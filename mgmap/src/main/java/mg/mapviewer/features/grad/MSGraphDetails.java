@@ -86,26 +86,10 @@ public class MSGraphDetails extends MGMicroService {
             if (controlLayer == null){                  // but is not yet
                 start();                                // therefore start it
             }
-//            if (msLayers.size() == 0){ // service is currently inactive
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        start();
-//                    }
-//                });
-//            }
         } else {
             if (controlLayer != null){
                 stop();
             }
-//            if (msLayers.size() > 0){ // service is currently inactive
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        stop();
-//                    }
-//                });
-//            }
         }
     }
 
