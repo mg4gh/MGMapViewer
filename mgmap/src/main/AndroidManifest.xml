@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="mg.mapviewer"
+    android:installLocation="auto"
+    android:versionCode="1"
+    android:versionName="1.0a">
+
+    <!--    <application-->
+    <!--        android:allowBackup="true"-->
+    <!--        android:icon="@mipmap/ic_launcher"-->
+    <!--        android:label="@string/app_name"-->
+    <!--        android:roundIcon="@mipmap/ic_launcher_round"-->
+    <!--        android:supportsRtl="true"-->
+    <!--        android:theme="@style/AppTheme" />-->
+
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature
+        android:name="android.hardware.sensor.barometer"
+        android:required="false" />
+
+    <!-- uses-sdk android:targetSdkVersion="26" / -->
+
+    <application
+        android:name="mg.mapviewer.MGMapApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/mg_map"
+        android:label="MGMapViewer">
+
+        <activity
+            android:name="mg.mapviewer.MGMapActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <!-- 23.10.2018 MG: intent-filter for files must have host tag, then it filters on pathPattern (not only on mimeType) -->
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+<!--                <data android:pathPattern=".*\\.gpx" />-->
+                <data android:pathPattern=".*\.gpx" />
+<!--                <data android:pathPattern=".*" />-->
+                <data android:scheme="content" />
+            </intent-filter>
+            <intent-filter>
+                <!-- 23.10.2018 MG: intent-filter for email appendix must not have host tag, then it filters on mimeType -->
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="application/octet-stream" />
+<!--                <data android:mimeType="application/*" />-->
+                <data android:mimeType="application/gpx" />
+                <data android:mimeType="application/gpx+xml" />
+                <data android:mimeType="text/xml" />
+<!--                <data android:mimeType="text/*" />-->
+                <data android:scheme="content" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="mg.mapviewer.Settings"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Settings"
+            android:parentActivityName="mg.mapviewer.MGMapActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mg.mapviewer.MGMapActivity" />
+        </activity>
+        <activity
+            android:name="mg.mapviewer.TrackStatisticActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Track Selection">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mg.mapviewer.MGMapActivity" />
+        </activity>
+        <activity
+            android:name="mg.mapviewer.ThemeSettings"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Theme_Settings"
+            android:parentActivityName="mg.mapviewer.MGMapActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mg.mapviewer.MGMapActivity" />
+        </activity>
+        <activity
+            android:name="mg.mapviewer.HeightProfileActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Height Profile"
+            android:parentActivityName="mg.mapviewer.MGMapActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mg.mapviewer.MGMapActivity" />
+        </activity>
+
+        <service
+            android:name="mg.mapviewer.TrackLoggerService"
+            android:exported="false"></service>
+    </application>
+
+</manifest>

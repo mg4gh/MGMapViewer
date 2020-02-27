@@ -1,0 +1,17 @@
+mg.mapviewer
+mg.mapviewer.control
+mg.mapviewer.features.atl
+mg.mapviewer.features.bb
+mg.mapviewer.features.grad
+mg.mapviewer.features.marker
+mg.mapviewer.features.motion
+mg.mapviewer.features.position
+mg.mapviewer.features.remainings
+mg.mapviewer.features.routing
+mg.mapviewer.features.rtl
+mg.mapviewer.features.rtl.control
+mg.mapviewer.features.time
+mg.mapviewer.graph
+mg.mapviewer.model
+mg.mapviewer.util
+mg.mapviewer.view

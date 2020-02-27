@@ -1,0 +1,37 @@
+/*
+ * Copyright 2017 - 2020 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package mg.mapviewer.graph;
+
+import org.mapsforge.core.util.LatLongUtils;
+
+import mg.mapviewer.util.PointModelUtil;
+
+/**
+ * Implementation of the AStar routing algorithm. This is basically identical to the Dijkstra algorithm, except that the heuristic function is based on the linear distance to the target.
+ */
+
+public class AStar extends Dijkstra {
+
+    public AStar(GGraph graph) {
+        super(graph);
+    }
+
+    @Override
+    double heuristic(GNode node) {
+        return PointModelUtil.distance(node, target) * 0.999;
+//        return LatLongUtils.sphericalDistance(node.getLatLong(), target.getLatLong()) * 0.999;
+    }
+
+}

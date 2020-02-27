@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <org.mapsforge.map.android.view.MapView
+        android:id="@+id/mapView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <mg.mapviewer.ControlView
+        android:id="@+id/controlView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <TableLayout
+            android:id="@+id/dashboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <TableRow
+                android:id="@+id/rtl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp"                                                                          android:text="" android:layout_weight="7"  android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/length"   android:text="" android:layout_weight="22" android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/gain"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/loss"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/duration" android:text="" android:layout_weight="21" android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/rtls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp"                                                                          android:text="" android:layout_weight="7"  android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/length"   android:text="" android:layout_weight="22" android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/gain"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/loss"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/duration" android:text="" android:layout_weight="21" android:lines="1" android:textColor="@color/WHITE" android:background="@color/RED100_A100"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/stl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp"                                                                          android:text="" android:layout_weight="7"  android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/length"   android:text="" android:layout_weight="22" android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/gain"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/loss"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/duration" android:text="" android:layout_weight="21" android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/stls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp"                                                                          android:text="" android:layout_weight="7"  android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/length"   android:text="" android:layout_weight="22" android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/gain"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/loss"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/duration" android:text="" android:layout_weight="21" android:lines="1" android:textColor="@color/WHITE" android:background="@color/BLUE100_A100"/>
+            </TableRow>
+            <TableRow
+
+                android:id="@+id/route"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp"                                                                          android:text="" android:layout_weight="7"  android:lines="1" android:textColor="@color/WHITE" android:background="@color/PURPLE_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/length"   android:text="" android:layout_weight="22" android:lines="1" android:textColor="@color/WHITE" android:background="@color/PURPLE_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/gain"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/PURPLE_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/loss"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/WHITE" android:background="@color/PURPLE_A100"/>
+                <TextView android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/duration" android:text="" android:layout_weight="21" android:lines="1" android:textColor="@color/WHITE" android:background="@color/PURPLE_A100"/>
+            </TableRow>
+
+
+        </TableLayout>
+
+        <RelativeLayout
+            android:id="@+id/mm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:maxHeight="1dp" />
+
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible"
+            android:id="@+id/bt_st01" android:text="" android:layout_below="@id/mm" />
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible"
+            android:id="@+id/bt_st02" android:text="" android:layout_below="@id/bt_st01" />
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible"
+            android:id="@+id/bt_st03" android:text="" android:layout_below="@id/bt_st02" />
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible"
+            android:id="@+id/bt_st04" android:text="" android:layout_below="@id/bt_st03" />
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible"
+            android:id="@+id/bt_st05" android:text="" android:layout_below="@id/bt_st04" />
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible"
+            android:id="@+id/bt_st06" android:text="" android:layout_below="@id/bt_st05" />
+
+
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible" android:layout_alignParentEnd="true"
+            android:id="@+id/bt_en01" android:text="" android:layout_below="@id/mm"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="0dp"
+            android:id="@+id/menu_en01_sub" android:layout_toStartOf="@id/bt_en01" android:layout_alignTop="@id/bt_en01">
+
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="0dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp"   android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+        </LinearLayout>
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible" android:layout_alignParentEnd="true"
+            android:id="@+id/bt_en02" android:text="" android:layout_below="@id/bt_en01"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="0dp"
+            android:id="@+id/menu_en02_sub" android:layout_toStartOf="@id/bt_en02" android:layout_alignTop="@id/bt_en02">
+
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="0dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp"   android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+        </LinearLayout>
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible" android:layout_alignParentEnd="true"
+            android:id="@+id/bt_en03" android:text="" android:layout_below="@id/bt_en02"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="0dp"
+            android:id="@+id/menu_en03_sub" android:layout_toStartOf="@id/bt_en03" android:layout_alignTop="@id/bt_en03">
+
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="0dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp"   android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+        </LinearLayout>
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible" android:layout_alignParentEnd="true"
+            android:id="@+id/bt_en04" android:text="" android:layout_below="@id/bt_en03"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="0dp"
+            android:id="@+id/menu_en04_sub" android:layout_toStartOf="@id/bt_en04" android:layout_alignTop="@id/bt_en04">
+
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="0dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp"   android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+        </LinearLayout>
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible" android:layout_alignParentEnd="true"
+            android:id="@+id/bt_en05" android:text="" android:layout_below="@id/bt_en04"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="0dp"
+            android:id="@+id/menu_en05_sub" android:layout_toStartOf="@id/bt_en05" android:layout_alignTop="@id/bt_en05">
+
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="0dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp"   android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+        </LinearLayout>
+
+        <Button  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2.5dp" android:background="@drawable/shape" android:textColor="@color/button_text" android:visibility="invisible" android:layout_alignParentEnd="true"
+            android:id="@+id/bt_en06" android:text="" android:layout_below="@id/bt_en05"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="0dp"
+            android:id="@+id/menu_en06_sub" android:layout_toStartOf="@id/bt_en06" android:layout_alignTop="@id/bt_en06">
+
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="0dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp"   android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/shape" android:textColor="@color/button_text"
+                android:layout_marginTop="2.5dp" android:layout_marginLeft="2.5dp" android:layout_marginRight="2.5dp" android:layout_marginBottom="2.5dp" android:text="" />
+        </LinearLayout>
+
+
+
+
+
+
+        <TableLayout
+            android:id="@+id/base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            >
+            <TableRow
+                android:id="@+id/base_r0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout android:id="@+id/bars" android:layout_width="0dp" android:layout_weight="50" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:id="@+id/sbt1" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <SeekBar android:id="@+id/sb1" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible"/>
+                    <TextView android:id="@+id/sbt2" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <SeekBar android:id="@+id/sb2" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible" android:paddingStart="30dp" android:paddingEnd="30dp"/>
+                    <TextView android:id="@+id/sbt3" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <SeekBar android:id="@+id/sb3" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible" android:paddingStart="30dp" android:paddingEnd="30dp"/>
+                    <TextView android:id="@+id/sbt4" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <SeekBar android:id="@+id/sb4" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible"/>
+                    <TextView android:id="@+id/sbt5" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <SeekBar android:id="@+id/sb5" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible"/>
+                </LinearLayout>
+
+            </TableRow>
+            <TableRow
+                android:id="@+id/pbar_p"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ProgressBar
+                    android:id="@+id/pbar"
+                    android:layout_width="0dp"
+                    android:layout_weight="50"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    style="?android:attr/progressBarStyleHorizontal" />
+            </TableRow>
+            <TableRow
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <TextView android:layout_height="wrap_content" android:layout_width="0dp"  android:layout_margin="0.8dp" android:padding="2dp" android:visibility="invisible" android:layout_weight="20" />
+            </TableRow>
+            <TableRow
+                android:id="@+id/tr_states"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <TextView android:id="@+id/tv_center" android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/distance"  android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@color/WHITE_A150"/>
+                <TextView android:id="@+id/tv_zoom"   android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/zoom"      android:text="" android:layout_weight="10" android:lines="1" android:textColor="@color/BLACK" android:background="@color/WHITE_A150"/>
+                <TextView android:id="@+id/tv_time"   android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/duration2" android:text="" android:layout_weight="15" android:lines="1" android:textColor="@color/BLACK" android:background="@color/WHITE_A150"/>
+                <TextView android:id="@+id/tv_height" android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/ele"       android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@color/WHITE_A150"/>
+                <TextView android:id="@+id/tv_remain" android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/remaining" android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@color/WHITE_A150"/>
+                <TextView android:id="@+id/tv_bat"    android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:padding="2dp" android:drawablePadding="3dp" android:drawableStart="@drawable/bat"      android:text="" android:layout_weight="10" android:lines="1" android:textColor="@color/BLACK" android:background="@color/WHITE_A150"/>
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <TextView android:id="@+id/ct1"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/fullscreen" android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct2"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/slider"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct3"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/mtlr"       android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct4"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/zoom_in"    android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct5"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/zoom_out"   android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+            </TableRow>
+
+        </TableLayout>
+
+
+
+
+
+    </mg.mapviewer.ControlView>
+
+</RelativeLayout>

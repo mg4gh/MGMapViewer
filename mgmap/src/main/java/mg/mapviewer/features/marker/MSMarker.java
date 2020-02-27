@@ -1,0 +1,294 @@
+/*
+ * Copyright 2017 - 2020 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package mg.mapviewer.features.marker;
+
+import android.util.Log;
+
+import org.mapsforge.core.graphics.Canvas;
+import org.mapsforge.core.model.BoundingBox;
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Point;
+import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.layer.Layer;
+
+import mg.mapviewer.MGMapActivity;
+import mg.mapviewer.MGMapApplication;
+import mg.mapviewer.MGMicroService;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
+
+import mg.mapviewer.model.WriteableTrackLog;
+import mg.mapviewer.model.PointModel;
+import mg.mapviewer.model.PointModelImpl;
+import mg.mapviewer.model.TrackLog;
+import mg.mapviewer.model.TrackLogPoint;
+import mg.mapviewer.model.TrackLogRef;
+import mg.mapviewer.model.TrackLogRefApproach;
+import mg.mapviewer.model.TrackLogSegment;
+import mg.mapviewer.model.WriteablePointModel;
+import mg.mapviewer.model.WriteablePointModelImpl;
+import mg.mapviewer.util.AltitudeProvider;
+import mg.mapviewer.util.Assert;
+import mg.mapviewer.util.Control;
+import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.util.PointModelUtil;
+import mg.mapviewer.view.MVLayer;
+
+public class MSMarker extends MGMicroService {
+
+    MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
+
+    public MSMarker(MGMapActivity mmActivity) {
+        super(mmActivity);
+    }
+
+    private Observer editMarkerTrackObserver = null;
+
+
+    @Override
+    protected void start() {
+        markerTrackLogObservable = getApplication().markerTrackLogObservable;
+        WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+        if (mtl != null){
+            refreshObserver.onChange();
+        }
+        markerTrackLogObservable.addObserver(refreshObserver);
+        getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
+        ttRefreshTime = 20;
+
+        checkStartStopMCL();
+        editMarkerTrackObserver = new Observer()
+        {
+            MarkerControlLayer mcl = null;
+            @Override
+            public void update(Observable o, Object arg) {
+                checkStartStopMCL();
+//                if (getApplication().editMarkerTrack.getValue()){
+//                    WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+//                    if (mtl == null){
+//                        initMarkerTrackLog();
+//                    }
+//
+//                    mcl = new MarkerControlLayer();
+//                    register(mcl, false);
+//                    markerTrackLogObservable.changed();
+//                } else {
+//                    int n = unregisterClass(MarkerControlLayer.class);
+//                    if (n > 1) Log.e(MGMapApplication.LABEL, NameUtil.context()+" unexpected number of control layers: "+n);
+//                    if (mcl != null){
+//                        unregister(mcl, false);
+//                        mcl = null;
+//                    }
+
+//                }
+            }
+        };
+        getApplication().editMarkerTrack.addObserver(editMarkerTrackObserver);
+    }
+
+    @Override
+    protected void stop() {
+        markerTrackLogObservable.deleteObserver(refreshObserver);
+        getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
+        getApplication().editMarkerTrack.deleteObserver(editMarkerTrackObserver);
+        unregisterClass(MarkerControlLayer.class);
+    }
+
+    @Override
+    protected void doRefresh() {
+        showHide(markerTrackLogObservable.getTrackLog());
+    }
+
+
+    private void checkStartStopMCL(){
+        if (getApplication().editMarkerTrack.getValue()){
+            WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+            if (mtl == null){
+                initMarkerTrackLog();
+            }
+            register(new MarkerControlLayer(), false);
+            markerTrackLogObservable.changed();
+        } else {
+            unregisterClass(MarkerControlLayer.class);
+        }
+    }
+
+
+    public void createMarkerTrackLog(TrackLog trackLog){
+        WriteableTrackLog mtl = new WriteableTrackLog(trackLog.getName()+"__MarkerTrack");
+        mtl.startTrack(trackLog.getTrackStatistic().getTStart());
+        for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
+            mtl.startSegment(segment.getStatistic().getTStart());
+            for (int i = 0; i<segment.size(); i++){
+                PointModel pm = segment.get(i);
+                PointModel npm;
+                if (pm instanceof TrackLogPoint) {
+                    npm = new TrackLogPoint((TrackLogPoint) pm);
+                } else {
+                    npm = new WriteablePointModelImpl(pm);
+                }
+                mtl.addPoint(npm);
+            }
+            mtl.stopSegment(segment.getStatistic().getTEnd());
+        }
+        mtl.stopTrack(trackLog.getTrackStatistic().getTEnd());
+        markerTrackLogObservable.setTrackLog(mtl);
+        showHide(mtl);
+    }
+
+    private void initMarkerTrackLog(){
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
+        long now = System.currentTimeMillis();
+        WriteableTrackLog mtl = new WriteableTrackLog(sdf2.format(new Date(now))+"_MarkerTrack");
+        mtl.startTrack(0);
+        mtl.startSegment(0);
+        markerTrackLogObservable.setTrackLog(mtl);
+    }
+
+
+    private void showHide(WriteableTrackLog mtl){
+        if (!msLayers.isEmpty()){
+            unregisterAll();
+        }
+        if (mtl != null){
+            for (TrackLogSegment segment : mtl.getTrackLogSegments()){
+                MarkerTrackView mtv = new MarkerTrackView(segment);
+                register(mtv);
+            }
+        }
+    }
+
+
+
+    public class MarkerControlLayer extends MVLayer {
+
+        private MarkerControlLayer(){
+            setDragging();
+        }
+
+        @Override
+        public boolean onTap(WriteablePointModel pmTap) {
+            WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+            TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
+            TrackLogRefApproach lineRef = mtl.getBestDistance(pmTap);
+
+            if (pointRef != null){
+                deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
+            } else {
+                pmTap.setEle(AltitudeProvider.getAltitude(pmTap.getLat(), pmTap.getLon()));
+                if (lineRef != null){
+                    insertPoint(mtl, pmTap, lineRef);
+                } else {
+                    addPoint(mtl, pmTap);
+                }
+            }
+            mtl.recalcStatistic();
+            markerTrackLogObservable.changed();
+            return true;
+        }
+
+        @Override
+        protected boolean checkDrag(PointModel pmStart, DragData dragData) {
+            WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+            TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
+//            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+((pointRef==null)?"null":(""+pointRef.getDistance())));
+            try {
+                if (pointRef != null){
+                    dragData.setDragObject(pointRef);
+
+                    if (getMapView().getModel().mapViewPosition.getZoomLevel() < 15){
+                        // if prev of next point are also close, then prohibit drag - if too much points close, the user intention is not clear
+                        TrackLogSegment segment = mtl.getTrackLogSegment(pointRef.getSegmentIdx());
+                        int tlpIdx = pointRef.getEndPointIndex();
+                        if (tlpIdx > 0){ // there is a previous point -> check whether also close
+                            PointModel prevPoint = segment.get(tlpIdx-1);
+                            if (getMapViewUtility().isClose( PointModelUtil.distance(pmStart, prevPoint) )){
+                                dragData.setDragObject(null);
+                            }
+                        }
+                        if (tlpIdx < segment.size()-1){
+                            PointModel nextPoint = segment.get(tlpIdx+1);
+                            if (getMapViewUtility().isClose( PointModelUtil.distance(pmStart, nextPoint) )){
+                                dragData.setDragObject(null);
+                            }
+                        }
+                    }
+                }
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" dragData.dragObject="+dragData.getDragObject());
+            } catch (Exception e){
+                dragData.setDragObject(null);
+            }
+            return (dragData.getDragObject() != null);
+        }
+
+        @Override
+        protected void handleDrag(PointModel pmCurrent, DragData dragData) {
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" pmCurrent="+pmCurrent);
+            WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+            TrackLogRefApproach dragRef = dragData.getDragObject(TrackLogRefApproach.class);
+            moveMarkerPoint(mtl, dragRef.getSegmentIdx(), dragRef.getEndPointIndex(), pmCurrent);
+            mtl.recalcStatistic();
+            markerTrackLogObservable.changed();
+        }
+
+        @Override
+        public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
+            return onTap(tapLatLong, layerXY, tapXY);
+        }
+
+    }
+
+
+
+
+    private void moveMarkerPoint(TrackLog mtl, int segIdx, int tlpIdx, PointModel pos){
+        PointModel pm = mtl.getTrackLogSegment(segIdx).get(tlpIdx);
+        if (pm instanceof WriteablePointModel) {
+            WriteablePointModel mtlp = (WriteablePointModel) pm;
+            mtlp.setLat(pos.getLat());
+            mtlp.setLon(pos.getLon());
+        }
+    }
+
+    private void deleteMarkerPoint(WriteableTrackLog mtl, int segIdx, int tlpIdx){
+        TrackLogSegment segment = mtl.getTrackLogSegment(segIdx);
+        segment.removePoint(tlpIdx);
+    }
+
+    private void addPoint(WriteableTrackLog mtl, PointModel pmTap){
+        mtl.addPoint( pmTap );
+    }
+
+
+    private void insertPoint(WriteableTrackLog mtl, PointModel pmTap, TrackLogRefApproach lineRef) {
+        Assert.check(lineRef.getTrackLog() == mtl);
+        TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
+        int tlpIdx = lineRef.getEndPointIndex();
+        segment.addPoint(tlpIdx, pmTap);
+    }
+
+    public Control[] getMenuMarkerControls(){
+        return new Control[]{
+                new MarkerDeleteAllControl(this),
+                new MarkerImportControl(this),
+                new MarkerExportControl()};
+    }
+
+
+}

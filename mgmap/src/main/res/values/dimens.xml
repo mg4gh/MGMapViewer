@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="attribution_margin">1dp</dimen>
+    <dimen name="attribution_size">4pt</dimen>
+    <!-- control margin increased to be above the inserted text field -->
+    <dimen name="controls_margin">20dp</dimen>
+    <dimen name="icon_size">80dp</dimen>
+
+</resources>
