@@ -19,6 +19,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
@@ -72,7 +73,9 @@ class BarometerListener implements SensorEventListener {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " FifoReservedEventCount="+pressureSensor.getFifoReservedEventCount());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Power="+pressureSensor.getPower());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Resolution="+pressureSensor.getResolution());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " HighestDirectReportRateLevel="+pressureSensor.getHighestDirectReportRateLevel());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " HighestDirectReportRateLevel="+pressureSensor.getHighestDirectReportRateLevel());
+            }
 
         } else {
             Log.e(TAG, "BarometerListener: "+"pressureSensor not found");

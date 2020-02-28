@@ -22,6 +22,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -55,24 +56,26 @@ public class TrackLoggerService extends Service {
     public void onCreate() {
         super.onCreate();
         application = (MGMapApplication)getApplication();
-//        fgService();
 
-        String CHANNEL_ID = "my_channel_01";
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                "MGMapViewer information channel",
-                NotificationManager.IMPORTANCE_LOW);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String CHANNEL_ID = "my_channel_01";
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                    "MGMapViewer information channel",
+                    NotificationManager.IMPORTANCE_LOW);
 
-        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
+            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
 
-        Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
-        notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.mg2)
-                .setContentTitle("MGMapViewer")
-                .setContentText("Location Listener is running.")
-                .setContentIntent(    PendingIntent.getActivity(this.getApplicationContext(), 0, intent , PendingIntent.FLAG_UPDATE_CURRENT))
-                .setSound(null)
-                .build();
+            Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
+            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.mg2)
+                    .setContentTitle("MGMapViewer")
+                    .setContentText("Location Listener is running.")
+                    .setContentIntent(    PendingIntent.getActivity(this.getApplicationContext(), 0, intent , PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setSound(null)
+                    .build();
+        }
+
 
     }
 
@@ -98,7 +101,9 @@ public class TrackLoggerService extends Service {
 
     protected void activateService(){
         try {
-            startForeground(1, notification);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForeground(1, notification);
+            }
             barometerListener = new BarometerListener(application,  SensorManager.SENSOR_DELAY_FASTEST);
             locationListener = new LocationListener(getApplication()){
                 @Override
@@ -110,7 +115,6 @@ public class TrackLoggerService extends Service {
                 }
             };
             locationListener.activate(4000,20);
-//            locationListener.activate(4000,0);
             barometerListener.activate();
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
@@ -119,7 +123,9 @@ public class TrackLoggerService extends Service {
     }
     protected void deactivateService(){
         try {
-            stopForeground(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                stopForeground(true);
+            }
             locationListener.deactivate();
             barometerListener.deactivate();
         } catch (Exception e) {

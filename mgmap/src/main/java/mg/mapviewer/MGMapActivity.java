@@ -17,6 +17,7 @@ package mg.mapviewer;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -274,7 +275,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, 1);
         } else {
             Intent intent = new Intent(this, TrackLoggerService.class);
-            this.startForegroundService(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                this.startForegroundService(intent);
+            } else {
+                this.startService(intent);
+            }
         }
     }
 
