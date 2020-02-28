@@ -486,20 +486,6 @@ public class ControlView extends RelativeLayout {
         tv_remain = registerTextView(R.id.tv_remain);
         tv_bat = registerTextView(R.id.tv_bat);
 
-//        tv_center = activity.findViewById(R.id.tv_center);
-//        tv_zoom = activity.findViewById(R.id.tv_zoom);
-//        tv_bat = activity.findViewById(R.id.tv_bat);
-//        tv_time = activity.findViewById(R.id.tv_time);
-//        tv_height = activity.findViewById(R.id.tv_height);
-//        tv_remain = activity.findViewById(R.id.tv_remain);
-//
-//        tv_center.setOnClickListener(new ZoomOCL());
-//        tv_zoom.setOnClickListener(new ZoomOCL());
-//        tv_bat.setOnClickListener(new ZoomOCL());
-//        tv_time.setOnClickListener(new ZoomOCL());
-//        tv_height.setOnClickListener(new ZoomOCL());
-//        tv_remain.setOnClickListener(new ZoomOCL());
-
         updateTvCenter(0);
         updateTvTime(System.currentTimeMillis());
         updateTvHeight(PointModel.NO_ELE);
@@ -553,39 +539,15 @@ public class ControlView extends RelativeLayout {
         setTvText(tv_center, text);
     }
 
-//    public void setTvCenter(double distance){
-//        tv_center.setText(String.format(Locale.ENGLISH, " %.2f km", distance / 1000.0));
-//        setAlphaForDrawable(tv_center, 255);
-//        tv_center.setVisibility(VISIBLE);
-//        if (tv_center.getParent() == null){
-//            tr_states.addView(tv_center, 0);
-//        }
-//    }
-//    public void clearTvCenter(){
-//        tv_center.setText("");
-//        setAlphaForDrawable(tv_center, 0);
-//        tv_center.setVisibility(INVISIBLE);
-//        if (tv_center.getParent() != null) {
-//            tr_states.removeView(tv_center);
-//        }
-//    }
-
     public void updateTvZoom(byte zoomLevel){ // zoomLevel 0 means clean
         String text = (zoomLevel==0)?"":String.format(Locale.ENGLISH, " %d", zoomLevel);
         setTvText(tv_zoom, text);
     }
 
-//    public void setTvZoom(byte zoomLevel){
-////        TextView tv_zoom = activity.findViewById(R.id.tv_zoom);
-//        tv_zoom.setText(String.format(Locale.ENGLISH, " %d", zoomLevel));
-//    }
-
     private SimpleDateFormat sdf2 = new SimpleDateFormat(" HH:mm", Locale.GERMANY);
     public void updateTvTime(long millis){
         String text = (millis==0)?"": sdf2.format(millis);
         setTvText(tv_time, text);
-
-//        tv_time.setText( sdf2.format(millis));
     }
 
     public void updateTvHeight(float height /* in m */){ // PointModel.NO_ELE means clean
@@ -593,43 +555,6 @@ public class ControlView extends RelativeLayout {
         setTvText(tv_height, text);
     }
 
-//    public void setTvHeight(float height /* in m */){
-////        Log.i(MGMapApplication.LABEL, NameUtil.context()+" height="+height);
-//        if (height == TrackLogPoint.NO_ELE){
-//            clearTvHeight();
-//        } else {
-//            tv_height.setText(String.format(Locale.ENGLISH," %.1f m",height));
-//            setAlphaForDrawable(tv_height, 255);
-//            tv_height.setVisibility(VISIBLE);
-//            if (tv_height.getParent() == null) {
-//                int pos = (tv_center.getParent()==null)?2:3;
-//                tr_states.addView(tv_height,pos);
-//            }
-//        }
-//    }
-//    public void setTvHeight2(float pressure /* in hpa */){
-// //       Log.i(MGMapApplication.LABEL, NameUtil.context()+" pressure="+pressure);
-//        if (pressure == PointModel.NO_PRES){
-//            clearTvHeight();
-//        } else {
-//            tv_height.setText(String.format(Locale.ENGLISH," %.2f hpa",pressure));
-//            setAlphaForDrawable(tv_height, 255);
-//            tv_height.setVisibility(VISIBLE);
-//            if (tv_height.getParent() == null) {
-//                int pos = (tv_center.getParent()==null)?2:3;
-//                tr_states.addView(tv_height,pos);
-//            }
-//        }
-//    }
-//    public void clearTvHeight(){
-//        tv_height.setText("");
-//        setAlphaForDrawable(tv_height, 0);
-//        tv_height.setVisibility(INVISIBLE);
-//        if (tv_height.getParent() != null) {
-//            tr_states.removeView(tv_height);
-//        }
-//
-//    }
 
     public void updateRemainingForSelected(int drawableId, double dist){
         String text = (dist<0)?"":String.format(Locale.ENGLISH, " %.2f km", dist/1000);
@@ -646,37 +571,13 @@ public class ControlView extends RelativeLayout {
         tv_remain.setCompoundDrawables(drawable,null,null,null);
         setTvText(tv_remain, text);
 
-
-
-//        tv_remain.setText(text);
-//        setAlphaForDrawable(tv_remain, text.equals("")?0:255);
-//        tv_remain.setVisibility(text.equals("")?INVISIBLE:VISIBLE);
-//        if ((tv_remain.getParent() == null) && (!text.equals(""))) {
-//            tr_states.addView(tv_remain);
-//        } else if ((tv_remain.getParent() != null) && (text.equals(""))) {
-//            tr_states.removeView(tv_remain);
-//        }
     }
 
     public void updateTvBat(int batteryPercent){ // batteryPercent -1 means clean
         String text = (batteryPercent==-1)?"":String.format(Locale.ENGLISH, " %d", batteryPercent);
         setTvText(tv_bat, text);
     }
-//    public void setTvBat(int batteryPercent){
-//        TextView tv_bat = activity.findViewById(R.id.tv_bat);
-//        tv_bat.setText(String.format(Locale.ENGLISH, " %d", batteryPercent));
-//    }
 
-
-
-
-//    private void setAlphaForDrawable(TextView tv, int alpha){
-//        Drawable drawable = tv.getCompoundDrawables()[0]; // index 0 is the left
-//        if (drawable != null){
-//            drawable.setAlpha(alpha);
-//            tv.setCompoundDrawables(drawable,null,null,null);
-//        }
-//    }
 
     private void scaleBoundsForDrawable(TextView tv, int diff){
         Drawable drawable = tv.getCompoundDrawables()[0]; // index 0 is the left
@@ -697,7 +598,6 @@ public class ControlView extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 application.fullscreen.toggle();
-//                activity.toggleFullscreen();
             }
         });
         final TextView ct2 = activity.findViewById(R.id.ct2);
