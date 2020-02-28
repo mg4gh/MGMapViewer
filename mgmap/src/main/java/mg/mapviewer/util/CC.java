@@ -45,11 +45,11 @@ public class CC { // short for ColorConstant
         return ContextCompat.getColor(activity.getApplicationContext(),colorId);
     }
 
-    public static Paint getStrokePaint(int colorId, int width){
+    public static Paint getStrokePaint(int colorId, float width){
         return getStrokePaint4Color(getColor(colorId), width);
     }
 
-    public static Paint getStrokePaint4Color(int color, int width){
+    public static Paint getStrokePaint4Color(int color, float width){
         Paint paint = AndroidGraphicFactory.INSTANCE.createPaint();
         paint.setColor( color );
         paint.setStrokeWidth(width);

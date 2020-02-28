@@ -26,7 +26,6 @@ import mg.mapviewer.util.NameUtil;
 
 /**
  * Location Listener for TrackLoggerService
- * Created by Martin on 13.08.2017.
  */
 
 abstract class LocationListener implements android.location.LocationListener {

@@ -29,6 +29,8 @@ import mg.mapviewer.model.BBox;
  */
 public class MapViewUtility {
 
+    public static final float DEFAULT_TRACK_WIDTH = 4;
+
     private Context context;
     private MapView mapView;
 
@@ -82,4 +84,7 @@ public class MapViewUtility {
         return this.mapView.getModel().mapViewPosition.getZoomLevel();
     }
 
+    public float getTrackWidth(){
+        return DEFAULT_TRACK_WIDTH * mapView.getModel().displayModel.getScaleFactor();
+    }
 }

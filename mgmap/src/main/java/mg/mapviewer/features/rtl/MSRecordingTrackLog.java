@@ -29,7 +29,7 @@ import mg.mapviewer.util.Control;
 
 public class MSRecordingTrackLog extends MGMicroService {
 
-    private static final Paint PAINT_STROKE_RTL = CC.getStrokePaint(R.color.RED, 10);
+    private final Paint PAINT_STROKE_RTL = CC.getStrokePaint(R.color.RED, getMapViewUtility().getTrackWidth());
 
     public MSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -63,9 +63,7 @@ public class MSRecordingTrackLog extends MGMicroService {
 
     private void showRecordingTrackLog(RecordingTrackLog rtl) {
         unregisterAll();
-//        getMapViewUtility().hideLayers(msLayers);
         showTrack(rtl, PAINT_STROKE_RTL, false);
-//        getMapViewUtility().showTarck(rtl,PAINT_STROKE_RTL,!rtl.isSegmentRecording(),msLayers);
 
         getControlView().showHideUpdateDashboard(true, R.id.rtl ,rtl.getTrackStatistic());
         int segIdx = rtl.getNumberOfSegments()-1;
@@ -74,7 +72,6 @@ public class MSRecordingTrackLog extends MGMicroService {
 
     private synchronized void hideRecordingTrackLog() {
         unregisterAll();
-//        getMapViewUtility().hideLayers(msLayers);
         getControlView().showHideUpdateDashboard(false,R.id.rtl,null);
         getControlView().showHideUpdateDashboard(false,R.id.rtls,null);
     }

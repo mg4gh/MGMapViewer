@@ -36,9 +36,9 @@ import mg.mapviewer.util.MetaDataUtil;
 
 public class MSAvailableTrackLogs extends MGMicroService {
 
-    private static final Paint PAINT_STROKE_ATL = CC.getStrokePaint(R.color.GREEN, 10);
-    private static final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.BLUE, 10);
-    private static final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.BLACK, 10);
+    private final Paint PAINT_STROKE_ATL = CC.getStrokePaint(R.color.GREEN, getMapViewUtility().getTrackWidth());
+    private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.BLUE, getMapViewUtility().getTrackWidth());
+    private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.BLACK, getMapViewUtility().getTrackWidth());
 
 
     public MSAvailableTrackLogs(MGMapActivity mmActivity) {
