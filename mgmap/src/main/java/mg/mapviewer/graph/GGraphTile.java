@@ -29,6 +29,7 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.MultiPointModelImpl;
+import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.model.WriteablePointModelImpl;
 import mg.mapviewer.util.AltitudeProvider;
@@ -65,7 +66,7 @@ public class GGraphTile extends GGraph {
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
             MapReadResult mapReadResult = mapFile.readMapData(tile);        // extractPoints relevant map data
             graph = new GGraphTile(tile);
-            BoundingBox b = tile.getBoundingBox();
+//            BoundingBox b = tile.getBoundingBox();
             for (Way way : mapReadResult.ways) {
                 if (isHighway(way)){
 
@@ -73,7 +74,13 @@ public class GGraphTile extends GGraph {
 
                     MultiPointModelImpl mpm = new MultiPointModelImpl();
                     for (LatLong latLong : way.latLongs[0] ){
-                        mpm.addPoint(graph.getAddNode(latLong.latitude, latLong.longitude));
+                        // for points inside the tile use the GNodes as already allocated
+                        // for points outside use extra Objects, don't pollute the graph with them
+                        if (graph.tbBox.contains(latLong.latitude, latLong.longitude)){
+                            mpm.addPoint(graph.getAddNode(latLong.latitude, latLong.longitude));
+                        } else {
+                            mpm.addPoint(new PointModelImpl(latLong));
+                        }
                     }
                     graph.rawWays.add(mpm);
                 }
@@ -189,14 +196,9 @@ public class GGraphTile extends GGraph {
         GNode node1 = getAddNode( lat1, long1);
         GNode node2 = getAddNode( lat2, long2);
         addSegment(node1, node2);
-//        double cost = PointModelUtil.distance(node1, node2);
-//        node1.addNeighbour(new GNeighbour(node2, cost));
-//        node2.addNeighbour(new GNeighbour(node1, cost));
     }
 
     void addSegment(GNode node1, GNode node2){
-//        GNode node1 = getAddNode( lat1, long1);
-//        GNode node2 = getAddNode( lat2, long2);
         double cost = PointModelUtil.distance(node1, node2);
         node1.addNeighbour(new GNeighbour(node2, cost));
         node2.addNeighbour(new GNeighbour(node1, cost));

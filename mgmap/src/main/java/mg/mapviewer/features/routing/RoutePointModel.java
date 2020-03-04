@@ -20,21 +20,26 @@ import java.util.TreeSet;
 
 import mg.mapviewer.graph.GNode;
 import mg.mapviewer.graph.ApproachModel;
+import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.MultiPointModel;
+import mg.mapviewer.model.MultiPointModelImpl;
 import mg.mapviewer.model.PointModel;
 
-/** A model point of the route. Most important property is the reference to the corresponding MarkerTrackLogPoint (PointModel).
- * Additionally it keeps a reference to a MultiPointModel that represents the route between the previous MarkerTrackLogPoint and this one.
+/** A model point of the route. Most important property is the reference to the corresponding
+ * MarkerTrackLogPoint (PointModel). Additionally it keeps a reference to a MultiPointModel
+ * that represents the route between the previous MarkerTrackLogPoint and this one.
  * Finally it contains references to the approaches of this MarkerTrackLogPoint.
  * */
 public class RoutePointModel implements Observer {
 
-    MultiPointModel currentMPM = null;
-    MultiPointModel newMPM = null;
+    MultiPointModelImpl currentMPM = null;
+    MultiPointModelImpl newMPM = null;
     PointModel mtlp;
+    double currentDistance = 0;
 
     TreeSet<ApproachModel> approaches;
     ApproachModel selectedApproach;
+    BBox approachBBox;
 
     public RoutePointModel(PointModel pointModel){
         this.mtlp = pointModel;
@@ -66,6 +71,18 @@ public class RoutePointModel implements Observer {
     public void resetApproaches(){
         approaches = null;
         selectedApproach = null;
-
+        approachBBox = null;
     }
+
+    void setApproaches(TreeSet<ApproachModel> approaches){
+        this.approaches = approaches; // keep remaining approaches in the RoutePointModel
+        approachBBox = new BBox();
+        if (!approaches.isEmpty()){
+            for (ApproachModel am : approaches){
+                approachBBox.extend(am.getNode1()).extend(am.getNode2());
+            }
+            selectedApproach = approaches.first();
+        }
+    }
+
 }

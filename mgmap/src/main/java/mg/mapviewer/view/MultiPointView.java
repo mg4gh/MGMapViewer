@@ -19,14 +19,8 @@ import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Path;
 import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
-import org.mapsforge.core.util.LatLongUtils;
-import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.layer.Layer;
-import org.mapsforge.map.layer.overlay.Polyline;
-import org.mapsforge.map.util.MapViewProjection;
 
 import java.util.Iterator;
 

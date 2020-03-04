@@ -70,7 +70,7 @@ public class CC { // short for ColorConstant
 
     private static void initGlPaints(){
         int w=6;
-        int a=0xFF;
+        int a=0x80;
         int steps = 30;
         for (int i=1; i<=steps; i++){
             int r=0;
@@ -87,7 +87,8 @@ public class CC { // short for ColorConstant
             int c = (a<<24) + (r<<16) + (g<<8) + b;
             glPaints.put(-i,getStrokePaint4Color(c, w));
         }
-        glPaints.put(0,getStrokePaint4Color(0xFF00FF00, w));
+
+        glPaints.put(0,getStrokePaint4Color((a<<24) +0x00FF00, w));
         steps = 10;
         for (int i=1; i<=steps; i++){
             int r=(i*255)/steps;

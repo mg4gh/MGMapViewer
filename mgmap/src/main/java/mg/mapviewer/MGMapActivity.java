@@ -60,8 +60,10 @@ import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.TrackLogRef;
+import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.model.WriteablePointModel;
+import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.GpxImporter;
 import mg.mapviewer.util.MapViewUtility;
@@ -410,11 +412,22 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         layers.add(new MVLayer() {
             @Override
             protected boolean onTap(WriteablePointModel point) {
+                { // this sectio is just for analysis purposes
+                    WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+                    if (mtl != null){
+                        TrackLogRefApproach pointRef = mtl.getBestPoint(point, PointModelUtil.getCloseThreshold());
+                        if (pointRef != null){
+                            Log.i(MGMapApplication.LABEL, NameUtil.context() + "idx=" +pointRef.getEndPointIndex()+" "+ pointRef.getApproachPoint());
+                        }
+                    }
+                }
+
                 if (!getMS(MSAvailableTrackLogs.class).selectCloseTrack( point )){
                     coView.toggleMenuVisibility();
                 }
                 return true;
             }
+
         });
     }
 

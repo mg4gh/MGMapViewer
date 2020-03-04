@@ -42,11 +42,6 @@ public class TrackLogSegment extends MultiPointModelImpl{
         statistic = new TrackLogStatistic(idx);
     }
 
-
-    public MultiPointModelImpl addPoint(PointModel pointModel){
-        statistic.updateWithPoint(pointModel);
-        return super.addPoint(pointModel);
-    }
     public MultiPointModelImpl addPoint(int idx, PointModel pointModel){
         statistic.updateWithPoint(pointModel);
         return super.addPoint(idx, pointModel);

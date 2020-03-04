@@ -131,15 +131,13 @@ public class Dijkstra {
     }
 
     public boolean markConnected(){
-        int cnt = 0;
         for (int i=0; i< CHECK_CONNECTED_ATTEMPTS; i++) {
-            GNode source = nodes.get((int) (Math.random() * (nodes.size() - 0.1))); // check random index
+            int sIdx = (int) (Math.random() * (nodes.size() - 0.1));
+            GNode source = nodes.get(sIdx); // check random index
             perform(source, null, Double.MAX_VALUE);
             if ((double) (cntRelaxed) / cntTotal > 0.6) {
                 for (GNode node : nodes) {
                     if (node.getNodeRef() != null) node.setConnected(true);
-//                    node.setConnected(node.getNodeRef() != null);
-                    if (node.getNodeRef() != null) cnt++;
                 }
                 return true;
             }

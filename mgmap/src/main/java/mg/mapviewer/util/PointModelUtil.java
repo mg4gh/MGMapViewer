@@ -16,6 +16,7 @@ package mg.mapviewer.util;
 
 import org.mapsforge.core.util.LatLongUtils;
 
+import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.WriteablePointModel;
 
@@ -45,6 +46,14 @@ public class PointModelUtil {
         double a = Math.sin(dLat / 2.0D) * Math.sin(dLat / 2.0D) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2.0D) * Math.sin(dLon / 2.0D);
         double c = 2.0D * Math.atan2(Math.sqrt(a), Math.sqrt(1.0D - a));
         return c * 6378137.0D;
+    }
+
+    public static double distance(MultiPointModel mpm){
+        double length = 0;
+        for (int i=1, j=0; i<mpm.size(); j=i++){
+            length += distance(mpm.get(i), mpm.get(j));
+        }
+        return length;
     }
 
     public static int getCloseThreshold(){

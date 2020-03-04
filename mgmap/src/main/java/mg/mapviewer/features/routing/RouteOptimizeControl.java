@@ -16,6 +16,8 @@ package mg.mapviewer.features.routing;
 
 import android.view.View;
 
+import org.mapsforge.map.datastore.MapDataStore;
+
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.model.WriteableTrackLog;
@@ -33,7 +35,9 @@ public class RouteOptimizeControl extends Control {
     @Override
     public void onClick(View v) {
         super.onClick(v);
-//        msRouting.optimize();
+        msRouting.optimize();
+
+
     }
 
     @Override
@@ -45,6 +49,6 @@ public class RouteOptimizeControl extends Control {
         setText(v, controlView.rstring(R.string.btRouteOptimize) );
 
 
-        v.setEnabled(false);
+//        v.setEnabled(false);
     }
 }

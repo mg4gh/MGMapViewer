@@ -24,6 +24,7 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
 
     ArrayList<PointModel> points = new ArrayList<>();
     BBox bBox = new BBox();
+    boolean route = false;
 
     public MultiPointModelImpl(){}
 
@@ -83,5 +84,11 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
         bBox.clear().extend(points);
     }
 
+    public boolean isRoute() {
+        return route;
+    }
 
+    public void setRoute(boolean route) {
+        this.route = route;
+    }
 }

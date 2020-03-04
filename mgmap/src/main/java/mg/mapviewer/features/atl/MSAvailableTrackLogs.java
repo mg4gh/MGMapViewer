@@ -38,7 +38,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
 
     private final Paint PAINT_STROKE_ATL = CC.getStrokePaint(R.color.GREEN, getMapViewUtility().getTrackWidth());
     private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.BLUE, getMapViewUtility().getTrackWidth());
-    private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.BLACK, getMapViewUtility().getTrackWidth());
+    private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth());
 
 
     public MSAvailableTrackLogs(MGMapActivity mmActivity) {

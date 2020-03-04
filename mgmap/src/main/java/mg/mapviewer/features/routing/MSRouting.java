@@ -124,7 +124,7 @@ public class MSRouting extends MGMicroService {
     }
 
 
-    private RoutePointModel getRoutePointModel(PointModel pm){
+    RoutePointModel getRoutePointModel(PointModel pm){
         RoutePointModel rpm = routePointMap.get(pm);
         if (rpm == null){
             rpm = new RoutePointModel(pm);
@@ -198,6 +198,7 @@ public class MSRouting extends MGMicroService {
             for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
                 RoutePointModel rpm = routePointMap.get(segment.get(idx));
                 rpm.currentMPM = rpm.newMPM;
+                rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
                 if (rpm.newMPM != null){
                     for (PointModel pm : rpm.newMPM){
                         routeStatistic.updateWithPoint(pm);
@@ -215,7 +216,7 @@ public class MSRouting extends MGMicroService {
     }
 
 
-    private MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, boolean distanceCheck){
+    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, boolean distanceCheck){
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
         Log.i(MGMapApplication.LABEL, NameUtil.context());
@@ -224,10 +225,6 @@ public class MSRouting extends MGMicroService {
         BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
         bBox.extend(PointModelUtil.getCloseThreshold());
         GGraph multi = new GGraphMulti(GGraphTile.getGGraphTileList(mapFile,bBox));
-        Dijkstra dj = new Dijkstra(multi);
-        dj.markConnected();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Result from markCOnnected: "+dj.getResult());
-
 
         calcApproaches(mapFile, source);
         calcApproaches(mapFile, target);
@@ -239,8 +236,8 @@ public class MSRouting extends MGMicroService {
         Log.i(MGMapApplication.LABEL, NameUtil.context()+ " start "+gStart+" end "+gEnd);
 
         if ((gStart != null) && (gEnd != null) && !direct){
-            multi.createOverlaysForApproaches(source.approaches, gStart);
-            multi.createOverlaysForApproaches(target.approaches, gEnd);
+            multi.createOverlaysForApproach(source.selectedApproach);
+            multi.createOverlaysForApproach(target.selectedApproach);
 
             Log.i(MGMapApplication.LABEL, NameUtil.context());
             double distLimit = distanceCheck? acceptedRouteDistance(gStart, gEnd):Double.MAX_VALUE;
@@ -253,13 +250,11 @@ public class MSRouting extends MGMicroService {
                 relaxedViews.clear();
                 List<GNodeRef> path = d.perform(gStart, gEnd, distLimit);
                 if (bShowRelaxed){
-//                    if (getApplication().wayDetails.getValue()){
-                        for (GNode gNode : d.getRelaxedList()){
-                            PointView pv = new PointView(gNode, PAINT_RELAXED);
-                            relaxedViews.add(pv);
-                            register(pv);
-                        }
-//                    }
+                    for (GNode gNode : d.getRelaxedList()){
+                        PointView pv = new PointView(gNode, PAINT_RELAXED);
+                        relaxedViews.add(pv);
+                        register(pv);
+                    }
                 }
 
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " "+ path.size()+" "+d.getResult());
@@ -286,6 +281,8 @@ public class MSRouting extends MGMicroService {
                 }
             }
         }
+        mpm.setRoute(mpm.size() != 0);
+
         if (mpm.size() == 0) { // no bRouting required or bRouting not possible due to missing approach or no route found
             if (gStart != null){
                 mpm.addPoint(gStart);
@@ -303,7 +300,7 @@ public class MSRouting extends MGMicroService {
     }
 
 
-    private void calcApproaches(MapDataStore mapFile, RoutePointModel rpm){
+    void calcApproaches(MapDataStore mapFile, RoutePointModel rpm){
 
         if (rpm.getApproach() != null){
             return; // approach calculation is already done
@@ -362,19 +359,7 @@ public class MSRouting extends MGMicroService {
             }
         }
         approaches.removeAll(dropApproaches);
-        rpm.approaches = approaches; // keep remaining approaches in the RoutePointModel
-        if (!approaches.isEmpty()){
-
-            for (ApproachModel am : approaches){
-                // take first connected approach as selected
-                if (am.getNode1().isConnected() || am.getNode2().isConnected()) rpm.selectedApproach = am;
-                break;
-            }
-            if (rpm.selectedApproach == null) {
-                // else take first approach as selected
-                rpm.selectedApproach = approaches.first();
-            }
-        }
+        rpm.setApproaches(approaches);
     }
 
     TrackLog calcRouteTrackLog(WriteableTrackLog mtl){
@@ -451,5 +436,13 @@ public class MSRouting extends MGMicroService {
         }
     }
 
+
+    void optimize(){
+        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+        MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
+        RouteOptimizer ro = new RouteOptimizer(this, mapFile);
+        ro.optimize(mtl);
+        getApplication().markerTrackLogObservable.changed();
+    }
 
 }

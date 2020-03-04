@@ -186,7 +186,7 @@ public class MSMarker extends MGMicroService {
         public boolean onTap(WriteablePointModel pmTap) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
-            TrackLogRefApproach lineRef = mtl.getBestDistance(pmTap);
+            TrackLogRefApproach lineRef = mtl.getBestDistance(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
 
             if (pointRef != null){
                 deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());

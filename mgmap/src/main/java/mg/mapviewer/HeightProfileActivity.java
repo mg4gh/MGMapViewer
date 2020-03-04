@@ -138,6 +138,8 @@ public class HeightProfileActivity extends Activity {
 
 
     private void createSeries(GraphView graph, SparseIntArray array, int color){
+        if (array.size() < 2) return;
+
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
         graph.addSeries(series);
         series.setColor(color);

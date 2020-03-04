@@ -180,7 +180,7 @@ public class TrackLogStatistic {
         gain += statistic.gain;
         loss += statistic.loss;
         minEle = Math.min(minEle, statistic.minEle);
-        maxEle = Math.min(maxEle, statistic.maxEle);
+        maxEle = Math.max(maxEle, statistic.maxEle);
         numPoints += statistic.numPoints;
     }
 
@@ -189,7 +189,7 @@ public class TrackLogStatistic {
             lastPoint4GainLoss = point;
         } else{
             float diff = point.getEleD() - lastPoint4GainLoss.getEleD();
-            if (Math.abs(diff) > ELE_THRESHOLD){
+            if (Math.abs(diff) > getEleThreshold(point)){
                 lastPoint4GainLoss = point;
                 if (diff > 0){
                     gain += diff;
@@ -198,6 +198,15 @@ public class TrackLogStatistic {
                 }
             }
         }
+    }
+
+    private float getEleThreshold(PointModel point){
+
+        if (point instanceof TrackLogPoint) {
+            TrackLogPoint tlp = (TrackLogPoint) point;
+            if (tlp.pressureAlt != PointModel.NO_ELE) return ELE_THRESHOLD;
+        }
+        return ELE_THRESHOLD*5;
     }
 
     public String durationToString(){

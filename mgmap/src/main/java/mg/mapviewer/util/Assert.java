@@ -14,7 +14,10 @@
  */
 package mg.mapviewer.util;
 
+import android.util.Log;
+
 import mg.mapviewer.BuildConfig;
+import mg.mapviewer.MGMapApplication;
 
 /**
  * Private Assert implementation.
@@ -24,12 +27,14 @@ public class Assert {
 
     public static void check(boolean condition) {
         if (BuildConfig.DEBUG && !condition){
-            throw new RuntimeException("Assert violation.");
+            Log.w(MGMapApplication.LABEL, NameUtil.context()+ " Assert violation.");
+//            throw new RuntimeException("Assert violation.");
         }
     }
     public static void check(boolean condition, String description) {
         if (BuildConfig.DEBUG && !condition){
-            throw new RuntimeException("Assert violation: "+description);
+            Log.w(MGMapApplication.LABEL, NameUtil.context()+ " Assert violation.");
+//            throw new RuntimeException("Assert violation: "+description);
         }
     }
 
