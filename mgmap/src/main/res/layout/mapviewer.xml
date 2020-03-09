@@ -204,48 +204,29 @@
         </LinearLayout>
 
 
-
-
-
-
         <TableLayout
             android:id="@+id/base"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            >
+            android:layout_alignParentBottom="true">
             <TableRow
                 android:id="@+id/base_r0"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <LinearLayout android:id="@+id/bars" android:layout_width="0dp" android:layout_weight="50" android:layout_height="wrap_content" android:orientation="vertical">
                     <TextView android:id="@+id/sbt1" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                    <SeekBar android:id="@+id/sb1" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible"/>
+                    <SeekBar android:id="@+id/sb1" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible" android:paddingStart="30dp" android:paddingEnd="30dp"/>
                     <TextView android:id="@+id/sbt2" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <SeekBar android:id="@+id/sb2" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible" android:paddingStart="30dp" android:paddingEnd="30dp"/>
                     <TextView android:id="@+id/sbt3" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <SeekBar android:id="@+id/sb3" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible" android:paddingStart="30dp" android:paddingEnd="30dp"/>
                     <TextView android:id="@+id/sbt4" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                    <SeekBar android:id="@+id/sb4" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible"/>
+                    <SeekBar android:id="@+id/sb4" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible" android:paddingStart="30dp" android:paddingEnd="30dp"/>
                     <TextView android:id="@+id/sbt5" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                    <SeekBar android:id="@+id/sb5" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible"/>
+                    <SeekBar android:id="@+id/sb5" android:layout_width="match_parent" android:layout_weight="50" android:layout_height="wrap_content" android:visibility="invisible" android:paddingStart="30dp" android:paddingEnd="30dp"/>
                 </LinearLayout>
-
             </TableRow>
             <TableRow
-                android:id="@+id/pbar_p"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ProgressBar
-                    android:id="@+id/pbar"
-                    android:layout_width="0dp"
-                    android:layout_weight="50"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    style="?android:attr/progressBarStyleHorizontal" />
-            </TableRow>
-            <TableRow
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
                 <TextView android:layout_height="wrap_content" android:layout_width="0dp"  android:layout_margin="0.8dp" android:padding="2dp" android:visibility="invisible" android:layout_weight="20" />

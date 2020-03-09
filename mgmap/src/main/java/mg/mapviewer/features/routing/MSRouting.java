@@ -223,7 +223,7 @@ public class MSRouting extends MGMicroService {
         boolean bShowRelaxed = (getApplication().wayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY);
 
         BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
-        bBox.extend(PointModelUtil.getCloseThreshold());
+        bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp, target.mtlp)*0.3) );
         GGraph multi = new GGraphMulti(GGraphTile.getGGraphTileList(mapFile,bBox));
 
         calcApproaches(mapFile, source);

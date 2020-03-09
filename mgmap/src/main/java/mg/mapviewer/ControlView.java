@@ -442,31 +442,6 @@ public class ControlView extends RelativeLayout {
 
 
 
-
-    public void setProgessbarColor(int colorIdx){
-        int[] progressBarColors = new int[]{ CC.getColor(R.color.PURPLE_A150), CC.getColor(R.color.BLACK) };
-        if (progressBar == null) progressBar = findViewById(R.id.pbar);
-        progressBar.getProgressDrawable().setColorFilter(progressBarColors[colorIdx], PorterDuff.Mode.SRC_IN);
-    }
-
-    public void showHideProgressBar(int percent){
-        if (progressBar == null) progressBar = findViewById(R.id.pbar);
-        LinearLayout progressBarParent = findViewById(R.id.pbar_p);
-
-
-        if ((percent == 0) || (percent == 100)) {
-            if (progressBar.getParent() != null) {
-                progressBarParent.removeView(progressBar);
-            }
-        }else {
-            progressBar.setProgress(percent);
-
-            if (progressBar.getParent() == null) {
-                progressBarParent.addView(progressBar);
-            }
-        }
-    }
-
     TextView registerTextView(int id){
         TextView tv = activity.findViewById(id);
         tvList.add(tv);

@@ -28,7 +28,9 @@ import mg.mapviewer.model.PointModel;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.PointModelUtil;
 
-/**
+/** This view draws a track (segment) via its MultiPointModel. The special thing here is, that the
+ * color depends on the gain/loss of the segment.
+ * A smoothing function will be applied.
  */
 public class MultiPointGLView extends MultiPointView {
 
@@ -59,64 +61,71 @@ public class MultiPointGLView extends MultiPointView {
             return;
         }
 
-        super.drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
-
         {
             Path path = this.graphicFactory.createPath();
-            PointModel pm = model.get(model.size() - 1);
-            int x = lon2x(pm.getLon());
-            int y = lat2y(pm.getLat());
-            float z = pm.getEleD();
-            path.moveTo(x, y);
+            PointModel pm1 = model.get(model.size() - 1), pm2;
+            int x1 = lon2x(pm1.getLon()), x2=x1, x3=x2;
+            int y1 = lat2y(pm1.getLat()), y2=y1, y3=y2;
+            float z1 = pm1.getEleD(), z2=z1;
+            double d1=0, d2=d1, d3=d2;
+            double gl1=0, gl2=gl1, gl3=gl2;
 
             float scale = getScale(zoomLevel);
-            float w0 = this.paintStroke.getStrokeWidth();
-            this.paintStroke.setStrokeWidth(w0*scale);
+            float w0 = paintStroke.getStrokeWidth();
 
+            // With a given i (Point pm1 with x1,y1,z1) we draw the line between index i-1 (pm2,x2,y2,z2) and
+            // index i-2 (x3,y3,z3).
+            // The interval between i and i-1 has the distance d1, and the gain/loss gl1,
+            // the interval between i-1 and i-2 has the distance d2, and the gain/loss gl2,
+            // the interval between i-2 and i-3 has the distance d3, and the gain/loss gl3,
+            // For the segment to draw the glValue is calculated from these three segments,
+            // the weight of the predecessor is 0.3*d3, current weight is 1*d2, the successor weight is 0.3*d1
+            for (int i = model.size() - 2; i >= -1; i--) {
+                pm2=pm1; pm1 = getPM(model, i);
+                x3=x2; x2=x1; x1 = lon2x(pm1.getLon());
+                y3=y2; y2=y1; y1 = lat2y(pm1.getLat());
+                z2=z1; z1 = pm1.getEleD();
+                d3=d2; d2=d1; d1=PointModelUtil.distance(pm2,pm1);
+                gl3=gl2; gl2=gl1; gl1= (d1==0)?0:(z2-z1)/(d1 / 100.0);
 
-            for (int i = model.size() - 2; i >= 0; i--) {
-                PointModel lpm = pm;
-                int lx = x;
-                int ly = y;
-                float lz = z;
+                if (d2 > 0){
+                    double f1=0.3, f2=1, f3=0.3;
+                    double d = d1*f1 + d2*f2 + d3*f3;
+                    double we1=d1*f1/d, we2=d2*f2/d, we3=d3*f3/d;
+                    float glValue= (float)(gl1*we1 + gl2*we2 + gl3*we3);
 
-                pm = model.get(i);
-                x = lon2x(pm.getLon());
-                y = lat2y(pm.getLat());
-                z = pm.getEleD();
-                path.lineTo(x, y);
-                double distance = PointModelUtil.distance(lpm, pm);
-                double glValue = (lz - z) / (distance / 100.0);
+                    path.clear();
+                    path.moveTo(x3, y3);
+                    path.lineTo(x2, y2);
+                    // first draw with paintStroke (background)
+                    paintStroke.setStrokeWidth(w0*scale);
+                    canvas.drawPath(path, paintStroke);
+                    // then draw with variable color (depending on gain/loss) 70% width
+                    Paint paint = CC.getGlPaint( glValue);
+                    float w1 = paint.getStrokeWidth();
+                    paint.setStrokeWidth( w0 * 0.7f * scale);
+                    canvas.drawPath(path, paint);
+                    // finally draw thin line in the direction of path (last 20%)
+                    path.clear();
+                    path.moveTo((x2+4*x3)/5, (y2+4*y3)/5);
+                    paintStroke.setStrokeWidth( w0 * 0.7f * scale / 3);
+                    path.lineTo(x3,y3);
+                    canvas.drawPath(path, paintStroke);
 
-                Paint paint = CC.getGlPaint((float) glValue);
-                float w1 = paint.getStrokeWidth();
-                paint.setStrokeWidth( w1 * scale);
-                canvas.drawPath(path, paint);
-
-                int x2 = (x+4*lx)/5;
-                int y2 = (y+4*ly)/5;
-                path.clear();
-                path.moveTo(x2,y2);
-                paintStroke.setStrokeWidth( w1 * scale / 3);
-                path.lineTo(lx,ly);
-                canvas.drawPath(path, paintStroke);
-
-                paint.setStrokeWidth(w1);
-
-
-
-                if (getMapViewUtility().getZoomLevel() >= 15) {
-                    paintStroke.setStyle(Style.STROKE);
-                    paintStroke.setStrokeWidth(w1*scale);
-                    canvas.drawCircle(x, y, (int)(2*scale), this.paintStroke);
+                    paint.setStrokeWidth(w1);
                 }
-                path.clear();
-                path.moveTo(x, y);
             }
             this.paintStroke.setStrokeWidth(w0);
 
         }
     }
 
-
+    PointModel getPM(MultiPointModel model, int i){
+        if (i < 0){
+            i=0;
+        } else if (i>=model.size()){
+            i=model.size()-1;
+        }
+        return model.get(i);
+    }
 }

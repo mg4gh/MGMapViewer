@@ -70,7 +70,7 @@ public class CC { // short for ColorConstant
 
     private static void initGlPaints(){
         int w=6;
-        int a=0x80;
+        int a=0xC0;
         int steps = 30;
         for (int i=1; i<=steps; i++){
             int r=0;
@@ -116,7 +116,6 @@ public class CC { // short for ColorConstant
         if (glValue > 20) glValue = 20;
         if (glValue < -20) glValue = -20;
         int glIndex = (int)(glValue*2); // each color corresponds to a half percent
-//        System.out.println("GLTable: glValue="+glValue+" glPaint="+ Integer.toHexString(glPaints.get(glIndex).getColor()));
         return glPaints.get(glIndex);
     }
 }
