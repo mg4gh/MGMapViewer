@@ -101,6 +101,9 @@ public class Settings extends PreferenceActivity implements
             String pref = preferences.getString(key, null);
             Preference preference = findPreference(key);
             preference.setSummary(pref);
+            if (pref.endsWith(".ref")){
+                checkRequestStoragePermissions(WRITE_EXTERNAL_STORAGE_CODE2);
+            }
         } else if (getResources().getString(R.string.preference_choose_theme_title).equals(key)) {
             String pref = preferences.getString(key, null);
             Preference preference = findPreference(key);
@@ -109,27 +112,43 @@ public class Settings extends PreferenceActivity implements
         if (getResources().getString(R.string.preferences_storage_key).equals(key)) {
             Boolean bWrite = preferences.getBoolean(key, false);
             if (bWrite) {
-                if (!Permissions.check(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ) {
-                    Permissions.request(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE} , WRITE_EXTERNAL_STORAGE_CODE);
-                    return;
-                }
+                if (checkRequestStoragePermissions(WRITE_EXTERNAL_STORAGE_CODE1)) return;
+//
+//                if (!Permissions.check(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ) {
+//                    Permissions.request(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE} , WRITE_EXTERNAL_STORAGE_CODE);
+//                    return;
+//                }
             }
             Permissions.doRestart(this);
 
         }
     }
-    private static final int WRITE_EXTERNAL_STORAGE_CODE = 991; // just an id to identify the callback
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode != WRITE_EXTERNAL_STORAGE_CODE) return;
 
-        if (Permissions.check(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-            Permissions.doRestart(this);
-        } else {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Warning");
-            builder.setMessage("Without permission "+Manifest.permission.WRITE_EXTERNAL_STORAGE+" the path can't be used.");
-            builder.show();
+    private boolean checkRequestStoragePermissions(int requestCode){
+        if (!Permissions.check(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ) {
+            Permissions.request(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE} , WRITE_EXTERNAL_STORAGE_CODE1);
+            return true;
         }
+        return false;
+    }
+    private static final int WRITE_EXTERNAL_STORAGE_CODE1 = 991; // just an id to identify the callback
+    private static final int WRITE_EXTERNAL_STORAGE_CODE2 = 992; // just an id to identify the callback
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if ((requestCode == WRITE_EXTERNAL_STORAGE_CODE1) || (requestCode == WRITE_EXTERNAL_STORAGE_CODE2)){
+            if (Permissions.check(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                Permissions.doRestart(this);
+            } else {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Warning");
+                String msg = "the app will not work";
+                if (requestCode == WRITE_EXTERNAL_STORAGE_CODE1) msg = "the selected path can't be used.";
+                if (requestCode == WRITE_EXTERNAL_STORAGE_CODE2) msg = "the selected link can't be used.";
+                builder.setMessage("Without permission "+Manifest.permission.WRITE_EXTERNAL_STORAGE+" "+msg);
+                builder.show();
+            }
+
+        }
+
     }
 
 

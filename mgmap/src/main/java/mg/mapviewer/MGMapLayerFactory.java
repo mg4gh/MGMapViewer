@@ -42,9 +42,11 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -82,7 +84,7 @@ public class MGMapLayerFactory {
             @Override
             public boolean accept(File dir, String name) {
                 boolean res = !(new File(dir,name).isDirectory());
-                res &= name.endsWith(".map");
+                res &= name.endsWith(".map") || name.endsWith(".ref");
                 return res;
             }
         });
@@ -92,14 +94,6 @@ public class MGMapLayerFactory {
                 return (new File(dir,name).isDirectory());
             }
         });
-        FilenameFilter prop = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                boolean res = !(new File(dir,name).isDirectory());
-                res &= name.endsWith(".properties");
-                return res;
-            }
-        };
         FilenameFilter xml = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -109,6 +103,14 @@ public class MGMapLayerFactory {
             }
         };
         filters.put(Types.MAPONLINE,xml);
+        FilenameFilter prop = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                boolean res = !(new File(dir,name).isDirectory());
+                res &= name.endsWith(".properties");
+                return res;
+            }
+        };
         filters.put(Types.MAPGRID,prop);
     }
 
@@ -169,6 +171,11 @@ public class MGMapLayerFactory {
                             mapView.getModel().frameBufferModel.getOverdrawFactor(), false);
                     activity.addTileCache(tileCache);
 
+                    if (entry.endsWith(".ref")){
+                        BufferedReader in = new BufferedReader(new FileReader(entryFile));
+                        String line = in.readLine();
+                        entryFile = new File(line);
+                    }
                     MapDataStore mapFile = new MapFile(entryFile, language);
                     TileRendererLayer tileRendererLayer = new TileRendererLayer(
                             tileCache,  mapFile,

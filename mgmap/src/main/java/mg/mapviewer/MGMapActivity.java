@@ -274,7 +274,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     /** trigger TrackLoggerService, request permission on demand. */
     public void triggerTrackLoggerService(){
         if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
-            Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, 1);
+            Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, ACCESS_FINE_LOCATION_CODE);
         } else {
             Intent intent = new Intent(this, TrackLoggerService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
