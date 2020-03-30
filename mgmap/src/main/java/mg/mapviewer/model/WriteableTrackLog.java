@@ -27,10 +27,7 @@ public class WriteableTrackLog extends TrackLog {
 
     public void stopSegment(long timestamp){
         currentSegment = null;
-        trackStatistic.reset();
-        for (TrackLogSegment segment : getTrackLogSegments()){
-            trackStatistic.updateWithStatistics(segment.getStatistic());
-        }
+        recalcTrackStatistic();
     }
 
     public void stopTrack(long timestamp){
@@ -57,5 +54,13 @@ public class WriteableTrackLog extends TrackLog {
             currentSegment = getTrackLogSegment(getNumberOfSegments()-1);
         }
         currentSegment.recalcStatistic();
+        recalcTrackStatistic();
+    }
+
+    private void recalcTrackStatistic(){
+        trackStatistic.reset();
+        for (TrackLogSegment segment : getTrackLogSegments()){
+            trackStatistic.updateWithStatistics(segment.getStatistic());
+        }
     }
 }

@@ -225,7 +225,9 @@ public class MGMapLayerFactory {
                             if (propName instanceof String){
                                 String sPropName = (String) propName;
                                 if (sPropName.toLowerCase().startsWith("zoomlevel")){
-                                    byte zl = Byte.parseByte(sPropName.substring(9));
+                                    int idx =  9;
+                                    if (sPropName.toLowerCase().startsWith("zoomlevel_")) idx =10;
+                                    byte zl = Byte.parseByte(sPropName.substring(idx));
                                     double value = Double.parseDouble( properties.getProperty(sPropName) );
                                     spacingConfig.put(zl, value);
                                 }

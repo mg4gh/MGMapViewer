@@ -4,14 +4,20 @@
 This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) library available via github. 
 [Here](./docs/History.md) it is described, how this app was originated.
 
+## Examples
+<img src="./docs/screenshot/mapsforge_map.png" width="200" />&nbsp; 
+<img src="./docs/screenshot/multi_map1.png" width="200" />
+
+
 ## License 
 This software is licensed under [LGPLv3](./LICENSE)
+
 
 ## User documentation
 The documentation consists of some markdown pages for "users" of the app:
 - [Feature Overview description](./docs/FeatureOverview.md)  
 - [Getting Started: Installation and first Usage of MGMapViewer](./docs/GettingStartedUsage.md)  
-- [Feature Detailed description](./docs/Detailed.md) - TODO 
+- [Feature Detailed description](./docs/FeatureDetails.md) - TODO 
 
 
 ## Developer documentation

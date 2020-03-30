@@ -154,7 +154,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
             }
             if (changed){
                 getApplication().availableTrackLogsObservable.changed();
-                getMapViewUtility().zoomForBoundingBox(bBox2show);
+//                getMapViewUtility().zoomForBoundingBox(bBox2show);
             }
         }
 

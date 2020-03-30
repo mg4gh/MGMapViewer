@@ -4,18 +4,25 @@
 2. Select the file in the file Exlorer and just tap on it.
 Make sure that the permission for local app installation is given to the file explorer.
 3. Just start the app.
-Don't be disappointed, since you'll see only a [screen](./screenshot/installed_01.png) 
+Don't be disappointed, since you'll see only a [screen](./screenshot/background.png) 
 the quick controls and the status line with very few information. 
-4. Tap on the background to get the menu. The menu disappears automatically after a few seconds.
-Alternatively it disappears after a second tap on the background.
-4. Decide, which storage location you want to use (Menu/[Settings](./screenshot/installed_03.png)/[Storage Settings](./screenshot/installed_02.png)). Currently there are two options:
+4. Tap on the background to get the [Menu](./screenshot/Menu.png). The menu disappears automatically after a few seconds.
+Alternatively it disappears after a second tap on the background. Remember this action as the basis that is used frequently in the next sections.
+5. Decide, which storage location you want to use ( 
+Menu | 
+[Settings](./screenshot/Menu_Settings.png) |
+[Storage Settings](./screenshot/settings_storage_settings.png) |
+[Select Storage Path](./screenshot/storage_settings.png)). 
+Currently there are two options:
     - /\<sdcard>/Andorid/data/mg.mgmap/files/MGMapViewer
     - /\<sdcard>/MGMapViewer  
   where \<sdcard> is not necessarily a real sdcard. It's rather the default external storage location. Often the path is "/storage/emulated/0".
-  The preconfiguered option is the first one. If you put your data to this location then keep in mind that the uninstall of the app deletes all these data!
-  If you use the second option, then data wil be available after deinstallation. If you don't need the data anymore, you have to cleanup the 
-  directory manually.
-5. The app creates a below the MGMapViewer directory new subdirectories:
+  Sometimes the term "internal storage" is used.
+  The preconfiguered option is the first one, beacause it doesn't need extra permissions. If you put your data to this location then keep in mind 
+  that the uninstall of the app deletes all these data! <br/>
+  If you use the second option, then your data are independent on the app Software. They will be available after deinstallation (you still want to have your tracks available even if you don't use this software anymore). This requires extra
+  [permissions](./screenshot/permissions_media.png).  If you don't need the data anymore, you have to cleanup the directory manually.
+6. The app creates below the MGMapViewer directory new subdirectories:
     - track (store track related data)
       - gpx (store tracks in .gpx format)
       - meta (store meta data of tracks - statistics and bounding box information on a set of latitude/longitude values)
@@ -28,14 +35,22 @@ Alternatively it disappears after a second tap on the background.
     - themes (store themes for mapsforge maps)
     - hgt (store hgt height files)
     - log (store log files)
-6. In the typical usage scenario you provide a map from [openandromaps](https://www.openandromaps.org/). 
-   Put the map (unzipped) in the ./MGMapViewer/maps/mapsforge directory and select it via <br/> Settings/Select map layers/Select map layer \<n>.
-7. Additionally you have to provide a theme, which you also get via [openandromaps](https://www.openandromaps.org/). 
+7. In the typical usage scenario you provide a map from [openandromaps](https://www.openandromaps.org/). 
+   Put the map (unzipped) in the ./MGMapViewer/maps/mapsforge directory and select it via <br/> 
+   Menu | [Settings](./screenshot/Menu_Settings.png) | 
+   [Select map layers](./screenshot/settings_select_map_layers.png) |
+   [Select map layer 2](./screenshot/select_map_layers_2.png).
+8. Additionally you have to provide a theme, which you also get via [openandromaps](https://www.openandromaps.org/). 
    Download e.g. [elevate theme](https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip), unzip it <br/> and 
-   put it into the ./MGMapViewer/themes/ directory.  Select it via Menu/[Settings](./screenshot/settings_02.png)/[Select theme](./screenshot/settings_theme.png) elevate.xml.
-8. When you go back to the main activity view, then this map is visible and you can navigate in this map.
-7. Finally go to menu/themes to select the most suitable theme for you. Click on the [current theme](./screenshot/themes.png) to get a 
-   [selection](./screenshot/themes2.png) of the main themes.   
+   put it into the ./MGMapViewer/themes/ directory.  
+   Select it via 
+   Menu | 
+   [Settings](./screenshot/Menu_Settings.png) |
+   [Select theme](./screenshot/settings_select_theme.png) |
+   [Select theme elevate.xml](./screenshot/settings_theme.png).
+9. When you go back to the main activity view, then this map is visible and you can navigate in this map.
+10. Finally go to Menu | [Themes](./screenshot/Menu_Themes.png) to enter the  themes menu.  Now click on the [current theme](./screenshot/themes.png) to get a 
+   [selection](./screenshot/themes2.png) of the main themes.  Select the most suitable theme for you. 
 
 
   

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx>
+	<trk>
+		<name>20200329_140049_MarkerTrack</name>
+		<desc>start=01.01.1970_00:00:00 duration=0:00:00 totalLength=961.74 gain=73.1 loss=0.0 minEle=325.5 maxEle=398.6 numPoints=7</desc>
+		<trkseg>
+			<desc>start=01.01.1970_00:00:00 duration=0:00:00 totalLength=961.74 gain=73.1 loss=0.0 minEle=325.5 maxEle=398.6 numPoints=7</desc>
+			<trkpt  lat="49.427802" lon="8.776749">
+				<ele>325.5</ele>
+			</trkpt>
+			<trkpt  lat="49.429186" lon="8.776165">
+				<ele>350.6</ele>
+			</trkpt>
+			<trkpt  lat="49.430744" lon="8.776140">
+				<ele>364.3</ele>
+			</trkpt>
+			<trkpt  lat="49.431838" lon="8.777702">
+				<ele>374.8</ele>
+			</trkpt>
+			<trkpt  lat="49.432920" lon="8.779195">
+				<ele>385.5</ele>
+			</trkpt>
+			<trkpt  lat="49.433116" lon="8.777161">
+				<ele>393.6</ele>
+			</trkpt>
+			<trkpt  lat="49.434416" lon="8.776535">
+				<ele>398.6</ele>
+			</trkpt>
+		</trkseg>
+	</trk>
+</gpx>

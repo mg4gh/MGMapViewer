@@ -1,5 +1,3 @@
-# Overview on MGMapViewer
-
 The MGMapViewer app is first of all a viewer on maps. But it provides also several options
 to deal with tracks. 
 
@@ -7,27 +5,30 @@ This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) lib
 It provides an excellent base for vector map visualisation. There were a few contributions to the mapsforge 
 project to enable straight forward implementation in this app.
 
-## Feature overview
+# Feature overview
+
+Each feature contains a link to the corresponding detailed feature description.
  
 ### Main map features
-- mapsforge: show vector maps e.g. from [openandromaps](https://www.openandromaps.org/). 
+- [mapsforge](./Features/MainMapFeatures/mapsforge.md): show vector maps e.g. from [openandromaps](https://www.openandromaps.org/). 
   This includes theme selection and customization of themes
-- mapstores: show maps, which are provided via an offline tile store
-- maponline: show maps, which are provided via an online tile store (e.g. openstreetmap via Mapnik renderer)
-- mapgrid: show a customizable grid from degree of latitude and longitude
-- Overlay multiple map layers and control transparency per layer (except grid)
+- [mapstores](./Features/MainMapFeatures/mapstore.md): show maps, which are provided via an offline tile store
+- [maponline](./Features/MainMapFeatures/maponline.md): show maps, which are provided via an online tile store (e.g. openstreetmap via Mapnik renderer)
+- [mapgrid](./Features/MainMapFeatures/mapgrid.md): show a customizable grid from degree of latitude and longitude
+- [Overlay multiple map layers](./Features/MainMapFeatures/multimap.md) and control transparency per layer (except grid)
 
 ### Main track features:
-- Record a track: recording of a track allows multiple segments
-- store tracks as gpx files, but additionally store some meta data on the tracks (for faster search)
-- load/show multiple tracks at the same time
-- highlight one of the loaded tracks as the "selected" track. Optional color the selected track according to height gain/loss.
-- change/select "selected" track with an tap action 
-- mark an area (bounding box) and load all tracks through this area (search track by location)
-- create a track (marker track) by tapping some points, including manipulations like moving points, 
+- [Track visualization](./Features/MainTrackFeatures/TrackVisualization/trackvisu.md): load/show multiple tracks 
+  - recording track
+  - available tracks
+  - selected track
+- [Record a track](./Features/MainTrackFeatures/TrackRecord/trackrecord.md): recording of a track allows multiple segments
+- [Track storage](./Features/MainTrackFeatures/TrackStorage/trackstorage.md):  store tracks as gpx files, but additionally store some meta data on the tracks (for faster search)
+- [Bounding Box](./Features/MainTrackFeatures/BoundingBox/boundingbox.md) search tracks by marking an area (bounding box) and load all tracks through this area 
+- [Marker Track](./Features/MainTrackFeatures/MarkerTrack/markertrack.md) create a track (marker track) by tapping some points, including manipulations like moving points, 
   insert and delete points. Such a marker track can also be imported/exported. 
-- simple route (track) calculation based on a marker track (shortest path).
-- dashboard visualization of the most important information of the recording, the selected and the route track log.
+- [Basic Routing](./Features/MainTrackFeatures/Routing/routing.md) basic route calculation (shortest path) based on a marker track.
+- [Dashboard](./Features/MainTrackFeatures/Dashborad/dashboard.md) visualization of the most important information of the recording, the selected and the route track log.
 
 ### Further features
 - select storage location between 
@@ -57,7 +58,7 @@ project to enable straight forward implementation in this app.
 
 
 
-## Controls Overview
+# Controls Overview
 
 #### Menus
 There are menus at the left and at the right side. Menus become visible on a tap. 
@@ -72,7 +73,7 @@ The are quick controls at the bottom for
 - toggle recording of a marker track
 - toggle controls for layer transparency
   
-## Views Overview
+# Views Overview
 There is a dashboard on the top of the view and additionally there is a status line with some 
 information visible. 
 
