@@ -31,11 +31,8 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Dashboard](./Features/MainTrackFeatures/Dashboard/dashboard.md) visualization of the most important information of the recording, the selected and the route track log.
 
 ### Further features
-- select storage location between 
-    - /\<sdcard>/Andorid/data/mg.mgmap/files/MGMapViewer
-    - /\<sdcard>/MGMapViewer  
-  where \<sdcard> is not necessarily a real sdcard. It's rather the default external storage location. Often the path is "/storage/emulated/0".
-- enlarge temporary a view entry (dashboard, status line) on a tap event (becomes readable without glasses)
+- [storage location](./Features/FurtherFeatures/StorageLocation/storagelocation.md) selection  
+- [enlarge](./Features/FurtherFeatures/Enlarge/enlarge.md)  temporary a view entry (dashboard, status line) on a tap event (becomes readable without glasses)
 - toggle GPS (without recording)
 - automatic center current GPS position
 - Statistic view: show a table of all stored tracks with basic statistic information
