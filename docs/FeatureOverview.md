@@ -32,7 +32,7 @@ Each feature contains a link to the corresponding detailed feature description.
 
 ### Further features
 - [storage location](./Features/FurtherFeatures/StorageLocation/storagelocation.md) selection  
-- [enlarge](./Features/FurtherFeatures/Enlarge/enlarge.md)  temporary a view entry (dashboard, status line) on a tap event (becomes readable without glasses)
+- [enlarge](./Features/FurtherFeatures/Enlarge/enlarge.md) temporary a view entry (dashboard, status line) on a tap event (becomes readable without glasses)
 - toggle GPS (without recording)
 - automatic center current GPS position
 - Statistic view: show a table of all stored tracks with basic statistic information
