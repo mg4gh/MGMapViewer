@@ -2,7 +2,7 @@
 
 The following shopshot is copied from the track visualization feature.
 
-<img src="./SelectedTrack.png" width="300" />&nbsp;
+<img src="./SelectedTrack.png" width="400" />&nbsp;
 
 But now we want to focus on the dashboard entry. 
 Each dashboard entry contains five values:
@@ -21,9 +21,9 @@ All dashboard entries have the same structure. They are colored depending on the
 
 So next figures show some more examples of these dashboards:
 
-<img src="./RecordingTrack.png" width="300" />&nbsp;
-<img src="./Route.png" width="300" />&nbsp;
-<img src="./Mixed1.png" width="300" />&nbsp;
+<img src="./RecordingTrack.png" width="400" />&nbsp;
+<img src="./Route.png" width="400" />&nbsp;
+<img src="./Mixed1.png" width="400" />&nbsp;
 
 As we can see with the last example, there can exist multiple entries at the same time, 
 depending on whether the is currently a track recording, a selected track and/or a route.
@@ -32,8 +32,8 @@ If a track has multiple segments, then it gets two dashboard entries, one for th
 track and the second for one of the segments. The segment can by changed by tap on the
 desired segment. The next example illustrates a track with two segments:
 
-<img src="./MultiSegment1.png" width="300" />&nbsp;
-<img src="./MultiSegment2.png" width="300" />&nbsp;
+<img src="./MultiSegment1.png" width="400" />&nbsp;
+<img src="./MultiSegment2.png" width="400" />&nbsp;
 
 As we can see here the total values correspond to the sum of the segment values.
 

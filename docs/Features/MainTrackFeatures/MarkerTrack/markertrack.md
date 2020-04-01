@@ -5,14 +5,14 @@ Another use case for marker track points is to determine distances along a given
 
 For explanation purposes of the marker tracks we first deactivate routing with  *Menu | Route | Route off*.
 
-<img src="./DeactRoute1.png" width="200" />&nbsp;
-<img src="./DeactRoute2.png" width="200" />&nbsp;
+<img src="./DeactRoute1.png" width="400" />&nbsp;
+<img src="./DeactRoute2.png" width="400" />&nbsp;
 
 To start the special mode for a marker track press the corresponding quick control.
 As a visual feedback the icon on this button get red. This implies that the edit mode for the marker track is active.
 
-<img src="./Quick1.png" width="200" />&nbsp;
-<img src="./Quick2.png" width="200" />&nbsp;
+<img src="./Quick1.png" width="400" />&nbsp;
+<img src="./Quick2.png" width="400" />&nbsp;
 
 <a id="action"> </a>"The following actions exists to edit the marker track:
 - tap on a free area: add a new marker point at the end of the track
@@ -26,16 +26,16 @@ but not too close to the first point. Use drag and drop to move it to the target
 The following example shows a creation of such a track. Marker points are visible witch a small red circle, 
 consecutive points are connected with a thin red line:
 
-<img src="./MT1.png" width="200" />&nbsp;
-<img src="./MT2.png" width="200" />&nbsp;
-<img src="./MT3.png" width="200" />&nbsp;
-<img src="./MT4.png" width="200" />&nbsp;
-<img src="./MT5.png" width="200" />&nbsp;
-<img src="./MT6.png" width="200" />&nbsp;
+<img src="./MT1.png" width="400" />&nbsp;
+<img src="./MT2.png" width="400" />&nbsp;
+<img src="./MT3.png" width="400" />&nbsp;
+<img src="./MT4.png" width="400" />&nbsp;
+<img src="./MT5.png" width="400" />&nbsp;
+<img src="./MT6.png" width="400" />&nbsp;
 
 After finishing don't forget to press again the marker track quick control to switch off the marker track edit mode.
 
-<img src="./Quick3.png" width="200" />&nbsp;
+<img src="./Quick3.png" width="400" />&nbsp;
 
 **Export Marker Track**
 
@@ -44,7 +44,7 @@ The filename has the structure \<date>_\<time>_MarkerTrack.gpx.
 
 For the example above the result looks like:
 
-<img src="./MT_Export.png" width="1000" />&nbsp;
+<img src="./MT_Export.png" width="1200" />&nbsp;
 
 **Import Marker Track**
 

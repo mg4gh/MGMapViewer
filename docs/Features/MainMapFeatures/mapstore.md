@@ -5,7 +5,7 @@ This directory will be placed as a subdirectory to "./MGMapViewer/maps/mapstores
 
 The following picture shows an example of such a structure:
 
-<img src="./mapstore.PNG" width="200" />
+<img src="./mapstore.png" width="200" />
 
 A mapstore could contain a "normal" map (e.g. downloaded from mapnik), but it could be also something like a heatmap, 
 generated from whatever data.

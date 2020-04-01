@@ -2,7 +2,7 @@
 
 A mapgrid layer is controlled be a simple properties file like this:
 
-<img src="./mapgrid.PNG" width="300" />
+<img src="./mapgrid.png" width="300" />
 
 The property values describe per zoom level the density of grid lines.
 

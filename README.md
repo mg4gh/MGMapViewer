@@ -5,8 +5,8 @@ This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) lib
 [Here](./docs/History.md) it is described, how this app was originated.
 
 ## Examples
-<img src="./docs/screenshot/mapsforge_map.png" width="200" />&nbsp; 
-<img src="./docs/screenshot/multi_map1.png" width="200" />
+<img src="./docs/Features/MainMapFeatures/mapsforge_map.png" width="200" />&nbsp; 
+<img src="./docs/Features/MainMapFeatures/multi_map1.png" width="200" />
 
 
 ## License 

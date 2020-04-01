@@ -5,26 +5,26 @@ Menu |
 [Track Record](./MenuM_Track.png ) |
 [Start Track](./MenuTrackStart.png).
 
-<img src="./MenuM_Track.png" width="200" />&nbsp;
-<img src="./MenuTrackStart.png" width="200" />&nbsp;
-<img src="./Track_Record_1.png" width="200" />&nbsp;
+<img src="./MenuM_Track.png" width="400" />&nbsp;
+<img src="./MenuTrackStart.png" width="400" />&nbsp;
+<img src="./Track_Record_1.png" width="400" />&nbsp;
 
 Move a little bit around 
 
-<img src="./Track_Record_2.png" width="200" />&nbsp;
+<img src="./Track_Record_2.png" width="400" />&nbsp;
 
 and then stop recording with 
 Menu | 
-[Track Record](./Track_Record_2a.png ) |
+[Track Record](./Track_Record_2.png ) |
 [Stop Track](./Track_Record_3.png).
 
-<img src="./Track_Record_2a.png" width="200" />&nbsp;
-<img src="./Track_Record_3.png" width="200" />&nbsp;
+<img src="./Track_Record_2.png" width="400" />&nbsp;
+<img src="./Track_Record_3.png" width="400" />&nbsp;
 
 After the stop recording action this track becomes the "selected track":
  
-<img src="./Track_Record_4.png" width="200" />&nbsp;
-<img src="./Track_Record_5.png" width="200" />&nbsp;
+<img src="./Track_Record_4.png" width="400" />&nbsp;
+<img src="./Track_Record_5.png" width="400" />&nbsp;
 
 The second screen is after zoom in two steps.
 
