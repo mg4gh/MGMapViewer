@@ -35,3 +35,6 @@ track is neither ascending nor descending.
 If you use instead of "Stop Track" the "Stop segment" button, then you can continue the track recording later
 with the "Start Segment" Button. So the track consists of a number of segments, which is typically just 1.
 
+**Note**: As long as the GPS is switched on there is a Notification active. It disappears after switching the GPS off.
+
+<img src="./notification.png" width="600" />&nbsp;

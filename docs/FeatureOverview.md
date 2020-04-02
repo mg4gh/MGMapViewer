@@ -33,8 +33,8 @@ Each feature contains a link to the corresponding detailed feature description.
 ### Further features
 - [storage location](./Features/FurtherFeatures/StorageLocation/storagelocation.md) selection  
 - [enlarge](./Features/FurtherFeatures/Enlarge/enlarge.md) temporary a view entry (dashboard, status line) on a tap event (becomes readable without glasses)
-- toggle GPS (without recording)
-- automatic center current GPS position
+- [toggle GPS](./Features/FurtherFeatures/GPS/gps.md) (without recording)
+- [center](./Features/FurtherFeatures/Center/center.md) automatically current GPS position
 - Statistic view: show a table of all stored tracks with basic statistic information
 - Height profile: Show the height profile form the recording track, the selected track or the current route 
 - show distance along the selected track 
