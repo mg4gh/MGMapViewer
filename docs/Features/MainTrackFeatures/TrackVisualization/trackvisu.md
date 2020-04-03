@@ -2,14 +2,9 @@
 
 The visualization of track is a one important feature of this app. 
 The track visualization is done by drawing a colored line over visible map layers.
-A track is represented by a TrackLog object, which consists of one or multiple TrackLogSegment 
-objects.
 
-The following terminology is used for TrackLog objects in this description (and in the app):
-- RecordingTrackLog (red line): track with currently ongoing recording action.
-- MetaTrackLogs (not shown): track logs from meta files, which represent the amount of known tracks
-- AvailableTrackLogs (green line): amount of currently visible track logs
-- SelectedTrackLog (either blue line or colored depending on height gain/loss): on specific TrackLog from the amount of AvailableTrackLogs
+
+A track is represented by a TrackLog object - please check the [track definitions](../../track.md).
 
 The following pictures show:
 - a RecordingTrackLog (red line)
