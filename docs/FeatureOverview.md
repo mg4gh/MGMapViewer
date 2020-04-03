@@ -37,7 +37,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [center](./Features/FurtherFeatures/Center/center.md) automatically current GPS position
 - [Statistic view](./Features/FurtherFeatures/Statistic/statistic.md): show a table of all stored tracks with basic statistic information
 - [Height profile](./Features/FurtherFeatures/HeightProfile/hprof.md): Show the height profile form the recording track, the selected track or the current route 
-- show distance along the selected track 
+- [Remaining distance](./Features/FurtherFeatures/Remaining/remaining.md): show distance along the selected track 
   - remaining distance based on current position
   - remaining distance based on a given point
   - remaining distance to the reverse end of the selected track
