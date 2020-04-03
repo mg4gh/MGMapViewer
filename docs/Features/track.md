@@ -8,7 +8,9 @@ The following terminology is used for TrackLog objects in this description (and 
 |  TrackLog Type |  Map visualisation | Statistic visualisation | Description |
 |---|---|---|---|
 | RecordingTrackLog | red line | red entry | track with currently ongoing recording action |
-| MetaTrackLog | no line | gray entry | track log from meta files (exists for each known track) |
+| MetaTrackLog | - | gray entry | track log from meta files (exists for each known track) |
 | AvailableTrackLog | green line | green entry | currently visible track log |
 | SelectedTrackLog | either blue line or colored depending on height gain/loss | blue entry | one specific TrackLog from the amount of AvailableTrackLogs |
+| MarkerTrack | thin red line, thin red circles on points | - | Track from marked points for planning |
+| Route | purple line | - | calculated route based on MarkerTrack |
 
