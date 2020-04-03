@@ -19,9 +19,6 @@ Each feature contains a link to the corresponding detailed feature description.
 
 ### Main track features:
 - [Track visualization](./Features/MainTrackFeatures/TrackVisualization/trackvisu.md): load/show multiple tracks 
-  - recording track
-  - available tracks
-  - selected track
 - [Record a track](./Features/MainTrackFeatures/TrackRecord/trackrecord.md): recording of a track allows multiple segments
 - [Track storage](./Features/MainTrackFeatures/TrackStorage/trackstorage.md):  store tracks as gpx files, but additionally store some meta data on the tracks (for faster search)
 - [Bounding Box](./Features/MainTrackFeatures/BoundingBox/boundingbox.md) search tracks by marking an area (bounding box) and load all tracks through this area 
@@ -38,15 +35,8 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Statistic view](./Features/FurtherFeatures/Statistic/statistic.md): show a table of all stored tracks with basic statistic information
 - [Height profile](./Features/FurtherFeatures/HeightProfile/hprof.md): Show the height profile form the recording track, the selected track or the current route 
 - [Remaining distance](./Features/FurtherFeatures/Remaining/remaining.md): show distance along the selected track 
-  - remaining distance based on current position
-  - remaining distance based on a given point
-  - remaining distance to the reverse end of the selected track
-  - distance along the track based on two given points
-- show distance between current position and the center position of the map
-- show current time
-- show current height (or atmosphere pressure)
-- show current zoom level (some information are only available at certain zoom levels)
-- show battery percentage
+- [Air distance](./Features/FurtherFeatures/AirDistance/airdistance.md): show the air distance between current position and the center position of the map
+- [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status ine
 
 ### Developer features
 - show the graph of a tile (base on a vector map) including way-points, including the tile border
