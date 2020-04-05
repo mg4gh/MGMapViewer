@@ -39,9 +39,11 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status ine
 
 ### Developer features
-- show the graph of a tile (base on a vector map) including way-points, including the tile border
-- show a single way in a tile (base on a vector map) including way-points
-- show approaches of marker points to ways as the basis of routing
+- [Way details](./Features/DeveloperFeatures/WayDetails/waydetails.md) shows the ways of a tile 
+  - based on a mapsforge map 
+  - includes the tile border
+  - highlights a taped graph segment
+- [approaches](./Features/DeveloperFeatures/Approach/approach.md) of marker points to ways as the basis of routing
 
 
 

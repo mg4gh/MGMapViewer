@@ -129,6 +129,8 @@ public class MSGraphDetails extends MGMicroService {
                 MultiMultiPointView mmpv = new MultiMultiPointView(gGraphTile.getRawWays(), PAINT_GRAD_ALL_STROKE);
                 mmpv.setShowIntermediates(true);
                 register( mmpv ); // show also the complete tile graph
+                BoxView boxView = new BoxView(gGraphTile.getTileBBox(), PAINT_GRAD_ALL_STROKE);
+                register(boxView);
             }
             for (GNode node : gGraphTile.getNodes()) {
 

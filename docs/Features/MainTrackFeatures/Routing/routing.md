@@ -1,4 +1,4 @@
-## Main Track Feature: Routing
+## Main Track Feature: routing
 
 This feature provides a basic route calculation (shortest path) based on a [marker track](../MarkerTrack/markertrack.md).
 
