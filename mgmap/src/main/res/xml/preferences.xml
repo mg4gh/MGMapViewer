@@ -51,14 +51,14 @@
             android:negativeButtonText="@string/cancelbutton"
             android:summary="@string/preferences_scale_desc"
             android:title="@string/preferences_scale" />
-        <ListPreference
-            android:defaultValue="0.7"
-            android:entries="@array/pref_textwidth_entries"
-            android:entryValues="@array/pref_textwidth_values"
-            android:key="textwidth"
-            android:negativeButtonText="@string/cancelbutton"
-            android:summary="@string/preferences_textwidth_desc"
-            android:title="@string/preferences_textwidth" />
+<!--        <ListPreference-->
+<!--            android:defaultValue="0.7"-->
+<!--            android:entries="@array/pref_textwidth_entries"-->
+<!--            android:entryValues="@array/pref_textwidth_values"-->
+<!--            android:key="textwidth"-->
+<!--            android:negativeButtonText="@string/cancelbutton"-->
+<!--            android:summary="@string/preferences_textwidth_desc"-->
+<!--            android:title="@string/preferences_textwidth" />-->
         <ListPreference
             android:defaultValue="metric"
             android:entries="@array/pref_scalebar_entries"
@@ -75,36 +75,36 @@
             android:negativeButtonText="@string/cancelbutton"
             android:summary="@string/preferences_language_desc"
             android:title="@string/preferences_language" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="language_showlocal"
-            android:summary="@string/preferences_language_showlocal_desc"
-            android:title="@string/preferences_language_showlocal" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="debug_timing"
-            android:summary="@string/preferences_debug_timing_desc"
-            android:title="@string/preferences_debug_timing" />
-        <EditTextPreference
-            android:defaultValue="1"
-            android:inputType="number"
-            android:key="rendering_threads"
-            android:summary="@string/preferences_rendering_threads_desc"
-            android:title="@string/preferences_rendering_threads" />
-        <PreferenceScreen android:title="@string/preferences_category_wayfiltering">
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/preferences_wayfiltering_key"
-                android:summary="@string/preferences_wayfiltering_desc"
-                android:title="@string/preferences_wayfiltering" />
-            <EditTextPreference
-                android:defaultValue="20"
-                android:dependency="wayfiltering"
-                android:inputType="number"
-                android:key="wayfiltering_distance"
-                android:summary="@string/preferences_wayfiltering_distance_desc"
-                android:title="@string/preferences_wayfiltering_distance" />
-        </PreferenceScreen>
+<!--        <CheckBoxPreference-->
+<!--            android:defaultValue="false"-->
+<!--            android:key="language_showlocal"-->
+<!--            android:summary="@string/preferences_language_showlocal_desc"-->
+<!--            android:title="@string/preferences_language_showlocal" />-->
+<!--        <CheckBoxPreference-->
+<!--            android:defaultValue="false"-->
+<!--            android:key="debug_timing"-->
+<!--            android:summary="@string/preferences_debug_timing_desc"-->
+<!--            android:title="@string/preferences_debug_timing" />-->
+<!--        <EditTextPreference-->
+<!--            android:defaultValue="1"-->
+<!--            android:inputType="number"-->
+<!--            android:key="rendering_threads"-->
+<!--            android:summary="@string/preferences_rendering_threads_desc"-->
+<!--            android:title="@string/preferences_rendering_threads" />-->
+<!--        <PreferenceScreen android:title="@string/preferences_category_wayfiltering">-->
+<!--            <CheckBoxPreference-->
+<!--                android:defaultValue="true"-->
+<!--                android:key="@string/preferences_wayfiltering_key"-->
+<!--                android:summary="@string/preferences_wayfiltering_desc"-->
+<!--                android:title="@string/preferences_wayfiltering" />-->
+<!--            <EditTextPreference-->
+<!--                android:defaultValue="20"-->
+<!--                android:dependency="wayfiltering"-->
+<!--                android:inputType="number"-->
+<!--                android:key="wayfiltering_distance"-->
+<!--                android:summary="@string/preferences_wayfiltering_distance_desc"-->
+<!--                android:title="@string/preferences_wayfiltering_distance" />-->
+<!--        </PreferenceScreen>-->
     </PreferenceScreen>
 
 </PreferenceScreen>

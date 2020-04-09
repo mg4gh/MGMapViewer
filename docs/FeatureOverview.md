@@ -1,8 +1,7 @@
-The MGMapViewer app is first of all a viewer on maps. But it provides also several options
+The **MGMapViewer** app is first of all a viewer on maps. But it provides also several options
 to deal with tracks. 
-
 This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) library available via github. 
-It provides an excellent base for vector map visualisation. There were a few contributions to the mapsforge 
+This library provides an excellent base for vector map visualisation. There were a few contributions to the mapsforge 
 project to enable straight forward implementation in this app.
 
 # Feature overview
@@ -10,12 +9,13 @@ project to enable straight forward implementation in this app.
 Each feature contains a link to the corresponding detailed feature description.
  
 ### Main map features
-- [mapsforge](./Features/MainMapFeatures/mapsforge.md): show vector maps e.g. from [openandromaps](https://www.openandromaps.org/). 
-  This includes theme selection and customization of themes
-- [mapstores](./Features/MainMapFeatures/mapstore.md): show maps, which are provided via an offline tile store
-- [maponline](./Features/MainMapFeatures/maponline.md): show maps, which are provided via an online tile store (e.g. openstreetmap via Mapnik renderer)
-- [mapgrid](./Features/MainMapFeatures/mapgrid.md): show a customizable grid from degree of latitude and longitude
-- [Overlay multiple map layers](./Features/MainMapFeatures/multimap.md) and control transparency per layer (except grid)
+- [mapsforge](./Features/MainMapFeatures/Mapsforge/mapsforge.md): show vector maps e.g. from [openandromaps](https://www.openandromaps.org/). 
+  This is the main map type for this app.
+- [mapsforge themes](./Features/MainMapFeatures/MapsforgeThemes/mapsforgethemes.md): Themes provide a customisation of the layout of mapsforge maps e.g. for hiking or MTB usage. 
+- [mapstores](./Features/MainMapFeatures/MapStore/mapstore.md): show maps, which are provided via an offline tile store
+- [maponline](./Features/MainMapFeatures/MapOnline/maponline.md): show maps, which are provided via an online tile store (e.g. openstreetmap via Mapnik renderer)
+- [mapgrid](./Features/MainMapFeatures/MapGrid/mapgrid.md): show a customizable grid from degree of latitude and longitude
+- [Overlay multiple map layers](./Features/MainMapFeatures/MapMulti/multimap.md) and control transparency per layer (except grid)
 
 ### Main track features:
 - [Track visualization](./Features/MainTrackFeatures/TrackVisualization/trackvisu.md): load/show multiple tracks 
@@ -36,7 +36,8 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Height profile](./Features/FurtherFeatures/HeightProfile/hprof.md): Show the height profile form the recording track, the selected track or the current route 
 - [Remaining distance](./Features/FurtherFeatures/Remaining/remaining.md): show distance along the selected track 
 - [Air distance](./Features/FurtherFeatures/AirDistance/airdistance.md): show the air distance between current position and the center position of the map
-- [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status ine
+- [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status line
+- [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md): show some state information in the status line
 
 ### Developer features
 - [Way details](./Features/DeveloperFeatures/WayDetails/waydetails.md) shows the ways of a tile 
@@ -44,59 +45,5 @@ Each feature contains a link to the corresponding detailed feature description.
   - includes the tile border
   - highlights a taped graph segment
 - [approaches](./Features/DeveloperFeatures/Approach/approach.md) of marker points to ways as the basis of routing
-
-
-
-# Controls Overview
-
-#### Menus
-There are menus at the left and at the right side. Menus become visible on a tap. 
-They disappear after usage and automatically after a few seconds. Some menus use submenus, other don't.
-Menu buttons are usually only enabled, if the action is allowed/make sense.
-
-#### Quick Controls
-The are quick controls at the bottom for 
-- zoom in
-- zoom out
-- toggle full screen
-- toggle recording of a marker track
-- toggle controls for layer transparency
-  
-# Views Overview
-There is a dashboard on the top of the view and additionally there is a status line with some 
-information visible. 
-
-#### Dashboard
-Dashboard entries are visible for 
-- the recording track (red)
-- the recording track segment (if there is more than one) (red)
-- the selected track (blue), 
-- a selected segment of the selected track, if there is more than one (blue),
-- the route track (purple)
-
-A dashboard gives information about
-- segment indicator
-- the length
-- the height gain
-- the height loss
-- the duration
-
-
-#### Status line
-The status line provides following information:
-- zoom level
-- direct distance between current position and the center of the map
-- remaining distance (depends on the context)
-- current height/pressure
-- current time
- 
-
-
-
-
-
-
-
-
-
+- [developer documentation](./Features/DeveloperFeatures/Developer/developer.md) 
 
