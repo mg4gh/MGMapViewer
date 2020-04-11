@@ -9,7 +9,9 @@ Now you can select the installed theme via the menu:
 
 <img src="./themes1.png" width="300" />
 <img src="./themes2.png" width="300" />
-<img src="./themes3.png" width="300" /><br/><br/>
+<img src="./themes3.png" width="300" />
+
+<br/><br/>
 
 After installation you can select the language for the themes:
 
