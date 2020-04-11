@@ -5,7 +5,7 @@ objects.
 
 The following terminology is used for TrackLog objects in this description (and in the app):
 
-|  TrackLog Type |  Map visualisation | Dashboard visualisation | Statistic visualisation | Description |
+|  TrackLog Type |  Map visualisation | Dashboard & height profile visualisation | Statistic visualisation | Description |
 |---|---|---|---|---|
 | RecordingTrackLog | red line | red entry| red entry | track with currently ongoing recording action |
 | MetaTrackLog | - | - | gray entry | track log from meta files (exists for each known track) |

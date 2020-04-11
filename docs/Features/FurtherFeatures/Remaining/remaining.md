@@ -38,7 +38,7 @@ Just use a second MarkerPoint.
 
 <img src="./remain5.png" width="400" />&nbsp;
 
-In this situation the automatic routing might be confusing. Therefore thre is the option to switch it off with
+In this situation the automatic routing might be confusing. There is the option to switch it off with
 <span style="color:gray">*Menu | Route | Route Off*</span>.
 
 <img src="./ro1.png" width="400" />&nbsp;

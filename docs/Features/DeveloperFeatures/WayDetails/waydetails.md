@@ -10,9 +10,7 @@ For this purpose it is possible to visualize the way raw data from the tiles.
 This is done with <span style="color:gray">*Menu | Setting*</span>, check the box "way details" and
 the go back to the map view as shown here:
 
-<img src="./wd1.png" width="300" />&nbsp;
-<img src="./wd2.png" width="300" />&nbsp;
-<img src="./wd3.png" width="300" />&nbsp;
+<img src="./wd1.png" width="300" />&nbsp;<img src="./wd2.png" width="300" />&nbsp;<img src="./wd3.png" width="300" />&nbsp;
 
 Now the *way details* mode is enabled: If you tap to the marked position, you get following result:
 
