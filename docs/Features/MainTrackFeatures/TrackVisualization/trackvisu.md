@@ -15,6 +15,7 @@ The following pictures show:
 <img src="./AvailableTracks1.png" width="400" />&nbsp;
 <img src="./AvailableTracks2.png" width="400" />&nbsp;
 
+The next pictures show
 - multiple available tracks (green lines) and a selected track 
  (colored depending on gain/loss - green due to flat area)
 - a selected track (colored depending on gain/loss)
@@ -34,8 +35,9 @@ The following pictures show:
 
 There are multiple options to make a track the selected track:
 - If there is more than one available track, then tap on a track and this track becomes the new selected track.
-- Other options are the Menu | Load Track | Prev and Menu | Load Track | Next to get the previous/next track (from the set of MetaTrackLogs).
-- Finally there is an option from the track statistics activity to choose a new selected track. 
+- Other options are the <span style="color:gray">*Menu | Load Track | Prev*</span> and 
+<span style="color:gray">*Menu | Load Track | Next*</span> to get the previous/next track (from the set of MetaTrackLogs).
+- Finally there is an option from the track statistics activity to choose a new selected track via the context menu of the track. 
 
 
 

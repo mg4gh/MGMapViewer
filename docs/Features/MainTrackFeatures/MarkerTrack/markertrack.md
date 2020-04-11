@@ -3,7 +3,8 @@
 A marker track is a sequence of manually set marker track points. Marker tracks are used in most cases as the basis for simple routing.
 Another use case for marker track points is to determine distances along a given track.
 
-For explanation purposes of the marker tracks we first deactivate routing with  *Menu | Route | Route off*.
+For explanation purposes of the marker tracks we first deactivate routing with
+<span style="color:gray">*Menu | Route | Route off*</span>.
 
 <img src="./DeactRoute1.png" width="400" />&nbsp;
 <img src="./DeactRoute2.png" width="400" />&nbsp;
@@ -14,7 +15,7 @@ As a visual feedback the icon on this button get red. This implies that the edit
 <img src="./Quick1.png" width="400" />&nbsp;
 <img src="./Quick2.png" width="400" />&nbsp;
 
-<a id="action"> </a>"The following actions exists to edit the marker track:
+<a id="action"> </a>The following actions exists to edit the marker track:
 - tap on a free area: add a new marker point at the end of the track
 - tap on a marker point: delete this marker point
 - tap on the connecting line between two marker points: insert a new point between the existing points

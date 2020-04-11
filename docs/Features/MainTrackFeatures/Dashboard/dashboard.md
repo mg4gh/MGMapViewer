@@ -1,6 +1,6 @@
 ## Main Track Feature: dashboard
 
-The following shopshot is copied from the track visualization feature.
+The following snapshot is copied from the track visualization feature.
 
 <img src="./SelectedTrack.png" width="400" />&nbsp;
 
@@ -14,7 +14,7 @@ Each dashboard entry contains five values:
 - Height loss: the height loss of the track (segment)
 - Duration: the duration of the track (segment)
 
-All dashboard entries have the same structure. They are colored depending on their type:
+All dashboard entries have the same structure. They are [colored](../../track.md) depending on their type:
 - red: statistic of recording track
 - blue: statistic of selected track
 - purple: statistic of a route

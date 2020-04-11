@@ -1,22 +1,16 @@
 ## Main Track Feature: record a track
 
-Start track recording with
-Menu | 
-[Track Record](./MenuM_Track.png ) |
-[Start Track](./MenuTrackStart.png).
+Start track recording with <span style="color:gray">*Menu | Track Record | Start Track*</span>.
 
 <img src="./MenuM_Track.png" width="400" />&nbsp;
 <img src="./MenuTrackStart.png" width="400" />&nbsp;
-<img src="./Track_Record_1.png" width="400" />&nbsp;
 
 Move a little bit around 
 
+<img src="./Track_Record_1.png" width="400" />&nbsp;
 <img src="./Track_Record_2.png" width="400" />&nbsp;
 
-and then stop recording with 
-Menu | 
-[Track Record](./Track_Record_2.png ) |
-[Stop Track](./Track_Record_3.png).
+and then stop recording with <span style="color:gray">*Menu | Track Record | Stop Track*</span>.
 
 <img src="./Track_Record_2.png" width="400" />&nbsp;
 <img src="./Track_Record_3.png" width="400" />&nbsp;
@@ -33,7 +27,7 @@ points in the direction of moving. The color green represents the fact, that the
 track is neither ascending nor descending.
 
 If you use instead of "Stop Track" the "Stop segment" button, then you can continue the track recording later
-with the "Start Segment" Button. So the track consists of a number of segments, which is typically just 1.
+with the "Start Segment" Button. So a track consists of a number of segments, which is typically just 1.
 
 **Note**: As long as the GPS is switched on there is a Notification active. It disappears after switching the GPS off.
 

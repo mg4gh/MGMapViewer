@@ -2,7 +2,8 @@
 
 This feature means search all tracks that go through a previously marked rectangular area, also called bounding box.
 
-The first step for the usage is to mark a rectangular area. To do this select the Menu | BoundingBox | New.
+The first step for the usage is to mark a rectangular area. To do this select the 
+<span style="color:gray">*Menu | BoundingBox | New*</span>.
 
 <img src="./MarkBox1.png" width="400" />&nbsp;
 <img src="./MarkBox2.png" width="400" />&nbsp;
@@ -16,7 +17,7 @@ Now there are two Options to do the marking:
 
 Both points (upper left and lower right) can be adjusted with drag and drop actions.
 
-Now use the Menu | BoundingBox | Load
+Now use the <span style="color:gray">*Menu | BoundingBox | Load*</span>.
 
 <img src="./LoadBox1.png" width="400" />&nbsp;
 <img src="./LoadBox2.png" width="400" />&nbsp;
@@ -29,4 +30,4 @@ track to make it the selected track instead.
 <img src="./LoadedBox3.png" width="400" />&nbsp;
 <img src="./LoadedBox4.png" width="400" />&nbsp;
  
-With Menu | BoundingBox | Hide the bounding box will disappear.
+With <span style="color:gray">*Menu | BoundingBox | Hide*</span> the bounding box will disappear.

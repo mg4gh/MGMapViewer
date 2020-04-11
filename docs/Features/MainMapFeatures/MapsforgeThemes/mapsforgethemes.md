@@ -40,7 +40,8 @@ and then click on the current mode (e.g. Mountainbike) and then you get a popup 
 
 Within one of these modes you still can adopt this mode according to your needs, e.g. in the mode "City" you can switch on the public transport
 (check public transport network)
-<img src="./tm9.png" width="400" /> 
-<img src="./tm8.png" width="400" /> 
-<img src="./tm7.png" width="400" /> 
+
+<img src="./tm9.png" width="300" /> 
+<img src="./tm8.png" width="300" /> 
+<img src="./tm7.png" width="300" /> 
 

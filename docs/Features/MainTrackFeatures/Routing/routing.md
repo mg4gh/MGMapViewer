@@ -1,14 +1,16 @@
 ## Main Track Feature: routing
 
-This feature provides a basic route calculation (shortest path) based on a [marker track](../MarkerTrack/markertrack.md).
+This feature provides a basic route calculation (shortest path)
+based on a [marker track](../MarkerTrack/markertrack.md). 
+The route calculation is using an simple [A*](https://de.wikipedia.org/wiki/A*-Algorithmus) algorithm.
 
 For the explanations around the marker tracks we switched off routing. Now we have to make sure that is is switched on again
-with with  *Menu | Route | Route on*.
+with with  <span style="color:gray">*Menu | Route | Route on*</span>.
 
 <img src="./ActRoute1.png" width="400" />&nbsp;
 <img src="./ActRoute2.png" width="400" />&nbsp;
 
-As already said the routing is an addon feature for the marker track. So gain we use the quick control to start edit the
+As already said the routing is an addon feature for the marker track. So again we use the quick control to start edit the
 marker track and verify the red color of the icon.
 
 <img src="./Quick1.png" width="400" />&nbsp;
