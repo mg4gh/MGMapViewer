@@ -12,4 +12,11 @@ Each statistic entry consists of three lines - details are explained here:
 
 <img src="./stat3.png" width="800" />&nbsp;
 
+Wit a long press on an statistic entry you get a popup menu:
 
+<img src="./popup.png" width="400" />&nbsp;
+
+This menu offers functionality:
+- open the height profile for this track
+- select this track (open it as the selected track)
+- delete this track (**Attention: there is no undo**)

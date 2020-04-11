@@ -45,5 +45,9 @@ Each feature contains a link to the corresponding detailed feature description.
   - includes the tile border
   - highlights a taped graph segment
 - [approaches](./Features/DeveloperFeatures/Approach/approach.md) of marker points to ways as the basis of routing
-- [developer documentation](./Features/DeveloperFeatures/Developer/developer.md) 
+- [developer documentation](./Features/DeveloperFeatures/Developer/developer.md) provides more information for developers.
+
+# About  
+[Here](./History.md) you can find some information, how this app was originated.
+
 

@@ -12,3 +12,6 @@ The UML class models are created with Visual Paradigm Community Edition.
 The project file of the model is available [here](../../../more/mgmap.vpp).
 
 The view model is created with Libre Office, the source file is available [here](../../../more/ViewModel.odg).  
+
+The JavaDoc of the source code is available [here](../../../javadoc/index.html)
+or via [github pages](https://mg4gh.github.io/MGMapViewer/javadoc/index.html).

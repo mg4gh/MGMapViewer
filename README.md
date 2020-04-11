@@ -1,42 +1,20 @@
 # MGMapViewer
-
-## Introduction
 This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) library available via github. 
-[Here](./docs/History.md) it is described, how this app was originated.
 
 ## Examples
-<img src="./docs/Features/MainMapFeatures/mapsforge_map.png" width="200" />&nbsp; 
-<img src="./docs/Features/MainMapFeatures/multi_map1.png" width="200" />
+<img src="./docs/Features/MainMapFeatures/Mapsforge/mapsforge_map.png" width="400" />&nbsp; 
+<img src="./docs/Features/MainMapFeatures/MapMulti/multi_map1.png" width="400" />
 
 
 ## License 
-This software is licensed under [LGPLv3](./LICENSE)
+This software is licensed under [LGPLv3](./LICENSE). This app and its author do not provide any maps. Please check carefully that you use only use maps and map sources in accordance with
+the license of these maps!
 
 
 ## User documentation
-The documentation consists of some markdown pages for "users" of the app:
-- [Feature Overview description](./docs/FeatureOverview.md)  
-- [Getting Started: Installation and first Usage of MGMapViewer](./docs/GettingStartedUsage.md)  
-- [Feature Detailed description](./docs/FeatureDetails.md) - TODO 
+The documentation consists of some markdown pages:
+- [Manual](./docs/Manual.md): contains detailed description of all features including additional information for developer 
+- [Getting Started](./docs/GettingStarted/GettingStarted.md): Installation and first Usage of MGMapViewer
 
-
-## Developer documentation
-As already stated in the introduction the capabilities to display maps from different sources are almost completely 
-inherited from the  [mapsforge](https://github.com/mapsforge/mapsforge) project. 
-
-The following documentation tries to summarize the most important aspects of the addons of this app.
-It consists of
-- a few more markdown pages, especially with some modelling views,
-  - [Track data model](./docs/Model.md) - This class model describes the most relevant classes that are used to store
-  a track with all its data.
-  - [Application Model](./docs/MGMapViewer.md) - This class model describes the main architecture of the app. 
-  The main activity is MGMapActivity. Most of its functions is added via different kinds of MGMicroService. The
-  corresponding application is MGMapApplication, which mainly provides several Observables that keep the state 
-  of the the app. 
-  - [MGMapViewer View Model](./docs/images/MGMapViewer_ViewModel.PNG) - This page tries to describe how different view layers are 
-  combined to the big picture of this app. 
-  
-  
--  the [javadoc](./docs/javadoc/index.html) of the code
 
 
