@@ -7,9 +7,7 @@ Unzip these theme and place it into the ./MGMapViewer/themes/ directory.
 
 Now you can select the installed theme via the menu:
 
-<img src="./themes1.png" width="300" />&nbsp;<img src="./themes2.png" width="300" />&nbsp;<img src="./themes3.png" width="300" />
-
-<br/>
+<img src="./themes1.png" width="300" />&nbsp;<img src="./themes2.png" width="300" />&nbsp;<img src="./themes3.png" width="300" /><br/>
 
 After installation you can select the language for the themes:
 
@@ -23,23 +21,19 @@ The elevate theme provides four main modes:
 
 The following images illustrates these four modes:
 
-<img src="./tm5.png" width="400" />
-<img src="./tm9.png" width="400" /> <br/>
+<img src="./tm5.png" width="400" />&nbsp;<img src="./tm9.png" width="400" /> <br/>
 
-<img src="./tm10.png" width="400" />
-<img src="./tm1.png" width="400" /><br/><br/>
+<img src="./tm10.png" width="400" />&nbsp;<img src="./tm1.png" width="400" /><br/><br/>
 
 To switch the mode use <span style="color:gray">*Menu | Themes*</span>
 and then click on the current mode (e.g. Mountainbike) and then you get a popup menu to select one of the four modes.
 
-<img src="./tm2.png" width="300" />
-<img src="./tm3.png" width="300" />
-<img src="./tm11.png" width="300" /><br/><br/>
+<img src="./tm2.png" width="300" />&nbsp;<img src="./tm3.png" width="300" />&nbsp;<img src="./tm11.png" width="300" /><br/>
 
 Within one of these modes you still can adopt this mode according to your needs, e.g. in the mode "City" you can switch on the public transport
 (check public transport network)
 
-<img src="./tm9.png" width="300" /> 
-<img src="./tm8.png" width="300" /> 
-<img src="./tm7.png" width="300" /> 
+<img src="./tm9.png" width="300" />&nbsp;
+<img src="./tm8.png" width="300" />&nbsp;
+<img src="./tm7.png" width="300" />
 
