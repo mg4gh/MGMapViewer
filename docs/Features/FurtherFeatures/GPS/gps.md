@@ -3,8 +3,7 @@
 Beside the option to record a track, it is also possible to "just" switch on the GPS 
 function. This can be done with *Menu | GPS on*.
 
-<img src="./gps1.png" width="300" />&nbsp;
-<img src="./gps2.png" width="300" />&nbsp;
+<img src="./gps1.png" width="300" />&nbsp;<img src="./gps2.png" width="300" />&nbsp;
 
 The red circle has a fixed size with the center on the actual position.
 The blue circle reflects the accuracy of the given gps measurement in meter. 

@@ -13,16 +13,12 @@ The following figures illustrate this:
 - the second figure shows the enlarged overall distance field,
 - the third figure shows the double enlarged overall distance field,
 
-<img src="./el0.png" width="300" />&nbsp;
-<img src="./el1a.png" width="300" />&nbsp;
-<img src="./el1.png" width="300" />&nbsp;
+<img src="./el0.png" width="300" />&nbsp;<img src="./el1a.png" width="300" />&nbsp;<img src="./el1.png" width="300" />&nbsp;
 
 Some more examples:
 - the first figure shows the enlarged elevation gain field,
 - the second figure shows the double enlarged elevation gain field,
 - the third figure shows the enlarged time field.
 
-<img src="./el2a.png" width="300" />&nbsp;
-<img src="./el2.png" width="300" />&nbsp;
-<img src="./el3.png" width="300" />&nbsp;
+<img src="./el2a.png" width="300" />&nbsp;<img src="./el2.png" width="300" />&nbsp;<img src="./el3.png" width="300" />&nbsp;
 
