@@ -6,15 +6,10 @@ Currently there are two main options, where the data of the MGMapViewer app can 
  where *\<sdcard>* is not necessarily a real sdcard. It's rather the default external storage location. Often the path is "/storage/emulated/0".
  Sometimes the term "internal storage" is used.
 
-To select the desired storage path use 
-Menu | 
-[Settings](./Menu_Settings.png) |
-[Storage Settings](./settings_storage_settings.png) |
-[Select Storage Path](./storage_settings.png)). 
+To select the desired storage path use <span style="color:gray">*Menu | Settings | Storage Settings | Select Storage Path*</span>.
+ 
 
-<img src="./Menu_Settings.png" width="300" />&nbsp;
-<img src="./settings_storage_settings.png" width="300" />&nbsp;
-<img src="./storage_settings.png" width="300" />&nbsp;
+<img src="./Menu_Settings.png" width="300" />&nbsp;<img src="./settings_storage_settings.png" width="300" />&nbsp;<img src="./storage_settings.png" width="300" />
 
 
 The preconfigured option is the first one, because it doesn't need extra permissions. 
