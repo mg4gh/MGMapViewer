@@ -29,7 +29,7 @@ In the next examples we see a third and a fourth marker point with more approach
 Some of the approaches may look obvious. Here it is to mention that there is also an algorithm to 
 ensure that a graph segment (no junction) provides only it's best approach. Because of this the 
 red marked approach seem wrong, since the blue marked approaches
-are better and there is no junction to see. The reason for those approaches is visible in the next figure - it's the tile boarder.
+are better and there is no junction to be seen. The reason for those approaches is visible in the next figure - it's the tile boarder.
 And since each graph segment is fully inside of a tile, this point is similar to  a junction. 
 
 <img src="./approach3a.png" width="400" />&nbsp;

@@ -19,7 +19,7 @@ Now the *way details* mode is enabled: If you tap to the marked position, you ge
 
 The rectangle visualize the size of the current tile. All way entries of the tile are shown.
 This is done with a small gray circle for each point and a thin gray connecting line.
-Out of these data the [graph](../../../Develop/graph.md) is setup. A graph segment can be
+Out of these data the [graph](../Developer/Graph.png) is setup. A graph segment can be
 considered as a set of consecutive nodes each with exactly two neighbours (no junctions).
 Due to the tap on the graph the tapped graph segment will be highlighted with red color.
 If this segment cross the tile boarder, then the graph of the tile will be limited to this boarder.
