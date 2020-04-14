@@ -110,7 +110,10 @@
 
         <service
             android:name="mg.mapviewer.TrackLoggerService"
-            android:exported="false"></service>
+            android:exported="false"/>
+        <service
+            android:name="mg.mapviewer.BgJobService"
+            android:exported="false"/>
     </application>
 
 </manifest>

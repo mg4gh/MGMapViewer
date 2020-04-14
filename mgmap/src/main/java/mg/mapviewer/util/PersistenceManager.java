@@ -115,13 +115,16 @@ public class PersistenceManager {
         return mapsDir;
     }
 
-    private File createIfNotExists(File parent, String subDir) {
+    public File createIfNotExists(File parent, String subDir) {
         File f = new File(parent, subDir);
-        if (!f.exists()) {
-            if (!f.mkdir()) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context()+" Failed to create directory: " + f.getAbsolutePath());
-                throw new RuntimeException("Failed to create directory: " + f.getAbsolutePath());
+        synchronized (parent) {
+            if (!f.exists()) {
+                f.mkdir();
             }
+        }
+        if (!f.exists()) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context()+" Failed to create directory: " + f.getAbsolutePath());
+            throw new RuntimeException("Failed to create directory: " + f.getAbsolutePath());
         }
         return f;
     }

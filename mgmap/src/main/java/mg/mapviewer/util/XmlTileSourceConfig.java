@@ -14,6 +14,9 @@
  */
 package mg.mapviewer.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class XmlTileSourceConfig {
 
     String name;
@@ -25,8 +28,16 @@ public class XmlTileSourceConfig {
     int parallelRequestsLimit;
     long ttl;
     String urlPart;
+    Map<String, String> connRequestProperties = null;
 
     public XmlTileSourceConfig(String name){
         this.name = name;
+    }
+
+    public void setConnRequestProperty(String key, String value){
+        if (connRequestProperties == null){
+            connRequestProperties = new HashMap<>();
+        }
+        connRequestProperties.put(key,value);
     }
 }

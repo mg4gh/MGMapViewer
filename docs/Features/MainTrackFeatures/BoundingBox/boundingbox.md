@@ -31,3 +31,9 @@ track to make it the selected track instead.
 <img src="./LoadedBox4.png" width="400" />&nbsp;
  
 With <span style="color:gray">*Menu | BoundingBox | Hide*</span> the bounding box will disappear.
+
+Despite the loading of tracks the marking of an BoundingBox does also support the loading of the tiles of an [MapStrore](../../MainMapFeatures/MapStore/mapstore.md).
+For this purpose the root directory must contain a [config.xml](../../MainMapFeatures/MapOnline/maponline.png) file with the same structure as for an online map.
+Additionally there might be a sample of a tile request as a curl command in the file "sample.curl". Additional HTTPConnection request 
+parameter are taken over from this sample.
+ 

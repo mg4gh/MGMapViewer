@@ -125,6 +125,10 @@ public class MSBB extends MGMicroService {
         register(bbcl, false); // the false prevents register to msLayers
     }
 
+    public BBox getBBox(){
+        return new BBox().extend(p1).extend(p2);
+    }
+
     public void loadFromBB(){
         BBox bBox = new BBox().extend(p1).extend(p2);
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
@@ -152,7 +156,8 @@ public class MSBB extends MGMicroService {
         return new Control[]{
                 new NewBBControl(this),
                 new LoadBBControl(this),
-                new HideBBControl(this)};
+                new HideBBControl(this),
+                new LoadTSFromBBControl(getActivity(), getApplication(), this)};
 
     }
 

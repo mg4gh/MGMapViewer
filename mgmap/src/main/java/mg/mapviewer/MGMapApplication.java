@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -16,6 +17,7 @@ import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.model.TrackLogSegment;
+import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.Geoid;
 import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.MetaDataUtil;
@@ -154,6 +156,7 @@ public class MGMapApplication extends Application {
         }.execute();
 
 //        ExtrasUtil.generate(new BoundingBox(49, 8, 50, 9.5));
+//        ExtrasUtil.downloadTest();
     }
 
     @Override
@@ -327,6 +330,7 @@ public class MGMapApplication extends Application {
 
     boolean initFinished = false;
     ArrayList<MGMicroService> microServices = new ArrayList<>();
+    private ArrayList<BgJob> bgJobs = new ArrayList<>();
 
     /** queue for new (unhandled) TrackLogPoint objects */
     private ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
@@ -354,4 +358,24 @@ public class MGMapApplication extends Application {
 
     public float pressure = 0;
 
+
+    public synchronized void addBgJobs(ArrayList<? extends BgJob> jobs){
+        bgJobs.addAll(jobs);
+        Intent intent = new Intent(this, BgJobService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(intent);
+        } else {
+            this.startService(intent);
+        }
+    }
+    public synchronized BgJob getBgJob(){
+        if (bgJobs.size() > 0){
+            return bgJobs.remove(0);
+        }
+        return null;
+    }
+
+    public synchronized int numBgJobs(){
+        return bgJobs.size();
+    }
 }

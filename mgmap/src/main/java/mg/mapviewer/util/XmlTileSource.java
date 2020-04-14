@@ -21,6 +21,7 @@ import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import mg.mapviewer.MGMapApplication;
 
@@ -40,14 +41,19 @@ public class XmlTileSource extends AbstractTileSource {
 
     @Override
     public URL getTileUrl(Tile tile) throws MalformedURLException {
+        return getTileUrl(tile.zoomLevel, tile.tileX, tile.tileY);
+    }
+
+    private URL getTileUrl(byte zoomLevel, int tileX, int tileY) throws MalformedURLException {
         String urlPart = config.urlPart;
-        urlPart = urlPart.replace("{x}", ""+tile.tileX);
-        urlPart = urlPart.replace("{y}", ""+tile.tileY);
-        urlPart = urlPart.replace("{z}", ""+tile.zoomLevel);
+        urlPart = urlPart.replace("{x}", ""+tileX);
+        urlPart = urlPart.replace("{y}", ""+tileY);
+        urlPart = urlPart.replace("{z}", ""+zoomLevel);
         URL url = new URL(config.protocol, getHostName(), config.port, urlPart);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+ " url="+url);
         return url;
     }
+
 
     @Override
     public byte getZoomLevelMax() {
@@ -62,6 +68,17 @@ public class XmlTileSource extends AbstractTileSource {
     @Override
     public boolean hasAlpha() {
         return false;
+    }
+
+    public URLConnection getURLConnection(byte zoomLevel, int tileX, int tileY) throws Exception{
+        URL url = getTileUrl(zoomLevel, tileX, tileY);
+        URLConnection conn = url.openConnection();
+        if (config.connRequestProperties != null){
+            for (String key : config.connRequestProperties.keySet()){
+                conn.setRequestProperty(key,config.connRequestProperties.get(key));
+            }
+        }
+        return conn;
     }
 
 }

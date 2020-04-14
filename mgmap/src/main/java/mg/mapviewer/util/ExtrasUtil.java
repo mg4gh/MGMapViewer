@@ -16,6 +16,15 @@ package mg.mapviewer.util;
 
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import mg.mapviewer.MGMapApplication;
@@ -39,6 +48,97 @@ public class ExtrasUtil {
 //            Log.i(MGMapApplication.LABEL, NameUtil.context() +" "+String.format(Locale.ENGLISH,"dls %d %d %d %d %d",zoomLevel,tileXMin, tileXMax, tileYMin, tileYMax));
 //        }
 //    }
+
+
+
+
+    public static  void downloadTest(){
+        File mapstores = new File(PersistenceManager.getInstance().getMapsDir(), "mapstores");
+        if (mapstores.exists() && mapstores.isDirectory()){
+            File requestDownload = new File(mapstores, "request");
+            if (requestDownload.exists() && requestDownload.isDirectory()){
+                File sample = new File(requestDownload, "sample.curl");
+                if (sample.exists()){
+                    try {
+                        BufferedReader in = new BufferedReader(new FileReader(sample));
+                        String line = in.readLine();
+                        in.close();
+
+                        saveFile(line, requestDownload, (byte)10, 534, 349);
+                    } catch (Exception e) {
+                        Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void saveFile(final String surl, final File destinationDir, final byte zoom, final int xtile, final int ytile) throws IOException {
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    URL url = null;
+                    URLConnection conn = null;
+
+                    {
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" URL="+surl);
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" destinationDir="+destinationDir.getAbsolutePath());
+                        String[] purl = surl.split(" -H ");
+                        for (String x : purl){
+                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" x="+x);
+                            String[] y = x.replaceAll("'$","").replaceAll(".*'","").split(": ");
+                            if (y.length == 2){
+                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" \""+y[0]+"\"=\""+y[1]+"\"");
+                                conn.setRequestProperty(y[0],y[1]);
+                            } else {
+                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+y[0]);
+                                String[] z = y[0].split("/");
+                                if (z.length >= 4){
+                                    url = new URL(String.format("%s/%s/%s/%s/%s/%s/%d/%d/%d.png?px=256",z[0],z[1],z[2],z[3],"ride","purple",zoom,xtile,ytile));
+                                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+url);
+                                    conn = url.openConnection();
+                                }
+                            }
+
+                        }
+                    }
+                    PersistenceManager pm = PersistenceManager.getInstance();
+                    File zoomDir = pm.createIfNotExists(destinationDir,Byte.toString(zoom));
+                    File xDir = pm.createIfNotExists(zoomDir,Integer.toString(xtile));
+                    File yFile = new File(xDir,Integer.toString(ytile)+".png");
+
+//                    URL url = new URL("https://heatmap-external-c.strava.com/tiles-auth/ride/purple/10/534/349.png?px=256");
+//                    URLConnection conn = url.openConnection();
+//                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0");
+//                    conn.setRequestProperty("Accept", "*/*' -H 'Accept-Language: de,en-US;q=0.7,en;q=0.3");
+//                    conn.setRequestProperty("Referer", "https://www.strava.com");
+//                    conn.setRequestProperty("Origin", "https://www.strava.com");
+//                    conn.setRequestProperty("Connection", "keep-alive");
+//                    conn.setRequestProperty("Cookie", "_strava4_session=mst9hpuico4o4cv0apl4onq55b0dqe6j; sp=f8417f3e-0fc5-40f3-aeaa-834718e67ab9; CloudFront-Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vaGVhdG1hcC1leHRlcm5hbC0qLnN0cmF2YS5jb20vKiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTU4NzQ5ODEyMX0sIkRhdGVHcmVhdGVyVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNTg2Mjc0MTIxfX19XX0_; CloudFront-Key-Pair-Id=APKAIDPUN4QMG7VUQPSA; CloudFront-Signature=EaZvrLY8lYP8BBPf8UPqAAfc7VUbJwn7nK~Eg7R2zHshbMCHvIm0wMEENferbbjxkO52cEAci2Yci95kiPOFjy1xuPiNosQqw0JRfIzC4KyVnGaIXfJN84~ZZwIxes08heRVIUAe3vE3Ltz39N~evCaRr5jH73sLJfhgwVq8iCC9WUtjr1m1BMpjo5iykpFQVRXCdtATiDnqurZFy3259Y2MaMpAawbbI0-hQZgOlI5KSBwfKWNcta7Ld3Qr4wG0EJl8yFkNksV9JcWa0CRrZ2U1ySg0V6HCw4wjwSAifXuNJ09cxnRiIQInidH~FNmoDo6mCgwtiKgw0AaG5Xa2ww__");
+
+                    InputStream is = conn.getInputStream();
+                    OutputStream os = new FileOutputStream(yFile);
+
+                    byte[] b = new byte[2048];
+                    int length;
+
+                    while ((length = is.read(b)) != -1) {
+                        os.write(b, 0, length);
+                    }
+
+                    is.close();
+                    os.close();
+                } catch (IOException e) {
+                    Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+                }
+
+            }
+        }.start();
+
+
+
+    }
 
     public static void checkCreateMeta(){
         Log.i(MGMapApplication.LABEL, NameUtil.context() );
