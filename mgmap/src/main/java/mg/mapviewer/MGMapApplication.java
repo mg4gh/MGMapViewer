@@ -8,9 +8,12 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.renderer.MapWorkerPool;
 import org.mapsforge.map.model.DisplayModel;
+import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.reader.MapFile;
 
 import mg.mapviewer.model.WriteableTrackLog;
@@ -377,5 +380,15 @@ public class MGMapApplication extends Application {
 
     public synchronized int numBgJobs(){
         return bgJobs.size();
+    }
+
+    public void refresh(){
+        if (!microServices.isEmpty()){
+            MGMicroService ms = microServices.get(0);
+            MapView mapView = ms.getMapView();
+
+            IMapViewPosition mvp = mapView.getModel().mapViewPosition;
+            mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));
+        }
     }
 }

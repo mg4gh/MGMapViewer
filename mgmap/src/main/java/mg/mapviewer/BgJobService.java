@@ -146,6 +146,7 @@ public class BgJobService extends Service {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 stopForeground(true);
             }
+            application.refresh();
 
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);

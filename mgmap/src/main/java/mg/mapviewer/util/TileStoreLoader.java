@@ -3,6 +3,7 @@ package mg.mapviewer.util;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Build;
+
 import android.util.Log;
 
 import org.mapsforge.core.util.MercatorProjection;
@@ -18,7 +19,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
@@ -58,6 +67,36 @@ public class TileStoreLoader {
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" \""+subparts[0]+"\"=\""+subparts[1]+"\"");
                 }
             }
+        }
+        File cookiesRef = new File(storeDir, "cookies.ref");
+        File cookies = new File(storeDir, "cookies.json");
+        if (cookiesRef.exists()){
+            BufferedReader in = new BufferedReader(new FileReader(cookiesRef));
+            String line = in.readLine();
+            cookies = new File(line);
+        }
+
+        if (cookies.exists()) {
+            Map<String, String> cookieMap = new HashMap<>();
+            FileReader jsonFile = new FileReader(cookies);
+            JsonReader jsonReader = Json.createReader(jsonFile);
+            JsonObject oAll = jsonReader.readObject();
+            JsonArray cAll = oAll.getJsonArray("cookies");
+            for (JsonValue i : cAll) {
+                JsonObject io = i.asJsonObject();
+                cookieMap.put(io.getString("name"), io.getString("value"));
+            }
+
+            String separator = "; ";
+            String cookieRes = "";
+            String[] cookieParts = config.connRequestProperties.get("Cookie").split(separator); // from sample
+            for (String cp : cookieParts){
+                String[] subCp = cp.split("=");
+                String subCpValue = cookieMap.get(subCp[0]);
+                cookieRes += subCp[0]+"="+ ((subCpValue==null)?subCp[1]:subCpValue) + separator;
+            }
+            config.connRequestProperties.put("Cookie", cookieRes.substring(0, cookieRes.length()-separator.length()));
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" cookies.json result: "+config.connRequestProperties.get("Cookie"));
         }
     }
 
