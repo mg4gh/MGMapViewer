@@ -57,10 +57,10 @@ public class MGMapApplication extends Application {
 
         try {
             String cmd = "logcat "+ LABEL+":i  -f "+PersistenceManager.getInstance(this).getLogDir().getAbsolutePath()+"/log.txt -r 10000 -n10";
-            Log.i(LABEL, NameUtil.context()+" onCreate: Start Logging: "+cmd);
+            Log.i(LABEL, NameUtil.context()+" Start Logging: "+cmd);
             Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
-            Log.e(LABEL, NameUtil.context()+" onCreate: "+e.getMessage(),e);
+            Log.e(LABEL, NameUtil.context(),e);
         }
         Log.i(LABEL,NameUtil.context()+" Starting Logger finished.");
 
