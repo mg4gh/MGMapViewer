@@ -49,8 +49,22 @@ public class DynamicListPreference extends ListPreference {
             String[] themes = pm.getThemeNames();
             if (themes.length == 0) {
             } else {
-                setEntries(pm.getThemeNames());
-                setEntryValues(pm.getThemeNames());
+                setEntries(themes);
+                setEntryValues(themes);
+                setSummary(PreferenceManager.getDefaultSharedPreferences(context).getString(key,""));
+            }
+        }
+
+        if (getKey().equals( context.getResources().getString(R.string.preference_choose_search_key) )){
+            String[] searchCfgs = pm.getSearchConfigNames();
+            String[] searchProviders = new String[searchCfgs.length];
+            for (int i=0; i<searchCfgs.length; i++){
+                searchProviders[i] = searchCfgs[i].replaceAll(".cfg$", "");
+            }
+            if (searchProviders.length == 0) {
+            } else {
+                setEntries(searchProviders);
+                setEntryValues(searchProviders);
                 setSummary(PreferenceManager.getDefaultSharedPreferences(context).getString(key,""));
             }
         }

@@ -14,6 +14,8 @@
  */
 package mg.mapviewer;
 
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -162,6 +164,12 @@ public class MGMicroService {
     }
     protected ControlView getControlView(){
         return mmActivity.getControlView();
+    }
+    protected SharedPreferences getSharedPreferences(){
+        return mmActivity.getSharedPreferences();
+    }
+    protected Resources getResources(){
+        return mmActivity.getApplicationContext().getResources();
     }
 
 

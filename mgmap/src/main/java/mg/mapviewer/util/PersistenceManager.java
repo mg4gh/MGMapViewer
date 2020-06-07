@@ -70,6 +70,8 @@ public class PersistenceManager {
     private File themesDir;
     private File hgtDir;
     private File logDir;
+    private File configDir;
+    private File searchConfigDir;
 
     private File fRaw;
     private FileOutputStream fosRaw = null;
@@ -96,6 +98,7 @@ public class PersistenceManager {
         trackMetaDir = createIfNotExists(trackDir, "meta");
         trackGpxDir = createIfNotExists(trackDir, "gpx");
         File trackRecDir = createIfNotExists(trackDir, "recording");
+        fRaw = new File(trackRecDir, "raw.dat");
 
         mapsDir = createIfNotExists(appDir, "maps");
         createIfNotExists(mapsDir, "mapsforge");
@@ -105,7 +108,8 @@ public class PersistenceManager {
         themesDir = createIfNotExists(appDir, "themes");
         hgtDir = createIfNotExists(appDir, "hgt");
         logDir = createIfNotExists(appDir, "log");
-        fRaw = new File(trackRecDir, "raw.dat");
+        configDir = createIfNotExists(appDir, "config");
+        searchConfigDir = createIfNotExists(configDir, "search");
     }
 
     public File getLogDir(){
@@ -279,5 +283,25 @@ public class PersistenceManager {
             file.delete();
         }
     }
+
+    public InputStream openSearchConfigInput(String filename) {
+        try {
+            File file = new File(searchConfigDir, filename );
+            return new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        }
+        return null;
+    }
+    public String[] getSearchConfigNames() {
+        return searchConfigDir.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                if (!s.endsWith(".cfg")) return false;
+                return !(new File(file,s).isDirectory());
+            }
+        });
+    }
+
 
 }

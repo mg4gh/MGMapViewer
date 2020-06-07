@@ -104,7 +104,11 @@ public class Settings extends PreferenceActivity implements
             if (pref.endsWith(".ref")){
                 checkRequestStoragePermissions(WRITE_EXTERNAL_STORAGE_CODE2);
             }
-        } else if (getResources().getString(R.string.preference_choose_theme_title).equals(key)) {
+        } else if (getResources().getString(R.string.preference_choose_theme_key).equals(key)) {
+            String pref = preferences.getString(key, null);
+            Preference preference = findPreference(key);
+            preference.setSummary(pref);
+        } else if (getResources().getString(R.string.preference_choose_search_key).equals(key)) {
             String pref = preferences.getString(key, null);
             Preference preference = findPreference(key);
             preference.setSummary(pref);

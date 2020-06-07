@@ -16,6 +16,7 @@ package mg.mapviewer;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -56,6 +57,8 @@ import mg.mapviewer.features.position.MSPosition;
 import mg.mapviewer.features.remainings.MSRemainings;
 import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
+import mg.mapviewer.features.search.MSSearch;
+import mg.mapviewer.features.search.SearchView;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModelImpl;
@@ -109,6 +112,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     public ControlView getControlView(){
         return (ControlView) findViewById(R.id.controlView);
+    }
+
+    SharedPreferences getSharedPreferences(){
+        return sharedPreferences;
     }
 
     /** Retruen the mirco service by type */
@@ -167,12 +174,14 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         microServices.add(new MSRemainings(this));
         microServices.add(new MSBB(this, getMS(MSAvailableTrackLogs.class)));
         microServices.add(new MSGraphDetails(this));
+        microServices.add(new MSSearch(this));
 
         try{
             Thread.sleep(100);
         }catch (Exception e){}
         coView.init(application, this);
-
+//        SearchView seView = findViewById(R.id.searchView);
+//        seView.init(application, this);
     }
 
     private FullscreenObserver fullscreenObserver = null;

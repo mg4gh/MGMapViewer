@@ -245,19 +245,49 @@
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
-                <TextView android:id="@+id/ct1"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/fullscreen" android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
-                <TextView android:id="@+id/ct2"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/slider"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
-                <TextView android:id="@+id/ct3"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/mtlr"       android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
-                <TextView android:id="@+id/ct4"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/zoom_in"    android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
-                <TextView android:id="@+id/ct5"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="30dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/zoom_out"   android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct1"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="22dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/fullscreen" android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct2"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="22dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/slider"     android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct3"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="22dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/mtlr"       android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct3a"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="22dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/search"       android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct4"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="22dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/zoom_in"    android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+                <TextView android:id="@+id/ct5"  android:layout_height="match_parent" android:layout_width="0dp" android:layout_margin="0.8dp" android:paddingStart="22dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="3dp"  android:drawableStart="@drawable/zoom_out"   android:text="" android:layout_weight="20" android:lines="1" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
             </TableRow>
 
         </TableLayout>
 
-
-
-
-
     </mg.mapviewer.ControlView>
 
+<!--    <mg.mapviewer.features.search.SearchView-->
+<!--        android:id="@+id/searchView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="vertical" >-->
+<!--        <LinearLayout-->
+<!--            android:id="@+id/searchllView"-->
+<!--            android:orientation="vertical"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content">-->
+<!--            <EditText-->
+<!--                android:id="@+id/et1"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="Search Text"-->
+<!--                android:textColorHint="@color/GRAY100_A150"-->
+<!--                android:inputType="textPostalAddress"-->
+<!--                android:singleLine="true"></EditText>-->
+<!--            <TextView-->
+<!--                android:id="@+id/st1"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="haha"/>-->
+<!--            <TextView-->
+<!--                android:id="@+id/st2"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+<!--            <TextView-->
+<!--                android:id="@+id/st3"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+<!--        </LinearLayout>-->
+<!--    </mg.mapviewer.features.search.SearchView>-->
 </RelativeLayout>
