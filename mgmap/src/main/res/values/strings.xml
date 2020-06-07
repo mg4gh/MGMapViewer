@@ -117,6 +117,8 @@
     <string name="preference_choose_map_title5">Select map layer 5 (Foreground)</string>
     <string name="preference_choose_theme_key">SelectTheme</string>
     <string name="preference_choose_theme_title">Select theme</string>
+    <string name="preference_choose_search_key">SelectSearchProvider</string>
+    <string name="preference_choose_search_title">Select Search Provider</string>
 
     <string name="preferences_screen_further_pref">Further Settings</string>
     <string name="preferences_screen_storage_pref">Storage Settings</string>

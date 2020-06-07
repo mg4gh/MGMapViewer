@@ -17,7 +17,6 @@ package mg.mapviewer;
 import android.content.Context;
 
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -28,6 +27,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -59,11 +59,12 @@ import mg.mapviewer.features.bb.MSBB;
 import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
+import mg.mapviewer.features.search.SearchView;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogStatistic;
-import mg.mapviewer.util.CC;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.util.ZoomOCL;
 
 /**
  * The control view is the parent container view object. So it is the parent for
@@ -138,7 +139,7 @@ public class ControlView extends RelativeLayout {
                 dashboardKeys.add(entry.getId());
                 dashboardMap.put(entry.getId(),entry);
                 for (int i=0; i<entry.getChildCount(); i++){
-                    entry.getChildAt(i).setOnClickListener(new ZoomOCL());
+                    entry.getChildAt(i).setOnClickListener(new ZoomOCL(mapView.getModel().displayModel.getScaleFactor()));
                 }
                 dashboard.removeViewAt(0);
             }
@@ -154,42 +155,6 @@ public class ControlView extends RelativeLayout {
         } catch (Exception e){
             Log.e(MGMapApplication.LABEL, NameUtil.context()+"", e);
         }
-    }
-
-    /** This OnClickListener is used for all dashboard entry fields and also for all status line views.
-     * A click to one of these fields zooms makes the text of this field larger for 1,5.
-     * Multiple clicking is increasing the font multiple times. */
-    private class ZoomOCL implements OnClickListener {
-        TextView tv;
-        final TimerTask ttResetTextSize = new TimerTask() {
-            @Override
-            public void run() {
-                float scale = mapView.getModel().displayModel.getScaleFactor();
-                float size = tv.getTextSize();
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + "size="+size);
-
-
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,  size-10*scale);
-                scaleBoundsForDrawable(tv,(int)(-10*scale));
-                ((LinearLayout.LayoutParams)tv.getLayoutParams()).weight -= 5*scale;
-            }
-        };
-        @Override
-        public void onClick(View v) {
-            if (v instanceof TextView){
-                this.tv = (TextView)v;
-                float scale = mapView.getModel().displayModel.getScaleFactor();
-                float size = tv.getTextSize();
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + "size="+size);
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,  size+10*scale );
-                scaleBoundsForDrawable(tv,(int)(10*scale));
-                ((LinearLayout.LayoutParams)tv.getLayoutParams()).weight += 5*scale;
-                timer.postDelayed(ttResetTextSize,1500);
-            }
-
-        }
-
-
     }
 
 
@@ -334,7 +299,9 @@ public class ControlView extends RelativeLayout {
 
 
 
-
+    public void setDashboardVisibility(boolean visibitity){
+        dashboard.setVisibility(visibitity?VISIBLE:INVISIBLE);
+    }
 
     int getIndexForDashoardEntry(int dashboardId){
         int idx = 0;
@@ -445,7 +412,7 @@ public class ControlView extends RelativeLayout {
     TextView registerTextView(int id){
         TextView tv = activity.findViewById(id);
         tvList.add(tv);
-        tv.setOnClickListener(new ZoomOCL());
+        tv.setOnClickListener(new ZoomOCL(mapView.getModel().displayModel.getScaleFactor()));
         return tv;
     }
 
@@ -608,6 +575,15 @@ public class ControlView extends RelativeLayout {
                 ct3.setCompoundDrawables(drawable,null,null,null);
             }
         });
+
+        final TextView ct3a = activity.findViewById(R.id.ct3a);
+        ct3a.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                application.searchOn.toggle();
+            }
+        });
+
 
         final TextView ct4 = activity.findViewById(R.id.ct4);
         ct4.setOnClickListener(new OnClickListener() {

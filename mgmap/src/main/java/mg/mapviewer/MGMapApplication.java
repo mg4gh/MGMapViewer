@@ -330,6 +330,7 @@ public class MGMapApplication extends Application {
     public BooleanObservable showRouting = new BooleanObservable(true);
     public BooleanObservable stlWithGL = new BooleanObservable(true);
     public BooleanObservable fullscreen = new BooleanObservable(true);
+    public BooleanObservable searchOn = new BooleanObservable(false);
 
     boolean initFinished = false;
     ArrayList<MGMicroService> microServices = new ArrayList<>();

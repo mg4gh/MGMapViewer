@@ -18,11 +18,15 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 import org.mapsforge.core.model.Dimension;
+import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.model.IMapViewPosition;
 
 import mg.mapviewer.model.BBox;
+import mg.mapviewer.model.PointModel;
+import mg.mapviewer.model.PointModelImpl;
 
 /**
  * Utility for functionality related to the mapsforge MapView.
@@ -80,11 +84,21 @@ public class MapViewUtility {
         return BBox.fromBoundingBox(mapView.getBoundingBox());
     }
 
-    public double getZoomLevel() {
+    public int getZoomLevel() {
         return this.mapView.getModel().mapViewPosition.getZoomLevel();
+    }
+
+    public PointModel getCenter() {
+        return new PointModelImpl(this.mapView.getModel().mapViewPosition.getCenter());
     }
 
     public float getTrackWidth(){
         return DEFAULT_TRACK_WIDTH * mapView.getModel().displayModel.getScaleFactor();
+    }
+
+    public void setMapViewPosition(PointModel pm){
+        IMapViewPosition imvp = this.mapView.getModel().mapViewPosition;
+//        byte zoom = imvp.getZoomLevel();
+        imvp.setCenter(new LatLong(pm.getLat(), pm.getLon()));
     }
 }

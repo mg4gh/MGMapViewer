@@ -31,6 +31,9 @@
     <mg.mapviewer.util.DynamicListPreference
         android:key="@string/preference_choose_theme_key"
         android:title="@string/preference_choose_theme_title" />
+    <mg.mapviewer.util.DynamicListPreference
+        android:key="@string/preference_choose_search_key"
+        android:title="@string/preference_choose_search_title" />
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="@string/preferences_way_details_key"
