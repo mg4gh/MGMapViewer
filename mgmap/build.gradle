@@ -21,6 +21,20 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+
+    sourceSets {
+        main {
+//            manifest.srcFile 'AndroidManifest.xml'
+//            java.srcDirs = ['src/main/java']
+//            resources.srcDirs = ['src']
+//            res.srcDirs = ['res']
+//            assets.srcDirs = ['assets']
+            file("${rootDir}/sqlite-android/natives").eachDir() { dir ->
+                jniLibs.srcDirs += "${dir.path}/lib"
+            }
+        }
+    }
+
 }
 
 dependencies {

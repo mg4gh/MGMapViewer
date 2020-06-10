@@ -1,15 +1,27 @@
 package mg.mapviewer.features.search;
 
 import mg.mapviewer.model.PointModel;
+import mg.mapviewer.util.PointModelUtil;
 
-public class SearchResult {
+public class SearchResult implements Comparable<SearchResult>{
     public SearchRequest searchRequest;
     public String resultText = null;
+    public String longResultText = null;
     public PointModel pos = null;
+    private double distance;
 
     public SearchResult(SearchRequest searchRequest, String resultText, PointModel pos) {
         this.searchRequest = searchRequest;
         this.resultText = resultText;
         this.pos = pos;
+        distance = PointModelUtil.distance(searchRequest.pos,pos);
+    }
+
+    @Override
+    public int compareTo(SearchResult o) {
+        if (distance != o.distance) return Double.compare(distance,o.distance);
+        if (pos.getLat() != o.pos.getLat()) return Double.compare(pos.getLat(),o.pos.getLat());
+        if (pos.getLon() != o.pos.getLon()) return Double.compare(pos.getLon(),o.pos.getLon());
+        return resultText.compareTo(o.resultText);
     }
 }

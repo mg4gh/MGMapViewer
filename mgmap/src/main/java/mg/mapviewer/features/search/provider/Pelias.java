@@ -1,5 +1,6 @@
 package mg.mapviewer.features.search.provider;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -38,8 +39,8 @@ public class Pelias extends SearchProvider {
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     @Override
-    protected void init(MSSearch msSearch, SearchView searchView) {
-        super.init(msSearch, searchView);
+    protected void init(MSSearch msSearch, SearchView searchView, SharedPreferences preferences) {
+        super.init(msSearch, searchView, preferences);
         try {
             InputStream is = PersistenceManager.getInstance().openSearchConfigInput(this.getClass().getSimpleName()+".cfg");
             String line;

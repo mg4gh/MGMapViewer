@@ -13,14 +13,15 @@ import java.util.TimerTask;
 
 import mg.mapviewer.MGMapApplication;
 
-public class ZoomOCL implements View.OnClickListener {
+public class ZoomOCL extends ExtendedClickListener {
+//public class ZoomOCL implements View.OnClickListener {
 
     public ZoomOCL(float scale){
         this.scale = scale;
     }
 
     private float scale;
-    private Handler timer = new Handler();
+    private static Handler timer = new Handler();
     TextView tv;
     private int toMillis = 1500;
 
@@ -37,7 +38,7 @@ public class ZoomOCL implements View.OnClickListener {
         }
     };
     @Override
-    public void onClick(View v) {
+    public void onSingleClick(View v) {
         if (v instanceof TextView){
             this.tv = (TextView)v;
 //            float scale = mapView.getModel().displayModel.getScaleFactor();

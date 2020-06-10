@@ -92,7 +92,20 @@ public class SearchView extends LinearLayout {
                 tv.setBackgroundColor(CC.getColor( R.color.WHITE_A150 ));
 
                 float scaleFactor = activity.getMapsforgeMapView().getModel().displayModel.getScaleFactor();
-                ZoomOCL ocl = new ZoomOCL(scaleFactor);
+                ZoomOCL ocl = new ZoomOCL(scaleFactor){
+                    private boolean showLong=true;
+                    @Override
+                    public void onDoubleClick(View view) {
+                        if (sr.longResultText != null){
+                            if (showLong){
+                                tv.setText(sr.longResultText);
+                            } else {
+                                tv.setText(sr.resultText);
+                            }
+                            showLong = !showLong;
+                        }
+                    }
+                };
                 ocl.setToMillis(2500);
                 tv.setOnClickListener(ocl);
                 tv.setOnLongClickListener(new OnLongClickListener() {
