@@ -283,7 +283,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     /** trigger TrackLoggerService, request permission on demand. */
     public void triggerTrackLoggerService(){
         if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
-            Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, ACCESS_FINE_LOCATION_CODE);
+            Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, ACCESS_FINE_LOCATION_CODE);
         } else {
             Intent intent = new Intent(this, TrackLoggerService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -296,7 +296,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ACCESS_FINE_LOCATION_CODE ){
-            if (Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION)){ //ok, got the permission, start service
+            if (Permissions.check(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION,  Manifest.permission.ACCESS_BACKGROUND_LOCATION} )){ //ok, got the permission, start service
                 triggerTrackLoggerService();
             }
         }
