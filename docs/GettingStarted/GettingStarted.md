@@ -17,19 +17,15 @@ Alternatively it disappears after a second tap on the background. Remember this 
 
 <img src="./Menu.png" width="200" />&nbsp;
 
-5. Decide, which storage location you want to use. Currently there are two options:
-  - /\<sdcard>/Andorid/data/mg.mgmap/files/MGMapViewer
-  - /\<sdcard>/MGMapViewer  
+5. Originally there were two storage options provided:
+    - /\<sdcard>/Andorid/data/mg.mgmap/files/MGMapViewer
+    - /\<sdcard>/MGMapViewer  
   where \<sdcard> is not necessarily a real sdcard. It's rather the default external storage location. Often the path is "/storage/emulated/0".
-  Sometimes the term "internal storage" is used. The preconfiguered option is the first one, because it doesn't need extra permissions. If you put your data to this location then keep in mind 
+  Sometimes the term "internal storage" is used. The preconfiguered option is the first one, because it doesn't need extra permissions. 
+  If you put your data to this location then keep in mind 
   that the uninstall of the app deletes all these data! <br/>
-  If you use the second option, then your data are independent on the app Software. They will be available after deinstallation 
-  (you still want to have your tracks available even if you don't use this software anymore). This requires extra
-  [permissions](./permissions_media.png).  If you don't need the data anymore, you have to cleanup the directory manually.
-
-<img src="./Menu_Settings.png" width="200" />&nbsp;
-<img src="./settings_storage_settings.png" width="200" />&nbsp;
-<img src="./storage_settings.png" width="200" />&nbsp;
+  Due to changes of Android 10 and 11 the second option will not longer work. The corresponding preferences is removed.
+  So just be aware about the storage location.
 
 6. The app creates below the MGMapViewer directory new subdirectories:
     - track (store track related data)

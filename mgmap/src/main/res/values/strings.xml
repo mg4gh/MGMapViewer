@@ -139,9 +139,4 @@
     <string name="preferences_stl_gl_title">Selected track with gain/loss</string>
     <string name="preferences_stl_gl_desc">Visualize the selected track with colors based on gain/loss."</string>
 
-    <string name="preferences_storage_key">storage_key</string>
-    <string name="preferences_storage_title">Select storage path</string>
-    <string name="preferences_storage_desc">checked: "/sdcard/MGMapViewer", requires permission "android.permission.WRITE_EXTERNAL_STORAGE"
-                                            unchecked: "/sdcard/Android/data/mg.mgmap/files/MGMapViwer"</string>
-
 </resources>
