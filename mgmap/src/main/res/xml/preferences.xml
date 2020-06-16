@@ -36,7 +36,12 @@
         android:key="@string/preferences_stl_gl_key"
         android:summary="@string/preferences_stl_gl_desc"
         android:title="@string/preferences_stl_gl_title" />
-
+    <PreferenceScreen android:title="@string/preferences_screen_gdrive">
+    <Preference
+        android:key="@string/preferences_gdrive_sync_key"
+        android:title="@string/preferences_gdrive_sync_title"
+        android:summary="@string/preferences_gdrive_sync_desc"/>
+    </PreferenceScreen>
     <PreferenceScreen android:title="@string/preferences_screen_further_pref">
         <ListPreference
             android:defaultValue="1.0"

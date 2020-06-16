@@ -17,6 +17,7 @@ package mg.mapviewer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -40,6 +41,7 @@ import org.mapsforge.map.model.DisplayModel;
 
 import java.util.ArrayList;
 
+import mg.mapviewer.features.gdrive.MSGDrive;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Permissions;
 import mg.mapviewer.util.TopExceptionHandler;
@@ -148,6 +150,21 @@ public class Settings extends PreferenceActivity implements
 
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
         addPreferencesFromResource(R.xml.preferences);
+
+        Preference pref = findPreference(getResources().getString(R.string.preferences_gdrive_sync_key));
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Application app = getApplication();
+                if (app instanceof MGMapApplication) {
+                    MGMapApplication mgMapApplication = (MGMapApplication) app;
+                    MSGDrive msGDrive = mgMapApplication.getMS(MSGDrive.class);
+                    msGDrive.trySynchronisation();
+                }
+                return true;
+            }
+        });
+
     }
 
     @Override

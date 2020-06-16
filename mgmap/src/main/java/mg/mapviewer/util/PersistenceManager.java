@@ -118,6 +118,12 @@ public class PersistenceManager {
     public File getMapsDir(){
         return mapsDir;
     }
+    public File getConfigDir(){
+        return configDir;
+    }
+    public File getTrackGpxDir(){
+        return trackGpxDir;
+    }
 
     public File createIfNotExists(File parent, String subDir) {
         File f = new File(parent, subDir);

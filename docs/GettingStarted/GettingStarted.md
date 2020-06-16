@@ -1,7 +1,7 @@
 # Getting Started: Installation and first Usage of MGMapViewer
 
 1. Copy apk to the device.<br/>
-Either take a prebuild apk from the apk directory of this project or download the source code 
+Either take a prebuild apk from the directory ./MGMapViewer/apk of this project or download the source code 
 and use AndroidStudio to build the whole project.
 2. Select the file in the file explorer and just tap on it.
 Make sure that the permission for local app installation is given to the file explorer.

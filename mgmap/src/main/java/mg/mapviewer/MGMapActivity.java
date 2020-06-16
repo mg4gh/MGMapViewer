@@ -50,6 +50,7 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.bb.MSBB;
+import mg.mapviewer.features.gdrive.MSGDrive;
 import mg.mapviewer.features.grad.MSGraphDetails;
 import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.features.motion.MSMotion;
@@ -175,6 +176,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         microServices.add(new MSBB(this, getMS(MSAvailableTrackLogs.class)));
         microServices.add(new MSGraphDetails(this));
         microServices.add(new MSSearch(this));
+        microServices.add(new MSGDrive(this));
 
         try{
             Thread.sleep(100);
