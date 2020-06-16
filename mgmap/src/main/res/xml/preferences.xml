@@ -2,14 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/menu_preferences">
 
-    <PreferenceScreen android:title="@string/preferences_screen_storage_pref">
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/preferences_storage_key"
-            android:summary="@string/preferences_storage_desc"
-            android:title="@string/preferences_storage_title" />
-    </PreferenceScreen>
     <PreferenceScreen android:title="@string/preference_choose_map_title">
         <mg.mapviewer.util.DynamicListPreference
             android:key="@string/preference_choose_map_key1"

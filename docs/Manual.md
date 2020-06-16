@@ -28,7 +28,6 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Dashboard](./Features/MainTrackFeatures/Dashboard/dashboard.md) visualization of the most important information of the recording, the selected and the route track log.
 
 ### Further features
-- [storage location](./Features/FurtherFeatures/StorageLocation/storagelocation.md) selection  
 - [enlarge](./Features/FurtherFeatures/Enlarge/enlarge.md) temporary a view entry (dashboard, status line) on a tap event (becomes readable without glasses)
 - [toggle GPS](./Features/FurtherFeatures/GPS/gps.md) (without recording)
 - [center](./Features/FurtherFeatures/Center/center.md) automatically current GPS position
