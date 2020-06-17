@@ -16,9 +16,12 @@ Such a reference is a file e.g. "test.ref" with the content
 
 <img src="./map_ref.png" width="400" />
 
-It has also to be placed in the directory "./MGMapViewer/maps/mapsforge/". The referenced location must 
+It has to be placed also in the directory "./MGMapViewer/maps/mapsforge/". The referenced location must 
 be readable for the app and this might require permission for external storage (if not yet granted anyhow)." 
 
-Remark: Mapsforge maps require installation of corresponding [themes](../MapsforgeThemes/mapsforgethemes.md).
+Remark 1: Mapsforge maps require installation of corresponding [themes](../MapsforgeThemes/mapsforgethemes.md).
 
-Remark: Unfortunately the external storage is in Android devices formatted in a way that it does NOT support symlinks , which would be easier.
+Remark 2: Unfortunately the external storage is in Android devices formatted in a way that it does NOT support symlinks , which would be easier.
+
+Remark 3: The references to other storage locations are deprecated in Android 10, and they will not longer work in Android 11 !!
+Since storage space is increasing over the last few years, this feature is only recommended only for older devices. 

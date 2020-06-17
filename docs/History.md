@@ -13,7 +13,7 @@ height measurement.
 (Un)fortunately they didn't and I was quite annoyed about this. Due to this I was searching the internet for good
 alternatives. Up to this point I had read a couple of times the term mapsforge, but I didn't really got an idea was it is about.
 To my surprise I recognized that mapsforge is a software library that contains everything that is necessary  to have an
-excellent mapviewer (like I was used from oruxmaps). In fact all the nice map viewer functionality in oruxmaps is inherited  
+excellent mapviewer (like I was used from oruxmaps). In fact all the nice map viewer functionality in oruxmaps is inherited 
 from mapsforge. 
 
 So although mapsforge is freely available on github there were a few none trivial problems for me:
