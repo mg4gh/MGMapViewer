@@ -139,7 +139,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         MGMapLayerFactory.setContext(getApplicationContext());
         MGMapLayerFactory.setActivity(this);
         MGMapLayerFactory.mapLayers.clear();
-        Settings.initMapLayers(getApplicationContext());
+        Settings.initMapLayers(getApplicationContext(), this);
 
         setContentView(R.layout.mapviewer);
 

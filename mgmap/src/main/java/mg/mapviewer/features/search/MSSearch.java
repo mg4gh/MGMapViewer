@@ -70,6 +70,7 @@ public class MSSearch extends MGMicroService {
         mainView.addView(searchView);
 
         EditText searchText = searchView.searchText;
+        searchText.setSelectAllOnFocus(true);
         searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView tv, int actionId, KeyEvent event) {
@@ -91,7 +92,6 @@ public class MSSearch extends MGMicroService {
         });
 
         setSearchProvider(new Nominatim());
-//        setSearchProvider(new Pelias());
     }
 
     @Override

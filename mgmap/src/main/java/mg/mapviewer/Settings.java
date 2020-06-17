@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
@@ -53,8 +54,9 @@ public class Settings extends PreferenceActivity implements
         OnSharedPreferenceChangeListener {
 
     private static ArrayList<String> mapLayerKeys = new ArrayList<>();
+    private static MGMapActivity mgMapActivity = null;
 
-    public static void initMapLayers(Context context){
+    public static void initMapLayers(Context context, MGMapActivity activity){
         mapLayerKeys.clear();
         int[] prefIds = new int[]{
                 R.string.preference_choose_map_key1,
@@ -66,6 +68,7 @@ public class Settings extends PreferenceActivity implements
         for (int id : prefIds){
             mapLayerKeys.add( context.getResources().getString( id ));
         }
+        mgMapActivity = activity;
     }
     public static ArrayList<String> getMapLayerKeys() {
         return mapLayerKeys;
@@ -155,11 +158,12 @@ public class Settings extends PreferenceActivity implements
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Application app = getApplication();
-                if (app instanceof MGMapApplication) {
-                    MGMapApplication mgMapApplication = (MGMapApplication) app;
-                    MSGDrive msGDrive = mgMapApplication.getMS(MSGDrive.class);
+                if (mgMapActivity != null){
+                    MSGDrive msGDrive = mgMapActivity.getMS(MSGDrive.class);
                     msGDrive.trySynchronisation();
+
+                    Intent intent = new Intent(mgMapActivity, MGMapActivity.class);
+                    mgMapActivity.startActivity(intent);
                 }
                 return true;
             }

@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -32,8 +33,8 @@ import mg.mapviewer.util.PersistenceManager;
 public class Pelias extends SearchProvider {
 
 
-    private static String URL_ORS = "https://api.openrouteservice.org/geocode/";
-    private static String API_KEY = "";
+    private static final String URL_ORS = "https://api.openrouteservice.org/geocode/";
+    private String apiKey = "";
 
     private SearchRequest searchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
@@ -41,19 +42,8 @@ public class Pelias extends SearchProvider {
     @Override
     protected void init(MSSearch msSearch, SearchView searchView, SharedPreferences preferences) {
         super.init(msSearch, searchView, preferences);
-        try {
-            InputStream is = PersistenceManager.getInstance().openSearchConfigInput(this.getClass().getSimpleName()+".cfg");
-            String line;
-            String ak = "API_KEY=";
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            while ((line = in.readLine()) != null){
-                if (line.startsWith(ak)){
-                    API_KEY=line.replaceAll("API_KEY=", "");
-                }
-            }
-        } catch (IOException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-        }
+        Properties props = PersistenceManager.getInstance().getConfigProperties("search",this.getClass().getSimpleName()+".cfg");
+        apiKey = props.getProperty("API_KEY");
     }
 
     @Override
@@ -80,13 +70,12 @@ public class Pelias extends SearchProvider {
                     String sUrl;
                     if (request.text.equals("")){
                         sUrl = String.format(Locale.ENGLISH, "%sreverse?api_key=%s&point.lon=%.6f&point.lat=%.6f",
-                                URL_ORS, API_KEY, pm.getLon(), pm.getLat());
+                                URL_ORS, apiKey, pm.getLon(), pm.getLat());
                     } else {
                         sUrl = String.format(Locale.ENGLISH, "%sautocomplete?api_key=%s&text=%s&focus.point.lon=%.6f&focus.point.lat=%.6f&boundary.circle.lon=%.6f&boundary.circle.lat=%.6f&boundary.circle.radius=%d",
-                                URL_ORS, API_KEY, request.text, pm.getLon(), pm.getLat(), pm.getLon(), pm.getLat(), radius);
+                                URL_ORS, apiKey, request.text, pm.getLon(), pm.getLat(), pm.getLon(), pm.getLat(), radius);
                     }
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
-
                     URL url = new URL(sUrl);
                     URLConnection conn = url.openConnection();
                     InputStream is = conn.getInputStream();

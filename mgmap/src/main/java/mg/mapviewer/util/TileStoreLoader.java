@@ -101,7 +101,7 @@ public class TileStoreLoader {
     }
 
 
-    ArrayList<TileStoreLoadJob> jobs = new ArrayList<>();
+    ArrayList<BgJob> jobs = new ArrayList<>();
 
     public void loadFromBB(BBox bBox){
         long now = System.currentTimeMillis();

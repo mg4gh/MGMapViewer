@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -309,5 +310,27 @@ public class PersistenceManager {
         });
     }
 
+    public Properties getConfigProperties(String group, String name){
+        Properties props = new Properties();
+        try {
+            File configDir = getConfigDir();
+            if (group != null){
+                configDir = new File(configDir, group);
+                if (!configDir.exists()){
+                    Log.w(MGMapApplication.LABEL, NameUtil.context() +" configDir not found: "+configDir.getAbsolutePath());
+                }
+            }
+            File configFile = new File(configDir, name );
+            if (configFile.exists()){
+                props.load( new FileInputStream(configFile) );
+            } else {
+                Log.w(MGMapApplication.LABEL, NameUtil.context() +" configFile not found: "+configFile.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        }
+        return props;
+
+    }
 
 }

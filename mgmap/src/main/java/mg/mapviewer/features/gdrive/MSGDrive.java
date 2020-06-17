@@ -36,9 +36,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -46,45 +48,19 @@ import java.util.TreeSet;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
+import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.util.Zipper;
 
 public class MSGDrive extends MGMicroService {
 
-
-    public MSGDrive(MGMapActivity mmActivity) {
-        super(mmActivity);
-    }
-
-    @Override
-    protected void start() {
-
-    }
-
-
-
-    @Override
-    @SuppressWarnings("EmptyCatchBlock")
-    protected void stop() {
-    }
-
-    @Override
-    protected void onUpdate(Observable o, Object arg) {
-
-    }
-
-    @Override
-    protected void doRefresh() {
-    }
-
-
-
-
+    /** Directory to store authorization tokens for this application. */
+    private static final String GDRIVE_CONFIG = "gdrive.cfg";
+    private static final String GDRIVE_CONFIG_TOP_DIR_KEY = "GDRIVE_TOP_DIR";
+    private static final String GDRIVE_CONFIG_ZIP_PW_KEY = "ZIP_PW";
     /** Directory to store authorization tokens for this application. */
     private static final String DATA_STORE_SUB_DIR = "tokens";
-    /** Directory to store authorization tokens for this application. */
-    private static final String APP_NAME = "MGMapViewer";
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
     /** Global instance of the JSON factory. */
@@ -96,6 +72,26 @@ public class MSGDrive extends MGMicroService {
      */
     private static final List<String> SCOPES = Arrays.asList( DriveScopes.DRIVE);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+
+
+
+    public MSGDrive(MGMapActivity mmActivity) {
+        super(mmActivity);
+    }
+
+    @Override
+    protected void start() { }
+
+    @Override
+    @SuppressWarnings("EmptyCatchBlock")
+    protected void stop() { }
+
+    @Override
+    protected void onUpdate(Observable o, Object arg) { }
+
+    @Override
+    protected void doRefresh() { }
+
 
     public void trySynchronisation() {
         new Thread(){
@@ -109,21 +105,21 @@ public class MSGDrive extends MGMicroService {
     public void trySynchronisationAsync(){
 
         try {
+            Properties props = PersistenceManager.getInstance().getConfigProperties(null,GDRIVE_CONFIG);
+
             HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
             DATA_STORE_FACTORY = new FileDataStoreFactory(new File(PersistenceManager.getInstance().getConfigDir(),DATA_STORE_SUB_DIR));
 
             Credential credential = authorize();
 
             Drive dservice = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-                    .setApplicationName(APP_NAME)
+                    .setApplicationName(MGMapApplication.LABEL)
                     .build();
 
-            //TODO: make Top Folder configurable to separate test and real live data
-            String idMgmFolder = GDriveUtil.getOrCreateTopFolder(dservice, APP_NAME);
+            String idMgmFolder = GDriveUtil.getOrCreateTopFolder(dservice, props.getProperty(GDRIVE_CONFIG_TOP_DIR_KEY,MGMapApplication.LABEL) );
             File gpxFolder = PersistenceManager.getInstance().getTrackGpxDir();
 
-            //TODO: make zip password configurable
-            Zipper zip = new Zipper("geheimXgeheim");
+            Zipper zip = new Zipper(props.getProperty(GDRIVE_CONFIG_ZIP_PW_KEY,"geheimXgeheim!"));
 
             Set<String> localSet = new TreeSet<String>();
             for (String filename : gpxFolder.list()){
@@ -149,33 +145,28 @@ public class MSGDrive extends MGMicroService {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" commonSet: "+commonSet);
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" localSet: "+localSet);
 
+            ArrayList<BgJob> jobs = new ArrayList<>();
+
             for (String name : localSet){
-                File gpxFile = new File(gpxFolder, name);
-                File zipFile = zip.pack(gpxFile.getAbsolutePath());
-                if (zipFile.exists()){
-                    System.out.println("Upload: "+zipFile.getAbsolutePath());
-                    GDriveUtil.createFile(dservice,idMgmFolder, zipFile);
-                    zipFile.delete();
-                }
+                jobs.add( new UploadJob(dservice,zip,idMgmFolder,gpxFolder,name) );
             }
+            int numUploadJobs = jobs.size();
 
             for (String name : remoteMap.keySet()){
                 if (!commonSet.contains(name)){
-                    System.out.println("Download: "+name);
-                    File zipFile = new File(gpxFolder, name+".zip");
-                    GDriveUtil.downloadFile(dservice, remoteMap.get(name), zipFile);
-                    zip.unpack(zipFile.getAbsolutePath(), gpxFolder.getAbsolutePath());
-                    zipFile.delete();
+                    jobs.add( new DownloadJob(dservice,zip,remoteMap.get(name),gpxFolder,name) );
                 }
             }
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" GDrive Sync Overview: uploadJob="+numUploadJobs+" downloadJob="+(jobs.size()-numUploadJobs));
+            // ok, now do the real work!!!
+            getApplication().addBgJobs( jobs );
 
         } catch (Throwable t) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), t);
             return;
         }
-
-
     }
+
 
     /**
      * Creates an authorized Credential object.

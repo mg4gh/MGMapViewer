@@ -3,28 +3,15 @@ package mg.mapviewer.features.search.provider;
 import android.database.Cursor;
 import android.util.Log;
 
-import org.mapsforge.map.layer.Layer;
 import org.sqlite.database.sqlite.SQLiteDatabase;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeSet;
-import java.util.logging.Level;
-
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonValue;
 
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMapLayerFactory;
 import mg.mapviewer.Settings;
 import mg.mapviewer.features.search.SearchProvider;
 import mg.mapviewer.features.search.SearchRequest;
@@ -34,7 +21,6 @@ import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
-import mg.mapviewer.util.PointModelUtil;
 
 public class POI extends SearchProvider {
 
@@ -52,8 +38,8 @@ public class POI extends SearchProvider {
 
 
 
-    private SearchRequest searchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
-    private ArrayList<SearchResult> searchResults = new ArrayList<>();
+    private SearchRequest lastSearchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
+    private ArrayList<SearchResult> lastSearchResults = new ArrayList<>();
 
     @Override
     public void doSearch(SearchRequest request) {
@@ -61,9 +47,9 @@ public class POI extends SearchProvider {
         if (request.actionId < 0) return;
 //        if (request.text.length() < 3) return;
 
-        if (request.text.equals(searchRequest.text) ){
-            if (request.pos.equals(searchRequest.pos)){
-                publishResult(request, searchResults);
+        if (request.text.equals(lastSearchRequest.text) ){
+            if (request.pos.equals(lastSearchRequest.pos)){
+                publishResult(request, lastSearchResults);
                 return;
             }
         }
@@ -104,10 +90,8 @@ public class POI extends SearchProvider {
                     TreeSet<SearchResult> resList = new TreeSet<>();
                     HashMap<String, String> subMap = new HashMap<>();
 
-//                    File poiFile = new File (mapsforgeDir, "bw.poi");
                     db = SQLiteDatabase.openDatabase(poiFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
 
-//                    String select = "SELECT * FROM poi_data INNER JOIN poi_index ON poi_data.id=poi_index.id ";
                     String select = "SELECT poi_data.id,poi_data.data,poi_index.id,poi_index.minLat,poi_index.maxLat,poi_index.minLon,poi_index.maxLon FROM poi_data INNER JOIN poi_index ON poi_data.id=poi_index.id  ";
                     String posMatch = String.format(Locale.ENGLISH, " ( (minLat>%.6f) AND (minLon>%.6f) AND (maxLat<%.6f) AND (maxLon<%.6f) )",
                             bBox.minLatitude,bBox.minLongitude,bBox.maxLatitude,bBox.maxLongitude);
@@ -219,9 +203,9 @@ public class POI extends SearchProvider {
 
 
     private void publishResult(SearchRequest request, ArrayList<SearchResult> results){
-        if (request.timestamp > searchRequest.timestamp){
-            searchRequest = request;
-            searchResults = results;
+        if (request.timestamp > lastSearchRequest.timestamp){
+            lastSearchRequest = request;
+            lastSearchResults = results;
             searchView.setResList(results);
         }
     }

@@ -34,6 +34,7 @@ import mg.mapviewer.util.ExtrasUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
@@ -363,13 +364,21 @@ public class MGMapApplication extends Application {
     public float pressure = 0;
 
 
-    public synchronized void addBgJobs(ArrayList<? extends BgJob> jobs){
-        bgJobs.addAll(jobs);
-        Intent intent = new Intent(this, BgJobService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.startForegroundService(intent);
-        } else {
-            this.startService(intent);
+    public synchronized void addBgJobs(List<BgJob> jobs){
+        if (jobs == null) return;
+        if (!bgJobs.isEmpty()){
+            bgJobs.addAll(jobs);
+        } else { // bgJobs is empty
+            if (jobs.size() > 0){ // and if there are new jobs
+                bgJobs.addAll(jobs);
+
+                Intent intent = new Intent(this, BgJobService.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    this.startForegroundService(intent);
+                } else {
+                    this.startService(intent);
+                }
+            }
         }
     }
     public synchronized BgJob getBgJob(){
