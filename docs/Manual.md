@@ -35,8 +35,10 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Height profile](./Features/FurtherFeatures/HeightProfile/hprof.md): Show the height profile form the recording track, the selected track or the current route 
 - [Remaining distance](./Features/FurtherFeatures/Remaining/remaining.md): show distance along the selected track 
 - [Air distance](./Features/FurtherFeatures/AirDistance/airdistance.md): show the air distance between current position and the center position of the map
+- [Geocode](./Features/FurtherFeatures/Geocode/geocode.md): Search location by name and search entity by location
 - [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status line
 - [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md): show some state information in the status line
+- [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account 
 
 ### Developer features
 - [Way details](./Features/DeveloperFeatures/WayDetails/waydetails.md) shows the ways of a tile 
@@ -49,4 +51,8 @@ Each feature contains a link to the corresponding detailed feature description.
 # About  
 [Here](./History.md) you can find some information, how this app was originated.
 
+
+Remark: Since the geocoding feature was added later, most feature
+documentation doesn't contain the quick control to start geocoding
+search.
 
