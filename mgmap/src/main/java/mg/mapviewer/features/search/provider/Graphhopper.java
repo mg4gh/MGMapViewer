@@ -71,10 +71,10 @@ public class Graphhopper extends SearchProvider {
 
                     String sUrl;
                     if (request.text.equals("")){
-                        sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&reverse=true",
+                        sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&limit=5&reverse=true",
                                 URL_ORS, apiKey, pm.getLat(), pm.getLon());
                     } else {
-                        sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&q=%s",
+                        sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&limit=5&q=%s",
                                 URL_ORS, apiKey, pm.getLat(), pm.getLon(), request.text);
                     }
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);

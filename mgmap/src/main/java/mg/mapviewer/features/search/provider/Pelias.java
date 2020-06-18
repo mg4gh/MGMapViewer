@@ -49,7 +49,7 @@ public class Pelias extends SearchProvider {
     @Override
     public void doSearch(SearchRequest request) {
 
-        if (request.actionId < 0) return;
+        if ((request.actionId < 0) && (request.text.length() <=5)) return;
 
         if (request.text.equals(searchRequest.text) ){
             if (request.pos.equals(searchRequest.pos)){
@@ -69,10 +69,10 @@ public class Pelias extends SearchProvider {
 
                     String sUrl;
                     if (request.text.equals("")){
-                        sUrl = String.format(Locale.ENGLISH, "%sreverse?api_key=%s&point.lon=%.6f&point.lat=%.6f",
+                        sUrl = String.format(Locale.ENGLISH, "%sreverse?api_key=%s&size=5&point.lon=%.6f&point.lat=%.6f",
                                 URL_ORS, apiKey, pm.getLon(), pm.getLat());
                     } else {
-                        sUrl = String.format(Locale.ENGLISH, "%sautocomplete?api_key=%s&text=%s&focus.point.lon=%.6f&focus.point.lat=%.6f&boundary.circle.lon=%.6f&boundary.circle.lat=%.6f&boundary.circle.radius=%d",
+                        sUrl = String.format(Locale.ENGLISH, "%sautocomplete?api_key=%s&text=%s&size=5&focus.point.lon=%.6f&focus.point.lat=%.6f&boundary.circle.lon=%.6f&boundary.circle.lat=%.6f&boundary.circle.radius=%d",
                                 URL_ORS, apiKey, request.text, pm.getLon(), pm.getLat(), pm.getLon(), pm.getLat(), radius);
                     }
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
