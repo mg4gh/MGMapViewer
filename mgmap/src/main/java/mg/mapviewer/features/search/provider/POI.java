@@ -45,7 +45,6 @@ public class POI extends SearchProvider {
     public void doSearch(SearchRequest request) {
 
         if (request.actionId < 0) return;
-//        if (request.text.length() < 3) return;
 
         if (request.text.equals(lastSearchRequest.text) ){
             if (request.pos.equals(lastSearchRequest.pos)){
