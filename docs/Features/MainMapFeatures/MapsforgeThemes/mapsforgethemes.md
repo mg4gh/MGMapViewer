@@ -7,9 +7,9 @@ Unzip these theme and place it into the ./MGMapViewer/themes/ directory.
 
 Now you can select the installed theme via the menu:
 
-<img src="./themes1.png" width="270" />&nbsp;
-<img src="./themes2.png" width="270" />&nbsp;
-<img src="./themes3.png" width="270" /><br/>
+<img src="./themes1.png" width="290" />&nbsp;
+<img src="./themes2.png" width="290" />&nbsp;
+<img src="./themes3.png" width="290" /><br/>
 
 After installation you can select the language for the themes:
 
