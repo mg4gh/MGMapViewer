@@ -12,9 +12,8 @@ the license of these maps!
 
 
 ## User documentation
-The documentation consists of some markdown pages:
-- [Manual](./docs/Manual.md): contains detailed description of all features including additional information for developer 
-- [Getting Started](./docs/GettingStarted/GettingStarted.md): Installation and first Usage of MGMapViewer
+You will find the documentation on [GitHub Pages](https://mg4gh.github.io/MGMapViewer/) or directly on [GitHub](./docs/index.md).
+
 
 
 
