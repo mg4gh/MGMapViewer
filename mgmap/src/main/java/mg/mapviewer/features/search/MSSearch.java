@@ -63,6 +63,7 @@ public class MSSearch extends MGMicroService {
             @Override
             public boolean onEditorAction(TextView tv, int actionId, KeyEvent event) {
                 doSearch(tv.getText().toString().trim(), actionId);
+                checkFullscreen();
                 return true;
             }
         });
@@ -194,6 +195,7 @@ public class MSSearch extends MGMicroService {
         View focus = getActivity().getCurrentFocus();
         if((inputMethodManager != null) && (focus != null)){
             inputMethodManager.hideSoftInputFromWindow(focus.getWindowToken(), 0);
+            checkFullscreen();
         }
     }
 
@@ -203,5 +205,9 @@ public class MSSearch extends MGMicroService {
         if((inputMethodManager != null) && (focus != null)){
             inputMethodManager.showSoftInput(focus, 0);
         }
+    }
+
+    private void checkFullscreen(){
+        getApplication().fullscreen.changed();
     }
 }
