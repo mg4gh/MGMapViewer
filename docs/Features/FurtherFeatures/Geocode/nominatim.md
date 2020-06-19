@@ -5,7 +5,7 @@ is no API_KEY required. So the configuration file "Nominatim.cfg" can be an empt
 
 #### Forward search
 
-The implementation for the Nominatim search engine defines a square of 1km around the current
+The implementation for the Nominatim search engine defines a square of 10km around the current
 center position of the map. Starting with zoom level 11, this size doubles with each lower
 zoom level. The number of result is limited to 5.
 

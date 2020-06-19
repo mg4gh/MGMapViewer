@@ -12,7 +12,7 @@ It is basically an SQLite database search.
 
 #### Forward search
 
-The implementation for the POI search engine defines a square of 1km around the current
+The implementation for the POI search engine defines a square of 10km around the current
 center position of the map. Starting with zoom level 11, this size doubles with each lower
 zoom level. 
 
