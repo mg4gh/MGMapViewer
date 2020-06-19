@@ -26,9 +26,9 @@ When you trigger the synchronisation for the first time you have to allow this a
 For this process a browser opens automatically and you have to confirm that this app is allowed to access your Google Drive account.
 If you feel uncomfortable with this, no problem, just don't use this feature. Everything else works without limitations.
 
-<img src="./account1.png" width="300" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="./account2.png" width="300" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="./account3.png" width="300" />&nbsp;
+<img src="./account1.png" width="250" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="./account2.png" width="250" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="./account3.png" width="250" />&nbsp;
 
 When you got the third screen just go back to the MGMapViewer app. This procedure is only necessary, when you synchronize the first time.
 

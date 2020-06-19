@@ -7,9 +7,9 @@ Unzip these theme and place it into the ./MGMapViewer/themes/ directory.
 
 Now you can select the installed theme via the menu:
 
-<img src="./themes1.png" width="265" />&nbsp;
-<img src="./themes2.png" width="265" />&nbsp;
-<img src="./themes3.png" width="265" />
+<img src="./themes1.png" width="270" />&nbsp;
+<img src="./themes2.png" width="270" />&nbsp;
+<img src="./themes3.png" width="270" />
 
 After installation you can select the language for the themes:
 
@@ -32,10 +32,14 @@ The following images illustrates these four modes:
 To switch the mode use <span style="color:gray">*Menu | Themes*</span>
 and then click on the current mode (e.g. Mountainbike) and then you get a popup menu to select one of the four modes.
 
-<img src="./sel1.png" width="290" />&nbsp;<img src="./sel2.png" width="290" />&nbsp;<img src="./sel3.png" width="290" /><br/>
+<img src="./sel1.png" width="270" />&nbsp;
+<img src="./sel2.png" width="270" />&nbsp;
+<img src="./sel3.png" width="270" />
 
 Within one of these modes you still can adopt this mode according to your needs, e.g. in the mode "City" you can switch on the public transport
 (check public transport network)
 
-<img src="./city1.png" width="290" />&nbsp;<img src="./city2.png" width="290" />&nbsp;<img src="./city3.png" width="290" />
+<img src="./city1.png" width="270" />&nbsp;
+<img src="./city2.png" width="270" />&nbsp;
+<img src="./city3.png" width="270" />
 

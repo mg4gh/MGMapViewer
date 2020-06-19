@@ -23,10 +23,13 @@ Now use the <span style="color:gray">*Menu | BoundingBox | Load*</span>.
 <img src="./LoadBox2.png" width="400" />&nbsp;
 
 As the result all tracks passing through the marked bounding box will be loaded to the set of available tracks.
-In the example there are two tracks loaded. Tap on one track to make it the selected track. Tap on the other
-track to make it the selected track instead. 
+In the example there are two tracks loaded. 
 
 <img src="./LoadedBox2.png" width="400" />&nbsp;
+
+Tap on one track to make it the selected track. Tap on the other
+track to make it the selected track instead. 
+
 <img src="./LoadedBox3.png" width="400" />&nbsp;
 <img src="./LoadedBox4.png" width="400" />&nbsp;
  

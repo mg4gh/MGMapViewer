@@ -48,7 +48,7 @@ Alternatively it disappears after a second tap on the background. Remember this 
 <img src="./Menu_Settings.png" width="200" />&nbsp;
 <img src="./settings_select_map_layers.png" width="200" />&nbsp;
 <img src="./select_map_layers_2.png" width="200" />&nbsp;
-<img src="./selectMap2.png" width="200" />&nbsp;
+<img src="./selectMap2.png" width="200" />
 
 8. Additionally you have to provide a theme, which you also get via [openandromaps](https://www.openandromaps.org/). 
    Download e.g. [elevate theme](https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip), unzip it <br/> and 
