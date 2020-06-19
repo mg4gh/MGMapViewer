@@ -7,7 +7,7 @@ This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) lib
 
 
 ## License 
-This software is licensed under [LGPLv3](./LICENSE). This app and its author do not provide any maps. Please check carefully that you use only use maps and map sources in accordance with
+This software is licensed under [LGPLv3](./LICENSE). This app and its author do not provide any maps. Please check carefully that you use only maps and map sources in accordance with
 the license of these maps!
 
 
