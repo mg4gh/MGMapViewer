@@ -61,7 +61,6 @@ public class Graphhopper extends SearchProvider {
         }
 
         PointModel pm = request.pos;
-        int radius = 50 << Math.max(0,  10 - request.zoom);
 
         new Thread(){
             @Override
@@ -136,16 +135,6 @@ public class Graphhopper extends SearchProvider {
 
             }
         }.start();
-    }
-
-    String getAttribute(JsonObject jo, String key){
-        try {
-            if (jo.containsKey(key))
-                return jo.getJsonObject(key).toString();
-        } catch (Exception e){
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-        }
-        return null;
     }
 
 

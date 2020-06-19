@@ -86,13 +86,6 @@ public class MSGDrive extends MGMicroService {
     @SuppressWarnings("EmptyCatchBlock")
     protected void stop() { }
 
-    @Override
-    protected void onUpdate(Observable o, Object arg) { }
-
-    @Override
-    protected void doRefresh() { }
-
-
     public void trySynchronisation() {
         new Thread(){
             @Override
@@ -102,7 +95,7 @@ public class MSGDrive extends MGMicroService {
         }.start();
     }
 
-    public void trySynchronisationAsync(){
+    private void trySynchronisationAsync(){
 
         try {
             Properties props = PersistenceManager.getInstance().getConfigProperties(null,GDRIVE_CONFIG);
@@ -174,7 +167,7 @@ public class MSGDrive extends MGMicroService {
      * @return an authorized Credential object.
      * @throws IOException
      */
-    public Credential authorize() throws IOException {
+    private Credential authorize() throws IOException {
         // Load client secrets.
         InputStream in = MSGDrive.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         if (in == null) {

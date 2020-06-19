@@ -29,36 +29,24 @@ import android.widget.TextView;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 
-import java.util.ArrayList;
-
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
-import mg.mapviewer.features.atl.MSAvailableTrackLogs;
-import mg.mapviewer.features.bb.BoxViewBB;
-import mg.mapviewer.features.bb.HideBBControl;
-import mg.mapviewer.features.bb.LoadBBControl;
-import mg.mapviewer.features.bb.LoadTSFromBBControl;
-import mg.mapviewer.features.bb.NewBBControl;
-import mg.mapviewer.features.bb.PointViewBB;
 import mg.mapviewer.features.search.provider.Nominatim;
-import mg.mapviewer.features.search.provider.Pelias;
-import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.WriteablePointModel;
-import mg.mapviewer.model.WriteablePointModelImpl;
-import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.view.MVLayer;
 
 public class MSSearch extends MGMicroService {
 
     private SearchView searchView;
     private SearchProvider searchProvider = null;
+    private MSSControlLayer msscl = null; // feature control layer to manage feature specific events
 
+    private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
 
 
     public MSSearch(MGMapActivity mmActivity) {
@@ -109,11 +97,10 @@ public class MSSearch extends MGMicroService {
     protected void doRefresh() {
         boolean visibility = getApplication().searchOn.getValue();
         changeVisibility(visibility);
-//        searchView.changeVisibility(visibility);
         getControlView().setDashboardVisibility(!visibility);
     }
 
-    public void changeVisibility(boolean targetVisibility){
+    private void changeVisibility(boolean targetVisibility){
         if (targetVisibility){
             if (searchView.getVisibility() == View.INVISIBLE){
                 try {
@@ -143,8 +130,6 @@ public class MSSearch extends MGMicroService {
     }
 
 
-    private WriteablePointModel p1 = null;
-
     public class MSSControlLayer extends MVLayer {
 
         @Override
@@ -163,10 +148,8 @@ public class MSSearch extends MGMicroService {
         }
     }
 
-    private MSSControlLayer msscl = null;
 
-    long tHideKeyboard = 10000;
-    Runnable ttHideKeyboard = new Runnable() {
+    private Runnable ttHideKeyboard = new Runnable() {
         @Override
         public void run() {
             hideKeyboard();
@@ -174,15 +157,15 @@ public class MSSearch extends MGMicroService {
     };
     private void triggerTTHideKeyboard(){
         getTimer().removeCallbacks(ttHideKeyboard);
-        getTimer().postDelayed(ttHideKeyboard,tHideKeyboard);
+        getTimer().postDelayed(ttHideKeyboard, T_HIDE_KEYBOARD);
     }
 
-    public void setSearchProvider(SearchProvider searchProvider){
+    private void setSearchProvider(SearchProvider searchProvider){
         this.searchProvider = searchProvider;
         searchProvider.init(this, searchView, getSharedPreferences());
     }
 
-    public void doSearch(String text, int actionId){
+    private void doSearch(String text, int actionId){
         long timestamp = System.currentTimeMillis();
         triggerTTHideKeyboard();
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" text="+text+" actionId="+actionId+" timestamp="+timestamp);
@@ -196,40 +179,28 @@ public class MSSearch extends MGMicroService {
                 || actionId == EditorInfo.IME_ACTION_SEARCH ) {
 
             hideKeyboard();
-//            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//            imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-
         }
     }
 
-    public void showSearchPos(PointModel pos){
+    void showSearchPos(PointModel pos){
         unregisterAll();
-
         register(new PointViewSearch(pos).setRadius(10));
         register(new PointViewSearch(pos).setRadius(1));
     }
 
-    public void toggleKeyboard(){
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
-
-    }
-
-    /* Hide Keyboard */
-    public void hideKeyboard(){
+    private void hideKeyboard(){
         InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         View focus = getActivity().getCurrentFocus();
-        if(focus != null){
+        if((inputMethodManager != null) && (focus != null)){
             inputMethodManager.hideSoftInputFromWindow(focus.getWindowToken(), 0);
-//            inputMethodManager.hideSoftInputFromWindow(focus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 
-    public void showKeyboard(){
+    private void showKeyboard(){
         InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         View focus = getActivity().getCurrentFocus();
-        if(focus != null){
+        if((inputMethodManager != null) && (focus != null)){
             inputMethodManager.showSoftInput(focus, 0);
         }
     }
