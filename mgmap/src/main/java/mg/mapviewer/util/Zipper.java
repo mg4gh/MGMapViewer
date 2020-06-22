@@ -25,10 +25,14 @@ public class Zipper
         ZipParameters zipParameters = new ZipParameters();
         zipParameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
         zipParameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA);
-        zipParameters.setEncryptFiles(true);
-        zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-        zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-        zipParameters.setPassword(password);
+        if ((password == null) ||(password.equals(""))){
+            zipParameters.setEncryptFiles(false);
+        } else {
+            zipParameters.setEncryptFiles(true);
+            zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
+            zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
+            zipParameters.setPassword(password);
+        }
         String baseFileName = filePath.replaceFirst(".*/", "").replaceFirst("\\.\\w*", "");
 //        String baseFileName = FilenameUtils.getBaseName(filePath);
         String destinationZipFilePath = filePath + "." + EXTENSION;
