@@ -16,8 +16,11 @@ package mg.mapviewer.util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,8 +32,11 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -77,8 +83,6 @@ public class PersistenceManager {
     private File fRaw;
     private FileOutputStream fosRaw = null;
 
-    private String hgtName = "";
-    private byte[] hgtBuf = null;
 
     synchronized private static void init(Context context){
         if (baseDir == null){
@@ -252,29 +256,98 @@ public class PersistenceManager {
         });
     }
 
-    public byte[] getHgtBuf(int iLat, int iLon){
-        try {
-            String file = String.format(Locale.GERMANY, "N%02dE%03d",iLat,iLon);
-            if (! file.equals(hgtName)) {
-                hgtName = file;
-                ZipFile zipFile = new ZipFile(new File(hgtDir, file+".SRTMGL1.hgt.zip"));
-                ZipEntry zipEntry = zipFile.getEntry(file+".hgt");
-                InputStream zis = zipFile.getInputStream(zipEntry);
-                int todo = zis.available();
-                hgtBuf = new byte[todo];
-                int done = 0;
-                while (todo > 0) {
-                    int step = zis.read(hgtBuf, done, todo);
-                    todo -= step;
-                    done += step;
+
+    TreeSet<HgtBuf> hgtBufs = new TreeSet<>();
+    long hgtBufTimeout = 10000; // cleanup hgtBufs, if they are not accessed for that time (since buffers are rather large)
+    Handler timer = new Handler();
+    Runnable ttCheckHgts = new Runnable() {
+        @Override
+        public void run() {
+            long now = System.currentTimeMillis();
+            for (HgtBuf hgtBuf : new TreeSet<>(hgtBufs)){
+                if ( (now - hgtBuf.lastAccess) > hgtBufTimeout ){ // drop, if last access is > 10s
+                    hgtBufs.remove(hgtBuf);
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" drop "+hgtBuf.name+" remaining hgtBufs.size="+hgtBufs.size());
                 }
-                zipFile.close();
             }
-        } catch (IOException e){
-            // if no file for this region is available, this exception can occur
-            hgtBuf = null;
         }
-        return hgtBuf;
+    };
+
+    public byte[] getHgtBuf(int iLat, int iLon){
+        byte[] buf = null;
+        String file = String.format(Locale.GERMANY, "N%02dE%03d",iLat,iLon);
+        HgtBuf hgtBuf = getHgtBuf(file);
+
+        if (hgtBuf != null) { // ok, exists already
+            buf = hgtBuf.buf;
+            hgtBufs.remove(hgtBuf);
+            hgtBuf.accessNow();
+        } else {
+            if (hgtBufs.size() >= 4){ // if cache contains already 4 bufs, remove last one
+                hgtBufs.pollLast();
+            }
+
+            hgtBuf = new HgtBuf(file);
+            File hgtFile = new File(hgtDir, file+".SRTMGL1.hgt.zip");
+            if (hgtFile.exists()){
+                try {
+                    ZipFile zipFile = new ZipFile(hgtFile);
+                    ZipEntry zipEntry = zipFile.getEntry(file+".hgt");
+                    InputStream zis = zipFile.getInputStream(zipEntry);
+                    int todo = zis.available();
+                    hgtBuf.buf = new byte[todo];
+                    int done = 0;
+                    while (todo > 0) {
+                        int step = zis.read(hgtBuf.buf, done, todo);
+                        todo -= step;
+                        done += step;
+                    }
+                    zipFile.close();
+                } catch (IOException e) { // should not happen
+                    e.printStackTrace();
+                    hgtBuf.buf = null; // but if so, prevent accessing inconsistent data
+                }
+            }
+        }
+        hgtBufs.add(hgtBuf);
+        return buf;
+    }
+
+    private HgtBuf getHgtBuf(String name){
+        for (HgtBuf hgtBuf : hgtBufs){
+            if (hgtBuf.getName().equals(name)){
+                return hgtBuf;
+            }
+        }
+        return null;
+    }
+
+    private class HgtBuf implements Comparable<HgtBuf>{
+        String name;
+        byte[] buf = null;
+        long lastAccess;
+
+        private HgtBuf(String name){
+            this.name = name;
+            accessNow();
+        }
+        private void accessNow(){
+            lastAccess = System.currentTimeMillis();
+            timer.removeCallbacks(ttCheckHgts);
+            timer.postDelayed(ttCheckHgts, hgtBufTimeout);
+        }
+        private String getName(){
+            return name;
+        }
+
+        @Override
+        public int compareTo(HgtBuf o) {
+            int res = Long.compare(lastAccess,o.lastAccess);
+            if (res == 0){
+                res = name.compareTo(o.name);
+            }
+            return res;
+        }
     }
 
 
