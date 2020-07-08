@@ -29,6 +29,7 @@ import java.util.Observable;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
+import mg.mapviewer.MGMapLayerFactory;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.model.MultiPointModel;

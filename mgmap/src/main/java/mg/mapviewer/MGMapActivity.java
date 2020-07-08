@@ -244,8 +244,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.lastPositionsObservable.changed();
         application.markerTrackLogObservable.changed();
 
-
-//        toggleFullscreen();
         super.onPause();
     }
 

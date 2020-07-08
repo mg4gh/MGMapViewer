@@ -57,6 +57,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import mg.mapviewer.util.MBTileStore;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.util.XmlTileSource;
@@ -188,7 +189,7 @@ public class MGMapLayerFactory {
                     layer = tileRendererLayer;
                     break;
                 case MAPSTORES:
-                    TileStore tileStore = new TileStore(entryFile, ".png", AndroidGraphicFactory.INSTANCE);
+                    TileStore tileStore = MBTileStore.getTileStore(entryFile);
                     InMemoryTileCache memoryTileCache = new InMemoryTileCache(AndroidUtil.getMinimumCacheSize(context,
                             mapView.getModel().displayModel.getTileSize(),
                             mapView.getModel().frameBufferModel.getOverdrawFactor(), 1.0f));
@@ -198,7 +199,7 @@ public class MGMapLayerFactory {
 
                     TileStoreLayer tileStoreLayer = new TileStoreLayer(tileCache,
                             mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE, true);
-                    tileStoreLayer.setAlpha(0f);
+                    tileStoreLayer.setAlpha((tileStore instanceof MBTileStore)?1f:0.2f);
                     tileStoreLayer.setParentTilesRendering(Parameters.ParentTilesRendering.OFF);
                     layer = tileStoreLayer;
                     break;
