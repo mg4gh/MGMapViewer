@@ -33,7 +33,6 @@ import mg.mapviewer.R;
 import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.graph.AStar;
-import mg.mapviewer.graph.Dijkstra;
 import mg.mapviewer.graph.GGraph;
 import mg.mapviewer.graph.GGraphMulti;
 import mg.mapviewer.graph.GGraphTile;
@@ -42,6 +41,7 @@ import mg.mapviewer.graph.GNode;
 import mg.mapviewer.graph.GNodeRef;
 import mg.mapviewer.graph.ApproachModel;
 import mg.mapviewer.model.BBox;
+import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.MultiPointModelImpl;
@@ -76,6 +76,7 @@ public class MSRouting extends MGMicroService {
     private MultiMultiPointView routingLineView = null;
     private ArrayList<PointView> relaxedViews = new ArrayList<>();
 
+    private boolean routeRemainings = true;
 
     public MSRouting(MGMapActivity mmActivity, MSMarker msMarker) {
         super(mmActivity);
@@ -212,7 +213,41 @@ public class MSRouting extends MGMicroService {
         routingLineView = new MultiMultiPointView(routingMPMs, PAINT_ROUTE_STROKE);
         routingLineView.setPointRadius(0); // dont show intemediate Points, since they overlap mostly with Marker points
         register(routingLineView);
+
+        routeStatistic = calcRouteStatistic();
         getControlView().showHideUpdateDashboard(routeStatistic.getTotalLength() > 0, R.id.route, routeStatistic);
+    }
+
+    private TrackLogStatistic calcRouteStatistic(){
+        TrackLogStatistic routeStatistic = new TrackLogStatistic(-1);
+        TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1, PointModelUtil.getCloseThreshold());
+        if (routeRemainings && getApplication().gpsOn.getValue()){
+            PointModel lastPos = getApplication().lastPositionsObservable.lastGpsPoint;
+            if (lastPos != null){
+                PointModelUtil.getBestDistance(routingLineModel,lastPos, bestMatch);
+                if (bestMatch.getApproachPoint() != null){
+                    routeStatistic.segmentIdx = -2;
+                    routeStatistic.updateWithPoint(bestMatch.getApproachPoint());
+                }
+            }
+        }
+        PointModel lastPM = null;
+        for (int mpmIdx=0; mpmIdx < routingLineModel.size(); mpmIdx++){
+            if (mpmIdx >= bestMatch.getSegmentIdx()){
+                MultiPointModel mpm = routingLineModel.get(mpmIdx);
+                for (int pmIdx=0; pmIdx<mpm.size(); pmIdx++){
+                    if ((mpmIdx > bestMatch.getSegmentIdx()) || (pmIdx > bestMatch.getEndPointIndex())){
+                        PointModel pm = mpm.get(pmIdx);
+                        if ((pmIdx == 0) && (lastPM != null) && (PointModelUtil.distance(lastPM, pm) > 1.0)){
+                            routeStatistic.resetSegment(); // don't calculate statistic over the end of an segment, if there is a distance
+                        }
+                        routeStatistic.updateWithPoint(pm);
+                        lastPM = pm;
+                    }
+                }
+            }
+        }
+        return routeStatistic;
     }
 
 

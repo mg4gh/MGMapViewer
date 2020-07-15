@@ -26,6 +26,10 @@ public class TrackLogRefApproach extends TrackLogRef {
     public TrackLogRefApproach(TrackLog trackLog, int segmentIdx) {
         super(trackLog, segmentIdx);
     }
+    public TrackLogRefApproach(TrackLog trackLog, int segmentIdx, double distance) {
+        super(trackLog, segmentIdx);
+        this.distance = distance;
+    }
 
     public PointModel getApproachPoint() {
         return approachPoint;

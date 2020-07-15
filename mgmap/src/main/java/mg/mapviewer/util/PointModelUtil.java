@@ -16,9 +16,14 @@ package mg.mapviewer.util;
 
 import org.mapsforge.core.util.LatLongUtils;
 
+import java.util.ArrayList;
+
 import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.PointModel;
+import mg.mapviewer.model.TrackLogPoint;
+import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.WriteablePointModel;
+import mg.mapviewer.model.WriteablePointModelImpl;
 
 /** Utilities for PointModel.
  * Especially
@@ -150,4 +155,42 @@ public class PointModelUtil {
      * ellipsoid</a>. WGS84 is the reference coordinate system used by the Global Positioning System.
      */
     public static final double EQUATORIAL_RADIUS = 6378137.0;
+
+
+    public static void getBestDistance(ArrayList<? extends MultiPointModel> mpms, PointModel pm, TrackLogRefApproach bestMatch){
+        WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();
+        WriteablePointModel pmApproach = new WriteablePointModelImpl();//new TrackLogPoint();
+        for (int segmentIdx = 0; segmentIdx< mpms.size(); segmentIdx++){
+            MultiPointModel segment = mpms.get(segmentIdx);
+            for (int i = 1, j = 0; i < segment.size(); j = i++) {
+                if (PointModelUtil.findApproach(pm, segment.get(i), segment.get(j), pmApproachCandidate)){
+                    double distance = PointModelUtil.distance( pm, pmApproachCandidate);
+                    if (distance < bestMatch.getDistance()){
+                        bestMatch.setSegmentIdx( segmentIdx );
+                        if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
+                        pmApproach.setLat(pmApproachCandidate.getLat());
+                        pmApproach.setLon(pmApproachCandidate.getLon());
+                        bestMatch.setDistance( distance );
+                        bestMatch.setEndPointIndex(i);
+                    }
+                }
+            }
+        }
+    }
+
+    public static  void getBestPoint(ArrayList<? extends MultiPointModel> mpms, PointModel pm, TrackLogRefApproach bestMatch){
+        for (int segmentIdx = 0; segmentIdx< mpms.size(); segmentIdx++){
+            MultiPointModel segment = mpms.get(segmentIdx);
+            for (int i = 0; i < segment.size(); i++) {
+                double distance = PointModelUtil.distance(pm,segment.get(i));
+                if (distance < bestMatch.getDistance()){
+                    bestMatch.setSegmentIdx( segmentIdx );
+                    bestMatch.setApproachPoint(segment.get(i));
+                    bestMatch.setDistance( distance );
+                    bestMatch.setEndPointIndex(i);
+                }
+            }
+        }
+    }
+
 }
