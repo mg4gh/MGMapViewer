@@ -325,7 +325,10 @@ public class ControlView extends RelativeLayout {
 
         if(condition && (statistic != null)){
             TextView t0 = (TextView) dashboardEntry.getChildAt(0);
-            t0.setText((statistic.getSegmentIdx()==-1)?"All":String.format(Locale.ENGLISH, "I=%d", statistic.getSegmentIdx()));
+            String sIdx = "I="+statistic.getSegmentIdx();
+            if (statistic.getSegmentIdx() == -1) sIdx = "All";
+            if (statistic.getSegmentIdx() == -2) sIdx = "R";
+            t0.setText(sIdx);
             TextView t1 = (TextView) dashboardEntry.getChildAt(1);
             t1.setText(String.format(Locale.ENGLISH, "%.2fkm", statistic.getTotalLength()/1000));
             TextView t2 = (TextView) dashboardEntry.getChildAt(2);

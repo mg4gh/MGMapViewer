@@ -14,8 +14,6 @@
  */
 package mg.mapviewer.model;
 
-import android.util.SparseIntArray;
-
 import androidx.annotation.NonNull;
 
 
@@ -100,27 +98,29 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
 
 
     public TrackLogRefApproach getBestDistance(PointModel pm, double maxDistance){
-        TrackLogRefApproach bestMatch = new TrackLogRefApproach(this, -1);
-        bestMatch.setDistance(maxDistance);
+        TrackLogRefApproach bestMatch = new TrackLogRefApproach(this, -1, maxDistance);
+        PointModelUtil.getBestDistance(trackLogSegments,pm,bestMatch);
 
-        WriteablePointModel pmApproachCandidate = new TrackLogPoint();
-        WriteablePointModel pmApproach = new TrackLogPoint();
-        for (int segmentIdx = 0; segmentIdx< getNumberOfSegments(); segmentIdx++){
-            TrackLogSegment segment = getTrackLogSegment(segmentIdx);
-            for (int i = 1, j = 0; i < segment.size(); j = i++) {
-                if (PointModelUtil.findApproach(pm, segment.get(i), segment.get(j), pmApproachCandidate)){
-                    double distance = PointModelUtil.distance( pm, pmApproachCandidate);
-                    if (distance < bestMatch.getDistance()){
-                        bestMatch.setSegmentIdx( segmentIdx );
-                        if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
-                        pmApproach.setLat(pmApproachCandidate.getLat());
-                        pmApproach.setLon(pmApproachCandidate.getLon());
-                        bestMatch.setDistance( distance );
-                        bestMatch.setEndPointIndex(i);
-                    }
-                }
-            }
-        }
+//        bestMatch.setDistance(maxDistance);
+//
+//        WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();
+//        WriteablePointModel pmApproach = new WriteablePointModelImpl();//new TrackLogPoint();
+//        for (int segmentIdx = 0; segmentIdx< getNumberOfSegments(); segmentIdx++){
+//            TrackLogSegment segment = getTrackLogSegment(segmentIdx);
+//            for (int i = 1, j = 0; i < segment.size(); j = i++) {
+//                if (PointModelUtil.findApproach(pm, segment.get(i), segment.get(j), pmApproachCandidate)){
+//                    double distance = PointModelUtil.distance( pm, pmApproachCandidate);
+//                    if (distance < bestMatch.getDistance()){
+//                        bestMatch.setSegmentIdx( segmentIdx );
+//                        if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
+//                        pmApproach.setLat(pmApproachCandidate.getLat());
+//                        pmApproach.setLon(pmApproachCandidate.getLon());
+//                        bestMatch.setDistance( distance );
+//                        bestMatch.setEndPointIndex(i);
+//                    }
+//                }
+//            }
+//        }
         return (bestMatch.getApproachPoint()==null)?null:bestMatch;
 
     }
@@ -130,20 +130,22 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     }
 
     public TrackLogRefApproach getBestPoint(PointModel pm, double threshold){
-        TrackLogRefApproach bestMatch = new TrackLogRefApproach(this, -1);
-        bestMatch.setDistance( threshold );
-        for (int segmentIdx = 0; segmentIdx< getNumberOfSegments(); segmentIdx++){
-            TrackLogSegment segment = getTrackLogSegment(segmentIdx);
-            for (int i = 0; i < segment.size(); i++) {
-                double distance = PointModelUtil.distance(pm,segment.get(i));
-                if (distance < bestMatch.getDistance()){
-                    bestMatch.setSegmentIdx( segmentIdx );
-                    bestMatch.setApproachPoint(segment.get(i));
-                    bestMatch.setDistance( distance );
-                    bestMatch.setEndPointIndex(i);
-                }
-            }
-        }
+        TrackLogRefApproach bestMatch = new TrackLogRefApproach(this, -1, threshold);
+        PointModelUtil.getBestPoint(trackLogSegments,pm,bestMatch);
+
+//        bestMatch.setDistance( threshold );
+//        for (int segmentIdx = 0; segmentIdx< getNumberOfSegments(); segmentIdx++){
+//            TrackLogSegment segment = getTrackLogSegment(segmentIdx);
+//            for (int i = 0; i < segment.size(); i++) {
+//                double distance = PointModelUtil.distance(pm,segment.get(i));
+//                if (distance < bestMatch.getDistance()){
+//                    bestMatch.setSegmentIdx( segmentIdx );
+//                    bestMatch.setApproachPoint(segment.get(i));
+//                    bestMatch.setDistance( distance );
+//                    bestMatch.setEndPointIndex(i);
+//                }
+//            }
+//        }
         return (bestMatch.getApproachPoint()==null)?null:bestMatch;
     }
 

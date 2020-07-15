@@ -30,7 +30,7 @@ public class TrackLogStatistic {
     private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
     private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
 
-    int segmentIdx; // -1 means all segments
+    public int segmentIdx; // -1 means all segments
     long tStart;
     long duration;
 
@@ -167,8 +167,10 @@ public class TrackLogStatistic {
             if (lastPoint4Distance != null) {
                 totalLength += PointModelUtil.distance(lastPoint4Distance, point);
             }
+            lastPoint4Distance = point;
+        } else {
+            resetSegment();
         }
-        lastPoint4Distance = point;
     }
 
     synchronized public void updateWithStatistics(TrackLogStatistic statistic){
