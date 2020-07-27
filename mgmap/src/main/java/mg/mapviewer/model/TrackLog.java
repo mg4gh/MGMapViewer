@@ -64,17 +64,8 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
 
     public TrackLogSegment getTrackLogSegment(int idx) {
         TrackLogSegment segment = trackLogSegments.get(idx);
-
-        // this realize a kind of lazy loading of lalo values for available track logs
-//        if (!segment.isAvailable()) {
-//            MetaData.readLaLosOfSegment(this, segment);
-//            segment.setAvailable(true);
-//        }
         return segment;
-
     }
-
-
 
     @Override
     public int compareTo(@NonNull TrackLog trackLog) {
@@ -100,27 +91,6 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     public TrackLogRefApproach getBestDistance(PointModel pm, double maxDistance){
         TrackLogRefApproach bestMatch = new TrackLogRefApproach(this, -1, maxDistance);
         PointModelUtil.getBestDistance(trackLogSegments,pm,bestMatch);
-
-//        bestMatch.setDistance(maxDistance);
-//
-//        WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();
-//        WriteablePointModel pmApproach = new WriteablePointModelImpl();//new TrackLogPoint();
-//        for (int segmentIdx = 0; segmentIdx< getNumberOfSegments(); segmentIdx++){
-//            TrackLogSegment segment = getTrackLogSegment(segmentIdx);
-//            for (int i = 1, j = 0; i < segment.size(); j = i++) {
-//                if (PointModelUtil.findApproach(pm, segment.get(i), segment.get(j), pmApproachCandidate)){
-//                    double distance = PointModelUtil.distance( pm, pmApproachCandidate);
-//                    if (distance < bestMatch.getDistance()){
-//                        bestMatch.setSegmentIdx( segmentIdx );
-//                        if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
-//                        pmApproach.setLat(pmApproachCandidate.getLat());
-//                        pmApproach.setLon(pmApproachCandidate.getLon());
-//                        bestMatch.setDistance( distance );
-//                        bestMatch.setEndPointIndex(i);
-//                    }
-//                }
-//            }
-//        }
         return (bestMatch.getApproachPoint()==null)?null:bestMatch;
 
     }
@@ -132,20 +102,6 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     public TrackLogRefApproach getBestPoint(PointModel pm, double threshold){
         TrackLogRefApproach bestMatch = new TrackLogRefApproach(this, -1, threshold);
         PointModelUtil.getBestPoint(trackLogSegments,pm,bestMatch);
-
-//        bestMatch.setDistance( threshold );
-//        for (int segmentIdx = 0; segmentIdx< getNumberOfSegments(); segmentIdx++){
-//            TrackLogSegment segment = getTrackLogSegment(segmentIdx);
-//            for (int i = 0; i < segment.size(); i++) {
-//                double distance = PointModelUtil.distance(pm,segment.get(i));
-//                if (distance < bestMatch.getDistance()){
-//                    bestMatch.setSegmentIdx( segmentIdx );
-//                    bestMatch.setApproachPoint(segment.get(i));
-//                    bestMatch.setDistance( distance );
-//                    bestMatch.setEndPointIndex(i);
-//                }
-//            }
-//        }
         return (bestMatch.getApproachPoint()==null)?null:bestMatch;
     }
 
@@ -181,32 +137,6 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
         remainingDistance += PointModelUtil.distance(p1,ref2.getApproachPoint());
         return remainingDistance;
     }
-
-
-//    private static void addSegmentHeightProfile(Double distance, SparseIntArray array, TrackLogSegment segment){
-//        if (segment.size() > 0){
-//            PointModel lastTlp = segment.get(0);
-//            for (PointModel pm : segment){
-//                distance += PointModelUtil.distance(pm, lastTlp);
-//                array.put( (int)(distance+0), (int)(pm.getEleA()*1000));
-//                lastTlp = pm;
-//            }
-//        }
-//    }
-//
-//    public SparseIntArray getHeightProfile(int idx){
-//        Double distance = 0d;
-//        SparseIntArray array = new SparseIntArray();
-//
-//        if (idx >= 0){
-//            addSegmentHeightProfile(distance,array,getTrackLogSegment(idx) );
-//        } else {
-//            for (int i = 0; i< getNumberOfSegments(); i++){
-//                addSegmentHeightProfile(distance,array,getTrackLogSegment(i) );
-//            }
-//        }
-//        return array;
-//    }
 
     public void changed(Object o){
         setChanged();

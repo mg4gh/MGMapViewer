@@ -86,7 +86,12 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.GERMAN, "Lat=%2.6f, Lon=%2.6f",getLat(), getLon());
+        if (ele == NO_ELE){
+            return String.format(Locale.GERMAN, "Lat=%2.6f, Lon=%2.6f",getLat(), getLon());
+        } else{
+            return String.format(Locale.GERMAN, "Lat=%2.6f, Lon=%2.6f, ELe=%2.1fm",getLat(), getLon(), ele);
+
+        }
     }
 
     public void toBuf(ByteBuffer buf){

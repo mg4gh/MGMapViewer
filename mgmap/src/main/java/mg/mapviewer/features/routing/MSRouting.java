@@ -15,6 +15,7 @@
 package mg.mapviewer.features.routing;
 
 
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import org.mapsforge.core.graphics.Paint;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.TreeSet;
 
 import mg.mapviewer.MGMapActivity;
@@ -70,15 +73,17 @@ public class MSRouting extends MGMicroService {
     private static final int ZOOM_LEVEL_RELAXED_VISIBILITY = 17;
 
 
-    private HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>();
+    HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
+    HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
     public ArrayList<MultiPointModel> routingLineModel = null;
+    public WriteableTrackLog routeTrackLog = null;
     private MultiMultiPointView routingLineView = null;
     private ArrayList<PointView> relaxedViews = new ArrayList<>();
 
     private boolean routeRemainings = true;
 
-    public MSRouting(MGMapActivity mmActivity, MSMarker msMarker) {
+    public MSRouting(MGMapActivity mmActivity) {
         super(mmActivity);
         ttRefreshTime = 150;
     }
@@ -120,6 +125,7 @@ public class MSRouting extends MGMicroService {
                 unregisterAll();
                 getControlView().showHideUpdateDashboard(false, R.id.route,null);
                 routingLineModel = null;
+                routeTrackLog = null;
             }
         });
     }
@@ -144,7 +150,7 @@ public class MSRouting extends MGMicroService {
 
 
     private void updateRouting(WriteableTrackLog mtl){
-        unregister(routingLineView);
+        unregisterAll(MultiPointView.class);
         if (mtl.getTrackStatistic().getNumPoints() == 0) return;
         MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
         if (mapFile == null){
@@ -180,21 +186,23 @@ public class MSRouting extends MGMicroService {
                 }
 
                 if (bRecalcRoute){
-                    current.newMPM = calcRouting(mapFile, prev, current, false, true);
+                    current.newMPM = calcRouting(mapFile, prev, current, false, true, current.routingHints);
                 }
-
             }
-
-
         }
 
         // do three things:
         // 1.) move newMPM to currentMPM information
         // 2.) recalc route statistic
         // 3.) setup routingMPMs
+        routePointMap2.clear();
+        routeTrackLog = new WriteableTrackLog();
+        routeTrackLog.startTrack(0);
+
         TrackLogStatistic routeStatistic = new TrackLogStatistic(-1);
         ArrayList<MultiPointModel> routingMPMs = new ArrayList<>();
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
+            routeTrackLog.startSegment(0);
             routeStatistic.updateWithPoint(null);
             for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
                 RoutePointModel rpm = routePointMap.get(segment.get(idx));
@@ -203,55 +211,44 @@ public class MSRouting extends MGMicroService {
                 if (rpm.newMPM != null){
                     for (PointModel pm : rpm.newMPM){
                         routeStatistic.updateWithPoint(pm);
+                        routeTrackLog.addPoint(pm);
+                        routePointMap2.put(pm,rpm);
                     }
                     routingMPMs.add(rpm.newMPM);
                 }
             }
+            routeTrackLog.stopSegment(0);
         }
+        routeTrackLog.stopTrack(0);
 
+        showTrack(routeTrackLog, PAINT_ROUTE_STROKE, false, 0);
         routingLineModel = routingMPMs;
-        routingLineView = new MultiMultiPointView(routingMPMs, PAINT_ROUTE_STROKE);
-        routingLineView.setPointRadius(0); // dont show intemediate Points, since they overlap mostly with Marker points
-        register(routingLineView);
-
-        routeStatistic = calcRouteStatistic();
-        getControlView().showHideUpdateDashboard(routeStatistic.getTotalLength() > 0, R.id.route, routeStatistic);
+        calcRemainingStatistic(routeTrackLog);
+        getControlView().showHideUpdateDashboard(true, R.id.route, routeTrackLog.getTrackStatistic());
     }
 
-    private TrackLogStatistic calcRouteStatistic(){
-        TrackLogStatistic routeStatistic = new TrackLogStatistic(-1);
-        TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1, PointModelUtil.getCloseThreshold());
+    private void calcRemainingStatistic(WriteableTrackLog routeTrackLog){
         if (routeRemainings && getApplication().gpsOn.getValue()){
             PointModel lastPos = getApplication().lastPositionsObservable.lastGpsPoint;
             if (lastPos != null){
-                PointModelUtil.getBestDistance(routingLineModel,lastPos, bestMatch);
-                if (bestMatch.getApproachPoint() != null){
-                    routeStatistic.segmentIdx = -2;
-                    routeStatistic.updateWithPoint(bestMatch.getApproachPoint());
+                TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(lastPos);
+                if ((bestMatch != null) && (bestMatch.getApproachPoint() != null)){
+                    routeTrackLog.recalcStatistic(bestMatch.getApproachPoint(), bestMatch.getSegmentIdx(), bestMatch.getEndPointIndex());
+                    routeTrackLog.getTrackStatistic().segmentIdx = -2; // indicates Remainings statistic
+
                 }
             }
         }
-        PointModel lastPM = null;
-        for (int mpmIdx=0; mpmIdx < routingLineModel.size(); mpmIdx++){
-            if (mpmIdx >= bestMatch.getSegmentIdx()){
-                MultiPointModel mpm = routingLineModel.get(mpmIdx);
-                for (int pmIdx=0; pmIdx<mpm.size(); pmIdx++){
-                    if ((mpmIdx > bestMatch.getSegmentIdx()) || (pmIdx > bestMatch.getEndPointIndex())){
-                        PointModel pm = mpm.get(pmIdx);
-                        if ((pmIdx == 0) && (lastPM != null) && (PointModelUtil.distance(lastPM, pm) > 1.0)){
-                            routeStatistic.resetSegment(); // don't calculate statistic over the end of an segment, if there is a distance
-                        }
-                        routeStatistic.updateWithPoint(pm);
-                        lastPM = pm;
-                    }
-                }
-            }
-        }
-        return routeStatistic;
+        routeTrackLog.getTrackStatistic().duration = getApplication().routingHints.getValue()?1000:0; // TODO find a better solution for feedback the state of routingHints
     }
 
 
-    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, boolean distanceCheck){
+
+    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, boolean distanceCheck) {
+        return calcRouting(mapFile,source,target,direct,distanceCheck,null);
+    }
+
+    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, boolean distanceCheck, Map<PointModel, RoutingHint> hints){
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
         Log.i(MGMapApplication.LABEL, NameUtil.context());
@@ -328,6 +325,45 @@ public class MSRouting extends MGMicroService {
                 mpm.addPoint(gEnd);
             } else {
                 mpm.addPoint(target.mtlp);
+            }
+        }
+
+        if (hints != null){
+            hints.clear();
+            for (int idx=1; idx < mpm.size()-1; idx++){
+                RoutingHint hint = new RoutingHint();
+                hint.pmPrev = mpm.get(idx-1);
+                hint.pmCurrent = mpm.get(idx);
+                hint.pmNext = mpm.get(idx+1);
+
+                hint.directionDegree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,hint.pmNext);
+
+                hint.nextLeftDegree = -1;
+                hint.nextRightDegree = 361;
+                if (hint.pmCurrent instanceof GNode) {
+                    GNode pmgCurrent = (GNode) hint.pmCurrent;
+                    GNeighbour neighbour = pmgCurrent.getNeighbour();
+
+                    while ((neighbour = multi.getNextNeighbour(pmgCurrent, neighbour)) != null) {
+                        hint.numberOfPathes++;
+                        if (neighbour.getNeighbourNode().equals(hint.pmPrev)) continue;
+                        if (neighbour.getNeighbourNode().equals(hint.pmNext)) continue;
+                        if ((idx == 1) && (multi.oppositeNode((GNode)hint.pmPrev,(GNode)hint.pmCurrent) == neighbour.getNeighbourNode())){
+                            hint.numberOfPathes--; // don't count, if add. neighbour is just related to approach overlays
+                            continue;
+                        }
+                        if ((idx == mpm.size()-2) && (multi.oppositeNode((GNode)hint.pmNext,(GNode)hint.pmCurrent) == neighbour.getNeighbourNode())){
+                            hint.numberOfPathes--; // don't count, if add. neighbour is just related to approach overlays
+                            continue;
+                        }
+
+                        double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getNeighbourNode());
+                        if ((hint.nextLeftDegree < degree) && (degree < hint.directionDegree)) hint.nextLeftDegree = degree;
+                        if ((hint.directionDegree < degree) && (degree < hint.nextRightDegree)) hint.nextRightDegree = degree;
+//                        System.out.println("PM:"+hint.pmCurrent+" HINT degree="+degree);
+                    }
+                }
+                hints.put(hint.pmCurrent, hint);
             }
         }
         Log.i(MGMapApplication.LABEL, NameUtil.context());

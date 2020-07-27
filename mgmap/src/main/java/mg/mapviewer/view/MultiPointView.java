@@ -31,6 +31,7 @@ import mg.mapviewer.model.PointModel;
  */
 public class MultiPointView extends MVLayer {
 
+    public static final int POINT_RADIUS = 4;
     private static final byte STROKE_MIN_ZOOM = 15;
 
     protected final GraphicFactory graphicFactory = AndroidGraphicFactory.INSTANCE;
@@ -38,7 +39,7 @@ public class MultiPointView extends MVLayer {
     protected Paint paintStroke;
     protected double strokeIncrease = 1.2;
     protected boolean showIntermediates = false;
-    protected int pointRadius = 4;
+    protected int pointRadius = POINT_RADIUS;
 
     protected volatile MultiPointModel model;
 

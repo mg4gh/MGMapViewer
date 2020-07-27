@@ -16,6 +16,7 @@ import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.reader.MapFile;
 
+import mg.mapviewer.features.routing.MSRoutingHint;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogRef;
@@ -140,9 +141,9 @@ public class MGMapApplication extends Application {
         }.execute();
 
         // initialize handling of new points from TrackLoggerService
-        new AsyncTask<Object, Object, Object>(){
+        new Thread(){
             @Override
-            protected Object doInBackground(Object... objects) {
+            public void run() {
                 Log.i(LABEL, NameUtil.context()+"doInBackground: handle TrackLogPoints started ");
                 while (true){
                     try {
@@ -155,9 +156,29 @@ public class MGMapApplication extends Application {
                         Log.e(LABEL, NameUtil.context()+" doInBackground: "+e.getMessage(),e);
                     }
                 }
-
             }
-        }.execute();
+        }.start();
+
+//        new AsyncTask<Object, Object, Object>(){
+//            @Override
+//            protected Object doInBackground(Object... objects) {
+//                Log.i(LABEL, NameUtil.context()+"doInBackground: handle TrackLogPoints started ");
+//                while (true){
+//                    try {
+//                        PointModel pointModel = logPoints2process.take();
+//                        if (recordingTrackLogObservable.getTrackLog() != null){
+//                            recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
+//                            Log.v(LABEL, NameUtil.context()+ " doInBackground: Processed TrackLogPoint: "+pointModel);
+//                        }
+//                    } catch (Exception e) {
+//                        Log.e(LABEL, NameUtil.context()+" doInBackground: "+e.getMessage(),e);
+//                    }
+//                }
+//
+//            }
+//        }
+//        .execute()
+//        ;
 
 //        ExtrasUtil.generate(new BoundingBox(49, 8, 50, 9.5));
 //        ExtrasUtil.downloadTest();
@@ -192,7 +213,7 @@ public class MGMapApplication extends Application {
 
     public class LastPositionsObservable extends Observable{
         public PointModel lastGpsPoint = null;
-        PointModel secondLastGpsPoint = null;
+        public PointModel secondLastGpsPoint = null;
 
         public void handlePoint(PointModel lp){
             secondLastGpsPoint = lastGpsPoint;
@@ -327,7 +348,25 @@ public class MGMapApplication extends Application {
     public BooleanObservable centerCurrentPosition = new BooleanObservable(true);
     public BooleanObservable wayDetails = new BooleanObservable(false);
     public BooleanObservable showAlphaSliders = new BooleanObservable(false);
-    public BooleanObservable editMarkerTrack = new BooleanObservable(false);
+    public BooleanObservable editMarkerTrack = new BooleanObservable(false){
+        @Override
+        public void toggle() {
+            super.toggle();
+            if (getValue()) routingHints.toggle(); //each toggleOn of editMarkerTrack triggers a toggle of routingHints TODO: separate quick control
+        }
+    };
+    public BooleanObservable routingHints = new BooleanObservable(false){
+        @Override
+        public void toggle() {
+            super.toggle();
+            MSRoutingHint msrh = getMS(MSRoutingHint.class);
+            if (getValue()){
+                msrh.startService();
+            } else {
+                msrh.stopService();
+            }
+        }
+    };
     public BooleanObservable showRouting = new BooleanObservable(true);
     public BooleanObservable stlWithGL = new BooleanObservable(true);
     public BooleanObservable fullscreen = new BooleanObservable(true);
@@ -352,7 +391,7 @@ public class MGMapApplication extends Application {
     public void addTrackLogPoint(final PointModel pointModel){
         if (pointModel != null){
             try {
-                Log.i(LABEL, NameUtil.context() +" tlp="+pointModel+" height="+ pointModel.getEleA());
+                Log.i(LABEL, NameUtil.context() +" tlp="+pointModel);
                 logPoints2process.add(pointModel);
                 lastPositionsObservable.handlePoint(pointModel);
             } catch (Exception e) {

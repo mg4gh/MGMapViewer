@@ -19,6 +19,7 @@ import android.view.View;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
+import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.util.Control;
 

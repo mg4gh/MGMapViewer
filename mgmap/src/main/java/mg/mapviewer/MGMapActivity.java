@@ -57,6 +57,7 @@ import mg.mapviewer.features.motion.MSMotion;
 import mg.mapviewer.features.position.MSPosition;
 import mg.mapviewer.features.remainings.MSRemainings;
 import mg.mapviewer.features.routing.MSRouting;
+import mg.mapviewer.features.routing.MSRoutingHint;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.search.SearchView;
@@ -171,7 +172,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         microServices.add(new MSRecordingTrackLog(this));
         microServices.add(new MSAvailableTrackLogs(this));
         microServices.add(new MSMarker(this));
-        microServices.add(new MSRouting(this, getMS(MSMarker.class)));
+        microServices.add(new MSRouting(this));
+        microServices.add(new MSRoutingHint(this));
         microServices.add(new MSRemainings(this));
         microServices.add(new MSBB(this, getMS(MSAvailableTrackLogs.class)));
         microServices.add(new MSGraphDetails(this));
