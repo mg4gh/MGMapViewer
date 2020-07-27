@@ -40,6 +40,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The application of the MgMapActivity.
@@ -51,29 +52,32 @@ public class MGMapApplication extends Application {
 
     // Label for Logging.
     public static final String LABEL = "MGMapViewer";
+    private Process pLogcat = null;
+
+    public void startLogging(){
+        try {
+            String cmd = "logcat "+ LABEL+":i  -f "+PersistenceManager.getInstance(this).getLogDir().getAbsolutePath()+"/log.txt -r 10000 -n10";
+            Log.i(LABEL, NameUtil.context()+" Start Logging: "+cmd);
+            pLogcat = Runtime.getRuntime().exec(cmd);
+        } catch (IOException e) {
+            Log.e(LABEL, NameUtil.context(),e);
+        }
+        Log.i(LABEL,NameUtil.context()+" Starting Logger finished.");
+
+        Log.v(MGMapApplication.LABEL, NameUtil.context());
+        Log.d(MGMapApplication.LABEL, NameUtil.context());
+        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
+        Log.e(MGMapApplication.LABEL, NameUtil.context());
+    }
 
     @Override
     public void onCreate() {
         System.out.println("MGMapViewer Application start!!!!");
         super.onCreate();
 
-        try {
-            String cmd = "logcat "+ LABEL+":i  -f "+PersistenceManager.getInstance(this).getLogDir().getAbsolutePath()+"/log.txt -r 10000 -n10";
-            Log.i(LABEL, NameUtil.context()+" Start Logging: "+cmd);
-            Runtime.getRuntime().exec(cmd);
-        } catch (IOException e) {
-            Log.e(LABEL, NameUtil.context(),e);
-        }
-        Log.i(LABEL,NameUtil.context()+" Starting Logger finished.");
-
-
+        startLogging();
         AndroidGraphicFactory.createInstance(this);
-        Log.v(MGMapApplication.LABEL, NameUtil.context());
-        Log.d(MGMapApplication.LABEL, NameUtil.context());
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
-        Log.e(MGMapApplication.LABEL, NameUtil.context());
-
         ExtrasUtil.checkCreateMeta();
 
         Log.i(LABEL, NameUtil.context()+" onCreate: Device scale factor "+ Float.toString(DisplayModel.getDeviceScaleFactor()));
@@ -144,44 +148,43 @@ public class MGMapApplication extends Application {
         new Thread(){
             @Override
             public void run() {
-                Log.i(LABEL, NameUtil.context()+"doInBackground: handle TrackLogPoints started ");
+                Log.i(LABEL, NameUtil.context()+"handle TrackLogPoints: started ");
                 while (true){
                     try {
                         PointModel pointModel = logPoints2process.take();
                         if (recordingTrackLogObservable.getTrackLog() != null){
                             recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
-                            Log.v(LABEL, NameUtil.context()+ " doInBackground: Processed TrackLogPoint: "+pointModel);
+                            Log.v(LABEL, NameUtil.context()+ "handle TrackLogPoints: Processed "+pointModel);
                         }
                     } catch (Exception e) {
-                        Log.e(LABEL, NameUtil.context()+" doInBackground: "+e.getMessage(),e);
+                        Log.e(LABEL, NameUtil.context()+"handle TrackLogPoints: "+e.getMessage(),e);
                     }
                 }
             }
         }.start();
 
-//        new AsyncTask<Object, Object, Object>(){
-//            @Override
-//            protected Object doInBackground(Object... objects) {
-//                Log.i(LABEL, NameUtil.context()+"doInBackground: handle TrackLogPoints started ");
-//                while (true){
-//                    try {
-//                        PointModel pointModel = logPoints2process.take();
-//                        if (recordingTrackLogObservable.getTrackLog() != null){
-//                            recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
-//                            Log.v(LABEL, NameUtil.context()+ " doInBackground: Processed TrackLogPoint: "+pointModel);
-//                        }
-//                    } catch (Exception e) {
-//                        Log.e(LABEL, NameUtil.context()+" doInBackground: "+e.getMessage(),e);
-//                    }
-//                }
-//
-//            }
-//        }
-//        .execute()
-//        ;
+        new Thread(){
+            @Override
+            public void run() {
+                Log.i(LABEL, NameUtil.context()+"logcat supervision: start ");
+                while (true){
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            pLogcat.waitFor(10, TimeUnit.SECONDS );
+                        } else {
+                            Thread.sleep(10000);
+                        }
 
-//        ExtrasUtil.generate(new BoundingBox(49, 8, 50, 9.5));
-//        ExtrasUtil.downloadTest();
+                        int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
+                        Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
+                        startLogging();
+                    } catch (Exception e) {
+                        Log.v(LABEL, NameUtil.context()+"logcat supervision: "+e.getMessage());
+                    }
+                }
+            }
+        }.start();
+
     }
 
     @Override
