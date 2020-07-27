@@ -45,19 +45,20 @@ import java.util.HashMap;
 
 public class GGraphTile extends GGraph {
 
-    private static final String TAG = NameUtil.getTag();
-
-
-    private static final int CACHE_SIZE = 200;
+    private static final int CACHE_SIZE = 400;
     private static HashMap<Long,GGraphTile> cache = new HashMap<>();
     private static ArrayList<GGraphTile>  accessList = new ArrayList<>();
 
     private static final byte ZOOM_LEVEL = 15;
     private static final int TILE_SIZE = 256;
 
-    private static GGraphTile getGGraphTile(MapDataStore mapFile, int tileX, int tileY){
+    private static long getKey(int tileX,int tileY){
         long key = tileX;
-        key = (key<<32) + tileY;
+        return (key<<32) + tileY;
+    }
+
+    private static GGraphTile getGGraphTile(MapDataStore mapFile, int tileX, int tileY){
+        long key = getKey(tileX,tileY);
 
         GGraphTile graph = cache.get(key);
         if (graph != null){
@@ -99,15 +100,16 @@ public class GGraphTile extends GGraph {
         }
 
         if (graph != null){
-            while (accessList.size() >= CACHE_SIZE) {
+            while (cache.size() >= CACHE_SIZE) {
                 GGraphTile old = accessList.remove(0);
-                cache.remove(old);
+                cache.remove(getKey(old.tile.tileX, old.tile.tileY));
                 old.setChanged();
                 old.notifyObservers();
+                Log.d(MGMapApplication.LABEL,NameUtil.context()+ " remove tile x="+old.tile.tileX+" y="+old.tile.tileY+" Cache Size:"+cache.size());
             }
             accessList.add(graph);
             cache.put(key,graph);
-            Log.d(TAG, "getGGraphTile: Cache Size:"+cache.size());
+            Log.d(MGMapApplication.LABEL,NameUtil.context()+ " Cache Size:"+cache.size()+" accessList Size:"+accessList.size());
         }
         return graph;
     }
@@ -218,9 +220,9 @@ public class GGraphTile extends GGraph {
      * @return
      */
     private GNode getAddNode(double latitude, double longitude, int low, int high){
-        if ((latitude == 49.453486) && (longitude == 8.656784)){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " low="+low+" high="+high);
-        }
+//        if ((latitude == 49.453486) && (longitude == 8.656784)){
+//            Log.i(MGMapApplication.LABEL, NameUtil.context() + " low="+low+" high="+high);
+//        }
         if (high - low == 1){
             float hgtAlt = AltitudeProvider.getAltitude(latitude, longitude);
             GNode node = new GNode(latitude, longitude, hgtAlt, 0);

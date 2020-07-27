@@ -14,6 +14,7 @@
  */
 package mg.mapviewer.features.routing;
 
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
@@ -32,6 +33,7 @@ import mg.mapviewer.model.PointModel;
  * */
 public class RoutePointModel implements Observer {
 
+    HashMap<PointModel, RoutingHint> routingHints = new HashMap<>();
     MultiPointModelImpl currentMPM = null;
     MultiPointModelImpl newMPM = null;
     PointModel mtlp;

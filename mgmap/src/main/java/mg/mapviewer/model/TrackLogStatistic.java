@@ -32,7 +32,7 @@ public class TrackLogStatistic {
 
     public int segmentIdx; // -1 means all segments
     long tStart;
-    long duration;
+    public long duration;
 
 
     double totalLength = 0;

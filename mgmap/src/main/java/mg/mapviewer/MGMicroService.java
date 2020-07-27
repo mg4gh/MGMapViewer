@@ -82,6 +82,10 @@ public class MGMicroService {
     protected void doRefresh(){}
 
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL){
+        showTrack(trackLog,paint,showGL,MultiPointView.POINT_RADIUS);
+    }
+
+    protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius){
         for (int idx = 0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
             MultiPointView layer = (showGL)?new MultiPointGLView(segment, paint):new MultiPointView(segment, paint);
@@ -137,6 +141,15 @@ public class MGMicroService {
             unregister(layer, false);
         }
         return layers2Bremoved.size();
+    }
+
+    protected <T>  void unregisterAll(Class<T> tClass){
+        for (Layer layer : msLayers){
+            if (tClass.isInstance(layer)){
+                getMapView().getLayerManager().getLayers().remove(layer);
+            }
+        }
+        msLayers.clear();
     }
 
     protected void unregisterAll(){

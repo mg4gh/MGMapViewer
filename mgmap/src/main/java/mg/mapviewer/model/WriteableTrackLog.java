@@ -49,6 +49,21 @@ public class WriteableTrackLog extends TrackLog {
         trackStatistic.updateWithPoint(lp);
     }
 
+    public void recalcStatistic(PointModel approachPoint, int idxSegmentStart, int idxPointStart) { // calculate remainings statistic from given approach point - continue with given segment and point index
+        for (int idxSegment = 0; idxSegment < getNumberOfSegments() ; idxSegment++){
+            if (idxSegment < idxSegmentStart) continue;
+            TrackLogSegment segment = getTrackLogSegment(idxSegment);
+            TrackLogStatistic segmentStatistic = segment.getStatistic();
+            segmentStatistic.reset();
+            if (idxSegment == idxSegmentStart) segmentStatistic.updateWithPoint(approachPoint);
+            for (int idxPoint=0; idxPoint < segment.size(); idxPoint++){
+                if ((idxSegment == idxSegmentStart) && (idxPoint<idxPointStart)) continue;
+                segmentStatistic.updateWithPoint(segment.get(idxPoint));
+            }
+        }
+        recalcTrackStatistic();
+    }
+
     public void recalcStatistic(){
         if (currentSegment == null){
             currentSegment = getTrackLogSegment(getNumberOfSegments()-1);

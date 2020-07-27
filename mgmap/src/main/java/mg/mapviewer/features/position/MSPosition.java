@@ -27,6 +27,7 @@ import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
+import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.CC;
 
@@ -49,10 +50,12 @@ public class MSPosition extends MGMicroService {
 
     @Override
     protected void stop() {
-        if (getApplication().recordingTrackLogObservable.getTrackLog() == null){
-            LatLong center = getMapView().getModel().mapViewPosition.getCenter();
-            PointModel pmCenter = new PointModelImpl(center);
-            getApplication().addTrackLogPoint(pmCenter);
+        TrackLog trackLog = getApplication().recordingTrackLogObservable.getTrackLog();
+        if (trackLog == null){
+//            LatLong center = getMapView().getModel().mapViewPosition.getCenter();
+//            PointModel pmCenter = new PointModelImpl(center);
+//            getApplication().addTrackLogPoint(pmCenter);
+
         }
         getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
     }

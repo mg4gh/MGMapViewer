@@ -258,14 +258,14 @@ public class PersistenceManager {
 
 
     TreeSet<HgtBuf> hgtBufs = new TreeSet<>();
-    long hgtBufTimeout = 10000; // cleanup hgtBufs, if they are not accessed for that time (since buffers are rather large)
+    long hgtBufTimeout = 30000; // cleanup hgtBufs, if they are not accessed for that time (since buffers are rather large)
     Handler timer = new Handler();
     Runnable ttCheckHgts = new Runnable() {
         @Override
         public void run() {
             long now = System.currentTimeMillis();
             for (HgtBuf hgtBuf : new TreeSet<>(hgtBufs)){
-                if ( (now - hgtBuf.lastAccess) > hgtBufTimeout ){ // drop, if last access is > 10s
+                if ( (now - hgtBuf.lastAccess) > hgtBufTimeout ){ // drop, if last access is over a given threshold
                     hgtBufs.remove(hgtBuf);
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" drop "+hgtBuf.name+" remaining hgtBufs.size="+hgtBufs.size());
                 }

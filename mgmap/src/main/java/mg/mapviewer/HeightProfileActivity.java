@@ -67,7 +67,7 @@ public class HeightProfileActivity extends Activity {
     public static boolean check4trackLogRef(MGMapApplication application){
         if (null != application.recordingTrackLogObservable.getTrackLog()) return true;
         if (null != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) return true;
-        if (null != application.getMS(MSRouting.class).routingLineModel) return true;
+        if (null != application.getMS(MSRouting.class).routeTrackLog) return true;
         return false;
     }
 
@@ -108,7 +108,8 @@ public class HeightProfileActivity extends Activity {
         TrackLog stl = application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
         if (stl != null)  createSeries(graph, getHeightProfile(stl), 0xFF0000FF);
 
-        ArrayList<MultiPointModel> rlm = application.getMS(MSRouting.class).routingLineModel;
+        TrackLog rlm = application.getMS(MSRouting.class).routeTrackLog;
+//        ArrayList<MultiPointModel> rlm = application.getMS(MSRouting.class).routingLineModel;
         if (rlm != null)  createSeries(graph, getHeightProfile(rlm), 0x96C800E6);
 
 //
