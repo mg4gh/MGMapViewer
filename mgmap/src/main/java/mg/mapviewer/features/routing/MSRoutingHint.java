@@ -18,6 +18,7 @@ import mg.mapviewer.util.PointModelUtil;
 public class MSRoutingHint extends MGMicroService {
 
     private static final int THRESHOLD_FAR = 200;
+    private static final int THRESHOLD_KURS = 100;
 
     private boolean running = false;
     private PointModel lastPos = null;
@@ -134,9 +135,8 @@ public class MSRoutingHint extends MGMicroService {
         for (int pmIdx=bestMatch.getEndPointIndex(); pmIdx<segment.size(); pmIdx++){
             PointModel pm = segment.get(pmIdx);
             double newDistance = PointModelUtil.distance(lastPm,pm);
-            if (routeDistance+newDistance > 100) { // some threshold
-                PointModel pmx = PointModelUtil.interpolate(lastPm,pm,100-routeDistance);
-
+            if (routeDistance+newDistance > THRESHOLD_KURS) { // some threshold
+                PointModel pmx = PointModelUtil.interpolate(lastPm,pm,THRESHOLD_KURS-routeDistance);
 
                 double kursDegree = PointModelUtil.calcDegree( msRouting.routeTrackLog.getTrackLogSegment(bestMatch.getSegmentIdx()).get(bestMatch.getEndPointIndex()-1), bestMatch.getApproachPoint() , pmx );
                 int kursClock = PointModelUtil.clock4degree( kursDegree );
@@ -151,8 +151,8 @@ public class MSRoutingHint extends MGMicroService {
             if (hint != null){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
                         +" l="+PointModelUtil.clock4degree(hint.nextLeftDegree)+" r="+PointModelUtil.clock4degree(hint.nextRightDegree));
-                if (hint.numberOfPathes > 2){
-                    int clock = PointModelUtil.clock4degree(hint.directionDegree);
+                int clock = PointModelUtil.clock4degree(hint.directionDegree);
+                if ((hint.numberOfPathes > 2) && (clock >= 0)){
                     boolean cond1 = ((hint.directionDegree < 150) || (hint.directionDegree > 210));
                     boolean cond2 = ((hint.nextLeftDegree > 0) && ((hint.directionDegree-hint.nextLeftDegree)<45));
                     boolean cond3 = ((hint.nextRightDegree < 360) && ((hint.nextRightDegree-hint.directionDegree)<45));

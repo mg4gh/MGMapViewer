@@ -138,28 +138,31 @@ public class HeightProfileActivity extends Activity {
     }
 
 
-    private void createSeries(GraphView graph, SparseIntArray array, int color){
-        if (array.size() < 2) return;
+    private void createSeries(GraphView graph, ArrayList<SparseIntArray> arrays, int color){
 
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
-        graph.addSeries(series);
-        series.setColor(color);
+        for (SparseIntArray array : arrays){
+            if (array.size() < 2) continue;
 
-        for (int i=0; i<array.size(); i++){
-            int distance = array.keyAt(i);
-            int height = array.valueAt(i);
+            LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
+            graph.addSeries(series);
+            series.setColor(color);
 
-            series.appendData(new DataPoint(distance,height),false,100000);
+            for (int i=0; i<array.size(); i++){
+                int distance = array.keyAt(i);
+                int height = array.valueAt(i);
+
+                series.appendData(new DataPoint(distance,height),false,100000);
+            }
+
+            graph.getViewport().setMinX(0);
+            double maxX = Math.max(graph.getViewport().getMaxX(true), array.keyAt(array.size()-1));
+            graph.getViewport().setMaxX(maxX);
         }
-
-        graph.getViewport().setMinX(0);
-        double maxX = Math.max(graph.getViewport().getMaxX(true), array.keyAt(array.size()-1));
-        graph.getViewport().setMaxX(maxX);
     }
 
 
 
-    private SparseIntArray getHeightProfile(TrackLog trackLog){
+    private ArrayList<SparseIntArray> getHeightProfile(TrackLog trackLog){
         TrackLogSegment tls = null;
         for (int idx=0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
@@ -189,13 +192,16 @@ public class HeightProfileActivity extends Activity {
         return null;
     }
 
-    private SparseIntArray getHeightProfile(ArrayList<MultiPointModel> mpms){
+    private ArrayList<SparseIntArray> getHeightProfile(ArrayList<MultiPointModel> mpms){
+        ArrayList<SparseIntArray> arrays = new ArrayList<>();
         double distance = 0d;
-        SparseIntArray array = new SparseIntArray();
+
         for (int i = 0; i< mpms.size(); i++){
+            SparseIntArray array = new SparseIntArray();
             distance = addSegmentHeightProfile(distance,array,mpms.get(i) );
+            arrays.add(array);
         }
-        return array;
+        return arrays;
     }
 
 

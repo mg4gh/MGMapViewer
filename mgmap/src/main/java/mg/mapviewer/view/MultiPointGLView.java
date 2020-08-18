@@ -39,10 +39,10 @@ public class MultiPointGLView extends MultiPointView {
         super(model, paintStroke);
     }
 
-    @Override
-    public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
-        drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
-    }
+//    @Override
+//    public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
+//        drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
+//    }
 
     protected void drawModel(MultiPointModel model, BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint){
         if ((model == null) ||(model.size() <= 0) || this.paintStroke == null) {

@@ -351,13 +351,7 @@ public class MGMapApplication extends Application {
     public BooleanObservable centerCurrentPosition = new BooleanObservable(true);
     public BooleanObservable wayDetails = new BooleanObservable(false);
     public BooleanObservable showAlphaSliders = new BooleanObservable(false);
-    public BooleanObservable editMarkerTrack = new BooleanObservable(false){
-        @Override
-        public void toggle() {
-            super.toggle();
-            if (getValue()) routingHints.toggle(); //each toggleOn of editMarkerTrack triggers a toggle of routingHints TODO: separate quick control
-        }
-    };
+    public BooleanObservable editMarkerTrack = new BooleanObservable(false);
     public BooleanObservable routingHints = new BooleanObservable(false){
         @Override
         public void toggle() {

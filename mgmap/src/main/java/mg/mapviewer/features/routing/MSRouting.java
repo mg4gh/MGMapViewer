@@ -78,7 +78,6 @@ public class MSRouting extends MGMicroService {
     private HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
     public ArrayList<MultiPointModel> routingLineModel = null;
     public WriteableTrackLog routeTrackLog = null;
-    private MultiMultiPointView routingLineView = null;
     private ArrayList<PointView> relaxedViews = new ArrayList<>();
 
     private boolean routeRemainings = true;
@@ -239,7 +238,6 @@ public class MSRouting extends MGMicroService {
                 }
             }
         }
-        routeTrackLog.getTrackStatistic().duration = getApplication().routingHints.getValue()?1000:0; // TODO find a better solution for feedback the state of routingHints
     }
 
 

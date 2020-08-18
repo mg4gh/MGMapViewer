@@ -565,19 +565,29 @@ public class ControlView extends RelativeLayout {
         ct3.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 application.editMarkerTrack.toggle();
             }
         });
-        application.editMarkerTrack.addObserver(new Observer() {
+        ct3.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                application.routingHints.toggle();
+                return true;
+            }
+        });
+        Observer ct3Observer = new Observer() {
             @Override
             public void update(Observable o, Object arg) {
                 Rect rect = ct3.getCompoundDrawables()[0].getBounds();
-                int id = application.editMarkerTrack.getValue()?R.drawable.mtlr2:R.drawable.mtlr;
+                int id = application.editMarkerTrack.getValue()?(application.routingHints.getValue()? R.drawable.mtlr4:R.drawable.mtlr2):(application.routingHints.getValue()? R.drawable.mtlr3:R.drawable.mtlr);
                 Drawable drawable = context.getResources().getDrawable(id, context.getTheme());
                 drawable.setBounds(rect.left,rect.top,rect.right,rect.bottom);
                 ct3.setCompoundDrawables(drawable,null,null,null);
             }
-        });
+        };
+        application.editMarkerTrack.addObserver(ct3Observer);
+        application.routingHints.addObserver(ct3Observer);
 
         final TextView ct3a = activity.findViewById(R.id.ct3a);
         ct3a.setOnClickListener(new OnClickListener() {

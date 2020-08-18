@@ -14,6 +14,8 @@
  */
 package mg.mapviewer.view;
 
+import android.util.Log;
+
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
@@ -24,8 +26,10 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import java.util.Iterator;
 
+import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.PointModel;
+import mg.mapviewer.util.NameUtil;
 
 /**
  */
@@ -72,7 +76,11 @@ public class MultiPointView extends MVLayer {
 
     @Override
     public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
-        drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
+        try {
+            drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+        }
     }
 
     protected void drawModel(MultiPointModel model, BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint){
@@ -87,40 +95,42 @@ public class MultiPointView extends MVLayer {
             return;
         }
 
-        Iterator<PointModel> iterator = model.iterator();
-        if (!iterator.hasNext()) {
-            return;
-        }
+        synchronized (model){
+            Iterator<PointModel> iterator = model.iterator();
+            if (!iterator.hasNext()) {
+                return;
+            }
 
-        Path path = this.graphicFactory.createPath();
+            Path path = this.graphicFactory.createPath();
 
-        PointModel pm = iterator.next();
-        int x = lon2x(pm.getLon());
-        int y = lat2y(pm.getLat());
-        path.moveTo(x, y);
-        canvas.drawCircle(x, y, pointRadius, this.paintStroke);
+            PointModel pm = iterator.next();
+            int x = lon2x(pm.getLon());
+            int y = lat2y(pm.getLat());
+            path.moveTo(x, y);
+            canvas.drawCircle(x, y, pointRadius, this.paintStroke);
 
-        while (iterator.hasNext()) {
-            pm = iterator.next();
-            x = lon2x(pm.getLon());
-            y = lat2y(pm.getLat());
-            path.lineTo(x, y);
-            if ( (! iterator.hasNext()) || showIntermediates ){
-                if (pointRadius > 0){
-                    canvas.drawCircle(x, y, pointRadius, this.paintStroke);
+            while (iterator.hasNext()) {
+                pm = iterator.next();
+                x = lon2x(pm.getLon());
+                y = lat2y(pm.getLat());
+                path.lineTo(x, y);
+                if ( (! iterator.hasNext()) || showIntermediates ){
+                    if (pointRadius > 0){
+                        canvas.drawCircle(x, y, pointRadius, this.paintStroke);
+                    }
                 }
             }
-        }
 
-        if (this.keepAligned) {
-            this.paintStroke.setBitmapShaderShift(topLeftPoint);
+            if (this.keepAligned) {
+                this.paintStroke.setBitmapShaderShift(topLeftPoint);
+            }
+            float strokeWidth = this.paintStroke.getStrokeWidth();
+            if (this.strokeIncrease > 1) {
+                this.paintStroke.setStrokeWidth(strokeWidth * getScale(zoomLevel));
+            }
+            canvas.drawPath(path, this.paintStroke);
+            this.paintStroke.setStrokeWidth(strokeWidth);
         }
-        float strokeWidth = this.paintStroke.getStrokeWidth();
-        if (this.strokeIncrease > 1) {
-            this.paintStroke.setStrokeWidth(strokeWidth * getScale(zoomLevel));
-        }
-        canvas.drawPath(path, this.paintStroke);
-        this.paintStroke.setStrokeWidth(strokeWidth);
     }
 
     /**
