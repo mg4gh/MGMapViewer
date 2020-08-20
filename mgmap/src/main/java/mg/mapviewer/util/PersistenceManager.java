@@ -73,6 +73,7 @@ public class PersistenceManager {
     private File trackMetaDir;
     private File trackGpxDir;
     private File mapsDir;
+    private File mapsMapsforgeDir;
 
     private File themesDir;
     private File hgtDir;
@@ -106,7 +107,7 @@ public class PersistenceManager {
         fRaw = new File(trackRecDir, "raw.dat");
 
         mapsDir = createIfNotExists(appDir, "maps");
-        createIfNotExists(mapsDir, "mapsforge");
+        mapsMapsforgeDir = createIfNotExists(mapsDir, "mapsforge");
         createIfNotExists(mapsDir, "mapstores");
         createIfNotExists(mapsDir, "maponline");
         createIfNotExists(mapsDir, "mapgrid");
@@ -122,6 +123,9 @@ public class PersistenceManager {
     }
     public File getMapsDir(){
         return mapsDir;
+    }
+    public File getMapsforgeDir(){
+        return mapsMapsforgeDir;
     }
     public File getConfigDir(){
         return configDir;
@@ -243,8 +247,8 @@ public class PersistenceManager {
         return names;
     }
 
-    public String getThemesDir(){
-        return themesDir.getAbsolutePath();
+    public File getThemesDir(){
+        return themesDir;
     }
     public String[] getThemeNames() {
         return themesDir.list(new FilenameFilter() {

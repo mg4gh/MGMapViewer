@@ -1,13 +1,24 @@
 package mg.mapviewer.util;
 
-import net.lingala.zip4j.core.ZipFile;
+import android.util.Log;
+
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.io.inputstream.ZipInputStream;
+import net.lingala.zip4j.model.LocalFileHeader;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.CompressionMethod;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-//import org.apache.commons.io.FilenameUtils;
+import mg.mapviewer.MGMapApplication;
 
 public class Zipper
 {
@@ -21,35 +32,71 @@ public class Zipper
 
     public File pack(String filePath) throws ZipException
     {
+        String destinationZipFilePath = filePath + "." + EXTENSION;
 
         ZipParameters zipParameters = new ZipParameters();
-        zipParameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-        zipParameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA);
+        zipParameters.setCompressionMethod(CompressionMethod.DEFLATE );
+        zipParameters.setCompressionLevel(CompressionLevel.ULTRA);
+        ZipFile zipFile;
         if ((password == null) ||(password.equals(""))){
             zipParameters.setEncryptFiles(false);
+            zipFile = new ZipFile(destinationZipFilePath);
         } else {
             zipParameters.setEncryptFiles(true);
-            zipParameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-            zipParameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-            zipParameters.setPassword(password);
+            zipParameters.setEncryptionMethod(EncryptionMethod.AES);
+            zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
+            zipFile = new ZipFile(destinationZipFilePath, password.toCharArray());
         }
-        String baseFileName = filePath.replaceFirst(".*/", "").replaceFirst("\\.\\w*", "");
-//        String baseFileName = FilenameUtils.getBaseName(filePath);
-        String destinationZipFilePath = filePath + "." + EXTENSION;
-        ZipFile zipFile = new ZipFile(destinationZipFilePath);
         zipFile.addFile(new File(filePath), zipParameters);
         return zipFile.getFile();
     }
 
-    public void unpack(String sourceZipFilePath, String extractedZipFilePath) throws ZipException
-    {
+    public void unpack(String sourceZipFilePath, String extractedZipFilePath) throws ZipException {
         ZipFile zipFile = new ZipFile(sourceZipFilePath);
 
         if (zipFile.isEncrypted())
         {
-            zipFile.setPassword(password);
+            zipFile.setPassword(password.toCharArray());
         }
-
         zipFile.extractAll(extractedZipFilePath);
+    }
+
+    public void unpack(InputStream inputStream, File extractedZipFilePath, FilenameFilter filter) throws Exception {
+        ZipInputStream zipInputStream = new ZipInputStream(inputStream, (password==null)?null:password.toCharArray());
+        LocalFileHeader localFileHeader;
+        int readLen;
+        byte[] readBuffer = new byte[4096];
+
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedZipFilePath="+extractedZipFilePath);
+        while ((localFileHeader = zipInputStream.getNextEntry()) != null) {
+
+
+            OutputStream outputStream = null;
+            try {
+                File extractedFile = new File(extractedZipFilePath, localFileHeader.getFileName());
+                if ((filter==null) || ( filter.accept( extractedFile.getParentFile(), extractedFile.getName() ))){
+
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile);
+                    if (localFileHeader.isDirectory()){
+                        boolean res = extractedFile.mkdirs();
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile+" dir created "+res);
+                    } else {
+                        outputStream = new FileOutputStream(extractedFile);
+                        while ((readLen = zipInputStream.read(readBuffer)) != -1) {
+                            outputStream.write(readBuffer, 0, readLen);
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                Log.e (MGMapApplication.LABEL, NameUtil.context(),e);
+            } finally {
+                try {
+                    if (outputStream != null){
+                        outputStream.close();
+                    }
+                } catch (Exception e){}
+            }
+        }
     }
 }

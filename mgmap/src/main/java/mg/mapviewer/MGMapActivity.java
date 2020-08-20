@@ -18,6 +18,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -69,20 +70,26 @@ import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.model.WriteableTrackLog;
+import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.GpxImporter;
 import mg.mapviewer.util.MapViewUtility;
 import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.util.OpenAndroMapsUtil;
 import mg.mapviewer.util.Permissions;
 import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.TopExceptionHandler;
 import mg.mapviewer.model.TrackLog;
+import mg.mapviewer.util.Zipper;
 import mg.mapviewer.view.MVLayer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -186,6 +193,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         coView.init(application, this);
 //        SearchView seView = findViewById(R.id.searchView);
 //        seView.init(application, this);
+        onNewIntent(getIntent());
     }
 
     private FullscreenObserver fullscreenObserver = null;
@@ -269,13 +277,29 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     /** Used if .gpx file is opened from mail oder file manager */
     @Override
     protected void onNewIntent(Intent intent) {
-        Log.w(MGMapApplication.LABEL, NameUtil.context()+"  " + intent);
-        TrackLog trackLog = GpxImporter.checkLoadGpx(application, intent);
-        if (trackLog != null) {
-            application.lastPositionsObservable.clear();
-            TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
-            application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
+        try {
+            Log.w(MGMapApplication.LABEL, NameUtil.context()+"  " + intent);
+            if (intent != null) {
+                Uri uri = intent.getData();
+                if (uri != null) {
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
+                    if (uri.toString().startsWith("content")){ // assume this is a gpx file
+                        TrackLog trackLog = GpxImporter.checkLoadGpx(application, uri);
+                        if (trackLog != null) {
+                            application.lastPositionsObservable.clear();
+                            TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
+                            application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
+                        }
+                    } else {
+                        // check for download jobs from openandromaps
+                        application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUri(uri));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
 

@@ -45,29 +45,22 @@ public class GpxImporter {
 
     private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
-    public static TrackLog checkLoadGpx(MGMapApplication application, Intent intent) {
-        if (intent != null) {
-            Uri uri = intent.getData();
-            if (uri != null) {
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " uri: "+uri );
-                try {
-                    InputStream is;
-                    if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-                        is = application.getContentResolver().openInputStream(uri);
-                        if (is == null) return null;
-                    } else {
-                        String filePath = uri.getEncodedPath();
-                        if (filePath == null) return null;
-                        is = new FileInputStream(filePath);
-                    }
-                    return new GpxImporter().parseTrackLog("GPX" + System.currentTimeMillis(), is);
-                } catch (Exception e) {
-                    Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                }
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" Track loaded for " + uri);
-
+    public static TrackLog checkLoadGpx(MGMapApplication application, Uri uri) {
+        try {
+            InputStream is;
+            if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+                is = application.getContentResolver().openInputStream(uri);
+                if (is == null) return null;
+            } else {
+                String filePath = uri.getEncodedPath();
+                if (filePath == null) return null;
+                is = new FileInputStream(filePath);
             }
+            return new GpxImporter().parseTrackLog("GPX" + System.currentTimeMillis(), is);
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Track loaded for " + uri);
         return null;
     }
 
