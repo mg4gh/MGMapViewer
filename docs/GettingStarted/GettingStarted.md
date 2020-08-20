@@ -14,7 +14,7 @@ except the quick controls and the status line with very few information.
 4. Tap on the background to get the <span style="color:gray">*Menu*</span>. The menu disappears automatically after a few seconds.
 Alternatively it disappears after a second tap on the background. Remember this action as it is frequently used in the next sections.
 
-   <img src="./Menu.png" width="200" />x&nbsp;
+   <img src="./Menu.png" width="200" />&nbsp;
 
 5. Storage location: The main storage location of this app is  
   `/<sdcard>/Andorid/data/mg.mgmap/files/MGMapViewer`  
@@ -40,27 +40,27 @@ Alternatively it disappears after a second tap on the background. Remember this 
    Put the map (unzipped) in the ./MGMapViewer/maps/mapsforge directory and select it via
    <span style="color:gray">*Menu | Settings | Select map layers| Select map layer 2*</span>
 
-<img src="./Menu_Settings.png" width="200" />&nbsp;
-<img src="./settings_select_map_layers.png" width="200" />&nbsp;
-<img src="./select_map_layers_2.png" width="200" />&nbsp;
-<img src="./selectMap2.png" width="200" />
+   <img src="./Menu_Settings.png" width="200" />&nbsp;
+   <img src="./settings_select_map_layers.png" width="200" />&nbsp;
+   <img src="./select_map_layers_2.png" width="200" />&nbsp;
+   <img src="./selectMap2.png" width="200" />
 
 8. Additionally you have to provide a theme, which you also get via [openandromaps](https://www.openandromaps.org/). 
    Download e.g. [elevate theme](https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip), unzip it <br/> and 
    put it into the ./MGMapViewer/themes/ directory.  
    Select it via <span style="color:gray">*Menu | Settings | Select theme | Elevate.xml*</span>
 
-<img src="./Menu_Settings.png" width="200" />&nbsp;
-<img src="./settings_select_theme.png" width="200" />&nbsp;
-<img src="./settings_theme.png" width="200" />&nbsp;
+   <img src="./Menu_Settings.png" width="200" />&nbsp;
+   <img src="./settings_select_theme.png" width="200" />&nbsp;
+   <img src="./settings_theme.png" width="200" />&nbsp;
 
 9. When you go back to the main activity view, then this map is visible and you can navigate in this map.
 10. Finally go to <span style="color:gray">*Menu | Themes*</span>. Now click on the current theme to get a 
    selection of the main themes. Select the most suitable theme for you. 
    
-<img src="./Menu_Themes.png" width="200" />&nbsp;
-<img src="./themes.png" width="200" />&nbsp;
-<img src="./themes2.png" width="200" />&nbsp;
+   <img src="./Menu_Themes.png" width="200" />&nbsp;
+   <img src="./themes.png" width="200" />&nbsp;
+   <img src="./themes2.png" width="200" />&nbsp;
  
 
 
