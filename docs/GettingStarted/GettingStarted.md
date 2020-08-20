@@ -9,12 +9,12 @@ Make sure that the permission for local app installation is given to the file ex
 Don't be disappointed, since you'll see only an almost empty screen, 
 except the quick controls and the status line with very few information.
 
-<img src="./background.png" width="200" />&nbsp;
+  <img src="./background.png" width="200" />&nbsp;
 
 4. Tap on the background to get the <span style="color:gray">*Menu*</span>. The menu disappears automatically after a few seconds.
 Alternatively it disappears after a second tap on the background. Remember this action as it is frequently used in the next sections.
 
-<img src="./Menu.png" width="200" />&nbsp;
+  <img src="./Menu.png" width="200" />&nbsp;
 
 5. Storage location: The main storage location of this app is  
   `/<sdcard>/Andorid/data/mg.mgmap/files/MGMapViewer`  
