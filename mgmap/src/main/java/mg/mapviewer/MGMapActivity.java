@@ -322,7 +322,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ACCESS_FINE_LOCATION_CODE ){
-            if (Permissions.check(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION,  Manifest.permission.ACCESS_BACKGROUND_LOCATION} )){ //ok, got the permission, start service
+            if (Permissions.check(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION} )){ //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
                 triggerTrackLoggerService();
             }
         }
