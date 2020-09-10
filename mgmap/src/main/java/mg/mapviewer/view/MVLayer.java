@@ -40,7 +40,7 @@ public abstract class MVLayer extends Layer {
     }
 
 
-    private Point topLeftPoint;
+    protected Point topLeftPoint;
     private long mapSize;
     private int dx = 0;
     private int dy = 0;
@@ -158,6 +158,12 @@ public abstract class MVLayer extends Layer {
         }
     }
 
+    @Override
+    public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
+        return onLongPress(new PointModelImpl(tapLatLong));
+    }
 
-
+    protected boolean onLongPress(PointModel pm){
+        return false;
+    }
 }

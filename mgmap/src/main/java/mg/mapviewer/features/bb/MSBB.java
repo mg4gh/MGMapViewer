@@ -14,7 +14,15 @@
  */
 package mg.mapviewer.features.bb;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
+
+import org.mapsforge.core.graphics.Canvas;
+import org.mapsforge.core.model.BoundingBox;
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Point;
+
+import java.util.TimerTask;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
@@ -39,13 +47,64 @@ public class MSBB extends MGMicroService {
 
     private WriteablePointModel p1 = null;
     private WriteablePointModel p2 = null;
+    public boolean initFromScreen = false;
+    private TimerTask ttHide = new TimerTask() {
+        @Override
+        public void run() {
+            getApplication().bboxOn.setValue(false);
+        }
+    };
+    long ttHideTime = 10000;
+    private void refreshTTHide(){
+        getTimer().removeCallbacks(ttHide);
+        getTimer().postDelayed(ttHide,ttHideTime);
+    }
 
+    @Override
+    protected void start() {
+        getApplication().bboxOn.addObserver(refreshObserver);
+    }
 
+    @Override
+    protected void stop() {
+        getApplication().bboxOn.deleteObserver(refreshObserver);
+    }
+
+    public void triggerRefresh(){
+        refreshObserver.onChange();
+    }
+
+    @Override
+    protected void doRefresh() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (getApplication().bboxOn.getValue() ){
+                    if (bbcl == null){
+                        bbcl = new BBControlLayer();
+                        register(bbcl, false);
+                        refreshObserver.onChange();
+                    } else {
+                        if (initFromScreen){
+                            bbcl.initFromScreen();
+                            refreshObserver.onChange();
+                        }
+                    }
+
+                } else {
+                    hideBB();
+                }
+                getControlView().updateTvZoom(getMapView().getModel().mapViewPosition.getZoomLevel());
+            }
+        });
+    }
 
     public class BBControlLayer extends MVLayer {
 
         private BBControlLayer(){
             setDragging();
+            changed();
         }
 
         @Override
@@ -100,6 +159,33 @@ public class MSBB extends MGMicroService {
             pmDrag.setLon(pmCurrent.getLon());
             changed();
         }
+
+
+        public void initFromScreen(){
+            if (topLeftPoint == null) return;
+            DisplayMetrics dm = getApplication().getApplicationContext().getResources().getDisplayMetrics();
+            double x1 = dm.widthPixels / 3.0;
+            double x2 = x1 * 2;
+            double y1 = (dm.heightPixels / 2) - (x1 / 2);
+            double y2 = (dm.heightPixels / 2) + (x1 / 2);
+            p1 = new WriteablePointModelImpl(y2lat(y1),x2lon(x1));
+            p2 = new WriteablePointModelImpl(y2lat(y2),x2lon(x2));
+            initFromScreen = false;
+            changed();
+        }
+
+        @Override
+        protected boolean onLongPress(PointModel pm) {
+            if ((p1!= null) && (p2!= null)){
+                BBox bBox = new BBox().extend(p1).extend(p2);
+                Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
+                if (bBox.contains(pm)){
+                    msAvailableTrackLogs.loadFromBB(bBox);
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public void changed(){
@@ -114,6 +200,7 @@ public class MSBB extends MGMicroService {
         if ((p1 != null) && (p2 != null)){
             register(new BoxViewBB(new BBox().extend(p1).extend(p2)));
         }
+        refreshTTHide();
     }
 
 
@@ -130,9 +217,11 @@ public class MSBB extends MGMicroService {
     }
 
     public void loadFromBB(){
-        BBox bBox = new BBox().extend(p1).extend(p2);
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
-        msAvailableTrackLogs.loadFromBB(bBox);
+        if ((p1!= null) && (p2!= null)){
+            BBox bBox = new BBox().extend(p1).extend(p2);
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
+            msAvailableTrackLogs.loadFromBB(bBox);
+        }
     }
 
      void hideBB(){
@@ -143,6 +232,7 @@ public class MSBB extends MGMicroService {
         }
         bbcl = null;
         unregisterAll();
+        getTimer().removeCallbacks(ttHide);
     }
 
     boolean isLoadAllowed(){

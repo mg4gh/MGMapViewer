@@ -33,7 +33,8 @@ public class HideBBControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
 
-        msBB.hideBB();
+        controlView.getApplication().bboxOn.setValue(false);
+//        msBB.hideBB();
     }
 
     @Override

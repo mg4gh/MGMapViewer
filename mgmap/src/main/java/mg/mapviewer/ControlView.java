@@ -24,6 +24,7 @@ import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -591,6 +592,35 @@ public class ControlView extends RelativeLayout {
 
         final TextView ct3a = activity.findViewById(R.id.ct3a);
         ct3a.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                application.bboxOn.toggle();
+            }
+        });
+        ct3a.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                application.bboxOn.setValue(true);
+                application.getMS(MSBB.class).initFromScreen = true;
+                application.getMS(MSBB.class).triggerRefresh();
+                return true;
+            }
+        });
+        Observer ct3aObserver = new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                Rect rect = ct3a.getCompoundDrawables()[0].getBounds();
+                int id = application.bboxOn.getValue()?R.drawable.bbox2:R.drawable.bbox;
+                Drawable drawable = context.getResources().getDrawable(id, context.getTheme());
+                drawable.setBounds(rect.left,rect.top,rect.right,rect.bottom);
+                ct3a.setCompoundDrawables(drawable,null,null,null);
+            }
+        };
+        application.bboxOn.addObserver(ct3aObserver);
+
+
+        final TextView ct3b = activity.findViewById(R.id.ct3b);
+        ct3b.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 application.searchOn.toggle();

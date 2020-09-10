@@ -62,7 +62,7 @@ public class PointView extends MVLayer {
         int pixelY = lat2y(model.getLat());
 
         int radiusInPixel = (int) (displayModel.getScaleFactor() * radius);
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" pixelX="+pixelX+" pixelY="+pixelY);
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" pixelX="+pixelX+" pixelY="+pixelY+" pos="+String.format("%.6f,%.6f",model.getLat(),model.getLon()));
 
         Rectangle canvasRectangle = new Rectangle(0, 0, canvas.getWidth(), canvas.getHeight());
         if (!canvasRectangle.intersectsCircle(pixelX, pixelY, radiusInPixel)) {
