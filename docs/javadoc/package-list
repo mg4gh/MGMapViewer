@@ -17,4 +17,5 @@ mg.mapviewer.features.time
 mg.mapviewer.graph
 mg.mapviewer.model
 mg.mapviewer.util
+mg.mapviewer.features.tilestore
 mg.mapviewer.view
