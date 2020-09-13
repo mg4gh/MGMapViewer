@@ -32,6 +32,7 @@ import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.util.ExtrasUtil;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -185,6 +186,21 @@ public class MGMapApplication extends Application {
             }
         }.start();
 
+//        try {
+//            byte[] bb = new byte[100];
+//            for (int i=0; i<bb.length; i++){
+//                bb[i] = (byte)(i*2);
+//            }
+//            File mapstores = new File(PersistenceManager.getInstance(null).getMapsDir(),"mapstores");
+//            MBTileStore emptyStore = (MBTileStore)MBTileStore.getTileStore(new File(mapstores,"test"));
+//
+//            emptyStore.saveTileBytes("77","55","2", bb);
+//
+//            byte[] bc = emptyStore.getTileAsBytes("77","55","2");
+//            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+bc);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

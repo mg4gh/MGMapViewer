@@ -1,23 +1,18 @@
-package mg.mapviewer.util;
+package mg.mapviewer.features.tilestore;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Build;
 
 import android.util.Log;
 
+import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
+import org.mapsforge.map.layer.queue.Job;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -32,6 +27,8 @@ import javax.json.JsonValue;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.BBox;
+import mg.mapviewer.util.BgJob;
+import mg.mapviewer.util.NameUtil;
 
 public class TileStoreLoader {
 
@@ -42,13 +39,15 @@ public class TileStoreLoader {
     public File storeDir;
     MGMapApplication application;
     MGMapActivity activity;
+    MGTileStore mgTileStore;
 
     public XmlTileSource xmlTileSource;
 
-    public TileStoreLoader(MGMapActivity activity, MGMapApplication application, File storeDir) throws Exception {
+    public TileStoreLoader(MGMapActivity activity, MGMapApplication application, MGTileStore mgTileStore) throws Exception {
         this.activity = activity;
         this.application = application;
-        this.storeDir = storeDir;
+        this.mgTileStore = mgTileStore;
+        this.storeDir = mgTileStore.getStoreDir();
 
         XmlTileSourceConfig config = new XmlTileSourceConfigReader().parseXmlTileSourceConfig(storeDir.getName(), new FileInputStream(new File(storeDir, "config.xml")));
         xmlTileSource = new XmlTileSource(config);
@@ -78,34 +77,58 @@ public class TileStoreLoader {
 
         if (cookies.exists()) {
             Map<String, String> cookieMap = new HashMap<>();
-            FileReader jsonFile = new FileReader(cookies);
-            JsonReader jsonReader = Json.createReader(jsonFile);
-            JsonObject oAll = jsonReader.readObject();
-            JsonArray cAll = oAll.getJsonArray("cookies");
+
+            JsonArray cAll = null;
+            try {
+                FileReader jsonFile = new FileReader(cookies);
+                JsonReader jsonReader = Json.createReader(jsonFile);
+                JsonObject oAll = jsonReader.readObject();
+                cAll = oAll.getJsonArray("cookies");
+            } catch (Exception e){
+                Log.w(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
+            }
+            if (cAll == null){
+                try {
+                    FileReader jsonFile = new FileReader(cookies);
+                    JsonReader jsonReader = Json.createReader(jsonFile);
+                    cAll = jsonReader.readArray();
+                } catch (Exception e){
+                    Log.w(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
+                }
+            }
             for (JsonValue i : cAll) {
                 JsonObject io = i.asJsonObject();
-                cookieMap.put(io.getString("name"), io.getString("value"));
+                if (io != null){
+                    if ((io.get("name") != null) && (io.get("value") != null)){
+                        cookieMap.put(io.getString("name"), io.getString("value"));
+                    }
+                    if ((io.get("Name raw") != null) && (io.get("Content raw") != null)){
+                        cookieMap.put(io.getString("Name raw"), io.getString("Content raw"));
+                    }
+                }
+            }
+            if (cAll != null){
+                String separator = "; ";
+                String cookieRes = "";
+                String[] cookieParts = config.connRequestProperties.get("Cookie").split(separator); // from sample
+                for (String cp : cookieParts){
+                    String[] subCp = cp.split("=");
+                    String subCpValue = cookieMap.get(subCp[0]);
+                    cookieRes += subCp[0]+"="+ ((subCpValue==null)?subCp[1]:subCpValue) + separator;
+                }
+                config.connRequestProperties.put("Cookie", cookieRes.substring(0, cookieRes.length()-separator.length()));
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" cookies.json result: "+config.connRequestProperties.get("Cookie"));
             }
 
-            String separator = "; ";
-            String cookieRes = "";
-            String[] cookieParts = config.connRequestProperties.get("Cookie").split(separator); // from sample
-            for (String cp : cookieParts){
-                String[] subCp = cp.split("=");
-                String subCpValue = cookieMap.get(subCp[0]);
-                cookieRes += subCp[0]+"="+ ((subCpValue==null)?subCp[1]:subCpValue) + separator;
-            }
-            config.connRequestProperties.put("Cookie", cookieRes.substring(0, cookieRes.length()-separator.length()));
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" cookies.json result: "+config.connRequestProperties.get("Cookie"));
         }
     }
 
 
     ArrayList<BgJob> jobs = new ArrayList<>();
 
-    public void loadFromBB(BBox bBox){
+    public void loadFromBB(BBox bBox, boolean all){
         long now = System.currentTimeMillis();
-        int tileSize = 512;
+        int tileSize = mgTileStore.getTileSize();
         for (byte zoomLevel=xmlTileSource.getZoomLevelMin(); zoomLevel<= xmlTileSource.getZoomLevelMax(); zoomLevel++) {
             long mapSize = MercatorProjection.getMapSize(zoomLevel, tileSize);
             int tileXMin = MercatorProjection.pixelXToTileX(MercatorProjection.longitudeToPixelX(bBox.minLongitude, mapSize), zoomLevel, tileSize);
@@ -114,15 +137,12 @@ public class TileStoreLoader {
             int tileYMax = MercatorProjection.pixelYToTileY(MercatorProjection.latitudeToPixelY(bBox.minLatitude, mapSize), zoomLevel, tileSize);
             Log.i(MGMapApplication.LABEL, NameUtil.context() + " " + String.format(Locale.ENGLISH, "dls %d %d %d %d %d", zoomLevel, tileXMin, tileXMax, tileYMin, tileYMax));
 
-            File zoomDir = new File(storeDir, Byte.toString(zoomLevel));
             for (int tileX = tileXMin; tileX<= tileXMax; tileX++){
-                File xDir = new File(zoomDir, Integer.toString(tileX));
                 for (int tileY = tileYMin; tileY<= tileYMax; tileY++) {
-                    File yFile = new File(xDir, Integer.toString(tileY)+".png");
-                    if (yFile.exists() && (now - yFile.lastModified() < 3 * 30 * 24 * 60 * 60 * 1000L)) {
-                        continue;
+                    Tile tile = new Tile(tileX, tileY, zoomLevel, tileSize);
+                    if (all || !mgTileStore.containsKey(new Job(tile, false))){
+                        jobs.add(  mgTileStore.getLoaderJob(this, tile) );
                     }
-                    jobs.add( new TileStoreLoadJob(this, zoomLevel, tileX, tileY));
                 }
             }
         }

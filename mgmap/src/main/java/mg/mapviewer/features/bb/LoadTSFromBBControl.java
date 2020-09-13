@@ -14,11 +14,13 @@
  */
 package mg.mapviewer.features.bb;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
+import org.mapsforge.map.layer.Layer;
+
 import java.io.File;
+import java.util.ArrayList;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
@@ -26,15 +28,16 @@ import mg.mapviewer.MGMapLayerFactory;
 import mg.mapviewer.R;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.PersistenceManager;
-import mg.mapviewer.util.TileStoreLoader;
+import mg.mapviewer.features.tilestore.TileStoreLoader;
+import mg.mapviewer.features.tilestore.MGTileStore;
+import mg.mapviewer.features.tilestore.MGTileStoreLayer;
 
 public class LoadTSFromBBControl extends Control {
 
     MGMapActivity activity;
     MGMapApplication application;
     MSBB msbb;
-    File ts = null;
+    ArrayList<MGTileStore> tss = null;
 
 
     public LoadTSFromBBControl(MGMapActivity activity, MGMapApplication application, MSBB msbb){
@@ -48,41 +51,46 @@ public class LoadTSFromBBControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
 
-        try {
-            TileStoreLoader tileStoreLoader = new TileStoreLoader(activity, application, ts);
-            tileStoreLoader.loadFromBB(msbb.getBBox());
-        } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        for (MGTileStore ts : tss){
+            try {
+                TileStoreLoader tileStoreLoader = new TileStoreLoader(activity, application, ts);
+                tileStoreLoader.loadFromBB(msbb.getBBox(), false);
+
+            } catch (Exception e) {
+                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            }
         }
     }
+
+
 
     @Override
     public void onPrepare(View v) {
         v.setEnabled(false);
         if (msbb.isLoadAllowed()){
-            ts = identifyTS();
-            if (ts != null){
-                if (new File(ts,"config.xml").exists()){
-                    v.setEnabled(true);
-                }
+            tss = identifyTS();
+            if (tss.size() > 0){
+                v.setEnabled(true);
             }
         }
         setText(v, controlView.rstring(R.string.btLoadTSFromBB) );
     }
 
-    File identifyTS(){
-        for (String key : MGMapLayerFactory.mapLayers.keySet()){
-            String[] keypart = key.split(": ");
-            if (keypart.length != 2) return null;
-            if (keypart[0].equals( MGMapLayerFactory.Types.MAPSTORES.toString() )){
-                PersistenceManager pm = PersistenceManager.getInstance();
-                File fTS = new File(pm.getMapsDir(), keypart[0]);
-                File storePath = new File(fTS, keypart[1].toLowerCase());
-                if (storePath.exists() && storePath.isDirectory()){
-                    return storePath;
+    private boolean hasConfig(File ts){
+        return ( new File(ts,"config.xml").exists() );
+    }
+
+    private ArrayList<MGTileStore> identifyTS(){
+        ArrayList<MGTileStore> tss = new ArrayList<>();
+        for (Layer layer : MGMapLayerFactory.mapLayers.values()){
+            if (layer instanceof MGTileStoreLayer) {
+                MGTileStoreLayer mgTileStoreLayer = (MGTileStoreLayer) layer;
+                MGTileStore mgTileStore = mgTileStoreLayer.getMGTileStore();
+                if (mgTileStore.hasConfig()){
+                    tss.add(mgTileStore);
                 }
             }
         }
-        return null;
+        return tss;
     }
 }

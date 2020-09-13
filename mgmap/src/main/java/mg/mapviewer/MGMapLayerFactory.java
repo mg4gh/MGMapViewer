@@ -17,9 +17,7 @@ package mg.mapviewer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.util.Xml;
 
-import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
@@ -28,41 +26,32 @@ import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
-import org.mapsforge.map.layer.cache.TileStore;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import org.mapsforge.map.layer.overlay.Grid;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.layer.tilestore.TileStoreLayer;
 import org.mapsforge.map.reader.MapFile;
-import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
-import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
-import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
-import mg.mapviewer.util.MBTileStore;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
-import mg.mapviewer.util.XmlTileSource;
-import mg.mapviewer.util.XmlTileSourceConfig;
-import mg.mapviewer.util.XmlTileSourceConfigReader;
+import mg.mapviewer.features.tilestore.XmlTileSource;
+import mg.mapviewer.features.tilestore.XmlTileSourceConfig;
+import mg.mapviewer.features.tilestore.XmlTileSourceConfigReader;
+import mg.mapviewer.features.tilestore.MGTileStore;
+import mg.mapviewer.features.tilestore.MGTileStoreLayer;
 
 /** The MGMapLayerFactory provides a list of keys of available map layers and it is able to create a map layer instance for a given key.
  * Available map layer have one of the following types:
@@ -189,7 +178,7 @@ public class MGMapLayerFactory {
                     layer = tileRendererLayer;
                     break;
                 case MAPSTORES:
-                    TileStore tileStore = MBTileStore.getTileStore(entryFile);
+                    MGTileStore tileStore = MGTileStore.createTileStore(entryFile);
                     InMemoryTileCache memoryTileCache = new InMemoryTileCache(AndroidUtil.getMinimumCacheSize(context,
                             mapView.getModel().displayModel.getTileSize(),
                             mapView.getModel().frameBufferModel.getOverdrawFactor(), 1.0f));
@@ -197,9 +186,9 @@ public class MGMapLayerFactory {
                     activity.addTileCache(tileCache);
 
 
-                    TileStoreLayer tileStoreLayer = new TileStoreLayer(tileCache,
+                    TileStoreLayer tileStoreLayer = new MGTileStoreLayer(tileStore, tileCache,
                             mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE, true);
-                    tileStoreLayer.setAlpha((tileStore instanceof MBTileStore)?1f:0.2f);
+                    tileStoreLayer.setAlpha(tileStore.getDefaultAlpha());
                     tileStoreLayer.setParentTilesRendering(Parameters.ParentTilesRendering.OFF);
                     layer = tileStoreLayer;
                     break;

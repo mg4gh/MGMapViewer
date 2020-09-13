@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mapviewer.util;
+package mg.mapviewer.features.tilestore;
 
 import android.util.Log;
 
@@ -24,6 +24,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import mg.mapviewer.MGMapApplication;
+import mg.mapviewer.util.NameUtil;
 
 public class XmlTileSource extends AbstractTileSource {
 
