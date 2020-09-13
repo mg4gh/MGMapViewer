@@ -35,8 +35,6 @@ public class MarkerDeleteAllControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
-        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-
         application.markerTrackLogObservable.setTrackLog(null);
         GGraphTile.clearCache();
     }

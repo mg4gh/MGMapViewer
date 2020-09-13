@@ -16,7 +16,9 @@ package mg.mapviewer.features.atl;
 
 import android.view.View;
 
+import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
+import mg.mapviewer.graph.GGraphTile;
 import mg.mapviewer.util.Control;
 
 public class HideAllControl extends Control {
@@ -28,7 +30,11 @@ public class HideAllControl extends Control {
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        controlView.getApplication().availableTrackLogsObservable.removeAll();
+        MGMapApplication application = controlView.getApplication();
+        application.availableTrackLogsObservable.removeAll();
+        application.markerTrackLogObservable.setTrackLog(null);
+        GGraphTile.clearCache();
+
     }
 
     @Override

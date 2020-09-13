@@ -34,6 +34,8 @@ public class MarkerExportControl extends Control {
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         GpxExporter.export(mtl);
+        application.metaTrackLogs.add(mtl);
+
     }
 
     @Override
