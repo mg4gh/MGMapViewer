@@ -116,6 +116,8 @@ public class PersistenceManager {
         logDir = createIfNotExists(appDir, "log");
         configDir = createIfNotExists(appDir, "config");
         searchConfigDir = createIfNotExists(configDir, "search");
+        createFileIfNotExists(searchConfigDir, "POI.cfg");
+        createFileIfNotExists(searchConfigDir, "Nominatim.cfg");
     }
 
     public File getLogDir(){
@@ -146,6 +148,18 @@ public class PersistenceManager {
             throw new RuntimeException("Failed to create directory: " + f.getAbsolutePath());
         }
         return f;
+    }
+    public void createFileIfNotExists(File parent, String file) {
+        File f = new File(parent, file);
+        try {
+            synchronized (parent) {
+                if (!f.exists()) {
+                    f.createNewFile();
+                }
+            }
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+        }
     }
 
     public void recordRaw(byte[] b, int offset, int length) {
