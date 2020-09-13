@@ -68,7 +68,7 @@ public class XmlTileSource extends AbstractTileSource {
 
     @Override
     public boolean hasAlpha() {
-        return false;
+        return true;
     }
 
     public URLConnection getURLConnection(byte zoomLevel, int tileX, int tileY) throws Exception{
