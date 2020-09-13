@@ -102,13 +102,15 @@ public class BgJobService extends Service {
     }
 
     protected void updateNotification(){
-        notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.mg2)
-                .setContentTitle("MGMapViewer")
-                .setContentText("BgJobService is running. "+application.numBgJobs())
-                .setSound(null)
-                .build();
-        NotificationManagerCompat.from(application).notify(555,notification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.mg2)
+                    .setContentTitle("MGMapViewer")
+                    .setContentText("BgJobService is running. "+application.numBgJobs())
+                    .setSound(null)
+                    .build();
+            NotificationManagerCompat.from(application).notify(555,notification);
+        }
     }
 
     protected void activateService(){

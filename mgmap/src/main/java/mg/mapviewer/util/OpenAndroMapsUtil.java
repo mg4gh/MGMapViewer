@@ -1,11 +1,15 @@
 package mg.mapviewer.util;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import mg.mapviewer.MGMapApplication;
@@ -20,7 +24,7 @@ public class OpenAndroMapsUtil {
                 protected void doJob() throws Exception {
                     Zipper zipper = new Zipper(null);
                     String s1 = uri.toString();
-                    String s2 = s1.replaceFirst("mf-v4-map://download.openandromaps.org/","https://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/");
+                    String s2 = s1.replaceFirst("mf-v4-map://download.openandromaps.org/", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/");
                     URL url = new URL(s2);
                     InputStream is = url.openStream();
                     FilenameFilter filter = new FilenameFilter() {
@@ -45,7 +49,7 @@ public class OpenAndroMapsUtil {
                     String s1 = uri.toString();
                     String s2 = s1.replaceFirst("mf-theme", "https");
 //                  URL url = new URL(s2);  //unfortunately this doesn't work
-                    URL url = new URL("https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
+                    URL url = new URL(((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
                     InputStream is = url.openStream();
                     zipper.unpack(is, PersistenceManager.getInstance().getThemesDir(), null);
                 }
