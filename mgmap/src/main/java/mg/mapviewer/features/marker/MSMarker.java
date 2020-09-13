@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.TimerTask;
 
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
@@ -60,6 +61,18 @@ public class MSMarker extends MGMicroService {
 
     private Observer editMarkerTrackObserver = null;
 
+    private TimerTask ttHide = new TimerTask() {
+        @Override
+        public void run() {
+            getApplication().editMarkerTrack.setValue(false);
+        }
+    };
+    long ttHideTime = 15000;
+    private void refreshTTHide(){
+        getTimer().removeCallbacks(ttHide);
+        getTimer().postDelayed(ttHide,ttHideTime);
+    }
+
 
     @Override
     protected void start() {
@@ -79,24 +92,6 @@ public class MSMarker extends MGMicroService {
             @Override
             public void update(Observable o, Object arg) {
                 checkStartStopMCL();
-//                if (getApplication().editMarkerTrack.getValue()){
-//                    WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
-//                    if (mtl == null){
-//                        initMarkerTrackLog();
-//                    }
-//
-//                    mcl = new MarkerControlLayer();
-//                    register(mcl, false);
-//                    markerTrackLogObservable.changed();
-//                } else {
-//                    int n = unregisterClass(MarkerControlLayer.class);
-//                    if (n > 1) Log.e(MGMapApplication.LABEL, NameUtil.context()+" unexpected number of control layers: "+n);
-//                    if (mcl != null){
-//                        unregister(mcl, false);
-//                        mcl = null;
-//                    }
-
-//                }
             }
         };
         getApplication().editMarkerTrack.addObserver(editMarkerTrackObserver);
@@ -113,6 +108,7 @@ public class MSMarker extends MGMicroService {
     @Override
     protected void doRefresh() {
         showHide(markerTrackLogObservable.getTrackLog());
+        refreshTTHide();
     }
 
 

@@ -54,7 +54,7 @@ public class MSBB extends MGMicroService {
             getApplication().bboxOn.setValue(false);
         }
     };
-    long ttHideTime = 10000;
+    long ttHideTime = 15000;
     private void refreshTTHide(){
         getTimer().removeCallbacks(ttHide);
         getTimer().postDelayed(ttHide,ttHideTime);

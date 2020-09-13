@@ -51,7 +51,7 @@ public class XmlTileSource extends AbstractTileSource {
         urlPart = urlPart.replace("{y}", ""+tileY);
         urlPart = urlPart.replace("{z}", ""+zoomLevel);
         URL url = new URL(config.protocol, getHostName(), config.port, urlPart);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+ " url="+url);
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+ " url="+url);
         return url;
     }
 
