@@ -244,10 +244,9 @@ public class MSBB extends MGMicroService {
 
     public Control[] getMenuBBControls(){
         return new Control[]{
-                new NewBBControl(this),
                 new LoadBBControl(this),
-                new HideBBControl(this),
-                new LoadTSFromBBControl(getActivity(), getApplication(), this)};
+                new LoadTSFromBBControl(getActivity(), getApplication(), this, false),
+                new LoadTSFromBBControl(getActivity(), getApplication(), this, true)};
 
     }
 

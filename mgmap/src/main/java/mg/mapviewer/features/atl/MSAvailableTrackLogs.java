@@ -126,8 +126,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
     public Control[] getMenuLoadControls(){
         return new Control[]{
                 new LoadPrevControl(),
-                new LoadNextControl(),
-                new LoadFromBBControl()};
+                new LoadNextControl()};
 
     }
 

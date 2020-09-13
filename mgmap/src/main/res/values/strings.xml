@@ -34,7 +34,8 @@
     <string name="btNewBB">NEW</string>
     <string name="btLoadBB">LOAD</string>
     <string name="btHideBB">HIDE</string>
-    <string name="btLoadTSFromBB">LOAD STORE</string>
+    <string name="btLoadTSFromBBAll">LOAD STORE\nALL</string>
+    <string name="btLoadTSFromBB">LOAD STORE\nREMAINING</string>
 
     <string name="btLoadNext">NEXT</string>
     <string name="btLoadPrev">PREV</string>
