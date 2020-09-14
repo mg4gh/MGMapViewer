@@ -145,4 +145,38 @@
     <string name="preferences_gdrive_sync_title">Synchronize with GDrive</string>
     <string name="preferences_gdrive_sync_desc">Trigger (one time) synchronisation of files in the \n ./MGMapViewer/tracks/gpx folder with users GDrive account.</string>
 
+    <string name="url_oam_dl">https://www.openandromaps.org/downloads</string>
+    <string name="url_oam_dl_eu">https://www.openandromaps.org/downloads/europa</string>
+    <string name="url_oam_dl_de">https://www.openandromaps.org/downloads/deutschland</string>
+    <string name="url_oam_th_el">https://www.openandromaps.org/kartenlegende/elevation-hike-theme</string>
+
+
+    <string name="preferences_screen_download">Downloads</string>
+
+    <string name="preferences_dl_help_title">Download of maps form openandromaps.org</string>
+    <string name="preferences_dl_help_desc">Select the map you want to download, open the "+" in fornt of the name and finally
+        select the following entry: Android mf-V4-map: Install others
+    </string>
+
+    <string name="preferences_dl_maps_key">DldMapsKey</string>
+    <string name="preferences_dl_maps_title">World</string>
+    <string name="preferences_dl_maps_desc">Download Maps from world</string>
+
+    <string name="preferences_dl_maps_eu_key">DldMapsEUKey</string>
+    <string name="preferences_dl_maps_eu_title">Europa</string>
+    <string name="preferences_dl_maps_eu_desc">Select a european map</string>
+
+    <string name="preferences_dl_maps_de_key">DldMapsDEKey</string>
+    <string name="preferences_dl_maps_de_title">Germany</string>
+    <string name="preferences_dl_maps_de_desc">Select map for germany</string>
+
+    <string name="preferences_dl_theme_title">Download of themes form openandromaps.org</string>
+    <string name="preferences_dl_theme_desc">Select the theme you want to download (elevate 4 is recommended) finally
+        select the following entry: Standard Karten App
+    </string>
+
+    <string name="preferences_dl_theme_el_key">DldThemeElKey</string>
+    <string name="preferences_dl_theme_el_title">Elevate</string>
+    <string name="preferences_dl_theme_el_desc">Select theme for download</string>
+
 </resources>

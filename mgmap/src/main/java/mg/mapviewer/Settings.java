@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -154,21 +155,43 @@ public class Settings extends PreferenceActivity implements
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
         addPreferencesFromResource(R.xml.preferences);
 
-        Preference pref = findPreference(getResources().getString(R.string.preferences_gdrive_sync_key));
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if (mgMapActivity != null){
-                    MSGDrive msGDrive = mgMapActivity.getMS(MSGDrive.class);
-                    msGDrive.trySynchronisation();
+        {
+            Preference pref = findPreference(getResources().getString(R.string.preferences_gdrive_sync_key));
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (mgMapActivity != null){
+                        MSGDrive msGDrive = mgMapActivity.getMS(MSGDrive.class);
+                        msGDrive.trySynchronisation();
 
-                    Intent intent = new Intent(mgMapActivity, MGMapActivity.class);
-                    mgMapActivity.startActivity(intent);
+                        Intent intent = new Intent(mgMapActivity, MGMapActivity.class);
+                        mgMapActivity.startActivity(intent);
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
+        }
+        registerOCL(R.string.preferences_dl_maps_key,    R.string.url_oam_dl);
+        registerOCL(R.string.preferences_dl_maps_eu_key, R.string.url_oam_dl_eu);
+        registerOCL(R.string.preferences_dl_maps_de_key, R.string.url_oam_dl_de);
+        registerOCL(R.string.preferences_dl_theme_el_key, R.string.url_oam_th_el);
+    }
 
+    @SuppressWarnings("deprecation")
+    private void registerOCL(int pref_key_id, int uri_id){
+        {
+            Preference pref = findPreference(getResources().getString(pref_key_id));
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (mgMapActivity != null){
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(uri_id)));
+                        startActivity(browserIntent);
+                    }
+                    return true;
+                }
+            });
+        }
     }
 
     @Override
@@ -182,8 +205,5 @@ public class Settings extends PreferenceActivity implements
         super.onResume();
         this.prefs.registerOnSharedPreferenceChangeListener(this);
     }
-
-
-
 
 }

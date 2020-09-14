@@ -26,6 +26,35 @@
     <mg.mapviewer.util.DynamicListPreference
         android:key="@string/preference_choose_search_key"
         android:title="@string/preference_choose_search_title" />
+
+    <PreferenceScreen
+        android:title="@string/preferences_dl_help_title"
+        android:summary="@string/preferences_dl_help_desc"
+        android:icon="@drawable/im">
+        <Preference
+            android:key="@string/preferences_dl_maps_key"
+            android:title="@string/preferences_dl_maps_title"
+            android:summary="@string/preferences_dl_maps_desc"/>
+        <Preference
+            android:key="@string/preferences_dl_maps_eu_key"
+            android:title="@string/preferences_dl_maps_eu_title"
+            android:summary="@string/preferences_dl_maps_eu_desc"/>
+        <Preference
+            android:key="@string/preferences_dl_maps_de_key"
+            android:title="@string/preferences_dl_maps_de_title"
+            android:summary="@string/preferences_dl_maps_de_desc"/>
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:title="@string/preferences_dl_theme_title"
+        android:summary="@string/preferences_dl_theme_desc"
+        android:icon="@drawable/it">
+        <Preference
+            android:key="@string/preferences_dl_theme_el_key"
+            android:title="@string/preferences_dl_theme_el_title"
+            android:summary="@string/preferences_dl_theme_el_desc"/>
+    </PreferenceScreen>
+
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="@string/preferences_stl_gl_key"
