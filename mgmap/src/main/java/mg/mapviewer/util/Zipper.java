@@ -61,15 +61,22 @@ public class Zipper
         zipFile.extractAll(extractedZipFilePath);
     }
 
-    public void unpack(InputStream inputStream, File extractedZipFilePath, FilenameFilter filter) throws Exception {
+    public void unpack(InputStream inputStream, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
         ZipInputStream zipInputStream = new ZipInputStream(inputStream, (password==null)?null:password.toCharArray());
         LocalFileHeader localFileHeader;
         int readLen;
+        long totalLength = 0;
+
         byte[] readBuffer = new byte[4096];
 
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedZipFilePath="+extractedZipFilePath);
         while ((localFileHeader = zipInputStream.getNextEntry()) != null) {
 
+            long fileLengthC = localFileHeader.getCompressedSize();
+            long fileLengthU = localFileHeader.getUncompressedSize();
+            double compressionFactor = fileLengthC / (double)fileLengthU;
+            totalLength += fileLengthC;
+            long fileRead = 0;
 
             OutputStream outputStream = null;
             try {
@@ -84,6 +91,11 @@ public class Zipper
                         outputStream = new FileOutputStream(extractedFile);
                         while ((readLen = zipInputStream.read(readBuffer)) != -1) {
                             outputStream.write(readBuffer, 0, readLen);
+                            fileRead += readLen;
+                            if (bgJob != null){
+                                long value = totalLength-fileLengthC+ (long)(fileRead*compressionFactor);
+                                bgJob.notify("Downlaod: "+value/1024+"K ");
+                            }
                         }
                     }
                 }

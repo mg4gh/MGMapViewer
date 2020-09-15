@@ -21,8 +21,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -30,10 +30,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import mg.mapviewer.model.PointModel;
-import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.NameUtil;
 
@@ -50,6 +49,14 @@ public class BgJobService extends Service {
     private volatile int numWorkers = 0;
     private String CHANNEL_ID;
 
+    private Handler timer;
+    private TimerTask ttNotify = new TimerTask() {
+        @Override
+        public void run() {
+            notifyUser(1,"BgJobService: "+numWorkers+" running, "+application.numBgJobs()+" waiting");
+            timer.postDelayed(ttNotify, 1000);
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -101,22 +108,23 @@ public class BgJobService extends Service {
         }
     }
 
-    protected void updateNotification(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.mg2)
-                    .setContentTitle("MGMapViewer")
-                    .setContentText("BgJobService is running. "+application.numBgJobs())
-                    .setSound(null)
-                    .build();
-            NotificationManagerCompat.from(application).notify(555,notification);
-        }
-    }
+//    protected void updateNotification(){
+//        notifyUser(1,"BgJobService is running. "+numWorkers+" running, "+application.numBgJobs()+" waiting");
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                    .setSmallIcon(R.drawable.mg2)
+//                    .setContentTitle("MGMapViewer")
+//                    .setContentText("BgJobService is running. "+application.numBgJobs())
+//                    .setSound(null)
+//                    .build();
+//            NotificationManagerCompat.from(application).notify(1,notification);
+//        }
+//    }
 
     protected void activateService(){
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForeground(555, notification);
+                startForeground(1, notification);
             }
 
             for (int i=0; i<8; i++){
@@ -126,9 +134,10 @@ public class BgJobService extends Service {
                         numWorkers++;
                         BgJob job = null;
                         while ((job = application.getBgJob()) != null){
-
+                            job.service = BgJobService.this;
                             job.start();
-                            updateNotification();
+                            NotificationManagerCompat.from(application).cancel(job.notification_id);
+ //                           updateNotification();
                         }
                         numWorkers--;
                         synchronized (this){
@@ -140,6 +149,8 @@ public class BgJobService extends Service {
 
                 }.start();
             }
+            timer = new Handler();
+            timer.postDelayed(ttNotify, 1000);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
@@ -151,12 +162,23 @@ public class BgJobService extends Service {
                 stopForeground(true);
             }
             application.refresh();
-
+            timer.removeCallbacks(ttNotify);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
     }
 
+    public void notifyUser(int notificationId, String notificationText) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.mg2)
+                    .setContentTitle("MGMapViewer")
+                    .setContentText(notificationText)
+                    .setSound(null)
+                    .build();
+            NotificationManagerCompat.from(application).notify(notificationId, notification);
+        }
+    }
 
     @Nullable
     @Override

@@ -35,7 +35,7 @@ public class OpenAndroMapsUtil {
                             return false;
                         }
                     };
-                    zipper.unpack(is, PersistenceManager.getInstance().getMapsforgeDir(), filter);
+                    zipper.unpack(is, PersistenceManager.getInstance().getMapsforgeDir(), filter, this);
 
                 }
             };
@@ -51,7 +51,7 @@ public class OpenAndroMapsUtil {
 //                  URL url = new URL(s2);  //unfortunately this doesn't work
                     URL url = new URL(((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
                     InputStream is = url.openStream();
-                    zipper.unpack(is, PersistenceManager.getInstance().getThemesDir(), null);
+                    zipper.unpack(is, PersistenceManager.getInstance().getThemesDir(), null, this);
                 }
             };
             jobs.add(job);
