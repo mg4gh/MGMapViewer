@@ -37,7 +37,16 @@ Alternatively it disappears after a second tap on the background. Remember this 
     - hgt (store hgt height files)
     - log (store log files)
 7. In the typical usage scenario you provide a map from [openandromaps](https://www.openandromaps.org/). 
-   Put the map (unzipped) in the ./MGMapViewer/maps/mapsforge directory and select it via
+   Either download the map manually and put it (unzipped) in the ./MGMapViewer/maps/mapsforge directory.
+   Alternatively  open via <span style="color:gray">*Menu | Settings | Download | Maps Download | Germany*</span>
+   the download webpage of openandromaps for germany. If you want to download e.g. the map of Berlin, then press the "+" butten in front
+   of "Berlin", now select the  <span style="color:gray">*Install others*</span> entry with the prefix
+   <span style="color:gray">*Android mf-V4-map*</span>
+   
+   <img src="./download1.png" width="200" />&nbsp;
+   <img src="./download2.png" width="200" />&nbsp;
+
+   and select it via
    <span style="color:gray">*Menu | Settings | Select map layers| Select map layer 2*</span>
 
    <img src="./Menu_Settings.png" width="200" />&nbsp;
@@ -46,9 +55,15 @@ Alternatively it disappears after a second tap on the background. Remember this 
    <img src="./selectMap2.png" width="200" />
 
 8. Additionally you have to provide a theme, which you also get via [openandromaps](https://www.openandromaps.org/). 
-   Download e.g. [elevate theme](https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip), unzip it <br/> and 
+   Download e.g. [elevate theme](https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip), unzip it and
    put it into the ./MGMapViewer/themes/ directory.  
-   Select it via <span style="color:gray">*Menu | Settings | Select theme | Elevate.xml*</span>
+   Alternatively  open via <span style="color:gray">*Menu | Settings | Download | Theme Download*</span>
+   the theme download webpage of openandromaps. Scroll to the Elevate 4 section and select the entry
+   <span style="color:gray">*Standard Karten App*</span> entry.
+   
+   <img src="./download3.png" width="200" />&nbsp;
+
+   Select the elevate theme via <span style="color:gray">*Menu | Settings | Select theme | Elevate.xml*</span>
 
    <img src="./Menu_Settings.png" width="200" />&nbsp;
    <img src="./settings_select_theme.png" width="200" />&nbsp;
@@ -56,12 +71,11 @@ Alternatively it disappears after a second tap on the background. Remember this 
 
 9. When you go back to the main activity view, then this map is visible and you can navigate in this map.
 10. Finally go to <span style="color:gray">*Menu | Themes*</span>. Now click on the current theme to get a 
-   selection of the main themes. Select the most suitable theme for you. 
-   
+selection of the main themes. Select the most suitable theme for you.  
+&nbsp;  
    <img src="./Menu_Themes.png" width="200" />&nbsp;
    <img src="./themes.png" width="200" />&nbsp;
    <img src="./themes2.png" width="200" />&nbsp;
- 
 
 
   

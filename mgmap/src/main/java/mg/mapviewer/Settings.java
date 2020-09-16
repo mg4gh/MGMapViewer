@@ -175,6 +175,7 @@ public class Settings extends PreferenceActivity implements
         registerOCL(R.string.preferences_dl_maps_eu_key, R.string.url_oam_dl_eu);
         registerOCL(R.string.preferences_dl_maps_de_key, R.string.url_oam_dl_de);
         registerOCL(R.string.preferences_dl_theme_el_key, R.string.url_oam_th_el);
+        registerOCL(R.string.preferences_doc_main_key, R.string.url_doc_main);
     }
 
     @SuppressWarnings("deprecation")

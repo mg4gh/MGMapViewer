@@ -31,6 +31,7 @@ import mg.mapviewer.Settings;
 
 public class DynamicListPreference extends ListPreference {
 
+    @SuppressWarnings( "deprecation" )
     public DynamicListPreference (Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -48,11 +49,11 @@ public class DynamicListPreference extends ListPreference {
         if (getKey().equals( context.getResources().getString(R.string.preference_choose_theme_key) )){
             String[] themes = pm.getThemeNames();
             if (themes.length == 0) {
-            } else {
-                setEntries(themes);
-                setEntryValues(themes);
-                setSummary(PreferenceManager.getDefaultSharedPreferences(context).getString(key,""));
+                themes = new String[]{ "Elevate.xml"};
             }
+            setEntries(themes);
+            setEntryValues(themes);
+            setSummary(PreferenceManager.getDefaultSharedPreferences(context).getString(key,""));
         }
 
         if (getKey().equals( context.getResources().getString(R.string.preference_choose_search_key) )){
@@ -62,11 +63,12 @@ public class DynamicListPreference extends ListPreference {
                 searchProviders[i] = searchCfgs[i].replaceAll(".cfg$", "");
             }
             if (searchProviders.length == 0) {
-            } else {
-                setEntries(searchProviders);
-                setEntryValues(searchProviders);
-                setSummary(PreferenceManager.getDefaultSharedPreferences(context).getString(key,""));
+                searchProviders = new String[]{ "Nominatim" };
             }
+            setEntries(searchProviders);
+            setEntryValues(searchProviders);
+            setSummary(PreferenceManager.getDefaultSharedPreferences(context).getString(key,""));
+
         }
 
     }

@@ -145,6 +145,7 @@
     <string name="preferences_gdrive_sync_title">Synchronize with GDrive</string>
     <string name="preferences_gdrive_sync_desc">Trigger (one time) synchronisation of files in the \n ./MGMapViewer/tracks/gpx folder with users GDrive account.</string>
 
+    <string name="url_doc_main">https://mg4gh.github.io/MGMapViewer/index.html</string>
     <string name="url_oam_dl">https://www.openandromaps.org/downloads</string>
     <string name="url_oam_dl_eu">https://www.openandromaps.org/downloads/europa</string>
     <string name="url_oam_dl_de">https://www.openandromaps.org/downloads/deutschland</string>
@@ -153,8 +154,8 @@
 
     <string name="preferences_screen_download">Downloads</string>
 
-    <string name="preferences_dl_help_title">Download of maps form openandromaps.org</string>
-    <string name="preferences_dl_help_desc">Select the map you want to download, open the "+" in fornt of the name and finally
+    <string name="preferences_dl_help_title">Maps Download</string>
+    <string name="preferences_dl_help_desc">Download of maps form www.openandromaps.org. Select the map you want to download, open the "+" in front of the name and finally
         select the following entry: Android mf-V4-map: Install others
     </string>
 
@@ -170,13 +171,14 @@
     <string name="preferences_dl_maps_de_title">Germany</string>
     <string name="preferences_dl_maps_de_desc">Select map for germany</string>
 
-    <string name="preferences_dl_theme_title">Download of themes form openandromaps.org</string>
-    <string name="preferences_dl_theme_desc">Select the theme you want to download (elevate 4 is recommended) finally
+    <string name="preferences_dl_theme_title">Theme Download</string>
+    <string name="preferences_dl_theme_desc">Go to the elevate 4 theme section and
         select the following entry: Standard Karten App
     </string>
-
     <string name="preferences_dl_theme_el_key">DldThemeElKey</string>
-    <string name="preferences_dl_theme_el_title">Elevate</string>
-    <string name="preferences_dl_theme_el_desc">Select theme for download</string>
+
+    <string name="preferences_doc_main_title">Documentation</string>
+    <string name="preferences_doc_main_desc">Go to the github.io main documentation page.</string>
+    <string name="preferences_doc_main_key">DocMain</string>
 
 </resources>
