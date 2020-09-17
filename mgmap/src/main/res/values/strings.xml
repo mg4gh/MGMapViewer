@@ -36,6 +36,7 @@
     <string name="btHideBB">HIDE</string>
     <string name="btLoadTSFromBBAll">LOAD STORE\nALL</string>
     <string name="btLoadTSFromBB">LOAD STORE\nREMAINING</string>
+    <string name="btDropTSFromBB">DROP STORE\nALL</string>
 
     <string name="btLoadNext">NEXT</string>
     <string name="btLoadPrev">PREV</string>

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
+import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.layer.queue.Job;
 
 import java.io.BufferedReader;
@@ -29,6 +30,7 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.util.Permissions;
 
 public class TileStoreLoader {
 
@@ -127,7 +129,6 @@ public class TileStoreLoader {
     ArrayList<BgJob> jobs = new ArrayList<>();
 
     public void loadFromBB(BBox bBox, boolean all){
-        long now = System.currentTimeMillis();
         int tileSize = mgTileStore.getTileSize();
         for (byte zoomLevel=xmlTileSource.getZoomLevelMin(); zoomLevel<= xmlTileSource.getZoomLevelMax(); zoomLevel++) {
             long mapSize = MercatorProjection.getMapSize(zoomLevel, tileSize);
@@ -154,9 +155,7 @@ public class TileStoreLoader {
         builder.setMessage("Load "+jobs.size()+" tiles?");
 
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
             public void onClick(DialogInterface dialog, int which) {
-                // Do nothing, but close the dialog
                 dialog.dismiss();
                 Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
                 application.addBgJobs(jobs);
@@ -164,10 +163,8 @@ public class TileStoreLoader {
         });
 
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 // Do nothing
                 dialog.dismiss();
                 Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
@@ -177,4 +174,54 @@ public class TileStoreLoader {
         AlertDialog alert = builder.create();
         alert.show();
     }
+
+    public void dropFromBB(BBox bBox){
+        int tileSize = mgTileStore.getTileSize();
+        int numDrops = 0;
+        for (byte zoomLevel=xmlTileSource.getZoomLevelMin(); zoomLevel<= xmlTileSource.getZoomLevelMax(); zoomLevel++) {
+            long mapSize = MercatorProjection.getMapSize(zoomLevel, tileSize);
+            int tileXMin = MercatorProjection.pixelXToTileX(MercatorProjection.longitudeToPixelX(bBox.minLongitude, mapSize), zoomLevel, tileSize);
+            int tileXMax = MercatorProjection.pixelXToTileX(MercatorProjection.longitudeToPixelX(bBox.maxLongitude, mapSize), zoomLevel, tileSize);
+            int tileYMin = MercatorProjection.pixelYToTileY(MercatorProjection.latitudeToPixelY(bBox.maxLatitude, mapSize), zoomLevel, tileSize); // min and max reversed for tiles
+            int tileYMax = MercatorProjection.pixelYToTileY(MercatorProjection.latitudeToPixelY(bBox.minLatitude, mapSize), zoomLevel, tileSize);
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " " + String.format(Locale.ENGLISH, "dls %d %d %d %d %d", zoomLevel, tileXMin, tileXMax, tileYMin, tileYMax));
+
+            if ( ((tileXMax-tileXMin) > 1) && ((tileYMax-tileYMin) >1 )){
+                numDrops += (tileXMax-tileXMin-1)*(tileYMax-tileYMin-1);
+                jobs.add(  mgTileStore.getDropJob(this, tileXMin, tileXMax, tileYMin, tileYMax, zoomLevel) );
+            }
+        }
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle("Drop Tiles for \""+storeDir.getName()+"\"");
+        builder.setMessage("Drop "+numDrops+" tiles? \nRestart app after finishing action.");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
+
+                if (jobs.size() > 0){
+                    application.addBgJobs(jobs);
+                }
+
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing
+                dialog.dismiss();
+                Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
 }

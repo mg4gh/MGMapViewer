@@ -10,11 +10,13 @@ import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.IOUtils;
 import org.mapsforge.map.layer.queue.Job;
 import org.sqlite.database.sqlite.SQLiteDatabase;
+import org.sqlite.database.sqlite.SQLiteStatement;
 
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Locale;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.util.BgJob;
@@ -46,13 +48,6 @@ public class MGTileStoreDB extends MGTileStore {
     @Override
     public synchronized TileBitmap get(Job key) {
         Tile tile = key.tile;
-//        long localTileX = tile.tileX;
-//        long localTileY = tile.tileY;
-
-        // conversion needed to fit the MbTiles coordinate system
-//        final int[] tmsTileXY = googleTile2TmsTile(localTileX, localTileY, tile.zoomLevel);
-//        Log.d(MGMapApplication.LABEL,NameUtil.context()+String.format(" Tile requested %d %d is now %d %d", tile.tileX, tile.tileY, tmsTileXY[0], tmsTileXY[1]));
-//        byte[] bytes = getTileAsBytes(String.valueOf(tmsTileXY[0]), String.valueOf(tmsTileXY[1]), Byte.toString(tile.zoomLevel));
         byte[] bytes = getTileAsBytes(tile);
 
         InputStream inputStream = null;
@@ -105,11 +100,21 @@ public class MGTileStoreDB extends MGTileStore {
 
     }
 
-
-        @Override
+    @Override
     public BgJob getLoaderJob(TileStoreLoader tileStoreLoader, Tile tile) {
         return new MGTileStoreLoaderJobDB(tileStoreLoader, tile);
     }
+
+    @Override
+    public BgJob getDropJob(TileStoreLoader tileStoreLoader, int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel) {
+        return new BgJob(){
+            @Override
+            protected void doJob() throws Exception {
+                dropTiles(tileXMin,tileXMax, tileYMin, tileYMax, zoomLevel);
+            }
+        };
+    }
+
 
     byte[] getTileAsBytes(Tile tile){
         final int[] tmsTileXY = googleTile2TmsTile(tile.tileX, tile.tileY, tile.zoomLevel);
@@ -153,9 +158,6 @@ public class MGTileStoreDB extends MGTileStore {
 
     private synchronized void saveTileBytes(String x, String y, String z, byte[] bb){
         try {
-            final Cursor c = this.db.rawQuery(
-                    "select tile_data from tiles where tile_column=? and tile_row=? and zoom_level=?", new String[] {
-                            x, y, z });
             ContentValues cv = new ContentValues();
             cv.put("zoom_level", z);
             cv.put("tile_column", x);
@@ -163,6 +165,25 @@ public class MGTileStoreDB extends MGTileStore {
             cv.put("tile_data",bb);
 
             db.insert("tiles", null, cv);
+
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+        }
+    }
+
+    private void dropTiles(int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel){
+        final int[] tmsTileXYMin = googleTile2TmsTile(tileXMin, tileYMin, zoomLevel);
+        final int[] tmsTileXYMax = googleTile2TmsTile(tileXMax, tileYMax, zoomLevel);
+        dropTiles(tmsTileXYMin[0],tmsTileXYMax[0],tmsTileXYMax[1],tmsTileXYMin[1]);
+    }
+
+
+    private synchronized void dropTiles(int tileXMin, int tileXMax, int tileYMin, int tileYMax){
+        try {
+            String sql = String.format(Locale.ENGLISH," ((%d < tile_column) AND (tile_column<%d) AND (%d<tile_row) AND (tile_row<%d));",tileXMin,tileXMax,tileYMin,tileYMax);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" SQL: "+sql);
+            db.delete("tiles", sql, null);
+            db.compileStatement("VACUUM").execute();
 
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);

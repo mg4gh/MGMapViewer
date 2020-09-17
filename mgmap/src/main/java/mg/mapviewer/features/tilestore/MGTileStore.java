@@ -9,6 +9,7 @@ import org.mapsforge.map.layer.queue.Job;
 import java.io.File;
 import java.io.FilenameFilter;
 
+import mg.mapviewer.model.BBox;
 import mg.mapviewer.util.BgJob;
 
 public abstract class MGTileStore extends TileStore {
@@ -55,4 +56,6 @@ public abstract class MGTileStore extends TileStore {
     }
 
     public abstract BgJob getLoaderJob(TileStoreLoader tileStoreLoader, Tile tile);
+
+    public abstract BgJob getDropJob(TileStoreLoader tileStoreLoader, int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel);
 }

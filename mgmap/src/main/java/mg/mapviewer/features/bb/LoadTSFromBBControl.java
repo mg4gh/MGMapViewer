@@ -38,15 +38,17 @@ public class LoadTSFromBBControl extends Control {
     MGMapApplication application;
     MSBB msbb;
     ArrayList<MGTileStore> tss = null;
-    private boolean bAll = false; // load all tiles of bb or only remaining tiles (which are not yet available)
+    private boolean bAll; // load all tiles of bb or only remaining tiles (which are not yet available)
+    private boolean bDrop; // delete tiles (instead of load) - default is false
 
 
-    public LoadTSFromBBControl(MGMapActivity activity, MGMapApplication application, MSBB msbb, boolean bAll){
+    public LoadTSFromBBControl(MGMapActivity activity, MGMapApplication application, MSBB msbb, boolean bAll, boolean bDrop){
         super(true);
         this.application = application;
         this.activity = activity;
         this.msbb = msbb;
         this.bAll = bAll;
+        this.bDrop = bDrop;
     }
 
     @Override
@@ -56,7 +58,11 @@ public class LoadTSFromBBControl extends Control {
         for (MGTileStore ts : tss){
             try {
                 TileStoreLoader tileStoreLoader = new TileStoreLoader(activity, application, ts);
-                tileStoreLoader.loadFromBB(msbb.getBBox(), bAll);
+                if (bDrop){
+                    tileStoreLoader.dropFromBB(msbb.getBBox());
+                } else {
+                    tileStoreLoader.loadFromBB(msbb.getBBox(), bAll);
+                }
 
             } catch (Exception e) {
                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
@@ -75,7 +81,11 @@ public class LoadTSFromBBControl extends Control {
                 v.setEnabled(true);
             }
         }
-        setText(v, controlView.rstring(bAll?R.string.btLoadTSFromBBAll:R.string.btLoadTSFromBB) );
+        if (bDrop){
+            setText(v, controlView.rstring(R.string.btDropTSFromBB) );
+        } else {
+            setText(v, controlView.rstring(bAll?R.string.btLoadTSFromBBAll:R.string.btLoadTSFromBB) );
+        }
     }
 
     private ArrayList<MGTileStore> identifyTS(){

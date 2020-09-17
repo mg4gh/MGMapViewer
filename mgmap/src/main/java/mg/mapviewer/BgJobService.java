@@ -127,6 +127,9 @@ public class BgJobService extends Service {
                 startForeground(1, notification);
             }
 
+            timer = new Handler();
+            timer.postDelayed(ttNotify, 1000);
+
             for (int i=0; i<8; i++){
                 new Thread(){
                     @Override
@@ -149,8 +152,6 @@ public class BgJobService extends Service {
 
                 }.start();
             }
-            timer = new Handler();
-            timer.postDelayed(ttNotify, 1000);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
@@ -166,6 +167,10 @@ public class BgJobService extends Service {
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
+    }
+
+    public int getNumWorkers(){
+        return numWorkers;
     }
 
     public void notifyUser(int notificationId, String notificationText) {
