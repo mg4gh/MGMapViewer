@@ -25,6 +25,9 @@ public class MSRoutingHint extends MGMicroService {
     private MSRouting msRouting = null;
     private int  mediumAwayCnt = 0;
 
+    private PointModel lastHintPoint = null;
+    private boolean lastHintClose = false;
+
     public MSRoutingHint(MGMapActivity mmActivity) {
         super(mmActivity);
         ttRefreshTime = 200;
@@ -138,10 +141,14 @@ public class MSRoutingHint extends MGMicroService {
             if (routeDistance+newDistance > THRESHOLD_KURS) { // some threshold
                 PointModel pmx = PointModelUtil.interpolate(lastPm,pm,THRESHOLD_KURS-routeDistance);
 
-                double kursDegree = PointModelUtil.calcDegree( msRouting.routeTrackLog.getTrackLogSegment(bestMatch.getSegmentIdx()).get(bestMatch.getEndPointIndex()-1), bestMatch.getApproachPoint() , pmx );
-                int kursClock = PointModelUtil.clock4degree( kursDegree );
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" Kurs "+msRouting.routeTrackLog.getTrackLogSegment(bestMatch.getSegmentIdx()).get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+kursDegree+" "+kursClock);
-                if (((0 < kursDegree) && (kursDegree < 150)) || ((210 < kursDegree) && (kursDegree < 360))) text += " Kurs "+kursClock+" Uhr";
+                double courseDegree = PointModelUtil.calcDegree( msRouting.routeTrackLog.getTrackLogSegment(bestMatch.getSegmentIdx()).get(bestMatch.getEndPointIndex()-1), bestMatch.getApproachPoint() , pmx );
+                int courseClock = PointModelUtil.clock4degree( courseDegree );
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" Kurs "+msRouting.routeTrackLog.getTrackLogSegment(bestMatch.getSegmentIdx()).get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
+                if (((0 < courseDegree) && (courseDegree < 150)) || ((210 < courseDegree) && (courseDegree < 360))) {
+                    if (text.length() > 0 ){ // add Kurs only, if there is a hint
+                        text += " Kurs "+courseClock+" Uhr";
+                    }
+                }
                 break;
             }
 
@@ -158,14 +165,25 @@ public class MSRoutingHint extends MGMicroService {
                     boolean cond3 = ((hint.nextRightDegree < 360) && ((hint.nextRightDegree-hint.directionDegree)<45));
 
                     if ((cond1 || cond2 || cond3) && (numHints<2)){
-                        text += ((routeDistance<30)?(numHints==0?"Gleich ":"Danach "):(" In "+(int)routeDistance+" Meter "))+clock+ "Uhr ";
+                        boolean bClose = (routeDistance < 40);
+                        if (numHints == 0){
+                            if ((pm == lastHintPoint) && (lastHintClose==bClose)){
+                                break; // no tts for this point
+                            } else {
+                                lastHintPoint = pm;
+                                lastHintClose = bClose;
+                            }
+                        }
+                        text += (bClose?(numHints==0?"Gleich ":"Danach "):(" In "+(int)routeDistance+" Meter "))+clock+ "Uhr ";
                         if (cond2){ // next path left is less than 45degree beside direction degree
                             text += "Nicht links "+PointModelUtil.clock4degree(hint.nextLeftDegree)+ " Uhr ";
                         }
                         if (cond3){ // next path right is less than 45degree beside direction degree
                             text += "Nicht rechts "+PointModelUtil.clock4degree(hint.nextRightDegree)+ " Uhr ";
                         }
+                        
                         numHints++;
+
                     }
                 }
             } else {
