@@ -65,6 +65,7 @@ import mg.mapviewer.features.tilestore.MGTileStoreLayer;
  */
 public class MGMapLayerFactory {
 
+    public static final String XML_CONFIG_NAME = "config.xml";
     public enum Types { MAPSFORGE, MAPSTORES, MAPONLINE, MAPGRID }
     public static HashMap<Types, FilenameFilter> filters = new HashMap<>();
     public static HashMap<String, Layer> mapLayers = new HashMap<>();
@@ -84,15 +85,23 @@ public class MGMapLayerFactory {
                 return (new File(dir,name).isDirectory());
             }
         });
-        FilenameFilter xml = new FilenameFilter() {
+        filters.put(Types.MAPONLINE, new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                boolean res = !(new File(dir,name).isDirectory());
-                res &= name.endsWith(".xml");
-                return res;
+                File fStore = new File(dir,name);
+                File fConfig = new File(fStore,XML_CONFIG_NAME);
+                return (fStore.isDirectory() && fConfig.exists());
             }
-        };
-        filters.put(Types.MAPONLINE,xml);
+        });
+//        FilenameFilter xml = new FilenameFilter() {
+//            @Override
+//            public boolean accept(File dir, String name) {
+//                boolean res = !(new File(dir,name).isDirectory());
+//                res &= name.endsWith(".xml");
+//                return res;
+//            }
+//        };
+//        filters.put(Types.MAPONLINE,xml);
         FilenameFilter prop = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -193,7 +202,8 @@ public class MGMapLayerFactory {
                     layer = tileStoreLayer;
                     break;
                 case MAPONLINE:
-                    XmlTileSourceConfig config = new XmlTileSourceConfigReader().parseXmlTileSourceConfig(entry, new FileInputStream(entryFile));
+                    File fXmlConfig = new File(entryFile,XML_CONFIG_NAME);
+                    XmlTileSourceConfig config = new XmlTileSourceConfigReader().parseXmlTileSourceConfig(entry, new FileInputStream(fXmlConfig));
                     XmlTileSource xmlTileSource = new XmlTileSource(config);
                     xmlTileSource.setUserAgent("mapsforge-samples-android");
 

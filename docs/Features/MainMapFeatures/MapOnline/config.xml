@@ -1,0 +1,14 @@
+<tilesource>
+	<hostnames>
+		<hostname>a.tile.openstreetmap.org</hostname>
+		<hostname>b.tile.openstreetmap.org</hostname>
+		<hostname>c.tile.openstreetmap.org</hostname>
+	</hostnames>
+	<port>443</port>
+	<urlPart>/{z}/{x}/{y}.png</urlPart>
+	<parallelRequestsLimit>8</parallelRequestsLimit>
+	<protocol>https</protocol>
+	<zoomLevelMin>4</zoomLevelMin>
+	<zoomLevelMax>20</zoomLevelMax>
+	<ttl>8279000</ttl>
+</tilesource>
