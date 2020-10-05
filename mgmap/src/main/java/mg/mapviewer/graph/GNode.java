@@ -69,4 +69,16 @@ public class GNode extends PointModelImpl implements PointModel {
         this.nodeRef = nodeRef;
     }
 
+    public void removeNeighbourNode(GNode neighbourNode){
+        GNeighbour nextNeighbour = this.neighbour;
+        while (nextNeighbour.getNextNeighbour() != null) {
+            GNeighbour lastNeighbour = nextNeighbour;
+            nextNeighbour = nextNeighbour.getNextNeighbour();
+            if (nextNeighbour.getNeighbourNode() == neighbourNode){
+                lastNeighbour.setNextNeighbour(nextNeighbour.getNextNeighbour());
+            }
+        }
+    }
+
+
 }

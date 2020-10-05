@@ -94,7 +94,19 @@ public class GGraphTile extends GGraph {
                     GNode nNode = graph.nodes.get(nIdx);
                     if (iNode.laMdDiff(nNode) >= threshold) break; // go to next iIdx
                     if ((iNode.laMdDiff(nNode)+iNode.loMdDiff(nNode)) >= threshold ) continue; // goto next mIdx
-                    graph.addSegment(iNode, nNode);
+
+//                  This doesn't work well for routing hints
+//                    graph.addSegment(iNode, nNode);
+
+//                  // Try to simplify the graph by removing node nNode
+                    // iterate over al neighbours from nNode
+                    GNeighbour nextNeighbour = nNode.getNeighbour();
+                    while (nextNeighbour.getNextNeighbour() != null) {
+                        nextNeighbour = nextNeighbour.getNextNeighbour();
+                        // remove nNode as a Neighbour
+                        nextNeighbour.getNeighbourNode().removeNeighbourNode(nNode);
+                        graph.addSegment(iNode, nextNeighbour.getNeighbourNode());
+                    }
                 }
             }
         }
