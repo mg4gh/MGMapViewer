@@ -41,10 +41,10 @@ public class BBox {
     }
 
     public BBox clear(){
-        minLatitude = Double.MAX_VALUE;
-        minLongitude = Double.MAX_VALUE;
-        maxLatitude = Double.MIN_VALUE;
-        maxLongitude = Double.MIN_VALUE;
+        minLatitude = LatLongUtils.LATITUDE_MAX ; //Double.MAX_VALUE;
+        minLongitude = LatLongUtils.LONGITUDE_MAX; //Double.MAX_VALUE;
+        maxLatitude = LatLongUtils.LATITUDE_MIN; // Double.MIN_VALUE;
+        maxLongitude = LatLongUtils.LONGITUDE_MIN; //Double.MIN_VALUE;
         return this;
     }
 
