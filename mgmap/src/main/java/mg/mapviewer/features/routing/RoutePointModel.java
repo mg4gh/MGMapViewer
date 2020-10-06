@@ -38,6 +38,8 @@ public class RoutePointModel implements Observer {
     MultiPointModelImpl newMPM = null;
     PointModel mtlp;
     double currentDistance = 0;
+    boolean direct = false;
+    boolean directChanged = false;
 
     TreeSet<ApproachModel> approaches;
     ApproachModel selectedApproach;

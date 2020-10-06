@@ -86,9 +86,7 @@ public class MSMarker extends MGMicroService {
         ttRefreshTime = 20;
 
         checkStartStopMCL();
-        editMarkerTrackObserver = new Observer()
-        {
-            MarkerControlLayer mcl = null;
+        editMarkerTrackObserver = new Observer() {
             @Override
             public void update(Observable o, Object arg) {
                 checkStartStopMCL();
@@ -243,10 +241,10 @@ public class MSMarker extends MGMicroService {
             markerTrackLogObservable.changed();
         }
 
-        @Override
-        public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
-            return onTap(tapLatLong, layerXY, tapXY);
-        }
+//        @Override
+//        public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
+//            return onTap(tapLatLong, layerXY, tapXY);
+//        }
 
     }
 
