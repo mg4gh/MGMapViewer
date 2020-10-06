@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.mapsforge.core.model.MapPosition;
+import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.renderer.MapWorkerPool;
@@ -97,6 +98,7 @@ public class MGMapApplication extends Application {
         MapWorkerPool.DEBUG_TIMING = preferences.getBoolean(getResources().getString(R.string.preferences_debug_timing_key), false);
         wayDetails.setValue( preferences.getBoolean(getResources().getString(R.string.preferences_way_details_key), false) );
         stlWithGL.setValue( preferences.getBoolean(getResources().getString(R.string.preferences_stl_gl_key), true) );
+        Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
 
         centerCurrentPosition.addObserver(new Observer() {
             @Override
