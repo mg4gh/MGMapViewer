@@ -3,7 +3,7 @@
     package="mg.mapviewer"
     android:installLocation="auto"
     android:versionCode="1"
-    android:versionName="1.0a">
+    android:versionName="0.9.1">
 
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
