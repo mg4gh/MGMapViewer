@@ -49,6 +49,7 @@ public class MSGraphDetails extends MGMicroService {
         @Override
         public boolean onTap(WriteablePointModel pmTap) {
             unregisterAll();
+            if (getMapView().getModel().mapViewPosition.getZoomLevel() <= 13) return false;
             return (showGraphDetails( pmTap ));
         }
     }
