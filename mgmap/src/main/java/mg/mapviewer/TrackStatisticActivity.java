@@ -15,14 +15,19 @@
 package mg.mapviewer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import android.os.StrictMode;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.ContextMenu;
@@ -52,6 +57,7 @@ import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.model.TrackLogStatistic;
 
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Random;
@@ -75,7 +81,17 @@ public class TrackStatisticActivity extends Activity {
         application = (MGMapApplication)getApplication();
         context = application.getApplicationContext();
         resources = getResources();
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            try {
+                Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+                m.invoke(null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         return true;
@@ -199,6 +215,7 @@ public class TrackStatisticActivity extends Activity {
                 menu.add(0, v.getId(),0,"Height Profile");
             }
             menu.add(0, v.getId(),0,"Select Track");
+            menu.add(0, v.getId(),0,"Share Track");
         }
     }
 
@@ -213,8 +230,33 @@ public class TrackStatisticActivity extends Activity {
             if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == trackLog) {
                 application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
             }
-            PersistenceManager.getInstance().deleteTrack(trackLog.getName());
-            AndroidUtil.restartActivity(this);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle("Delete Track");
+            builder.setMessage(trackLog.getName());
+
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " delete track "+trackLog.getName() );
+                    PersistenceManager.getInstance().deleteTrack(trackLog.getName());
+                    AndroidUtil.restartActivity(TrackStatisticActivity.this);
+                }
+            });
+
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // Do nothing
+                    dialog.dismiss();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " abort delete track "+trackLog.getName() );
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
         }
         if (item.getTitle().equals("Select Track")){
             Log.i(MGMapApplication.LABEL, NameUtil.context() +" Select Track " + trackLog.getName());
@@ -222,6 +264,15 @@ public class TrackStatisticActivity extends Activity {
             application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRefZoom(trackLog, -1, true));
             application.availableTrackLogsObservable.changed();
             finish();
+        }
+        if (item.getTitle().equals("Share Track")){
+            Log.i(MGMapApplication.LABEL, NameUtil.context() +" Share Track " + trackLog.getName());
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType("*/*");
+            sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
+            sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(sendIntent, "Share "+trackLog.getName()+".gpx to ..."));
         }
         if (item.getTitle().equals("Height Profile")){
             Log.i(MGMapApplication.LABEL, NameUtil.context() +" Height Profile Track " + trackLog.getName());

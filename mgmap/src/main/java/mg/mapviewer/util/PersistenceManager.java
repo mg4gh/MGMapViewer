@@ -15,6 +15,7 @@
 package mg.mapviewer.util;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -221,6 +222,15 @@ public class PersistenceManager {
             File file = new File(trackGpxDir, filename + ".gpx");
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        }
+        return null;
+    }
+    public Uri getGpxUri(String filename) {
+        try {
+            File file = new File(trackGpxDir, filename + ".gpx");
+            return Uri.fromFile(file);
+        } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
         return null;
