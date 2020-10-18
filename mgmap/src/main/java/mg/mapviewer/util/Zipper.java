@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import mg.mapviewer.MGMapApplication;
 
@@ -61,7 +63,14 @@ public class Zipper
         zipFile.extractAll(extractedZipFilePath);
     }
 
-    public void unpack(InputStream inputStream, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
+    public void unpack(URL url, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
+        URLConnection connection = url.openConnection();
+        connection.connect();
+        bgJob.setMax(connection.getContentLength());
+        bgJob.setText("Download "+ url.toString().replaceFirst(".*/",""));
+        bgJob.notifyUser();
+
+        InputStream inputStream = url.openStream();
         ZipInputStream zipInputStream = new ZipInputStream(inputStream, (password==null)?null:password.toCharArray());
         LocalFileHeader localFileHeader;
         int readLen;
@@ -76,7 +85,7 @@ public class Zipper
             long fileLengthU = localFileHeader.getUncompressedSize();
             double compressionFactor = fileLengthC / (double)fileLengthU;
             totalLength += fileLengthC;
-            long fileRead = 0;
+            int fileRead = 0;
 
             OutputStream outputStream = null;
             try {
@@ -94,7 +103,8 @@ public class Zipper
                             fileRead += readLen;
                             if (bgJob != null){
                                 long value = totalLength-fileLengthC+ (long)(fileRead*compressionFactor);
-                                bgJob.notify("Downlaod: "+value/1024+"K ");
+                                bgJob.setProgress((int)value);
+                                bgJob.notifyUser();
                             }
                         }
                     }

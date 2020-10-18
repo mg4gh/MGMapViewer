@@ -1,18 +1,13 @@
 package mg.mapviewer.util;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-
-import mg.mapviewer.MGMapApplication;
 
 public class OpenAndroMapsUtil {
 
@@ -26,7 +21,6 @@ public class OpenAndroMapsUtil {
                     String s1 = uri.toString();
                     String s2 = s1.replaceFirst("mf-v4-map://download.openandromaps.org/", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/");
                     URL url = new URL(s2);
-                    InputStream is = url.openStream();
                     FilenameFilter filter = new FilenameFilter() {
                         @Override
                         public boolean accept(File dir, String name) {
@@ -35,7 +29,7 @@ public class OpenAndroMapsUtil {
                             return false;
                         }
                     };
-                    zipper.unpack(is, PersistenceManager.getInstance().getMapsforgeDir(), filter, this);
+                    zipper.unpack(url, PersistenceManager.getInstance().getMapsforgeDir(), filter, this);
 
                 }
             };
@@ -50,8 +44,7 @@ public class OpenAndroMapsUtil {
                     String s2 = s1.replaceFirst("mf-theme", "https");
 //                  URL url = new URL(s2);  //unfortunately this doesn't work
                     URL url = new URL(((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
-                    InputStream is = url.openStream();
-                    zipper.unpack(is, PersistenceManager.getInstance().getThemesDir(), null, this);
+                    zipper.unpack(url, PersistenceManager.getInstance().getThemesDir(), null, this);
                 }
             };
             jobs.add(job);

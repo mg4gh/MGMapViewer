@@ -48,12 +48,18 @@ public class BgJobService extends Service {
     private Notification notification = null;
     private volatile int numWorkers = 0;
     private String CHANNEL_ID;
+    private int max = 0; // max jobs at activation - used for progress handling
+    private int lastNumBgJobs = 0;
 
     private Handler timer;
     private TimerTask ttNotify = new TimerTask() {
         @Override
         public void run() {
-            notifyUser(1,"BgJobService: "+numWorkers+" running, "+application.numBgJobs()+" waiting");
+            int currentNumBgJobs = application.numBgJobs();
+            if (lastNumBgJobs != currentNumBgJobs){
+                notifyUser(1,"BgJobService: running", max, max-currentNumBgJobs, false);
+                lastNumBgJobs = currentNumBgJobs;
+            }
             timer.postDelayed(ttNotify, 1000);
         }
     };
@@ -123,6 +129,8 @@ public class BgJobService extends Service {
 
     protected void activateService(){
         try {
+            max = application.numBgJobs() + getNumWorkers();
+            lastNumBgJobs = max;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForeground(1, notification);
             }
@@ -173,13 +181,16 @@ public class BgJobService extends Service {
         return numWorkers;
     }
 
-    public void notifyUser(int notificationId, String notificationText) {
+    public void notifyUser(int notificationId, String notificationText, int max, int progress, boolean indeterminate) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setSmallIcon(R.drawable.mg2)
                     .setContentTitle("MGMapViewer")
                     .setContentText(notificationText)
                     .setSound(null)
+                    .setProgress(max, progress, indeterminate)
+                    .setOngoing(true)
+                    .setOnlyAlertOnce(true)
                     .build();
             NotificationManagerCompat.from(application).notify(notificationId, notification);
         }
