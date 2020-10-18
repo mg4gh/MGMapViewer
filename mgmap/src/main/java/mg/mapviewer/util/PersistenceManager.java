@@ -81,6 +81,7 @@ public class PersistenceManager {
     private File logDir;
     private File configDir;
     private File searchConfigDir;
+    private File apkDir;
 
     private File fRaw;
     private FileOutputStream fosRaw = null;
@@ -119,6 +120,7 @@ public class PersistenceManager {
         searchConfigDir = createIfNotExists(configDir, "search");
         createFileIfNotExists(searchConfigDir, "POI.cfg");
         createFileIfNotExists(searchConfigDir, "Nominatim.cfg");
+        apkDir = createIfNotExists(appDir, "apk");
     }
 
     public File getLogDir(){
@@ -135,6 +137,10 @@ public class PersistenceManager {
     }
     public File getTrackGpxDir(){
         return trackGpxDir;
+    }
+
+    public File getApkDir(){
+        return apkDir;
     }
 
     public File createIfNotExists(File parent, String subDir) {

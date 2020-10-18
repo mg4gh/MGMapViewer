@@ -30,13 +30,13 @@
     <PreferenceScreen
         android:title="Download">
         <PreferenceScreen
-            android:title="@string/preferences_dl_help_title"
-            android:summary="@string/preferences_dl_help_desc"
+            android:title="@string/preferences_dl_maps_title"
+            android:summary="@string/preferences_dl_maps_desc"
             android:icon="@drawable/im">
             <Preference
-                android:key="@string/preferences_dl_maps_key"
-                android:title="@string/preferences_dl_maps_title"
-                android:summary="@string/preferences_dl_maps_desc"/>
+                android:key="@string/preferences_dl_maps_wd_key"
+                android:title="@string/preferences_dl_maps_wd_title"
+                android:summary="@string/preferences_dl_maps_wd_desc"/>
             <Preference
                 android:key="@string/preferences_dl_maps_eu_key"
                 android:title="@string/preferences_dl_maps_eu_title"
@@ -52,6 +52,21 @@
             android:title="@string/preferences_dl_theme_title"
             android:summary="@string/preferences_dl_theme_desc"
             android:icon="@drawable/it"/>
+
+        <PreferenceScreen
+            android:title="@string/preferences_dl_sw_title"
+            android:summary="@string/preferences_dl_sw_desc"
+            android:icon="@drawable/github">
+            <Preference
+                android:key="@string/preferences_dl_sw_latest_key"
+                android:title="@string/preferences_dl_sw_latest_title"
+                android:summary="@string/preferences_dl_sw_latest_desc"/>
+            <Preference
+                android:key="@string/preferences_dl_sw_other_key"
+                android:title="@string/preferences_dl_sw_other_title"
+                android:summary="@string/preferences_dl_sw_other_desc"/>
+        </PreferenceScreen>
+
     </PreferenceScreen>
 
     <Preference

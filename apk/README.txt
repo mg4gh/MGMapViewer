@@ -1,1 +1,0 @@
-This folder is used to provide complete apk files too, if you don't want to build them from the source.

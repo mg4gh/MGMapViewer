@@ -15,38 +15,32 @@
 package mg.mapviewer;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.map.datastore.MapDataStore;
-import org.mapsforge.map.layer.Layer;
-import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.DisplayModel;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 
 import mg.mapviewer.features.gdrive.MSGDrive;
-import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.Permissions;
+import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.util.TopExceptionHandler;
+import mg.mapviewer.util.Zipper;
 
 /**
  * Activity to edit the application preferences.
@@ -171,11 +165,13 @@ public class Settings extends PreferenceActivity implements
                 }
             });
         }
-        registerOCL(R.string.preferences_dl_maps_key,    R.string.url_oam_dl);
+        registerOCL(R.string.preferences_dl_maps_wd_key,    R.string.url_oam_dl);
         registerOCL(R.string.preferences_dl_maps_eu_key, R.string.url_oam_dl_eu);
         registerOCL(R.string.preferences_dl_maps_de_key, R.string.url_oam_dl_de);
         registerOCL(R.string.preferences_dl_theme_el_key, R.string.url_oam_th_el);
         registerOCL(R.string.preferences_doc_main_key, R.string.url_doc_main);
+        registerOCL(R.string.preferences_dl_sw_other_key, R.string.url_github_apk_dir);
+        registerOCLDownloadLatest();
     }
 
     @SuppressWarnings("deprecation")
@@ -193,6 +189,34 @@ public class Settings extends PreferenceActivity implements
                 }
             });
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void registerOCLDownloadLatest(){
+        Preference pref = findPreference(getResources().getString(R.string.preferences_dl_sw_latest_key));
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                ArrayList<BgJob> jobs = new ArrayList(){ };
+                BgJob job = new BgJob() {
+                    @Override
+                    protected void doJob() throws Exception {
+                        super.doJob();
+                        Zipper zipper = new Zipper(null);
+                        URL url = new URL(getResources().getString(R.string.url_github_apk_latest));
+                        zipper.unpack(url, PersistenceManager.getInstance().getApkDir(), null, this);
+
+                        File file = new File(PersistenceManager.getInstance().getApkDir(), "mgmap.apk");
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                        startActivity(intent);
+                    }
+                };
+                jobs.add(job);
+                ((MGMapApplication)getApplication()).addBgJobs(jobs);
+                return true;
+            }
+        });
     }
 
     @Override
