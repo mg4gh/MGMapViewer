@@ -29,6 +29,8 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.core.content.FileProvider;
+
 import org.mapsforge.map.model.DisplayModel;
 
 import java.io.File;
@@ -208,7 +210,13 @@ public class Settings extends PreferenceActivity implements
 
                         File file = new File(PersistenceManager.getInstance().getApkDir(), "mgmap.apk");
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                        intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+                        Context context = getApplicationContext();
+
+                        Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+                        intent.setDataAndType(uri, "application/vnd.android.package-archive");
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         startActivity(intent);
                     }
                 };

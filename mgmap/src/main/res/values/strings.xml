@@ -152,7 +152,7 @@
     <string name="url_oam_dl_de">https://www.openandromaps.org/downloads/deutschland</string>
     <string name="url_oam_th_el">https://www.openandromaps.org/kartenlegende/elevation-hike-theme</string>
     <string name="url_github_apk_dir">https://github.com/mg4gh/MGMapViewer/tree/master/apk</string>
-    <string name="url_github_apk_latest">https://github.com/mg4gh/MGMapViewer/tree/master/apk/mgmap.zip</string>
+    <string name="url_github_apk_latest">https://github.com/mg4gh/MGMapViewer/raw/master/apk/mgmap.zip</string>
 
 
     <string name="preferences_screen_download">Downloads</string>
