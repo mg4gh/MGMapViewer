@@ -206,6 +206,7 @@ public class Settings extends PreferenceActivity implements
                         super.doJob();
                         Zipper zipper = new Zipper(null);
                         URL url = new URL(getResources().getString(R.string.url_github_apk_latest));
+                        PersistenceManager.getInstance().cleanApkDir();
                         zipper.unpack(url, PersistenceManager.getInstance().getApkDir(), null, this);
 
                         File file = PersistenceManager.getInstance().getApkFile();

@@ -142,6 +142,13 @@ public class PersistenceManager {
     public File getApkDir(){
         return apkDir;
     }
+    public void cleanApkDir(){
+        try {
+            for (File file : apkDir.listFiles()){
+                file.delete();
+            }
+        } catch (Exception e) { }
+    }
     public File getApkFile(){
         String[] apkNames = apkDir.list(new FilenameFilter() {
             @Override
