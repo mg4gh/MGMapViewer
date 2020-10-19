@@ -5,6 +5,31 @@ def getDate() {
     return new Date().format('yyyyMMdd_HHmmss')
 }
 
+afterEvaluate {
+
+    task copyReleaseApk(type: Copy, dependsOn: assembleRelease) {
+        from("$buildDir/outputs/apk/release") {
+            include '**/*.apk'
+            exclude '**/*unsigned.apk', '**/*unaligned.apk'
+        }
+        into '../apk/'
+    }
+    task zipReleaseApk(type: Zip, dependsOn: copyReleaseApk ){
+        from("$buildDir/outputs/apk/release") {
+            exclude '**/*unsigned.apk', '**/*unaligned.apk'
+        }
+        archiveName( "apk.zip" )
+        destinationDirectory = file( "../apk")
+    }
+
+    task mgmapRelease(dependsOn: zipReleaseApk){
+        doLast {
+            System.out.println( "mgmapRelease finished" )
+        }
+    }
+
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -13,13 +38,12 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
-//        versionName "1.0"
         versionName "${versionMajor}-build-${getDate()}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -30,7 +54,13 @@ android {
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
     }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "${parent.name}-${output.baseName}-${variant.versionName}.apk"
 
+        }
+
+     }
 
     sourceSets {
         main {

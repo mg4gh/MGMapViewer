@@ -134,7 +134,7 @@ public class Settings extends PreferenceActivity implements
                 builder.setTitle("Warning");
                 String msg = "the app will not work";
                 if (requestCode == WRITE_EXTERNAL_STORAGE_CODE2) msg = "the selected link can't be used.";
-                builder.setMessage("Without permission "+Manifest.permission.WRITE_EXTERNAL_STORAGE+" "+msg);
+                builder.setMessage(" Without permission "+Manifest.permission.WRITE_EXTERNAL_STORAGE+" "+msg);
                 builder.show();
             }
         }
@@ -208,7 +208,7 @@ public class Settings extends PreferenceActivity implements
                         URL url = new URL(getResources().getString(R.string.url_github_apk_latest));
                         zipper.unpack(url, PersistenceManager.getInstance().getApkDir(), null, this);
 
-                        File file = new File(PersistenceManager.getInstance().getApkDir(), "mgmap.apk");
+                        File file = PersistenceManager.getInstance().getApkFile();
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
                         Context context = getApplicationContext();

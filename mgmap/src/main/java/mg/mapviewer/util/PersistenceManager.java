@@ -142,6 +142,18 @@ public class PersistenceManager {
     public File getApkDir(){
         return apkDir;
     }
+    public File getApkFile(){
+        String[] apkNames = apkDir.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".apk");
+            }
+        });
+        if (apkNames.length > 0){
+            return new File(apkDir, apkNames[0]);
+        }
+        return null;
+    }
 
     public File createIfNotExists(File parent, String subDir) {
         File f = new File(parent, subDir);
