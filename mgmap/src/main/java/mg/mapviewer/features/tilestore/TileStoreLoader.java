@@ -1,5 +1,6 @@
 package mg.mapviewer.features.tilestore;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 
@@ -72,6 +73,8 @@ public class TileStoreLoader {
         File cookiesRef = new File(storeDir, "cookies.ref");
         File cookies = new File(storeDir, "cookies.json");
         if (cookiesRef.exists()){
+            checkRequestStoragePermissions(); // check (and request if necessary the permissions)
+
             BufferedReader in = new BufferedReader(new FileReader(cookiesRef));
             String line = in.readLine();
             cookies = new File(line);
@@ -124,6 +127,15 @@ public class TileStoreLoader {
 
         }
     }
+
+    private boolean checkRequestStoragePermissions(){
+        if (!Permissions.check(activity, Manifest.permission.READ_EXTERNAL_STORAGE) ) {
+            Permissions.request(activity, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE} , 995);
+            return true;
+        }
+        return false;
+    }
+
 
 
     ArrayList<BgJob> jobs = new ArrayList<>();
