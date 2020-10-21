@@ -184,8 +184,8 @@
     <string name="preferences_dl_sw_desc">Download new apk from https://github.com/mg4gh/MGMapViewer</string>
 
     <string name="preferences_dl_sw_latest_key">DldSWLatestKey</string>
-    <string name="preferences_dl_sw_latest_title">Download latest apk</string>
-    <string name="preferences_dl_sw_latest_desc">Download the latest apk from https://github.com/mg4gh/MGMapViewer</string>
+    <string name="preferences_dl_sw_latest_title">Download and Install latest apk</string>
+    <string name="preferences_dl_sw_latest_desc">Download and Install the latest apk from https://github.com/mg4gh/MGMapViewer</string>
 
     <string name="preferences_dl_sw_other_key">DldSWOtherKey</string>
     <string name="preferences_dl_sw_other_title">Download other apk</string>
