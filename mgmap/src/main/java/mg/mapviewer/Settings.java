@@ -205,7 +205,8 @@ public class Settings extends PreferenceActivity implements
                     protected void doJob() throws Exception {
                         super.doJob();
                         Zipper zipper = new Zipper(null);
-                        URL url = new URL(getResources().getString(R.string.url_github_apk_latest));
+                        String urlString = getResources().getString(R.string.url_github_apk_latest)+((BuildConfig.DEBUG)?"debug":"release")+"/apk.zip";
+                        URL url = new URL(urlString);
                         PersistenceManager.getInstance().cleanApkDir();
                         zipper.unpack(url, PersistenceManager.getInstance().getApkDir(), null, this);
 
