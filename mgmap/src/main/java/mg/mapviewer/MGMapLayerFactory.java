@@ -167,7 +167,7 @@ public class MGMapLayerFactory {
 
                     TileCache tileCache = AndroidUtil.createTileCache(context, "trl_"+key,
                             mapView.getModel().displayModel.getTileSize(), 1.0f,
-                            mapView.getModel().frameBufferModel.getOverdrawFactor(), false);
+                            mapView.getModel().frameBufferModel.getOverdrawFactor() *1.5, false);
                     activity.addTileCache(tileCache);
 
                     if (entry.endsWith(".ref")){
