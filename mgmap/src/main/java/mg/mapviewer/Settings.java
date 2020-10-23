@@ -174,6 +174,10 @@ public class Settings extends PreferenceActivity implements
         registerOCL(R.string.preferences_doc_main_key, R.string.url_doc_main);
         registerOCL(R.string.preferences_dl_sw_other_key, R.string.url_github_apk_dir);
         registerOCLDownloadLatest();
+
+        Preference preference = findPreference(getResources().getString(R.string.preferences_version_key));
+        preference.setSummary(BuildConfig.VERSION_NAME);
+
     }
 
     @SuppressWarnings("deprecation")

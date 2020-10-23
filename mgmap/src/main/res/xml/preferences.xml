@@ -28,7 +28,8 @@
         android:title="@string/preference_choose_search_title" />
 
     <PreferenceScreen
-        android:title="Download">
+        android:title="@string/preferences_screen_download"
+        android:summary="@string/preferences_screen_desc_download">
         <PreferenceScreen
             android:title="@string/preferences_dl_maps_title"
             android:summary="@string/preferences_dl_maps_desc"
@@ -156,5 +157,10 @@
             android:summary="@string/preferences_way_details_desc"
             android:title="@string/preferences_way_details_title" />
     </PreferenceScreen>
+    <Preference
+        android:key="@string/preferences_version_key"
+        android:summary="@string/preferences_version_desc"
+        android:title="@string/preferences_version_title" />
+
 
 </PreferenceScreen>

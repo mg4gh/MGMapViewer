@@ -155,7 +155,8 @@
     <string name="url_github_apk_latest">https://github.com/mg4gh/MGMapViewer/raw/master/apk/</string>
 
 
-    <string name="preferences_screen_download">Downloads</string>
+    <string name="preferences_screen_download">Download</string>
+    <string name="preferences_screen_desc_download">Download Maps and Software</string>
 
     <string name="preferences_dl_maps_title">Download Maps</string>
     <string name="preferences_dl_maps_desc">Download of maps form www.openandromaps.org. Select the map you want to download, open the "+" in front of the name and finally
@@ -191,8 +192,12 @@
     <string name="preferences_dl_sw_other_title">Download other apk</string>
     <string name="preferences_dl_sw_other_desc">Download the other apk from https://github.com/mg4gh/MGMapViewer</string>
 
+    <string name="preferences_doc_main_key">DocMain</string>
     <string name="preferences_doc_main_title">Documentation</string>
     <string name="preferences_doc_main_desc">Go to the github.io main documentation page.</string>
-    <string name="preferences_doc_main_key">DocMain</string>
+
+    <string name="preferences_version_key">versionKey</string>
+    <string name="preferences_version_title">App Version</string>
+    <string name="preferences_version_desc">-</string>
 
 </resources>
