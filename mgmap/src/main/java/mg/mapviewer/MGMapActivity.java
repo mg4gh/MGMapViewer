@@ -156,6 +156,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         createLayers();
         createControls();
         initializePosition(mapView.getModel().mapViewPosition);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
         application = (MGMapApplication) getApplication();
         CC.setActivity(this);

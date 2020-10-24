@@ -60,15 +60,7 @@ public class ThemeSettings extends PreferenceActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences,
                                           String key) {
-        if (getResources().getString(R.string.preferences_scale_key).equals(key)) {
-            float userScaleFactor = DisplayModel.getDefaultUserScaleFactor();
-            float fs = Float.valueOf(preferences.getString(
-                    getResources().getString(R.string.preferences_scale_key),
-                    Float.toString(userScaleFactor)));
-            if (fs != userScaleFactor) {
-                DisplayModel.setDefaultUserScaleFactor(fs);
-            }
-        } else if (this.renderthemeOptions != null && this.renderthemeOptions.getId().equals(key)) {
+        if (this.renderthemeOptions != null && this.renderthemeOptions.getId().equals(key)) {
             createRenderthemeMenu();
         }
     }
@@ -86,7 +78,7 @@ public class ThemeSettings extends PreferenceActivity implements
         renderthemeOptions = (XmlRenderThemeStyleMenu) getIntent().getSerializableExtra(getResources().getString(R.string.my_rendertheme_menu_key));
         if (renderthemeOptions != null) {
 
-            // the preference category is hard-wired into the Samples app and serves as
+            // the preference category is hard-wired into this app and serves as
             // the hook to add a list preference to allow users to select a style
             this.renderthemeMenu = (PreferenceCategory) findPreference(getResources().getString(R.string.my_rendertheme_menu_key));
             createRenderthemeMenu();
