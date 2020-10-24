@@ -123,15 +123,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     api 'net.sf.kxml:kxml2:2.3.0'
 
     implementation 'com.android.support:preference-v7:29.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    implementation files('libs\\javax.json-1.1.2.jar')
-    implementation files('libs\\javax.json-api-1.1.2.jar')
+    implementation files('libs/javax.json-1.1.2.jar')
+    implementation files('libs/javax.json-api-1.1.2.jar')
 
     implementation 'com.google.api-client:google-api-client:1.30.9'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.27.0'
