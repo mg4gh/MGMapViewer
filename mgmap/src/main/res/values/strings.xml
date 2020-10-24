@@ -10,7 +10,7 @@
     <string name="okbutton">OK</string>
 
 
-    <string name="btSettings">SETTINGS</string>
+    <string name="btSettings">SETTINGS\nAND MORE</string>
     <string name="btThemes">THEMES</string>
     <string name="btStatistic">STATISTIC</string>
     <string name="btDashboard">BOARD</string>

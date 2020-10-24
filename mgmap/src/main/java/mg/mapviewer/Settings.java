@@ -176,7 +176,7 @@ public class Settings extends PreferenceActivity implements
         registerOCLDownloadLatest();
 
         Preference preference = findPreference(getResources().getString(R.string.preferences_version_key));
-        preference.setSummary(BuildConfig.VERSION_NAME);
+        preference.setSummary(BuildConfig.VERSION_NAME+" ("+ (BuildConfig.DEBUG?"debug":"release")+")");
 
     }
 
