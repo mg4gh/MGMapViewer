@@ -17,30 +17,36 @@ package mg.mapviewer;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceManager;
+
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
-import org.mapsforge.map.model.DisplayModel;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
-
-import mg.mapviewer.util.TopExceptionHandler;
 
 import java.util.Locale;
 import java.util.Map;
 
-public class ThemeSettings extends PreferenceActivity implements
-        OnSharedPreferenceChangeListener {
+import mg.mapviewer.util.TopExceptionHandler;
+
+public class ThemeSettings extends AppCompatActivity implements OnSharedPreferenceChangeListener {
 
     ListPreference baseLayerPreference;
     SharedPreferences prefs;
     XmlRenderThemeStyleMenu renderthemeOptions;
     PreferenceCategory renderthemeMenu;
+    ThemeSettingsFragment themeSettingsFragment;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -72,16 +78,29 @@ public class ThemeSettings extends PreferenceActivity implements
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler());
 
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        addPreferencesFromResource(R.xml.mypreferences);
+
+        setContentView(R.layout.theme_settings_activity);
+        themeSettingsFragment = new ThemeSettingsFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settings, themeSettingsFragment)
+                .commit();
 
         // if the render theme has a style menu, its data is delivered via the intent
         renderthemeOptions = (XmlRenderThemeStyleMenu) getIntent().getSerializableExtra(getResources().getString(R.string.my_rendertheme_menu_key));
-        if (renderthemeOptions != null) {
+    }
 
-            // the preference category is hard-wired into this app and serves as
-            // the hook to add a list preference to allow users to select a style
-            this.renderthemeMenu = (PreferenceCategory) findPreference(getResources().getString(R.string.my_rendertheme_menu_key));
-            createRenderthemeMenu();
+    public static class ThemeSettingsFragment extends PreferenceFragmentCompat {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.mypreferences, rootKey);
+        }
+        @Override
+        public RecyclerView onCreateRecyclerView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+            RecyclerView recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState);
+            DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), RecyclerView.VERTICAL);
+            recyclerView.addItemDecoration(itemDecoration);
+            return recyclerView;
         }
     }
 
@@ -95,6 +114,15 @@ public class ThemeSettings extends PreferenceActivity implements
     protected void onResume() {
         super.onResume();
         this.prefs.registerOnSharedPreferenceChangeListener(this);
+
+        if (renderthemeOptions != null) {
+
+            // the preference category is hard-wired into this app and serves as
+            // the hook to add a list preference to allow users to select a style
+            renderthemeMenu = (PreferenceCategory) themeSettingsFragment.getPreferenceScreen().findPreference(getResources().getString(R.string.my_rendertheme_menu_key));
+            createRenderthemeMenu();
+        }
+
     }
 
 
@@ -146,6 +174,7 @@ public class ThemeSettings extends PreferenceActivity implements
         baseLayerPreference.setEnabled(true);
         baseLayerPreference.setPersistent(true);
         baseLayerPreference.setDefaultValue(renderthemeOptions.getDefaultValue());
+        baseLayerPreference.setIconSpaceReserved(false);
 
         renderthemeMenu.addPreference(baseLayerPreference);
 
@@ -163,7 +192,9 @@ public class ThemeSettings extends PreferenceActivity implements
             checkbox.setKey(overlay.getId());
             checkbox.setPersistent(true);
             checkbox.setTitle(overlay.getTitle(language));
-            if (findPreference(overlay.getId()) == null) {
+            checkbox.setIconSpaceReserved(false);
+
+            if (themeSettingsFragment.findPreference(overlay.getId()) == null) {
                 // value has never been set, so set from default
                 checkbox.setChecked(overlay.isEnabled());
             }

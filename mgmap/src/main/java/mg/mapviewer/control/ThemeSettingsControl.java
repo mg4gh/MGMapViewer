@@ -19,7 +19,6 @@ import android.view.View;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.R;
-import mg.mapviewer.Settings;
 import mg.mapviewer.ThemeSettings;
 import mg.mapviewer.util.Control;
 

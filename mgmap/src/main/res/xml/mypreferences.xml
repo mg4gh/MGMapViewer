@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/menu_mypreferences">
     <PreferenceCategory
         android:key="@string/my_rendertheme_menu_key"
-        android:title="Themes" />
+        android:title="Themes"
+        app:iconSpaceReserved="false" />
 </PreferenceScreen>
