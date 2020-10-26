@@ -66,7 +66,7 @@ public class Zipper
     public void unpack(URL url, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
         URLConnection connection = url.openConnection();
         connection.connect();
-        bgJob.setMax(connection.getContentLength());
+        bgJob.setMax((int)(connection.getContentLengthLong()/1000));
         bgJob.setText("Download "+ url.toString().replaceFirst(".*/",""));
         bgJob.notifyUser();
 
@@ -81,15 +81,17 @@ public class Zipper
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedZipFilePath="+extractedZipFilePath);
         while ((localFileHeader = zipInputStream.getNextEntry()) != null) {
 
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+localFileHeader.getFileName());
             long fileLengthC = localFileHeader.getCompressedSize();
             long fileLengthU = localFileHeader.getUncompressedSize();
             double compressionFactor = fileLengthC / (double)fileLengthU;
             totalLength += fileLengthC;
-            int fileRead = 0;
+            long fileRead = 0;
 
             OutputStream outputStream = null;
             try {
                 File extractedFile = new File(extractedZipFilePath, localFileHeader.getFileName());
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile);
                 if ((filter==null) || ( filter.accept( extractedFile.getParentFile(), extractedFile.getName() ))){
 
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile);
@@ -103,7 +105,7 @@ public class Zipper
                             fileRead += readLen;
                             if (bgJob != null){
                                 long value = totalLength-fileLengthC+ (long)(fileRead*compressionFactor);
-                                bgJob.setProgress((int)value);
+                                bgJob.setProgress((int)(value/1000));
                                 bgJob.notifyUser();
                             }
                         }
@@ -117,7 +119,9 @@ public class Zipper
                     if (outputStream != null){
                         outputStream.close();
                     }
-                } catch (Exception e){}
+                } catch (Exception e){
+                    Log.e (MGMapApplication.LABEL, NameUtil.context(),e);
+                }
             }
         }
     }

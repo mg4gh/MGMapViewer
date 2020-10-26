@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.preference.Preference;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -33,15 +34,19 @@ import androidx.annotation.NonNull;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
 
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.renderer.MapWorkerPool;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 
+import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
@@ -147,18 +152,18 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         MGMapLayerFactory.setContext(getApplicationContext());
         MGMapLayerFactory.setActivity(this);
         MGMapLayerFactory.mapLayers.clear();
-        Settings.initMapLayers(getApplicationContext(), this);
+//        Settings.initMapLayers(getApplicationContext(), this);
 
+        application = (MGMapApplication) getApplication();
+        createSharedPreferences();
         setContentView(R.layout.mapviewer);
 
-        createSharedPreferences();
         initMapView();
         createLayers();
         createControls();
         initializePosition(mapView.getModel().mapViewPosition);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
-        application = (MGMapApplication) getApplication();
         CC.setActivity(this);
         PointModelUtil.init(getResources().getInteger(R.integer.CLOSE_THRESHOLD));
 
@@ -273,6 +278,23 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.createSharedPreferences();
         MGMapLayerFactory.setSharedPreferences(sharedPreferences);
         MGMapLayerFactory.setXmlRenderTheme(getRenderTheme());
+
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + Float.toString(DisplayModel.getDeviceScaleFactor()));
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device screen size " + getResources().getDisplayMetrics().widthPixels + "x" + getResources().getDisplayMetrics().heightPixels);
+        float fs = Float.valueOf(sharedPreferences.getString(getResources().getString(R.string.preferences_scale_key), Float.toString(DisplayModel.getDefaultUserScaleFactor())));
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " User ScaleFactor " + Float.toString(fs));
+        if (fs != DisplayModel.getDefaultUserScaleFactor()) {
+            DisplayModel.setDefaultUserScaleFactor(fs);
+        }
+        MapFile.wayFilterEnabled = sharedPreferences.getBoolean(getResources().getString(R.string.preferences_wayfiltering_key), true);
+        if (MapFile.wayFilterEnabled) {
+            MapFile.wayFilterDistance = Integer.parseInt(sharedPreferences.getString(getResources().getString(R.string.preferences_wayfiltering_distance_key), "20"));
+        }
+        MapWorkerPool.DEBUG_TIMING = sharedPreferences.getBoolean(getResources().getString(R.string.preferences_debug_timing_key), false);
+
+        application.wayDetails.setValue(sharedPreferences.getBoolean(getResources().getString(R.string.preferences_way_details_key), false));
+        application.stlWithGL.setValue(sharedPreferences.getBoolean(getResources().getString(R.string.preferences_stl_gl_key), true));
+
     }
 
     /** Used if .gpx file is opened from mail oder file manager */
@@ -306,6 +328,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
 
 
+    private static final int READ_EXTERNAL_STORAGE_CODE = 991; // just an id to identify the callback
     private static final int ACCESS_FINE_LOCATION_CODE = 995; // just an id to identify the callback
     /** trigger TrackLoggerService, request permission on demand. */
     public void triggerTrackLoggerService(){
@@ -321,10 +344,30 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         }
     }
 
+    public boolean requestReadPermissions(){
+        if (!Permissions.check(this, Manifest.permission.READ_EXTERNAL_STORAGE) ) {
+            Permissions.request(this, Manifest.permission.READ_EXTERNAL_STORAGE , READ_EXTERNAL_STORAGE_CODE);
+            return true;
+        }
+        return false;
+    }
+
+
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ACCESS_FINE_LOCATION_CODE ){
             if (Permissions.check(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION} )){ //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
                 triggerTrackLoggerService();
+            }
+        }
+        if (requestCode == READ_EXTERNAL_STORAGE_CODE ){
+            if (Permissions.check(this, Manifest.permission.READ_EXTERNAL_STORAGE) ){ //ok, got the read permission -> restart
+                Log.w(MGMapApplication.LABEL, NameUtil.context()+ " Restart NOW");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        MGMapActivity.this.recreate(); // restart activity
+                    }
+                },200);
             }
         }
     }
@@ -410,7 +453,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     /** Return a MapDataStore if it contains a given BBox. This is used e.g. to find the MapDataStore for route calculation. */
     public MapDataStore getMapDataStore(BBox bBox) {
         String language = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "");
-        for (String prefKey : Settings.getMapLayerKeys()){
+        for (String prefKey : application.getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, language);
 
             Layer layer = MGMapLayerFactory.getMapLayer(key);
@@ -433,7 +476,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void createLayers() {
         MGMapLayerFactory.setMapView(mapView);
         Layers layers = mapView.getLayerManager().getLayers();
-        for (String prefKey : Settings.getMapLayerKeys()){
+        for (String prefKey : application.getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
             Layer layer = null;
             layer = MGMapLayerFactory.getMapLayer(key);

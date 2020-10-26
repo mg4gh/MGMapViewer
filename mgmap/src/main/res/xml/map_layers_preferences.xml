@@ -1,0 +1,32 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        app:title="Map layer selection"
+        app:iconSpaceReserved="false" >
+
+        <mg.mapviewer.settings.MapLayerListPreference
+            android:key="@string/preference_choose_map_key1"
+            android:title="@string/preference_choose_map_title1"
+            app:iconSpaceReserved="false" />
+        <mg.mapviewer.settings.MapLayerListPreference
+            android:key="@string/preference_choose_map_key2"
+            android:title="@string/preference_choose_map_title2"
+            app:iconSpaceReserved="false" />
+        <mg.mapviewer.settings.MapLayerListPreference
+            android:key="@string/preference_choose_map_key3"
+            android:title="@string/preference_choose_map_title3"
+            app:iconSpaceReserved="false" />
+        <mg.mapviewer.settings.MapLayerListPreference
+            android:key="@string/preference_choose_map_key4"
+            android:title="@string/preference_choose_map_title4"
+            app:iconSpaceReserved="false" />
+        <mg.mapviewer.settings.MapLayerListPreference
+            android:key="@string/preference_choose_map_key5"
+            android:title="@string/preference_choose_map_title5"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

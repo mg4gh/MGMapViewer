@@ -163,7 +163,7 @@ public class MSSearch extends MGMicroService {
 
     private void setSearchProvider(SearchProvider searchProvider){
         this.searchProvider = searchProvider;
-        searchProvider.init(this, searchView, getSharedPreferences());
+        searchProvider.init( getApplication(),this, searchView, getSharedPreferences());
     }
 
     private void doSearch(String text, int actionId){

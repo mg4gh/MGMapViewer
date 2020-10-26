@@ -42,8 +42,8 @@ public class Graphhopper extends SearchProvider {
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     @Override
-    protected void init(MSSearch msSearch, SearchView searchView, SharedPreferences preferences) {
-        super.init(msSearch, searchView, preferences);
+    protected void init(MGMapApplication application, MSSearch msSearch, SearchView searchView, SharedPreferences preferences) {
+        super.init(application, msSearch, searchView, preferences);
         Properties props = PersistenceManager.getInstance().getConfigProperties("search",this.getClass().getSimpleName()+".cfg");
         apiKey = props.getProperty("API_KEY");
     }

@@ -1,6 +1,7 @@
 package mg.mapviewer;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -82,23 +83,23 @@ public class MGMapApplication extends Application {
         AndroidGraphicFactory.createInstance(this);
         ExtrasUtil.checkCreateMeta();
 
-        Log.i(LABEL, NameUtil.context()+" onCreate: Device scale factor "+ Float.toString(DisplayModel.getDeviceScaleFactor()));
-        Log.i(LABEL, NameUtil.context()+" onCreate: Device screen size "+ getResources().getDisplayMetrics().widthPixels+"x"+getResources().getDisplayMetrics().heightPixels);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        float fs = Float.valueOf(preferences.getString(getResources().getString(R.string.preferences_scale_key),Float.toString(DisplayModel.getDefaultUserScaleFactor())));
-        Log.i(LABEL, NameUtil.context()+" onCreate: User ScaleFactor " + Float.toString(fs));
-        if (fs != DisplayModel.getDefaultUserScaleFactor()) {
-            DisplayModel.setDefaultUserScaleFactor(fs);
-        }
-
-        MapFile.wayFilterEnabled = preferences.getBoolean(getResources().getString(R.string.preferences_wayfiltering_key), true);
-        if (MapFile.wayFilterEnabled) {
-            MapFile.wayFilterDistance = Integer.parseInt(preferences.getString(getResources().getString(R.string.preferences_wayfiltering_distance_key), "20"));
-        }
-        MapWorkerPool.DEBUG_TIMING = preferences.getBoolean(getResources().getString(R.string.preferences_debug_timing_key), false);
         wayDetails.setValue( preferences.getBoolean(getResources().getString(R.string.preferences_way_details_key), false) );
         stlWithGL.setValue( preferences.getBoolean(getResources().getString(R.string.preferences_stl_gl_key), true) );
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
+//        if (preferences.getBoolean(getResources().getString(R.string.preferences_mtr_key), false)){
+//            Parameters.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() + 1;
+//        }
+
+        int[] prefIds = new int[]{
+                R.string.preference_choose_map_key1,
+                R.string.preference_choose_map_key2,
+                R.string.preference_choose_map_key3,
+                R.string.preference_choose_map_key4,
+                R.string.preference_choose_map_key5};
+        for (int id : prefIds){
+            mapLayerKeys.add( getResources().getString( id ));
+        }
 
         centerCurrentPosition.addObserver(new Observer() {
             @Override
@@ -394,6 +395,12 @@ public class MGMapApplication extends Application {
 
     /** queue for new (unhandled) TrackLogPoint objects */
     private ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
+
+    private ArrayList<String> mapLayerKeys = new ArrayList<>();
+
+    public ArrayList<String> getMapLayerKeys() {
+        return mapLayerKeys;
+    }
 
     /** Retruen the mirco service by type  - duplicate code of MGMapActivity, but here it is also available for other activities */
     public <T> T getMS(Class<T> tClass){

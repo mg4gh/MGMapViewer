@@ -366,7 +366,7 @@ public class ControlView extends RelativeLayout {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         LinearLayout parentLayer = findViewById(R.id.bars);
-        for (String prefKey : Settings.getMapLayerKeys()) {
+        for (String prefKey : application.getMapLayerKeys()) {
             final String key = sharedPreferences.getString(prefKey, "");
             Layer layer = MGMapLayerFactory.getMapLayer(key);
             boolean providesAlpha = (layer instanceof TileLayer);

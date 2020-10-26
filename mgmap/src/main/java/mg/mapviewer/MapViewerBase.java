@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -91,9 +92,6 @@ public abstract class MapViewerBase extends Activity implements SharedPreference
     protected void createSharedPreferences() {
         this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( this.getClass().getSimpleName(), MODE_PRIVATE));
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        this.sharedPreferences.edit().clear();
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
         this.sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -120,52 +118,12 @@ public abstract class MapViewerBase extends Activity implements SharedPreference
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key).toString());
-        MGMapApplication application = (MGMapApplication)getApplication();
+        // Be aware that most preference changes take effect due to activity restart
 
-        if (getResources().getString(R.string.preferences_scale_key).equals(key)) {
-            this.mapView.getModel().displayModel.setUserScaleFactor(DisplayModel.getDefaultUserScaleFactor());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize now " + this.mapView.getModel().displayModel.getTileSize());
-        }
-        if (getResources().getString(R.string.preferences_language_key).equals(key)) {
-            String language = preferences.getString(getResources().getString(R.string.preferences_language_key), null);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Preferred language now " + language);
-            // MG (04.08.17) : seems zo have no effect, since there is no action, 4 lines added
-            Resources resources = getResources();
-            Configuration configuration = resources.getConfiguration();
-            configuration.setLocale(new Locale("en"));
-            getApplicationContext().createConfigurationContext(configuration);
-        }
-        if (getResources().getString(R.string.preferences_textwidth_key).equals(key)) {
-            // will take effect due to activity restart
-        }
-        if (getResources().getString(R.string.preferences_scalebar_key).equals(key)) {
-            setMapScaleBar();
-        }
-        if (getResources().getString(R.string.preferences_debug_timing_key).equals(key)) {
-            MapWorkerPool.DEBUG_TIMING = preferences.getBoolean(getResources().getString(R.string.preferences_debug_timing_key), false);
-        }
-        if (getResources().getString(R.string.preferences_way_details_key).equals(key)) {
-            application.wayDetails.setValue( preferences.getBoolean(getResources().getString(R.string.preferences_way_details_key), false) );
-        }
-        if (getResources().getString(R.string.preferences_stl_gl_key).equals(key)) {
-            application.stlWithGL.setValue( preferences.getBoolean(getResources().getString(R.string.preferences_stl_gl_key), true) );
-        }
-        if (getResources().getString(R.string.preferences_rendering_threads_key).equals(key)) {
-//            MapWorkerPool.NUMBER_OF_THREADS = Integer.parseInt(preferences.getString(MGMapApplication.SETTING_RENDERING_THREADS, Integer.toString(MapWorkerPool.DEFAULT_NUMBER_OF_THREADS)));
-        }
-        if (getResources().getString(R.string.preferences_wayfiltering_distance_key).equals(key) ||
-                getResources().getString(R.string.preferences_wayfiltering_key).equals(key)) {
-            MapFile.wayFilterEnabled = preferences.getBoolean(getResources().getString(R.string.preferences_wayfiltering_key), true);
-            if (MapFile.wayFilterEnabled) {
-                MapFile.wayFilterDistance = Integer.parseInt(preferences.getString(getResources().getString(R.string.preferences_wayfiltering_distance_key), "20"));
-            }
-        }
         for (TileCache tileCache : tileCaches) {
             tileCache.purge();
         }
-        AndroidUtil.restartActivity(this);
+        this.recreate(); // restart activity
     }
-
-
 
 }

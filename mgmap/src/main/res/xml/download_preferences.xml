@@ -1,0 +1,60 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <mg.mapviewer.settings.PreferenceCategoryEx
+        app:title="@string/preferences_dl_maps_title"
+        app:summary="@string/preferences_dl_maps_desc"
+        app:icon="@drawable/im"
+        >
+
+        <Preference
+            app:key="@string/preferences_dl_maps_wd_key"
+            app:title="@string/preferences_dl_maps_wd_title"
+            app:summary="@string/preferences_dl_maps_wd_desc"
+            />
+        <Preference
+            app:key="@string/preferences_dl_maps_eu_key"
+            app:title="@string/preferences_dl_maps_eu_title"
+            app:summary="@string/preferences_dl_maps_eu_desc"
+            />
+        <Preference
+            app:key="@string/preferences_dl_maps_de_key"
+            app:title="@string/preferences_dl_maps_de_title"
+            app:summary="@string/preferences_dl_maps_de_desc"
+            />
+
+    </mg.mapviewer.settings.PreferenceCategoryEx>
+
+    <mg.mapviewer.settings.PreferenceCategoryEx
+        app:title="@string/preferences_dl_theme_title"
+        app:summary="@string/preferences_dl_theme_desc"
+        app:icon="@drawable/it"
+        >
+        <Preference
+            app:key="@string/preferences_dl_theme_el_key"
+            app:title="@string/preferences_dl_theme_el_title"
+            app:summary="@string/preferences_dl_theme_el_desc"
+            />
+
+    </mg.mapviewer.settings.PreferenceCategoryEx>
+
+    <mg.mapviewer.settings.PreferenceCategoryEx
+        app:title="@string/preferences_dl_sw_title"
+        app:summary="@string/preferences_dl_sw_desc"
+        app:icon="@drawable/github"
+        app:allowDividerAbove="true"
+        >
+        <Preference
+            app:key="@string/preferences_dl_sw_latest_key"
+            app:title="@string/preferences_dl_sw_latest_title"
+            app:summary="@string/preferences_dl_sw_latest_desc"
+            />
+        <Preference
+            app:key="@string/preferences_dl_sw_other_key"
+            app:title="@string/preferences_dl_sw_other_title"
+            app:summary="@string/preferences_dl_sw_other_desc"
+            />
+
+    </mg.mapviewer.settings.PreferenceCategoryEx>
+
+</PreferenceScreen>

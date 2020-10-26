@@ -1,0 +1,68 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <Preference
+        app:title="@string/preference_choose_map_title"
+        app:summary="@string/preference_choose_map_summary"
+        app:fragment="mg.mapviewer.settings.MapLayersPreferenceScreen"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        />
+
+    <mg.mapviewer.settings.ThemeListPreference
+        app:key="@string/preference_choose_theme_key"
+        app:title="@string/preference_choose_theme_title"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        />
+
+    <mg.mapviewer.settings.SearchProviderListPreference
+        app:key="@string/preference_choose_search_key"
+        app:title="@string/preference_choose_search_title"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        />
+
+    <Preference
+        app:title="@string/preferences_screen_download"
+        app:summary="@string/preferences_screen_desc_download"
+        app:fragment="mg.mapviewer.settings.DownloadPreferenceScreen"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        />
+
+    <Preference
+        app:key="@string/preferences_doc_main_key"
+        app:title="@string/preferences_doc_main_title"
+        app:summary="@string/preferences_doc_main_desc"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        />
+
+    <SwitchPreference
+        app:defaultValue="true"
+        app:key="@string/preferences_stl_gl_key"
+        app:summary="@string/preferences_stl_gl_desc"
+        app:title="@string/preferences_stl_gl_title"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        />
+
+    <Preference
+        app:title="@string/preferences_screen_further_pref"
+        app:fragment="mg.mapviewer.settings.FurtherPreferenceScreen"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        />
+
+    <Preference
+        app:key="@string/preferences_version_key"
+        app:summary="@string/preferences_version_desc"
+        app:title="@string/preferences_version_title"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        />
+
+
+
+</PreferenceScreen>

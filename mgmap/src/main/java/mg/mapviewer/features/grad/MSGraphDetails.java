@@ -62,7 +62,7 @@ public class MSGraphDetails extends MGMicroService {
 
     @Override
     protected void start() {
-        getApplication().wayDetails.addObserver(refreshObserver);
+//        getApplication().wayDetails.addObserver(refreshObserver);
 
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" wayDetails=" + getApplication().wayDetails.getValue());
         if (getApplication().wayDetails.getValue()){
@@ -74,25 +74,25 @@ public class MSGraphDetails extends MGMicroService {
 
     @Override
     protected void stop() {
-        getApplication().wayDetails.deleteObserver(refreshObserver);
+//        getApplication().wayDetails.deleteObserver(refreshObserver);
 
         unregisterClass(GradControlLayer.class);
         unregisterAll();
         controlLayer = null;
     }
 
-    @Override
-    protected void doRefresh() {
-        if (getApplication().wayDetails.getValue()){    // should be active
-            if (controlLayer == null){                  // but is not yet
-                start();                                // therefore start it
-            }
-        } else {
-            if (controlLayer != null){
-                stop();
-            }
-        }
-    }
+//    @Override
+//    protected void doRefresh() {
+//        if (getApplication().wayDetails.getValue()){    // should be active
+//            if (controlLayer == null){                  // but is not yet
+//                start();                                // therefore start it
+//            }
+//        } else {
+//            if (controlLayer != null){
+//                stop();
+//            }
+//        }
+//    }
 
 
     private boolean showGraphDetails(PointModel pmTap){

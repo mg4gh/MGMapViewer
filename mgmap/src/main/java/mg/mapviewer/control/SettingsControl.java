@@ -19,7 +19,7 @@ import android.view.View;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.R;
-import mg.mapviewer.Settings;
+import mg.mapviewer.settings.SettingsActivity;
 import mg.mapviewer.util.Control;
 
 public class SettingsControl extends Control {
@@ -32,7 +32,7 @@ public class SettingsControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
         MGMapActivity activity = controlView.getActivity();
-        Intent intent = new Intent(activity, Settings.class);
+        Intent intent = new Intent(activity, SettingsActivity.class);
         activity.startActivity(intent);
     }
 

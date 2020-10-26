@@ -119,7 +119,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
 
             // the preference category is hard-wired into this app and serves as
             // the hook to add a list preference to allow users to select a style
-            renderthemeMenu = (PreferenceCategory) themeSettingsFragment.getPreferenceScreen().findPreference(getResources().getString(R.string.my_rendertheme_menu_key));
+            renderthemeMenu = (PreferenceCategory) themeSettingsFragment.findPreference(getResources().getString(R.string.my_rendertheme_menu_key));
             createRenderthemeMenu();
         }
 

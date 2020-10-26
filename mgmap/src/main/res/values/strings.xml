@@ -107,6 +107,7 @@
     <string name="preferences_category_tilecache">Tile cache</string>
 
     <string name="preference_choose_map_title">Select map layers</string>
+    <string name="preference_choose_map_summary">Define content for map layers 1..5</string>
     <string name="preference_choose_map_key1">SelectMap1</string>
     <string name="preference_choose_map_title1">Select map layer 1 (Background)</string>
     <string name="preference_choose_map_key2">SelectMap2</string>
@@ -117,13 +118,17 @@
     <string name="preference_choose_map_title4">Select map layer 4 </string>
     <string name="preference_choose_map_key5">SelectMap5</string>
     <string name="preference_choose_map_title5">Select map layer 5 (Foreground)</string>
+    <string name="preference_apply_map_layers_key">ApplyMapLayers</string>
+    <string name="preference_apply_map_layers_title">Apply map layers</string>
     <string name="preference_choose_theme_key">SelectTheme</string>
     <string name="preference_choose_theme_title">Select theme</string>
     <string name="preference_choose_search_key">SelectSearchProvider</string>
     <string name="preference_choose_search_title">Select Search Provider</string>
 
     <string name="preferences_screen_further_pref">Further Settings</string>
-    <string name="preferences_screen_storage_pref">Storage Settings</string>
+    <string name="preferences_mapsforge_title">Mapsforge Settings</string>
+
+
 
     <string name="preferences_debug_timing">Debug timing</string>
     <string name="preferences_debug_timing_key">debug_timing</string>
@@ -135,7 +140,10 @@
 
     <string name="preferences_way_details_key">way_details</string>
     <string name="preferences_way_details_title">Way details</string>
-    <string name="preferences_way_details_desc">Visualize way details of a taped way"</string>
+    <string name="preferences_way_details_desc">Visualize way details of a taped way</string>
+    <string name="preferences_mtr_key">multi_thread_rendering</string>
+    <string name="preferences_mtr_title">Multi thread rendering</string>
+    <string name="preferences_mtr_desc">Use multi thread rendering (caution: this can cause stability issues)</string>
 
     <string name="preferences_stl_gl_key">stl_gl</string>
     <string name="preferences_stl_gl_title">Selected track with gain/loss</string>
@@ -158,9 +166,9 @@
     <string name="preferences_screen_download">Download</string>
     <string name="preferences_screen_desc_download">Download Maps and Software</string>
 
-    <string name="preferences_dl_maps_title">Download Maps</string>
-    <string name="preferences_dl_maps_desc">Download of maps form www.openandromaps.org. Select the map you want to download, open the "+" in front of the name and finally
-        select the following entry: Android mf-V4-map: Install others
+    <string name="preferences_dl_maps_title">Download Maps from openandromaps</string>
+    <string name="preferences_dl_maps_desc">Download of maps form www.openandromaps.org. Select the map you want to download, open the \"+\" in front of the name and finally
+        select the entry \"Android mf-V4-map\" and click on the button \"Install others\"
     </string>
 
     <string name="preferences_dl_maps_wd_key">DldMapsKey</string>
@@ -169,17 +177,19 @@
 
     <string name="preferences_dl_maps_eu_key">DldMapsEUKey</string>
     <string name="preferences_dl_maps_eu_title">Europa</string>
-    <string name="preferences_dl_maps_eu_desc">Select a european map</string>
+    <string name="preferences_dl_maps_eu_desc">Download a european map</string>
 
     <string name="preferences_dl_maps_de_key">DldMapsDEKey</string>
     <string name="preferences_dl_maps_de_title">Germany</string>
-    <string name="preferences_dl_maps_de_desc">Select map for germany</string>
+    <string name="preferences_dl_maps_de_desc">Download map for germany</string>
 
     <string name="preferences_dl_theme_title">Download Theme</string>
     <string name="preferences_dl_theme_desc">Go to the elevate 4 theme section and
-        select the following entry: Standard Karten App
+        select the following button: \"Standard Karten App\"
     </string>
     <string name="preferences_dl_theme_el_key">DldThemeElKey</string>
+    <string name="preferences_dl_theme_el_title">Download Elevate Theme</string>
+    <string name="preferences_dl_theme_el_desc">Download Elevate 4 Theme</string>
 
     <string name="preferences_dl_sw_title">Download Software</string>
     <string name="preferences_dl_sw_desc">Download new apk from https://github.com/mg4gh/MGMapViewer</string>

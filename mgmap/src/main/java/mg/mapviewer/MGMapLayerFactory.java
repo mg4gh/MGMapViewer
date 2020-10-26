@@ -171,6 +171,10 @@ public class MGMapLayerFactory {
                     activity.addTileCache(tileCache);
 
                     if (entry.endsWith(".ref")){
+                        if (activity.requestReadPermissions()){
+                            mapLayers.put(key, null);
+                        }
+
                         BufferedReader in = new BufferedReader(new FileReader(entryFile));
                         String line = in.readLine();
                         entryFile = new File(line);
@@ -246,6 +250,7 @@ public class MGMapLayerFactory {
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
         }
+        Log.i(MGMapApplication.LABEL, NameUtil.context());
         return layer;
     }
 

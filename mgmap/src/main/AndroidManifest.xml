@@ -76,7 +76,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="mg.mapviewer.Settings"
+            android:name="mg.mapviewer.settings.SettingsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Settings"
             android:parentActivityName="mg.mapviewer.MGMapActivity">

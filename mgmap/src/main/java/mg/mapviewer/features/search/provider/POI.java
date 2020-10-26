@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.TreeSet;
 
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.Settings;
 import mg.mapviewer.features.search.SearchProvider;
 import mg.mapviewer.features.search.SearchRequest;
 import mg.mapviewer.features.search.SearchResult;
@@ -69,7 +68,7 @@ public class POI extends SearchProvider {
         File mapsDir = PersistenceManager.getInstance().getMapsDir();
         File mapsforgeDir = new File (mapsDir, "mapsforge");
         poiFile = null;
-        for (String prefKey : Settings.getMapLayerKeys()){
+        for (String prefKey : application.getMapLayerKeys()){
             String key =  preferences.getString(prefKey, "");
             if (key.startsWith("MAPSFORGE:")){
                 File poi = new File(mapsforgeDir, key.replaceAll("MAPSFORGE: ", "").replaceAll("map$","poi"));
