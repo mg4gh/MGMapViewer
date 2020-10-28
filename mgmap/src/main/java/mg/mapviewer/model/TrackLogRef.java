@@ -46,4 +46,8 @@ public class TrackLogRef {
         this.segmentIdx = segmentIdx;
     }
 
+
+    public TrackLogSegment getSegment(){
+        return trackLog.getTrackLogSegment(segmentIdx);
+    }
 }
