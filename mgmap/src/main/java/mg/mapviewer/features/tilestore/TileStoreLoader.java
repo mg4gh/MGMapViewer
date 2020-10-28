@@ -200,7 +200,7 @@ public class TileStoreLoader {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         builder.setTitle("Drop Tiles for \""+storeDir.getName()+"\"");
-        builder.setMessage("Drop "+numDrops+" tiles? \nRestart app after finishing action.");
+        builder.setMessage("Drop "+numDrops+" tiles?");
 
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
