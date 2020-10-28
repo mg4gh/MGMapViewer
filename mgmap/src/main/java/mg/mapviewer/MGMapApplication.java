@@ -19,6 +19,7 @@ import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.reader.MapFile;
 
 import mg.mapviewer.features.routing.MSRoutingHint;
+import mg.mapviewer.features.routing.RoutingHintService;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogRef;
@@ -229,6 +230,7 @@ public class MGMapApplication extends Application {
                 }
             }
         }
+        new RoutingHintService(this);
     }
 
 
@@ -372,16 +374,16 @@ public class MGMapApplication extends Application {
     public BooleanObservable showAlphaSliders = new BooleanObservable(false);
     public BooleanObservable editMarkerTrack = new BooleanObservable(false);
     public BooleanObservable routingHints = new BooleanObservable(false){
-        @Override
-        public void toggle() {
-            super.toggle();
-            MSRoutingHint msrh = getMS(MSRoutingHint.class);
-            if (getValue()){
-                msrh.startService();
-            } else {
-                msrh.stopService();
-            }
-        }
+//        @Override
+//        public void toggle() {
+//            super.toggle();
+//            MSRoutingHint msrh = getMS(MSRoutingHint.class);
+//            if (getValue()){
+//                msrh.startService();
+//            } else {
+//                msrh.stopService();
+//            }
+//        }
     };
     public BooleanObservable showRouting = new BooleanObservable(true);
     public BooleanObservable stlWithGL = new BooleanObservable(true);

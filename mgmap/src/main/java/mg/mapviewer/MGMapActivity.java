@@ -152,7 +152,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         MGMapLayerFactory.setContext(getApplicationContext());
         MGMapLayerFactory.setActivity(this);
         MGMapLayerFactory.mapLayers.clear();
-//        Settings.initMapLayers(getApplicationContext(), this);
 
         application = (MGMapApplication) getApplication();
         createSharedPreferences();
@@ -186,7 +185,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         microServices.add(new MSAvailableTrackLogs(this));
         microServices.add(new MSMarker(this));
         microServices.add(new MSRouting(this));
-        microServices.add(new MSRoutingHint(this));
         microServices.add(new MSRemainings(this));
         microServices.add(new MSBB(this, getMS(MSAvailableTrackLogs.class)));
         microServices.add(new MSGraphDetails(this));
@@ -197,8 +195,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             Thread.sleep(100);
         }catch (Exception e){}
         coView.init(application, this);
-//        SearchView seView = findViewById(R.id.searchView);
-//        seView.init(application, this);
         onNewIntent(getIntent());
     }
 
