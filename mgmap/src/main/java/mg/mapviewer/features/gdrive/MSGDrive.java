@@ -83,7 +83,6 @@ public class MSGDrive extends MGMicroService {
     protected void start() { }
 
     @Override
-    @SuppressWarnings("EmptyCatchBlock")
     protected void stop() { }
 
     public void trySynchronisation() {
@@ -121,7 +120,7 @@ public class MSGDrive extends MGMicroService {
                 }
             }
 
-            TreeMap<String, String> remoteMap = new TreeMap();
+            TreeMap<String, String> remoteMap = new TreeMap<>();
             Set<String> rSet = GDriveUtil.listFiles(dservice, idMgmFolder, ".*\\.gpx\\.zip");
             for (String entry : rSet){
                 String[] parts = entry.split(".zip:");
