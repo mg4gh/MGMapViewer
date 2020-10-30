@@ -12,7 +12,7 @@ Now you can select the installed theme via the menu:
 <img src="./themes3.png" width="270" />
 
 After installation you can select the language for the themes (be aware that the scope of  
-this language selection is **only** the the theme):
+this language selection is **only** the theme):
 
 <img src="./lang1.png" width="270" />&nbsp;
 <img src="./lang2.png" width="270" />&nbsp;
