@@ -59,11 +59,11 @@ Alternatively it disappears after a second tap on the background. Remember this 
    <img src="./download1.png" width="200" />&nbsp;
    <img src="./download2.png" width="200" />&nbsp;
 
-   Then select the downloaded map via
+   Then select the downloaded map via  
    <span style="color:gray">*Menu | Settings and more | Select map layers| Select map layer 2*</span>
 
    <img src="./Menu_Settings.png" width="200" />&nbsp;
-   <img src="./settings_screen_selectMap.png" width="200" />&nbsp;
+   <img src="./settings_screen_selectMap.png" width="200" />&nbsp;  
    <img src="./select_map_layers_2.png" width="200" />&nbsp;
    <img src="./selectMap2.png" width="200" />
 
