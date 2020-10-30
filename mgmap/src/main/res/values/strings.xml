@@ -70,7 +70,9 @@
 
     <string name="my_rendertheme_menu_key">myrenderthememenu</string>
 
-
+    <string name="preferences_cat_settings_key">Settings</string>
+    <string name="preferences_cat_actions_key">Actions</string>
+    <string name="preferences_cat_info_key">Infos</string>
 
     <string name="preferences_scale_key">scale</string>
     <string name="preferences_scale">Display Scale</string>
@@ -125,7 +127,8 @@
     <string name="preference_choose_search_key">SelectSearchProvider</string>
     <string name="preference_choose_search_title">Select Search Provider</string>
 
-    <string name="preferences_screen_further_pref">Further Settings</string>
+    <string name="preferences_screen_further_title">Further Settings</string>
+    <string name="preferences_screen_further_desc">Further Mapsforge, Gain/Loss and Developer Settings</string>
     <string name="preferences_mapsforge_title">Mapsforge Settings</string>
 
 
@@ -145,11 +148,19 @@
     <string name="preferences_mtr_title">Multi thread rendering</string>
     <string name="preferences_mtr_desc">Use multi thread rendering (caution: this can cause stability issues)</string>
 
+    <string name="preferences_cat_gl_title">Gain/Loss settings</string>
+    <string name="preferences_cat_dev_title">Developer settings</string>
+<!--    <string name="preferences_cat_gl_desc">Visualize the selected track with colors based on gain/loss."</string>-->
+
     <string name="preferences_stl_gl_key">stl_gl</string>
     <string name="preferences_stl_gl_title">Selected track with gain/loss</string>
     <string name="preferences_stl_gl_desc">Visualize the selected track with colors based on gain/loss."</string>
+    <string name="preferences_hprof_gl_key">hprof_gl</string>
+    <string name="preferences_hprof_gl_title">Ascent height profile</string>
+    <string name="preferences_hprof_gl_desc">Show ascent profile together with height profile"</string>
 
     <string name="preferences_screen_gdrive">GDrive</string>
+    <string name="preferences_screen_gdrive_desc">GDrive synchronisation</string>
     <string name="preferences_gdrive_sync_key">GDriveSyncKey</string>
     <string name="preferences_gdrive_sync_title">Synchronize with GDrive</string>
     <string name="preferences_gdrive_sync_desc">Trigger (one time) synchronisation of files in the \n ./MGMapViewer/tracks/gpx folder with users GDrive account.</string>

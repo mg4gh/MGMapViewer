@@ -40,21 +40,30 @@
 
     </PreferenceCategory>
 
+
     <PreferenceCategory
-        app:title="@string/preferences_screen_gdrive"
+        app:title="@string/preferences_cat_gl_title"
         app:iconSpaceReserved="false"
         >
-        <Preference
-            app:key="@string/preferences_gdrive_sync_key"
-            app:title="@string/preferences_gdrive_sync_title"
-            app:summary="@string/preferences_gdrive_sync_desc"
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="@string/preferences_stl_gl_key"
+            app:summary="@string/preferences_stl_gl_desc"
+            app:title="@string/preferences_stl_gl_title"
+            app:iconSpaceReserved="false"
+            />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_hprof_gl_key"
+            app:summary="@string/preferences_hprof_gl_desc"
+            app:title="@string/preferences_hprof_gl_title"
             app:iconSpaceReserved="false"
             />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="Developer"
+        app:title="@string/preferences_cat_dev_title"
         app:iconSpaceReserved="false"
         app:allowDividerAbove="true"
         >

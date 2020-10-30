@@ -10,23 +10,15 @@ import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.R;
 import mg.mapviewer.features.gdrive.MSGDrive;
 
-public class FurtherPreferenceScreen extends MGPreferenceScreen {
+public class GDrivePreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setPreferencesFromResource(R.xml.further_preferences, rootKey);
+        setPreferencesFromResource(R.xml.gdrive_preferences, rootKey);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-//        setBrowseIntent(R.string.preferences_dl_maps_wd_key, R.string.url_oam_dl);
-//        setBrowseIntent(R.string.preferences_dl_maps_eu_key, R.string.url_oam_dl_eu);
-//        setBrowseIntent(R.string.preferences_dl_maps_de_key, R.string.url_oam_dl_de);
-//
-//        setBrowseIntent(R.string.preferences_dl_theme_el_key, R.string.url_oam_th_el);
-//
-//        setBrowseIntent(R.string.preferences_dl_sw_other_key, R.string.url_github_apk_dir);
         setGDriveOCL();
     }
 
