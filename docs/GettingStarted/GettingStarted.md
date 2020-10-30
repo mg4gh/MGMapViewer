@@ -44,7 +44,7 @@ Alternatively it disappears after a second tap on the background. Remember this 
 
 7. In the typical usage scenario you provide a map from [openandromaps](https://www.openandromaps.org/).
    Either download the map manually and put it (unzipped) in the ./MGMapViewer/maps/mapsforge directory.
-   Alternatively  open via <span style="color:gray">*Menu | Settings and more | Download | Germany *</span>
+   Alternatively  open via <span style="color:gray">*Menu | Settings and more | Download | Germany*</span>
    the download webpage of openandromaps for germany.
 
    <img src="./Menu_Settings.png" width="200" />&nbsp;
@@ -63,7 +63,7 @@ Alternatively it disappears after a second tap on the background. Remember this 
    <span style="color:gray">*Menu | Settings and more | Select map layers| Select map layer 2*</span>
 
    <img src="./Menu_Settings.png" width="200" />&nbsp;
-   <img src="./settings_screen_selectMap.png" width="200" />&nbsp;  
+   <img src="./settings_screen_selectMap.png" width="200" />&nbsp;
    <img src="./select_map_layers_2.png" width="200" />&nbsp;
    <img src="./selectMap2.png" width="200" />
 
@@ -84,7 +84,7 @@ Alternatively it disappears after a second tap on the background. Remember this 
    <img src="./download3.png" width="200" />&nbsp;
 
    The "elevate.xml" is already registered as the standard theme file. If you want to select another theme,  
-    you can do it via  <span style="color:gray">*Menu | Settings and more | Select theme *</span>
+    you can do it via  <span style="color:gray">*Menu | Settings and more | Select theme*</span>
 
 9. When you go back to the main activity view, then this map is visible and you can navigate in this map.
 10. Finally go to <span style="color:gray">*Menu | Themes*</span>. Now click on the current theme to get a
