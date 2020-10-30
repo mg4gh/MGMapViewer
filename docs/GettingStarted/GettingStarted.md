@@ -83,11 +83,11 @@ Alternatively it disappears after a second tap on the background. Remember this 
    
    <img src="./download3.png" width="200" />&nbsp;
 
-   The "elevate.xml" is already registered as the standard theme file. If you want to select another theme,  
-    you can do it via  <span style="color:gray">*Menu | Settings and more | Select theme*</span>
+   The "elevate.xml" is already registered as the standard theme file. If you want to select another theme,
+    you can do it via  <span style="color:gray">*Menu | Settings and more | Select theme*</span>.
 
-9. When you go back to the main activity view, then this map is visible and you can navigate in this map.
-10. Finally go to <span style="color:gray">*Menu | Themes*</span>. Now click on the current theme to get a
+
+9. Finally go to <span style="color:gray">*Menu | Themes*</span>. Now click on the current theme to get a
 selection of the main themes. Select the most suitable theme for you.  
 Hint: If the menu entries are not visible, restart your app once.  
 &nbsp;  
@@ -96,4 +96,4 @@ Hint: If the menu entries are not visible, restart your app once.
    <img src="./themes2.png" width="200" />&nbsp;
 
 
-  
+Congratulations! 
