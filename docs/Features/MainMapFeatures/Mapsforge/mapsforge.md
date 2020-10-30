@@ -12,9 +12,9 @@ Here is an example of such a map:
 Since map files are large you can share mapfiles for multiple apps. 
 For this reason you can also use a reference to such a map file.
 
-Such a reference is a file e.g. "test.ref" with the content
+Such a reference is a file e.g. "test.ref" with a single line of content, e.g. the following:
 
-<img src="./map_ref.png" width="400" />
+```/sdcard/Download/bw.map```
 
 It has to be placed also in the directory "./MGMapViewer/maps/mapsforge/". The referenced location must 
 be readable for the app and this might require permission for external storage (if not yet granted anyhow)." 
