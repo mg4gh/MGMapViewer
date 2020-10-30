@@ -68,7 +68,7 @@
                 <data android:scheme="mf-v4-map" />
             </intent-filter>
             <intent-filter>
-                <!-- 20.08.2020 MG: intent-filter for map download -->
+                <!-- 20.08.2020 MG: intent-filter for theme download -->
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
