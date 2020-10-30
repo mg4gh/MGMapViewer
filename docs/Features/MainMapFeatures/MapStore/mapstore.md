@@ -5,8 +5,11 @@ There are tow options available:
 - Tile store based on file system structure
 - Tile store based on SQLite database (*.mbtiles file) 
 
-If you are free, the second option is recommended - since handling of large amounts of files is slow (e.g. for backup purposes). In both cases you
-can also provide a [config.xml](../Maponline/config.xml) configuration file, which allows to fill the store similar to an online mapstore.
+If you are free, the second option is recommended - since handling of
+large amounts of files is slow (e.g. for backup purposes). In both cases
+you can also provide a [config.xml](../MapOnline/config.xml)
+configuration file, which allows to fill the store similar to an online
+mapstore.
 
 ### Tile store based on file system structure
 
@@ -30,8 +33,11 @@ The format definition is available via [github](https://github.com/mapbox/mbtile
 You can find examples of such tile stores on openandromaps: The [overview maps](https://www.openandromaps.org/downloads/ubersichts-karten) are in this format.
 They are well suited as background maps.
 
-Another usecase of these tile stores is to setup your own tile database. Create a store similar to an 
-[online store](../Maponline/maponline.md) with a [config.xml](../Maponline/config.xml) that specifies a source of tiles.
-Put a copy of the [empty tile store](../../../more/store.mbtiles) in the store directory. Now you can fill this store 
-using the [bounding box](../../MainTrackFeatures/BoundingBox/boundingbox.md) feature.
+Another usecase of these tile stores is to setup your own tile database.
+Create a store similar to an [online store](../MapOnline/maponline.md)
+with a [config.xml](../MapOnline/config.xml) that specifies a source of
+tiles. Put a copy of the [empty tile store](../../../more/store.mbtiles)
+store.mbtiles) in the store directory. Now you can fill this store using
+the [bounding box](../../MainTrackFeatures/BoundingBox/boundingbox.md)
+feature.
 
