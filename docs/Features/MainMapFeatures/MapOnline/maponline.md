@@ -1,8 +1,9 @@
 ## Main map Feature: maponline
 
-A maponline layer consists of a directory with the name of the layer. This is a direct subdirectory of ./MGMapViewer/maps/maponline.
-Inside of this directory there is a description file with the fix name `config.xml`.
-Such a [config.xml](./config.xml) looks like:
+A maponline layer consists of a directory with the name of the layer.
+This is a direct subdirectory of ./MGMapViewer/maps/maponline. Inside of
+this directory there is a description file with the fix name
+`config.xml`. The content of this file looks like:
 
 ```
 <tilesource>

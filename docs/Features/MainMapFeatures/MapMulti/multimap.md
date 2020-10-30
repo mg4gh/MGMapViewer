@@ -11,8 +11,10 @@ we can get the following picture:
 
 <img src="./multi_map1.png" width="400" />
 
-For each tile-based layer (mapsforge, mapstore, maponline) we can get a slider to control the 
-transparency of this layer as it is for </br>the "MAPSFORGE: bw.map" layer and the "MAPSTORES: heatmap" layer in the example above.
+For each tile-based layer (mapsforge, mapstore, maponline) we can get a
+slider to control the transparency of this layer as it is for the
+"MAPSFORGE:&nbsp;bw.map" layer and the "MAPSTORES:&nbsp;heatmap" layer in the
+example above.
 
 You can toggle the visibility of these sliders via the second quick control:
 
