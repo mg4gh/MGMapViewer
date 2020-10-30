@@ -1,7 +1,7 @@
 ## Main map Feature: mapsforge themes
 
 The usage of [mapsforge](../Mapsforge/mapsforge.md) maps requires the usage of rendering themes. As already stated in the
-[Getting Started](../../../GettingStartedUsage.md) you need to download the corresponding theme definitions, e.g.
+[Getting Started](../../../GettingStarted/GettingStarted.md) you need to download the corresponding theme definitions, e.g.
 the [elevate theme](https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip).  
 Unzip these theme and place it into the ./MGMapViewer/themes/ directory.
 
@@ -11,7 +11,8 @@ Now you can select the installed theme via the menu:
 <img src="./themes2.png" width="270" />&nbsp;
 <img src="./themes3.png" width="270" />
 
-After installation you can select the language for the themes:
+After installation you can select the language for the themes (be aware that the scope of  
+this language selection is **only** the the theme):
 
 <img src="./lang1.png" width="270" />&nbsp;
 <img src="./lang2.png" width="270" />&nbsp;

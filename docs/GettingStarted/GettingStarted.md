@@ -62,10 +62,10 @@ Alternatively it disappears after a second tap on the background. Remember this 
    Then select the downloaded map via  
    <span style="color:gray">*Menu | Settings and more | Select map layers| Select map layer 2*</span>
 
-   <img src="./Menu_Settings.png" width="200" />&nbsp;
-   <img src="./settings_screen_selectMap.png" width="200" />&nbsp;
-   <img src="./select_map_layers_2.png" width="200" />&nbsp;
-   <img src="./selectMap2.png" width="200" />
+   <img src="./Menu_Settings.png" width="195" />&nbsp;
+   <img src="./settings_screen_selectMap.png" width="195" />&nbsp;
+   <img src="./select_map_layers_2.png" width="195" />&nbsp;
+   <img src="./selectMap2.png" width="195" />
 
    Now use twice the <span style="color:gray">*Back*</span> button and you'll see the first map.
 
@@ -96,4 +96,4 @@ Hint: If the menu entries are not visible, restart your app once.
    <img src="./themes2.png" width="200" />&nbsp;
 
 
-Congratulations! 
+Congratulations!

@@ -24,4 +24,4 @@ Remark 1: Mapsforge maps require installation of corresponding [themes](../Mapsf
 Remark 2: Unfortunately the external storage is in Android devices formatted in a way that it does NOT support symlinks , which would be easier.
 
 Remark 3: The references to other storage locations are deprecated in Android 10, and they will not longer work in Android 11 !!
-Since storage space is increasing over the last few years, this feature is only recommended only for older devices. 
+Since storage space is increasing over the last few years, this feature is recommended only for older devices.
