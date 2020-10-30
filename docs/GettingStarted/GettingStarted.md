@@ -25,14 +25,11 @@ Alternatively it disappears after a second tap on the background. Remember this 
 
 6. The app creates below the MGMapViewer directory new subdirectories:
     - apk (to store downloaded apk)
-
     - config (configuration data)
       - search (search configuration data)
 
     - hgt (store hgt height files)
-
     - log (store log files)
-
     - maps (store map related data)
       - mapsforge (store mapsforge maps - unzipped)
       - mapstores (directory to store offline tile stores)
