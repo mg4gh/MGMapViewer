@@ -7,14 +7,14 @@ The route calculation is using an simple [A\*](https://de.wikipedia.org/wiki/A*-
 For the explanations around the marker tracks we switched off routing. Now we have to make sure that is is switched on again
 with with  <span style="color:gray">*Menu | Route | Route on*</span>.
 
-<img src="./ActRoute1.png" width="400" />&nbsp;
-<img src="./ActRoute2.png" width="400" />&nbsp;
+<img src="./ActRoute1.png" width="200" />&nbsp;
+<img src="./ActRoute2.png" width="200" />&nbsp;
 
 As already said the routing is an addon feature for the marker track. So again we use the quick control to start edit the
 marker track and verify the red color of the icon.
 
-<img src="./Quick1.png" width="400" />&nbsp;
-<img src="./Quick2.png" width="400" />&nbsp;
+<img src="./Quick1.png" width="200" />&nbsp;
+<img src="./Quick2.png" width="200" />&nbsp;
  
 Now we start set points:
 
@@ -25,7 +25,7 @@ Now we start set points:
 
 After finishing don't forget to press again the marker track quick control to switch off the marker track edit mode.
 
-<img src="./Quick3.png" width="400" />&nbsp;
+<img src="./Quick3.png" width="200" />&nbsp;
 
 As it is visible in this example we need only a very few points to mark a route exactly. If the route (representing the shortest path) 
 doesn't match our expectation, we need to move or insert another marker point to get the route as desired. Remember the actions to 
@@ -34,8 +34,9 @@ modify a marker track as described in <a href="../MarkerTrack/markertrack.md#act
 **Route export**
 
 The route menu provides also an option to save the calculated route to a gpx file in the directory ./MGMapViewer/track/gpx.
-The filename has the structure \<date>_\<time>_MarkerRoute.gpx. This gpx consists of much more track points to describe the
-exact path as it is visible in the map.
+The filename has the structure \<date>_\<time>_MarkerRoute.gpx. Compared to the marker track this gpx consists of much more track points to describe the
+exact path as it is visible in the map. So use this export, if give it to other people and/or tools. But prefer to use the marker track export, if you want to
+modify the route later on.
 
 **Route optimize**
 
@@ -50,6 +51,7 @@ deviations from the recorded track. The "Route optimize" function tries to corre
 correct most of this cases. In the result the optimized route reflects the real length of the track quite well. If necessary,
 a manually correction of remaining recording failures can be done easily by using the normal marker track editing functions. 
 
+The route optimisation is triggered via <span style="color:gray">*Menu | Route | Route on*</span>.
 The next figures show two examples of typical route optimizations (each example with one picture before and one after optimization):
 
 <img src="./OPT1.png" width="400" />&nbsp;
