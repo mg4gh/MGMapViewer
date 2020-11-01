@@ -90,7 +90,7 @@ as a marker track. So if you want to reopen a saved marker track, then make this
 <img src="./import2.png" width="200" />&nbsp;
 <img src="./import3.png" width="200" />&nbsp;
 
-Finally use <span style="color:gray">*Menu | Hide Track | Selected*</span>, then the original maker track is left.
+As a side effect of the import the selected track will be hidden - so now you see only the original marker track.
 
 <img src="./import4.png" width="200" />&nbsp;
 

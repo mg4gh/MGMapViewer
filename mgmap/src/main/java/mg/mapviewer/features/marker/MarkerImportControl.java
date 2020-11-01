@@ -36,9 +36,11 @@ public class MarkerImportControl extends Control {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
 
-        TrackLog trackLog = application.availableTrackLogsObservable.getSelectedTrackLogRef().getTrackLog();
+        MGMapApplication.AvailableTrackLogsObservable atlo = application.availableTrackLogsObservable;
+        TrackLog trackLog = atlo.getSelectedTrackLogRef().getTrackLog();
         if (trackLog != null){
             msMarker.createMarkerTrackLog(trackLog);
+            atlo.removeSelected();
         }
     }
 
