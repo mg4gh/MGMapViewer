@@ -2,27 +2,23 @@
 
 Start track recording with <span style="color:gray">*Menu | Track Record | Start Track*</span>.
 
-<img src="./MenuM_Track.png" width="400" />&nbsp;
-<img src="./MenuTrackStart.png" width="400" />&nbsp;
-
-Move a little bit around 
-
 <img src="./Track_Record_1.png" width="400" />&nbsp;
 <img src="./Track_Record_2.png" width="400" />&nbsp;
 
-and then stop recording with <span style="color:gray">*Menu | Track Record | Stop Track*</span>.
+Move a little bit around 
 
-<img src="./Track_Record_2.png" width="400" />&nbsp;
 <img src="./Track_Record_3.png" width="400" />&nbsp;
 
-After the stop recording action this track becomes the "selected track":
- 
+and then stop recording with <span style="color:gray">*Menu | Track Record | Stop Track*</span>.
+
 <img src="./Track_Record_4.png" width="400" />&nbsp;
 <img src="./Track_Record_5.png" width="400" />&nbsp;
 
-The second screen is after zoom in two steps.
+After the stop recording action this track becomes the "selected track":
+ 
+<img src="./Track_Record_6.png" width="400" />&nbsp;
 
-Each green segment represents the line between 2 successive recorded points. The small inner (gray) line 
+Each green segment represents the line between 2 successive recorded points. The small inner (gray) line
 points in the direction of moving. The color green represents the fact, that the area is flat, so the 
 track is neither ascending nor descending.
 
