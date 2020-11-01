@@ -82,7 +82,7 @@ For the example above the result looks like:
 
 **Import Marker Track**
 
-In opposite to the export of an marker track the import does not read a .gpx file. Instead the current selected track will be imported 
+In opposite to the export of a marker track the import does not read a .gpx file. Instead the current selected track will be imported
 as a marker track. So if you want to reopen a saved marker track, then make this marker track first the selected track and then use
 <span style="color:gray">*Menu | Marker Track | Import*</span>  as a second step.
 
