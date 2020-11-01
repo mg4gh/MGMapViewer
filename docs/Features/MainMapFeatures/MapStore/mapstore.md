@@ -36,7 +36,8 @@ They are well suited as background maps.
 Another usecase of these tile stores is to setup your own tile database.
 Create a store similar to an [online store](../MapOnline/maponline.md)
 with a [config.xml](../MapOnline/config.xml) that specifies a source of
-tiles. Put a copy of the [empty tile store](../../../more/store.mbtiles)
+tiles. Put a copy of the tiles. Put a copy of the <a
+href="../../../more/store.mbtiles">empty tile store</a>
 in the store directory. Now you can fill this store using the
 [bounding box](../../MainTrackFeatures/BoundingBox/boundingbox.md)
 feature.
