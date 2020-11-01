@@ -1,15 +1,15 @@
 ## Main Track Feature: Use a bounding box to search track(s) ... and more
 
-Initially a bounding box helped only to search for tracks going through this marked area. Meanwhile a couple of other mapstore features are added.
-The mapstore itself might use both options (file system structure or sqlite database *.mbtiles).
+Initially the bounding box feature was intended to provide a simple search for tracks through a marked area.
+Meanwhile a couple of other features for mapstores are added.
 
-This page is split to the following sections, which represent typical steps the bounding box usage.
+This page is split into the following sections, which represent typical steps in the bounding box usage.
 - switch bounding box feature on and mark a relevant area 
 - select and execute the desired action on the bounding box
 - switch off the bounding box feature 
 
 ### Switch bounding box feature on and mark a relevant area
-To switch on the bounding box feature, press the bounding box control (part of the [quick controls](../../FurtherFeatures/QuikControl/quickcontrols.md).
+To switch on the bounding box feature, press the bounding box control (part of the [quick controls](../../FurtherFeatures/QuickControl/quickcontrols.md)).
 As a visual feedback you see the quick control in blue color.
 
 <img src="./bb_m1.png" width="200" />&nbsp;
@@ -51,7 +51,7 @@ To trigger this action press <span style="color:gray">*Menu | BoundingBox | Load
 <img src="./bb_a1a.png" width="200" />&nbsp;
 <img src="./bb_a1b.png" width="200" />&nbsp;
 
-As the result all tracks passing through the marked area will we loaded. If there are multiple tracks, you can select one of them just by tapping on it.
+As the result all tracks passing through the marked area will be loaded. If there are multiple tracks, you can select one of them just by tapping on it.
 With the use of <span style="color:gray">*Menu | Hide Track | Selected*</span> and <span style="color:gray">*Menu | Hide Track | Not Selected*</span> you
 can reduce the number of visible tracks to the track(s) you are searching for.
 
@@ -64,7 +64,7 @@ can reduce the number of visible tracks to the track(s) you are searching for.
 
 With the menu item <span style="color:gray">*Menu | BoundingBox | Load Store All*</span> you can trigger a download of all tiles inside the marked area.
 Limitations of the zoom level are given by the config.xml file. This option can be used, if there are no tiles for the specified area available yet.
-But if the map data will change over the time, this open can be used to refresh your tiles in the store after som time.
+But if the map data will change over the time, this option can also be used to refresh your tiles in the store after som time.
 
 #### Load missing tiles of a marked area
 
@@ -72,16 +72,16 @@ The menu item <span style="color:gray">*Menu | BoundingBox | Load Store Remainin
 The difference is, that if a tile is already existing, then no new tile will be loaded.
 Imagine you have a region almost available in the app and you want slightly enlarge it without download everything again.
 
-Remark: the time number for a download request doesn't yet reflect already existing once.
+Remark: the tile number for a download request doesn't yet reflect already existing once.
 
 #### Remove all tiles inside a marked area
 
 As your store might grow due to different loading requests, it will require more and more space. Once you realize, that you don't need anymore some data
-inside a mapstore, you can drop tiles from it. This can be achieved by <span style="color:gray">*Menu | BoundingBox | Load Store All*</span>. This command 
-deletes all tiles which are full included by this giben bounding box.   
+inside a mapstore, you can drop tiles from it. This can be achieved by <span style="color:gray">*Menu | BoundingBox | Drop Store All*</span>. This command
+deletes all tiles which are full included by this given bounding box.
 
 
 ### Switch off the bounding box feature 
 
 Finally, after some bounding box action, you want to leave this feature. This can be done again by a short tap on the bounding box quick control.
-Alternatively this mode will be leaved automatically after 15 secinds, if the is no bounding box related action recognized during this time.
+Alternatively this mode will be leaved automatically after 15 seconds, if there is no bounding box related action recognized during this time.
