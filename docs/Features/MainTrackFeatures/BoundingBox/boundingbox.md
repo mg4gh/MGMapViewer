@@ -1,7 +1,7 @@
 ## Main Track Feature: Use a bounding box to search track(s) ... and more
 
 Initially the bounding box feature was intended to provide a simple search for tracks through a marked area.
-Meanwhile a couple of other features for mapstores are added.
+Meanwhile a couple of other features for [mapstores](../../MainMapFeatures/MapStore/mapstore.md) are added.
 
 This page is split into the following sections, which represent typical steps in the bounding box usage.
 - switch bounding box feature on and mark a relevant area 
@@ -64,7 +64,7 @@ can reduce the number of visible tracks to the track(s) you are searching for.
 
 With the menu item <span style="color:gray">*Menu | BoundingBox | Load Store All*</span> you can trigger a download of all tiles inside the marked area.
 Limitations of the zoom level are given by the config.xml file. This option can be used, if there are no tiles for the specified area available yet.
-But if the map data will change over the time, this option can also be used to refresh your tiles in the store after som time.
+But if the map data will change over the time, this option can also be used to refresh your tiles in the store after some time.
 
 #### Load missing tiles of a marked area
 
@@ -78,7 +78,7 @@ Remark: the tile number for a download request doesn't yet reflect already exist
 
 As your store might grow due to different loading requests, it will require more and more space. Once you realize, that you don't need anymore some data
 inside a mapstore, you can drop tiles from it. This can be achieved by <span style="color:gray">*Menu | BoundingBox | Drop Store All*</span>. This command
-deletes all tiles which are full included by this given bounding box.
+deletes all tiles that are fully included by this given bounding box.
 
 
 ### Switch off the bounding box feature 
