@@ -1,7 +1,7 @@
 ## Main Track Feature: track visualisation
 
 The visualization of tracks is a one important feature of this app. The
-track visualization is done by drawing a colored lines on top of the
+track visualization is done by drawing colored lines on top of the
 visible map layers.
 
 
@@ -40,7 +40,7 @@ To toggle the setting "Selected Track with Gain/Loss" use
 
 There are multiple options to make a track the selected track:
 - If there is more than one available track, then just tap on a track and this track becomes the new selected track.
-- Use the <span style="color:gray">*Menu | Load Track | Prev*</span> and
+- Use the <span style="color:gray">*Menu | Load Track | Prev*</span> &nbsp;&nbsp;and&nbsp;&nbsp;
   <span style="color:gray">*Menu | Load Track | Next*</span> to get the
   previous/next track (from the set of MetaTrackLogs). This corresponds to the set of known tracks sorted by name.
 - Use the track statistics activity and choose a
