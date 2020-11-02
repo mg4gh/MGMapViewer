@@ -1,20 +1,20 @@
 ## Further Features: remaining distance - show distance along the selected track 
 
-This feature subsume the following detailed options:
-- remaining distance based on current position
-- remaining distance based on current position to the start of the selected track
-- remaining distance based on a given point
-- remaining distance to the reverse end of the selected track
+This feature provides the following detailed options:
+- remaining distance to the end of the selected track based on current position
+- remaining distance to the start of the selected track based on current position
+- remaining distance to the end of the selected track based on a given point
+- remaining distance to the start of the selected track based on a given point
 - distance along the track based on two given points
 
 Let's take the following track as the basis to explain this feature
 
 <img src="./remain1.png" width="400" />&nbsp;
 
-This selected track has a total length of 1.02km.
+This selected track has a total length of 2.20km.
 If you move along this path with a switched on GPS, then the following picture occurs.
 The red circle show the current position, not far from the end of the track.
-Then there is a field in the status, which shows the remaining distance of 0.19km.
+Then there is a field in the status, which shows the remaining distance of 0.65km.
 Please notice also the icon with an arrow to the target. It means distance to the end of the track.
 
 With a long press on this field in the status line you can change the remaining direction, means you 
@@ -34,9 +34,11 @@ remaining distance from this point. Again with a long tap on this status line fi
 <img src="./remain4.png" width="400" />&nbsp;
 
 If you want to determine the distance between two given points along the track, then this is also possible.
-Just use a second MarkerPoint.
+Just use a second MarkerPoint. While the direct route has a length of only 0.96km, the length along the given track
+is 1.47km.
 
 <img src="./remain5.png" width="400" />&nbsp;
+
 
 In this situation the automatic routing might be confusing. There is the option to switch it off with
 <span style="color:gray">*Menu | Route | Route Off*</span>.
@@ -45,6 +47,6 @@ In this situation the automatic routing might be confusing. There is the option 
 <img src="./ro2.png" width="400" />&nbsp;
 
 In the result the MarkerTrack with its two points is better visible. The distance is again shown in the 
-status line. Now the icon in this filed indicates the measurement between two pints.
+status line. Please notice that the icon in this field indicates the measurement between two pints.
 
 <img src="./remain6.png" width="400" />&nbsp;
