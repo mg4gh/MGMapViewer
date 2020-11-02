@@ -29,11 +29,11 @@ As we can see with the last example, there can exist multiple entries at the sam
 depending on whether there is currently a track recording, a selected track and/or a route.
 
 If a track has multiple segments, then it gets two dashboard entries, one for the whole
-track and the second for one of the segments. The segment can by changed by tap on the
+track and the second for one of the segments. The segment can be changed by tap on the
 desired segment. The next example illustrates a track with two segments:
 
 <img src="./MultiSegment1.png" width="400" />&nbsp;
 <img src="./MultiSegment2.png" width="400" />&nbsp;
 
-As we can see here the total values correspond to the sum of the segment values.
+The total values of the track correspond to the sum of the segment values.
 

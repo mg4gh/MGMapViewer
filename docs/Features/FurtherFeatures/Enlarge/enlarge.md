@@ -22,7 +22,7 @@ Some more examples:
 - the second figure shows the double enlarged elevation gain field,
 - the third figure shows the enlarged time field.
 
-<img src="./el2a.png" width="270" />&nbsp;
 <img src="./el2.png" width="270" />&nbsp;
+<img src="./el2a.png" width="270" />&nbsp;
 <img src="./el3.png" width="270" />
 
