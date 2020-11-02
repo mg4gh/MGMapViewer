@@ -332,7 +332,6 @@ public class PersistenceManager {
         HgtBuf hgtBuf = getHgtBuf(file);
 
         if (hgtBuf != null) { // ok, exists already
-            buf = hgtBuf.buf;
             hgtBufs.remove(hgtBuf);
             hgtBuf.accessNow();
         } else {
@@ -363,6 +362,7 @@ public class PersistenceManager {
             }
         }
         hgtBufs.add(hgtBuf);
+        buf = hgtBuf.buf;
         return buf;
     }
 
