@@ -20,6 +20,7 @@ import mg.mapviewer.util.PointModelUtil;
 public class MSRoutingHint extends MGMicroService {
 
     private static final int THRESHOLD_FAR = 200;
+    private static final int THRESHOLD_MEDIUM = 40;
     private static final int THRESHOLD_KURS = 100;
 
     private boolean running = false;
@@ -67,18 +68,10 @@ public class MSRoutingHint extends MGMicroService {
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" lastPos="+lastPos+" lastGps="+lastGps+" secondLastGpsPoint="+getApplication().lastPositionsObservable.secondLastGpsPoint);
                 if ((lastGps != null) && ((lastPos == null) || (PointModelUtil.compareTo(lastGps,lastPos)!=0))) { // have a new position to handle
                     TrackLogRefApproach bestMatch = msRouting.routeTrackLog.getBestDistance(lastGps, THRESHOLD_FAR);
-                    double speed = 4; // in m/s - estimate, if no info
-                    PointModel secondLastGps = getApplication().lastPositionsObservable.secondLastGpsPoint;
-
-                    if ((secondLastGps != null) && ( lastGps.getTimestamp() - secondLastGps.getTimestamp() <10000)){ // less than 10s time diff
-                        speed = PointModelUtil.distance(lastGps,secondLastGps)*1000 /(lastGps.getTimestamp() - secondLastGps.getTimestamp());
-                    }
-                    double distSinceLastPos = (System.currentTimeMillis() - lastGps.getTimestamp()) * speed / 1000;
-
 
                     if ((bestMatch != null)){
-                        if (bestMatch.getDistance() < PointModelUtil.getCloseThreshold()){
-                            checkHints(bestMatch, distSinceLastPos);
+                        if (bestMatch.getDistance() < THRESHOLD_MEDIUM){
+                            checkHints(bestMatch);
                             mediumAwayCnt = 0;
                         } else {
                             // not really close
@@ -140,10 +133,10 @@ public class MSRoutingHint extends MGMicroService {
     }
 
 
-    private void checkHints(TrackLogRefApproach bestMatch, double distSinceLastPos){
+    private void checkHints(TrackLogRefApproach bestMatch){
         int abstand = (int)bestMatch.getDistance();
         String text = "";
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+"SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand+" distSinceLastPos="+distSinceLastPos);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+"SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
 
         PointModel lastPm = bestMatch.getApproachPoint();
         double routeDistance = 0;

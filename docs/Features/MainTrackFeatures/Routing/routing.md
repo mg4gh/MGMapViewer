@@ -4,6 +4,8 @@ This feature provides a basic route calculation (shortest path)
 based on a [marker track](../MarkerTrack/markertrack.md). 
 The route calculation is using an simple [A\*](https://de.wikipedia.org/wiki/A*-Algorithmus) algorithm.
 
+There is also a feature [routing hints](./hints.md), which is based on this routing feature.
+
 For the explanations around the marker tracks we switched off routing. Now we have to make sure that is is switched on again
 with with  <span style="color:gray">*Menu | Route | Route on*</span>.
 

@@ -16,9 +16,10 @@ The configuration file (./MGMapViewer/config/gdrive.cfg) might look like this:
 <img src="./config.png" width="300" />
 
 The entry with the key **GDRIVE_TOP_DIR** defines the top directory on your Google Drive account that is used to store the data from 
-this app. It has to be a simple foldername (no subfolders). 
+this app. It has to be a simple foldername (no subfolders). The default for this name is "MGMapViewer".
  
-The second configuration parameter **ZIP_PW** defines the password for zip encryption/decryption process. 
+The second configuration parameter **ZIP_PW** defines the password for zip encryption/decryption process.
+The default value for this passwort is "geheimXgeheim!"
 
 When you trigger the synchronisation for the first time you have to allow this app the access to your Google Drive.
 (Remark: Unfortunately there is no option to get access ONLY to the configured top level directory.)
