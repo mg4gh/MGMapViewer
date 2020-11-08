@@ -95,5 +95,12 @@ Hint: If the menu entries are not visible, restart your app once.
    <img src="./themes.png" width="200" />&nbsp;
    <img src="./themes2.png" width="200" />&nbsp;
 
+10. Power Saving: If you are using track recording on Android&nbsp;10, then it is recommended to switch on the option "Ausgenommen vom Energiesparen" for this app.
+    On a LG device with Android&nbsp;10 you can reach this Option via
+      - "Einstellungen / Akku / Ausgenommen vom Energiesparen" or
+      - "Einstellungen / Apps & Benachrichtigungen / Besonderer Zugang / Ausgenommen vom Energiesparen".
+
+    Otherwise it might happen, that Android is killing the
+    background service and the track recording will only continue after the next usage of the app.
 
 Congratulations!
