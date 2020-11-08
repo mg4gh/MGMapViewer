@@ -32,7 +32,7 @@ After this example I'll try to give some general rules for these voice messages:
 - A routing hint may give additional information "Kurs \<nn>Uhr", which means: calculate a point along the route that is 100m ahead the last measured point.
  calculate the direction to this 100m away point and based on this the clock direction. The idea behind this is to give a rough information, in
  which direction you'll have to move.
-- A hint will only be given vor points in the graph with more than two neighbours. (There is some routing hint preparation as part of the
+- A hint will only be given for points in the graph with more than two neighbours. (There is some routing hint preparation as part of the
  route calculation process).
 - There will be no routing hint, if the route is straight ahead and other options are not too close to this.
 - If there are other options, which are rather close to the planed route, then the hint may be extended by the advise
