@@ -93,7 +93,7 @@ public abstract class MVLayer extends Layer {
             if (!dragData.checkDragXY(scrollX1,scrollY1)){
                 dragData.reset();
                 dragData.setDragXY(scrollX1,scrollY1);
-                PointModel pmStartScroll = new PointModelImpl(y2lat(scrollY1), x2lon(scrollX1));
+                PointModel pmStartScroll = new WriteablePointModelImpl(y2lat(scrollY1), x2lon(scrollX1));
                 if (checkDrag(pmStartScroll, dragData)){
                     dragData.dragOrigin = pmStartScroll;
                 }
