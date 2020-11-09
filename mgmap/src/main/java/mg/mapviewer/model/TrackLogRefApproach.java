@@ -54,4 +54,12 @@ public class TrackLogRefApproach extends TrackLogRef {
     public void setEndPointIndex(int endPointIndex) {
         this.endPointIndex = endPointIndex;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", approachPoint=" + approachPoint +
+                ", distance=" + distance +
+                ", endPointIndex=" + endPointIndex ;
+    }
 }

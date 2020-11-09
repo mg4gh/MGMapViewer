@@ -50,4 +50,11 @@ public class TrackLogRef {
     public TrackLogSegment getSegment(){
         return trackLog.getTrackLogSegment(segmentIdx);
     }
+
+    @Override
+    public String toString() {
+        return
+                "trackLog.name=" + trackLog.name +
+                ", segmentIdx=" + segmentIdx ;
+    }
 }
