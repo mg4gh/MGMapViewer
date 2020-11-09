@@ -201,8 +201,15 @@ public class MSMarker extends MGMicroService {
         protected boolean checkDrag(PointModel pmStart, DragData dragData) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
-//            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+((pointRef==null)?"null":(""+pointRef.getDistance())));
+            TrackLogRefApproach lineRef = mtl.getBestDistance(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmStart);
             try {
+                if (pointRef == null){
+                    if (lineRef != null){
+                        insertPoint(mtl, pmStart, lineRef);
+                        pointRef = mtl.getBestPoint(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
+                    }
+                }
                 if (pointRef != null){
                     dragData.setDragObject(pointRef);
 
