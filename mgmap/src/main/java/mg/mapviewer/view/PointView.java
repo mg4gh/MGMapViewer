@@ -21,6 +21,8 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.model.Rectangle;
+import org.mapsforge.core.util.MercatorProjection;
+import org.mapsforge.map.model.DisplayModel;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.PointModel;
@@ -28,11 +30,15 @@ import mg.mapviewer.util.NameUtil;
 
 public class PointView extends MVLayer {
 
+    private static final int DEFAULT_ZOOM_LEVEL = 15;
+
     private PointModel model;
     private Paint paintStroke;
     private Paint paintFill = null;
     private float radius = 4;
-    private boolean keepAligned = false;
+//    private boolean keepAligned = false;
+    private float radiusIncrease = 1;
+    private float radiusMeter = -1;
 
 
     public PointView(PointModel model, Paint paintStroke){
@@ -45,7 +51,7 @@ public class PointView extends MVLayer {
     }
     public PointView(PointModel model, Paint paintStroke, Paint paintFill, boolean keepAligned){
         this(model, paintStroke, paintFill);
-        this.keepAligned = keepAligned;
+//        this.keepAligned = keepAligned;
     }
 
 
@@ -61,7 +67,7 @@ public class PointView extends MVLayer {
         int pixelX = lon2x(model.getLon());
         int pixelY = lat2y(model.getLat());
 
-        int radiusInPixel = (int) (displayModel.getScaleFactor() * radius);
+        int radiusInPixel = (int) (displayModel.getScaleFactor() * radius * getScale(zoomLevel));
         Log.v(MGMapApplication.LABEL, NameUtil.context()+" pixelX="+pixelX+" pixelY="+pixelY+" pos="+String.format("%.6f,%.6f",model.getLat(),model.getLon()));
 
         Rectangle canvasRectangle = new Rectangle(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -70,18 +76,25 @@ public class PointView extends MVLayer {
         }
 
         if (this.paintStroke != null) {
-            if (this.keepAligned) {
-                this.paintStroke.setBitmapShaderShift(topLeftPoint);
-            }
+//            if (this.keepAligned) {
+//                this.paintStroke.setBitmapShaderShift(topLeftPoint);
+//            }
             canvas.drawCircle(pixelX, pixelY, radiusInPixel, this.paintStroke);
         }
         if (this.paintFill != null) {
-            if (this.keepAligned) {
-                this.paintFill.setBitmapShaderShift(topLeftPoint);
-            }
+//            if (this.keepAligned) {
+//                this.paintFill.setBitmapShaderShift(topLeftPoint);
+//            }
             canvas.drawCircle(pixelX, pixelY, radiusInPixel, this.paintFill);
         }
     }
+
+
+    protected float getScale(byte zoomLevel){
+        return (float) Math.pow(this.radiusIncrease, zoomLevel - DEFAULT_ZOOM_LEVEL);
+    }
+
+
 
 
     public PointModel getModel() {
@@ -100,8 +113,23 @@ public class PointView extends MVLayer {
         this.radius = radius;
         return this;
     }
-
-    public void setKeepAligned(boolean keepAligned) {
-        this.keepAligned = keepAligned;
+    public PointView setRadiusMeter(float meter){
+        this.radius = (float)MercatorProjection.metersToPixels(meter, model.getLat(), MercatorProjection.getMapSize((byte)15, this.displayModel.getTileSize())) / displayModel.getScaleFactor();
+        this.radiusIncrease = 2;
+        return this;
     }
+
+
+    public float getRadiusIncrease() {
+        return radiusIncrease;
+    }
+
+    public PointView setRadiusIncrease(float radiusIncrease) {
+        this.radiusIncrease = radiusIncrease;
+        return this;
+    }
+
+    //    public void setKeepAligned(boolean keepAligned) {
+//        this.keepAligned = keepAligned;
+//    }
 }

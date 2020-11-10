@@ -30,6 +30,7 @@ import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.CC;
+import mg.mapviewer.view.PointView;
 
 public class MSPosition extends MGMicroService {
 
@@ -50,13 +51,6 @@ public class MSPosition extends MGMicroService {
 
     @Override
     protected void stop() {
-        TrackLog trackLog = getApplication().recordingTrackLogObservable.getTrackLog();
-        if (trackLog == null){
-//            LatLong center = getMapView().getModel().mapViewPosition.getCenter();
-//            PointModel pmCenter = new PointModelImpl(center);
-//            getApplication().addTrackLogPoint(pmCenter);
-
-        }
         getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
     }
 
@@ -88,17 +82,14 @@ public class MSPosition extends MGMicroService {
     private void showPosition(PointModel pm) {
         hidePosition();
 
-        LatLong pos = new LatLong(pm.getLat(), pm.getLon());
         if (pm instanceof TrackLogPoint) {
             TrackLogPoint trackLogPoint = (TrackLogPoint) pm;
-            Layer accuracyCircle = new Circle(pos, (float) trackLogPoint.getAccuracy() , PAINT_ACC_FILL, PAINT_ACC_STROKE);
-            register(accuracyCircle);
+            PointView accuracyCircle2 = new PointView(pm, PAINT_ACC_STROKE, PAINT_ACC_FILL);
+            register(accuracyCircle2);
+            accuracyCircle2.setRadiusMeter(trackLogPoint.getAccuracy());
 
         }
-
-        float circleSize = 6;
-        Layer locationCircle = new FixedPixelCircle(pos, circleSize, PAINT_FIX2_FILL, PAINT_FIX2_STROKE);
-        register(locationCircle);
+        register(new PointView(pm, PAINT_FIX2_STROKE, PAINT_FIX2_FILL).setRadius( 6 ));
 
         getControlView().updateTvHeight(pm.getEleA());
     }
