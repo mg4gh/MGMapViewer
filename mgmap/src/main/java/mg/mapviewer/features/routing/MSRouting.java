@@ -83,7 +83,6 @@ public class MSRouting extends MGMicroService {
     HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
-//    public ArrayList<MultiPointModel> routingLineModel = null;
     public WriteableTrackLog routeTrackLog = null;
     private ArrayList<PointView> relaxedViews = new ArrayList<>();
 
@@ -137,7 +136,6 @@ public class MSRouting extends MGMicroService {
             public void run() {
                 unregisterAll();
                 getControlView().showHideUpdateDashboard(false, R.id.route,null);
-//                routingLineModel = null;
                 routeTrackLog = null;
             }
         });
@@ -163,12 +161,9 @@ public class MSRouting extends MGMicroService {
     RoutePointModel getRoutePointModel(MapDataStore mapFile, PointModel pm){
         RoutePointModel rpm = getRoutePointModel(pm);
         calcApproaches(mapFile, rpm);
-//        Log.i(MGMapApplication.LABEL, NameUtil.context());
         if (snapMarkerToWay){
             if (rpm.selectedApproach != null){
-//                Log.i(MGMapApplication.LABEL, NameUtil.context()+" pm="+pm+" am="+rpm.selectedApproach.getApproachNode());
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
-//                    Log.i(MGMapApplication.LABEL, NameUtil.context());
                     if (pm instanceof WriteablePointModel) {
                         Log.i(MGMapApplication.LABEL, NameUtil.context());
                         WriteablePointModel wpm = (WriteablePointModel) pm;
@@ -298,9 +293,6 @@ public class MSRouting extends MGMicroService {
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         boolean bShowRelaxed = (getApplication().wayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY);
 
-//        calcApproaches(mapFile, source);
-//        calcApproaches(mapFile, target);
-
         GNode gStart = source.getApproachNode();
         GNode gEnd = target.getApproachNode();
         Log.i(MGMapApplication.LABEL, NameUtil.context()+ " start "+gStart+" end "+gEnd);
@@ -403,7 +395,6 @@ public class MSRouting extends MGMicroService {
                         double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getNeighbourNode());
                         if ((hint.nextLeftDegree < degree) && (degree < hint.directionDegree)) hint.nextLeftDegree = degree;
                         if ((hint.directionDegree < degree) && (degree < hint.nextRightDegree)) hint.nextRightDegree = degree;
-//                        System.out.println("PM:"+hint.pmCurrent+" HINT degree="+degree);
                     }
                 }
                 hints.put(hint.pmCurrent, hint);
@@ -576,7 +567,6 @@ public class MSRouting extends MGMicroService {
             if (mtl != null){
                 PointModel pmTap = new PointModelImpl(tapLatLong.latitude, tapLatLong.longitude);
                 TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
-//                TrackLogRefApproach lineRef = mtl.getBestDistance(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
                 TrackLogRefApproach lineRef = routingLineRefProvider.getBestDistance(mtl, pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
 
                 if ((pointRef == null) && (lineRef != null)){
