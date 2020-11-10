@@ -34,6 +34,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TimerTask;
 
+import mg.mapviewer.R;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
@@ -60,6 +61,8 @@ public class MSMarker extends MGMicroService {
     }
 
     private Observer editMarkerTrackObserver = null;
+    private boolean showMarkerTrack = false;
+    public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
     private TimerTask ttHide = new TimerTask() {
         @Override
@@ -76,6 +79,7 @@ public class MSMarker extends MGMicroService {
 
     @Override
     protected void start() {
+        showMarkerTrack = getSharedPreferences().getBoolean(getResources().getString(R.string.preferences_dev_mtl_key), false);
         markerTrackLogObservable = getApplication().markerTrackLogObservable;
         WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
         if (mtl != null){
@@ -160,7 +164,7 @@ public class MSMarker extends MGMicroService {
         if (!msLayers.isEmpty()){
             unregisterAll();
         }
-        if (mtl != null){
+        if ((mtl != null) && (showMarkerTrack)){
             for (TrackLogSegment segment : mtl.getTrackLogSegments()){
                 MarkerTrackView mtv = new MarkerTrackView(segment);
                 register(mtv);
@@ -180,7 +184,7 @@ public class MSMarker extends MGMicroService {
         public boolean onTap(WriteablePointModel pmTap) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
-            TrackLogRefApproach lineRef = mtl.getBestDistance(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
+            TrackLogRefApproach lineRef = lineRefProvider.getBestDistance(mtl,pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
 
             if (pointRef != null){
                 deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
@@ -201,7 +205,7 @@ public class MSMarker extends MGMicroService {
         protected boolean checkDrag(PointModel pmStart, DragData dragData) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
-            TrackLogRefApproach lineRef = mtl.getBestDistance(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
+            TrackLogRefApproach lineRef = lineRefProvider.getBestDistance(mtl, pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmStart);
             try {
                 if (pointRef == null){
@@ -248,11 +252,6 @@ public class MSMarker extends MGMicroService {
             markerTrackLogObservable.changed();
         }
 
-//        @Override
-//        public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
-//            return onTap(tapLatLong, layerXY, tapXY);
-//        }
-
     }
 
 
@@ -291,5 +290,13 @@ public class MSMarker extends MGMicroService {
                 new MarkerExportControl()};
     }
 
+    public interface LineRefProvider{
+        TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) ;
+    }
+    public class MarkerLineRefProvider implements LineRefProvider{
+        public TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) {
+            return mtl.getBestDistance(pm,threshold);
+        }
+    }
 
 }

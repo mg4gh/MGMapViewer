@@ -144,6 +144,15 @@
     <string name="preferences_way_details_key">way_details</string>
     <string name="preferences_way_details_title">Way details</string>
     <string name="preferences_way_details_desc">Visualize way details of a taped way</string>
+
+    <string name="preferences_dev_mtl_key">show_marker_track</string>
+    <string name="preferences_dev_mtl_title">Show marker track</string>
+    <string name="preferences_dev_mtl_desc">Visualize the marker track</string>
+
+    <string name="preferences_dev_snap2way_key">snap_to_way</string>
+    <string name="preferences_dev_snap2way_title">Snap to way</string>
+    <string name="preferences_dev_snap2way_desc">Snap marker points automatically to close ways.</string>
+
     <string name="preferences_mtr_key">multi_thread_rendering</string>
     <string name="preferences_mtr_title">Multi thread rendering</string>
     <string name="preferences_mtr_desc">Use multi thread rendering (caution: this can cause stability issues)</string>

@@ -29,9 +29,7 @@ public class RouteOptimizer {
     }
 
     private RoutePointModel getRoutePointModel(PointModel pm){
-        RoutePointModel rpm = msRouting.getRoutePointModel( pm );
-        msRouting.calcApproaches(mapFile, rpm);
-        return rpm;
+        return msRouting.getRoutePointModel( mapFile, pm );
     }
 
     private void replaceNode(MultiPointModelImpl mpmi, int idx, PointModel pm){
@@ -65,8 +63,7 @@ public class RouteOptimizer {
 
 
         for (int idx=startIdx+1; idx < endIdx; idx++){
-            RoutePointModel rpm = msRouting.getRoutePointModel( segment.get(idx) );
-            msRouting.calcApproaches(mapFile, rpm);
+            RoutePointModel rpm = msRouting.getRoutePointModel( mapFile, segment.get(idx) );
 
             ApproachModel match = null;
 
@@ -180,10 +177,5 @@ public class RouteOptimizer {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+"idx="+idx+" "+segment.get(idx)+ log);
         }
     }
-
-
-
-
-
 
 }

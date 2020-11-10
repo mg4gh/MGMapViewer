@@ -20,6 +20,7 @@
     <color name="BLUE_A50">#320000FF</color>
     <color name="BLUE_A150">#960000FF</color>
     <color name="BLUE100_A100">#64000064</color>
+    <color name="PURPLE">#FFC800E6</color>
     <color name="PURPLE_A150">#96C800E6</color>
     <color name="PURPLE_A100">#64C800E6</color>
 </resources>

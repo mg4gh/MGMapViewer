@@ -85,11 +85,17 @@ public class MGMicroService {
         showTrack(trackLog,paint,showGL,MultiPointView.POINT_RADIUS);
     }
 
-    protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius){
+    protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius) {
+        showTrack(trackLog,paint,showGL,pointRadius, false);
+    }
+
+    protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius, boolean showIntermediates){
         for (int idx = 0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
             MultiPointView layer = (showGL)?new MultiPointGLView(segment, paint):new MultiPointView(segment, paint);
             if (showGL) layer.setStrokeIncrease(1.5);
+            layer.setPointRadius(pointRadius);
+            layer.setShowIntermediates(showIntermediates);
             register(layer, true);
         }
     }
