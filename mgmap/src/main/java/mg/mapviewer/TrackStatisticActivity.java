@@ -174,19 +174,22 @@ public class TrackStatisticActivity extends Activity {
 
         setViewtreeColor(tableLayout, colorId);
 
-        tableLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int id = tableLayout.getId();
-                if (selectedRefs.get(id) == null){
-                    selectedRefs.put(id, selectionRefs.get(id));
-                    setViewtreeColor(tableLayout, colorIdSelected);
-                } else {
-                    selectedRefs.remove(id);
-                    setViewtreeColor(tableLayout, colorId);
+        if (trackLog != application.recordingTrackLogObservable.getTrackLog()) {
+            tableLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int id = tableLayout.getId();
+                    if (selectedRefs.get(id) == null){
+                        selectedRefs.put(id, selectionRefs.get(id));
+                        setViewtreeColor(tableLayout, colorIdSelected);
+                    } else {
+                        selectedRefs.remove(id);
+                        setViewtreeColor(tableLayout, colorId);
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     private void setViewtreeColor(View view, int colorId){
@@ -226,20 +229,22 @@ public class TrackStatisticActivity extends Activity {
 
         menu.setHeaderTitle("MGMapViewer:");
         if (v instanceof TableLayout){
-            if (selectedRefs.get(v.getId()) == null){
-                v.performClick();
-            }
-
-            menu.add(0, v.getId(),1,getResources().getString(R.string.ctx_stat_del_track));
-            menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_stl_track));
-            if (selectedRefs.size() == 1){
-                menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_mtl_track));
-                TrackLogStatistic statistic = selectionRefs.get(v.getId()).getTrackLog().getTrackStatistic();
-                if ((statistic.getMinEle() != TrackLogPoint.NO_ELE) && (statistic.getMaxEle() != TrackLogPoint.NO_ELE)){
-                    menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_hpr_track));
+            if (selectionRefs.get(v.getId()).getTrackLog() != application.recordingTrackLogObservable.getTrackLog()){
+                if (selectedRefs.get(v.getId()) == null){
+                    v.performClick();
                 }
+
+                menu.add(0, v.getId(),1,getResources().getString(R.string.ctx_stat_del_track));
+                menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_stl_track));
+                if (selectedRefs.size() == 1){
+                    menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_mtl_track));
+                    TrackLogStatistic statistic = selectionRefs.get(v.getId()).getTrackLog().getTrackStatistic();
+                    if ((statistic.getMinEle() != TrackLogPoint.NO_ELE) && (statistic.getMaxEle() != TrackLogPoint.NO_ELE)){
+                        menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_hpr_track));
+                    }
+                }
+                menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_shr_track));
             }
-            menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_shr_track));
         }
     }
 
