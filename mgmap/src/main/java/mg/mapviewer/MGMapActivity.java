@@ -79,6 +79,7 @@ import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.GpxImporter;
 import mg.mapviewer.util.MapViewUtility;
+import mg.mapviewer.util.MetaDataUtil;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.OpenAndroMapsUtil;
 import mg.mapviewer.util.Permissions;
@@ -94,6 +95,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -299,21 +301,84 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         try {
             Log.w(MGMapApplication.LABEL, NameUtil.context()+"  " + intent);
             if (intent != null) {
-                Uri uri = intent.getData();
-                if (uri != null) {
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
-                    if (uri.toString().startsWith("content")){ // assume this is a gpx file
-                        TrackLog trackLog = GpxImporter.checkLoadGpx(application, uri);
-                        if (trackLog != null) {
-                            application.lastPositionsObservable.clear();
-                            TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
-                            application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
+                if (intent.getType() == null){
+                    Uri uri = intent.getData();
+                    if (uri != null) {
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
+                        if (uri.getScheme().equals("mf-v4-map")){
+                            application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUriMap(uri));
+                        } else
+                        if (uri.getScheme().equals("mf-theme")){
+                            application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(uri));
                         }
-                    } else {
-                        // check for download jobs from openandromaps
-                        application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUri(uri));
+                    }
+
+                } else if (intent.getType().equals("mgmap/showTrack")){
+                    String stl = intent.getStringExtra("stl");
+                    String atl = intent.getStringExtra("atl");
+                    List<String> atls = (atl==null)?new ArrayList<>():Arrays.asList( atl.substring(1,atl.length()-1).split(", ") );
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent.getType()+" stl="+stl+" atl="+atl);
+
+                    BBox bBox2show = new BBox();
+                    for (TrackLog aTrackLog : application.metaTrackLogs){
+                        if (atls.contains(aTrackLog.getName())){
+                            application.availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
+                            bBox2show.extend(aTrackLog.getBBox());
+                        }
+                        if ((stl!=null) && (stl.equals(aTrackLog.getName()))){
+                            TrackLogRef selectedRef = new TrackLogRef(aTrackLog, -1);
+                            application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
+                            bBox2show.extend(aTrackLog.getBBox());
+                        }
+                    }
+                    application.availableTrackLogsObservable.changed();
+                    getMapViewUtility().zoomForBoundingBox(bBox2show);
+
+                } else if (intent.getType().equals("mgmap/markTrack")){
+                    String stl = intent.getStringExtra("stl");
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent.getType()+" stl="+stl);
+
+                    BBox bBox2show = new BBox();
+                    for (TrackLog aTrackLog : application.metaTrackLogs){
+                        if ((stl!=null) && (stl.equals(aTrackLog.getName()))){
+                            application.getMS(MSMarker.class).createMarkerTrackLog(aTrackLog);
+//                            application.getMS(MSMarker.class).createMarkerTrackLog(trackLog);
+//                            application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
+                            bBox2show.extend(aTrackLog.getBBox());
+                        }
+                    }
+//                    application.availableTrackLogsObservable.changed();
+                    getMapViewUtility().zoomForBoundingBox(bBox2show);
+
+                } else {
+                    Uri uri = intent.getData();
+                    if (uri != null) {
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
+                        if (uri.toString().startsWith("content")){ // assume this is a gpx file
+                            TrackLog trackLog = GpxImporter.checkLoadGpx(application, uri);
+                            if (trackLog != null) {
+                                application.lastPositionsObservable.clear();
+                                TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
+                                application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
+                            }
+                        }
                     }
                 }
+//                Uri uri = intent.getData();
+//                if (uri != null) {
+//                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
+//                    if (uri.toString().startsWith("content")){ // assume this is a gpx file
+//                        TrackLog trackLog = GpxImporter.checkLoadGpx(application, uri);
+//                        if (trackLog != null) {
+//                            application.lastPositionsObservable.clear();
+//                            TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
+//                            application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
+//                        }
+//                    } else {
+//                        // check for download jobs from openandromaps
+//                        application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUri(uri));
+//                    }
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();

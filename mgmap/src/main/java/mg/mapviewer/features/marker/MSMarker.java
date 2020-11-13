@@ -147,6 +147,7 @@ public class MSMarker extends MGMicroService {
         }
         mtl.stopTrack(trackLog.getTrackStatistic().getTEnd());
         markerTrackLogObservable.setTrackLog(mtl);
+        getMapViewUtility().zoomForBoundingBox(trackLog.getBBox());
         showHide(mtl);
     }
 

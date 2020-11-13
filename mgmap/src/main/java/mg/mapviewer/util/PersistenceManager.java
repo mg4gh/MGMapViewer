@@ -22,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,6 +52,7 @@ public class PersistenceManager {
 
     private static PersistenceManager persistenceManager = null;
     private static File baseDir = null;
+    private static Context context = null;
 
 
     public static PersistenceManager getInstance(Context context) {
@@ -93,6 +95,7 @@ public class PersistenceManager {
 //            baseDir = Environment.getExternalStorageDirectory();
 //            if (baseDir.canWrite() && bPrefStorage){
 //            } else {
+            PersistenceManager.context = context;
             baseDir = context.getExternalFilesDir(null);
 
 //            }
@@ -254,7 +257,8 @@ public class PersistenceManager {
     public Uri getGpxUri(String filename) {
         try {
             File file = new File(trackGpxDir, filename + ".gpx");
-            return Uri.fromFile(file);
+            Uri uri = FileProvider.getUriForFile(context, "mg.mgmap.provider", file);
+            return uri;
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }

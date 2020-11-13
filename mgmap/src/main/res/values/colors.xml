@@ -10,8 +10,10 @@
     <color name="RED_A50">#32FF0000</color>
     <color name="RED_A150">#96FF0000</color>
     <color name="RED100_A100">#64640000</color>
+    <color name="RED100_A150">#64960000</color>
     <color name="GREEN">#FF00FF00</color>
     <color name="GREEN100_A100">#64006400</color>
+    <color name="GREEN150_A150">#96009600</color>
     <color name="ORANGE_A50">#32FF6000</color>
     <color name="ORANGE">#FFFF6000</color>
     <color name="GRAY100_A100">#64646464</color>
@@ -20,6 +22,7 @@
     <color name="BLUE_A50">#320000FF</color>
     <color name="BLUE_A150">#960000FF</color>
     <color name="BLUE100_A100">#64000064</color>
+    <color name="BLUE150_A150">#96000096</color>
     <color name="PURPLE">#FFC800E6</color>
     <color name="PURPLE_A150">#96C800E6</color>
     <color name="PURPLE_A100">#64C800E6</color>

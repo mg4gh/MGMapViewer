@@ -46,6 +46,7 @@ import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
 
+import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.model.TrackLogRefZoom;
@@ -59,8 +60,10 @@ import mg.mapviewer.model.TrackLogStatistic;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class TrackStatisticActivity extends Activity {
 
@@ -72,7 +75,7 @@ public class TrackStatisticActivity extends Activity {
     private Resources resources = null;
 
     private SparseArray<TrackLogRef> selectionRefs = new SparseArray<>();
-
+    private SparseArray<TrackLogRef> selectedRefs = new SparseArray<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,22 +108,22 @@ public class TrackStatisticActivity extends Activity {
 
         LinearLayout parent = findViewById(R.id.trackView);
 
-        addTrackLog(parent, application.recordingTrackLogObservable.getTrackLog(), R.color.RED100_A100);
-        addTrackLog(parent, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE100_A100);
+        addTrackLog(parent, application.recordingTrackLogObservable.getTrackLog(), R.color.RED100_A100, R.color.RED100_A150);
+        addTrackLog(parent, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE100_A100, R.color.BLUE150_A150);
         for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
             if (trackLog != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()){
-                addTrackLog(parent, trackLog, R.color.GREEN100_A100);
+                addTrackLog(parent, trackLog, R.color.GREEN100_A100, R.color.GREEN150_A150);
             }
         }
         for (TrackLog trackLog : application.metaTrackLogs){
             if (!application.availableTrackLogsObservable.availableTrackLogs.contains(trackLog)){
-                addTrackLog(parent, trackLog, R.color.GRAY100_A100);
+                addTrackLog(parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
             }
         }
     }
 
     static Random random = new Random(System.currentTimeMillis());
-    public void addTrackLog(ViewGroup parent, TrackLog trackLog, int colorId){
+    public void addTrackLog(ViewGroup parent, TrackLog trackLog, int colorId, int colorIdSelected){
         if (trackLog == null) return;
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
 
@@ -171,7 +174,19 @@ public class TrackStatisticActivity extends Activity {
 
         setViewtreeColor(tableLayout, colorId);
 
-
+        tableLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int id = tableLayout.getId();
+                if (selectedRefs.get(id) == null){
+                    selectedRefs.put(id, selectionRefs.get(id));
+                    setViewtreeColor(tableLayout, colorIdSelected);
+                } else {
+                    selectedRefs.remove(id);
+                    setViewtreeColor(tableLayout, colorId);
+                }
+            }
+        });
     }
 
     private void setViewtreeColor(View view, int colorId){
@@ -201,6 +216,8 @@ public class TrackStatisticActivity extends Activity {
 
         LinearLayout parent = findViewById(R.id.trackView);
         parent.removeAllViews();
+        selectionRefs.clear();
+        selectedRefs.clear();
     }
 
     @Override
@@ -209,13 +226,20 @@ public class TrackStatisticActivity extends Activity {
 
         menu.setHeaderTitle("MGMapViewer:");
         if (v instanceof TableLayout){
-            menu.add(0, v.getId(),1,"Delete Track");
-            TrackLogStatistic statistic = selectionRefs.get(v.getId()).getTrackLog().getTrackStatistic();
-            if ((statistic.getMinEle() != TrackLogPoint.NO_ELE) && (statistic.getMaxEle() != TrackLogPoint.NO_ELE)){
-                menu.add(0, v.getId(),0,"Height Profile");
+            if (selectedRefs.get(v.getId()) == null){
+                v.performClick();
             }
-            menu.add(0, v.getId(),0,"Select Track");
-            menu.add(0, v.getId(),0,"Share Track");
+
+            menu.add(0, v.getId(),1,getResources().getString(R.string.ctx_stat_del_track));
+            menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_stl_track));
+            if (selectedRefs.size() == 1){
+                menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_mtl_track));
+                TrackLogStatistic statistic = selectionRefs.get(v.getId()).getTrackLog().getTrackStatistic();
+                if ((statistic.getMinEle() != TrackLogPoint.NO_ELE) && (statistic.getMaxEle() != TrackLogPoint.NO_ELE)){
+                    menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_hpr_track));
+                }
+            }
+            menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_shr_track));
         }
     }
 
@@ -223,25 +247,34 @@ public class TrackStatisticActivity extends Activity {
     public boolean onContextItemSelected(MenuItem item) {
         super.onContextItemSelected(item);
         TrackLog trackLog = selectionRefs.get(item.getItemId()).getTrackLog();
-        if (item.getTitle().equals("Delete Track")) {
-            Log.i(MGMapApplication.LABEL, NameUtil.context() +" Delete Track " + trackLog.getName());
-            application.metaTrackLogs.remove(trackLog);
-            application.availableTrackLogsObservable.availableTrackLogs.remove(trackLog);
-            if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == trackLog) {
-                application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
-            }
+        Log.i(MGMapApplication.LABEL, NameUtil.context() +" \""+item.getTitle()+"\" for track \"" + trackLog.getName()+"\"");
+
+        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_del_track) )) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            builder.setTitle("Delete Track");
-            builder.setMessage(trackLog.getName());
+            builder.setTitle(item.getTitle());
+            ArrayList<String> list = new ArrayList<>();
+            for(int idx=0; idx < selectedRefs.size(); idx++){
+                list .add( selectedRefs.valueAt(idx).getTrackLog().getName()  );
+            }
+            String msg = list.toString();
+            builder.setMessage(msg.substring(1,msg.length()-1));
 
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " delete track "+trackLog.getName() );
-                    PersistenceManager.getInstance().deleteTrack(trackLog.getName());
-                    AndroidUtil.restartActivity(TrackStatisticActivity.this);
+                    for(int idx=0; idx < selectedRefs.size(); idx++){
+                        TrackLog aTrackLog = selectedRefs.valueAt(idx).getTrackLog();
+                        application.metaTrackLogs.remove(aTrackLog);
+                        application.availableTrackLogsObservable.availableTrackLogs.remove(aTrackLog);
+                        if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == aTrackLog) {
+                            application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
+                        }
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() +" confirm \""+item.getTitle()+"\" for track \"" + aTrackLog.getName()+"\"");
+                        PersistenceManager.getInstance().deleteTrack(aTrackLog.getName());
+                    }
+                    TrackStatisticActivity.this.recreate();
                 }
             });
 
@@ -250,7 +283,7 @@ public class TrackStatisticActivity extends Activity {
                 public void onClick(DialogInterface dialog, int which) {
                     // Do nothing
                     dialog.dismiss();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " abort delete track "+trackLog.getName() );
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() +" abort \""+item.getTitle()+"\" for track \"" + trackLog.getName()+"\"");
                 }
             });
 
@@ -258,24 +291,49 @@ public class TrackStatisticActivity extends Activity {
             alert.show();
 
         }
-        if (item.getTitle().equals("Select Track")){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() +" Select Track " + trackLog.getName());
-            application.lastPositionsObservable.clear();
-            application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRefZoom(trackLog, -1, true));
-            application.availableTrackLogsObservable.changed();
-            finish();
+        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_stl_track) )){
+            Intent intent = new Intent(this, MGMapActivity.class);
+            intent.putExtra("stl",trackLog.getName());
+            ArrayList<String> list = new ArrayList<>();
+            for(int idx=0; idx < selectedRefs.size(); idx++){
+                list .add( selectedRefs.valueAt(idx).getTrackLog().getName()  );
+            }
+            list.remove(trackLog.getName());
+            if (list.size() > 0){
+                intent.putExtra("atl",list.toString());
+            }
+            intent.setType("mgmap/showTrack");
+            startActivity(intent);
         }
-        if (item.getTitle().equals("Share Track")){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() +" Share Track " + trackLog.getName());
+        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_mtl_track) )){
+            Intent intent = new Intent(this, MGMapActivity.class);
+            intent.putExtra("stl",trackLog.getName());
+            intent.setType("mgmap/markTrack");
+            startActivity(intent);
+//            application.getMS(MSMarker.class).createMarkerTrackLog(trackLog);
+//            finish();
+        }
+        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_shr_track) )){
+            Intent sendIntent = null;
+            String title = "Share ...";
+            if (selectedRefs.size() == 1){
+                sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
+                title = "Share "+trackLog.getName()+".gpx to ...";
+            } else if (selectedRefs.size() >= 2){
+                ArrayList<Uri> uris = new ArrayList<>();
+                for(int idx=0; idx < selectedRefs.size(); idx++){
+                    uris.add( PersistenceManager.getInstance().getGpxUri( selectedRefs.valueAt(idx).getTrackLog().getName() ) );
+                }
+                sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            }
             sendIntent.setType("*/*");
-            sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
             sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(Intent.createChooser(sendIntent, "Share "+trackLog.getName()+".gpx to ..."));
+            startActivity(Intent.createChooser(sendIntent, title));
         }
-        if (item.getTitle().equals("Height Profile")){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() +" Height Profile Track " + trackLog.getName());
+        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_hpr_track) )){
             application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRefZoom(trackLog, -1, true));
             application.availableTrackLogsObservable.changed();
             Intent intent = new Intent(this, HeightProfileActivity.class);
