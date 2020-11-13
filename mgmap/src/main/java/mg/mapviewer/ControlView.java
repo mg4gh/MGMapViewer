@@ -368,6 +368,7 @@ public class ControlView extends RelativeLayout {
         LinearLayout parentLayer = findViewById(R.id.bars);
         for (String prefKey : application.getMapLayerKeys()) {
             final String key = sharedPreferences.getString(prefKey, "");
+            final String alphakey = "no_recreate_alpha_"+key;
             Layer layer = MGMapLayerFactory.getMapLayer(key);
             boolean providesAlpha = (layer instanceof TileLayer);
 
@@ -378,33 +379,46 @@ public class ControlView extends RelativeLayout {
             seekBarName.setVisibility(providesAlpha?VISIBLE:INVISIBLE);
             if (layer instanceof TileLayer) {
                 TileLayer tileLayer = (TileLayer) layer;
-                seekBar.setProgress((int) (tileLayer.getAlpha()*100));
+                float alpha = tileLayer.getAlpha();
+                alpha = sharedPreferences.getFloat(alphakey, alpha);
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha+ " "+seekBar);
+                tileLayer.setAlpha(alpha);
+                seekBar.setProgress((int) (alpha*100));
+
+                seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        Layer layer = MGMapLayerFactory.getMapLayer(key);
+                        if (layer instanceof TileLayer) {
+                            TileLayer tileLayer = (TileLayer) layer;
+                            float alpha = progress/100.0f;
+                            if (!fromUser){
+                                alpha = sharedPreferences.getFloat(alphakey, alpha);
+                                seekBar.setProgress((int) (alpha*100));
+                            }
+                            tileLayer.setAlpha(alpha);
+                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha+ " "+seekBar);
+                            sharedPreferences.edit().putFloat(alphakey, alpha).apply();
+                            tileLayer.setVisible(progress != 0);
+                            mapView.getLayerManager().redrawLayers();
+                        }
+                        Log.d(MGMapApplication.LABEL, NameUtil.context()+" progress="+progress);
+                    }
+                });
+
             } else {
                 parentLayer.removeView(seekBar);
                 parentLayer.removeView(seekBarName);
             }
 
-            seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    Layer layer = MGMapLayerFactory.getMapLayer(key);
-                    if (layer instanceof TileLayer) {
-                        TileLayer tileLayer = (TileLayer) layer;
-                        tileLayer.setAlpha(progress/100.0f);
-                        tileLayer.setVisible(progress != 0);
-                        mapView.getLayerManager().redrawLayers();
-                    }
-                    Log.d(MGMapApplication.LABEL, NameUtil.context()+" progress="+progress);
-                }
-            });
 
         }
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " showAlphaSliders="+application.showAlphaSliders.getValue());
