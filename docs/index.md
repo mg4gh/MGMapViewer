@@ -27,7 +27,6 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Marker Track](./Features/MainTrackFeatures/MarkerTrack/markertrack.md) create a track (marker track) by tapping some points, including manipulations like moving points, 
   insert and delete points. Such a marker track can also be imported/exported. 
 - [Basic Routing](./Features/MainTrackFeatures/Routing/routing.md) basic route calculation (shortest path) based on a marker track.
-- [Routing Hints](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation.
 - [Dashboard](./Features/MainTrackFeatures/Dashboard/dashboard.md) visualization of the most important information of the recording, the selected and the route track log.
 
 ### Further features
@@ -43,6 +42,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status line
 - [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md): show some state information in the status line
 - [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account 
+- [Routing Hints](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation.
 
 ### Developer features
 - [Way details](./Features/DeveloperFeatures/WayDetails/waydetails.md) shows the ways of a tile 
