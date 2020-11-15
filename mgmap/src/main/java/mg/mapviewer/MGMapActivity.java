@@ -295,7 +295,15 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     }
 
-    /** Used if .gpx file is opened from mail oder file manager */
+    /** Used if
+     * <ul>
+     *     <li>Map download is triggered from openandomaps page (via scheme "mf-v4-map")</li>
+     *     <li>Theme download is triggered from openandomaps page (via scheme "mf-theme")</li>
+     *     <li>one or multiple tracks are shown from statistic view</li>
+     *     <li>a new marker tracks is set from statistic view</li>
+     *     <li>a .gpx file is opened from mail oder file manager</li>
+     * </ul>
+     * */
     @Override
     protected void onNewIntent(Intent intent) {
         try {
@@ -342,12 +350,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     for (TrackLog aTrackLog : application.metaTrackLogs){
                         if ((stl!=null) && (stl.equals(aTrackLog.getName()))){
                             application.getMS(MSMarker.class).createMarkerTrackLog(aTrackLog);
-//                            application.getMS(MSMarker.class).createMarkerTrackLog(trackLog);
-//                            application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
                             bBox2show.extend(aTrackLog.getBBox());
                         }
                     }
-//                    application.availableTrackLogsObservable.changed();
                     getMapViewUtility().zoomForBoundingBox(bBox2show);
 
                 } else {
@@ -364,21 +369,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         }
                     }
                 }
-//                Uri uri = intent.getData();
-//                if (uri != null) {
-//                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
-//                    if (uri.toString().startsWith("content")){ // assume this is a gpx file
-//                        TrackLog trackLog = GpxImporter.checkLoadGpx(application, uri);
-//                        if (trackLog != null) {
-//                            application.lastPositionsObservable.clear();
-//                            TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
-//                            application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
-//                        }
-//                    } else {
-//                        // check for download jobs from openandromaps
-//                        application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUri(uri));
-//                    }
-//                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,3 +1,7 @@
+com.jjoe64.graphview
+com.jjoe64.graphview.compat
+com.jjoe64.graphview.helper
+com.jjoe64.graphview.series
 mg.mapviewer
 mg.mapviewer.control
 mg.mapviewer.features.atl
@@ -13,9 +17,10 @@ mg.mapviewer.features.rtl
 mg.mapviewer.features.rtl.control
 mg.mapviewer.features.search
 mg.mapviewer.features.search.provider
+mg.mapviewer.features.tilestore
 mg.mapviewer.features.time
 mg.mapviewer.graph
 mg.mapviewer.model
+mg.mapviewer.settings
 mg.mapviewer.util
-mg.mapviewer.features.tilestore
 mg.mapviewer.view
