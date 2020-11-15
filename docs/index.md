@@ -27,7 +27,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Marker Track](./Features/MainTrackFeatures/MarkerTrack/markertrack.md) create a track (marker track) by tapping some points, including manipulations like moving points, 
   insert and delete points. Such a marker track can also be imported/exported. 
 - [Basic Routing](./Features/MainTrackFeatures/Routing/routing.md) basic route calculation (shortest path) based on a marker track.
-- [Routing Hints](./Features/MainTrackFeatures/Routing/hints.md) basic voice output based on the route calculation.
+- [Routing Hints](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation.
 - [Dashboard](./Features/MainTrackFeatures/Dashboard/dashboard.md) visualization of the most important information of the recording, the selected and the route track log.
 
 ### Further features
