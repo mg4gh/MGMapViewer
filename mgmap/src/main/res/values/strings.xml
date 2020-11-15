@@ -163,6 +163,7 @@
     <string name="preferences_mtr_desc">Use multi thread rendering (caution: this can cause stability issues)</string>
 
     <string name="preferences_cat_gl_title">Gain/Loss settings</string>
+    <string name="preferences_cat_marker_title">Marker/Route settings</string>
     <string name="preferences_cat_dev_title">Developer settings</string>
 <!--    <string name="preferences_cat_gl_desc">Visualize the selected track with colors based on gain/loss."</string>-->
 

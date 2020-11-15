@@ -63,17 +63,10 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="@string/preferences_cat_dev_title"
+        app:title="@string/preferences_cat_marker_title"
         app:iconSpaceReserved="false"
         app:allowDividerAbove="true"
         >
-        <SwitchPreference
-            app:defaultValue="false"
-            app:key="@string/preferences_way_details_key"
-            app:summary="@string/preferences_way_details_desc"
-            app:title="@string/preferences_way_details_title"
-            app:iconSpaceReserved="false"
-            />
         <SwitchPreference
             app:defaultValue="false"
             app:key="@string/preferences_dev_mtl_key"
@@ -86,6 +79,20 @@
             app:key="@string/preferences_dev_snap2way_key"
             app:summary="@string/preferences_dev_snap2way_desc"
             app:title="@string/preferences_dev_snap2way_title"
+            app:iconSpaceReserved="false"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/preferences_cat_dev_title"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        >
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_way_details_key"
+            app:summary="@string/preferences_way_details_desc"
+            app:title="@string/preferences_way_details_title"
             app:iconSpaceReserved="false"
             />
         <!--SwitchPreference

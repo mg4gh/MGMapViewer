@@ -3,11 +3,10 @@
 A marker track is a sequence of manually set marker track points. Marker tracks are used in most cases as the basis for simple routing.
 Another use case for marker track points is to determine distances along a given track.
 
-For explanation purposes of the marker tracks we first deactivate routing with
-<span style="color:gray">*Menu | Route | Route off*</span>.
-
-<img src="./DeactRoute1.png" width="200" />&nbsp;
-<img src="./DeactRoute2.png" width="200" />&nbsp;
+For explanation purposes of the marker tracks we first change a few default settings:
+- switch on <span style="color:gray">*Menu | Settings and more | Further settings | Show marker track*</span>
+- switch off <span style="color:gray">*Menu | Settings and more | Further settings | Snap to way*</span>
+- switch off route visibility with <span style="color:gray">*Menu | Route | Route off*</span>.
 
 To start the special mode for a marker track press the corresponding quick control.
 As a visual feedback the icon on this button get red. This implies that the edit mode for the marker track is active.
@@ -21,6 +20,7 @@ As a visual feedback the icon on this button get red. This implies that the edit
 - tap on the connecting line between two marker points: insert a new point between the existing points
 - drag and drop of a marker point: move the position of an existing marker point
 
+You can even combine the last two actions to insert and immediately move the inserted point.
 The following example shows a creation of such a track. Marker points are visible witch a small red circle, 
 consecutive points are connected with a thin red line:
 
@@ -82,15 +82,10 @@ For the example above the result looks like:
 
 **Import Marker Track**
 
-In opposite to the export of a marker track the import does not read a .gpx file. Instead the current selected track will be imported
-as a marker track. So if you want to reopen a saved marker track, then make this marker track first the selected track and then use
+There are two options to get a gpx back as a marker track:
+
+1. Make the marker track the selected track and then use
 <span style="color:gray">*Menu | Marker Track | Import*</span>  as a second step.
-
-<img src="./import1.png" width="200" />&nbsp;
-<img src="./import2.png" width="200" />&nbsp;
-<img src="./import3.png" width="200" />&nbsp;
-
-As a side effect of the import the selected track will be hidden - so now you see only the original marker track.
-
-<img src="./import4.png" width="200" />&nbsp;
+As a side effect of the import the selected track will be hidden - so then you see only the original marker track.
+2. Use directly the context menu entry "marker track" in the statistic view.
 
