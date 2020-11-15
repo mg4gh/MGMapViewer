@@ -84,7 +84,7 @@ public class PointView extends MVLayer {
     protected float getScale(byte zoomLevel){
         return (float) Math.pow(this.radiusIncrease, zoomLevel - DEFAULT_ZOOM_LEVEL);
     }
-    
+
 
     public PointModel getModel() {
         return model;
