@@ -36,7 +36,6 @@ public class PointView extends MVLayer {
     private Paint paintStroke;
     private Paint paintFill = null;
     private float radius = 4;
-//    private boolean keepAligned = false;
     private float radiusIncrease = 1;
     private float radiusMeter = -1;
 
@@ -51,7 +50,6 @@ public class PointView extends MVLayer {
     }
     public PointView(PointModel model, Paint paintStroke, Paint paintFill, boolean keepAligned){
         this(model, paintStroke, paintFill);
-//        this.keepAligned = keepAligned;
     }
 
 
@@ -76,26 +74,17 @@ public class PointView extends MVLayer {
         }
 
         if (this.paintStroke != null) {
-//            if (this.keepAligned) {
-//                this.paintStroke.setBitmapShaderShift(topLeftPoint);
-//            }
             canvas.drawCircle(pixelX, pixelY, radiusInPixel, this.paintStroke);
         }
         if (this.paintFill != null) {
-//            if (this.keepAligned) {
-//                this.paintFill.setBitmapShaderShift(topLeftPoint);
-//            }
             canvas.drawCircle(pixelX, pixelY, radiusInPixel, this.paintFill);
         }
     }
 
-
     protected float getScale(byte zoomLevel){
         return (float) Math.pow(this.radiusIncrease, zoomLevel - DEFAULT_ZOOM_LEVEL);
     }
-
-
-
+    
 
     public PointModel getModel() {
         return model;
@@ -119,7 +108,6 @@ public class PointView extends MVLayer {
         return this;
     }
 
-
     public float getRadiusIncrease() {
         return radiusIncrease;
     }
@@ -129,7 +117,4 @@ public class PointView extends MVLayer {
         return this;
     }
 
-    //    public void setKeepAligned(boolean keepAligned) {
-//        this.keepAligned = keepAligned;
-//    }
 }
