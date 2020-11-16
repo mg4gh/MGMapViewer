@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: center automatically current gps position
 
 By default this feature is switched on. This means that for every new GPS 
@@ -21,3 +23,5 @@ This is done with <span style="color:gray">*Menu | Center off*</span> and
 
 <img src="./centeroff.png" width="200" />&nbsp;
 <img src="./centeron.png" width="200" />&nbsp;
+
+<small><small>[Back to Index](../../../index.md)</small></small>

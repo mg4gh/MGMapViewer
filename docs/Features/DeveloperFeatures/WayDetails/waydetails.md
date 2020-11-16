@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Developer Features: way data
 
 This feature supports development of the
@@ -29,3 +31,5 @@ Zooming a few steps in, this becomes better visible:
 <img src="./wd6.png" width="400" />&nbsp;
 
 This visualization helps to understand the results of the routing process.
+
+<small><small>[Back to Index](../../../index.md)</small></small>

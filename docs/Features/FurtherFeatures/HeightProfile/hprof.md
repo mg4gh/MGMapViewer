@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: height profile
 
 To enter the statistic view use <span style="color:gray">*Menu | Height Profile*</span>.
@@ -25,3 +27,5 @@ With this setting switched on the route as seen on the first picture provides a 
 <img src="./hp5.png" width="400" />&nbsp;
 
 Be aware of the second scale on the right side, which is valid for the ascent graph.
+
+<small><small>[Back to Index](../../../index.md)</small></small>

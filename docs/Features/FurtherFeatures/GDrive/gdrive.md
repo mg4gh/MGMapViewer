@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: GDrive Synchronisation
 
 This feature allows the synchronisation of gpx TrackLogs with a folder on your Google Drive account.
@@ -48,3 +50,4 @@ So why is only gpx data synchronized?
 So if you have lost data on your device, you can simply restore the gpx files from your Google Drive. 
 Be aware that the download job will only be successful, if your configured password fits to the zip files!
 
+<small><small>[Back to Index](../../../index.md)</small></small>

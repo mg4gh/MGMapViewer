@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: quick controls
 
 At the very bottom of the screen there is a row with quick controls:
@@ -14,5 +16,5 @@ There are seven quick controls:
 - Zoom In
 - Zoom Out
 
- 
+ <small><small>[Back to Index](../../../index.md)</small></small>
 

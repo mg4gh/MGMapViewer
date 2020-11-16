@@ -1,4 +1,4 @@
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 
 ## Main Track Feature: Use a bounding box to search track(s) ... and more
 
@@ -89,4 +89,4 @@ Finally, after some bounding box action, you want to leave this feature. This ca
 Alternatively this mode will be leaved automatically after 15 seconds, if there is no bounding box related action recognized during this time.
 
 
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>

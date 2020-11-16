@@ -1,4 +1,4 @@
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 
 ## Main Track Feature: record a track
 
@@ -31,4 +31,4 @@ with the "Start Segment" Button. So a track consists of a number of segments, wh
 
 <img src="./notification.png" width="600" />&nbsp;
 
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>

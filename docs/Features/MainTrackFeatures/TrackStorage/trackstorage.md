@@ -1,4 +1,4 @@
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 
 ## Main Track Feature: track storage
 
@@ -29,7 +29,7 @@ Additionally the track points are split in groups of 4K bytes size. For each gro
 a bounding box info available. All these meta data provide the ability to search for a track by
 marking a certain relevant area. For detail see Feature [Bounding Box](../BoundingBox/boundingbox.md).
 
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 
 
 

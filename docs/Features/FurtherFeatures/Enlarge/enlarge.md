@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: enlarge temporary a view entry
  
 This feature allows to enlarge temporary a dashboard view entry or a status line entry. 
@@ -26,3 +28,4 @@ Some more examples:
 <img src="./el2a.png" width="270" />&nbsp;
 <img src="./el3.png" width="270" />
 
+<small><small>[Back to Index](../../../index.md)</small></small>

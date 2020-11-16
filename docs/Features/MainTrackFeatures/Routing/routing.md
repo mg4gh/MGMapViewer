@@ -1,4 +1,4 @@
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 
 ## Main Track Feature: routing
 
@@ -84,4 +84,4 @@ The next figures show two examples of typical route optimizations (each example 
 <img src="./OPT3.png" width="400" />&nbsp;
 <img src="./OPT4.png" width="400" />&nbsp;
 
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>

@@ -1,4 +1,6 @@
-## Further Features: remaining distance - show distance along the selected track 
+<small><small>[Back to Index](../../../index.md)</small></small>
+
+## Further Features: remaining distance - show distance along the selected track
 
 This feature provides the following detailed options:
 - remaining distance to the end of the selected track based on current position
@@ -50,3 +52,5 @@ In the result the MarkerTrack with its two points is better visible. The distanc
 status line. Please notice that the icon in this field indicates the measurement between two pints.
 
 <img src="./remain6.png" width="400" />&nbsp;
+
+<small><small>[Back to Index](../../../index.md)</small></small>

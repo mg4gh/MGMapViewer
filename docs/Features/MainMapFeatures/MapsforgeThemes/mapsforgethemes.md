@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Main map Feature: mapsforge themes
 
 The usage of [mapsforge](../Mapsforge/mapsforge.md) maps requires the usage of rendering themes. As already stated in the
@@ -44,3 +46,4 @@ Within one of these modes you still can adopt this mode according to your needs,
 <img src="./city2.png" width="270" />&nbsp;
 <img src="./city3.png" width="270" />
 
+<small><small>[Back to Index](../../../index.md)</small></small>

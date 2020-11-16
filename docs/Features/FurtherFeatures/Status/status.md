@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: status line
  
 The status line is always visible, but it is kept semi transparent to have an idea about the 
@@ -21,3 +23,4 @@ The following figures illustrate this behaviour:
 <img src="./stat2.png" width="400" />&nbsp;
 <img src="./stat1.png" width="400" />&nbsp;
 
+<small><small>[Back to Index](../../../index.md)</small></small>

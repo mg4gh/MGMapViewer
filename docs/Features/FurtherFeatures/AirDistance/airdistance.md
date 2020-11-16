@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: air distnace
 
 If you have switched on GPS directly or via track recording, then you can determine the 
@@ -9,3 +11,5 @@ shown in the status line.
 
 <img src="./air1.png" width="400" />&nbsp;
 <img src="./air2.png" width="400" />&nbsp;
+
+<small><small>[Back to Index](../../../index.md)</small></small>

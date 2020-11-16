@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: toggle gps
 
 Beside the option to record a track, it is also possible to "just" switch on the GPS 
@@ -18,3 +20,5 @@ After the usage switch off this function with <span style="color:gray">*Menu | G
 **Note**: As long as the GPS is switched on there is a Notification active. It disappears after switching the GPS off.
 
 <img src="./notification.png" width="600" />&nbsp;
+
+<small><small>[Back to Index](../../../index.md)</small></small>

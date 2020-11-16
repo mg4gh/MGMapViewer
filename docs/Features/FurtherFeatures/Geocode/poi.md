@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: geocode provider - POI
 
 This geocode implementation is based on the POI (point of interests) files. These POI files can be downloaded together with the corresponding map files 
@@ -62,4 +64,6 @@ Finally the closest five entries are shown as the result.
 
 Although especially for address search this engine is not comparable to Graphhopper or Pelias
 it might be useful in case there is no internet and also for some very special search
-requests. 
+requests.
+
+<small><small>[Back to Index](../../../index.md)</small></small>

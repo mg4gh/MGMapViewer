@@ -1,4 +1,4 @@
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 
 ## Main Track Feature: dashboard
 
@@ -39,4 +39,4 @@ desired segment. The next example illustrates a track with two segments:
 
 The total values of the track correspond to the sum of the segment values.
 
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>

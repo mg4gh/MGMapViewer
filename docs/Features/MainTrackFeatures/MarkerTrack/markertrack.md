@@ -1,4 +1,4 @@
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 
 ## Main Track Feature: marker track
 
@@ -91,4 +91,4 @@ There are two options to get a gpx back as a marker track:
 As a side effect of the import the selected track will be hidden - so then you see only the original marker track.
 2. Use directly the context menu entry "marker track" in the statistic view.
 
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>

@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Main map Feature: mapstore
 The term tile store or offline tile store will be also used for this kind of store.
 
@@ -42,3 +44,4 @@ in the store directory. Now you can fill this store using the
 [bounding box](../../MainTrackFeatures/BoundingBox/boundingbox.md)
 feature.
 
+<small><small>[Back to Index](../../../index.md)</small></small>

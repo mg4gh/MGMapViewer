@@ -1,4 +1,4 @@
-<small><small><a href="../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../index.md)</small></small>
 
 ## Definitions: Track
 
@@ -16,4 +16,4 @@ The following terminology is used for TrackLog objects in this description (and 
 | Route | purple line | purple entry | - | calculated route based on MarkerTrack |
 | MetaTrackLog | - | - | gray entry | track log from meta files (exists for each known track) |
 
-<small><small><a href="../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../index.md)</small></small>

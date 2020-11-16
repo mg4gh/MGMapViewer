@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: geocode provider - Nominatim
 
 [Nominatim](https://nominatim.org/) is the geocode service of [OpenStreetMap](https://www.openstreetmap.de/). It is free and there
@@ -19,3 +21,5 @@ The reverse search returns always just one result, which is rather on a rough le
 #### Summary
 
 The search results, forward and reverse are both with a basic quality. 
+
+<small><small>[Back to Index](../../../index.md)</small></small>

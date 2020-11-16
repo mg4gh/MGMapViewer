@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Developer Features: approaches
 
 The [marker track](../../MainTrackFeatures/MarkerTrack/markertrack.md) is the basis for the 
@@ -35,3 +37,4 @@ And since each graph segment is fully inside of a tile, this point is similar to
 <img src="./approach3a.png" width="400" />&nbsp;
 <img src="./approach4.png" width="400" />&nbsp;
 
+<small><small>[Back to Index](../../../index.md)</small></small>

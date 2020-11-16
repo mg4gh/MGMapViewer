@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: geocode provider - Pelias
 
 The routing engine [OpenRouteService](https://openrouteservice.org/) provides the geocode service [Pelias](https://github.com/pelias/pelias).
@@ -38,3 +40,5 @@ A long press on the result of the first search provides the following result:
 #### Summary
 
 The search results, forward and reverse are both with quite good quality. 
+
+<small><small>[Back to Index](../../../index.md)</small></small>

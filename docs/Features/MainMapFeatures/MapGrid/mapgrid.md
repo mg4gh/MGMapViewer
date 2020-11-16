@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Main map Feature: mapgrid
 
 A mapgrid layer is controlled be a simple properties file (named e.g.
@@ -25,3 +27,4 @@ It shows a grid of longitude and latitude values, e.g. like this:
 
 <img src="./mapgrid_map.png" width="300" />
 
+<small><small>[Back to Index](../../../index.md)</small></small>

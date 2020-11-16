@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: geocode provider - Graphhopper
 
 The [graphhopper](https://www.graphhopper.com/) service provides multiple services. Geocode service is
@@ -41,3 +43,5 @@ A long press on the result of the first search provides the following result:
 #### Summary
 
 The search results, forward and reverse are both with quite good quality. The autocompletion is the best I have seen up to now.
+
+<small><small>[Back to Index](../../../index.md)</small></small>

@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Main map Feature: Overlay multiple map layers
 
 This feature allows to combine multiple different map layers to one map. 
@@ -20,3 +22,4 @@ You can toggle the visibility of these sliders via the second quick control:
 
 <img src="./multi_map2.png" width="400" />
 
+<small><small>[Back to Index](../../../index.md)</small></small>

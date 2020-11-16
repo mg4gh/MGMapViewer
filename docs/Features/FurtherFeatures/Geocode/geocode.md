@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: geocode
  
 The feature "Geocode" provides the ability to search 
@@ -77,3 +79,4 @@ You will get the result as seen. A long tap on this result lets the map jump aga
 <img src="./use_r1.png" width="300" />&nbsp;
 <img src="./use_r2.png" width="300" />&nbsp;
 
+<small><small>[Back to Index](../../../index.md)</small></small>

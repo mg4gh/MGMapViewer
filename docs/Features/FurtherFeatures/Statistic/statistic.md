@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Further Features: statistic view
 
 There is a statistic view to keep an overview on all existing tracks.
@@ -45,4 +47,4 @@ This context menu offers functionality:
 - Share Track: open a share intent - allows to send the marked tracks as gpx files via mail, Whatsapp, etc
 - Delete track: delete the tracks (there is a confirm required - but once you confirm, then they will be deleted, you don't get them back!)
 
-
+<small><small>[Back to Index](../../../index.md)</small></small>

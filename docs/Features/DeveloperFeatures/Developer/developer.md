@@ -1,3 +1,5 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Developer Features: developer documentation
 
 This is in fact not a feature of the software, this is rather the entry point for more developer documentation.
@@ -14,3 +16,5 @@ The project file of the model is available [here](../../../more/mgmap.vpp).
 The view model is created with Libre Office, the source file is available [here](../../../more/ViewModel.odg).  
 
 The JavaDoc of the source code is available [here](https://mg4gh.github.io/MGMapViewer/javadoc/index.html).
+
+<small><small>[Back to Index](../../../index.md)</small></small>

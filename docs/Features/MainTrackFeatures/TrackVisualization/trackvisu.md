@@ -1,4 +1,4 @@
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 
 ## Main Track Feature: track visualisation
 
@@ -48,5 +48,5 @@ There are multiple options to make a track the selected track:
 - Use the track statistics activity and choose a
   new selected track via the context menu entry "Select Track" of the track.
 
-<small><small><a href="../../../index.md">Back to Index</a></small></small>
+<small><small>[Back to Index](../../../index.md)</small></small>
 

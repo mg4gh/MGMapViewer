@@ -1,6 +1,8 @@
+<small><small>[Back to Index](../../../index.md)</small></small>
+
 ## Main Track Feature: routing hints
 
-This feature is an addon to the basic [routing feature](./routing.md).
+This feature is an addon to the basic [routing feature](../../MainTrackFeatures/Routing/routing.md).
 
 You can toggle this feature on and off with a long press on the marker track quick control. As a result of activating this
 feature the quick control icon changes in a way, that the original icon will be smaller and beside it there is a small icon of a
@@ -48,3 +50,5 @@ Additional rules
   - "Achtung Achtung Abstand \<nn> Meter"
   - "Achtung Achtung Achtung Abstand \<nn> Meter"  
   If there are further gps points with a distance more the THRESHOLD_MEDIUM, you don't get any further hint
+
+<small><small>[Back to Index](../../../index.md)</small></small>
