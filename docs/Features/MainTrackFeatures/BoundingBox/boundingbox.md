@@ -1,3 +1,5 @@
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
+
 ## Main Track Feature: Use a bounding box to search track(s) ... and more
 
 Initially the bounding box feature was intended to provide a simple search for tracks through a marked area.
@@ -85,3 +87,6 @@ deletes all tiles that are fully included by this given bounding box.
 
 Finally, after some bounding box action, you want to leave this feature. This can be done again by a short tap on the bounding box quick control.
 Alternatively this mode will be leaved automatically after 15 seconds, if there is no bounding box related action recognized during this time.
+
+
+<small><small><a href="../../../index.md">Back to Index</a></small></small>

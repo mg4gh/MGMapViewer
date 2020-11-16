@@ -1,3 +1,5 @@
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
+
 ## Main Track Feature: track storage
 
 Tracks will be stored in ".gpx" format in the directory "./MGMapViewer/track/gpx/". 
@@ -26,6 +28,8 @@ These meta files are binary files with information about the bounding box around
 Additionally the track points are split in groups of 4K bytes size. For each group there is also
 a bounding box info available. All these meta data provide the ability to search for a track by
 marking a certain relevant area. For detail see Feature [Bounding Box](../BoundingBox/boundingbox.md).
+
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
 
 
 

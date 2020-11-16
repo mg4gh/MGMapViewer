@@ -1,4 +1,6 @@
-## Main Track Feature: marker track 
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
+
+## Main Track Feature: marker track
 
 A marker track is a sequence of manually set marker track points. Marker tracks are used in most cases as the basis for simple routing.
 Another use case for marker track points is to determine distances along a given track.
@@ -89,3 +91,4 @@ There are two options to get a gpx back as a marker track:
 As a side effect of the import the selected track will be hidden - so then you see only the original marker track.
 2. Use directly the context menu entry "marker track" in the statistic view.
 
+<small><small><a href="../../../index.md">Back to Index</a></small></small>

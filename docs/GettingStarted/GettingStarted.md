@@ -1,3 +1,5 @@
+<small><small><a href="../index.md">Back to Index</a></small></small>
+
 # Getting Started: Installation and first Usage of MGMapViewer
 
 1. Copy apk to the device.<br/>
@@ -104,3 +106,5 @@ Hint: If the menu entries are not visible, restart your app once.
     background service and the track recording will only continue after the next usage of the app.
 
 Congratulations!
+
+<small><small><a href="../index.md">Back to Index</a></small></small>

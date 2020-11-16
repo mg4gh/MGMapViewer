@@ -1,3 +1,5 @@
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
+
 ## Main Track Feature: record a track
 
 Start track recording with <span style="color:gray">*Menu | Track Record | Start Track*</span>.
@@ -28,3 +30,5 @@ with the "Start Segment" Button. So a track consists of a number of segments, wh
 **Note**: As long as the GPS is switched on there is a Notification active. It disappears after switching the GPS off.
 
 <img src="./notification.png" width="600" />&nbsp;
+
+<small><small><a href="../../../index.md">Back to Index</a></small></small>

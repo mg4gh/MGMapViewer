@@ -1,4 +1,6 @@
-## Definitions: Track 
+<small><small><a href="../../index.md">Back to Index</a></small></small>
+
+## Definitions: Track
 
 A track is represented by a TrackLog object, which consists of one or multiple TrackLogSegment 
 objects.
@@ -14,3 +16,4 @@ The following terminology is used for TrackLog objects in this description (and 
 | Route | purple line | purple entry | - | calculated route based on MarkerTrack |
 | MetaTrackLog | - | - | gray entry | track log from meta files (exists for each known track) |
 
+<small><small><a href="../../index.md">Back to Index</a></small></small>

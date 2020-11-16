@@ -1,3 +1,5 @@
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
+
 ## Main Track Feature: track visualisation
 
 The visualization of tracks is a one important feature of this app. The
@@ -46,5 +48,5 @@ There are multiple options to make a track the selected track:
 - Use the track statistics activity and choose a
   new selected track via the context menu entry "Select Track" of the track.
 
-
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
 

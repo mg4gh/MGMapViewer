@@ -1,3 +1,5 @@
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
+
 ## Main Track Feature: routing
 
 This feature provides a basic route calculation (shortest path) based on a [marker track](../MarkerTrack/markertrack.md).
@@ -82,3 +84,4 @@ The next figures show two examples of typical route optimizations (each example 
 <img src="./OPT3.png" width="400" />&nbsp;
 <img src="./OPT4.png" width="400" />&nbsp;
 
+<small><small><a href="../../../index.md">Back to Index</a></small></small>
