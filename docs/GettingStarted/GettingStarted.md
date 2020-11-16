@@ -1,5 +1,7 @@
 <small><small><a href="../index.html">Back to Index</a></small></small>
 
+<small><small>[Back to Index](../index.md)</small></small>
+
 # Getting Started: Installation and first Usage of MGMapViewer
 
 1. Copy apk to the device.<br/>
