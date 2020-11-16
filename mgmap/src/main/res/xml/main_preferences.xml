@@ -47,7 +47,7 @@
             />
 
         <Preference
-            app:title="@string/preferences_screen_download"
+            app:title="@string/preferences_screen_gdrive"
             app:summary="@string/preferences_screen_gdrive_desc"
             app:fragment="mg.mapviewer.settings.GDrivePreferenceScreen"
             app:iconSpaceReserved="false"
