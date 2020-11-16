@@ -30,6 +30,7 @@ import mg.mapviewer.util.NameUtil;
 
 abstract class LocationListener implements android.location.LocationListener {
 
+    private static final float ACCURACY_LIMIT = 30.0f; // accuracy limit in meter
     private LocationManager locationManager;
 
     LocationListener(Application application){
@@ -38,8 +39,12 @@ abstract class LocationListener implements android.location.LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(location);
-        onNewTrackLogPoint(lp);
+        if ((location.hasAccuracy()) && (location.getAccuracy() < ACCURACY_LIMIT)){
+            TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(location);
+            onNewTrackLogPoint(lp);
+        } else {
+            Log.w(MGMapApplication.LABEL, NameUtil.context() + " location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());
+        }
     }
 
     @Override
