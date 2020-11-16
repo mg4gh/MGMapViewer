@@ -1,4 +1,4 @@
-<small><small><a href="../index.md">Back to Index</a></small></small>
+<small><small><a href="../index.html">Back to Index</a></small></small>
 
 # Getting Started: Installation and first Usage of MGMapViewer
 
@@ -107,4 +107,4 @@ Hint: If the menu entries are not visible, restart your app once.
 
 Congratulations!
 
-<small><small><a href="../index.md">Back to Index</a></small></small>
+<small><small><a href="../index.html">Back to Index</a></small></small>
