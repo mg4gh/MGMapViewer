@@ -31,6 +31,7 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.ContextMenu;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -45,6 +47,7 @@ import android.widget.TextView;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
+import org.mapsforge.map.model.DisplayModel;
 
 import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.model.PointModel;
@@ -101,6 +104,8 @@ public class TrackStatisticActivity extends Activity {
     }
 
 
+    boolean working = false;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -115,11 +120,47 @@ public class TrackStatisticActivity extends Activity {
                 addTrackLog(parent, trackLog, R.color.GREEN100_A100, R.color.GREEN150_A150);
             }
         }
+        ArrayList<TrackLog> trackLogsRemain = new ArrayList<>();
         for (TrackLog trackLog : application.metaTrackLogs){
             if (!application.availableTrackLogsObservable.availableTrackLogs.contains(trackLog)){
-                addTrackLog(parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
+                if (parent.getChildCount() <= 30){
+                    addTrackLog(parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
+                } else {
+                    trackLogsRemain.add(trackLog);
+                }
             }
         }
+
+
+        new Thread(){
+            @Override
+            public void run() {
+                while (!trackLogsRemain.isEmpty()){
+                    try {
+                        Thread.sleep(150);
+                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainA working="+working+" size="+trackLogsRemain.size());
+                        if (!working){
+                            working = true;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainB working="+working+" size="+trackLogsRemain.size());
+                                    for (int i=0; (i<30)&&(!trackLogsRemain.isEmpty()) ; i++){
+                                        TrackLog trackLog = trackLogsRemain.remove(0);
+                                        addTrackLog(parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
+                                    }
+                                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainC working="+working+" size="+trackLogsRemain.size());
+                                    working = false;
+                                }
+                            });
+
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
     }
 
     static Random random = new Random(System.currentTimeMillis());
