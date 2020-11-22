@@ -54,6 +54,7 @@ import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.model.TrackLogSegment;
+import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.features.rtl.RecordingTrackLog;
@@ -277,6 +278,17 @@ public class TrackStatisticActivity extends Activity {
 
                 menu.add(0, v.getId(),1,getResources().getString(R.string.ctx_stat_del_track));
                 menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_stl_track));
+                boolean bProvideSave = true;
+                for(int idx=0; idx < selectedRefs.size(); idx++) {
+                    TrackLog aTrackLog = selectedRefs.valueAt(idx).getTrackLog();
+                    if (PersistenceManager.getInstance().existsGpx(aTrackLog.getName())){
+                        bProvideSave = false;
+                        break;
+                    }
+                }
+                if (bProvideSave){
+                    menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_sav_track));
+                }
                 if (selectedRefs.size() == 1){
                     menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_mtl_track));
                     TrackLogStatistic statistic = selectionRefs.get(v.getId()).getTrackLog().getTrackStatistic();
@@ -385,8 +397,15 @@ public class TrackStatisticActivity extends Activity {
             Intent intent = new Intent(this, HeightProfileActivity.class);
             startActivity(intent);
         }
-
-
+        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_sav_track) )){
+            for(int idx=0; idx < selectedRefs.size(); idx++) {
+                TrackLog aTrackLog = selectedRefs.valueAt(idx).getTrackLog();
+                if (!PersistenceManager.getInstance().existsGpx(aTrackLog.getName())){
+                    GpxExporter.export(aTrackLog);
+                }
+            }
+            finish();
+        }
         return true;
     }
 
