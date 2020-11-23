@@ -151,11 +151,15 @@
     <string name="preferences_way_details_title">Way details</string>
     <string name="preferences_way_details_desc">Visualize way details of a taped way</string>
 
-    <string name="preferences_dev_mtl_key">show_marker_track</string>
+    <string name="preferences_mkr_auto_key">no_recreate_auto_marker_settings</string>
+    <string name="preferences_mkr_auto_title">Automatic marker settings</string>
+    <string name="preferences_mkr_auto_desc">Do automatically set marker settings ("Show marker track" and  "Snap to way").</string>
+
+    <string name="preferences_dev_mtl_key">no_recreate_show_marker_track</string>
     <string name="preferences_dev_mtl_title">Show marker track</string>
     <string name="preferences_dev_mtl_desc">Visualize the marker track</string>
 
-    <string name="preferences_dev_snap2way_key">snap_to_way</string>
+    <string name="preferences_dev_snap2way_key">no_recreate_snap_to_way</string>
     <string name="preferences_dev_snap2way_title">Snap to way</string>
     <string name="preferences_dev_snap2way_desc">Snap marker points automatically to close ways.</string>
 

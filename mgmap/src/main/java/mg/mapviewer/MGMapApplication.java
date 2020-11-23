@@ -373,23 +373,15 @@ public class MGMapApplication extends Application {
     public BooleanObservable wayDetails = new BooleanObservable(false);
     public BooleanObservable showAlphaSliders = new BooleanObservable(false);
     public BooleanObservable editMarkerTrack = new BooleanObservable(false);
-    public BooleanObservable routingHints = new BooleanObservable(false){
-//        @Override
-//        public void toggle() {
-//            super.toggle();
-//            MSRoutingHint msrh = getMS(MSRoutingHint.class);
-//            if (getValue()){
-//                msrh.startService();
-//            } else {
-//                msrh.stopService();
-//            }
-//        }
-    };
+    public BooleanObservable routingHints = new BooleanObservable(false);
     public BooleanObservable showRouting = new BooleanObservable(true);
     public BooleanObservable stlWithGL = new BooleanObservable(true);
     public BooleanObservable fullscreen = new BooleanObservable(true);
     public BooleanObservable searchOn = new BooleanObservable(false);
     public BooleanObservable bboxOn = new BooleanObservable(false);
+    public BooleanObservable showMarkerTrack = new BooleanObservable(false);;
+    public BooleanObservable snapMarkerToWay = new BooleanObservable(true);
+
 
     boolean initFinished = false;
     ArrayList<MGMicroService> microServices = new ArrayList<>();

@@ -87,7 +87,6 @@ public class MSRouting extends MGMicroService {
     private ArrayList<PointView> relaxedViews = new ArrayList<>();
 
     private boolean routeRemainings = true;
-    public boolean snapMarkerToWay = true;
     private RoutingLineRefProvider routingLineRefProvider;
 
     public MSRouting(MGMapActivity mmActivity) {
@@ -99,7 +98,6 @@ public class MSRouting extends MGMicroService {
 
     @Override
     protected void start() {
-        snapMarkerToWay = getSharedPreferences().getBoolean(getResources().getString(R.string.preferences_dev_snap2way_key), true);
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
         getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
         register(new RoutingControlLayer(), false);
@@ -161,7 +159,7 @@ public class MSRouting extends MGMicroService {
     RoutePointModel getRoutePointModel(MapDataStore mapFile, PointModel pm){
         RoutePointModel rpm = getRoutePointModel(pm);
         calcApproaches(mapFile, rpm);
-        if (snapMarkerToWay){
+        if (getApplication().snapMarkerToWay.getValue()){
             if (rpm.selectedApproach != null){
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
                     if (pm instanceof WriteablePointModel) {

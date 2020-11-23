@@ -14,6 +14,7 @@
  */
 package mg.mapviewer.features.marker;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.mapsforge.core.graphics.Canvas;
@@ -61,7 +62,6 @@ public class MSMarker extends MGMicroService {
     }
 
     private Observer editMarkerTrackObserver = null;
-    private boolean showMarkerTrack = false;
     public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
     private TimerTask ttHide = new TimerTask() {
@@ -79,7 +79,6 @@ public class MSMarker extends MGMicroService {
 
     @Override
     protected void start() {
-        showMarkerTrack = getSharedPreferences().getBoolean(getResources().getString(R.string.preferences_dev_mtl_key), false);
         markerTrackLogObservable = getApplication().markerTrackLogObservable;
         WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
         if (mtl != null){
@@ -129,6 +128,7 @@ public class MSMarker extends MGMicroService {
 
 
     public void createMarkerTrackLog(TrackLog trackLog){
+        adaptAutoSettings(trackLog.getTrackStatistic().getNumPoints() < 200);
         WriteableTrackLog mtl = new WriteableTrackLog(trackLog.getName()+"__MarkerTrack");
         mtl.startTrack(trackLog.getTrackStatistic().getTStart());
         for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
@@ -152,6 +152,7 @@ public class MSMarker extends MGMicroService {
     }
 
     private void initMarkerTrackLog(){
+        adaptAutoSettings(true);
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
         long now = System.currentTimeMillis();
         WriteableTrackLog mtl = new WriteableTrackLog(sdf2.format(new Date(now))+"_MarkerTrack");
@@ -165,7 +166,7 @@ public class MSMarker extends MGMicroService {
         if (!msLayers.isEmpty()){
             unregisterAll();
         }
-        if ((mtl != null) && (showMarkerTrack)){
+        if ((mtl != null) && (getApplication().showMarkerTrack.getValue())){
             for (TrackLogSegment segment : mtl.getTrackLogSegments()){
                 MarkerTrackView mtv = new MarkerTrackView(segment);
                 register(mtv);
@@ -300,4 +301,15 @@ public class MSMarker extends MGMicroService {
         }
     }
 
+    private void adaptAutoSettings(boolean smallMtl){
+        SharedPreferences prefs = getSharedPreferences();
+        if (prefs.getBoolean(getResources().getString(R.string.preferences_mkr_auto_key),true)){
+            prefs.edit().
+                    putBoolean(getResources().getString(R.string.preferences_dev_mtl_key), !smallMtl).
+                    putBoolean(getResources().getString(R.string.preferences_dev_snap2way_key), smallMtl).
+                    apply();
+            getApplication().showMarkerTrack.setValue(!smallMtl);
+            getApplication().snapMarkerToWay.setValue(smallMtl);
+        }
+    }
 }

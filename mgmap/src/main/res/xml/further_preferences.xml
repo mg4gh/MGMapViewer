@@ -68,11 +68,20 @@
         app:allowDividerAbove="true"
         >
         <SwitchPreference
+            app:defaultValue="true"
+            app:key="@string/preferences_mkr_auto_key"
+            app:summary="@string/preferences_mkr_auto_desc"
+            app:title="@string/preferences_mkr_auto_title"
+            app:iconSpaceReserved="false"
+            app:disableDependentsState="true"
+            />
+        <SwitchPreference
             app:defaultValue="false"
             app:key="@string/preferences_dev_mtl_key"
             app:summary="@string/preferences_dev_mtl_desc"
             app:title="@string/preferences_dev_mtl_title"
             app:iconSpaceReserved="false"
+            app:dependency="@string/preferences_mkr_auto_key"
             />
         <SwitchPreference
             app:defaultValue="true"
@@ -80,6 +89,7 @@
             app:summary="@string/preferences_dev_snap2way_desc"
             app:title="@string/preferences_dev_snap2way_title"
             app:iconSpaceReserved="false"
+            app:dependency="@string/preferences_mkr_auto_key"
             />
     </PreferenceCategory>
 

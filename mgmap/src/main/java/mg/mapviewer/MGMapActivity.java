@@ -207,6 +207,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.onResume();
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         application = (MGMapApplication) getApplication();
+        application.snapMarkerToWay.setValue( sharedPreferences.getBoolean(getResources().getString(R.string.preferences_dev_snap2way_key), true) );
+        application.showMarkerTrack.setValue( sharedPreferences.getBoolean(getResources().getString(R.string.preferences_dev_mtl_key), false) );
 
         for (MGMicroService microService : microServices) {
             try {
