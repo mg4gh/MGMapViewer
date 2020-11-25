@@ -23,12 +23,9 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -47,7 +44,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.TimerTask;
 
 import mg.mapviewer.control.CenterControl;
 import mg.mapviewer.control.GpsControl;
@@ -60,12 +56,11 @@ import mg.mapviewer.features.bb.MSBB;
 import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
-import mg.mapviewer.features.search.SearchView;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogStatistic;
+import mg.mapviewer.util.HintControl;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
-import mg.mapviewer.util.ZoomOCL;
 
 /**
  * The control view is the parent container view object. So it is the parent for
@@ -109,6 +104,9 @@ public class ControlView extends RelativeLayout {
     public TextView tv_remain = null;
     ArrayList<TextView> tvList = new ArrayList<>();
 
+    TextView tv_hint = null;
+    HintControl hintControl = null;
+
     /** A Control object is an extension of a ViewOnClickListener. With this map it's easy to determine from the OnClickListener the corresponding View object. Furthermore this map provides a list of all menu and submenu views. */
     Map<Control, View> controlMap = new HashMap<>();
 
@@ -128,6 +126,10 @@ public class ControlView extends RelativeLayout {
             this.application = application;
             this.activity = activity;
 
+            tv_hint = findViewById(R.id.hint);
+            tv_hint.setVisibility(INVISIBLE);
+            hintControl = new HintControl(tv_hint);
+
             mapView = activity.getMapsforgeMapView();
             // this is necessary to get the scalbar above the quick controls and the status line
             mapView.getMapScaleBar().setMarginVertical((int)(60 * mapView.getModel().displayModel.getScaleFactor()));
@@ -140,7 +142,8 @@ public class ControlView extends RelativeLayout {
                 dashboardKeys.add(entry.getId());
                 dashboardMap.put(entry.getId(),entry);
                 for (int i=0; i<entry.getChildCount(); i++){
-                    entry.getChildAt(i).setOnClickListener(new ZoomOCL(mapView.getModel().displayModel.getScaleFactor()));
+//                    entry.getChildAt(i).setOnClickListener(new ZoomOCL(mapView.getModel().displayModel.getScaleFactor()));
+                    entry.getChildAt(i).setOnClickListener(hintControl);
                 }
                 dashboard.removeViewAt(0);
             }
@@ -430,7 +433,8 @@ public class ControlView extends RelativeLayout {
     TextView registerTextView(int id){
         TextView tv = activity.findViewById(id);
         tvList.add(tv);
-        tv.setOnClickListener(new ZoomOCL(mapView.getModel().displayModel.getScaleFactor()));
+        tv.setOnClickListener(hintControl);
+//        tv.setOnClickListener(new ZoomOCL(mapView.getModel().displayModel.getScaleFactor()));
         return tv;
     }
 

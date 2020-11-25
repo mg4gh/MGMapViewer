@@ -256,39 +256,16 @@
 
         </TableLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_alignTop="@id/bt_en04"
+            android:layout_toStartOf="@id/bt_en05"
+            android:layout_toEndOf="@id/bt_st05"
+            >
+            <androidx.appcompat.widget.AppCompatTextView android:id="@+id/hint"  android:layout_height="wrap_content" android:layout_width="0dp" android:layout_margin="5dp" android:paddingStart="8dp" android:paddingTop="5dp" android:paddingBottom="5dp" android:drawablePadding="13dp"  android:drawableStart="@drawable/slider"     android:text="CENTER" android:layout_weight="20" android:lines="1" android:textSize="40dp" android:textColor="@color/BLACK" android:background="@drawable/shape"/>
+        </LinearLayout>
     </mg.mapviewer.ControlView>
 
-<!--    <mg.mapviewer.features.search.SearchView-->
-<!--        android:id="@+id/searchView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:orientation="vertical" >-->
-<!--        <LinearLayout-->
-<!--            android:id="@+id/searchllView"-->
-<!--            android:orientation="vertical"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content">-->
-<!--            <EditText-->
-<!--                android:id="@+id/et1"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:hint="Search Text"-->
-<!--                android:textColorHint="@color/GRAY100_A150"-->
-<!--                android:inputType="textPostalAddress"-->
-<!--                android:singleLine="true"></EditText>-->
-<!--            <TextView-->
-<!--                android:id="@+id/st1"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="haha"/>-->
-<!--            <TextView-->
-<!--                android:id="@+id/st2"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content" />-->
-<!--            <TextView-->
-<!--                android:id="@+id/st3"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content" />-->
-<!--        </LinearLayout>-->
-<!--    </mg.mapviewer.features.search.SearchView>-->
 </RelativeLayout>
