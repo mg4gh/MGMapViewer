@@ -505,9 +505,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     /** Return a MapDataStore if it contains a given BBox. This is used e.g. to find the MapDataStore for route calculation. */
     public MapDataStore getMapDataStore(BBox bBox) {
-        String language = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "");
+//        String language = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "");
         for (String prefKey : application.getMapLayerKeys()){
-            String key = sharedPreferences.getString(prefKey, language);
+//            String key = sharedPreferences.getString(prefKey, language);
+            String key = sharedPreferences.getString(prefKey, "none");
 
             Layer layer = MGMapLayerFactory.getMapLayer(key);
             if (layer instanceof TileRendererLayer) {
