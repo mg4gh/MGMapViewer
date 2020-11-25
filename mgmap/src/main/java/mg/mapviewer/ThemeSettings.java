@@ -126,7 +126,6 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     }
 
 
-    @SuppressWarnings("deprecation")
     private void createRenderthemeMenu() {
         this.renderthemeMenu.removeAll();
 
