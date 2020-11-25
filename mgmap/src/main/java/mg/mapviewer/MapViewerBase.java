@@ -120,12 +120,18 @@ public abstract class MapViewerBase extends Activity implements SharedPreference
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key).toString());
         // Be aware that most preference changes take effect due to activity restart
 
-        if (!key.startsWith("no_recreate")){
+        if (key.startsWith("SelectMap") || key.equals("SelectTheme") || key.equals("scale") || key.equals("scalebar") || key.equals("language_selection")){
             for (TileCache tileCache : tileCaches) {
                 tileCache.purge();
             }
             this.recreate(); // restart activity
         }
+//        if (!key.startsWith("no_recreate")){
+//            for (TileCache tileCache : tileCaches) {
+//                tileCache.purge();
+//            }
+//            this.recreate(); // restart activity
+//        }
     }
 
 }
