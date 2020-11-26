@@ -288,7 +288,9 @@ public class PersistenceManager {
     public ArrayList<String> getGpxNames() {
         ArrayList<String> names = new ArrayList<>();
         for (String name : trackGpxDir.list()){
-            names.add( name.replace(".gpx","") );
+            if (name.endsWith(".gpx")){
+                names.add( name.replace(".gpx","") );
+            }
         }
         return names;
     }
