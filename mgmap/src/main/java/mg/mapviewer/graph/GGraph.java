@@ -56,9 +56,6 @@ public class GGraph extends Observable {
     }
 
     public void addNextNeighbour(GNode node, GNeighbour neighbour, GNeighbour nextNeighbour){
-//        if (!getNodes().contains(node)){
-//            nodes.add(node);
-//        }
         overlayNeighbours.add(new GOverlayNeighbour(node, neighbour, nextNeighbour));
     }
 
@@ -126,22 +123,7 @@ public class GGraph extends Observable {
         }
         return segmentNodes;
     }
-
-
-//    public void createOverlaysForApproaches(TreeSet<ApproachModel> approaches, PointModel pmApproach){
-//        ApproachModel firstMatch = null;
-//        for (ApproachModel approach : approaches){
-//            if ( PointModelUtil.compareTo(pmApproach, approach.getApproachNode()) == 0){  // matches all approaches, if it is the same approachPos
-//                if (firstMatch == null){
-//                    firstMatch = approach;
-//                } else { // first match was already set - interconnect approaches with same approachPos
-//                    createOverlaysForApproach(approach.getApproachNode(), firstMatch.getApproachNode());
-//                }
-//                createOverlaysForApproach(approach);
-//            }
-//        }
-//    }
-
+    
     public void createOverlaysForApproach(ApproachModel approach){
         nodes.add(approach.getApproachNode());
         createOverlaysForApproach(approach.getNode1(), approach.getApproachNode());
