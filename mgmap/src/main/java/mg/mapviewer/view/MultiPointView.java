@@ -141,7 +141,7 @@ public class MultiPointView extends MVLayer {
 
     private void drawPoint(Canvas canvas, int x, int y, byte zoomLevel){
         if (pointRadius > 0){
-            if (showIntermediates) Log.i(MGMapApplication.LABEL, NameUtil.context()+" r="+(int)(pointRadius* getScale(zoomLevel))+" zoom="+zoomLevel+" sw="+(paintStroke.getStrokeWidth() * getScale(zoomLevel)));
+            if (showIntermediates) Log.v(MGMapApplication.LABEL, NameUtil.context()+" r="+(int)(pointRadius* getScale(zoomLevel))+" zoom="+zoomLevel+" sw="+(paintStroke.getStrokeWidth() * getScale(zoomLevel)));
             canvas.drawCircle(x, y, (int)(pointRadius* getScale(zoomLevel)), this.paintStroke);
         }
     }
