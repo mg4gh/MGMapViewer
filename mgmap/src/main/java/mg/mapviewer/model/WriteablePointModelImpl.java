@@ -19,6 +19,7 @@ import mg.mapviewer.util.LaLo;
 /** A implementation of a point model with changeable model data */
 public class WriteablePointModelImpl extends PointModelImpl implements WriteablePointModel {
 
+    long timestamp = NO_TIME;
 
     public WriteablePointModelImpl(PointModel pm){
         this(pm.getLat(), pm.getLon(), pm.getEleA());
@@ -47,5 +48,14 @@ public class WriteablePointModelImpl extends PointModelImpl implements Writeable
     @Override
     public void setEle(float elevation) {
         ele = elevation;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return timestamp;
+    }
+    @Override
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

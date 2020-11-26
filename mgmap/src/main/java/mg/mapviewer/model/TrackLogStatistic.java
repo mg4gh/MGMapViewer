@@ -70,6 +70,9 @@ public class TrackLogStatistic {
         return numPoints;
     }
 
+    public void setTStart(long tStart) {
+        this.tStart = tStart;
+    }
     public void setTotalLength(double totalLength) {
         this.totalLength = totalLength;
     }
