@@ -108,8 +108,8 @@ public class GGraphMulti extends GGraph {
     private void connect(GNode node1, GNode node2){
         double cost = PointModelUtil.distance(node1, node2);
         cost += 0.01;
-        addNextNeighbour(node1,node1.getLastNeighbour(),new GNeighbour(node2,cost));
-        addNextNeighbour(node2,node2.getLastNeighbour(),new GNeighbour(node1,cost));
+        addNextNeighbour(node1,getLastNeighbour(node1),new GNeighbour(node2,cost));
+        addNextNeighbour(node2,getLastNeighbour(node2),new GNeighbour(node1,cost));
     }
 
 
