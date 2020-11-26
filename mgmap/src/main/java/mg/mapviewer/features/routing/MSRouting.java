@@ -235,6 +235,7 @@ public class MSRouting extends MGMicroService {
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             routeTrackLog.startSegment(0);
             routeStatistic.updateWithPoint(null);
+            PointModel lastPM = null;
             for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
                 RoutePointModel rpm = routePointMap.get(segment.get(idx));
                 if (rpm != null){
@@ -243,11 +244,12 @@ public class MSRouting extends MGMicroService {
                     rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
                     if (rpm.newMPM != null){
                         for (PointModel pm : rpm.newMPM){
-                            if (routePointMap2.get(pm) == null){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
+                            if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
                                 routeStatistic.updateWithPoint(pm);
                                 routeTrackLog.addPoint(pm);
                                 routePointMap2.put(pm,rpm);
                             }
+                            lastPM = pm;
                         }
                         routingMPMs.add(rpm.newMPM);
                     }
