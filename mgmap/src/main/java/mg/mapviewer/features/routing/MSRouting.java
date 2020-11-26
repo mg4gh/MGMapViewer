@@ -517,7 +517,7 @@ public class MSRouting extends MGMicroService {
     private void checkApproachViews(){
         WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
 
-        boolean visibility = (getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_APPROACHES_VISIBILITY);
+        boolean visibility = ((getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_APPROACHES_VISIBILITY) && (getApplication().wayDetails.getValue()));
 
         for (MultiPointView approachView : approachViewMap.values()){
             unregister(approachView,false);
