@@ -209,6 +209,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application = (MGMapApplication) getApplication();
         application.snapMarkerToWay.setValue( sharedPreferences.getBoolean(getResources().getString(R.string.preferences_dev_snap2way_key), true) );
         application.showMarkerTrack.setValue( sharedPreferences.getBoolean(getResources().getString(R.string.preferences_dev_mtl_key), false) );
+        application.wayDetails.setValue(sharedPreferences.getBoolean(getResources().getString(R.string.preferences_way_details_key), false));
+        application.stlWithGL.setValue(sharedPreferences.getBoolean(getResources().getString(R.string.preferences_stl_gl_key), true));
 
         for (MGMicroService microService : microServices) {
             try {
@@ -291,10 +293,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             MapFile.wayFilterDistance = Integer.parseInt(sharedPreferences.getString(getResources().getString(R.string.preferences_wayfiltering_distance_key), "20"));
         }
         MapWorkerPool.DEBUG_TIMING = sharedPreferences.getBoolean(getResources().getString(R.string.preferences_debug_timing_key), false);
-
-        application.wayDetails.setValue(sharedPreferences.getBoolean(getResources().getString(R.string.preferences_way_details_key), false));
-        application.stlWithGL.setValue(sharedPreferences.getBoolean(getResources().getString(R.string.preferences_stl_gl_key), true));
-
     }
 
     /** Used if
