@@ -83,6 +83,7 @@ public class MGMicroService {
     protected void doRefresh(){}
 
     public void initQuickControl(PrefTextView ptv, String info){}
+    public void initStatusLine(PrefTextView ptv, String info){}
 
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL){
         showTrack(trackLog,paint,showGL,MultiPointView.POINT_RADIUS);

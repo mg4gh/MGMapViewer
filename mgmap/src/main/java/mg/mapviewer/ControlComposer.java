@@ -2,6 +2,7 @@ package mg.mapviewer;
 
 import android.view.ViewGroup;
 
+import mg.mapviewer.features.motion.MSBeeline;
 import mg.mapviewer.features.position.CenterControl;
 import mg.mapviewer.features.position.GpsControl;
 import mg.mapviewer.control.HeightProfileControl;
@@ -13,16 +14,16 @@ import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.bb.MSBB;
 import mg.mapviewer.features.fullscreen.MSFullscreen;
 import mg.mapviewer.features.marker.MSMarker;
+import mg.mapviewer.features.position.MSPosition;
+import mg.mapviewer.features.remainings.MSRemainings;
 import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.features.routing.RoutingHintService;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
+import mg.mapviewer.features.time.MSTime;
+import mg.mapviewer.view.PrefTextView;
 
 public class ControlComposer {
-
-    void compose(MGMapApplication application, MGMapActivity activity, ControlView coView) {
-        composeMenu(application, activity, coView);
-    }
 
     void composeMenu(MGMapApplication application, MGMapActivity activity, ControlView coView){
         coView.registerControl(activity.findViewById(R.id.bt_st01), new SettingsControl());
@@ -49,5 +50,14 @@ public class ControlComposer {
         application.getMS(MSSearch.class).initQuickControl(activity.findViewById(R.id.ct3b), null);
         activity.getMapViewUtility().initQuickControl(activity.findViewById(R.id.ct4), "zoom_in");
         activity.getMapViewUtility().initQuickControl(activity.findViewById(R.id.ct5), "zoom_out");
+    }
+
+    void composeStatusLine(MGMapApplication application, MGMapActivity activity, ControlView coView){
+        application.getMS(MSBeeline.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl1), 20), "center");
+        application.getMS(MSBeeline.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl2), 10), "zoom");
+        application.getMS(MSTime.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl3), 15), "time");
+        application.getMS(MSPosition.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl4), 20), "height");
+        application.getMS(MSRemainings.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl5), 20), "remain");
+        application.getMS(MSTime.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl6), 15), "bat");
     }
 }

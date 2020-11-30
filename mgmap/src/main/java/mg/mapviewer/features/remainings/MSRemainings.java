@@ -24,6 +24,7 @@ import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogSegment;
 import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.PrefTextView;
 
 public class MSRemainings extends MGMicroService {
 
@@ -33,22 +34,38 @@ public class MSRemainings extends MGMicroService {
     }
 
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
-    private boolean bReverseRemainings = false;
+    private final MGPref<Boolean> prefReverse = MGPref.get(R.string.MSRemaining_pref_Reverse, false);
+    private final MGPref<Boolean> prefInterval = MGPref.get(R.string.MSRemaining_pref_Interval, false);
 
-   @Override
+
+//    private boolean bReverseRemainings = false;
+
+    private PrefTextView ptvRemain = null;
+
+    @Override
+    public void initStatusLine(PrefTextView ptv, String info) {
+        if (info.equals("remain")){
+            ptv.setPrefData(new MGPref[]{prefInterval, prefReverse}, new int[]{R.drawable.remaining, R.drawable.remaining3, R.drawable.remaining2, R.drawable.remaining3 });
+            ptv.setFormat(PrefTextView.FormatType.FORMAT_DISTANCE);
+            ptvRemain = ptv;
+        }
+    }
+
+    @Override
     protected void start() {
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
         getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
+        prefReverse.addObserver(refreshObserver);
 
-        getControlView().tv_remain.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                bReverseRemainings = !bReverseRemainings;
-                refreshObserver.update(null,null);
-                return true;
-            }
-        });
+//        getControlView().tv_remain.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                bReverseRemainings = !bReverseRemainings;
+//                refreshObserver.update(null,null);
+//                return true;
+//            }
+//        });
     }
 
     @Override
@@ -56,6 +73,7 @@ public class MSRemainings extends MGMicroService {
         getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
         getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
         getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);
+        prefReverse.deleteObserver(refreshObserver);
     }
 
     @Override
@@ -76,8 +94,9 @@ public class MSRemainings extends MGMicroService {
      */
     private void refreshRemainings(){
         TrackLog selectedTrackLog = getApplication().availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
-        double dist = -1;
+        double dist = 0;
         int drawableId = 0;
+        boolean interval = false;
         if (selectedTrackLog != null){
 //            String text = "";
 
@@ -90,7 +109,7 @@ public class MSRemainings extends MGMicroService {
                         if (ref1 != null) {
                             dist = selectedTrackLog.getRemainingDistance(ref1);
                             drawableId = R.drawable.remaining;
-                            if (bReverseRemainings) {
+                            if (prefReverse.getValue()) {
                                 dist = selectedTrackLog.getTrackLogSegment(ref1.getSegmentIdx()).getStatistic().getTotalLength() - dist;
 //                                dist = selectedTrackLog.getSegmentStatistics().get(ref1.getSegmentIdx()).getTotalLength() - dist;
                                 drawableId = R.drawable.remaining2;
@@ -104,6 +123,7 @@ public class MSRemainings extends MGMicroService {
                         if ((ref1 != null) && (ref2 != null)) {
                             dist = selectedTrackLog.getRemainingDistance(ref1, ref2);
                             drawableId = R.drawable.remaining3;
+                            interval = true;
 //                            text = String.format(Locale.ENGLISH, " %.2f km", dist / 1000.0);
                         }
                     }
@@ -116,7 +136,7 @@ public class MSRemainings extends MGMicroService {
                     if (ref1 != null) {
                         dist = selectedTrackLog.getRemainingDistance(ref1) ;
                         drawableId = R.drawable.remaining;
-                        if (bReverseRemainings) {
+                        if (prefReverse.getValue()) {
                             double total = selectedTrackLog.getTrackLogSegment(ref1.getSegmentIdx()).getStatistic().getTotalLength();
                             dist = total - dist;
                             drawableId = R.drawable.remaining2;
@@ -126,7 +146,8 @@ public class MSRemainings extends MGMicroService {
                 }
             }
         }
-        getControlView().updateRemainingForSelected(drawableId, dist);
+        prefInterval.setValue(interval);
+        getControlView().setStatusLineValue(ptvRemain, dist);
     }
 
 }

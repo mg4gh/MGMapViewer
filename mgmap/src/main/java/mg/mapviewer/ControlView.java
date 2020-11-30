@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,6 +33,8 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.Layer;
@@ -45,9 +48,11 @@ import java.util.Map;
 
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogStatistic;
+import mg.mapviewer.util.CC;
 import mg.mapviewer.util.HintControl;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.view.PrefTextView;
 
 /**
  * The control view is the parent container view object. So it is the parent for
@@ -86,12 +91,7 @@ public class ControlView extends RelativeLayout {
 
     /** parent object for status line */
     TableRow tr_states = null;
-    TextView tv_center = null;
-    TextView tv_zoom = null;
-    TextView tv_bat = null;
-    TextView tv_time = null;
-    TextView tv_height = null;
-    public TextView tv_remain = null;
+    /** List will be filled with all members of the status line */
     ArrayList<TextView> tvList = new ArrayList<>();
 
     TextView tv_hint = null;
@@ -144,6 +144,8 @@ public class ControlView extends RelativeLayout {
             prepareAlphaSliders();
 
             prepareStatusLine();
+            controlComposer.composeStatusLine(application, activity, this);
+            finalizeStatusLine();
 
             controlComposer.composeQuickControls(application, activity, this);
 
@@ -378,115 +380,71 @@ public class ControlView extends RelativeLayout {
 
 
 
-    TextView registerTextView(int id){
-        TextView tv = activity.findViewById(id);
-        tvList.add(tv);
-        tv.setOnClickListener(hintControl);
-        return tv;
+    private int convertDp(float dp){
+         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+    }
+
+    public static final String TIME_FORMAT = "";
+    public PrefTextView setStatusLineLayout(PrefTextView ptv, float weight){
+        TableRow.LayoutParams llParms = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        int margin = convertDp(0.8f);
+        llParms.setMargins(margin,margin,margin,margin);
+        llParms.weight = weight;
+        ptv.setLayoutParams(llParms);
+
+        int padding = convertDp(2.0f);
+        ptv.setPadding(padding, padding, padding, padding);
+        int drawablePadding = convertDp(3.0f);
+        ptv.setCompoundDrawablePadding(drawablePadding);
+        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
+
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        ptv.setCompoundDrawables(drawable,null,null,null);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
+        ptv.setText("");
+        ptv.setLines(1);
+        ptv.setTextColor(CC.getColor(R.color.BLACK));
+        ptv.setBackgroundColor(CC.getColor(R.color.WHITE_A150));
+        return ptv;
+    }
+
+    void reworkStatusLine(){
+        int cntVisible = 0;
+        for (TextView tv : tvList){
+            boolean shouldBeVisible = (tv.getText() != null) && (!("".equals(tv.getText()) ) && (cntVisible < 5));
+            boolean isVisible = (tv.getParent() != null);
+            if (shouldBeVisible && !isVisible){
+                tr_states.addView(tv, cntVisible);
+            }
+            if (!shouldBeVisible && isVisible){
+                tr_states.removeView(tv);
+            }
+            if (shouldBeVisible) cntVisible++;
+        }
+    }
+
+    public void setStatusLineValue(PrefTextView ptv, Object value){
+        if (ptv != null) {
+            ptv.setValue(value);
+            reworkStatusLine();
+        }
     }
 
 
 
     void prepareStatusLine(){
         tr_states = activity.findViewById(R.id.tr_states);
-
-        tv_center = registerTextView(R.id.tv_center);
-        tv_zoom = registerTextView(R.id.tv_zoom);
-        tv_time = registerTextView(R.id.tv_time);
-        tv_height = registerTextView(R.id.tv_height);
-        tv_remain = registerTextView(R.id.tv_remain);
-        tv_bat = registerTextView(R.id.tv_bat);
-
-        updateTvCenter(0);
-        updateTvTime(System.currentTimeMillis());
-        updateTvHeight(PointModel.NO_ELE);
-        updateRemainingForSelected(0, -1);
-
-    }
-
-    public void setTvText(TextView textView, String text){
-        textView.setText(text);
-        if ((textView.getParent() == null) && (text != null) && (!("".equals(text)))){ // ok, add the view
-            //determine first the position to insert the view
-            int cntVisible = 0;
-            for (TextView tv : tvList){
-                if (tv == textView) break;
-                if (tv.getParent() != null) cntVisible++;
-            }
-            if (cntVisible < tvList.indexOf(tv_bat)){ // don't add tv_bat, if all other tv's are visible
-                tr_states.addView(textView, cntVisible);
-            }
-
-            if (tv_bat.getParent() != null){ // check, whether tv_bat has to be removed
-                //determine, how much tv's are visible after adding
-                cntVisible = 0;
-                for (TextView tv : tvList){
-                    if (tv.getParent() != null) cntVisible++;
-                }
-                if (cntVisible > tvList.indexOf(tv_bat)){  //are all other tv's before tv_bat also visible
-                    tr_states.removeView(tv_bat);
-                }
-            }
-        } else if ((textView.getParent() != null) && (("".equals(text)) || (text == null)) ){ // opposite, remove a view
-            tr_states.removeView(textView);
-
-            if (tv_bat.getParent() == null){ // check, whether tv_bat has to be added
-                //determine, how much tv's are visible after adding
-                int cntVisible = 0;
-                for (TextView tv : tvList){
-                    if (tv.getParent() != null) cntVisible++;
-                }
-                if (cntVisible < tvList.indexOf(tv_bat)){  //not all other tv's before tv_bat are visible
-                    tr_states.addView(tv_bat);
-                }
-            }
+        for (int idx=0; idx<tr_states.getChildCount();idx++){
+            tvList.add((TextView) tr_states.getChildAt(idx));
         }
     }
 
-
-
-    public void updateTvCenter(double distance){ // distance 0 means clean
-        String text = (distance==0)?"":String.format(Locale.ENGLISH, " %.2f km", distance / 1000.0);
-        setTvText(tv_center, text);
-    }
-
-    public void updateTvZoom(byte zoomLevel){ // zoomLevel 0 means clean
-        String text = (zoomLevel==0)?"":String.format(Locale.ENGLISH, " %d", zoomLevel);
-        setTvText(tv_zoom, text);
-    }
-
-    private SimpleDateFormat sdf2 = new SimpleDateFormat(" HH:mm", Locale.GERMANY);
-    public void updateTvTime(long millis){
-        String text = (millis==0)?"": sdf2.format(millis);
-        setTvText(tv_time, text);
-    }
-
-    public void updateTvHeight(float height /* in m */){ // PointModel.NO_ELE means clean
-        String text = (height == PointModel.NO_ELE)?"":String.format(Locale.ENGLISH," %.1f m",height);
-        setTvText(tv_height, text);
-    }
-
-
-    public void updateRemainingForSelected(int drawableId, double dist){
-        String text = (dist<0)?"":String.format(Locale.ENGLISH, " %.2f km", dist/1000);
-
-        Rect rect = new Rect(0,0,40,40);
-        try {
-            rect = tv_remain.getCompoundDrawables()[0].getBounds(); // if available, take these values
-        } catch (Exception e) {}
-        Drawable drawable = null;
-        if (drawableId != 0){
-            drawable = context.getResources().getDrawable( drawableId, context.getTheme());
-            drawable.setBounds(rect);
+    void finalizeStatusLine(){
+        tr_states = activity.findViewById(R.id.tr_states);
+        for (int idx=0; idx<tr_states.getChildCount();idx++){
+            tr_states.getChildAt(idx).setOnClickListener(hintControl);
         }
-        tv_remain.setCompoundDrawables(drawable,null,null,null);
-        setTvText(tv_remain, text);
-
     }
 
-    public void updateTvBat(int batteryPercent){ // batteryPercent -1 means clean
-        String text = (batteryPercent==-1)?"":String.format(Locale.ENGLISH, " %d", batteryPercent);
-        setTvText(tv_bat, text);
-    }
 
 }

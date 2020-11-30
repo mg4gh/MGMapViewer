@@ -30,6 +30,7 @@ import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.PointView;
+import mg.mapviewer.view.PrefTextView;
 
 public class MSPosition extends MGMicroService {
 
@@ -38,15 +39,30 @@ public class MSPosition extends MGMicroService {
     private static final Paint PAINT_ACC_FILL = CC.getFillPaint(R.color.BLUE_A50);
     private static final Paint PAINT_ACC_STROKE = CC.getStrokePaint(R.color.BLUE_A150, 5);
 
+    private final MGPref<Boolean> prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, false);
     private final MGPref<Boolean> prefCenter = MGPref.get(R.string.MSPosition_prev_Center, true);
     final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+
+    private PrefTextView ptvHeight = null;
 
     public MSPosition(MGMapActivity mmActivity) {
         super(mmActivity);
     }
 
     @Override
+    public void initStatusLine(PrefTextView ptv, String info) {
+        if (info.equals("height")){
+            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.ele});
+            ptv.setFormat(PrefTextView.FormatType.FORMAT_HEIGHT);
+            ptvHeight = ptv;
+        }
+    }
+
+    @Override
     protected void start() {
+        if (prefAppRestart.getValue()){
+            prefCenter.setValue(true);
+        }
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
         refreshObserver.onChange();
         prefCenter.addObserver(new Observer() {
@@ -84,7 +100,7 @@ public class MSPosition extends MGMicroService {
 
     private void hidePosition(){
         unregisterAll();
-        getControlView().updateTvHeight(PointModel.NO_ELE);
+        getControlView().setStatusLineValue(ptvHeight, PointModel.NO_ELE);
     }
 
     private void showPosition(PointModel pm) {
@@ -99,7 +115,7 @@ public class MSPosition extends MGMicroService {
         }
         register(new PointView(pm, PAINT_FIX2_STROKE, PAINT_FIX2_FILL).setRadius( 6 ));
 
-        getControlView().updateTvHeight(pm.getEleA());
+        getControlView().setStatusLineValue(ptvHeight, pm.getEleA());
     }
 
     private void centerCurrentPosition(PointModel pm){

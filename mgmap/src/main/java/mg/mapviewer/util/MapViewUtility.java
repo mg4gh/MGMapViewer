@@ -109,7 +109,6 @@ public class MapViewUtility {
     public void initQuickControl(PrefTextView ptv, String info){
         if (info.toLowerCase().endsWith("in")){
             ptv.setPrefData(new MGPref[]{},
-                    new int[]{},
                     new int[]{R.drawable.zoom_in});
             ptv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -119,7 +118,6 @@ public class MapViewUtility {
             });
         } else if (info.toLowerCase().endsWith("out")){
             ptv.setPrefData(new MGPref[]{},
-                    new int[]{},
                     new int[]{R.drawable.zoom_out});
             ptv.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -34,15 +34,32 @@ import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.MultiPointView;
+import mg.mapviewer.view.PrefTextView;
 
 public class MSBeeline extends MGMicroService {
 
     public static final Paint PAINT_BLACK_STROKE = CC.getStrokePaint(R.color.BLACK, 2);
 
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private PrefTextView ptvCenter = null;
+    private PrefTextView ptvZoom = null;
 
     public MSBeeline(MGMapActivity mmActivity) {
         super(mmActivity);
+    }
+
+    @Override
+    public void initStatusLine(PrefTextView ptv, String info) {
+        if (info.equals("center")){
+            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.distance});
+            ptv.setFormat(PrefTextView.FormatType.FORMAT_DISTANCE);
+            ptvCenter = ptv;
+        }
+        if (info.equals("zoom")){
+            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.zoom});
+            ptv.setFormat(PrefTextView.FormatType.FORMAT_INT);
+            ptvZoom = ptv;
+        }
     }
 
     @Override
@@ -78,7 +95,8 @@ public class MSBeeline extends MGMicroService {
                 } else {
                     showHidePositionToCenter(null);
                 }
-                getControlView().updateTvZoom(getMapView().getModel().mapViewPosition.getZoomLevel());
+//                getControlView().updateTvZoom(getMapView().getModel().mapViewPosition.getZoomLevel());
+                getControlView().setStatusLineValue(ptvZoom, (int) (getMapView().getModel().mapViewPosition.getZoomLevel()));
             }
         });
     }
@@ -86,7 +104,6 @@ public class MSBeeline extends MGMicroService {
     private void showHidePositionToCenter(PointModel pm){
         if (msLayers.isEmpty() && (pm == null)) return; // default is fast
         unregisterAll();
-//        getMapViewUtility().hideLayers(msLayers);
         LatLong center = getMapView().getModel().mapViewPosition.getCenter();
         PointModel pmCenter = new PointModelImpl(center);
         boolean showNewValue = (pm != null);
@@ -104,7 +121,7 @@ public class MSBeeline extends MGMicroService {
         } else {
             distance = 0;
         }
-        getControlView().updateTvCenter(distance);
+        getControlView().setStatusLineValue(ptvCenter, distance);
     }
 
 }

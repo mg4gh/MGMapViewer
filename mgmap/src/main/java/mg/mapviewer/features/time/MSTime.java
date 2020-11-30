@@ -19,11 +19,31 @@ import android.os.BatteryManager;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
+import mg.mapviewer.R;
+import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.PrefTextView;
 
 public class MSTime extends MGMicroService {
 
+    private PrefTextView ptvTime = null;
+    private PrefTextView ptvBat = null;
+
     public MSTime(MGMapActivity mmActivity) {
         super(mmActivity);
+    }
+
+    @Override
+    public void initStatusLine(PrefTextView ptv, String info) {
+        if (info.equals("time")){
+            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.duration2});
+            ptv.setFormat(PrefTextView.FormatType.FORMAT_TIME);
+            ptvTime = ptv;
+        }
+        if (info.equals("bat")){
+            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.bat});
+            ptv.setFormat(PrefTextView.FormatType.FORMAT_INT);
+            ptvBat = ptv;
+        }
     }
 
     @Override
@@ -42,12 +62,14 @@ public class MSTime extends MGMicroService {
     private final Runnable timerTaskTime = new Runnable() {
         @Override
         public void run() {
-            getControlView().updateTvTime(System.currentTimeMillis());
-//            getControlView().setTvHeight2(getApplication().pressure);
+//            getControlView().updateTvTime(System.currentTimeMillis());
+            getControlView().setStatusLineValue(ptvTime, System.currentTimeMillis());
             getTimer().postDelayed(timerTaskTime,1000);
+
             if (--batCnt <= 0){
                 batCnt = 60;
-                getControlView().updateTvBat(getBatteryPercent());
+//                getControlView().updateTvBat(getBatteryPercent());
+                getControlView().setStatusLineValue(ptvBat, getBatteryPercent());
             }
         }
     };

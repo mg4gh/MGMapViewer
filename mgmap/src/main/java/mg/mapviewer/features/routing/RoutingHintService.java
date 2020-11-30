@@ -36,7 +36,6 @@ public class RoutingHintService {
 
     public void initQuickControl(PrefTextView ptv, String info) {
         ptv.appendPrefData(new MGPref[]{prefRoutingHints},
-                new int[]{},
                 new int[]{R.drawable.mtlr3, R.drawable.mtlr4});
     }
 

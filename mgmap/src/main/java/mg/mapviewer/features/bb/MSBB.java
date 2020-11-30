@@ -63,7 +63,6 @@ public class MSBB extends MGMicroService {
     @Override
     public void initQuickControl(PrefTextView ptv, String info){
         ptv.setPrefData(new MGPref[]{prefBboxOn,prefBboxCenter},
-                new int[]{},
                 new int[]{R.drawable.bbox,R.drawable.bbox2,R.drawable.bbox,R.drawable.bbox2});
     }
 
@@ -109,7 +108,7 @@ public class MSBB extends MGMicroService {
                 } else {
                     hideBB();
                 }
-                getControlView().updateTvZoom(getMapView().getModel().mapViewPosition.getZoomLevel());
+//                getControlView().updateTvZoom(getMapView().getModel().mapViewPosition.getZoomLevel());
             }
         });
     }
