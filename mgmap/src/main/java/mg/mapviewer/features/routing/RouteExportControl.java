@@ -78,7 +78,7 @@ public class RouteExportControl extends Control {
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
-        v.setEnabled( (mtl != null) && application.showRouting.getValue()  && (mtl.getTrackLogSegment(0).size() > 1));
+        v.setEnabled( (mtl != null) && msRouting.prefShowRouting.getValue() && (mtl.getTrackLogSegment(0).size() > 1));
         setText(v, controlView.rstring(R.string.btRouteExport) );
     }
 }

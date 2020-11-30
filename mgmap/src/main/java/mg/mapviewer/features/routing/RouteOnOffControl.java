@@ -22,21 +22,24 @@ import mg.mapviewer.util.Control;
 
 public class RouteOnOffControl extends Control {
 
-    public RouteOnOffControl(){
+    MSRouting msRouting;
+
+    public RouteOnOffControl(MSRouting msRouting){
         super(true);
+        this.msRouting = msRouting;
     }
 
     public void onClick(View v) {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
-        application.showRouting.toggle();
+        msRouting.prefShowRouting.toggle();
         application.markerTrackLogObservable.changed();
 
     }
 
     @Override
     public void onPrepare(View v) {
-        boolean showRouting = controlView.getApplication().showRouting.getValue();
+        boolean showRouting = msRouting.prefShowRouting.getValue();
         setText(v, controlView.rstring(showRouting? R.string.btRouteOff:R.string.btRouteOn) );
     }
 

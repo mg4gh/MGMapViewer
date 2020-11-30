@@ -23,9 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import android.preference.Preference;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 
 
@@ -34,7 +32,6 @@ import androidx.annotation.NonNull;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
 
@@ -54,19 +51,19 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import mg.mapviewer.features.alpha.MSAlpha;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.bb.MSBB;
+import mg.mapviewer.features.fullscreen.MSFullscreen;
 import mg.mapviewer.features.gdrive.MSGDrive;
 import mg.mapviewer.features.grad.MSGraphDetails;
 import mg.mapviewer.features.marker.MSMarker;
-import mg.mapviewer.features.motion.MSMotion;
+import mg.mapviewer.features.motion.MSBeeline;
 import mg.mapviewer.features.position.MSPosition;
 import mg.mapviewer.features.remainings.MSRemainings;
 import mg.mapviewer.features.routing.MSRouting;
-import mg.mapviewer.features.routing.MSRoutingHint;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
-import mg.mapviewer.features.search.SearchView;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModelImpl;
@@ -75,11 +72,9 @@ import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.model.WriteableTrackLog;
-import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.GpxImporter;
 import mg.mapviewer.util.MapViewUtility;
-import mg.mapviewer.util.MetaDataUtil;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.OpenAndroMapsUtil;
 import mg.mapviewer.util.Permissions;
@@ -87,18 +82,14 @@ import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.TopExceptionHandler;
 import mg.mapviewer.model.TrackLog;
-import mg.mapviewer.util.Zipper;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.MVLayer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 /**
@@ -146,7 +137,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void onCreate(Bundle savedInstanceState) {
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler());
         Log.w(MGMapApplication.LABEL, NameUtil.context());
-        //set fullsrceen mode
+        //for fullsrceen mode
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
@@ -161,7 +152,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         initMapView();
         createLayers();
-        createControls();
+
         initializePosition(mapView.getModel().mapViewPosition);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
@@ -181,7 +172,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
 
         microServices.add(new MSTime(this));
-        microServices.add(new MSMotion(this));
+        microServices.add(new MSBeeline(this));
         microServices.add(new MSPosition(this));
         microServices.add(new MSRecordingTrackLog(this));
         microServices.add(new MSAvailableTrackLogs(this));
@@ -192,25 +183,25 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         microServices.add(new MSGraphDetails(this));
         microServices.add(new MSSearch(this));
         microServices.add(new MSGDrive(this));
+        microServices.add(new MSFullscreen(this));
+        microServices.add(new MSAlpha(this));
 
         try{
             Thread.sleep(100);
         }catch (Exception e){}
         coView.init(application, this);
         onNewIntent(getIntent());
+
+        application.prefAppRestart.setValue(false);
+        MGPref.dumpPrefs();
     }
 
-    private FullscreenObserver fullscreenObserver = null;
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         application = (MGMapApplication) getApplication();
-        application.snapMarkerToWay.setValue( sharedPreferences.getBoolean(getResources().getString(R.string.preferences_dev_snap2way_key), true) );
-        application.showMarkerTrack.setValue( sharedPreferences.getBoolean(getResources().getString(R.string.preferences_dev_mtl_key), false) );
-        application.wayDetails.setValue(sharedPreferences.getBoolean(getResources().getString(R.string.preferences_way_details_key), false));
-        application.stlWithGL.setValue(sharedPreferences.getBoolean(getResources().getString(R.string.preferences_stl_gl_key), true));
 
         for (MGMicroService microService : microServices) {
             try {
@@ -225,14 +216,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 tileDownloadLayer.onResume();
             }
         }
-        fullscreenObserver = new FullscreenObserver();
-        application.fullscreen.addObserver(fullscreenObserver);
 
         application.recordingTrackLogObservable.changed();
         application.availableTrackLogsObservable.changed();
         application.lastPositionsObservable.changed();
         application.markerTrackLogObservable.changed();
-        application.fullscreen.changed();
     }
 
     @Override
@@ -254,8 +242,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 tileDownloadLayer.onPause();
             }
         }
-        application.fullscreen.deleteObserver(fullscreenObserver);
-        fullscreenObserver = null;
 
         application.recordingTrackLogObservable.changed();
         application.availableTrackLogsObservable.changed();
@@ -288,11 +274,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         if (fs != DisplayModel.getDefaultUserScaleFactor()) {
             DisplayModel.setDefaultUserScaleFactor(fs);
         }
-        MapFile.wayFilterEnabled = sharedPreferences.getBoolean(getResources().getString(R.string.preferences_wayfiltering_key), true);
-        if (MapFile.wayFilterEnabled) {
-            MapFile.wayFilterDistance = Integer.parseInt(sharedPreferences.getString(getResources().getString(R.string.preferences_wayfiltering_distance_key), "20"));
-        }
-        MapWorkerPool.DEBUG_TIMING = sharedPreferences.getBoolean(getResources().getString(R.string.preferences_debug_timing_key), false);
     }
 
     /** Used if
@@ -503,9 +484,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     /** Return a MapDataStore if it contains a given BBox. This is used e.g. to find the MapDataStore for route calculation. */
     public MapDataStore getMapDataStore(BBox bBox) {
-//        String language = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "");
         for (String prefKey : application.getMapLayerKeys()){
-//            String key = sharedPreferences.getString(prefKey, language);
             String key = sharedPreferences.getString(prefKey, "none");
 
             Layer layer = MGMapLayerFactory.getMapLayer(key);
@@ -543,7 +522,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         layers.add(new MVLayer() {
             @Override
             protected boolean onTap(WriteablePointModel point) {
-                { // this sectio is just for analysis purposes
+                { // this section is just for analysis purposes
                     WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
                     if (mtl != null){
                         TrackLogRefApproach pointRef = mtl.getBestPoint(point, PointModelUtil.getCloseThreshold());
@@ -562,29 +541,4 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         });
     }
 
-    public class FullscreenObserver implements Observer{
-        @Override
-        public void update(Observable o, Object arg) {
-            if (application.fullscreen.getValue()){
-                setFullscreen();
-            } else {
-                hideFullscreen();
-            }
-        }
-    }
-
-    void setFullscreen() {
-        int newUiOptions = this.getWindow().getDecorView().getSystemUiVisibility();
-        newUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        newUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        newUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        this.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
-    }
-    void hideFullscreen() {
-        int newUiOptions = this.getWindow().getDecorView().getSystemUiVisibility();
-        newUiOptions &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        newUiOptions &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
-        newUiOptions &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        this.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
-    }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="MSGrad_pref_WayDetails_key">MGGrad.wayDetails</string>
+    <string name="MSGrad_pref_WayDetails_title">Way details</string>
+    <string name="MSGrad_pref_WayDetails_desc">Visualize way details of a taped way</string>
+
+</resources>

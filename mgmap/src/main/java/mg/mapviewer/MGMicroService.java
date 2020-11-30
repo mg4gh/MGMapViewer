@@ -33,6 +33,7 @@ import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.util.MapViewUtility;
 import mg.mapviewer.view.MultiPointGLView;
 import mg.mapviewer.view.MultiPointView;
+import mg.mapviewer.view.PrefTextView;
 
 /**
  * <p>The concept of MicroServices helps to split the overall functionality into smaller parts. These parts are realized as features in separate packages and they are mostly independent from each other.</p>
@@ -80,6 +81,8 @@ public class MGMicroService {
     protected RefreshObserver refreshObserver = new RefreshObserver();
 
     protected void doRefresh(){}
+
+    public void initQuickControl(PrefTextView ptv, String info){}
 
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL){
         showTrack(trackLog,paint,showGL,MultiPointView.POINT_RADIUS);

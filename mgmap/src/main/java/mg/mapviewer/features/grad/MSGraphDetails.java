@@ -35,6 +35,7 @@ import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.BoxView;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.MultiMultiPointView;
@@ -56,47 +57,30 @@ public class MSGraphDetails extends MGMicroService {
 
     private GradControlLayer controlLayer = null;
 
+    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.MSGrad_pref_WayDetails_key, false);
+
     public MSGraphDetails(MGMapActivity mmActivity) {
         super(mmActivity);
     }
 
     @Override
     protected void start() {
-//        getApplication().wayDetails.addObserver(refreshObserver);
-
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" wayDetails=" + getApplication().wayDetails.getValue());
-        if (getApplication().wayDetails.getValue()){
+        if (prefWayDetails.getValue()){
             controlLayer = new GradControlLayer();
             register(controlLayer, false);
         }
-
     }
 
     @Override
     protected void stop() {
-//        getApplication().wayDetails.deleteObserver(refreshObserver);
-
         unregisterClass(GradControlLayer.class);
         unregisterAll();
         controlLayer = null;
     }
 
-//    @Override
-//    protected void doRefresh() {
-//        if (getApplication().wayDetails.getValue()){    // should be active
-//            if (controlLayer == null){                  // but is not yet
-//                start();                                // therefore start it
-//            }
-//        } else {
-//            if (controlLayer != null){
-//                stop();
-//            }
-//        }
-//    }
-
 
     private boolean showGraphDetails(PointModel pmTap){
-        if (getApplication().wayDetails.getValue()){
+        if (prefWayDetails.getValue()){
             MultiPointModelImpl multiPointModel = new MultiPointModelImpl();
             BBox bBox = getGraphDetails(pmTap, multiPointModel);
             if (bBox != null){

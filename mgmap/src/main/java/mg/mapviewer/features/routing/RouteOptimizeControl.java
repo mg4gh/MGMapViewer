@@ -36,8 +36,6 @@ public class RouteOptimizeControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
         msRouting.optimize();
-
-
     }
 
     @Override
@@ -45,10 +43,7 @@ public class RouteOptimizeControl extends Control {
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
-        v.setEnabled( (mtl != null) && application.showRouting.getValue() );
+        v.setEnabled( (mtl != null) && msRouting.prefShowRouting.getValue() );
         setText(v, controlView.rstring(R.string.btRouteOptimize) );
-
-
-//        v.setEnabled(false);
     }
 }

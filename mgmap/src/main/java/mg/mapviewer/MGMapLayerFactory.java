@@ -24,6 +24,7 @@ import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.layer.Layer;
+import org.mapsforge.map.layer.TileLayer;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
@@ -296,5 +297,25 @@ public class MGMapLayerFactory {
 
     public static void setXmlRenderTheme(XmlRenderTheme xmlRenderTheme) {
         MGMapLayerFactory.xmlRenderTheme = xmlRenderTheme;
+    }
+
+    public static boolean hasAlpha(String key){
+        return (getMapLayer(key) instanceof TileLayer);
+    }
+    public static float getMapLayerAlpha(String key){
+        Layer layer = getMapLayer(key);
+        if (layer instanceof TileLayer) {
+            TileLayer<?> tileLayer = (TileLayer<?>) layer;
+            return tileLayer.getAlpha();
+        }
+        return -1;
+    }
+    public static void setMapLayerAlpha(String key, float alpha){
+        Layer layer = getMapLayer(key);
+        if (layer instanceof TileLayer) {
+            TileLayer<?> tileLayer = (TileLayer<?>) layer;
+            tileLayer.setAlpha(alpha);
+            tileLayer.setVisible(alpha != 0);
+        }
     }
 }

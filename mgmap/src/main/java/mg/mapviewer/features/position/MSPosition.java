@@ -17,19 +17,18 @@ package mg.mapviewer.features.position;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.map.layer.Layer;
-import org.mapsforge.map.layer.overlay.Circle;
-import org.mapsforge.map.layer.overlay.FixedPixelCircle;
 import org.mapsforge.map.model.IMapViewPosition;
+
+import java.util.Observable;
+import java.util.Observer;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.model.PointModel;
-import mg.mapviewer.model.PointModelImpl;
-import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.CC;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.PointView;
 
 public class MSPosition extends MGMicroService {
@@ -39,6 +38,8 @@ public class MSPosition extends MGMicroService {
     private static final Paint PAINT_ACC_FILL = CC.getFillPaint(R.color.BLUE_A50);
     private static final Paint PAINT_ACC_STROKE = CC.getStrokePaint(R.color.BLUE_A150, 5);
 
+    private final MGPref<Boolean> prefCenter = MGPref.get(R.string.MSPosition_prev_Center, true);
+    final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
     public MSPosition(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -47,6 +48,13 @@ public class MSPosition extends MGMicroService {
     @Override
     protected void start() {
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
+        refreshObserver.onChange();
+        prefCenter.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                refreshObserver.onChange();
+            }
+        });
     }
 
     @Override
@@ -60,7 +68,7 @@ public class MSPosition extends MGMicroService {
             @Override
             public void run() {
                 PointModel pm = getApplication().lastPositionsObservable.lastGpsPoint;
-                if (getApplication().gpsOn.getValue() && (pm != null)){
+                if (prefGps.getValue() && (pm != null)){
                     showPosition(pm);
                     centerCurrentPosition(pm);
                 } else {
@@ -95,7 +103,7 @@ public class MSPosition extends MGMicroService {
     }
 
     private void centerCurrentPosition(PointModel pm){
-        if ((pm != null) && getApplication().centerCurrentPosition.getValue()) {
+        if ((pm != null) && prefCenter.getValue()) {
             IMapViewPosition mvp = getMapView().getModel().mapViewPosition;
             LatLong pos = new LatLong(pm.getLat(), pm.getLon());
             mvp.setMapPosition(new MapPosition(pos, mvp.getZoomLevel()));

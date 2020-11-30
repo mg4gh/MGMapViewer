@@ -42,20 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
-import mg.mapviewer.control.CenterControl;
-import mg.mapviewer.control.GpsControl;
-import mg.mapviewer.control.HeightProfileControl;
-import mg.mapviewer.control.SettingsControl;
-import mg.mapviewer.control.ThemeSettingsControl;
-import mg.mapviewer.control.TrackStatisticControl;
-import mg.mapviewer.features.atl.MSAvailableTrackLogs;
-import mg.mapviewer.features.bb.MSBB;
-import mg.mapviewer.features.marker.MSMarker;
-import mg.mapviewer.features.routing.MSRouting;
-import mg.mapviewer.features.rtl.MSRecordingTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogStatistic;
 import mg.mapviewer.util.HintControl;
@@ -92,6 +79,9 @@ public class ControlView extends RelativeLayout {
 
     /** progress bar - only used in case of route opimization */
     ProgressBar progressBar = null;
+    /** indicates visibility of menu */
+    private boolean menuVisibility = false;
+
 
 
     /** parent object for status line */
@@ -125,6 +115,7 @@ public class ControlView extends RelativeLayout {
         try {
             this.application = application;
             this.activity = activity;
+            ControlComposer controlComposer = new ControlComposer();
 
             tv_hint = findViewById(R.id.hint);
             tv_hint.setVisibility(INVISIBLE);
@@ -142,19 +133,19 @@ public class ControlView extends RelativeLayout {
                 dashboardKeys.add(entry.getId());
                 dashboardMap.put(entry.getId(),entry);
                 for (int i=0; i<entry.getChildCount(); i++){
-//                    entry.getChildAt(i).setOnClickListener(new ZoomOCL(mapView.getModel().displayModel.getScaleFactor()));
                     entry.getChildAt(i).setOnClickListener(hintControl);
                 }
                 dashboard.removeViewAt(0);
             }
 
-            prepareMenuOCLs();
+            controlComposer.composeMenu(application, activity, this);
+            hideMenu();
 
             prepareAlphaSliders();
 
             prepareStatusLine();
 
-            prepareHotControls();
+            controlComposer.composeQuickControls(application, activity, this);
 
         } catch (Exception e){
             Log.e(MGMapApplication.LABEL, NameUtil.context()+"", e);
@@ -237,39 +228,10 @@ public class ControlView extends RelativeLayout {
         return application;
     }
 
-
-
-    public void prepareMenuOCLs(){
-
-
-        registerControl(findViewById(R.id.bt_st01), new SettingsControl());
-        registerControl(findViewById(R.id.bt_st02), new ThemeSettingsControl());
-        registerControl(findViewById(R.id.bt_st03), new TrackStatisticControl());
-        registerControl(findViewById(R.id.bt_st04), new HeightProfileControl());
-        registerControl(findViewById(R.id.bt_st05), new CenterControl());
-        registerControl(findViewById(R.id.bt_st06), new GpsControl());
-
-
-        registerMenuControl(findViewById(R.id.bt_en01), rstring(R.string.btRecordTrack), (ViewGroup) findViewById(R.id.menu_en01_sub), getActivity().getMS(MSRecordingTrackLog.class).getMenuTrackControls());
-        registerMenuControl(findViewById(R.id.bt_en02), rstring(R.string.btBB), (ViewGroup) findViewById(R.id.menu_en02_sub), getActivity().getMS(MSBB.class).getMenuBBControls());
-        registerMenuControl(findViewById(R.id.bt_en03), rstring(R.string.btLoadTrack), (ViewGroup) findViewById(R.id.menu_en03_sub), getActivity().getMS(MSAvailableTrackLogs.class).getMenuLoadControls());
-        registerMenuControl(findViewById(R.id.bt_en04), rstring(R.string.btHideTrack), (ViewGroup) findViewById(R.id.menu_en04_sub), getActivity().getMS(MSAvailableTrackLogs.class).getMenuHideControls());
-        registerMenuControl(findViewById(R.id.bt_en05), rstring(R.string.btMarkerTrack), (ViewGroup) findViewById(R.id.menu_en05_sub), getActivity().getMS(MSMarker.class).getMenuMarkerControls());
-        registerMenuControl(findViewById(R.id.bt_en06), rstring(R.string.btRoute), (ViewGroup) findViewById(R.id.menu_en06_sub), getActivity().getMS(MSRouting.class).getMenuRouteControls());
-        hideMenu();
-
-    }
-
-
-
-
-
     public String rstring(int id){
         return getResources().getString(id);
     }
 
-
-    boolean menuVisibility = false;
 
     public void toggleMenuVisibility(){
         menuVisibility = !menuVisibility;
@@ -355,62 +317,52 @@ public class ControlView extends RelativeLayout {
     Map<String, SeekBar> mapSliders = new HashMap<>();
     Map<String, TextView> mapSliderNames = new HashMap<>();
     private void prepareAlphaSliders(){
-        mapSliders.put(context.getResources().getString( R.string.preference_choose_map_key1 ), (SeekBar) findViewById(R.id.sb1));
-        mapSliders.put(context.getResources().getString( R.string.preference_choose_map_key2 ), (SeekBar) findViewById(R.id.sb2));
-        mapSliders.put(context.getResources().getString( R.string.preference_choose_map_key3 ), (SeekBar) findViewById(R.id.sb3));
-        mapSliders.put(context.getResources().getString( R.string.preference_choose_map_key4 ), (SeekBar) findViewById(R.id.sb4));
-        mapSliders.put(context.getResources().getString( R.string.preference_choose_map_key5 ), (SeekBar) findViewById(R.id.sb5));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), (SeekBar) findViewById(R.id.sb1));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), (SeekBar) findViewById(R.id.sb2));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), (SeekBar) findViewById(R.id.sb3));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), (SeekBar) findViewById(R.id.sb4));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), (SeekBar) findViewById(R.id.sb5));
 
-        mapSliderNames.put(context.getResources().getString( R.string.preference_choose_map_key1 ), (TextView) findViewById(R.id.sbt1));
-        mapSliderNames.put(context.getResources().getString( R.string.preference_choose_map_key2 ), (TextView) findViewById(R.id.sbt2));
-        mapSliderNames.put(context.getResources().getString( R.string.preference_choose_map_key3 ), (TextView) findViewById(R.id.sbt3));
-        mapSliderNames.put(context.getResources().getString( R.string.preference_choose_map_key4 ), (TextView) findViewById(R.id.sbt4));
-        mapSliderNames.put(context.getResources().getString( R.string.preference_choose_map_key5 ), (TextView) findViewById(R.id.sbt5));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), (TextView) findViewById(R.id.sbt1));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), (TextView) findViewById(R.id.sbt2));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), (TextView) findViewById(R.id.sbt3));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), (TextView) findViewById(R.id.sbt4));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), (TextView) findViewById(R.id.sbt5));
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         LinearLayout parentLayer = findViewById(R.id.bars);
         for (String prefKey : application.getMapLayerKeys()) {
             final String key = sharedPreferences.getString(prefKey, "");
-            final String alphakey = "no_recreate_alpha_"+key;
-            Layer layer = MGMapLayerFactory.getMapLayer(key);
-            boolean providesAlpha = (layer instanceof TileLayer);
-
+            final String alphakey = "ControlView_alpha_"+key;
             SeekBar seekBar = mapSliders.get(prefKey);
-            seekBar.setVisibility(providesAlpha?VISIBLE:INVISIBLE);
             TextView seekBarName = mapSliderNames.get(prefKey);
-            seekBarName.setText(key);
-            seekBarName.setVisibility(providesAlpha?VISIBLE:INVISIBLE);
-            if (layer instanceof TileLayer) {
-                TileLayer tileLayer = (TileLayer) layer;
-                float alpha = tileLayer.getAlpha();
+            if (MGMapLayerFactory.hasAlpha(key)) {
+                seekBarName.setText(key);
+                float alpha = MGMapLayerFactory.getMapLayerAlpha(key);
                 alpha = sharedPreferences.getFloat(alphakey, alpha);
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha+ " "+seekBar);
-                tileLayer.setAlpha(alpha);
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha);
+                MGMapLayerFactory.setMapLayerAlpha(key, alpha);
                 seekBar.setProgress((int) (alpha*100));
 
                 seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
+                    public void onStopTrackingTouch(SeekBar seekBar) { }
 
                     @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
+                    public void onStartTrackingTouch(SeekBar seekBar) { }
 
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         Layer layer = MGMapLayerFactory.getMapLayer(key);
                         if (layer instanceof TileLayer) {
-                            TileLayer tileLayer = (TileLayer) layer;
                             float alpha = progress/100.0f;
                             if (!fromUser){
                                 alpha = sharedPreferences.getFloat(alphakey, alpha);
                                 seekBar.setProgress((int) (alpha*100));
                             }
-                            tileLayer.setAlpha(alpha);
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha+ " "+seekBar);
+                            MGMapLayerFactory.setMapLayerAlpha(key, alpha);
+                            Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha+ " "+seekBar);
                             sharedPreferences.edit().putFloat(alphakey, alpha).apply();
-                            tileLayer.setVisible(progress != 0);
                             mapView.getLayerManager().redrawLayers();
                         }
                         Log.d(MGMapApplication.LABEL, NameUtil.context()+" progress="+progress);
@@ -421,11 +373,7 @@ public class ControlView extends RelativeLayout {
                 parentLayer.removeView(seekBar);
                 parentLayer.removeView(seekBarName);
             }
-
-
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " showAlphaSliders="+application.showAlphaSliders.getValue());
-        application.showAlphaSliders.changed();
     }
 
 
@@ -434,7 +382,6 @@ public class ControlView extends RelativeLayout {
         TextView tv = activity.findViewById(id);
         tvList.add(tv);
         tv.setOnClickListener(hintControl);
-//        tv.setOnClickListener(new ZoomOCL(mapView.getModel().displayModel.getScaleFactor()));
         return tv;
     }
 
@@ -542,124 +489,4 @@ public class ControlView extends RelativeLayout {
         setTvText(tv_bat, text);
     }
 
-
-    private void scaleBoundsForDrawable(TextView tv, int diff){
-        Drawable drawable = tv.getCompoundDrawables()[0]; // index 0 is the left
-        if (drawable != null){
-            Rect bounds = drawable.getBounds();
-            bounds.right += diff;
-            bounds.bottom += diff;
-            drawable.setBounds(bounds);
-            tv.setCompoundDrawables(drawable,null,null,null);
-        }
-    }
-
-
-    private void prepareHotControls(){
-
-        final TextView ct1 = activity.findViewById(R.id.ct1);
-        ct1.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                application.fullscreen.toggle();
-            }
-        });
-        final TextView ct2 = activity.findViewById(R.id.ct2);
-        ct2.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                application.showAlphaSliders.toggle();
-            }
-        });
-        application.showAlphaSliders.deleteObservers(); // if there are old observers
-        application.showAlphaSliders.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                findViewById(R.id.bars).setVisibility( application.showAlphaSliders.getValue()?VISIBLE:INVISIBLE );
-            }
-        });
-        application.showAlphaSliders.changed();
-
-        final TextView ct3 = activity.findViewById(R.id.ct3);
-        ct3.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                application.editMarkerTrack.toggle();
-            }
-        });
-        ct3.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                application.routingHints.toggle();
-                return true;
-            }
-        });
-        Observer ct3Observer = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                Rect rect = ct3.getCompoundDrawables()[0].getBounds();
-                int id = application.editMarkerTrack.getValue()?(application.routingHints.getValue()? R.drawable.mtlr4:R.drawable.mtlr2):(application.routingHints.getValue()? R.drawable.mtlr3:R.drawable.mtlr);
-                Drawable drawable = context.getResources().getDrawable(id, context.getTheme());
-                drawable.setBounds(rect.left,rect.top,rect.right,rect.bottom);
-                ct3.setCompoundDrawables(drawable,null,null,null);
-            }
-        };
-        application.editMarkerTrack.addObserver(ct3Observer);
-        application.routingHints.addObserver(ct3Observer);
-
-        final TextView ct3a = activity.findViewById(R.id.ct3a);
-        ct3a.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                application.bboxOn.toggle();
-            }
-        });
-        ct3a.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                application.bboxOn.setValue(true);
-                application.getMS(MSBB.class).initFromScreen = true;
-                application.getMS(MSBB.class).triggerRefresh();
-                return true;
-            }
-        });
-        Observer ct3aObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                Rect rect = ct3a.getCompoundDrawables()[0].getBounds();
-                int id = application.bboxOn.getValue()?R.drawable.bbox2:R.drawable.bbox;
-                Drawable drawable = context.getResources().getDrawable(id, context.getTheme());
-                drawable.setBounds(rect.left,rect.top,rect.right,rect.bottom);
-                ct3a.setCompoundDrawables(drawable,null,null,null);
-            }
-        };
-        application.bboxOn.addObserver(ct3aObserver);
-
-
-        final TextView ct3b = activity.findViewById(R.id.ct3b);
-        ct3b.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                application.searchOn.toggle();
-            }
-        });
-
-
-        final TextView ct4 = activity.findViewById(R.id.ct4);
-        ct4.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mapView.getModel().mapViewPosition.zoomIn();
-            }
-        });
-        final TextView ct5 = activity.findViewById(R.id.ct5);
-        ct5.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mapView.getModel().mapViewPosition.zoomOut();
-            }
-        });
-
-    }
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_screen_gdrive">GDrive</string>
+    <string name="preferences_screen_gdrive_desc">GDrive synchronisation</string>
+    <string name="preferences_gdrive_sync_key">GDriveSyncKey</string>
+    <string name="preferences_gdrive_sync_title">Synchronize with GDrive</string>
+    <string name="preferences_gdrive_sync_desc">Trigger (one time) synchronisation of files in the \n ./MGMapViewer/tracks/gpx folder with users GDrive account.</string>
+</resources>

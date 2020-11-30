@@ -6,8 +6,8 @@
         app:iconSpaceReserved="false"
         >
         <Preference
-            app:title="@string/preference_choose_map_title"
-            app:summary="@string/preference_choose_map_summary"
+            app:title="@string/Layers_pref_chooseMap_title"
+            app:summary="@string/Layers_pref_chooseMap_summary"
             app:fragment="mg.mapviewer.settings.MapLayersPreferenceScreen"
             app:iconSpaceReserved="false"
             />

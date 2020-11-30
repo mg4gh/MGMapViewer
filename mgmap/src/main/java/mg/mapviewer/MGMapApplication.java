@@ -1,24 +1,19 @@
 package mg.mapviewer;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.layer.renderer.MapWorkerPool;
-import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.model.IMapViewPosition;
-import org.mapsforge.map.reader.MapFile;
 
-import mg.mapviewer.features.routing.MSRoutingHint;
 import mg.mapviewer.features.routing.RoutingHintService;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
@@ -33,9 +28,9 @@ import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.util.ExtrasUtil;
+import mg.mapviewer.util.pref.MGPref;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,9 +53,12 @@ public class MGMapApplication extends Application {
     public static final String LABEL = "MGMapViewer";
     private Process pLogcat = null;
 
+    MGPref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
+    MGPref<Boolean> prefGpsOn = null; // property to distinguish ApplicationStart from ActivityRecreate
+
     public void startLogging(){
         try {
-            String cmd = "logcat "+ LABEL+":i  -f "+PersistenceManager.getInstance(this).getLogDir().getAbsolutePath()+"/log.txt -r 10000 -n10";
+            String cmd = "logcat "+ LABEL+":i -f "+PersistenceManager.getInstance(this).getLogDir().getAbsolutePath()+"/log.txt -r 10000 -n10";
             Log.i(LABEL, NameUtil.context()+" Start Logging: "+cmd);
             pLogcat = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
@@ -85,29 +83,25 @@ public class MGMapApplication extends Application {
         ExtrasUtil.checkCreateMeta();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        wayDetails.setValue( preferences.getBoolean(getResources().getString(R.string.preferences_way_details_key), false) );
-        stlWithGL.setValue( preferences.getBoolean(getResources().getString(R.string.preferences_stl_gl_key), true) );
+        MGPref.init(this);
+        prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, true);
+        prefGpsOn = MGPref.get(R.string.MSPosition_prev_GpsOn, true);
+        prefAppRestart.setValue(true);
+        prefGpsOn.setValue(false);
+
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
-//        if (preferences.getBoolean(getResources().getString(R.string.preferences_mtr_key), false)){
-//            Parameters.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() + 1;
-//        }
 
         int[] prefIds = new int[]{
-                R.string.preference_choose_map_key1,
-                R.string.preference_choose_map_key2,
-                R.string.preference_choose_map_key3,
-                R.string.preference_choose_map_key4,
-                R.string.preference_choose_map_key5};
+                R.string.Layers_pref_chooseMap1_key,
+                R.string.Layers_pref_chooseMap2_key,
+                R.string.Layers_pref_chooseMap3_key,
+                R.string.Layers_pref_chooseMap4_key,
+                R.string.Layers_pref_chooseMap5_key};
         for (int id : prefIds){
             mapLayerKeys.add( getResources().getString( id ));
         }
+        new RoutingHintService(this);
 
-        centerCurrentPosition.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                lastPositionsObservable.changed();
-            }
-        });
 
 
         // Recover state of RecordingTrackLog
@@ -190,21 +184,6 @@ public class MGMapApplication extends Application {
             }
         }.start();
 
-//        try {
-//            byte[] bb = new byte[100];
-//            for (int i=0; i<bb.length; i++){
-//                bb[i] = (byte)(i*2);
-//            }
-//            File mapstores = new File(PersistenceManager.getInstance(null).getMapsDir(),"mapstores");
-//            MBTileStore emptyStore = (MBTileStore)MBTileStore.getTileStore(new File(mapstores,"test"));
-//
-//            emptyStore.saveTileBytes("77","55","2", bb);
-//
-//            byte[] bc = emptyStore.getTileAsBytes("77","55","2");
-//            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+bc);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     @Override
@@ -219,18 +198,17 @@ public class MGMapApplication extends Application {
         if (recordingTrackLogObservable.getTrackLog() != null){
             recordingTrackLogObservable.getTrackLog().setRecordRaw(true); // from now on record new entries in the tracklog
             if (recordingTrackLogObservable.getTrackLog().isSegmentRecording()){
-                gpsOn.setValue(true);
+                prefGpsOn.setValue(true);
                 Intent intent = new Intent(this, TrackLoggerService.class);
                 startService(intent);
 
                 TrackLogSegment currentSegment = recordingTrackLogObservable.getTrackLog().getCurrentSegment();
                 PointModel lastTlp = currentSegment.getLastPoint();
-                if (centerCurrentPosition.getValue() && (lastTlp != null)){
+                if (/* centerCurrentPosition.getValue() && */ (lastTlp != null)){
                     lastPositionsObservable.handlePoint(lastTlp);
                 }
             }
         }
-        new RoutingHintService(this);
     }
 
 
@@ -367,20 +345,6 @@ public class MGMapApplication extends Application {
     public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>();
     public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>();
     public final TreeSet<TrackLog> metaTrackLogs = new TreeSet<>(Collections.<TrackLog>reverseOrder());
-
-    public BooleanObservable gpsOn = new BooleanObservable(false);;
-    public BooleanObservable centerCurrentPosition = new BooleanObservable(true);
-    public BooleanObservable wayDetails = new BooleanObservable(false);
-    public BooleanObservable showAlphaSliders = new BooleanObservable(false);
-    public BooleanObservable editMarkerTrack = new BooleanObservable(false);
-    public BooleanObservable routingHints = new BooleanObservable(false);
-    public BooleanObservable showRouting = new BooleanObservable(true);
-    public BooleanObservable stlWithGL = new BooleanObservable(true);
-    public BooleanObservable fullscreen = new BooleanObservable(true);
-    public BooleanObservable searchOn = new BooleanObservable(false);
-    public BooleanObservable bboxOn = new BooleanObservable(false);
-    public BooleanObservable showMarkerTrack = new BooleanObservable(false);;
-    public BooleanObservable snapMarkerToWay = new BooleanObservable(true);
 
 
     boolean initFinished = false;

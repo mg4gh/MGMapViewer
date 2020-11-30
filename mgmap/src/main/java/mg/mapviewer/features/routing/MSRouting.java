@@ -15,7 +15,6 @@
 package mg.mapviewer.features.routing;
 
 
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import org.mapsforge.core.graphics.Paint;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -48,7 +46,6 @@ import mg.mapviewer.graph.ApproachModel;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.TrackLogRefApproach;
-import mg.mapviewer.model.WriteablePointModelImpl;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.MultiPointModelImpl;
@@ -63,8 +60,8 @@ import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.MVLayer;
-import mg.mapviewer.view.MultiMultiPointView;
 import mg.mapviewer.view.MultiPointView;
 import mg.mapviewer.view.PointView;
 
@@ -88,6 +85,13 @@ public class MSRouting extends MGMicroService {
 
     private boolean routeRemainings = true;
     private RoutingLineRefProvider routingLineRefProvider;
+
+    final MGPref<Boolean> prefShowRouting = MGPref.get(R.string.MSRouting_bt_ShowRouting, true);
+    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.MSGrad_pref_WayDetails_key, false);
+    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
+    private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+
 
     public MSRouting(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -113,7 +117,7 @@ public class MSRouting extends MGMicroService {
     @Override
     protected void doRefresh() {
         WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
-        if (getApplication().showRouting.getValue() && (mtl!= null)){
+        if (prefShowRouting.getValue() && (mtl!= null)){
             updateRouting(mtl);
         } else {
             hideRouting();
@@ -159,7 +163,7 @@ public class MSRouting extends MGMicroService {
     RoutePointModel getRoutePointModel(MapDataStore mapFile, PointModel pm){
         RoutePointModel rpm = getRoutePointModel(pm);
         calcApproaches(mapFile, rpm);
-        if (getApplication().snapMarkerToWay.getValue()){
+        if (prefSnap2Way.getValue()){
             if (rpm.selectedApproach != null){
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
                     if (pm instanceof WriteablePointModel) {
@@ -260,7 +264,7 @@ public class MSRouting extends MGMicroService {
         routeTrackLog.stopTrack(0);
 
         showTrack(routeTrackLog, PAINT_ROUTE_STROKE, false, 0);
-        if (!getSharedPreferences().getBoolean(getResources().getString(R.string.preferences_dev_mtl_key), false)){
+        if (!getSharedPreferences().getBoolean(getResources().getString(R.string.MSMarker_pref_showMtl_key), false)){
             showTrack(mtl, PAINT_ROUTE_STROKE2, false, 15, true);
         }
         calcRemainingStatistic(routeTrackLog);
@@ -268,7 +272,7 @@ public class MSRouting extends MGMicroService {
     }
 
     private void calcRemainingStatistic(WriteableTrackLog routeTrackLog){
-        if (routeRemainings && getApplication().gpsOn.getValue()){
+        if (routeRemainings && prefGps.getValue()){
             PointModel lastPos = getApplication().lastPositionsObservable.lastGpsPoint;
             if (lastPos != null){
                 TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(lastPos);
@@ -291,7 +295,7 @@ public class MSRouting extends MGMicroService {
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
         Log.i(MGMapApplication.LABEL, NameUtil.context());
-        boolean bShowRelaxed = (getApplication().wayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY);
+        boolean bShowRelaxed = (prefWayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY);
 
         GNode gStart = source.getApproachNode();
         GNode gEnd = target.getApproachNode();
@@ -506,7 +510,7 @@ public class MSRouting extends MGMicroService {
 
     public Control[] getMenuRouteControls(){
         return new Control[]{
-                new RouteOnOffControl(),
+                new RouteOnOffControl(this),
                 new RouteOptimizeControl(this),
                 new RouteExportControl(this)};
 
@@ -517,7 +521,7 @@ public class MSRouting extends MGMicroService {
     private void checkApproachViews(){
         WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
 
-        boolean visibility = ((getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_APPROACHES_VISIBILITY) && (getApplication().wayDetails.getValue()));
+        boolean visibility = ((getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_APPROACHES_VISIBILITY) && (prefWayDetails.getValue()));
 
         for (MultiPointView approachView : approachViewMap.values()){
             unregister(approachView,false);
@@ -560,8 +564,8 @@ public class MSRouting extends MGMicroService {
 
         @Override
         public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
-            if (!getApplication().editMarkerTrack.getValue() ) return false;
-            if (!getApplication().showRouting.getValue() ) return false;
+            if (!prefEditMarkerTrack.getValue()) return false;
+            if (!prefShowRouting.getValue()) return false;
 
             WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
             if (mtl != null){

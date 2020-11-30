@@ -23,6 +23,7 @@ import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogSegment;
+import mg.mapviewer.util.pref.MGPref;
 
 public class MSRemainings extends MGMicroService {
 
@@ -31,6 +32,7 @@ public class MSRemainings extends MGMicroService {
         super(mmActivity);
     }
 
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
     private boolean bReverseRemainings = false;
 
    @Override
@@ -109,7 +111,7 @@ public class MSRemainings extends MGMicroService {
             }
             if (drawableId == 0) {
                 PointModel lp = getApplication().lastPositionsObservable.lastGpsPoint;
-                if (getApplication().gpsOn.getValue() && (lp != null)) {
+                if (prefGps.getValue() && (lp != null)) {
                     TrackLogRefApproach ref1 = selectedTrackLog.getBestDistance(lp);
                     if (ref1 != null) {
                         dist = selectedTrackLog.getRemainingDistance(ref1) ;

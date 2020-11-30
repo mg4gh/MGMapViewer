@@ -18,35 +18,30 @@ import android.util.Log;
 
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.util.LatLongUtils;
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.layer.overlay.Circle;
-import org.mapsforge.map.layer.overlay.FixedPixelCircle;
-import org.mapsforge.map.layer.overlay.Polyline;
 
 
 import java.util.Observable;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMapLayerFactory;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
-import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.MultiPointModelImpl;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
-import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.MultiPointView;
 
-public class MSMotion extends MGMicroService {
+public class MSBeeline extends MGMicroService {
 
     public static final Paint PAINT_BLACK_STROKE = CC.getStrokePaint(R.color.BLACK, 2);
 
-    public MSMotion(MGMapActivity mmActivity) {
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+
+    public MSBeeline(MGMapActivity mmActivity) {
         super(mmActivity);
     }
 
@@ -78,7 +73,7 @@ public class MSMotion extends MGMicroService {
             @Override
             public void run() {
                 PointModel lp = getApplication().lastPositionsObservable.lastGpsPoint;
-                if (getApplication().gpsOn.getValue() && (lp != null)){
+                if (prefGps.getValue() && (lp != null)){
                     showHidePositionToCenter(lp);
                 } else {
                     showHidePositionToCenter(null);

@@ -14,11 +14,16 @@
  */
 package mg.mapviewer.graph;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.TreeSet;
 
+import mg.mapviewer.MGMapApplication;
+import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
+import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 
 /**

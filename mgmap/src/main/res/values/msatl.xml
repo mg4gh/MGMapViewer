@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="MSATL_pref_stlGl_key">MSATL.stlGl</string>
+    <string name="MSATL_pref_stlGl_title">Selected track with gain/loss</string>
+    <string name="MSATL_pref_stlGl_desc">Visualize the selected track with colors based on gain/loss."</string>
+</resources>

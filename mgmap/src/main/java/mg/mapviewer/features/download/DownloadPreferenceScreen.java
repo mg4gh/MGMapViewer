@@ -1,4 +1,4 @@
-package mg.mapviewer.settings;
+package mg.mapviewer.features.download;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import mg.mapviewer.BuildConfig;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
+import mg.mapviewer.settings.MGPreferenceScreen;
 import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;

@@ -16,6 +16,8 @@ package mg.mapviewer.util;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.TextView;
 
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
@@ -24,9 +26,12 @@ import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.IMapViewPosition;
 
+import mg.mapviewer.R;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
+import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.PrefTextView;
 
 /**
  * Utility for functionality related to the mapsforge MapView.
@@ -35,8 +40,8 @@ public class MapViewUtility {
 
     public static final float DEFAULT_TRACK_WIDTH = 4;
 
-    private Context context;
-    private MapView mapView;
+    final private Context context;
+    final private MapView mapView;
 
     public MapViewUtility(Context context, MapView mapView){
         this.context = context;
@@ -98,7 +103,30 @@ public class MapViewUtility {
 
     public void setMapViewPosition(PointModel pm){
         IMapViewPosition imvp = this.mapView.getModel().mapViewPosition;
-//        byte zoom = imvp.getZoomLevel();
         imvp.setCenter(new LatLong(pm.getLat(), pm.getLon()));
+    }
+
+    public void initQuickControl(PrefTextView ptv, String info){
+        if (info.toLowerCase().endsWith("in")){
+            ptv.setPrefData(new MGPref[]{},
+                    new int[]{},
+                    new int[]{R.drawable.zoom_in});
+            ptv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mapView.getModel().mapViewPosition.zoomIn();
+                }
+            });
+        } else if (info.toLowerCase().endsWith("out")){
+            ptv.setPrefData(new MGPref[]{},
+                    new int[]{},
+                    new int[]{R.drawable.zoom_out});
+            ptv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mapView.getModel().mapViewPosition.zoomOut();
+                }
+            });
+        }
     }
 }

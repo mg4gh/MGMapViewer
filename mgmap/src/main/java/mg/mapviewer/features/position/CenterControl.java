@@ -12,40 +12,30 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mapviewer.control;
+package mg.mapviewer.features.position;
 
 import android.view.View;
 
-import mg.mapviewer.MGMapActivity;
-import mg.mapviewer.MGMapApplication;
+
 import mg.mapviewer.R;
-import mg.mapviewer.features.routing.MSRouting;
-import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.util.pref.MGPref;
 
-public class GpsControl extends Control {
+public class CenterControl extends Control {
 
-    public GpsControl(){
+    private final MGPref<Boolean> prefCenter = MGPref.get(R.string.MSPosition_prev_Center, true);
+
+    public CenterControl(){
         super(true);
     }
 
     public void onClick(View v) {
         super.onClick(v);
-        MGMapApplication application = controlView.getApplication();
-        MGMapActivity activity = controlView.getActivity();
-
-        application.gpsOn.toggle();
-        activity.triggerTrackLoggerService();
-        application.lastPositionsObservable.changed();
+        prefCenter.toggle();
     }
 
     @Override
     public void onPrepare(View v) {
-        boolean bGps = controlView.getApplication().gpsOn.getValue();
-        setText(v, controlView.rstring(bGps? R.string.btGpsOff:R.string.btGpsOn) );
-
-        RecordingTrackLog rtl = controlView.getApplication().recordingTrackLogObservable.getTrackLog();
-        v.setEnabled( (rtl == null) || (!rtl.isTrackRecording()) );
+        setText(v, controlView.rstring(prefCenter.getValue()? mg.mapviewer.R.string.btCenterOff:mg.mapviewer.R.string.btCenterOn) );
     }
-
 }

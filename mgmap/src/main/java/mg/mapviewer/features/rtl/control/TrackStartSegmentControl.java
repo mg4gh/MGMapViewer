@@ -7,8 +7,11 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.util.pref.MGPref;
 
 public class TrackStartSegmentControl extends Control {
+
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
     public TrackStartSegmentControl(){
         super(true);
@@ -20,17 +23,10 @@ public class TrackStartSegmentControl extends Control {
         MGMapActivity activity = controlView.getActivity();
 
         long timestamp = System.currentTimeMillis();
-        RecordingTrackLog rtl = null;
-//        Intent intent = null;
-
-        rtl = application.recordingTrackLogObservable.getTrackLog();
+        RecordingTrackLog rtl = application.recordingTrackLogObservable.getTrackLog();
         rtl.startSegment(timestamp);
-        application.gpsOn.setValue(true);
-
+        prefGps.setValue(true);
         activity.triggerTrackLoggerService();
-//        intent = new Intent(activity, TrackLoggerService.class);
-//
-//        activity.startForegroundService(intent);
     }
 
     @Override

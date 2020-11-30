@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="MSRouting_qc_RoutingHint">MSRouting.RoutingHint</string>
+    <string name="MSRouting_bt_ShowRouting">MSRouting.ShowRouting</string>
+
+
+</resources>

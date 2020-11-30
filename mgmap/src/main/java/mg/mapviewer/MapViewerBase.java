@@ -16,10 +16,8 @@ package mg.mapviewer;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import org.mapsforge.map.android.util.AndroidPreferences;
@@ -69,12 +67,6 @@ public abstract class MapViewerBase extends Activity implements SharedPreference
         this.tileCaches.add(tileCache);
     }
 
-    protected void createControls() {
-        setMapScaleBar();
-        mapView.getModel().displayModel.setMaxTextWidthFactor(Float.valueOf(sharedPreferences.getString(getResources().getString(R.string.preferences_textwidth_key), "0.7")));
-    }
-
-
 
     protected static final byte ZOOM_LEVEL_MIN = 1;
     protected static final byte ZOOM_LEVEL_MAX = 24;
@@ -86,6 +78,7 @@ public abstract class MapViewerBase extends Activity implements SharedPreference
         mapView.setClickable(true);
         mapView.getMapScaleBar().setVisible(true);
         mapView.setBuiltInZoomControls(false);
+        setMapScaleBar();
     }
 
 

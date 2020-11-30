@@ -9,11 +9,11 @@ import mg.mapviewer.MGMapApplication;
 public class ExtendedClickListener implements View.OnClickListener {
 
     private static Handler timer = new Handler();
-    private long doubleClickTimeout = 200;
+    protected long doubleClickTimeout = 200;
     private class TTSingle implements Runnable{
         @Override
         public void run() {
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" single");
+//            Log.i(MGMapApplication.LABEL, NameUtil.context()+" single");
             ttSingle = null;
             onSingleClick(view);
         }

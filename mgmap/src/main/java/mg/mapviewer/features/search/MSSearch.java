@@ -38,7 +38,9 @@ import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.MVLayer;
+import mg.mapviewer.view.PrefTextView;
 
 public class MSSearch extends MGMicroService {
 
@@ -46,11 +48,15 @@ public class MSSearch extends MGMicroService {
     private SearchProvider searchProvider = null;
     private MSSControlLayer msscl = null; // feature control layer to manage feature specific events
 
+    private final MGPref<Boolean> prefSearchOn = MGPref.get(R.string.MSSearch_qc_searchOn, false);
+    private MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
+
     private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
 
 
     public MSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
+        prefSearchOn.setValue(false);
 
         searchView = new SearchView(mmActivity.getApplicationContext(), this);
         searchView.init(mmActivity);
@@ -84,19 +90,28 @@ public class MSSearch extends MGMicroService {
     }
 
     @Override
+    public void initQuickControl(PrefTextView ptv, String info){
+        ptv.setPrefData(new MGPref[]{prefSearchOn},
+                new int[]{},
+                new int[]{R.drawable.search,R.drawable.search});
+    }
+
+    @Override
     protected void start() {
-        getApplication().searchOn.addObserver(refreshObserver);
-        doRefresh();
+        super.start();
+        prefSearchOn.addObserver(refreshObserver);
+        refreshObserver.onChange();
     }
 
     @Override
     protected void stop() {
-        getApplication().searchOn.deleteObserver(refreshObserver);
+        super.stop();
+        prefSearchOn.deleteObserver(refreshObserver);
     }
 
     @Override
     protected void doRefresh() {
-        boolean visibility = getApplication().searchOn.getValue();
+        boolean visibility = prefSearchOn.getValue();
         changeVisibility(visibility);
         getControlView().setDashboardVisibility(!visibility);
     }
@@ -208,6 +223,6 @@ public class MSSearch extends MGMicroService {
     }
 
     private void checkFullscreen(){
-        getApplication().fullscreen.changed();
+        prefFullscreen.onChange();
     }
 }

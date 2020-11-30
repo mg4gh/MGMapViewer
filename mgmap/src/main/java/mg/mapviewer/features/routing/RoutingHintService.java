@@ -1,6 +1,5 @@
 package mg.mapviewer.features.routing;
 
-import android.content.Context;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -9,46 +8,67 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
-import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.R;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogSegment;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
+import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.PrefTextView;
 
 public class RoutingHintService {
 
     private static final int THRESHOLD_FAR = 200;
     private static final int THRESHOLD_KURS = 100;
+    private static final int TT_REFRESH_TIME = 150;
+
+    private static RoutingHintService instance;
+    public static RoutingHintService getInstance(){
+        return instance;
+    }
 
     private enum ServiceState { OFF , INIT, ON };
+    private final MGPref<Boolean> prefRoutingHints = MGPref.get(R.string.MSRouting_qc_RoutingHint, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
-//    private boolean running = false;
-//    private PointModel lastPos = null;
-//    private MSRouting msRouting = null;
+    public void initQuickControl(PrefTextView ptv, String info) {
+        ptv.appendPrefData(new MGPref[]{prefRoutingHints},
+                new int[]{},
+                new int[]{R.drawable.mtlr3, R.drawable.mtlr4});
+    }
+
     private int  mediumAwayCnt = 0;
     private PointModel lastHintPoint = null;
     private boolean lastHintClose = false;
 
-    private MGMapApplication application;
-    private Handler timer;
-    private int ttRefreshTime = 150;
+    private final MGMapApplication application;
+    private final Handler timer;
     private ServiceState serviceState = ServiceState.OFF;
     private TextToSpeech tts = null;
 
     public RoutingHintService(MGMapApplication application){
+        if (instance == null){
+            instance = this;
+        } else {
+            String error = "Only one Instance allowed";
+            Log.e(MGMapApplication.LABEL, NameUtil.context()+ error);
+            throw new RuntimeException(error);
+        }
         this.application = application;
         this.timer = new Handler();
-        application.routingHints.addObserver(routingHintObserver);
+        prefRoutingHints.setValue(false);
+        prefRoutingHints.addObserver(new RoutingHintObserver());
     }
 
-    public Observer routingHintObserver = new Observer() {
+    public class RoutingHintObserver implements Observer {
+
         @Override
         public void update(Observable o, Object arg) {
-            if (application.routingHints.getValue()){
+
+            if (prefRoutingHints.getValue()){
                 if (serviceState == ServiceState.OFF){
                     serviceState = ServiceState.INIT;
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech start");
@@ -76,14 +96,17 @@ public class RoutingHintService {
                     }
                 }
             }
+
+
         }
-    };
+    }
+
 
     public Observer locationObserver = new Observer() {
         @Override
         public void update(Observable o, Object arg) {
             timer.removeCallbacks(ttRefresh);
-            timer.postDelayed(ttRefresh,ttRefreshTime);
+            timer.postDelayed(ttRefresh, TT_REFRESH_TIME);
         }
     };
 
@@ -105,16 +128,11 @@ public class RoutingHintService {
             TrackLog routeTrackLog = msRouting.routeTrackLog;
             if (routeTrackLog == null) return;
 
-            if ((tts != null) && (serviceState == ServiceState.ON) && application.gpsOn.getValue()){
+            if ((tts != null) && (serviceState == ServiceState.ON) && prefGps.getValue()){
                 PointModel last1Gps = application.lastPositionsObservable.lastGpsPoint;
-    //            PointModel last2Gps = application.lastPositionsObservable.secondLastGpsPoint;
 
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" lastGps="+last1Gps
-//                        +" secondLastGpsPoint="+last2Gps
-                );
-                if ((last1Gps != null)
-//                        && (last2Gps != null) && (PointModelUtil.compareTo(last1Gps,last2Gps) !=0)
-                    ) { // have a new position to handle
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" lastGps="+last1Gps);
+                if (last1Gps != null) { // have a new position to handle
                     TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(last1Gps, THRESHOLD_FAR);
                     if ((bestMatch != null)){
                         if (bestMatch.getDistance() < PointModelUtil.getCloseThreshold()){

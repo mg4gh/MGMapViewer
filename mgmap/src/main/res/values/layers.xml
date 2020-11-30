@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Layers_pref_chooseMap_title">Select map layers</string>
+    <string name="Layers_pref_chooseMap_summary">Define content for map layers 1..5</string>
+    <string name="Layers_pref_chooseMap1_key">SelectMap1</string>
+    <string name="Layers_pref_chooseMap1_title">Select map layer 1 (Background)</string>
+    <string name="Layers_pref_chooseMap2_key">SelectMap2</string>
+    <string name="Layers_pref_chooseMap2_title">Select map layer 2 </string>
+    <string name="Layers_pref_chooseMap3_key">SelectMap3</string>
+    <string name="Layers_pref_chooseMap3_title">Select map layer 3 </string>
+    <string name="Layers_pref_chooseMap4_key">SelectMap4</string>
+    <string name="Layers_pref_chooseMap4_title">Select map layer 4 </string>
+    <string name="Layers_pref_chooseMap5_key">SelectMap5</string>
+    <string name="Layers_pref_chooseMap5_title">Select map layer 5 (Foreground)</string>
+
+    <string name="Layers_qc_showAlphaSlider">Layers.showAlphaSlider</string>
+</resources>

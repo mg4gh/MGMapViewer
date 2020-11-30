@@ -90,23 +90,31 @@ public class GGraphTile extends GGraph {
             //all highwas are in the map ... try to correct data ...
             for (int iIdx=0; iIdx<graph.nodes.size(); iIdx++){
                 GNode iNode = graph.nodes.get(iIdx);
+                if (iNode.countNeighbours() != 1) continue; // connect only end points
                 for (int nIdx=iIdx+1; nIdx<graph.nodes.size(); nIdx++ ){
                     GNode nNode = graph.nodes.get(nIdx);
                     if (iNode.laMdDiff(nNode) >= threshold) break; // go to next iIdx
                     if ((iNode.laMdDiff(nNode)+iNode.loMdDiff(nNode)) >= threshold ) continue; // goto next mIdx
 
-//                  This doesn't work well for routing hints
+//This doesn't work well for routing hints
 //                    graph.addSegment(iNode, nNode);
 
+//And this didn't work too - removes the resulting point from tile clip process
 //                  // Try to simplify the graph by removing node nNode
                     // iterate over al neighbours from nNode
-                    GNeighbour nextNeighbour = nNode.getNeighbour();
-                    while (nextNeighbour.getNextNeighbour() != null) {
-                        nextNeighbour = nextNeighbour.getNextNeighbour();
-                        // remove nNode as a Neighbour
-                        nextNeighbour.getNeighbourNode().removeNeighbourNode(nNode);
-                        graph.addSegment(iNode, nextNeighbour.getNeighbourNode());
-                    }
+//                    GNeighbour nextNeighbour = nNode.getNeighbour();
+//                    while (nextNeighbour.getNextNeighbour() != null) {
+//                        nextNeighbour = nextNeighbour.getNextNeighbour();
+//                        // remove nNode as a Neighbour
+//                        nextNeighbour.getNeighbourNode().removeNeighbourNode(nNode);
+//                        graph.addSegment(iNode, nextNeighbour.getNeighbourNode());
+//                    }
+
+                    if (nNode.countNeighbours() != 1) continue; // connect only end points
+                    // Third solution approach: connect only point with exactly 1 neighbour
+                    // Therefore this shouldn't be a Problem for routing hints, since both connected points have now 2 neighbours - so they are no routing points
+                    graph.addSegment(iNode, nNode);
+
                 }
             }
         }

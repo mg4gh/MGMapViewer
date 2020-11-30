@@ -14,15 +14,7 @@
  */
 package mg.mapviewer.features.marker;
 
-import android.content.SharedPreferences;
 import android.util.Log;
-
-import org.mapsforge.core.graphics.Canvas;
-import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.Point;
-import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.layer.Layer;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
@@ -38,10 +30,8 @@ import java.util.TimerTask;
 import mg.mapviewer.R;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
-import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogPoint;
-import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogSegment;
 import mg.mapviewer.model.WriteablePointModel;
@@ -51,23 +41,36 @@ import mg.mapviewer.util.Assert;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.MVLayer;
+import mg.mapviewer.view.PrefTextView;
 
 public class MSMarker extends MGMicroService {
+
+    private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
+    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
+    private final MGPref<Boolean> prefShowMtl = MGPref.get(R.string.MSMarker_pref_showMtl_key, false);
+    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
 
     MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
 
     public MSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
+        editMarkerTrackObserver = new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                checkStartStopMCL();
+            }
+        };
     }
 
-    private Observer editMarkerTrackObserver = null;
+    private final Observer editMarkerTrackObserver;
     public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
     private TimerTask ttHide = new TimerTask() {
         @Override
         public void run() {
-            getApplication().editMarkerTrack.setValue(false);
+            prefEditMarkerTrack.setValue(false);
         }
     };
     long ttHideTime = 15000;
@@ -76,9 +79,19 @@ public class MSMarker extends MGMicroService {
         getTimer().postDelayed(ttHide,ttHideTime);
     }
 
+    @Override
+    public void initQuickControl(PrefTextView ptv, String info) {
+        ptv.setPrefData(new MGPref[]{prefEditMarkerTrack},
+                new int[]{},
+                new int[]{R.drawable.mtlr, R.drawable.mtlr2});
+    }
 
     @Override
     protected void start() {
+        super.start();
+        prefEditMarkerTrack.setValue(false);
+        prefEditMarkerTrack.addObserver(editMarkerTrackObserver);
+
         markerTrackLogObservable = getApplication().markerTrackLogObservable;
         WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
         if (mtl != null){
@@ -87,22 +100,13 @@ public class MSMarker extends MGMicroService {
         markerTrackLogObservable.addObserver(refreshObserver);
         getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
         ttRefreshTime = 20;
-
-        checkStartStopMCL();
-        editMarkerTrackObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                checkStartStopMCL();
-            }
-        };
-        getApplication().editMarkerTrack.addObserver(editMarkerTrackObserver);
     }
 
     @Override
     protected void stop() {
         markerTrackLogObservable.deleteObserver(refreshObserver);
         getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
-        getApplication().editMarkerTrack.deleteObserver(editMarkerTrackObserver);
+        prefEditMarkerTrack.deleteObserver(editMarkerTrackObserver);
         unregisterClass(MarkerControlLayer.class);
     }
 
@@ -114,7 +118,7 @@ public class MSMarker extends MGMicroService {
 
 
     private void checkStartStopMCL(){
-        if (getApplication().editMarkerTrack.getValue()){
+        if (prefEditMarkerTrack.getValue()){
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             if (mtl == null){
                 initMarkerTrackLog();
@@ -166,7 +170,7 @@ public class MSMarker extends MGMicroService {
         if (!msLayers.isEmpty()){
             unregisterAll();
         }
-        if ((mtl != null) && (getApplication().showMarkerTrack.getValue())){
+        if ((mtl != null) && (prefShowMtl.getValue())){
             for (TrackLogSegment segment : mtl.getTrackLogSegments()){
                 MarkerTrackView mtv = new MarkerTrackView(segment);
                 register(mtv);
@@ -302,14 +306,9 @@ public class MSMarker extends MGMicroService {
     }
 
     private void adaptAutoSettings(boolean smallMtl){
-        SharedPreferences prefs = getSharedPreferences();
-        if (prefs.getBoolean(getResources().getString(R.string.preferences_mkr_auto_key),true)){
-            prefs.edit().
-                    putBoolean(getResources().getString(R.string.preferences_dev_mtl_key), !smallMtl).
-                    putBoolean(getResources().getString(R.string.preferences_dev_snap2way_key), smallMtl).
-                    apply();
-            getApplication().showMarkerTrack.setValue(!smallMtl);
-            getApplication().snapMarkerToWay.setValue(smallMtl);
+        if (prefAutoMarkerSetting.getValue()){
+            prefShowMtl.setValue(!smallMtl);
+            prefSnap2Way.setValue(smallMtl);
         }
     }
 }

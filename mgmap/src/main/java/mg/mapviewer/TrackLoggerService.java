@@ -32,6 +32,7 @@ import androidx.core.app.NotificationCompat;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.util.pref.MGPref;
 
 /**
  * Android Service that coordinates gps and barometer access
@@ -45,6 +46,7 @@ public class TrackLoggerService extends Service {
     private BarometerListener barometerListener = null;
     private boolean active = false;
     private Notification notification = null;
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
     public static void setPressureAlt(TrackLogPoint lp){
         if (lp.getPressure() != PointModel.NO_PRES){
@@ -85,7 +87,7 @@ public class TrackLoggerService extends Service {
 
         application = (MGMapApplication)getApplication();
 
-        boolean shouldBeActive = application.gpsOn.getValue();
+        boolean shouldBeActive = prefGps.getValue();
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" acitve="+active+" shouldBeActive="+shouldBeActive);
         if (!active && shouldBeActive){
             active = true;

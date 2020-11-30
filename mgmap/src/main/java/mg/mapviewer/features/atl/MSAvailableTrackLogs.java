@@ -33,6 +33,7 @@ import mg.mapviewer.util.Assert;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.MetaDataUtil;
+import mg.mapviewer.util.pref.MGPref;
 
 public class MSAvailableTrackLogs extends MGMicroService {
 
@@ -40,6 +41,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
     private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.BLUE, getMapViewUtility().getTrackWidth());
     private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
+    private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.MSATL_pref_stlGl_key, true);
 
     public MSAvailableTrackLogs(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -78,7 +80,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
         TrackLog trackLog = available.getSelectedTrackLogRef().getTrackLog();
         if (trackLog!= null){
             Assert.check(available.getAvailableTrackLogs().contains(trackLog));
-            if (getApplication().stlWithGL.getValue()){
+            if (prefStlGl.getValue()){
                 showTrack(trackLog, PAINT_STROKE_STL_GL, true);
             } else {
                 showTrack(trackLog, PAINT_STROKE_STL, false);

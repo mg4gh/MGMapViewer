@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="url_doc_main">https://mg4gh.github.io/MGMapViewer/index.html</string>
+    <string name="url_oam_dl">https://www.openandromaps.org/downloads</string>
+    <string name="url_oam_dl_eu">https://www.openandromaps.org/downloads/europa</string>
+    <string name="url_oam_dl_de">https://www.openandromaps.org/downloads/deutschland</string>
+    <string name="url_oam_th_el">https://www.openandromaps.org/kartenlegende/elevation-hike-theme</string>
+    <string name="url_github_apk_dir">https://github.com/mg4gh/MGMapViewer/tree/master/apk</string>
+    <string name="url_github_apk_latest">https://github.com/mg4gh/MGMapViewer/raw/master/apk/</string>
+
+    <string name="preferences_screen_download">Download</string>
+    <string name="preferences_screen_desc_download">Download Maps and Software</string>
+
+    <string name="preferences_dl_maps_title">Download Maps from openandromaps</string>
+    <string name="preferences_dl_maps_desc">Download of maps form www.openandromaps.org. Select the map you want to download, open the \"+\" in front of the name and finally
+        select the entry \"Android mf-V4-map\" and click on the button \"Install others\"
+    </string>
+
+    <string name="preferences_dl_maps_wd_key">DldMapsKey</string>
+    <string name="preferences_dl_maps_wd_title">World</string>
+    <string name="preferences_dl_maps_wd_desc">Download Maps from world</string>
+
+    <string name="preferences_dl_maps_eu_key">DldMapsEUKey</string>
+    <string name="preferences_dl_maps_eu_title">Europa</string>
+    <string name="preferences_dl_maps_eu_desc">Download a european map</string>
+
+    <string name="preferences_dl_maps_de_key">DldMapsDEKey</string>
+    <string name="preferences_dl_maps_de_title">Germany</string>
+    <string name="preferences_dl_maps_de_desc">Download map for germany</string>
+
+    <string name="preferences_dl_theme_title">Download Theme</string>
+    <string name="preferences_dl_theme_desc">Go to the elevate 4 theme section and
+        select the following button: \"Standard Karten App\"
+    </string>
+    <string name="preferences_dl_theme_el_key">DldThemeElKey</string>
+    <string name="preferences_dl_theme_el_title">Download Elevate Theme</string>
+    <string name="preferences_dl_theme_el_desc">Download Elevate 4 Theme</string>
+
+    <string name="preferences_dl_sw_title">Download Software</string>
+    <string name="preferences_dl_sw_desc">Download new apk from https://github.com/mg4gh/MGMapViewer</string>
+
+    <string name="preferences_dl_sw_latest_key">DldSWLatestKey</string>
+    <string name="preferences_dl_sw_latest_title">Download and Install latest apk</string>
+    <string name="preferences_dl_sw_latest_desc">Download and Install the latest apk from https://github.com/mg4gh/MGMapViewer</string>
+
+    <string name="preferences_dl_sw_other_key">DldSWOtherKey</string>
+    <string name="preferences_dl_sw_other_title">Download other apk</string>
+    <string name="preferences_dl_sw_other_desc">Download the other apk from https://github.com/mg4gh/MGMapViewer</string>
+
+</resources>

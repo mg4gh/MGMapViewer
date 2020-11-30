@@ -17,16 +17,12 @@ package mg.mapviewer.features.bb;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import org.mapsforge.core.graphics.Canvas;
-import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.Point;
-
 import java.util.TimerTask;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
+import mg.mapviewer.R;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
@@ -35,9 +31,14 @@ import mg.mapviewer.model.WriteablePointModelImpl;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.MVLayer;
+import mg.mapviewer.view.PrefTextView;
 
 public class MSBB extends MGMicroService {
+
+    private final MGPref<Boolean> prefBboxOn = MGPref.get(R.string.MSBB_qc_bboxOn, false);
+    private final MGPref<Boolean> prefBboxCenter = MGPref.get(R.string.MSBB_qc_bboxCenter, true);
 
     private MSAvailableTrackLogs msAvailableTrackLogs;
     public MSBB(MGMapActivity mmActivity, MSAvailableTrackLogs msAvailableTrackLogs) {
@@ -47,11 +48,10 @@ public class MSBB extends MGMicroService {
 
     private WriteablePointModel p1 = null;
     private WriteablePointModel p2 = null;
-    public boolean initFromScreen = false;
     private TimerTask ttHide = new TimerTask() {
         @Override
         public void run() {
-            getApplication().bboxOn.setValue(false);
+            prefBboxOn.setValue(false);
         }
     };
     long ttHideTime = 15000;
@@ -61,13 +61,25 @@ public class MSBB extends MGMicroService {
     }
 
     @Override
+    public void initQuickControl(PrefTextView ptv, String info){
+        ptv.setPrefData(new MGPref[]{prefBboxOn,prefBboxCenter},
+                new int[]{},
+                new int[]{R.drawable.bbox,R.drawable.bbox2,R.drawable.bbox,R.drawable.bbox2});
+    }
+
+    @Override
     protected void start() {
-        getApplication().bboxOn.addObserver(refreshObserver);
+        super.start();
+        prefBboxOn.addObserver(refreshObserver);
+        prefBboxCenter.addObserver(refreshObserver);
+        prefBboxOn.setValue(false);
     }
 
     @Override
     protected void stop() {
-        getApplication().bboxOn.deleteObserver(refreshObserver);
+        super.stop();
+        prefBboxOn.deleteObserver(refreshObserver);
+        prefBboxCenter.deleteObserver(refreshObserver);
     }
 
     public void triggerRefresh(){
@@ -79,19 +91,21 @@ public class MSBB extends MGMicroService {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                if (getApplication().bboxOn.getValue() ){
+                if (prefBboxCenter.getValue()){
+                    prefBboxOn.setValue(true);
+                }
+                if (prefBboxOn.getValue()){
                     if (bbcl == null){
                         bbcl = new BBControlLayer();
                         register(bbcl, false);
-                        refreshObserver.onChange();
-                    } else {
-                        if (initFromScreen){
-                            bbcl.initFromScreen();
-                            refreshObserver.onChange();
+                        triggerRefresh();
+                    } else if (prefBboxCenter.getValue()){
+                        if (bbcl.initFromScreen()){
+                            prefBboxCenter.setValue(false);
+                        } else {
+                            triggerRefresh();
                         }
                     }
-
                 } else {
                     hideBB();
                 }
@@ -161,17 +175,17 @@ public class MSBB extends MGMicroService {
         }
 
 
-        public void initFromScreen(){
-            if (topLeftPoint == null) return;
+        public boolean initFromScreen(){
+            if (topLeftPoint == null) return false;
             DisplayMetrics dm = getApplication().getApplicationContext().getResources().getDisplayMetrics();
             double x1 = dm.widthPixels / 3.0;
             double x2 = x1 * 2;
-            double y1 = (dm.heightPixels / 2) - (x1 / 2);
-            double y2 = (dm.heightPixels / 2) + (x1 / 2);
+            double y1 = (dm.heightPixels / 2.0) - (x1 / 2);
+            double y2 = (dm.heightPixels / 2.0) + (x1 / 2);
             p1 = new WriteablePointModelImpl(y2lat(y1),x2lon(x1));
             p2 = new WriteablePointModelImpl(y2lat(y2),x2lon(x2));
-            initFromScreen = false;
             changed();
+            return true;
         }
 
         @Override
@@ -190,7 +204,6 @@ public class MSBB extends MGMicroService {
 
     public void changed(){
         unregisterAll();
-//        getMapViewUtility().hideLayers(msLayers);
         if (p1 != null){
             register(new PointViewBB(p1));
         }
@@ -237,9 +250,6 @@ public class MSBB extends MGMicroService {
 
     boolean isLoadAllowed(){
         return ((p1 != null) && (p2 != null) && (bbcl!= null));
-    }
-    boolean isHideAllowed(){
-        return (bbcl != null);
     }
 
     public Control[] getMenuBBControls(){
