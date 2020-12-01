@@ -193,7 +193,9 @@ public class MSBB extends MGMicroService {
                 BBox bBox = new BBox().extend(p1).extend(p2);
                 Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
                 if (bBox.contains(pm)){
-                    msAvailableTrackLogs.loadFromBB(bBox);
+                    if (msAvailableTrackLogs.loadFromBB(bBox)){
+                        prefBboxOn.setValue(false);
+                    }
                     return true;
                 }
             }

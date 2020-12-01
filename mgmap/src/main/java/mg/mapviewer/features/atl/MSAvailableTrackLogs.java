@@ -142,7 +142,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
 
 
 
-    public void loadFromBB(BBox bBox2Load){
+    public boolean loadFromBB(BBox bBox2Load){
         boolean changed = false;
         BBox bBox2show = new BBox();
         if (bBox2Load != null){
@@ -158,6 +158,6 @@ public class MSAvailableTrackLogs extends MGMicroService {
 //                getMapViewUtility().zoomForBoundingBox(bBox2show);
             }
         }
-
+        return changed;
     }
 }
