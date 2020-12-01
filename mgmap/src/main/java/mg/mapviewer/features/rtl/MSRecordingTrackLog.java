@@ -14,6 +14,8 @@
  */
 package mg.mapviewer.features.rtl;
 
+import android.view.ViewGroup;
+
 import org.mapsforge.core.graphics.Paint;
 
 import mg.mapviewer.MGMapActivity;
@@ -31,8 +33,23 @@ public class MSRecordingTrackLog extends MGMicroService {
 
     private final Paint PAINT_STROKE_RTL = CC.getStrokePaint(R.color.RED, getMapViewUtility().getTrackWidth());
 
+    private ViewGroup dashboardRtl = null;
+    private ViewGroup dashboardRtls = null;
+
     public MSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);
+    }
+
+
+    @Override
+    public void initDashboard(ViewGroup dvg, String info) {
+        getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.RED100_A100);
+        if ("rtl".equals(info)) {
+            dashboardRtl = dvg;
+        }
+        if ("rtls".equals(info)) {
+            dashboardRtls = dvg;
+        }
     }
 
     @Override
@@ -65,15 +82,15 @@ public class MSRecordingTrackLog extends MGMicroService {
         unregisterAll();
         showTrack(rtl, PAINT_STROKE_RTL, false);
 
-        getControlView().showHideUpdateDashboard(true, R.id.rtl ,rtl.getTrackStatistic());
+        getControlView().setDashboardValue(true, dashboardRtl ,rtl.getTrackStatistic());
         int segIdx = rtl.getNumberOfSegments()-1;
-        getControlView().showHideUpdateDashboard(segIdx > 0, R.id.rtls,(segIdx>0)?rtl.getTrackLogSegment(segIdx).getStatistic():null);
+        getControlView().setDashboardValue(segIdx > 0, dashboardRtls,(segIdx>0)?rtl.getTrackLogSegment(segIdx).getStatistic():null);
     }
 
     private synchronized void hideRecordingTrackLog() {
         unregisterAll();
-        getControlView().showHideUpdateDashboard(false,R.id.rtl,null);
-        getControlView().showHideUpdateDashboard(false,R.id.rtls,null);
+        getControlView().setDashboardValue(false,dashboardRtl,null);
+        getControlView().setDashboardValue(false,dashboardRtls,null);
     }
 
     public Control[] getMenuTrackControls(){

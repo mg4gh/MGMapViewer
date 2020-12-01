@@ -14,6 +14,8 @@
  */
 package mg.mapviewer.features.atl;
 
+import android.view.ViewGroup;
+
 import org.mapsforge.core.graphics.Paint;
 
 import mg.mapviewer.MGMapActivity;
@@ -43,8 +45,22 @@ public class MSAvailableTrackLogs extends MGMicroService {
 
     private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.MSATL_pref_stlGl_key, true);
 
+    private ViewGroup dashboardStl = null;
+    private ViewGroup dashboardStls = null;
+
     public MSAvailableTrackLogs(MGMapActivity mmActivity) {
         super(mmActivity);
+    }
+
+    @Override
+    public void initDashboard(ViewGroup dvg, String info) {
+        getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.BLUE100_A100);
+        if ("stl".equals(info)) {
+            dashboardStl = dvg;
+        }
+        if ("stls".equals(info)) {
+            dashboardStls = dvg;
+        }
     }
 
     @Override
@@ -85,9 +101,10 @@ public class MSAvailableTrackLogs extends MGMicroService {
             } else {
                 showTrack(trackLog, PAINT_STROKE_STL, false);
             }
-            getControlView().showHideUpdateDashboard(true, R.id.stl ,trackLog.getTrackStatistic());
+            getControlView().setDashboardValue(true, dashboardStl ,trackLog.getTrackStatistic());
+//            getControlView().showHideUpdateDashboard(true, R.id.stl ,trackLog.getTrackStatistic());
             int segIdx = available.getSelectedTrackLogRef().getSegmentIdx();
-            getControlView().showHideUpdateDashboard(trackLog.getNumberOfSegments()>1, R.id.stls,(segIdx>=0)?trackLog.getTrackLogSegment(segIdx).getStatistic():null);
+            getControlView().setDashboardValue(trackLog.getNumberOfSegments()>1, dashboardStls,(segIdx>=0)?trackLog.getTrackLogSegment(segIdx).getStatistic():null);
             TrackLogRef ref = available.getSelectedTrackLogRef();
             if (ref instanceof TrackLogRefZoom) {
                 TrackLogRefZoom trackLogRefZoom = (TrackLogRefZoom) ref;
@@ -101,8 +118,8 @@ public class MSAvailableTrackLogs extends MGMicroService {
 
     private void hideAvailableTrackLogs(){
         unregisterAll();
-        getControlView().showHideUpdateDashboard(false,R.id.stl,null);
-        getControlView().showHideUpdateDashboard(false,R.id.stls,null);
+        getControlView().setDashboardValue(false,dashboardStl,null);
+        getControlView().setDashboardValue(false,dashboardStls,null);
     }
 
     public boolean selectCloseTrack(PointModel pmTap) {

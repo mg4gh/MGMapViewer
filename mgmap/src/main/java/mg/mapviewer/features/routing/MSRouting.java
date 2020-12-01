@@ -16,6 +16,7 @@ package mg.mapviewer.features.routing;
 
 
 import android.util.Log;
+import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
@@ -92,6 +93,7 @@ public class MSRouting extends MGMicroService {
     private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
+    private ViewGroup dashboardRoute = null;
 
     public MSRouting(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -99,6 +101,13 @@ public class MSRouting extends MGMicroService {
         routingLineRefProvider = new RoutingLineRefProvider();
         getApplication().getMS(MSMarker.class).lineRefProvider = routingLineRefProvider;
     }
+
+    @Override
+    public void initDashboard(ViewGroup dvg, String info) {
+        getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.PURPLE_A100);
+        dashboardRoute = dvg;
+    }
+
 
     @Override
     protected void start() {
@@ -137,7 +146,7 @@ public class MSRouting extends MGMicroService {
             @Override
             public void run() {
                 unregisterAll();
-                getControlView().showHideUpdateDashboard(false, R.id.route,null);
+                getControlView().setDashboardValue(false, dashboardRoute,null);
                 routeTrackLog = null;
             }
         });
@@ -268,7 +277,7 @@ public class MSRouting extends MGMicroService {
             showTrack(mtl, PAINT_ROUTE_STROKE2, false, 15, true);
         }
         calcRemainingStatistic(routeTrackLog);
-        getControlView().showHideUpdateDashboard(true, R.id.route, routeTrackLog.getTrackStatistic());
+        getControlView().setDashboardValue(true, dashboardRoute, routeTrackLog.getTrackStatistic());
     }
 
     private void calcRemainingStatistic(WriteableTrackLog routeTrackLog){

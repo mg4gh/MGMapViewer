@@ -23,6 +23,7 @@ import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogSegment;
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.PrefTextView;
 
@@ -46,7 +47,7 @@ public class MSRemainings extends MGMicroService {
     public void initStatusLine(PrefTextView ptv, String info) {
         if (info.equals("remain")){
             ptv.setPrefData(new MGPref[]{prefInterval, prefReverse}, new int[]{R.drawable.remaining, R.drawable.remaining3, R.drawable.remaining2, R.drawable.remaining3 });
-            ptv.setFormat(PrefTextView.FormatType.FORMAT_DISTANCE);
+            ptv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
             ptvRemain = ptv;
         }
     }

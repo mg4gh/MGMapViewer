@@ -17,7 +17,6 @@ package mg.mapviewer;
 import android.content.Context;
 
 import android.content.SharedPreferences;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -31,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -40,13 +40,10 @@ import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.TileLayer;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogStatistic;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.HintControl;
@@ -73,10 +70,12 @@ public class ControlView extends RelativeLayout {
     MGMapApplication application = null;
     MGMapActivity activity = null;
 
-    /** There are five dashboard entries, each with a specific semantic. This ordered list contains the viewIds of these five entries. */
-    ArrayList<Integer> dashboardKeys = new ArrayList<>();
-    /** Mapping of the viewIDs to the Dashboard entries. The Dashboard entry objects are kept here even if they are not visible. */
-    Map<Integer,ViewGroup> dashboardMap = new HashMap<>();
+//    /** There are five dashboard entries, each with a specific semantic. This ordered list contains the viewIds of these five entries. */
+//    ArrayList<Integer> dashboardKeys = new ArrayList<>();
+//    /** Mapping of the viewIDs to the Dashboard entries. The Dashboard entry objects are kept here even if they are not visible. */
+//    Map<Integer,ViewGroup> dashboardMap = new HashMap<>();
+
+    ArrayList<ViewGroup> dashboardEntries = new ArrayList<>();
     /** Parent of the dashboard entries. */
     ViewGroup dashboard;
     /** Reference to the MapView object - some controls change properties of the mapView */
@@ -98,7 +97,7 @@ public class ControlView extends RelativeLayout {
     HintControl hintControl = null;
 
     /** A Control object is an extension of a ViewOnClickListener. With this map it's easy to determine from the OnClickListener the corresponding View object. Furthermore this map provides a list of all menu and submenu views. */
-    Map<Control, View> controlMap = new HashMap<>();
+    Map<Control, View> menuControlMap = new HashMap<>();
 
     public ControlView(Context context) {
         super(context);
@@ -108,8 +107,24 @@ public class ControlView extends RelativeLayout {
     public ControlView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         this.context = context;
-
     }
+
+    public MGMapActivity getActivity(){
+        return activity;
+    }
+    public MGMapApplication getApplication(){
+        return application;
+    }
+
+    public String rstring(int id){
+        return getResources().getString(id);
+    }
+
+    private int convertDp(float dp){
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+    }
+
+
 
     public void init(final MGMapApplication application, final MGMapActivity activity){
         try {
@@ -127,16 +142,8 @@ public class ControlView extends RelativeLayout {
 
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
             dashboard = findViewById(R.id.dashboard);
-            dashboardKeys.clear();
-            while (dashboard.getChildCount() > 0){
-                ViewGroup entry = (ViewGroup) dashboard.getChildAt(0);
-                dashboardKeys.add(entry.getId());
-                dashboardMap.put(entry.getId(),entry);
-                for (int i=0; i<entry.getChildCount(); i++){
-                    entry.getChildAt(i).setOnClickListener(hintControl);
-                }
-                dashboard.removeViewAt(0);
-            }
+
+            controlComposer.composeDashboard(application, activity, this);
 
             controlComposer.composeMenu(application, activity, this);
             hideMenu();
@@ -154,28 +161,31 @@ public class ControlView extends RelativeLayout {
         }
     }
 
+// *************************************************************************************************
+// ********* Menu Button related stuff                                                    **********
+// *************************************************************************************************
 
-    void registerControl(View view, Control control){
+    void registerMenuControl(View view, Control control){
         control.setControlView(this);
-        controlMap.put(control, view);
+        menuControlMap.put(control, view);
         view.setOnClickListener(control);
     }
 
-    void registerSubmenu(ViewGroup menu, Control[] controls){
+    void registerSubmenuControls(ViewGroup menu, Control[] controls){
         if (menu.getChildCount() < controls.length){
             Log.e(MGMapApplication.LABEL, NameUtil.context() + " too much controls("+controls.length+") for menu("+menu.getChildCount()+")");
         }
         for (int idx=menu.getChildCount()-1; idx >= 0; idx--){
             if (idx < controls.length){
-                registerControl(menu.getChildAt(idx), controls[idx]);
+                registerMenuControl(menu.getChildAt(idx), controls[idx]);
             } else {
                 menu.removeViewAt(idx);
             }
         }
     }
 
-    void registerMenuControl(View view, final String name, final ViewGroup menu, Control[] controls){
-        registerSubmenu(menu, controls);
+    void registerMenuControls(View view, final String name, final ViewGroup menu, Control[] controls){
+        registerSubmenuControls(menu, controls);
         Control control = new Control(false){
             @Override
             public void onClick(View v) {
@@ -189,21 +199,21 @@ public class ControlView extends RelativeLayout {
                 setText(v, name);
             }
         };
-        registerControl(view, control);
+        registerMenuControl(view, control);
     }
 
     void disableMainMenuButtons(){
         for (int idx=0; idx<getChildCount(); idx++) {
             View chview = getChildAt(idx);
             if (chview instanceof Button) {
-                chview.setEnabled(false); // disable mainmenu entries by default
+                chview.setEnabled(false); // disable main menu entries by default
             }
         }
     }
 
     public void showMenu(ViewGroup parent){
-        for (Control control : controlMap.keySet()){
-            View view = controlMap.get(control);
+        for (Control control : menuControlMap.keySet()){
+            View view = menuControlMap.get(control);
             if (view.getParent() == parent){
                 view.setEnabled( true ); // default is enabled, might be reset in onPrepare
                 control.onPrepare(view);
@@ -214,24 +224,13 @@ public class ControlView extends RelativeLayout {
 
     public void hideMenu(){
         menuVisibility = false;
-        for (Control control : controlMap.keySet()){
-            View view = controlMap.get(control);
+        for (Control control : menuControlMap.keySet()){
+            View view = menuControlMap.get(control);
 
             if (view.getVisibility() == VISIBLE){
                 view.setVisibility( INVISIBLE );
             }
         }
-    }
-
-    public MGMapActivity getActivity(){
-        return activity;
-    }
-    public MGMapApplication getApplication(){
-        return application;
-    }
-
-    public String rstring(int id){
-        return getResources().getString(id);
     }
 
 
@@ -247,74 +246,108 @@ public class ControlView extends RelativeLayout {
 
 
     private Handler timer = new Handler();
-    final Runnable timerTaskHideButtons = new Runnable() {
+    final Runnable ttHideButtons = new Runnable() { // define timerTask to hide menu buttons
         @Override
         public void run() {
             hideMenu();
-            timer.removeCallbacks(timerTaskHideButtons);
+            timer.removeCallbacks(ttHideButtons);
         }
     };
     public void cancelTTHideButtons(){
-        timer.removeCallbacks(timerTaskHideButtons);
+        timer.removeCallbacks(ttHideButtons);
     }
     public void startTTHideButtons(long millis){
-        timer.removeCallbacks(timerTaskHideButtons);
-        timer.postDelayed(timerTaskHideButtons, millis);
+        timer.removeCallbacks(ttHideButtons);
+        timer.postDelayed(ttHideButtons, millis);
     }
 
-
-
-
-
+// *************************************************************************************************
+// ********* Dashboard related stuff                                                      **********
+// *************************************************************************************************
 
     public void setDashboardVisibility(boolean visibitity){
         dashboard.setVisibility(visibitity?VISIBLE:INVISIBLE);
     }
 
-    int getIndexForDashoardEntry(int dashboardId){
-        int idx = 0;
-        for (int key : dashboardKeys){
-            if (key == dashboardId){
-                return idx;
-            } else {
-                if (dashboardMap.get(key).getParent() != null){
-                    idx++;
-                }
-            }
-        }
-        RuntimeException t = new RuntimeException("unknown Dashboard ID "+dashboardId);
-        Log.e(MGMapApplication.LABEL, NameUtil.context(), t);
-        return -1;
+    public ViewGroup createDashboardEntry(){
+        TableRow tr = new TableRow(context);
+        TableLayout.LayoutParams llParms = new TableLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        tr.setLayoutParams(llParms);
+        return tr;
     }
 
-    public void showHideUpdateDashboard(boolean condition, int dashboardId, TrackLogStatistic statistic) {
-        ViewGroup dashboardEntry = dashboardMap.get(dashboardId);
-        if (dashboardEntry == null) return;
+    public PrefTextView createDashboardPTV(ViewGroup vgDashboard, float weight) {
+        PrefTextView ptv = new PrefTextView(context);
+        vgDashboard.addView(ptv);
 
-        if(condition && (statistic != null)){
-            TextView t0 = (TextView) dashboardEntry.getChildAt(0);
+        TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        int margin = convertDp(0.8f);
+        params.setMargins(margin,margin,margin,margin);
+        params.weight = weight;
+        ptv.setLayoutParams(params);
+
+        int padding = convertDp(2.0f);
+        ptv.setPadding(padding, padding, padding, padding);
+        int drawablePadding = convertDp(3.0f);
+        ptv.setCompoundDrawablePadding(drawablePadding);
+        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
+
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        ptv.setCompoundDrawables(drawable,null,null,null);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
+        ptv.setText("");
+        ptv.setLines(1);
+        ptv.setOnClickListener(hintControl);
+        return ptv;
+    }
+
+    public void setViewGroupColors(ViewGroup viewGroup, int textColorId, int bgColorId){
+        for (int idx=0; idx<viewGroup.getChildCount(); idx++){
+            if (viewGroup.getChildAt(idx) instanceof TextView) {
+                TextView tv = (TextView) viewGroup.getChildAt(idx);
+                tv.setTextColor(CC.getColor(textColorId));
+                tv.setBackgroundColor(CC.getColor(bgColorId));
+            }
+        }
+    }
+
+    private boolean setDashboradEntryVisibility(ViewGroup dashboardEntry, boolean shouldBeVisible, boolean isVisible){
+        int idx = 0;
+        if (shouldBeVisible && !isVisible){
+            for (ViewGroup entry : dashboardEntries){
+                if (entry == dashboardEntry){
+                    break;
+                } else {
+                    if (entry.getParent() != null){
+                        idx++;
+                    }
+                }
+            }
+            dashboard.addView(dashboardEntry, idx);
+        }
+        if (!shouldBeVisible && isVisible) {
+            dashboard.removeView(dashboardEntry);
+        }
+        return shouldBeVisible; // means finally it is visible
+    }
+
+    public void setDashboardValue(boolean condition, ViewGroup dashboardEntry, TrackLogStatistic statistic){
+        if (setDashboradEntryVisibility(dashboardEntry, condition && (statistic != null) , (dashboardEntry.getParent() != null))){
             String sIdx = "I="+statistic.getSegmentIdx();
             if (statistic.getSegmentIdx() == -1) sIdx = "All";
             if (statistic.getSegmentIdx() == -2) sIdx = "R";
-            t0.setText(sIdx);
-            TextView t1 = (TextView) dashboardEntry.getChildAt(1);
-            t1.setText(String.format(Locale.ENGLISH, "%.2fkm", statistic.getTotalLength()/1000));
-            TextView t2 = (TextView) dashboardEntry.getChildAt(2);
-            t2.setText(String.format(Locale.ENGLISH, "%.1fm", statistic.getGain()));
-            TextView t3 = (TextView) dashboardEntry.getChildAt(3);
-            t3.setText(String.format(Locale.ENGLISH, "%.1fm", statistic.getLoss()));
-            TextView t4 = (TextView) dashboardEntry.getChildAt(4);
-            t4.setText(String.format(Locale.ENGLISH, "%s", statistic.durationToString()));
-            if (dashboardEntry.getParent() == null){
-                dashboard.addView(dashboardEntry,getIndexForDashoardEntry(dashboardId));
-            }
-
-        } else {
-            if (dashboardEntry.getParent() != null) {
-                dashboard.removeView(dashboardEntry);
-            }
+//            String sIdx = ("I"+statistic.getSegmentIdx()).replaceFirst("I=-1","All").replaceFirst("I=-2","R");
+            ((PrefTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
+            ((PrefTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
+            ((PrefTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
+            ((PrefTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
+            ((PrefTextView) dashboardEntry.getChildAt(4)).setValue(statistic.duration);
         }
     }
+
+    // *************************************************************************************************
+    // ********* Alpha Slider related stuff                                                   **********
+    // *************************************************************************************************
 
     Map<String, SeekBar> mapSliders = new HashMap<>();
     Map<String, TextView> mapSliderNames = new HashMap<>();
@@ -378,13 +411,10 @@ public class ControlView extends RelativeLayout {
         }
     }
 
+    // *************************************************************************************************
+    // ********* Status line related stuff                                                    **********
+    // *************************************************************************************************
 
-
-    private int convertDp(float dp){
-         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
-    }
-
-    public static final String TIME_FORMAT = "";
     public PrefTextView setStatusLineLayout(PrefTextView ptv, float weight){
         TableRow.LayoutParams llParms = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
         int margin = convertDp(0.8f);
@@ -429,8 +459,6 @@ public class ControlView extends RelativeLayout {
             reworkStatusLine();
         }
     }
-
-
 
     void prepareStatusLine(){
         tr_states = activity.findViewById(R.id.tr_states);

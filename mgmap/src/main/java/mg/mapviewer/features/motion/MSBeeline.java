@@ -30,6 +30,7 @@ import mg.mapviewer.model.MultiPointModelImpl;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.util.CC;
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.pref.MGPref;
@@ -51,13 +52,13 @@ public class MSBeeline extends MGMicroService {
     @Override
     public void initStatusLine(PrefTextView ptv, String info) {
         if (info.equals("center")){
-            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.distance});
-            ptv.setFormat(PrefTextView.FormatType.FORMAT_DISTANCE);
+            ptv.setPrefData(null, new int[]{R.drawable.distance});
+            ptv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
             ptvCenter = ptv;
         }
         if (info.equals("zoom")){
-            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.zoom});
-            ptv.setFormat(PrefTextView.FormatType.FORMAT_INT);
+            ptv.setPrefData(null, new int[]{R.drawable.zoom});
+            ptv.setFormat(Formatter.FormatType.FORMAT_INT);
             ptvZoom = ptv;
         }
     }

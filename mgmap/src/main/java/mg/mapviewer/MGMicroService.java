@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.android.view.MapView;
@@ -84,6 +85,7 @@ public class MGMicroService {
 
     public void initQuickControl(PrefTextView ptv, String info){}
     public void initStatusLine(PrefTextView ptv, String info){}
+    public void initDashboard(ViewGroup dvg, String info){}
 
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL){
         showTrack(trackLog,paint,showGL,MultiPointView.POINT_RADIUS);

@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.PointModelUtil;
 
 
@@ -215,12 +216,13 @@ public class TrackLogStatistic {
     }
 
     public String durationToString(){
-        long seconds = duration/1000;
-        long minutes = seconds / 60;
-        long hours = minutes /60;
-        seconds -= minutes * 60;
-        minutes -= hours * 60;
-        return String.format(Locale.ENGLISH,"%d:%02d:%02d",hours,minutes,seconds);
+        return Formatter.format(Formatter.FormatType.FORMAT_DURATION, duration);
+//        long seconds = duration/1000;
+//        long minutes = seconds / 60;
+//        long hours = minutes /60;
+//        seconds -= minutes * 60;
+//        minutes -= hours * 60;
+//        return String.format(Locale.ENGLISH,"%d:%02d:%02d",hours,minutes,seconds);
     }
 
     @Override

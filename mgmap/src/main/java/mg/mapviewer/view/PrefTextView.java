@@ -21,13 +21,12 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.util.ArrayUtil;
 import mg.mapviewer.util.ExtendedClickListener;
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.pref.MGPref;
 
 public class PrefTextView extends AppCompatTextView implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private final SimpleDateFormat sdf2 = new SimpleDateFormat(" HH:mm", Locale.GERMANY);
-    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DAY, FORMAT_INT, FORMAT_HEIGHT};
 
     private static Handler timer = new Handler();
 
@@ -53,21 +52,22 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
 
     private MGPref<Boolean>[] prefs = null;
     private int[] drawableIds = null;
-    private FormatType formatType = null;
+    private Formatter.FormatType formatType = Formatter.FormatType.FORMAT_STRING;
 
     /**
      * Expect boolean Preferences.
      * @param prefs
      * @param drawableIds
      */
-    public void setPrefData(MGPref<Boolean>[] prefs, int[] drawableIds) {
-        this.prefs = prefs;
-        this.drawableIds = drawableIds;
+    public PrefTextView setPrefData(MGPref<Boolean>[] prefs, int[] drawableIds) {
+        this.prefs = (prefs==null)?new MGPref[]{}:prefs;
+        this.drawableIds = (drawableIds==null)?new int[]{}:drawableIds;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         createOCLs();
         onChange("init");
+        return this;
     }
 
     public void appendPrefData(MGPref<Boolean>[] prefs, int[] drawableIds) {
@@ -76,29 +76,13 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
         createOCLs();
     }
 
-    public void setFormat(FormatType formatType){
+    public PrefTextView setFormat(Formatter.FormatType formatType){
         this.formatType = formatType;
+        return this;
     }
 
     public void setValue(Object value){
-        String text = "";
-        if (formatType == FormatType.FORMAT_TIME){
-            long millis = (Long)value;
-            if (millis > 0){
-                text = sdf2.format(millis);
-            }
-        } else if (formatType == FormatType.FORMAT_INT){
-            int iValue = (Integer)value;
-            text = Integer.toString(iValue);
-        } else if (formatType == FormatType.FORMAT_DISTANCE){
-            double distance = (Double)value;
-            text = (distance==0)?"":String.format(Locale.ENGLISH, " %.2f km", distance / 1000.0);
-        } else if (formatType == FormatType.FORMAT_HEIGHT){
-            float height  = (Float)value;
-            text = (height == PointModel.NO_ELE)?"":String.format(Locale.ENGLISH," %.1f m",height);
-        }
-
-        setText(text);
+        setText( Formatter.format(formatType, value) );
         onChange("onSetValue");
     }
 
@@ -140,32 +124,33 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
     }
 
     private void onChange(String key){
-        String s =  "";
-        for (MGPref<?> pref : prefs){
-            s += " "+pref.toString();
-        }
-//        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+key+" "+getId()+s);
-        int idx = 0;
-        int cnt = 1;
-        for (MGPref<Boolean> pref : prefs){
-            if (pref.getValue()){
-                idx += cnt;
-            }
-            cnt *= 2;
-        }
-
-        Drawable dOld = getCompoundDrawables()[0];
-        if (dOld != null) {
-            if (idx<drawableIds.length){
-                Rect rect = getCompoundDrawables()[0].getBounds();
-                Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drawableIds[idx], getContext().getTheme());
-                if ((drawable != null) && (rect != null)){
-                    drawable.setBounds(rect.left,rect.top,rect.right,rect.bottom);
-                    setCompoundDrawables(drawable,null,null,null);
+        if (drawableIds.length == 0) {
+            setCompoundDrawables(null,null,null,null);
+        } else {
+            int idx = 0;
+            int cnt = 1;
+            if (prefs != null){
+                for (MGPref<Boolean> pref : prefs){
+                    if (pref.getValue()){
+                        idx += cnt;
+                    }
+                    cnt *= 2;
                 }
             }
-        } else {
-            resetTTControlRefresh();
+
+            Drawable dOld = getCompoundDrawables()[0];
+            if (dOld != null) {
+                if (idx<drawableIds.length){
+                    Rect rect = getCompoundDrawables()[0].getBounds();
+                    Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drawableIds[idx], getContext().getTheme());
+                    if ((drawable != null) && (rect != null)){
+                        drawable.setBounds(rect.left,rect.top,rect.right,rect.bottom);
+                        setCompoundDrawables(drawable,null,null,null);
+                    }
+                }
+            } else {
+                resetTTControlRefresh();
+            }
         }
     }
 

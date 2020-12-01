@@ -20,6 +20,7 @@ import android.os.BatteryManager;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.PrefTextView;
 
@@ -35,13 +36,13 @@ public class MSTime extends MGMicroService {
     @Override
     public void initStatusLine(PrefTextView ptv, String info) {
         if (info.equals("time")){
-            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.duration2});
-            ptv.setFormat(PrefTextView.FormatType.FORMAT_TIME);
+            ptv.setPrefData(null, new int[]{R.drawable.duration2});
+            ptv.setFormat(Formatter.FormatType.FORMAT_TIME);
             ptvTime = ptv;
         }
         if (info.equals("bat")){
-            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.bat});
-            ptv.setFormat(PrefTextView.FormatType.FORMAT_INT);
+            ptv.setPrefData(null, new int[]{R.drawable.bat});
+            ptv.setFormat(Formatter.FormatType.FORMAT_INT);
             ptvBat = ptv;
         }
     }

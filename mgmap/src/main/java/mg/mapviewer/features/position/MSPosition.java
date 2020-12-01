@@ -28,6 +28,7 @@ import mg.mapviewer.R;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.CC;
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.PointView;
 import mg.mapviewer.view.PrefTextView;
@@ -52,8 +53,8 @@ public class MSPosition extends MGMicroService {
     @Override
     public void initStatusLine(PrefTextView ptv, String info) {
         if (info.equals("height")){
-            ptv.setPrefData(new MGPref[]{}, new int[]{R.drawable.ele});
-            ptv.setFormat(PrefTextView.FormatType.FORMAT_HEIGHT);
+            ptv.setPrefData(null, new int[]{R.drawable.ele});
+            ptv.setFormat(Formatter.FormatType.FORMAT_HEIGHT);
             ptvHeight = ptv;
         }
     }
