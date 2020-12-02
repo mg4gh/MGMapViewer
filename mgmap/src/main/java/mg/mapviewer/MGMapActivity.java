@@ -163,7 +163,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         coView = getControlView();
-        mapViewUtility = new MapViewUtility(getApplicationContext(), mapView);
+        mapViewUtility = new MapViewUtility(this, mapView);
 
         // micro service registry is stored in the context of the application
         microServices = application.microServices;

@@ -10,10 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-        <ViewStub
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout="@layout/statistic_entry"
-            android:id="@+id/xxx"/>
+
     </LinearLayout>
 
 </mg.mapviewer.view.MyScrollView>

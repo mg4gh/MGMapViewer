@@ -34,6 +34,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.mapsforge.map.android.view.MapView;
@@ -83,8 +86,6 @@ public class ControlView extends RelativeLayout {
 
     /** progress bar - only used in case of route opimization */
     ProgressBar progressBar = null;
-    /** indicates visibility of menu */
-    private boolean menuVisibility = false;
 
 
 
@@ -97,7 +98,10 @@ public class ControlView extends RelativeLayout {
     HintControl hintControl = null;
 
     /** A Control object is an extension of a ViewOnClickListener. With this map it's easy to determine from the OnClickListener the corresponding View object. Furthermore this map provides a list of all menu and submenu views. */
-    Map<Control, View> menuControlMap = new HashMap<>();
+//    Map<Control, View> menuControlMap = new HashMap<>();
+
+    private Map<View, ArrayList<View>> submenuMap = new HashMap<>();
+    private Map<View, Control> menuControlMap = new HashMap<>();
 
     public ControlView(Context context) {
         super(context);
@@ -146,7 +150,7 @@ public class ControlView extends RelativeLayout {
             controlComposer.composeDashboard(application, activity, this);
 
             controlComposer.composeMenu(application, activity, this);
-            hideMenu();
+            setMenuVisibility(false);
 
             prepareAlphaSliders();
 
@@ -162,36 +166,98 @@ public class ControlView extends RelativeLayout {
     }
 
 // *************************************************************************************************
-// ********* Menu Button related stuff                                                    **********
+// ********* Menu Button creation  ---  related stuff                                     **********
 // *************************************************************************************************
 
-    void registerMenuControl(View view, Control control){
-        control.setControlView(this);
-        menuControlMap.put(control, view);
-        view.setOnClickListener(control);
-    }
+    Button createMenuButton(ConstraintLayout parent, View alignViewTop, View alignViewSide, boolean alignEnd, int submenuEntries) {
+        boolean isSubmenuButton = (parent != alignViewSide);
+        Button button = new AppCompatButton(context) {
+            @Override
+            public void setEnabled(boolean enabled) {
+                super.setEnabled(enabled);
+                this.setTextColor(enabled ? CC.getColor(R.color.WHITE) : CC.getColor(R.color.WHITE_A100));
+            }
+        };
+        parent.addView(button);
+        button.setVisibility(VISIBLE);
+        button.setId(View.generateViewId());
+        button.setBackgroundResource(R.drawable.shape);
+        button.setPadding(0, 0, 0, 0);
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int margin = convertDp(2.5f);
+        layoutParams.setMargins(margin, margin, margin, margin);
+        button.setLayoutParams(layoutParams);
 
-    void registerSubmenuControls(ViewGroup menu, Control[] controls){
-        if (menu.getChildCount() < controls.length){
-            Log.e(MGMapApplication.LABEL, NameUtil.context() + " too much controls("+controls.length+") for menu("+menu.getChildCount()+")");
-        }
-        for (int idx=menu.getChildCount()-1; idx >= 0; idx--){
-            if (idx < controls.length){
-                registerMenuControl(menu.getChildAt(idx), controls[idx]);
+        ConstraintSet set = new ConstraintSet();
+        set.clone(parent);
+        if (alignViewTop == null) {
+            if (isSubmenuButton){ // then it's a main menu button
+                set.connect(button.getId(), ConstraintSet.TOP, alignViewSide.getId(), ConstraintSet.TOP, convertDp(0));
             } else {
-                menu.removeViewAt(idx);
+                set.connect(button.getId(), ConstraintSet.TOP, parent.getId(), ConstraintSet.TOP, convertDp(150));
+            }
+        } else {
+            set.connect(button.getId(), ConstraintSet.TOP, alignViewTop.getId(), ConstraintSet.BOTTOM, convertDp(2.5f));
+        }
+        int startSide = (alignEnd)?ConstraintSet.RIGHT:ConstraintSet.LEFT;
+        int endSide =  (alignEnd == isSubmenuButton)?ConstraintSet.LEFT:ConstraintSet.RIGHT;
+        set.connect(button.getId(), startSide, alignViewSide.getId(), endSide, convertDp(2.5f));
+        set.applyTo(parent);
+
+        if (submenuEntries > 0){
+            submenuMap.put(button, new ArrayList<>()); // int List for submenu buttons
+            View alignSubMenuTop = null;
+            for (int i=0; i<submenuEntries; i++){
+                alignSubMenuTop = createMenuButton(parent, alignSubMenuTop, button, alignEnd, 0);
+            }
+        } else {
+            if (!isSubmenuButton){
+                submenuMap.put(button, null); // need this entry to detect all main menu entries
             }
         }
+        if (isSubmenuButton){
+            submenuMap.get(alignViewSide).add(button);
+        }
+        return button;
     }
 
-    void registerMenuControls(View view, final String name, final ViewGroup menu, Control[] controls){
-        registerSubmenuControls(menu, controls);
+// *************************************************************************************************
+// ********* Menu Button and Control registration stuff                                   **********
+// *************************************************************************************************
+
+    View registerMenuControl(View view, Control control){
+        if (control != null){
+            control.setControlView(this);
+            view.setOnClickListener(control);
+            menuControlMap.put(view, control);
+        }
+        return view;
+    }
+
+    void registerSubmenuControls(ArrayList<View> submenu, Control[] controls){
+        if (submenu.size() < controls.length){
+            Log.e(MGMapApplication.LABEL, NameUtil.context() + " too much controls("+controls.length+") for menu("+submenu.size()+")");
+        }
+        for (View submenuView : submenu){
+            registerMenuControl(submenuView, controls[submenu.indexOf(submenuView)]);
+        }
+    }
+
+    View registerMenuControls(View button, final String name, Control[] controls){
+        registerSubmenuControls(submenuMap.get(button), controls);
         Control control = new Control(false){
             @Override
             public void onClick(View v) {
                 super.onClick(v);
                 disableMainMenuButtons();
-                showMenu(menu);
+                if (submenuMap.get(button).get(0).getVisibility()==VISIBLE){
+                    setMenuVisibility(false);
+                } else {
+                    for (View subButton : submenuMap.get(button)){
+                        showMenuButton(subButton);
+                    }
+                    button.setEnabled(true);
+                }
             }
 
             @Override
@@ -199,63 +265,56 @@ public class ControlView extends RelativeLayout {
                 setText(v, name);
             }
         };
-        registerMenuControl(view, control);
+        return registerMenuControl(button, control);
     }
 
     void disableMainMenuButtons(){
-        for (int idx=0; idx<getChildCount(); idx++) {
-            View chview = getChildAt(idx);
+        for (View chview : submenuMap.keySet()){
             if (chview instanceof Button) {
                 chview.setEnabled(false); // disable main menu entries by default
             }
         }
     }
 
-    public void showMenu(ViewGroup parent){
-        for (Control control : menuControlMap.keySet()){
-            View view = menuControlMap.get(control);
-            if (view.getParent() == parent){
-                view.setEnabled( true ); // default is enabled, might be reset in onPrepare
-                control.onPrepare(view);
-                view.setVisibility( VISIBLE );
-            }
-        }
+    void showMenuButton(View view){
+        view.setEnabled(true);
+        menuControlMap.get(view).onPrepare(view);
+        view.setVisibility( VISIBLE );
     }
 
-    public void hideMenu(){
-        menuVisibility = false;
-        for (Control control : menuControlMap.keySet()){
-            View view = menuControlMap.get(control);
-
-            if (view.getVisibility() == VISIBLE){
-                view.setVisibility( INVISIBLE );
+    void setMenuVisibility(boolean visibility){
+        View menu = findViewById(R.id.menuBase);
+        menu.setVisibility(visibility?VISIBLE:INVISIBLE);
+        if (visibility) {
+            for (View button : submenuMap.keySet()){ // the keyset contains the main menu buttons
+                showMenuButton(button);
             }
-        }
-    }
-
-
-    public void toggleMenuVisibility(){
-        menuVisibility = !menuVisibility;
-        if (menuVisibility) {
-            showMenu(this);
             startTTHideButtons(7000);
         } else {
-            hideMenu();
+            for (View view : submenuMap.keySet()){
+                view.setVisibility(INVISIBLE);
+                ArrayList<View> submenu = submenuMap.get(view);
+                if (submenu != null){
+                    for (View subview : submenu){
+                        subview.setVisibility(INVISIBLE);
+                    }
+                }
+            }
         }
     }
 
+    void toggleMenuVisibility(){
+        setMenuVisibility(findViewById(R.id.menuBase).getVisibility() != VISIBLE);
+    }
 
     private Handler timer = new Handler();
     final Runnable ttHideButtons = new Runnable() { // define timerTask to hide menu buttons
         @Override
         public void run() {
-            hideMenu();
+            setMenuVisibility(false);
             timer.removeCallbacks(ttHideButtons);
         }
     };
-    public void cancelTTHideButtons(){
-        timer.removeCallbacks(ttHideButtons);
-    }
     public void startTTHideButtons(long millis){
         timer.removeCallbacks(ttHideButtons);
         timer.postDelayed(ttHideButtons, millis);
@@ -311,7 +370,7 @@ public class ControlView extends RelativeLayout {
         }
     }
 
-    private boolean setDashboradEntryVisibility(ViewGroup dashboardEntry, boolean shouldBeVisible, boolean isVisible){
+    private boolean setDashboardEntryVisibility(ViewGroup dashboardEntry, boolean shouldBeVisible, boolean isVisible){
         int idx = 0;
         if (shouldBeVisible && !isVisible){
             for (ViewGroup entry : dashboardEntries){
@@ -332,7 +391,7 @@ public class ControlView extends RelativeLayout {
     }
 
     public void setDashboardValue(boolean condition, ViewGroup dashboardEntry, TrackLogStatistic statistic){
-        if (setDashboradEntryVisibility(dashboardEntry, condition && (statistic != null) , (dashboardEntry.getParent() != null))){
+        if (setDashboardEntryVisibility(dashboardEntry, condition && (statistic != null) , (dashboardEntry.getParent() != null))){
             String sIdx = "I="+statistic.getSegmentIdx();
             if (statistic.getSegmentIdx() == -1) sIdx = "All";
             if (statistic.getSegmentIdx() == -2) sIdx = "R";

@@ -1,6 +1,9 @@
 package mg.mapviewer;
 
+import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import mg.mapviewer.features.motion.MSBeeline;
 import mg.mapviewer.features.position.CenterControl;
@@ -21,24 +24,34 @@ import mg.mapviewer.features.routing.RoutingHintService;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
+import mg.mapviewer.util.Control;
 import mg.mapviewer.util.Formatter;
 
 public class ControlComposer {
 
     void composeMenu(MGMapApplication application, MGMapActivity activity, ControlView coView){
-        coView.registerMenuControl(activity.findViewById(R.id.bt_st01), new SettingsControl());
-        coView.registerMenuControl(activity.findViewById(R.id.bt_st02), new ThemeSettingsControl());
-        coView.registerMenuControl(activity.findViewById(R.id.bt_st03), new TrackStatisticControl());
-        coView.registerMenuControl(activity.findViewById(R.id.bt_st04), new HeightProfileControl());
-        coView.registerMenuControl(activity.findViewById(R.id.bt_st05), new CenterControl());
-        coView.registerMenuControl(activity.findViewById(R.id.bt_st06), new GpsControl());
+        View alignHelper = null;
+        ConstraintLayout parent = activity.findViewById(R.id.menuBase);
+        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent, false, 0), new SettingsControl());
+        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent, false, 0), new ThemeSettingsControl());
+        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent,false, 0), new TrackStatisticControl());
+        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent,false, 0), new HeightProfileControl());
+        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent,false, 0), new CenterControl());
+        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent,false, 0), new GpsControl());
 
-        coView.registerMenuControls(activity.findViewById(R.id.bt_en01), coView.rstring(R.string.btRecordTrack), (ViewGroup) activity.findViewById(R.id.menu_en01_sub), application.getMS(MSRecordingTrackLog.class).getMenuTrackControls());
-        coView.registerMenuControls(activity.findViewById(R.id.bt_en02), coView.rstring(R.string.btBB), (ViewGroup) activity.findViewById(R.id.menu_en02_sub), application.getMS(MSBB.class).getMenuBBControls());
-        coView.registerMenuControls(activity.findViewById(R.id.bt_en03), coView.rstring(R.string.btLoadTrack),   (ViewGroup) activity.findViewById(R.id.menu_en03_sub), application.getMS(MSAvailableTrackLogs.class).getMenuLoadControls());
-        coView.registerMenuControls(activity.findViewById(R.id.bt_en04), coView.rstring(R.string.btHideTrack),   (ViewGroup) activity.findViewById(R.id.menu_en04_sub), application.getMS(MSAvailableTrackLogs.class).getMenuHideControls());
-        coView.registerMenuControls(activity.findViewById(R.id.bt_en05), coView.rstring(R.string.btMarkerTrack), (ViewGroup) activity.findViewById(R.id.menu_en05_sub), application.getMS(MSMarker.class).getMenuMarkerControls());
-        coView.registerMenuControls(activity.findViewById(R.id.bt_en06), coView.rstring(R.string.btRoute),        (ViewGroup) activity.findViewById(R.id.menu_en06_sub), application.getMS(MSRouting.class).getMenuRouteControls());
+        alignHelper = null;
+        Control[] controls = application.getMS(MSRecordingTrackLog.class).getMenuTrackControls();
+        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length) , coView.rstring(R.string.btRecordTrack),controls);
+        controls = application.getMS(MSBB.class).getMenuBBControls();
+        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btBB), controls);
+        controls = application.getMS(MSAvailableTrackLogs.class).getMenuLoadControls();
+        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btLoadTrack), controls);
+        controls = application.getMS(MSAvailableTrackLogs.class).getMenuHideControls();
+        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btHideTrack), controls);
+        controls = application.getMS(MSMarker.class).getMenuMarkerControls();
+        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btMarkerTrack), controls);
+        controls = application.getMS(MSRouting.class).getMenuRouteControls();
+        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btRoute), controls);
     }
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
