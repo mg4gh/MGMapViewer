@@ -178,7 +178,6 @@ public class TrackStatisticActivity extends Activity {
 
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         ptv.setCompoundDrawables(drawable,null,null,null);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
         ptv.setText("");
         ptv.setTextColor(CC.getColor(R.color.WHITE));
         ptv.setLines(1);

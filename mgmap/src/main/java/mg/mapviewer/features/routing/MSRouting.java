@@ -486,7 +486,7 @@ public class MSRouting extends MGMicroService {
         name = name.replace("MarkerTrack","MarkerRoute");
         RecordingTrackLog rtl = new RecordingTrackLog(false);
         rtl.setName(name);
-        rtl.startTrack(PointModel.NO_TIME);
+        rtl.startTrack(mtl.getTrackStatistic().getTStart());
         rtl.setReworkData(false);
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){

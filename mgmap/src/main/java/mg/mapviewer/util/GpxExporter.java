@@ -42,7 +42,11 @@ public class GpxExporter {
                 pw = PersistenceManager.getInstance().openGpxOutput(trackLog.getName());
                 if (pw != null){
                     pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    pw.println("<gpx>");
+                    pw.println("<gpx version=\"1.1\" creator=\"MGMap\">");
+                    pw.println("\t<metadata>");
+                    pw.println("\t\t<name>"+trackLog.getName()+"</name>");
+                    pw.println("\t\t<time>"+sdf2.format(new Date(trackLog.getTrackStatistic().getTStart())).replace("_","T")+"</time>");
+                    pw.println("\t</metadata>");
                     pw.println("\t<trk>");
                     pw.println("\t\t<name>"+trackLog.getName()+"</name>");
                     pw.println("\t\t<desc>"+trackLog.getTrackStatistic().toString()+"</desc>");

@@ -85,6 +85,7 @@ public class GpxImporter {
         TrackLogPoint tlp = null;
         String text = null;
         String qName;
+        boolean meta = false;
 
         pullParser.setInput(inputStream, null);
 
@@ -96,6 +97,9 @@ public class GpxImporter {
             } else if (eventType == XmlPullParser.START_TAG) {
                 if ("trk".equals(qName)) {
                     trackLog.startTrack(0);
+                }
+                if ("metadata".equals(qName)) {
+                    meta = true;
                 }
                 if ("trkseg".equals(qName)) {
                     trackLog.startSegment(0);
@@ -117,6 +121,9 @@ public class GpxImporter {
                 if ("trk".equals(qName)) {
                     trackLog.stopTrack(0);
                 }
+                if ("metadata".equals(qName)) {
+                    meta = false;
+                }
                 if ("trkseg".equals(qName)) {
                     trackLog.stopSegment(0);
                 }
@@ -132,7 +139,12 @@ public class GpxImporter {
                 }
                 if ("time".equals(qName)) {
                     try {
-                        tlp.setTimestamp( sdf2.parse(text.replaceAll("T","_")).getTime() );
+                        if (tlp != null){
+                            tlp.setTimestamp( sdf2.parse(text.replaceAll("T","_")).getTime() );
+                        }
+                        if (meta){
+                            trackLog.getTrackStatistic().setTStart( sdf2.parse(text.replaceAll("T","_")).getTime() );
+                        }
                     } catch (Exception e) {
                         Log.w(MGMapApplication.LABEL, NameUtil.context()+" Parse time failed: "+e.getMessage());
                     }

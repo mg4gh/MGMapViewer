@@ -35,10 +35,6 @@ public class MarkerExportControl extends Control {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-        long now = System.currentTimeMillis();
-        mtl.getTrackStatistic().setTStart(now);
-        PointModel pm = mtl.getTrackLogSegment(0).get(0);
-        ((WriteablePointModel)pm).setTimestamp(now);
         GpxExporter.export(mtl);
         application.metaTrackLogs.add(mtl);
 

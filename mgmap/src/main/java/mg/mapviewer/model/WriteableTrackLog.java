@@ -17,12 +17,17 @@ public class WriteableTrackLog extends TrackLog {
 
 
     public void startTrack(long timestamp){
-
+        if (timestamp != PointModel.NO_TIME){
+            trackStatistic.tStart = timestamp;
+        }
     }
 
     public void startSegment(long timestamp){
         currentSegment = new TrackLogSegment(this, getNumberOfSegments());
         trackLogSegments.add(currentSegment);
+        if (timestamp != PointModel.NO_TIME){
+            currentSegment.getStatistic().setTStart(timestamp);
+        }
     }
 
     public void stopSegment(long timestamp){
@@ -31,7 +36,7 @@ public class WriteableTrackLog extends TrackLog {
     }
 
     public void stopTrack(long timestamp){
-        if (getNumberOfSegments() > 0){
+        if ((trackStatistic.tStart == PointModel.NO_TIME) && (getNumberOfSegments() > 0)){
             trackStatistic.tStart = getTrackLogSegment(0).getStatistic().tStart;
         }
         long duration = 0;

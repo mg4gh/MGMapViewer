@@ -143,6 +143,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
 
 
     public void startTrack(long tStartTrack) {
+        super.startTrack(tStartTrack);
         isTrackRecording = true;
 
         if (recordRaw) createRawEntry(RawType.E_START_TRACK, tStartTrack, null);

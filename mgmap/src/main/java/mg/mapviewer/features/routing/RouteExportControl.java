@@ -47,12 +47,6 @@ public class RouteExportControl extends Control {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
         TrackLog trackLog = msRouting.calcRouteTrackLog(mtl);
-        long now = System.currentTimeMillis();
-        trackLog.getTrackStatistic().setTStart(now);
-        PointModel pm = trackLog.getTrackLogSegment(0).get(0);
-        WriteablePointModel wpm = new WriteablePointModelImpl(pm.getLat(), pm.getLon(), pm.getEleA());
-        wpm.setTimestamp(now);
-        trackLog.getTrackLogSegment(0).addPoint(0,wpm);
 
         try {
             String oldName = trackLog.getName().split("__")[0];

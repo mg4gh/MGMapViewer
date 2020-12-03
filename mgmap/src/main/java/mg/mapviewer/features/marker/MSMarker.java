@@ -160,8 +160,8 @@ public class MSMarker extends MGMicroService {
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
         long now = System.currentTimeMillis();
         WriteableTrackLog mtl = new WriteableTrackLog(sdf2.format(new Date(now))+"_MarkerTrack");
-        mtl.startTrack(0);
-        mtl.startSegment(0);
+        mtl.startTrack(now);
+        mtl.startSegment(now);
         markerTrackLogObservable.setTrackLog(mtl);
     }
 

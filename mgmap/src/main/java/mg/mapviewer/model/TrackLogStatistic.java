@@ -106,7 +106,7 @@ public class TrackLogStatistic {
         numPoints = 0;
         segmentIdx = -1;
         duration = 0;
-        tStart = 0;
+//        tStart = 0;
         lastPoint4Distance = null;
         lastPoint4GainLoss = null;
     }
