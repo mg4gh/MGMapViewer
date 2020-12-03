@@ -63,9 +63,11 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
         this.prefs = (prefs==null)?new MGPref[]{}:prefs;
         this.drawableIds = (drawableIds==null)?new int[]{}:drawableIds;
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        createOCLs();
+        if (this.prefs.length > 0){
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+            createOCLs();
+        }
         onChange("init");
         return this;
     }

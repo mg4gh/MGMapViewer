@@ -146,7 +146,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         application = (MGMapApplication) getApplication();
         createSharedPreferences();
-        setContentView(R.layout.mapviewer);
+        setContentView(R.layout.mgmapactivity);
 
         initMapView();
         createLayers();

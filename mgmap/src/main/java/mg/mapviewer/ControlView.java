@@ -43,6 +43,7 @@ import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.TileLayer;
 import org.mapsforge.map.model.DisplayModel;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,7 +132,7 @@ public class ControlView extends RelativeLayout {
 
             mapView = activity.getMapsforgeMapView();
             // this is necessary to get the scalbar above the quick controls and the status line
-            mapView.getMapScaleBar().setMarginVertical((int)(convertDp(60)));
+            mapView.getMapScaleBar().setMarginVertical((int)(convertDp(65)));
 
             prepareHintControl();
 
@@ -424,18 +425,44 @@ public class ControlView extends RelativeLayout {
 
     Map<String, SeekBar> mapSliders = new HashMap<>();
     Map<String, TextView> mapSliderNames = new HashMap<>();
-    private void prepareAlphaSliders(){
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), (SeekBar) findViewById(R.id.sb1));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), (SeekBar) findViewById(R.id.sb2));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), (SeekBar) findViewById(R.id.sb3));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), (SeekBar) findViewById(R.id.sb4));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), (SeekBar) findViewById(R.id.sb5));
 
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), (TextView) findViewById(R.id.sbt1));
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), (TextView) findViewById(R.id.sbt2));
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), (TextView) findViewById(R.id.sbt3));
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), (TextView) findViewById(R.id.sbt4));
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), (TextView) findViewById(R.id.sbt5));
+    private TextView createSeekBarLabel(ViewGroup vgParent){
+        TextView tv = new TextView(context);
+        vgParent.addView(tv);
+        return tv;
+    }
+
+    private SeekBar createSeekBar(ViewGroup vgParent){
+        SeekBar sb = new SeekBar(context);
+        vgParent.addView(sb);
+        sb.setScaleY(1.5f);
+        sb.setPadding(convertDp(20),0,convertDp(20),convertDp(10));
+        return sb;
+    }
+
+    private void prepareAlphaSliders(){
+        ViewGroup vgParent = findViewById(R.id.bars);
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), createSeekBarLabel(vgParent));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), createSeekBar(vgParent));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), createSeekBarLabel(vgParent));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), createSeekBar(vgParent));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), createSeekBarLabel(vgParent));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), createSeekBar(vgParent));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), createSeekBarLabel(vgParent));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), createSeekBar(vgParent));
+        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), createSeekBarLabel(vgParent));
+        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), createSeekBar(vgParent));
+//
+//
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), (SeekBar) findViewById(R.id.sb2));
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), (SeekBar) findViewById(R.id.sb3));
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), (SeekBar) findViewById(R.id.sb4));
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), (SeekBar) findViewById(R.id.sb5));
+//
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), (TextView) findViewById(R.id.sbt2));
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), (TextView) findViewById(R.id.sbt3));
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), (TextView) findViewById(R.id.sbt4));
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), (TextView) findViewById(R.id.sbt5));
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         LinearLayout parentLayer = findViewById(R.id.bars);
@@ -579,7 +606,6 @@ public class ControlView extends RelativeLayout {
         ptv.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                Log.i("XXX"," left="+left+" top="+top+" right="+right+" bottom="+bottom+" left="+oldLeft+" top="+oldTop+" right="+oldRight+" bottom="+oldBottom);
                 if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
                     int paddingHorizontal = Math.max((right-left - drawable.getIntrinsicWidth()) / 2, 0);
                     int paddingVertical = Math.max((bottom-top - drawable.getIntrinsicHeight()) / 2, 0);

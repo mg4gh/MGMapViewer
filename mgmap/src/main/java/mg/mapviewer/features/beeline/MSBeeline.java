@@ -97,7 +97,6 @@ public class MSBeeline extends MGMicroService {
                 } else {
                     showHidePositionToCenter(null);
                 }
-//                getControlView().updateTvZoom(getMapView().getModel().mapViewPosition.getZoomLevel());
                 getControlView().setStatusLineValue(ptvZoom, (int) (getMapView().getModel().mapViewPosition.getZoomLevel()));
             }
         });

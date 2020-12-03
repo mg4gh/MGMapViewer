@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,44 +29,37 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.ContextMenu;
-import android.view.DragEvent;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import org.mapsforge.core.graphics.GraphicFactory;
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.util.AndroidUtil;
-import org.mapsforge.map.model.DisplayModel;
+import androidx.core.content.res.ResourcesCompat;
 
-import mg.mapviewer.features.marker.MSMarker;
-import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.model.TrackLogRefZoom;
-import mg.mapviewer.model.TrackLogSegment;
+import mg.mapviewer.util.CC;
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
-import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.model.TrackLogStatistic;
+import mg.mapviewer.view.PrefTextView;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
-import java.util.TreeMap;
 
 public class TrackStatisticActivity extends Activity {
 
@@ -84,7 +76,7 @@ public class TrackStatisticActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.track_main);
+        setContentView(R.layout.track_statistic_activity);
         application = (MGMapApplication)getApplication();
         context = application.getApplicationContext();
         resources = getResources();
@@ -164,55 +156,68 @@ public class TrackStatisticActivity extends Activity {
         }.start();
     }
 
+    private int convertDp(float dp){
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+    }
+
+    public PrefTextView createPTV(ViewGroup vgDashboard, float weight) {
+        PrefTextView ptv = new PrefTextView(context);
+        vgDashboard.addView(ptv);
+
+        TableRow.LayoutParams params = new TableRow.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT);
+        int margin = convertDp(0.8f);
+        params.setMargins(margin,margin,margin,margin);
+        params.weight = weight;
+        ptv.setLayoutParams(params);
+
+        int padding = convertDp(2.0f);
+        ptv.setPadding(padding, padding, padding, padding);
+        int drawablePadding = convertDp(3.0f);
+        ptv.setCompoundDrawablePadding(drawablePadding);
+        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.quick2, context.getTheme());
+
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        ptv.setCompoundDrawables(drawable,null,null,null);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
+        ptv.setText("");
+        ptv.setTextColor(CC.getColor(R.color.WHITE));
+        ptv.setLines(1);
+        return ptv;
+    }
+
+
     static Random random = new Random(System.currentTimeMillis());
     public void addTrackLog(ViewGroup parent, TrackLog trackLog, int colorId, int colorIdSelected){
         if (trackLog == null) return;
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
 
 
-        ViewStub vs = new ViewStub(context);
-        vs.setLayoutResource(R.layout.statistic_entry);
-        parent.addView(vs);
-        TableLayout tableLayout = (TableLayout)vs.inflate();
-        tableLayout.setId(random.nextInt());
+        TableLayout tableLayout = new TableLayout(context);
+        parent.addView(tableLayout);
+        tableLayout.setId(View.generateViewId());
+        tableLayout.setPadding(0, convertDp(2),0,0);
         selectionRefs.put(tableLayout.getId(), new TrackLogRef(trackLog, -1));
         registerForContextMenu(tableLayout);
 
-        TableRow tableRow0 = (TableRow)tableLayout.getChildAt(0);
-        TextView tv0 = (TextView)tableRow0.getChildAt(0);
-        tv0.setText(trackLog.getName());
-        tv0.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        TableRow tableRow1 = (TableRow)tableLayout.getChildAt(1);
-        TextView tv1_0 = (TextView)tableRow1.getChildAt(0);
-        tv1_0.setText( (statistic.getSegmentIdx()<0)?"All":""+statistic.getSegmentIdx() );
-        TextView tv1_1 = (TextView)tableRow1.getChildAt(1);
-        tv1_1.setText( sdf1.format(statistic.getTStart()) );
-        TextView tv1_2 = (TextView)tableRow1.getChildAt(2);
-        tv1_2.setText( sdf2.format(statistic.getTStart()) );
-        TextView tv1_3 = (TextView)tableRow1.getChildAt(3);
-        tv1_3.setText( statistic.durationToString() );
-        setDrawable(tv1_3, R.drawable.duration);
-        TextView tv1_4 = (TextView)tableRow1.getChildAt(4);
-        tv1_4.setText( String.format(Locale.ENGLISH,"%.2fkm",statistic.getTotalLength()/1000.0));
-        setDrawable(tv1_4, R.drawable.length);
+        TableRow tableRow0 = new TableRow(context);
+        tableLayout.addView(tableRow0);
+        createPTV(tableRow0,1).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null).setValue(trackLog.getName());
 
-        TableRow tableRow2 = (TableRow)tableLayout.getChildAt(2);
-        TextView tv2_0 = (TextView)tableRow2.getChildAt(0);
-        tv2_0.setText( String.format(Locale.ENGLISH,"%d",statistic.getNumPoints()));
-        TextView tv2_1 = (TextView)tableRow2.getChildAt(1);
-        tv2_1.setText( String.format(Locale.ENGLISH,"%.1fm",statistic.getGain()));
-        setDrawable(tv2_1, R.drawable.gain);
-        TextView tv2_2 = (TextView)tableRow2.getChildAt(2);
-        tv2_2.setText( String.format(Locale.ENGLISH,"%.1fm",statistic.getLoss()));
-        setDrawable(tv2_2, R.drawable.loss);
-        TextView tv2_3 = (TextView)tableRow2.getChildAt(3);
-        String sMaxEle =  (Math.abs(statistic.getMaxEle())<(Math.abs(PointModel.NO_ELE)))?String.format(Locale.ENGLISH,"%.1fm",statistic.getMaxEle()):"";
-        tv2_3.setText( sMaxEle );
-        setDrawable(tv2_3, R.drawable.maxele);
-        TextView tv2_4 = (TextView)tableRow2.getChildAt(4);
-        String sMinEle =  (Math.abs(statistic.getMinEle())<(Math.abs(PointModel.NO_ELE)))?String.format(Locale.ENGLISH,"%.1fm",statistic.getMinEle()):"";
-        tv2_4.setText( sMinEle );
-        setDrawable(tv2_4, R.drawable.minele);
+        TableRow tableRow1 = new TableRow(context);
+        tableLayout.addView(tableRow1);
+        createPTV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null).setValue( (statistic.getSegmentIdx()<0)?"All":""+statistic.getSegmentIdx() );
+        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DATE).setPrefData(null,null).setValue( statistic.getTStart() );
+        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_TIME).setPrefData(null,null).setValue( statistic.getTStart() );
+        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setPrefData(null, new int[]{R.drawable.duration}).setValue( statistic.duration );
+        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setPrefData(null, new int[]{R.drawable.length}).setValue( statistic.getTotalLength() );
+
+        TableRow tableRow2 = new TableRow(context);
+        tableLayout.addView(tableRow2);
+        createPTV(tableRow2,10).setFormat(Formatter.FormatType.FORMAT_INT).setPrefData(null,null).setValue( statistic.getNumPoints() );
+        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.gain}).setValue( statistic.getGain() );
+        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.loss}).setValue( statistic.getLoss() );
+        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.maxele}).setValue( statistic.getMaxEle() );
+        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.minele}).setValue( statistic.getMinEle() );
 
         setViewtreeColor(tableLayout, colorId);
 

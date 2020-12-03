@@ -7,9 +7,10 @@ import mg.mapviewer.model.PointModel;
 
 public class Formatter {
 
-    private static final SimpleDateFormat sdf2 = new SimpleDateFormat(" HH:mm", Locale.GERMANY);
+    private static final SimpleDateFormat sdf1 = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
+    private static final SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm", Locale.GERMANY);
 
-    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DAY, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING};
+    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DATE, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING};
 
     private FormatType formatType;
 
@@ -27,6 +28,11 @@ public class Formatter {
             long millis = (Long) value;
             if (millis > 0) {
                 text = sdf2.format(millis);
+            }
+        } else if (formatType == FormatType.FORMAT_DATE) {
+            long millis = (Long) value;
+            if (millis > 0) {
+                text = sdf1.format(millis);
             }
         } else if (formatType == FormatType.FORMAT_INT) {
             int iValue = (Integer) value;

@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
 
-import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
@@ -28,16 +27,11 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.graphics.Path;
-
-import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogSegment;
-import mg.mapviewer.util.CC;
 import mg.mapviewer.util.GpxImporter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
@@ -56,7 +50,7 @@ public class HeightProfileActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.height_profile);
+        setContentView(R.layout.height_profile_activity);
 
     }
 
