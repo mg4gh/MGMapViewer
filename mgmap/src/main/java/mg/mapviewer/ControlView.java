@@ -42,6 +42,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.TileLayer;
+import org.mapsforge.map.model.DisplayModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,20 +74,12 @@ public class ControlView extends RelativeLayout {
     MGMapApplication application = null;
     MGMapActivity activity = null;
 
-//    /** There are five dashboard entries, each with a specific semantic. This ordered list contains the viewIds of these five entries. */
-//    ArrayList<Integer> dashboardKeys = new ArrayList<>();
-//    /** Mapping of the viewIDs to the Dashboard entries. The Dashboard entry objects are kept here even if they are not visible. */
-//    Map<Integer,ViewGroup> dashboardMap = new HashMap<>();
-
+    /** There are five dashboard entries, each with a specific semantic. This ordered list contains these five entries. */
     ArrayList<ViewGroup> dashboardEntries = new ArrayList<>();
     /** Parent of the dashboard entries. */
     ViewGroup dashboard;
     /** Reference to the MapView object - some controls change properties of the mapView */
     MapView mapView = null;
-
-    /** progress bar - only used in case of route opimization */
-    ProgressBar progressBar = null;
-
 
 
     /** parent object for status line */
@@ -136,13 +129,11 @@ public class ControlView extends RelativeLayout {
             this.activity = activity;
             ControlComposer controlComposer = new ControlComposer();
 
-            tv_hint = findViewById(R.id.hint);
-            tv_hint.setVisibility(INVISIBLE);
-            hintControl = new HintControl(tv_hint);
-
             mapView = activity.getMapsforgeMapView();
             // this is necessary to get the scalbar above the quick controls and the status line
-            mapView.getMapScaleBar().setMarginVertical((int)(60 * mapView.getModel().displayModel.getScaleFactor()));
+            mapView.getMapScaleBar().setMarginVertical((int)(convertDp(60)));
+
+            prepareHintControl();
 
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
             dashboard = findViewById(R.id.dashboard);
@@ -162,6 +153,112 @@ public class ControlView extends RelativeLayout {
 
         } catch (Exception e){
             Log.e(MGMapApplication.LABEL, NameUtil.context()+"", e);
+        }
+    }
+
+// *************************************************************************************************
+// ********* HintControl related stuff                                                      **********
+// *************************************************************************************************
+
+    void prepareHintControl(){
+        tv_hint = findViewById(R.id.hint);
+        tv_hint.setVisibility(INVISIBLE);
+        hintControl = new HintControl(tv_hint);
+
+        View parent = (View)tv_hint.getParent();
+        RelativeLayout.LayoutParams parentLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        parentLayoutParams.setMargins(convertDp(90),convertDp(350),convertDp(90),convertDp(0));
+        parent.setLayoutParams(parentLayoutParams);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        tv_hint.setLines(1);
+        tv_hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
+        int padding = convertDp(5);
+        tv_hint.setPadding(padding,padding,padding,padding);
+        tv_hint.setBackgroundResource(R.drawable.shape);
+    }
+
+// *************************************************************************************************
+// ********* Dashboard related stuff                                                      **********
+// *************************************************************************************************
+
+    public void setDashboardVisibility(boolean visibitity){
+        dashboard.setVisibility(visibitity?VISIBLE:INVISIBLE);
+    }
+
+    public ViewGroup createDashboardEntry(){
+        TableRow tr = new TableRow(context);
+        TableLayout.LayoutParams llParms = new TableLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        tr.setLayoutParams(llParms);
+        return tr;
+    }
+
+    public PrefTextView createDashboardPTV(ViewGroup vgDashboard, float weight) {
+        PrefTextView ptv = new PrefTextView(context);
+        vgDashboard.addView(ptv);
+
+        TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        int margin = convertDp(0.8f);
+        params.setMargins(margin,margin,margin,margin);
+        params.weight = weight;
+        ptv.setLayoutParams(params);
+
+        int padding = convertDp(2.0f);
+        ptv.setPadding(padding, padding, padding, padding);
+        int drawablePadding = convertDp(3.0f);
+        ptv.setCompoundDrawablePadding(drawablePadding);
+        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
+
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        ptv.setCompoundDrawables(drawable,null,null,null);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
+        ptv.setText("");
+        ptv.setLines(1);
+        ptv.setOnClickListener(hintControl);
+        return ptv;
+    }
+
+    public void setViewGroupColors(ViewGroup viewGroup, int textColorId, int bgColorId){
+        for (int idx=0; idx<viewGroup.getChildCount(); idx++){
+            if (viewGroup.getChildAt(idx) instanceof TextView) {
+                TextView tv = (TextView) viewGroup.getChildAt(idx);
+                tv.setTextColor(CC.getColor(textColorId));
+                tv.setBackgroundColor(CC.getColor(bgColorId));
+            }
+        }
+    }
+
+    private boolean setDashboardEntryVisibility(ViewGroup dashboardEntry, boolean shouldBeVisible, boolean isVisible){
+        int idx = 0;
+        if (shouldBeVisible && !isVisible){
+            for (ViewGroup entry : dashboardEntries){
+                if (entry == dashboardEntry){
+                    break;
+                } else {
+                    if (entry.getParent() != null){
+                        idx++;
+                    }
+                }
+            }
+            dashboard.addView(dashboardEntry, idx);
+        }
+        if (!shouldBeVisible && isVisible) {
+            dashboard.removeView(dashboardEntry);
+        }
+        return shouldBeVisible; // means finally it is visible
+    }
+
+    public void setDashboardValue(boolean condition, ViewGroup dashboardEntry, TrackLogStatistic statistic){
+        if (setDashboardEntryVisibility(dashboardEntry, condition && (statistic != null) , (dashboardEntry.getParent() != null))){
+            String sIdx = "I="+statistic.getSegmentIdx();
+            if (statistic.getSegmentIdx() == -1) sIdx = "All";
+            if (statistic.getSegmentIdx() == -2) sIdx = "R";
+//            String sIdx = ("I"+statistic.getSegmentIdx()).replaceFirst("I=-1","All").replaceFirst("I=-2","R");
+            ((PrefTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
+            ((PrefTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
+            ((PrefTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
+            ((PrefTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
+            ((PrefTextView) dashboardEntry.getChildAt(4)).setValue(statistic.duration);
         }
     }
 
@@ -320,89 +417,6 @@ public class ControlView extends RelativeLayout {
         timer.postDelayed(ttHideButtons, millis);
     }
 
-// *************************************************************************************************
-// ********* Dashboard related stuff                                                      **********
-// *************************************************************************************************
-
-    public void setDashboardVisibility(boolean visibitity){
-        dashboard.setVisibility(visibitity?VISIBLE:INVISIBLE);
-    }
-
-    public ViewGroup createDashboardEntry(){
-        TableRow tr = new TableRow(context);
-        TableLayout.LayoutParams llParms = new TableLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
-        tr.setLayoutParams(llParms);
-        return tr;
-    }
-
-    public PrefTextView createDashboardPTV(ViewGroup vgDashboard, float weight) {
-        PrefTextView ptv = new PrefTextView(context);
-        vgDashboard.addView(ptv);
-
-        TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
-        int margin = convertDp(0.8f);
-        params.setMargins(margin,margin,margin,margin);
-        params.weight = weight;
-        ptv.setLayoutParams(params);
-
-        int padding = convertDp(2.0f);
-        ptv.setPadding(padding, padding, padding, padding);
-        int drawablePadding = convertDp(3.0f);
-        ptv.setCompoundDrawablePadding(drawablePadding);
-        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
-
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        ptv.setCompoundDrawables(drawable,null,null,null);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
-        ptv.setText("");
-        ptv.setLines(1);
-        ptv.setOnClickListener(hintControl);
-        return ptv;
-    }
-
-    public void setViewGroupColors(ViewGroup viewGroup, int textColorId, int bgColorId){
-        for (int idx=0; idx<viewGroup.getChildCount(); idx++){
-            if (viewGroup.getChildAt(idx) instanceof TextView) {
-                TextView tv = (TextView) viewGroup.getChildAt(idx);
-                tv.setTextColor(CC.getColor(textColorId));
-                tv.setBackgroundColor(CC.getColor(bgColorId));
-            }
-        }
-    }
-
-    private boolean setDashboardEntryVisibility(ViewGroup dashboardEntry, boolean shouldBeVisible, boolean isVisible){
-        int idx = 0;
-        if (shouldBeVisible && !isVisible){
-            for (ViewGroup entry : dashboardEntries){
-                if (entry == dashboardEntry){
-                    break;
-                } else {
-                    if (entry.getParent() != null){
-                        idx++;
-                    }
-                }
-            }
-            dashboard.addView(dashboardEntry, idx);
-        }
-        if (!shouldBeVisible && isVisible) {
-            dashboard.removeView(dashboardEntry);
-        }
-        return shouldBeVisible; // means finally it is visible
-    }
-
-    public void setDashboardValue(boolean condition, ViewGroup dashboardEntry, TrackLogStatistic statistic){
-        if (setDashboardEntryVisibility(dashboardEntry, condition && (statistic != null) , (dashboardEntry.getParent() != null))){
-            String sIdx = "I="+statistic.getSegmentIdx();
-            if (statistic.getSegmentIdx() == -1) sIdx = "All";
-            if (statistic.getSegmentIdx() == -2) sIdx = "R";
-//            String sIdx = ("I"+statistic.getSegmentIdx()).replaceFirst("I=-1","All").replaceFirst("I=-2","R");
-            ((PrefTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
-            ((PrefTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
-            ((PrefTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
-            ((PrefTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
-            ((PrefTextView) dashboardEntry.getChildAt(4)).setValue(statistic.duration);
-        }
-    }
 
     // *************************************************************************************************
     // ********* Alpha Slider related stuff                                                   **********
