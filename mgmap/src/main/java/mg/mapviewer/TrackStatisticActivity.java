@@ -41,11 +41,14 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.util.CC;
+import mg.mapviewer.util.ExtendedClickListener;
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.NameUtil;
@@ -61,10 +64,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
 
-public class TrackStatisticActivity extends Activity {
-
-    private SimpleDateFormat sdf1 = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
-    private SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss", Locale.GERMANY);
+public class TrackStatisticActivity extends AppCompatActivity {
 
     private Context context = null;
     private MGMapApplication application = null;
@@ -161,7 +161,7 @@ public class TrackStatisticActivity extends Activity {
     }
 
     public PrefTextView createPTV(ViewGroup vgDashboard, float weight) {
-        PrefTextView ptv = new PrefTextView(context);
+        PrefTextView ptv = new PrefTextView(application.getMgMapActivity()); // Need activity context for Theme.AppCompat (Otherwise we get error messages)
         vgDashboard.addView(ptv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -200,7 +200,8 @@ public class TrackStatisticActivity extends Activity {
 
         TableRow tableRow0 = new TableRow(context);
         tableLayout.addView(tableRow0);
-        createPTV(tableRow0,1).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null).setValue(trackLog.getName());
+        PrefTextView namePTV = createPTV(tableRow0,1).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null);
+        namePTV.setValue(trackLog.getName());
 
         TableRow tableRow1 = new TableRow(context);
         tableLayout.addView(tableRow1);
@@ -218,12 +219,13 @@ public class TrackStatisticActivity extends Activity {
         createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.maxele}).setValue( statistic.getMaxEle() );
         createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.minele}).setValue( statistic.getMinEle() );
 
+
         setViewtreeColor(tableLayout, colorId);
 
         if (trackLog != application.recordingTrackLogObservable.getTrackLog()) {
-            tableLayout.setOnClickListener(new View.OnClickListener() {
+            tableLayout.setOnClickListener(new ExtendedClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onSingleClick(View v) {
                     int id = tableLayout.getId();
                     if (selectedRefs.get(id) == null){
                         selectedRefs.put(id, selectionRefs.get(id));
@@ -232,6 +234,18 @@ public class TrackStatisticActivity extends Activity {
                         selectedRefs.remove(id);
                         setViewtreeColor(tableLayout, colorId);
                     }
+                }
+
+                private boolean sortName = false;
+                @Override
+                public void onDoubleClick(View view) {
+                    sortName = !sortName;
+                    if (sortName){
+                        namePTV.setText(trackLog.getName4Sort());
+                    } else {
+                        namePTV.setText(trackLog.getName());
+                    }
+                    super.onDoubleClick(view);
                 }
             });
         }

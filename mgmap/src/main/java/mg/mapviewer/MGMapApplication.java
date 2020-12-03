@@ -348,6 +348,7 @@ public class MGMapApplication extends Application {
 
 
     boolean initFinished = false;
+    private MGMapActivity mgMapActivity = null;
     ArrayList<MGMicroService> microServices = new ArrayList<>();
     private ArrayList<BgJob> bgJobs = new ArrayList<>();
 
@@ -358,6 +359,14 @@ public class MGMapApplication extends Application {
 
     public ArrayList<String> getMapLayerKeys() {
         return mapLayerKeys;
+    }
+
+    public MGMapActivity getMgMapActivity() {
+        return mgMapActivity;
+    }
+
+    public void setMgMapActivity(MGMapActivity mgMapActivity) {
+        this.mgMapActivity = mgMapActivity;
     }
 
     /** Retruen the mirco service by type  - duplicate code of MGMapActivity, but here it is also available for other activities */

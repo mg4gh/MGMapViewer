@@ -13,7 +13,6 @@ public class ExtendedClickListener implements View.OnClickListener {
     private class TTSingle implements Runnable{
         @Override
         public void run() {
-//            Log.i(MGMapApplication.LABEL, NameUtil.context()+" single");
             ttSingle = null;
             onSingleClick(view);
         }

@@ -21,6 +21,7 @@ import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.model.TrackLogSegment;
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
 
@@ -37,7 +38,6 @@ import java.util.Locale;
 public class RecordingTrackLog extends WriteableTrackLog {
 
     private static final String TAG = NameUtil.getTag();
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
 
     private static PersistenceManager persistenceManager = PersistenceManager.getInstance();
 
@@ -147,7 +147,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
         isTrackRecording = true;
 
         if (recordRaw) createRawEntry(RawType.E_START_TRACK, tStartTrack, null);
-        if (name.equals("")) name = sdf.format(tStartTrack)+"_GPS";
+        if (name.equals("")) name = Formatter.SDF.format(tStartTrack)+"_GPS";
         changed(null);
     }
 

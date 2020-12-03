@@ -17,6 +17,7 @@ package mg.mapviewer;
 import android.app.Activity;
 import android.content.SharedPreferences;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
 
@@ -42,7 +43,7 @@ import mg.mapviewer.util.NameUtil;
  * Base class of the MGMapActivity.
  * Covers the most handling concerning the preferences and also concerning the MapView initialization
  */
-public abstract class MapViewerBase extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public abstract class MapViewerBase extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     protected MapView mapView;
     protected PreferencesFacade preferencesFacade;

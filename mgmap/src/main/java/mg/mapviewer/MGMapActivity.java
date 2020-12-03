@@ -145,6 +145,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         MGMapLayerFactory.mapLayers.clear();
 
         application = (MGMapApplication) getApplication();
+        application.setMgMapActivity(this);
         createSharedPreferences();
         setContentView(R.layout.mgmapactivity);
 
@@ -254,6 +255,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Log.w(MGMapApplication.LABEL, NameUtil.context());
         mapView.destroyAll();
         AndroidGraphicFactory.clearResourceMemoryCache();
+        application.setMgMapActivity(null);
         super.onDestroy();
     }
 

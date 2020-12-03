@@ -17,6 +17,7 @@ package mg.mapviewer.model;
 import androidx.annotation.NonNull;
 
 
+import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.PointModelUtil;
 
 import java.util.ArrayList;
@@ -46,6 +47,16 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     public String getName() {
         return name;
     }
+    public String getName4Sort() {
+        String name4Sort = name;
+        if (trackStatistic.tStart != PointModel.NO_TIME){
+            String sTStart = Formatter.SDF.format(trackStatistic.getTStart());
+            if (!name4Sort.startsWith(sTStart)){
+                name4Sort = sTStart+"_"+name4Sort;
+            }
+        }
+        return name4Sort;
+    }
     public void setName(String name) {
         this.name = name;
     }
@@ -69,7 +80,8 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
 
     @Override
     public int compareTo(@NonNull TrackLog trackLog) {
-        return name.compareTo(trackLog.name);
+//        return name.compareTo(trackLog.name);
+        return getName4Sort().compareTo(trackLog.getName4Sort());
     }
 
     public int getNumberOfSegments(){
