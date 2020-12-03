@@ -80,9 +80,10 @@ public class MSMarker extends MGMicroService {
     }
 
     @Override
-    public void initQuickControl(PrefTextView ptv, String info) {
+    public PrefTextView initQuickControl(PrefTextView ptv, String info) {
         ptv.setPrefData(new MGPref[]{prefEditMarkerTrack},
                 new int[]{R.drawable.mtlr, R.drawable.mtlr2});
+        return ptv;
     }
 
     @Override

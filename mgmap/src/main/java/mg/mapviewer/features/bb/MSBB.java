@@ -61,9 +61,10 @@ public class MSBB extends MGMicroService {
     }
 
     @Override
-    public void initQuickControl(PrefTextView ptv, String info){
+    public PrefTextView initQuickControl(PrefTextView ptv, String info){
         ptv.setPrefData(new MGPref[]{prefBboxOn,prefBboxCenter},
                 new int[]{R.drawable.bbox,R.drawable.bbox2,R.drawable.bbox,R.drawable.bbox2});
+        return ptv;
     }
 
     @Override

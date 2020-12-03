@@ -33,7 +33,11 @@ public class Formatter {
             text = Integer.toString(iValue);
         } else if (formatType == FormatType.FORMAT_DISTANCE) {
             double distance = (Double) value;
-            text = (distance == 0) ? "" : String.format(Locale.ENGLISH, " %.2f km", distance / 1000.0);
+            if (distance < 0){
+                text = "";
+            } else {
+                text = String.format(Locale.ENGLISH, " %.2f" + ((distance < 100000) ? " " : "") + "km", distance / 1000.0);
+            }
         } else if (formatType == FormatType.FORMAT_HEIGHT) {
             float height = (Float) value;
             text = (height == PointModel.NO_ELE) ? "" : String.format(Locale.ENGLISH, " %.1f m", height);

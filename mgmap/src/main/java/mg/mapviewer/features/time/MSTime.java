@@ -34,7 +34,7 @@ public class MSTime extends MGMicroService {
     }
 
     @Override
-    public void initStatusLine(PrefTextView ptv, String info) {
+    public PrefTextView initStatusLine(PrefTextView ptv, String info) {
         if (info.equals("time")){
             ptv.setPrefData(null, new int[]{R.drawable.duration2});
             ptv.setFormat(Formatter.FormatType.FORMAT_TIME);
@@ -45,6 +45,7 @@ public class MSTime extends MGMicroService {
             ptv.setFormat(Formatter.FormatType.FORMAT_INT);
             ptvBat = ptv;
         }
+        return ptv;
     }
 
     @Override

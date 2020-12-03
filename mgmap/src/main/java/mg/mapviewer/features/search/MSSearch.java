@@ -90,9 +90,10 @@ public class MSSearch extends MGMicroService {
     }
 
     @Override
-    public void initQuickControl(PrefTextView ptv, String info){
+    public PrefTextView initQuickControl(PrefTextView ptv, String info){
         ptv.setPrefData(new MGPref[]{prefSearchOn},
                 new int[]{R.drawable.search,R.drawable.search});
+        return ptv;
     }
 
     @Override

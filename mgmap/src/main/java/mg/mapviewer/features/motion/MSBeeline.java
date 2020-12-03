@@ -50,7 +50,7 @@ public class MSBeeline extends MGMicroService {
     }
 
     @Override
-    public void initStatusLine(PrefTextView ptv, String info) {
+    public PrefTextView initStatusLine(PrefTextView ptv, String info) {
         if (info.equals("center")){
             ptv.setPrefData(null, new int[]{R.drawable.distance});
             ptv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
@@ -61,6 +61,7 @@ public class MSBeeline extends MGMicroService {
             ptv.setFormat(Formatter.FormatType.FORMAT_INT);
             ptvZoom = ptv;
         }
+        return ptv;
     }
 
     @Override

@@ -81,9 +81,14 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
         return this;
     }
 
-    public void setValue(Object value){
-        setText( Formatter.format(formatType, value) );
-        onChange("onSetValue");
+    public boolean setValue(Object value){
+        String newText = Formatter.format(formatType, value);
+        if (!newText.equals(getText())){
+            setText( newText );
+            onChange("onSetValue");
+            return true;
+        }
+        return false;
     }
 
     private void createOCLs(){

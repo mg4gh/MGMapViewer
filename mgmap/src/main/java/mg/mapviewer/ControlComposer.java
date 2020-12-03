@@ -26,6 +26,7 @@ import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.Formatter;
+import mg.mapviewer.view.PrefTextView;
 
 public class ControlComposer {
 
@@ -55,14 +56,15 @@ public class ControlComposer {
     }
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
-        application.getMS(MSFullscreen.class).initQuickControl(activity.findViewById(R.id.ct1), null);
-        application.getMS(MSAlpha.class).initQuickControl(activity.findViewById(R.id.ct2), null);
-        application.getMS(MSMarker.class).initQuickControl(activity.findViewById(R.id.ct3), null);
-        RoutingHintService.getInstance().initQuickControl(activity.findViewById(R.id.ct3), null);
-        application.getMS(MSBB.class).initQuickControl(activity.findViewById(R.id.ct3a), null);
-        application.getMS(MSSearch.class).initQuickControl(activity.findViewById(R.id.ct3b), null);
-        activity.getMapViewUtility().initQuickControl(activity.findViewById(R.id.ct4), "zoom_in");
-        activity.getMapViewUtility().initQuickControl(activity.findViewById(R.id.ct5), "zoom_out");
+        ViewGroup qcs = activity.findViewById(R.id.tr_qc);
+        application.getMS(MSFullscreen.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        application.getMS(MSAlpha.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        RoutingHintService.getInstance().initQuickControl(ptvEditMarker, null);
+        application.getMS(MSBB.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        application.getMS(MSSearch.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_in");
+        activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_out");
     }
 
     void composeStatusLine(MGMapApplication application, MGMapActivity activity, ControlView coView){

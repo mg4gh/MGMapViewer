@@ -514,8 +514,9 @@ public class ControlView extends RelativeLayout {
 
     public void setStatusLineValue(PrefTextView ptv, Object value){
         if (ptv != null) {
-            ptv.setValue(value);
-            reworkStatusLine();
+            if (ptv.setValue(value)){
+                reworkStatusLine();
+            }
         }
     }
 
@@ -533,5 +534,42 @@ public class ControlView extends RelativeLayout {
         }
     }
 
+    // *************************************************************************************************
+    // ********* Quick controls related stuff                                                    **********
+    // *************************************************************************************************
 
+    public PrefTextView createQuickControlPTV(ViewGroup vgQuickControls, float weight) {
+        PrefTextView ptv = new PrefTextView(context);
+        vgQuickControls.addView(ptv);
+
+        TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        int margin = convertDp(1.5f);
+        params.setMargins(margin,margin,margin,margin);
+        params.weight = weight;
+        ptv.setLayoutParams(params);
+
+        ptv.setPadding(0,convertDp(8),0,convertDp(8));
+        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick, getContext().getTheme());
+
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        ptv.setCompoundDrawables(drawable,null,null,null);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
+        ptv.setLines(1);
+        ptv.setText(" ");
+        ptv.setCompoundDrawablePadding(convertDp(30));
+//        ptv.setOnClickListener(hintControl);
+        ptv.setBackground(ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.shape, getContext().getTheme()));
+        ptv.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                Log.i("XXX"," left="+left+" top="+top+" right="+right+" bottom="+bottom+" left="+oldLeft+" top="+oldTop+" right="+oldRight+" bottom="+oldBottom);
+                if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
+                    int paddingHorizontal = Math.max((right-left - drawable.getIntrinsicWidth()) / 2, 0);
+                    int paddingVertical = Math.max((bottom-top - drawable.getIntrinsicHeight()) / 2, 0);
+                    ptv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
+                }
+            }
+        });
+        return ptv;
+    }
 }

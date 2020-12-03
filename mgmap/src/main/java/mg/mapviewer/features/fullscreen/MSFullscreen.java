@@ -17,9 +17,10 @@ public class MSFullscreen extends MGMicroService {
     }
 
     @Override
-    public void initQuickControl(PrefTextView ptv, String info) {
+    public PrefTextView initQuickControl(PrefTextView ptv, String info) {
         ptv.setPrefData(new MGPref[]{prefFullscreen},
                 new int[]{R.drawable.fullscreen, R.drawable.fullscreen});
+        return ptv;
     }
 
     @Override

@@ -42,7 +42,7 @@ public class MSRecordingTrackLog extends MGMicroService {
 
 
     @Override
-    public void initDashboard(ViewGroup dvg, String info) {
+    public ViewGroup initDashboard(ViewGroup dvg, String info) {
         getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.RED100_A100);
         if ("rtl".equals(info)) {
             dashboardRtl = dvg;
@@ -50,6 +50,7 @@ public class MSRecordingTrackLog extends MGMicroService {
         if ("rtls".equals(info)) {
             dashboardRtls = dvg;
         }
+        return dvg;
     }
 
     @Override

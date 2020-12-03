@@ -18,10 +18,11 @@ public class MSAlpha extends MGMicroService {
     }
 
     @Override
-    public void initQuickControl(PrefTextView ptv, String info){
+    public PrefTextView initQuickControl(PrefTextView ptv, String info){
         ptv.setPrefData(new MGPref[]{prefAlpha},
                 new int[]{R.drawable.slider});
         setSliderVisibility();
+        return ptv;
     }
 
     @Override

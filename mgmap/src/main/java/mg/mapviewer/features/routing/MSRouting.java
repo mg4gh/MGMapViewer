@@ -103,9 +103,10 @@ public class MSRouting extends MGMicroService {
     }
 
     @Override
-    public void initDashboard(ViewGroup dvg, String info) {
+    public ViewGroup initDashboard(ViewGroup dvg, String info) {
         getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.PURPLE_A100);
         dashboardRoute = dvg;
+        return dvg;
     }
 
 

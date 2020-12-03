@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 
+import org.mapsforge.map.model.DisplayModel;
+
 import mg.mapviewer.MGMapApplication;
 
 public class HintControl extends ExtendedClickListener {
@@ -41,7 +43,12 @@ public class HintControl extends ExtendedClickListener {
                 tvHint.setBackgroundColor(colorCode);
             }
             Drawable[] ds = tv.getCompoundDrawables();
-            tvHint.setCompoundDrawables(ds[0],null,null,null);
+            if (ds[0] != null){
+                Drawable clone = ds[0].getConstantState().newDrawable();
+                float scale = DisplayModel.getDeviceScaleFactor();
+                clone.setBounds(0,0, (int)(30*scale),(int)(30*scale));
+                tvHint.setCompoundDrawables(clone,null,null,null);
+            }
             int fgColor = tv.getTextColors().getDefaultColor();
             tvHint.setTextColor(fgColor);
             tvHint.setVisibility(View.VISIBLE);

@@ -44,12 +44,13 @@ public class MSRemainings extends MGMicroService {
     private PrefTextView ptvRemain = null;
 
     @Override
-    public void initStatusLine(PrefTextView ptv, String info) {
+    public PrefTextView initStatusLine(PrefTextView ptv, String info) {
         if (info.equals("remain")){
             ptv.setPrefData(new MGPref[]{prefInterval, prefReverse}, new int[]{R.drawable.remaining, R.drawable.remaining3, R.drawable.remaining2, R.drawable.remaining3 });
             ptv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
             ptvRemain = ptv;
         }
+        return ptv;
     }
 
     @Override
@@ -95,7 +96,7 @@ public class MSRemainings extends MGMicroService {
      */
     private void refreshRemainings(){
         TrackLog selectedTrackLog = getApplication().availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
-        double dist = 0;
+        double dist = -1;
         int drawableId = 0;
         boolean interval = false;
         if (selectedTrackLog != null){
