@@ -145,7 +145,7 @@ public class ControlView extends RelativeLayout {
 
             prepareAlphaSliders();
 
-            prepareStatusLine();
+//            prepareStatusLine();
             controlComposer.composeStatusLine(application, activity, this);
             finalizeStatusLine();
 
@@ -488,7 +488,10 @@ public class ControlView extends RelativeLayout {
     // ********* Status line related stuff                                                    **********
     // *************************************************************************************************
 
-    public PrefTextView setStatusLineLayout(PrefTextView ptv, float weight){
+    public PrefTextView createStatusLinePTV(ViewGroup vgParent, float weight){
+        PrefTextView ptv = new PrefTextView(context);
+        vgParent.addView(ptv);
+        tvList.add(ptv);
         TableRow.LayoutParams llParms = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
         int margin = convertDp(0.8f);
         llParms.setMargins(margin,margin,margin,margin);
@@ -534,13 +537,13 @@ public class ControlView extends RelativeLayout {
         }
     }
 
-    void prepareStatusLine(){
-        tr_states = activity.findViewById(R.id.tr_states);
-        for (int idx=0; idx<tr_states.getChildCount();idx++){
-            tvList.add((TextView) tr_states.getChildAt(idx));
-        }
-    }
-
+//    void prepareStatusLine(){
+//        tr_states = activity.findViewById(R.id.tr_states);
+//        for (int idx=0; idx<tr_states.getChildCount();idx++){
+//            tvList.add((TextView) tr_states.getChildAt(idx));
+//        }
+//    }
+//
     void finalizeStatusLine(){
         tr_states = activity.findViewById(R.id.tr_states);
         for (int idx=0; idx<tr_states.getChildCount();idx++){

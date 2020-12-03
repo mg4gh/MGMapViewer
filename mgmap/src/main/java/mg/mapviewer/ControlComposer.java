@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import mg.mapviewer.features.motion.MSBeeline;
+import mg.mapviewer.features.beeline.MSBeeline;
 import mg.mapviewer.features.position.CenterControl;
 import mg.mapviewer.features.position.GpsControl;
 import mg.mapviewer.control.HeightProfileControl;
@@ -68,12 +68,13 @@ public class ControlComposer {
     }
 
     void composeStatusLine(MGMapApplication application, MGMapActivity activity, ControlView coView){
-        application.getMS(MSBeeline.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl1), 20), "center");
-        application.getMS(MSBeeline.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl2), 10), "zoom");
-        application.getMS(MSTime.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl3), 15), "time");
-        application.getMS(MSPosition.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl4), 20), "height");
-        application.getMS(MSRemainings.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl5), 20), "remain");
-        application.getMS(MSTime.class).initStatusLine(coView.setStatusLineLayout(activity.findViewById(R.id.tv_sl6), 15), "bat");
+        ViewGroup parent = activity.findViewById(R.id.tr_states);
+        application.getMS(MSBeeline.class).initStatusLine(coView.createStatusLinePTV(parent, 20), "center");
+        application.getMS(MSBeeline.class).initStatusLine(coView.createStatusLinePTV(parent, 10), "zoom");
+        application.getMS(MSTime.class).initStatusLine(coView.createStatusLinePTV(parent, 15), "time");
+        application.getMS(MSPosition.class).initStatusLine(coView.createStatusLinePTV(parent, 20), "height");
+        application.getMS(MSRemainings.class).initStatusLine(coView.createStatusLinePTV(parent, 20), "remain");
+        application.getMS(MSTime.class).initStatusLine(coView.createStatusLinePTV(parent, 15), "bat");
     }
 
     void composeDashboard(MGMapApplication application, MGMapActivity activity, ControlView coView){

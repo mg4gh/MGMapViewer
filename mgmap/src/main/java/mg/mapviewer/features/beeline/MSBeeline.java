@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mapviewer.features.motion;
+package mg.mapviewer.features.beeline;
 
 import android.util.Log;
 
@@ -121,7 +121,7 @@ public class MSBeeline extends MGMicroService {
             mpm.addPoint(pm);
             register( new MultiPointView(mpm, PAINT_BLACK_STROKE));
         } else {
-            distance = 0;
+            distance = -1;
         }
         getControlView().setStatusLineValue(ptvCenter, distance);
     }

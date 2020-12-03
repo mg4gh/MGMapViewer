@@ -4,12 +4,15 @@ com.jjoe64.graphview.helper
 com.jjoe64.graphview.series
 mg.mapviewer
 mg.mapviewer.control
+mg.mapviewer.features.alpha
 mg.mapviewer.features.atl
 mg.mapviewer.features.bb
+mg.mapviewer.features.beeline
+mg.mapviewer.features.download
+mg.mapviewer.features.fullscreen
 mg.mapviewer.features.gdrive
 mg.mapviewer.features.grad
 mg.mapviewer.features.marker
-mg.mapviewer.features.motion
 mg.mapviewer.features.position
 mg.mapviewer.features.remainings
 mg.mapviewer.features.routing
@@ -23,4 +26,5 @@ mg.mapviewer.graph
 mg.mapviewer.model
 mg.mapviewer.settings
 mg.mapviewer.util
+mg.mapviewer.util.pref
 mg.mapviewer.view

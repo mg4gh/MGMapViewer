@@ -62,12 +62,12 @@
                 android:id="@+id/tr_states"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
-                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl1"   />
-                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl2"   />
-                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl3"   />
-                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl4"   />
-                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl5"   />
-                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl6"   />
+<!--                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl1"   />-->
+<!--                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl2"   />-->
+<!--                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl3"   />-->
+<!--                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl4"   />-->
+<!--                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl5"   />-->
+<!--                <mg.mapviewer.view.PrefTextView android:id="@+id/tv_sl6"   />-->
             </TableRow>
             <TableRow
                 android:id="@+id/tr_qc"
