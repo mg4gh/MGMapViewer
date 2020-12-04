@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
@@ -30,6 +31,7 @@ import java.util.Observable;
 
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogSegment;
+import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.util.MapViewUtility;
 import mg.mapviewer.view.MultiPointGLView;
@@ -59,6 +61,7 @@ public class MGMicroService {
 
         @Override
         public void update(Observable o, Object arg) {
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+" o="+o+" arg="+arg);
             onUpdate(o,arg);
             onChange();
         }

@@ -202,7 +202,7 @@ public class MSRouting extends MGMicroService {
             hideRouting();
             return;
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+ " start");
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Start");
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             if (segment.size() < 1) continue;
@@ -279,6 +279,7 @@ public class MSRouting extends MGMicroService {
         }
         calcRemainingStatistic(routeTrackLog);
         getControlView().setDashboardValue(true, dashboardRoute, routeTrackLog.getTrackStatistic());
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
     }
 
     private void calcRemainingStatistic(WriteableTrackLog routeTrackLog){
