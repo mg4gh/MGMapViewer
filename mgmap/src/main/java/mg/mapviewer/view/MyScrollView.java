@@ -27,7 +27,7 @@ public class MyScrollView extends ScrollView {
     @Override
     public void fling(int velocityY) {
         double v = velocityY;
-        double f =  Math.max( Math.abs(v/2000.0) , 1);
+        double f =  Math.max( Math.abs(v/4000.0) , 1);
 
         int nv = (int)(v*f);
         Log.i("MyScroll", "fling "+velocityY+" "+nv);
