@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,9 +36,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
+import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.TopExceptionHandler;
 
 public class ThemeSettings extends AppCompatActivity implements OnSharedPreferenceChangeListener {
@@ -47,6 +51,8 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     XmlRenderThemeStyleMenu renderthemeOptions;
     PreferenceCategory renderthemeMenu;
     ThemeSettingsFragment themeSettingsFragment;
+
+    ArrayList<String> themePreferenceKeys = new ArrayList<>(); // store in this list all preference keys used by the renderThemeMenu
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -66,8 +72,12 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences,
                                           String key) {
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key).toString());
         if (this.renderthemeOptions != null && this.renderthemeOptions.getId().equals(key)) {
             createRenderthemeMenu();
+        }
+        if (themePreferenceKeys.contains(key)){
+            preferences.edit().putString(getResources().getString(R.string.preference_theme_changed), UUID.randomUUID().toString()).apply();
         }
     }
 
@@ -176,6 +186,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         baseLayerPreference.setIconSpaceReserved(false);
 
         renderthemeMenu.addPreference(baseLayerPreference);
+        themePreferenceKeys.add(renderthemeOptions.getId());
 
         String selection = baseLayerPreference.getValue();
         // need to check that the selection stored is actually a valid getLayer in the current
@@ -198,6 +209,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
                 checkbox.setChecked(overlay.isEnabled());
             }
             this.renderthemeMenu.addPreference(checkbox);
+            themePreferenceKeys.add(overlay.getId());
         }
     }
 }

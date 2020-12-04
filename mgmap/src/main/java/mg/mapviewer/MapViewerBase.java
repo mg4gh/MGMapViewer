@@ -34,6 +34,7 @@ import org.mapsforge.map.scalebar.MetricUnitAdapter;
 import org.mapsforge.map.scalebar.NauticalUnitAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,6 +50,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
     protected PreferencesFacade preferencesFacade;
     protected SharedPreferences sharedPreferences;
     protected List<TileCache> tileCaches = new ArrayList<TileCache>();
+    protected List<String> recreatePreferences;
 
     @Override
     protected void onPause() {
@@ -87,6 +89,17 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( this.getClass().getSimpleName(), MODE_PRIVATE));
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         this.sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        recreatePreferences = Arrays.asList(
+                getResources().getString(R.string.Layers_pref_chooseMap1_key),
+                getResources().getString(R.string.Layers_pref_chooseMap2_key),
+                getResources().getString(R.string.Layers_pref_chooseMap3_key),
+                getResources().getString(R.string.Layers_pref_chooseMap4_key),
+                getResources().getString(R.string.Layers_pref_chooseMap5_key),
+                getResources().getString(R.string.preference_theme_changed),
+                getResources().getString(R.string.preference_choose_theme_key),
+                getResources().getString(R.string.preferences_scale_key),
+                getResources().getString(R.string.preferences_scalebar_key),
+                getResources().getString(R.string.preferences_language_key));
     }
 
 
@@ -112,20 +125,14 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key).toString());
-        // Be aware that most preference changes take effect due to activity restart
 
-        if (key.startsWith("SelectMap") || key.equals("SelectTheme") || key.equals("scale") || key.equals("scalebar") || key.equals("language_selection")){
+        // Some preference changes take effect due to activity restart - those need to be listed in recreatePreferences
+        if (recreatePreferences.contains(key)){
             for (TileCache tileCache : tileCaches) {
                 tileCache.purge();
             }
             this.recreate(); // restart activity
         }
-//        if (!key.startsWith("no_recreate")){
-//            for (TileCache tileCache : tileCaches) {
-//                tileCache.purge();
-//            }
-//            this.recreate(); // restart activity
-//        }
     }
 
 }

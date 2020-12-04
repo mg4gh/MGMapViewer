@@ -288,6 +288,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @Override
     protected void onNewIntent(Intent intent) {
         try {
+            super.onNewIntent(intent);
             Log.w(MGMapApplication.LABEL, NameUtil.context()+"  " + intent);
             if (intent != null) {
                 if (intent.getType() == null){
@@ -466,6 +467,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             if (this.sharedPreferences.getBoolean(overlay.getId(), overlay.isEnabled())) {
                 result.addAll(overlay.getCategories());
             }
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+overlay.getId()+" "+ overlay.isEnabled());
         }
         return result;
     }
