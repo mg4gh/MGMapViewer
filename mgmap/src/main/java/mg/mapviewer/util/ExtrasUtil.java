@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 import mg.mapviewer.MGMapApplication;
@@ -38,15 +39,25 @@ public class ExtrasUtil {
         Log.i(MGMapApplication.LABEL, NameUtil.context() );
 
         try {
-            List<String> candidates = PersistenceManager.getInstance().getGpxNames();
-            candidates.removeAll( PersistenceManager.getInstance().getMetaNames() );
+            List<String> gpxNames = PersistenceManager.getInstance().getGpxNames();
+            List<String> metaNames = PersistenceManager.getInstance().getMetaNames();
 
-            for (String name : candidates){
+            List<String> newGpxNames = new ArrayList<>(gpxNames); // create  meta files for new gpx
+            newGpxNames.removeAll(metaNames);
+            metaNames.removeAll(gpxNames); // remove meta files without corresponding gpx
+
+            for (String name : newGpxNames){
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Create meta file for "+name );
                 TrackLog trackLog = new GpxImporter().parseTrackLog(name, PersistenceManager.getInstance().openGpxInput(name));
                 MetaDataUtil.createMetaData(trackLog);
                 MetaDataUtil.writeMetaData(PersistenceManager.getInstance().openMetaOutput(name), trackLog);
-
             }
+            Log.i(MGMapApplication.LABEL, NameUtil.context() );
+            for (String name : metaNames){
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Delete meta file for "+name);
+                PersistenceManager.getInstance().deleteTrack(name);
+            }
+            Log.i(MGMapApplication.LABEL, NameUtil.context() );
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         }

@@ -231,14 +231,25 @@ public class PersistenceManager {
         return null;
     }
 
+    // extension should include a ".", e.g. ".gpx"
+    private File getAbsoluteFile(File baseDir, String filename, String extension){
+        return new File(baseDir.getAbsoluteFile()+File.separator+filename+extension);
+    }
+    private void checkCreatePath(File file){
+        File fParent = file.getParentFile();
+        if (!fParent.exists()){
+            fParent.mkdirs();
+        }
+    }
 
     public boolean existsGpx(String filename) {
-        File file = new File(trackGpxDir, filename + ".gpx");
+        File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
         return file.exists();
     }
     public PrintWriter openGpxOutput(String filename) {
         try {
-            File file = new File(trackGpxDir, filename + ".gpx");
+            File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
+            checkCreatePath(file);
             return new PrintWriter(file);
         } catch (FileNotFoundException e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
@@ -247,7 +258,7 @@ public class PersistenceManager {
     }
     public InputStream openGpxInput(String filename) {
         try {
-            File file = new File(trackGpxDir, filename + ".gpx");
+            File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
@@ -256,7 +267,7 @@ public class PersistenceManager {
     }
     public Uri getGpxUri(String filename) {
         try {
-            File file = new File(trackGpxDir, filename + ".gpx");
+            File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
             Uri uri = FileProvider.getUriForFile(context, "mg.mgmap.provider", file);
             return uri;
         } catch (Exception e) {
@@ -267,7 +278,8 @@ public class PersistenceManager {
 
     public FileOutputStream openMetaOutput(String filename) {
         try {
-            File file = new File(trackMetaDir, filename + ".meta");
+            File file = getAbsoluteFile(trackMetaDir, filename, ".meta");
+            checkCreatePath(file);
             return new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
@@ -277,7 +289,7 @@ public class PersistenceManager {
 
     public FileInputStream openMetaInput(String filename) {
         try {
-            File file = new File(trackMetaDir, filename + ".meta");
+            File file = getAbsoluteFile(trackMetaDir, filename, ".meta");
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
@@ -285,21 +297,26 @@ public class PersistenceManager {
         return null;
     }
 
-    public ArrayList<String> getGpxNames() {
-        ArrayList<String> names = new ArrayList<>();
-        for (String name : trackGpxDir.list()){
-            if (name.endsWith(".gpx")){
-                names.add( name.replace(".gpx","") );
+    /** Retruns a list of relative path name, but without extension */
+    public ArrayList<String> getNames(File baseDir, File dir, String endsWith, ArrayList<String> matchedList) {
+        for (File entry : dir.listFiles()) {
+            if (entry.isDirectory()) {
+                getNames(baseDir, entry, endsWith, matchedList);
+            } else {
+                if (entry.getName().endsWith(endsWith)) {
+                    String sPath = entry.getAbsolutePath();
+                    matchedList.add(sPath.substring((baseDir.getAbsolutePath()+File.pathSeparator ).length(), sPath.length() - endsWith.length()));
+                }
             }
         }
-        return names;
+        return matchedList;
+    }
+
+    public ArrayList<String> getGpxNames() {
+        return getNames(trackGpxDir, trackGpxDir, ".gpx", new ArrayList<>());
     }
     public ArrayList<String> getMetaNames() {
-        ArrayList<String> names = new ArrayList<>();
-        for (String name : trackMetaDir.list()){
-            names.add( name.replace(".meta","") );
-        }
-        return names;
+        return getNames(trackMetaDir, trackMetaDir, ".meta", new ArrayList<>());
     }
 
     public File getThemesDir(){
@@ -411,9 +428,9 @@ public class PersistenceManager {
 
 
 
-    public void deleteTrack(String name) {
-        deleteFile( new File(trackGpxDir, name + ".gpx") );
-        deleteFile( new File(trackMetaDir, name + ".meta") );
+    public void deleteTrack(String filename) {
+        deleteFile( getAbsoluteFile(trackGpxDir, filename, ".gpx") );
+        deleteFile( getAbsoluteFile(trackMetaDir, filename, ".meta") );
     }
 
     @SuppressWarnings("all")
