@@ -202,6 +202,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         tableLayout.addView(tableRow0);
         PrefTextView namePTV = createPTV(tableRow0,1).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null);
         namePTV.setValue(trackLog.getName());
+        namePTV.setMaxLines(5);
 
         TableRow tableRow1 = new TableRow(context);
         tableLayout.addView(tableRow1);
@@ -265,13 +266,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
         }
 
     }
-
-    private void setDrawable(TextView textView, int resourceID){
-        Drawable drawable = resources.getDrawable( resourceID, getTheme());
-        drawable.setBounds(0,0,40,40);
-        textView.setCompoundDrawables(drawable, null, null, null);
-    }
-
 
     @Override
     protected void onStop() {
