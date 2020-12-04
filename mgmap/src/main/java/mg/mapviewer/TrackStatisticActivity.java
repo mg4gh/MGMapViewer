@@ -387,13 +387,20 @@ public class TrackStatisticActivity extends AppCompatActivity {
             Intent sendIntent = null;
             String title = "Share ...";
             if (selectedRefs.size() == 1){
+                if (!PersistenceManager.getInstance().existsGpx(trackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
+                    GpxExporter.export(trackLog);
+                }
                 sendIntent = new Intent(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
                 title = "Share "+trackLog.getName()+".gpx to ...";
             } else if (selectedRefs.size() >= 2){
                 ArrayList<Uri> uris = new ArrayList<>();
                 for(int idx=0; idx < selectedRefs.size(); idx++){
-                    uris.add( PersistenceManager.getInstance().getGpxUri( selectedRefs.valueAt(idx).getTrackLog().getName() ) );
+                    TrackLog aTrackLog = selectedRefs.valueAt(idx).getTrackLog();
+                    if (!PersistenceManager.getInstance().existsGpx(aTrackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
+                        GpxExporter.export(aTrackLog);
+                    }
+                    uris.add( PersistenceManager.getInstance().getGpxUri( aTrackLog.getName() ) );
                 }
                 sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                 sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
