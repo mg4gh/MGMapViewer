@@ -28,7 +28,7 @@ public class GDrivePreferenceScreen extends MGPreferenceScreen {
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                MGMapApplication application = (MGMapApplication)getActivity().getApplication(); // getActivity return Settings Activity 
+                MGMapApplication application = (MGMapApplication)getActivity().getApplication(); // getActivity() returns Settings Activity, not MGMapActivity
                 MGMapActivity mgMapActivity = application.getMgMapActivity();
 
                 MSGDrive msGDrive = mgMapActivity.getMS(MSGDrive.class);
