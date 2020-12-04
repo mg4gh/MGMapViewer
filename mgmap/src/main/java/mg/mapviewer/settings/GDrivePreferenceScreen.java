@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 
 import mg.mapviewer.MGMapActivity;
+import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.features.gdrive.MSGDrive;
 
@@ -27,16 +28,15 @@ public class GDrivePreferenceScreen extends MGPreferenceScreen {
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Activity activity = getActivity();
-                if (activity instanceof MGMapActivity) {
-                    MGMapActivity mgMapActivity = (MGMapActivity) activity;
+                MGMapApplication application = (MGMapApplication)getActivity().getApplication(); // getActivity return Settings Activity 
+                MGMapActivity mgMapActivity = application.getMgMapActivity();
 
-                    MSGDrive msGDrive = mgMapActivity.getMS(MSGDrive.class);
-                    msGDrive.trySynchronisation();
+                MSGDrive msGDrive = mgMapActivity.getMS(MSGDrive.class);
+                msGDrive.trySynchronisation();
 
-                    Intent intent = new Intent(mgMapActivity, MGMapActivity.class);
-                    mgMapActivity.startActivity(intent);
-                }
+                Intent intent = new Intent(mgMapActivity, MGMapActivity.class);
+                mgMapActivity.startActivity(intent);
+
                 return true;
             }
         });
