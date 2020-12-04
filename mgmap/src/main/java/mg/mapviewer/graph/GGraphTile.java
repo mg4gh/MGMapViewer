@@ -64,6 +64,7 @@ public class GGraphTile extends GGraph {
         if (graph != null){
             accessList.remove(graph);
         } else {
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+accessList.size()+")");
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
             MapReadResult mapReadResult = mapFile.readMapData(tile);        // extractPoints relevant map data
             graph = new GGraphTile(tile);

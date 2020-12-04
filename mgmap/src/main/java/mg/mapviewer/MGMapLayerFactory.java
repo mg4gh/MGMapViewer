@@ -251,7 +251,6 @@ public class MGMapLayerFactory {
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
         return layer;
     }
 

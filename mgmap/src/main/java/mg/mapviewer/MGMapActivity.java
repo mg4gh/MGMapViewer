@@ -467,7 +467,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             if (this.sharedPreferences.getBoolean(overlay.getId(), overlay.isEnabled())) {
                 result.addAll(overlay.getCategories());
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+overlay.getId()+" "+ overlay.isEnabled());
         }
         return result;
     }

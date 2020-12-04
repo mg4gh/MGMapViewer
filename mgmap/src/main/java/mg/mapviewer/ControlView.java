@@ -532,7 +532,6 @@ public class ControlView extends RelativeLayout {
 
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         ptv.setCompoundDrawables(drawable,null,null,null);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
         ptv.setText("");
         ptv.setLines(1);
         ptv.setTextColor(CC.getColor(R.color.BLACK));
@@ -596,7 +595,6 @@ public class ControlView extends RelativeLayout {
 
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         ptv.setCompoundDrawables(drawable,null,null,null);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+drawable.getIntrinsicWidth() +" "+ drawable.getIntrinsicHeight()+" "+drawable.getBounds());
         ptv.setLines(1);
         ptv.setText(" ");
         ptv.setCompoundDrawablePadding(convertDp(30));

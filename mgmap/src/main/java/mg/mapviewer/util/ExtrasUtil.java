@@ -37,7 +37,6 @@ public class ExtrasUtil {
 
     public static void checkCreateMeta(){
         Log.i(MGMapApplication.LABEL, NameUtil.context() );
-
         try {
             List<String> gpxNames = PersistenceManager.getInstance().getGpxNames();
             List<String> metaNames = PersistenceManager.getInstance().getMetaNames();
@@ -52,12 +51,10 @@ public class ExtrasUtil {
                 MetaDataUtil.createMetaData(trackLog);
                 MetaDataUtil.writeMetaData(PersistenceManager.getInstance().openMetaOutput(name), trackLog);
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context() );
             for (String name : metaNames){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Delete meta file for "+name);
                 PersistenceManager.getInstance().deleteTrack(name);
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context() );
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         }

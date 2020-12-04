@@ -21,10 +21,9 @@ public class MGPref<T> extends Observable {
     private static SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener(){
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+key);
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+key);
             MGPref<?> pref = prefMap.get(key);
             if (pref != null){
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+key);
                 pref.onSharedPreferenceChanged();
             }
         }

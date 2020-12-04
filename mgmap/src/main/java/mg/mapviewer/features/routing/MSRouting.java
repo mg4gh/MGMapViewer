@@ -304,7 +304,7 @@ public class MSRouting extends MGMicroService {
     MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, boolean distanceCheck, Map<PointModel, RoutingHint> hints){
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+" Start");
         boolean bShowRelaxed = (prefWayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY);
 
         GNode gStart = source.getApproachNode();
@@ -321,7 +321,7 @@ public class MSRouting extends MGMicroService {
             multi.createOverlaysForApproach(source.selectedApproach);
             multi.createOverlaysForApproach(target.selectedApproach);
 
-            Log.i(MGMapApplication.LABEL, NameUtil.context());
+            Log.v(MGMapApplication.LABEL, NameUtil.context());
             { // perform an AStar on this graph
                 AStar d = new AStar(multi);
 
@@ -338,12 +338,12 @@ public class MSRouting extends MGMicroService {
                     }
                 }
 
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " "+ path.size()+" "+d.getResult());
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " "+ " "+d.getResult());
                 for (GNodeRef gnr : path){
                     mpm.addPoint(gnr.getNode() );
                 }
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context());
+            Log.v(MGMapApplication.LABEL, NameUtil.context());
 
             // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
             if (mpm.size() == 3){
@@ -414,7 +414,7 @@ public class MSRouting extends MGMicroService {
                 hints.put(hint.pmCurrent, hint);
             }
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
         return mpm;
     }
 
