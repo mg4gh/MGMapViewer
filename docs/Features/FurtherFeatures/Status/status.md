@@ -4,7 +4,7 @@
  
 The status line is always visible, but it is kept semi transparent to have an idea about the 
 underlying map part. The status line can shows following information:
-- [air distance](../AirDistance/airdistance.md) between current position and a point of interest
+- [air distance](../BeelineDistance/beeline.md) between current position and a point of interest
 - zoom level of the current map 
 - current time
 - current elevation 

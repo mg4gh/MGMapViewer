@@ -37,7 +37,7 @@ public class ExtendedClickListener implements View.OnClickListener {
     public void onSingleClick(View view){}
 
     public void onDoubleClick(View view){
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" double");
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" double");
         onSingleClick(view);
         onSingleClick(view);
     }

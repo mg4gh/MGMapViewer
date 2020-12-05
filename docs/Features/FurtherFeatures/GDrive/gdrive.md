@@ -5,7 +5,12 @@
 This feature allows the synchronisation of gpx TrackLogs with a folder on your Google Drive account.
 
 Currently this synchronisation has to be triggered manually. 
-An automatic synchronisation might be implemented in future.
+An automatic synchronisation might be implemented in future. To start the GDrive synchronization process use
+<span style="color:gray">*Menu | GDrive | Synchronize with GDrive*</span>;
+
+<img src="./Menu_Settings.png" width="200" />
+<img src="./settings_gdrive.png" width="200" />
+<img src="./settings_gdrive_prefScreen.png" width="200" />
 
 The synchronisation process takes all files from the ./MGMapViewer/track/gpx
 directory into account. It tries to synchronize them to a (configurable) folder on your Google Drive.
@@ -29,9 +34,9 @@ When you trigger the synchronisation for the first time you have to allow this a
 For this process a browser opens automatically and you have to confirm that this app is allowed to access your Google Drive account.
 If you feel uncomfortable with this, no problem, just don't use this feature. Everything else works without limitations.
 
-<img src="./account1.png" width="250" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="./account2.png" width="250" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="./account3.png" width="250" />&nbsp;
+<img src="./account1.png" width="200" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="./account2.png" width="200" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="./account3.png" width="200" />&nbsp;
 
 When you got the third screen just go back to the MGMapViewer app. This procedure is only necessary, when you synchronize the first time.
 

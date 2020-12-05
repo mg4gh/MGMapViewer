@@ -49,12 +49,8 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     }
     public String getName4Sort() {
         String name4Sort = name;
-        if (trackStatistic.tStart != PointModel.NO_TIME){
-            String sTStart = Formatter.SDF.format(trackStatistic.getTStart());
-            if (!name4Sort.startsWith(sTStart)){
-                name4Sort = sTStart+"_"+name4Sort;
-            }
-        }
+        String sTStart = Formatter.SDF.format(trackStatistic.getTStart());
+        name4Sort = sTStart+"_"+name4Sort;
         return name4Sort;
     }
     public void setName(String name) {

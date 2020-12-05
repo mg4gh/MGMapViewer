@@ -11,7 +11,7 @@ To enter the statistic view use <span style="color:gray">*Menu | Statistic*</spa
 #### Statistic information
 
 The following figure shows an example of the statistic view - for the coloring see [here](../../track.md).
-Inside of a color group the entries are sorted (descending) by name.
+Inside of a color group the entries are <a href="#sort">sorted (descending)</a> .
 
 <img src="./stat2.png" width="400" />&nbsp;
 
@@ -46,5 +46,18 @@ This context menu offers functionality:
 - Show Track: open all marked tracks, the entry with the context menu as the selected one
 - Share Track: open a share intent - allows to send the marked tracks as gpx files via mail, Whatsapp, etc
 - Delete track: delete the tracks (there is a confirm required - but once you confirm, then they will be deleted, you don't get them back!)
+
+#### <a id="sort">Sorting of entries</a>
+
+Basically the entries are sorted descending by date.
+
+But which date? ... and what about entries without timestamp?  
+Each TrackLog has a "sort-name" which consists of the date prefix followed by the name.
+The date will be taken from the main track statistic, which contains the gpx header timestamp (if available) or otherwise from the first point (if available).
+If no date at all is available, the "0" timestamp is taken, which corresponds to the 1.1.1970.
+
+With a double-click on an entry you can switch the name to the sort-name, and with a second double click back to the original name.
+
+
 
 <small><small>[Back to Index](../../../index.md)</small></small>
