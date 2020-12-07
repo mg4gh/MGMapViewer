@@ -50,6 +50,9 @@ import mg.mapviewer.view.PrefTextView;
  */
 public class MGMicroService {
 
+    /** A timer object. */
+    private static Handler timer = new Handler();
+
     private MGMapActivity mmActivity;
     protected ArrayList<Layer> msLayers = new ArrayList<>();
 
@@ -191,7 +194,7 @@ public class MGMicroService {
         return mmActivity.getMapsforgeMapView();
     }
     protected Handler getTimer(){
-        return mmActivity.getTimer();
+        return timer;
     }
     protected MapViewUtility getMapViewUtility(){
         return mmActivity.getMapViewUtility();

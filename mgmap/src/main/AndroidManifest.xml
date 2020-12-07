@@ -85,7 +85,7 @@
                 android:value="mg.mapviewer.MGMapActivity" />
         </activity>
         <activity
-            android:name="mg.mapviewer.TrackStatisticActivity"
+            android:name="mg.mapviewer.features.statistic.TrackStatisticActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Track Selection">
             <meta-data

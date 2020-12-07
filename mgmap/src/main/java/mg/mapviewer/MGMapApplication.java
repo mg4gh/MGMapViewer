@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +53,19 @@ public class MGMapApplication extends Application {
     // Label for Logging.
     public static final String LABEL = "MGMapViewer";
     private Process pLogcat = null;
+
+    public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
+    public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
+    public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>();
+    public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>();
+    public final TrackLogObservable<WriteableTrackLog> routeTrackLogObservable = new TrackLogObservable<>();
+    public final TreeMap<String, TrackLog> metaTrackLogs = new TreeMap<>(Collections.reverseOrder());
+
+
+    boolean initFinished = false;
+    private MGMapActivity mgMapActivity = null;
+    ArrayList<MGMicroService> microServices = new ArrayList<>();
+    private ArrayList<BgJob> bgJobs = new ArrayList<>();
 
     MGPref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
     MGPref<Boolean> prefGpsOn = null; // property to distinguish ApplicationStart from ActivityRecreate
@@ -138,7 +152,9 @@ public class MGMapApplication extends Application {
         new AsyncTask<Object, Object, Object>(){
             @Override
             protected Object doInBackground(Object... objects) {
-                metaTrackLogs.addAll(MetaDataUtil.loadMetaData());
+                for (TrackLog trackLog : MetaDataUtil.loadMetaData()){
+                    metaTrackLogs.put(trackLog.getNameKey(),trackLog);
+                }
                 return null;
             }
         }.execute();
@@ -301,6 +317,7 @@ public class MGMapApplication extends Application {
             this.trackLog = trackLog;
             if (this.trackLog != null){
                 this.trackLog.addObserver(proxyObserver);
+                metaTrackLogs.put(trackLog.getNameKey(), trackLog);
             }
             setChanged();
             notifyObservers();
@@ -340,17 +357,6 @@ public class MGMapApplication extends Application {
 
 
 
-    public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
-    public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
-    public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>();
-    public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>();
-    public final TreeSet<TrackLog> metaTrackLogs = new TreeSet<>(Collections.<TrackLog>reverseOrder());
-
-
-    boolean initFinished = false;
-    private MGMapActivity mgMapActivity = null;
-    ArrayList<MGMicroService> microServices = new ArrayList<>();
-    private ArrayList<BgJob> bgJobs = new ArrayList<>();
 
     /** queue for new (unhandled) TrackLogPoint objects */
     private ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);

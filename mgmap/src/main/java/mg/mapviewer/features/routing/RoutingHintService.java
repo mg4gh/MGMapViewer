@@ -124,7 +124,7 @@ public class RoutingHintService {
         try {
             MSRouting msRouting = application.getMS(MSRouting.class);
             if (msRouting == null) return;
-            TrackLog routeTrackLog = msRouting.routeTrackLog;
+            TrackLog routeTrackLog = application.routeTrackLogObservable.getTrackLog();
             if (routeTrackLog == null) return;
 
             if ((tts != null) && (serviceState == ServiceState.ON) && prefGps.getValue()){

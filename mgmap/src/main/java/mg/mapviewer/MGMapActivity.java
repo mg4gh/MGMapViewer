@@ -61,6 +61,7 @@ import mg.mapviewer.features.position.MSPosition;
 import mg.mapviewer.features.remainings.MSRemainings;
 import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
+import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.model.BBox;
@@ -87,8 +88,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * The main activity of the MgMapViewer. It is based on the mapsforge MapView and provides track logging
@@ -110,8 +113,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     MapViewUtility mapViewUtility = null;
     /** Registry of MicroServices - see also {@link mg.mapviewer.MGMicroService} for the micro service concept. */
     ArrayList<MGMicroService> microServices = null;
-    /** A timer object. */
-    private Handler timer = new Handler();
 
 
 
@@ -310,32 +311,40 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent.getType()+" stl="+stl+" atl="+atl);
 
                     BBox bBox2show = new BBox();
-                    for (TrackLog aTrackLog : application.metaTrackLogs){
-                        if (atls.contains(aTrackLog.getName())){
+                    TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
+                    if (selectedTrackLog != null){
+                        TrackLogRef selectedRef = new TrackLogRef(selectedTrackLog, -1);
+                        application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
+                        bBox2show.extend(selectedTrackLog.getBBox());
+                    }
+                    for (String aatl : atls){
+                        TrackLog aTrackLog = application.metaTrackLogs.get(aatl);
+                        if (aatl != null){
                             application.availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
                             bBox2show.extend(aTrackLog.getBBox());
-                        }
-                        if ((stl!=null) && (stl.equals(aTrackLog.getName()))){
-                            TrackLogRef selectedRef = new TrackLogRef(aTrackLog, -1);
-                            application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
-                            bBox2show.extend(aTrackLog.getBBox());
+
                         }
                     }
-                    application.availableTrackLogsObservable.changed();
-                    getMapViewUtility().zoomForBoundingBox(bBox2show);
+
+                    if (!bBox2show.isInitial()){
+                        application.availableTrackLogsObservable.changed();
+                        getMapViewUtility().zoomForBoundingBox(bBox2show);
+                    }
 
                 } else if (intent.getType().equals("mgmap/markTrack")){
                     String stl = intent.getStringExtra("stl");
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent.getType()+" stl="+stl);
 
                     BBox bBox2show = new BBox();
-                    for (TrackLog aTrackLog : application.metaTrackLogs){
-                        if ((stl!=null) && (stl.equals(aTrackLog.getName()))){
-                            application.getMS(MSMarker.class).createMarkerTrackLog(aTrackLog);
-                            bBox2show.extend(aTrackLog.getBBox());
-                        }
+                    TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
+                    if (selectedTrackLog != null){
+                        application.getMS(MSMarker.class).createMarkerTrackLog(selectedTrackLog);
+                        bBox2show.extend(selectedTrackLog.getBBox());
                     }
-                    getMapViewUtility().zoomForBoundingBox(bBox2show);
+
+                    if (!bBox2show.isInitial()){
+                        getMapViewUtility().zoomForBoundingBox(bBox2show);
+                    }
 
                 } else {
                     Uri uri = intent.getData();
@@ -344,6 +353,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         if (uri.toString().startsWith("content")){ // assume this is a gpx file
                             TrackLog trackLog = GpxImporter.checkLoadGpx(application, uri);
                             if (trackLog != null) {
+                                application.metaTrackLogs.put(trackLog.getNameKey(), trackLog);
                                 application.lastPositionsObservable.clear();
                                 TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
                                 application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
@@ -475,9 +485,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     public MapView getMapsforgeMapView(){
         return mapView;
     }
-    public Handler getTimer(){
-        return timer;
-    }
+//    public Handler getTimer(){
+//        return timer;
+//    }
     public MapViewUtility getMapViewUtility(){
         return mapViewUtility;
     }

@@ -23,7 +23,7 @@ import mg.mapviewer.view.MultiPointView;
 
 public class MarkerTrackView extends MultiPointView {
 
-    private static final Paint PAINT_MARKER_STROKE_DASHED = CC.getStrokePaint(R.color.RED_A150, 3);
+    private static final Paint PAINT_MARKER_STROKE_DASHED = CC.getStrokePaint(R.color.PINK, 3);
 
     static{
 //        PAINT_MARKER_STROKE_DASHED.setDashPathEffect(new float[]{40.0f,20.0f});

@@ -41,7 +41,7 @@ public class TrackStopControl extends Control {
         PersistenceManager.getInstance().clearRaw();
 
         application.availableTrackLogsObservable.availableTrackLogs.add(rtl);
-        application.metaTrackLogs.add(rtl);
+        application.metaTrackLogs.put(rtl.getNameKey(), rtl);
         application.recordingTrackLogObservable.setTrackLog(null);
 
         MetaDataUtil.createMetaData(rtl);

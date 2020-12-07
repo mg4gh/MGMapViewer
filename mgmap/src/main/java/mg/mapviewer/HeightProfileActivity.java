@@ -70,7 +70,7 @@ public class HeightProfileActivity extends Activity {
     public static boolean check4trackLogRef(MGMapApplication application){
         if (null != application.recordingTrackLogObservable.getTrackLog()) return true;
         if (null != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) return true;
-        if (null != application.getMS(MSRouting.class).routeTrackLog) return true;
+        if (null != application.routeTrackLogObservable.getTrackLog()) return true;
         return false;
     }
 
@@ -122,7 +122,7 @@ public class HeightProfileActivity extends Activity {
         MGMapApplication application = (MGMapApplication)getApplication();
         createSeries(graph,  application.recordingTrackLogObservable.getTrackLog(), R.color.RED, showAscentGraph);
         createSeries(graph,  application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE, showAscentGraph);
-        createSeries(graph,  application.getMS(MSRouting.class).routeTrackLog, R.color.PURPLE_A150, showAscentGraph);
+        createSeries(graph,  application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A150, showAscentGraph);
     }
 
 
@@ -190,15 +190,15 @@ public class HeightProfileActivity extends Activity {
             } else {
                 // the reason for no ele values is probably, that the track is loaded via lalo meta data - thus it doesn't contain ele values - try to load corresponding gpx
 
-                try {
-                    InputStream fis =  PersistenceManager.getInstance().openGpxInput(trackLog.getName());
-                    if (fis != null){
-                        TrackLog trackLogGpx = new GpxImporter().parseTrackLog(trackLog.getName(), fis);
-                        fillHeightProfiles(trackLogGpx.asMPMList(), segmentHeightProfiles, segmentAscentProfiles);
-                    }
-                } catch (Exception e) {
-                    Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                }
+//                try {
+//                    InputStream fis =  PersistenceManager.getInstance().openGpxInput(trackLog.getName());
+//                    if (fis != null){
+//                        TrackLog trackLogGpx = new GpxImporter().parseTrackLog(trackLog.getName(), fis);
+//                        fillHeightProfiles(trackLogGpx.asMPMList(), segmentHeightProfiles, segmentAscentProfiles);
+//                    }
+//                } catch (Exception e) {
+//                    Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+//                }
             }
         }
     }

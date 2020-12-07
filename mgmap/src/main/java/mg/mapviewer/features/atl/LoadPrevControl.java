@@ -37,9 +37,9 @@ public class LoadPrevControl extends Control {
             TrackLog trackLog = null;
             TrackLog oldSelected = application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
             if (oldSelected != null){
-                trackLog = application.metaTrackLogs.higher(oldSelected);
+                trackLog = application.metaTrackLogs.higherEntry(oldSelected.getNameKey()).getValue();
             } else {
-                trackLog = application.metaTrackLogs.first();
+                trackLog = application.metaTrackLogs.firstEntry().getValue();
             }
             if (trackLog != null){
                 TrackLogRef refSelected = new TrackLogRefZoom(trackLog,trackLog.getNumberOfSegments()-1,true);

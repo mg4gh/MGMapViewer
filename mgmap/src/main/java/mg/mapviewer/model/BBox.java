@@ -58,6 +58,11 @@ public class BBox {
         return this;
     }
 
+    public boolean isInitial(){
+        return ((minLatitude == LatLongUtils.LATITUDE_MAX) && (minLongitude == LatLongUtils.LONGITUDE_MAX) &&
+                (maxLatitude == LatLongUtils.LATITUDE_MIN) && (maxLongitude == LatLongUtils.LONGITUDE_MIN));
+    }
+
     public BBox extend(double meters){
         double closeDeltaLat = PointModelUtil.latitudeDistance(meters);
         double closeDeltaLong = PointModelUtil.longitudeDistance(meters, (minLatitude+maxLatitude)/2);

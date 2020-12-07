@@ -164,7 +164,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
         boolean changed = false;
         BBox bBox2show = new BBox();
         if (bBox2Load != null){
-            for (TrackLog aTrackLog : getApplication().metaTrackLogs){
+            for (TrackLog aTrackLog : getApplication().metaTrackLogs.values()){
                 if (MetaDataUtil.checkLaLoRecords(aTrackLog, bBox2Load)){
                     getApplication().availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
                     bBox2show.extend(aTrackLog.getBBox());

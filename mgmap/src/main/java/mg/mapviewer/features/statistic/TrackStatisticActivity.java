@@ -12,15 +12,13 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mapviewer;
+package mg.mapviewer.features.statistic;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -44,9 +42,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-import mg.mapviewer.features.time.MSTime;
+import mg.mapviewer.MGMapActivity;
+import mg.mapviewer.MGMapApplication;
+import mg.mapviewer.R;
 import mg.mapviewer.model.TrackLogRef;
-import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.ExtendedClickListener;
 import mg.mapviewer.util.Formatter;
@@ -54,24 +53,24 @@ import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.model.TrackLog;
-import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.model.TrackLogStatistic;
 import mg.mapviewer.view.PrefTextView;
 
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class TrackStatisticActivity extends AppCompatActivity {
 
     private Context context = null;
     private MGMapApplication application = null;
-    private Resources resources = null;
 
-    private SparseArray<TrackLogRef> selectionRefs = new SparseArray<>();
-    private SparseArray<TrackLogRef> selectedRefs = new SparseArray<>();
+    public final Set<String> nameKeys = new TreeSet<>();
+    private SparseArray<TrackLog> existingTrackLogs = new SparseArray<>(); // maps viewId -> TrackLog
+    private SparseArray<TrackLog> selectedTrackLogs = new SparseArray<>(); // maps viewId -> TrackLog (only for selected entries)
+    private SparseArray<StatisticClickListener> statisticClickListeners = new SparseArray<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +78,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
         setContentView(R.layout.track_statistic_activity);
         application = (MGMapApplication)getApplication();
         context = application.getApplicationContext();
-        resources = getResources();
 
         if (Build.VERSION.SDK_INT >= 24) {
             try {
@@ -104,33 +102,24 @@ public class TrackStatisticActivity extends AppCompatActivity {
         super.onStart();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        LinearLayout parent = findViewById(R.id.trackView);
+        LinearLayout parent = findViewById(R.id.trackStatisticEntries);
+
+
 
         addTrackLog(parent, application.recordingTrackLogObservable.getTrackLog(), R.color.RED100_A100, R.color.RED100_A150);
+        addTrackLog(parent, application.markerTrackLogObservable.getTrackLog(), R.color.PINK_A100, R.color.PINK_A150);
+        addTrackLog(parent, application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A100, R.color.PURPLE_A150);
         addTrackLog(parent, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE100_A100, R.color.BLUE150_A150);
         for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
-            if (trackLog != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()){
-                addTrackLog(parent, trackLog, R.color.GREEN100_A100, R.color.GREEN150_A150);
-            }
+            addTrackLog(parent, trackLog, R.color.GREEN100_A100, R.color.GREEN150_A150);
         }
-        ArrayList<TrackLog> trackLogsRemain = new ArrayList<>();
-        for (TrackLog trackLog : application.metaTrackLogs){
-            if (!application.availableTrackLogsObservable.availableTrackLogs.contains(trackLog)){
-                if (parent.getChildCount() <= 30){
-                    addTrackLog(parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
-                } else {
-                    trackLogsRemain.add(trackLog);
-                }
-            }
-        }
-
+        ArrayList<TrackLog> trackLogsRemain = new ArrayList<>(application.metaTrackLogs.values());
 
         new Thread(){
             @Override
             public void run() {
                 while (!trackLogsRemain.isEmpty()){
                     try {
-                        Thread.sleep(150);
                         Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainA working="+working+" size="+trackLogsRemain.size());
                         if (!working){
                             working = true;
@@ -148,6 +137,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                             });
 
                         }
+                        Thread.sleep(100);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -188,20 +178,22 @@ public class TrackStatisticActivity extends AppCompatActivity {
     static Random random = new Random(System.currentTimeMillis());
     public void addTrackLog(ViewGroup parent, TrackLog trackLog, int colorId, int colorIdSelected){
         if (trackLog == null) return;
+        if (nameKeys.contains(trackLog.getNameKey())) return; // this TrackLog is already added
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
-
+        if (statistic.getNumPoints() == 0) return; // don't show empty tracks, especially possible for marker Tracks
+        nameKeys.add(trackLog.getNameKey());
 
         TableLayout tableLayout = new TableLayout(context);
         parent.addView(tableLayout);
         tableLayout.setId(View.generateViewId());
         tableLayout.setPadding(0, convertDp(2),0,0);
-        selectionRefs.put(tableLayout.getId(), new TrackLogRef(trackLog, -1));
+        existingTrackLogs.put(tableLayout.getId(), trackLog);
         registerForContextMenu(tableLayout);
 
         TableRow tableRow0 = new TableRow(context);
         tableLayout.addView(tableRow0);
         PrefTextView namePTV = createPTV(tableRow0,1).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null);
-        namePTV.setValue(trackLog.getName());
+        namePTV.setValue(trackLog.getName()+(trackLog.isModified()?"(*)":""));
         namePTV.setMaxLines(5);
 
         TableRow tableRow1 = new TableRow(context);
@@ -224,31 +216,45 @@ public class TrackStatisticActivity extends AppCompatActivity {
         setViewtreeColor(tableLayout, colorId);
 
         if (trackLog != application.recordingTrackLogObservable.getTrackLog()) {
-            tableLayout.setOnClickListener(new ExtendedClickListener() {
-                @Override
-                public void onSingleClick(View v) {
-                    int id = tableLayout.getId();
-                    if (selectedRefs.get(id) == null){
-                        selectedRefs.put(id, selectionRefs.get(id));
-                        setViewtreeColor(tableLayout, colorIdSelected);
-                    } else {
-                        selectedRefs.remove(id);
-                        setViewtreeColor(tableLayout, colorId);
-                    }
-                }
+            StatisticClickListener statisticClickListener = new StatisticClickListener(colorId,colorIdSelected,namePTV);
+            tableLayout.setOnClickListener(new StatisticClickListener(colorId,colorIdSelected,namePTV));
+            statisticClickListeners.put(tableLayout.getId(), statisticClickListener);
+        }
 
-                private boolean sortName = false;
-                @Override
-                public void onDoubleClick(View view) {
-                    sortName = !sortName;
-                    if (sortName){
-                        namePTV.setText(trackLog.getName4Sort());
-                    } else {
-                        namePTV.setText(trackLog.getName());
-                    }
-                    super.onDoubleClick(view);
-                }
-            });
+    }
+
+    public class StatisticClickListener extends ExtendedClickListener{
+        private int colorId;
+        private int colorIdSelected;
+        private PrefTextView namePTV;
+        public StatisticClickListener(int colorId, int colorIdSelected, PrefTextView namePTV){
+            this.colorId = colorId;
+            this.colorIdSelected = colorIdSelected;
+            this.namePTV = namePTV;
+        }
+        @Override
+        public void onSingleClick(View v) {
+            int id = v.getId();
+            if (selectedTrackLogs.get(id) == null){
+                selectedTrackLogs.put(id, existingTrackLogs.get(id));
+                setViewtreeColor(v, colorIdSelected);
+            } else {
+                selectedTrackLogs.remove(id);
+                setViewtreeColor(v, colorId);
+            }
+        }
+
+        private boolean sortName = false;
+        @Override
+        public void onDoubleClick(View v) {
+            sortName = !sortName;
+            TrackLog trackLog = existingTrackLogs.get(v.getId());
+            if (sortName){
+                namePTV.setText(trackLog.getNameKey());
+            } else {
+                namePTV.setText(trackLog.getName());
+            }
+            super.onDoubleClick(v);
         }
 
     }
@@ -271,10 +277,10 @@ public class TrackStatisticActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        LinearLayout parent = findViewById(R.id.trackView);
+        LinearLayout parent = findViewById(R.id.trackStatisticEntries);
         parent.removeAllViews();
-        selectionRefs.clear();
-        selectedRefs.clear();
+        existingTrackLogs.clear();
+        selectedTrackLogs.clear();
     }
 
     @Override
@@ -283,32 +289,39 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
         menu.setHeaderTitle("MGMapViewer:");
         if (v instanceof TableLayout){
-            if (selectionRefs.get(v.getId()).getTrackLog() != application.recordingTrackLogObservable.getTrackLog()){
-                if (selectedRefs.get(v.getId()) == null){
-                    v.performClick();
+            if (existingTrackLogs.get(v.getId()) != application.recordingTrackLogObservable.getTrackLog()){
+                int id = v.getId();
+
+                if (selectedTrackLogs.get(id) == null) {
+                    StatisticClickListener scl = statisticClickListeners.get(id);
+                    scl.onSingleClick(v);
                 }
 
-                menu.add(0, v.getId(),1,getResources().getString(R.string.ctx_stat_del_track));
                 menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_stl_track));
-                boolean bProvideSave = true;
-                for(int idx=0; idx < selectedRefs.size(); idx++) {
-                    TrackLog aTrackLog = selectedRefs.valueAt(idx).getTrackLog();
-                    if (PersistenceManager.getInstance().existsGpx(aTrackLog.getName())){
-                        bProvideSave = false;
-                        break;
+                boolean bModified = false;
+                for(int idx = 0; idx < selectedTrackLogs.size(); idx++) {
+                    TrackLog aTrackLog = selectedTrackLogs.valueAt(idx);
+                    if (aTrackLog.isModified()){
+                        bModified = true;
                     }
                 }
-                if (bProvideSave){
+                if (bModified){
                     menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_sav_track));
                 }
-                if (selectedRefs.size() == 1){
-                    menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_mtl_track));
-                    TrackLogStatistic statistic = selectionRefs.get(v.getId()).getTrackLog().getTrackStatistic();
-                    if ((statistic.getMinEle() != TrackLogPoint.NO_ELE) && (statistic.getMaxEle() != TrackLogPoint.NO_ELE)){
-                        menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_hpr_track));
+                if (selectedTrackLogs.size() == 1){
+                    TrackLog trackLog = selectedTrackLogs.get(v.getId());
+                    boolean bProvideMarkerEntry = true;
+                    if (application.recordingTrackLogObservable.getTrackLog() == trackLog) bProvideMarkerEntry = false;
+                    if (application.markerTrackLogObservable.getTrackLog() == trackLog) bProvideMarkerEntry = false;
+                    if (application.routeTrackLogObservable.getTrackLog() == trackLog) bProvideMarkerEntry = false;
+                    if (bProvideMarkerEntry){
+                        menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_mtl_track));
                     }
                 }
-                menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_shr_track));
+                menu.add(0, v.getId(),0,getResources().getString(bModified?R.string.ctx_stat_shr_track2:R.string.ctx_stat_shr_track));
+                if (!bModified){
+                    menu.add(0, v.getId(),1,getResources().getString(R.string.ctx_stat_del_track));
+                }
             }
         }
     }
@@ -316,7 +329,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         super.onContextItemSelected(item);
-        TrackLog trackLog = selectionRefs.get(item.getItemId()).getTrackLog();
+        TrackLog trackLog = existingTrackLogs.get(item.getItemId());
         Log.i(MGMapApplication.LABEL, NameUtil.context() +" \""+item.getTitle()+"\" for track \"" + trackLog.getName()+"\"");
 
         if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_del_track) )) {
@@ -325,8 +338,8 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
             builder.setTitle(item.getTitle());
             ArrayList<String> list = new ArrayList<>();
-            for(int idx=0; idx < selectedRefs.size(); idx++){
-                list .add( selectedRefs.valueAt(idx).getTrackLog().getName()  );
+            for(int idx = 0; idx < selectedTrackLogs.size(); idx++){
+                list .add( selectedTrackLogs.valueAt(idx).getName()  );
             }
             String msg = list.toString();
             builder.setMessage(msg.substring(1,msg.length()-1));
@@ -334,9 +347,9 @@ public class TrackStatisticActivity extends AppCompatActivity {
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    for(int idx=0; idx < selectedRefs.size(); idx++){
-                        TrackLog aTrackLog = selectedRefs.valueAt(idx).getTrackLog();
-                        application.metaTrackLogs.remove(aTrackLog);
+                    for(int idx = 0; idx < selectedTrackLogs.size(); idx++){
+                        TrackLog aTrackLog = selectedTrackLogs.valueAt(idx);
+                        application.metaTrackLogs.remove(aTrackLog.getNameKey());
                         application.availableTrackLogsObservable.availableTrackLogs.remove(aTrackLog);
                         if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == aTrackLog) {
                             application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
@@ -363,12 +376,12 @@ public class TrackStatisticActivity extends AppCompatActivity {
         }
         if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_stl_track) )){
             Intent intent = new Intent(this, MGMapActivity.class);
-            intent.putExtra("stl",trackLog.getName());
+            intent.putExtra("stl",trackLog.getNameKey());
             ArrayList<String> list = new ArrayList<>();
-            for(int idx=0; idx < selectedRefs.size(); idx++){
-                list .add( selectedRefs.valueAt(idx).getTrackLog().getName()  );
+            for(int idx = 0; idx < selectedTrackLogs.size(); idx++){
+                list .add( selectedTrackLogs.valueAt(idx).getNameKey()  );
             }
-            list.remove(trackLog.getName());
+            list.remove(trackLog.getNameKey());
             if (list.size() > 0){
                 intent.putExtra("atl",list.toString());
             }
@@ -377,26 +390,26 @@ public class TrackStatisticActivity extends AppCompatActivity {
         }
         if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_mtl_track) )){
             Intent intent = new Intent(this, MGMapActivity.class);
-            intent.putExtra("stl",trackLog.getName());
+            intent.putExtra("stl",trackLog.getNameKey());
             intent.setType("mgmap/markTrack");
             startActivity(intent);
 //            application.getMS(MSMarker.class).createMarkerTrackLog(trackLog);
 //            finish();
         }
-        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_shr_track) )){
+        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_shr_track) ) || item.getTitle().equals( getResources().getString(R.string.ctx_stat_shr_track2) )){
             Intent sendIntent = null;
             String title = "Share ...";
-            if (selectedRefs.size() == 1){
+            if (selectedTrackLogs.size() == 1){
                 if (!PersistenceManager.getInstance().existsGpx(trackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
                     GpxExporter.export(trackLog);
                 }
                 sendIntent = new Intent(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
                 title = "Share "+trackLog.getName()+".gpx to ...";
-            } else if (selectedRefs.size() >= 2){
+            } else if (selectedTrackLogs.size() >= 2){
                 ArrayList<Uri> uris = new ArrayList<>();
-                for(int idx=0; idx < selectedRefs.size(); idx++){
-                    TrackLog aTrackLog = selectedRefs.valueAt(idx).getTrackLog();
+                for(int idx = 0; idx < selectedTrackLogs.size(); idx++){
+                    TrackLog aTrackLog = selectedTrackLogs.valueAt(idx);
                     if (!PersistenceManager.getInstance().existsGpx(aTrackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
                         GpxExporter.export(aTrackLog);
                     }
@@ -410,17 +423,19 @@ public class TrackStatisticActivity extends AppCompatActivity {
             sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(sendIntent, title));
         }
-        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_hpr_track) )){
-            application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRefZoom(trackLog, -1, true));
-            application.availableTrackLogsObservable.changed();
-            Intent intent = new Intent(this, HeightProfileActivity.class);
-            startActivity(intent);
-        }
+//        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_hpr_track) )){
+//            application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRefZoom(trackLog, -1, true));
+//            application.availableTrackLogsObservable.changed();
+//            Intent intent = new Intent(this, HeightProfileActivity.class);
+//            startActivity(intent);
+//        }
         if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_sav_track) )){
-            for(int idx=0; idx < selectedRefs.size(); idx++) {
-                TrackLog aTrackLog = selectedRefs.valueAt(idx).getTrackLog();
-                if (!PersistenceManager.getInstance().existsGpx(aTrackLog.getName())){
+            for(int idx = 0; idx < selectedTrackLogs.size(); idx++) {
+                TrackLog aTrackLog = selectedTrackLogs.valueAt(idx);
+                if (aTrackLog.isModified()){
                     GpxExporter.export(aTrackLog);
+//                    application.metaTrackLogs.put(aTrackLog.getNameKey(), aTrackLog);
+                    aTrackLog.setModified(false);
                 }
             }
             finish();

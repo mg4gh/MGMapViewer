@@ -19,9 +19,6 @@ import android.view.View;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
-import mg.mapviewer.model.PointModel;
-import mg.mapviewer.model.WriteablePointModel;
-import mg.mapviewer.model.WriteablePointModelImpl;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogRef;
@@ -29,7 +26,6 @@ import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.PersistenceManager;
 
 public class RouteExportControl extends Control {
 
@@ -44,21 +40,21 @@ public class RouteExportControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
-        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+//        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
-        TrackLog trackLog = msRouting.calcRouteTrackLog(mtl);
+        TrackLog trackLog = application.routeTrackLogObservable.getTrackLog();
 
-        try {
-            String oldName = trackLog.getName().split("__")[0];
-            if (PersistenceManager.getInstance().existsGpx(oldName)){
-//                        PersistenceManager.getInstance().deleteTrack(oldName);
-            }
-        } catch (Exception e){
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e );
-        }
+//        try {
+//            String oldName = trackLog.getName().split("__")[0];
+//            if (PersistenceManager.getInstance().existsGpx(oldName)){
+////                        PersistenceManager.getInstance().deleteTrack(oldName);
+//            }
+//        } catch (Exception e){
+//            Log.e(MGMapApplication.LABEL, NameUtil.context(),e );
+//        }
         GpxExporter.export(trackLog);
         try {
-            application.metaTrackLogs.add(trackLog);
+//            application.metaTrackLogs.put(trackLog.getNameKey(), trackLog);
             TrackLogRef refSelected = new TrackLogRefZoom(trackLog,trackLog.getNumberOfSegments()-1,false);
             application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
         } catch (Exception e){

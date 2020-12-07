@@ -18,8 +18,6 @@ import android.view.View;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
-import mg.mapviewer.model.PointModel;
-import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.GpxExporter;
@@ -36,7 +34,7 @@ public class MarkerExportControl extends Control {
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         GpxExporter.export(mtl);
-        application.metaTrackLogs.add(mtl);
+//        application.metaTrackLogs.put(mtl.getNameKey(), mtl);
 
     }
 

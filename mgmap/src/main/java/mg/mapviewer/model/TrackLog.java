@@ -30,6 +30,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected TrackLogStatistic trackStatistic = new TrackLogStatistic(-1);
     protected String name = "";
     protected boolean available = true;
+    protected boolean modified = false;
 
 
     public void clear(){
@@ -47,11 +48,11 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     public String getName() {
         return name;
     }
-    public String getName4Sort() {
-        String name4Sort = name;
+    public String getNameKey() {
+        String nameKey = name;
         String sTStart = Formatter.SDF.format(trackStatistic.getTStart());
-        name4Sort = sTStart+"_"+name4Sort;
-        return name4Sort;
+        nameKey = sTStart+"_"+nameKey;
+        return nameKey;
     }
     public void setName(String name) {
         this.name = name;
@@ -63,6 +64,14 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public boolean isModified() {
+        return modified;
+    }
+
+    public void setModified(boolean modified) {
+        this.modified = modified;
     }
 
     public ArrayList<TrackLogSegment> getTrackLogSegments(){
@@ -77,7 +86,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     @Override
     public int compareTo(@NonNull TrackLog trackLog) {
 //        return name.compareTo(trackLog.name);
-        return getName4Sort().compareTo(trackLog.getName4Sort());
+        return getNameKey().compareTo(trackLog.getNameKey());
     }
 
     public int getNumberOfSegments(){

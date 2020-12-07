@@ -203,6 +203,7 @@ public class MSMarker extends MGMicroService {
                 }
             }
             mtl.recalcStatistic();
+            mtl.setModified(true);
             markerTrackLogObservable.changed();
             return true;
         }
@@ -255,6 +256,7 @@ public class MSMarker extends MGMicroService {
             TrackLogRefApproach dragRef = dragData.getDragObject(TrackLogRefApproach.class);
             moveMarkerPoint(mtl, dragRef.getSegmentIdx(), dragRef.getEndPointIndex(), pmCurrent);
             mtl.recalcStatistic();
+            mtl.setModified(true);
             markerTrackLogObservable.changed();
         }
 

@@ -69,7 +69,7 @@ import mg.mapviewer.view.PointView;
 public class MSRouting extends MGMicroService {
 
     private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE_A150, 15);
-    private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE);
+    private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE_A150);
     private static final Paint PAINT_APPROACH = CC.getStrokePaint(R.color.BLACK, 2);
     private static final Paint PAINT_RELAXED = CC.getStrokePaint(R.color.BLUE, 2);
 
@@ -81,7 +81,7 @@ public class MSRouting extends MGMicroService {
     HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
-    public WriteableTrackLog routeTrackLog = null;
+//    public WriteableTrackLog routeTrackLog = null;
     private ArrayList<PointView> relaxedViews = new ArrayList<>();
 
     private boolean routeRemainings = true;
@@ -148,7 +148,8 @@ public class MSRouting extends MGMicroService {
             public void run() {
                 unregisterAll();
                 getControlView().setDashboardValue(false, dashboardRoute,null);
-                routeTrackLog = null;
+//                routeTrackLog = null;
+                getApplication().routeTrackLogObservable.setTrackLog(null);
             }
         });
     }
@@ -204,6 +205,7 @@ public class MSRouting extends MGMicroService {
         }
         Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Start");
 
+        boolean routeModified = false;
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             if (segment.size() < 1) continue;
             Iterator<PointModel> iter = segment.iterator();
@@ -231,6 +233,7 @@ public class MSRouting extends MGMicroService {
                 }
 
                 if (bRecalcRoute){
+                    routeModified = true;
                     current.newMPM = calcRouting(mapFile, prev, current, current.direct, true, current.routingHints);
                 }
             }
@@ -241,14 +244,18 @@ public class MSRouting extends MGMicroService {
         // 2.) recalc route statistic
         // 3.) setup routingMPMs
         routePointMap2.clear();
-        routeTrackLog = new WriteableTrackLog();
-        routeTrackLog.startTrack(0);
+        WriteableTrackLog routeTrackLog = new WriteableTrackLog();
+        String name = mtl.getName();
+        name = name.replace("MarkerTrack","MarkerRoute");
+        routeTrackLog.setName(name);
+        routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
+        TrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
+        if ((oldRouteTrackLog != null) && oldRouteTrackLog.isModified()) routeModified = true;
+        routeTrackLog.setModified(routeModified);
 
-        TrackLogStatistic routeStatistic = new TrackLogStatistic(-1);
-        ArrayList<MultiPointModel> routingMPMs = new ArrayList<>();
+//        ArrayList<MultiPointModel> routingMPMs = new ArrayList<>();
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             routeTrackLog.startSegment(0);
-            routeStatistic.updateWithPoint(null);
             PointModel lastPM = null;
             for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
                 RoutePointModel rpm = routePointMap.get(segment.get(idx));
@@ -259,13 +266,12 @@ public class MSRouting extends MGMicroService {
                     if (rpm.newMPM != null){
                         for (PointModel pm : rpm.newMPM){
                             if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
-                                routeStatistic.updateWithPoint(pm);
                                 routeTrackLog.addPoint(pm);
                                 routePointMap2.put(pm,rpm);
                             }
                             lastPM = pm;
                         }
-                        routingMPMs.add(rpm.newMPM);
+//                        routingMPMs.add(rpm.newMPM);
                     }
                 }
             }
@@ -279,6 +285,7 @@ public class MSRouting extends MGMicroService {
         }
         calcRemainingStatistic(routeTrackLog);
         getControlView().setDashboardValue(true, dashboardRoute, routeTrackLog.getTrackStatistic());
+        getApplication().routeTrackLogObservable.setTrackLog(routeTrackLog);
         Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
     }
 
@@ -482,32 +489,32 @@ public class MSRouting extends MGMicroService {
         rpm.setApproaches(approaches);
     }
 
-    TrackLog calcRouteTrackLog(WriteableTrackLog mtl){
-        String name = mtl.getName();
-        name = name.replace("MarkerTrack","MarkerRoute");
-        RecordingTrackLog rtl = new RecordingTrackLog(false);
-        rtl.setName(name);
-        rtl.startTrack(mtl.getTrackStatistic().getTStart());
-        rtl.setReworkData(false);
-
-        for (TrackLogSegment segment : mtl.getTrackLogSegments()){
-            if (segment.size() > 0){
-                rtl.startSegment(PointModel.NO_TIME );
-                for (PointModel mtlp : segment){
-                    RoutePointModel rpm = routePointMap.get(mtlp);
-                    if (rpm.currentMPM!= null){
-                        for (PointModel pointModel : rpm.currentMPM){
-                            rtl.addPoint( pointModel );
-                        }
-                    }
-                }
-                rtl.stopSegment(PointModel.NO_TIME );
-            }
-        }
-
-        rtl.stopTrack(PointModel.NO_TIME );
-        return rtl;
-    }
+//    TrackLog calcRouteTrackLog(WriteableTrackLog mtl){
+//        String name = mtl.getName();
+//        name = name.replace("MarkerTrack","MarkerRoute");
+//        RecordingTrackLog rtl = new RecordingTrackLog(false);
+//        rtl.setName(name);
+//        rtl.startTrack(mtl.getTrackStatistic().getTStart());
+//        rtl.setReworkData(false);
+//
+//        for (TrackLogSegment segment : mtl.getTrackLogSegments()){
+//            if (segment.size() > 0){
+//                rtl.startSegment(PointModel.NO_TIME );
+//                for (PointModel mtlp : segment){
+//                    RoutePointModel rpm = routePointMap.get(mtlp);
+//                    if (rpm.currentMPM!= null){
+//                        for (PointModel pointModel : rpm.currentMPM){
+//                            rtl.addPoint( pointModel );
+//                        }
+//                    }
+//                }
+//                rtl.stopSegment(PointModel.NO_TIME );
+//            }
+//        }
+//
+//        rtl.stopTrack(PointModel.NO_TIME );
+//        return rtl;
+//    }
 
 
     private double acceptedRouteDistance(PointModel pmStart, PointModel pmEnd){
@@ -610,6 +617,7 @@ public class MSRouting extends MGMicroService {
     }
 
     public TrackLogRefApproach getRoutingLineApproach(PointModel pm, double threshold){
+        TrackLog routeTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
         if (routeTrackLog != null){
             TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(pm, threshold);
             if (bestMatch != null){

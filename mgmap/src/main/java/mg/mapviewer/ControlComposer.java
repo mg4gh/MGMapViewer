@@ -11,7 +11,7 @@ import mg.mapviewer.features.position.GpsControl;
 import mg.mapviewer.control.HeightProfileControl;
 import mg.mapviewer.control.SettingsControl;
 import mg.mapviewer.control.ThemeSettingsControl;
-import mg.mapviewer.control.TrackStatisticControl;
+import mg.mapviewer.features.statistic.TrackStatisticControl;
 import mg.mapviewer.features.alpha.MSAlpha;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.bb.MSBB;

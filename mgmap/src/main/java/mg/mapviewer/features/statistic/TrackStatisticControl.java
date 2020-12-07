@@ -12,14 +12,14 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mapviewer.control;
+package mg.mapviewer.features.statistic;
 
 import android.content.Intent;
 import android.view.View;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.R;
-import mg.mapviewer.TrackStatisticActivity;
+import mg.mapviewer.features.statistic.TrackStatisticActivity;
 import mg.mapviewer.util.Control;
 
 public class TrackStatisticControl extends Control {

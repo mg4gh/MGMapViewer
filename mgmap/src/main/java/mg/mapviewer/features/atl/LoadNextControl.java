@@ -37,9 +37,9 @@ public class LoadNextControl extends Control {
             TrackLog trackLog = null;
             TrackLog oldSelected = application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
             if (oldSelected != null){
-                trackLog = application.metaTrackLogs.lower(oldSelected);
+                trackLog = application.metaTrackLogs.lowerEntry(oldSelected.getNameKey()).getValue();
             } else {
-                trackLog = application.metaTrackLogs.last();
+                trackLog = application.metaTrackLogs.lastEntry().getValue();
             }
             if (trackLog != null){
                 TrackLogRef refSelected = new TrackLogRefZoom(trackLog,trackLog.getNumberOfSegments()-1,true);

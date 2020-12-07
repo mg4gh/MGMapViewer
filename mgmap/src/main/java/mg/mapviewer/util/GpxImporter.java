@@ -184,6 +184,7 @@ public class GpxImporter {
             }
             eventType = pullParser.next();
         } while (eventType != XmlPullParser.END_DOCUMENT);
+        trackLog.setModified(true);
         return trackLog;
     }
 
