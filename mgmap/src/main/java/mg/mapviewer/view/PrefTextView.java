@@ -26,22 +26,7 @@ import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.pref.MGPref;
 
 public class PrefTextView extends AppCompatTextView implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-
-    private static Handler timer = new Handler();
-
-    Runnable ttControlRefresh = new Runnable() {
-        @Override
-        public void run() {
-            onChange("refresh");
-        }
-    };
-
-    protected void resetTTControlRefresh(){
-        timer.removeCallbacks(ttControlRefresh);
-        timer.postDelayed(ttControlRefresh, 100);
-    }
-
+    
     public PrefTextView(Context context) {
         super(context, null);
     }
@@ -53,6 +38,7 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
     private MGPref<Boolean>[] prefs = null;
     private int[] drawableIds = null;
     private Formatter.FormatType formatType = Formatter.FormatType.FORMAT_STRING;
+    private int drawableSize = 0;
 
     /**
      * Expect boolean Preferences.
@@ -80,6 +66,11 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
 
     public PrefTextView setFormat(Formatter.FormatType formatType){
         this.formatType = formatType;
+        return this;
+    }
+
+    public PrefTextView setDrawableSize(int drawableSize){
+        this.drawableSize = drawableSize;
         return this;
     }
 
@@ -145,18 +136,12 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
                 }
             }
 
-            Drawable dOld = getCompoundDrawables()[0];
-            if (dOld != null) {
-                if (idx<drawableIds.length){
-                    Rect rect = getCompoundDrawables()[0].getBounds();
-                    Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drawableIds[idx], getContext().getTheme());
-                    if ((drawable != null) && (rect != null)){
-                        drawable.setBounds(rect.left,rect.top,rect.right,rect.bottom);
-                        setCompoundDrawables(drawable,null,null,null);
-                    }
+            if (idx<drawableIds.length){
+                Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drawableIds[idx], getContext().getTheme());
+                if (drawable != null){
+                    drawable.setBounds(0,0,drawableSize,drawableSize);
+                    setCompoundDrawables(drawable,null,null,null);
                 }
-            } else {
-                resetTTControlRefresh();
             }
         }
     }

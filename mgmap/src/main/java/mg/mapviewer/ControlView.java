@@ -195,7 +195,7 @@ public class ControlView extends RelativeLayout {
     }
 
     public PrefTextView createDashboardPTV(ViewGroup vgDashboard, float weight) {
-        PrefTextView ptv = new PrefTextView(context);
+        PrefTextView ptv = new PrefTextView(context).setDrawableSize(convertDp(16));
         vgDashboard.addView(ptv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
@@ -515,7 +515,7 @@ public class ControlView extends RelativeLayout {
     // *************************************************************************************************
 
     public PrefTextView createStatusLinePTV(ViewGroup vgParent, float weight){
-        PrefTextView ptv = new PrefTextView(context);
+        PrefTextView ptv = new PrefTextView(context).setDrawableSize(convertDp(16));
         vgParent.addView(ptv);
         tvList.add(ptv);
         TableRow.LayoutParams llParms = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
@@ -581,7 +581,7 @@ public class ControlView extends RelativeLayout {
     // *************************************************************************************************
 
     public PrefTextView createQuickControlPTV(ViewGroup vgQuickControls, float weight) {
-        PrefTextView ptv = new PrefTextView(context);
+        PrefTextView ptv = new PrefTextView(context).setDrawableSize(convertDp(24));
         vgQuickControls.addView(ptv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
