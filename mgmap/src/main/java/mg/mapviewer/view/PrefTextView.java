@@ -55,11 +55,11 @@ public class PrefTextView extends AppCompatTextView  {
         if (this.prefs.length > 0){
 //            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 //            sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-            createOCLs();
             prefObserver = createObserver();
             for (MGPref<?> pref : prefs){
                  pref.addObserver(prefObserver);
             }
+            createOCLs();
         }
 
         onChange("init");
@@ -85,6 +85,9 @@ public class PrefTextView extends AppCompatTextView  {
     public void appendPrefData(MGPref<Boolean>[] prefs, int[] drawableIds) {
         this.prefs = ArrayUtil.concat(this.prefs, prefs);
         this.drawableIds = ArrayUtil.concat(this.drawableIds, drawableIds);
+        for (MGPref<?> pref : prefs){ // add the prefObserver to the additional prefs
+            pref.addObserver(prefObserver);
+        }
         createOCLs();
     }
 
@@ -173,4 +176,11 @@ public class PrefTextView extends AppCompatTextView  {
         }
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        for (MGPref<?> pref : prefs){
+            pref.deleteObserver(prefObserver);
+        }
+    }
 }
