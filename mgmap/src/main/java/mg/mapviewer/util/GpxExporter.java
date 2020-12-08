@@ -90,6 +90,7 @@ public class GpxExporter {
                     pw.println("</gpx>");
                 }
             }
+            trackLog.setModified(false);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         } finally {

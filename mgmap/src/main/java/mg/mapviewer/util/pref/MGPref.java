@@ -71,19 +71,33 @@ public class MGPref<T> extends Observable {
 
     protected String key;
     protected T value;
+    protected boolean changeSharedPrefs = true;
 
     private MGPref(int keyId, T initialValue) {
         this(context.getResources().getString(keyId), initialValue);
     }
 
     public MGPref(String key, T initialValue){
+        this(key, initialValue, true);
+//        if (initialValue == null){
+//            throw new RuntimeException("null not allowed");
+//        }
+//        this.key = key;
+//        value = initialValue;
+//        value = getSharedPreference();
+//        prefMap.put(key, this);
+    }
+    public MGPref(String key, T initialValue, boolean changeSharedPrefs){
         if (initialValue == null){
             throw new RuntimeException("null not allowed");
         }
         this.key = key;
+        this.changeSharedPrefs = changeSharedPrefs;
         value = initialValue;
-        value = getSharedPreference();
-        prefMap.put(key, this);
+        if (changeSharedPrefs){
+            value = getSharedPreference();
+            prefMap.put(key, this);
+        }
     }
 
     private T getSharedPreference(){
@@ -123,7 +137,7 @@ public class MGPref<T> extends Observable {
         }
     }
 
-     void onSharedPreferenceChanged(){
+    void onSharedPreferenceChanged(){
         T t = getSharedPreference();
         setValue(t, false);
     }
@@ -137,10 +151,10 @@ public class MGPref<T> extends Observable {
     }
 
     public void setValue(T t){
-        setValue(t, true);
+        setValue(t, changeSharedPrefs);
     }
 
-    public void setValue(T t, boolean changeSharedPrefs){
+    protected void setValue(T t, boolean changeSharedPrefs){
         if (t == null){
             throw new RuntimeException("null not allowed");
         }

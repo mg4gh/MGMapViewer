@@ -246,7 +246,7 @@ public class MSRouting extends MGMicroService {
         routePointMap2.clear();
         WriteableTrackLog routeTrackLog = new WriteableTrackLog();
         String name = mtl.getName();
-        name = name.replace("MarkerTrack","MarkerRoute");
+        name = name.replaceAll("MarkerTrack$","MarkerRoute");
         routeTrackLog.setName(name);
         routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
         TrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();

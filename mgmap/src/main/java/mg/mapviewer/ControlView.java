@@ -118,8 +118,9 @@ public class ControlView extends RelativeLayout {
         return getResources().getString(id);
     }
 
-    private int convertDp(float dp){
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+    public static int convertDp(float dp){
+//        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+        return (int) (dp * DisplayModel.getDeviceScaleFactor());
     }
 
 
@@ -451,17 +452,6 @@ public class ControlView extends RelativeLayout {
         mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), createSeekBar(vgParent));
         mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), createSeekBarLabel(vgParent));
         mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), createSeekBar(vgParent));
-//
-//
-//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), (SeekBar) findViewById(R.id.sb2));
-//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), (SeekBar) findViewById(R.id.sb3));
-//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), (SeekBar) findViewById(R.id.sb4));
-//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), (SeekBar) findViewById(R.id.sb5));
-//
-//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), (TextView) findViewById(R.id.sbt2));
-//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), (TextView) findViewById(R.id.sbt3));
-//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), (TextView) findViewById(R.id.sbt4));
-//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), (TextView) findViewById(R.id.sbt5));
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         LinearLayout parentLayer = findViewById(R.id.bars);
@@ -529,8 +519,9 @@ public class ControlView extends RelativeLayout {
         int drawablePadding = convertDp(3.0f);
         ptv.setCompoundDrawablePadding(drawablePadding);
         Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
-
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        if (drawable != null){
+            drawable.setBounds(0, 0, ptv.getDrawableSize(), ptv.getDrawableSize());
+        }
         ptv.setCompoundDrawables(drawable,null,null,null);
         ptv.setText("");
         ptv.setLines(1);
@@ -562,13 +553,6 @@ public class ControlView extends RelativeLayout {
         }
     }
 
-//    void prepareStatusLine(){
-//        tr_states = activity.findViewById(R.id.tr_states);
-//        for (int idx=0; idx<tr_states.getChildCount();idx++){
-//            tvList.add((TextView) tr_states.getChildAt(idx));
-//        }
-//    }
-//
     void finalizeStatusLine(){
         tr_states = activity.findViewById(R.id.tr_states);
         for (int idx=0; idx<tr_states.getChildCount();idx++){
@@ -580,8 +564,9 @@ public class ControlView extends RelativeLayout {
     // ********* Quick controls related stuff                                                    **********
     // *************************************************************************************************
 
-    public PrefTextView createQuickControlPTV(ViewGroup vgQuickControls, float weight) {
-        PrefTextView ptv = new PrefTextView(context).setDrawableSize(convertDp(24));
+    public static PrefTextView createQuickControlPTV(ViewGroup vgQuickControls, float weight) {
+        Context context = vgQuickControls.getContext();
+        PrefTextView ptv = new PrefTextView(context).setDrawableSize(convertDp(32));
         vgQuickControls.addView(ptv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
@@ -590,22 +575,16 @@ public class ControlView extends RelativeLayout {
         params.weight = weight;
         ptv.setLayoutParams(params);
 
-        ptv.setPadding(0,convertDp(8),0,convertDp(8));
-        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick, getContext().getTheme());
+        ptv.setPadding(0,convertDp(4),0,convertDp(4));
+        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.quick, context.getTheme());
 
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        ptv.setCompoundDrawables(drawable,null,null,null);
-        ptv.setLines(1);
-        ptv.setText(" ");
-        ptv.setCompoundDrawablePadding(convertDp(30));
-//        ptv.setOnClickListener(hintControl);
-        ptv.setBackground(ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.shape, getContext().getTheme()));
+        ptv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
         ptv.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
-                    int paddingHorizontal = Math.max((right-left - drawable.getIntrinsicWidth()) / 2, 0);
-                    int paddingVertical = Math.max((bottom-top - drawable.getIntrinsicHeight()) / 2, 0);
+                    int paddingHorizontal = Math.max((right-left - ptv.getDrawableSize()) / 2, 0);
+                    int paddingVertical = Math.max((bottom-top - ptv.getDrawableSize()) / 2, 0);
                     ptv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
                 }
             }

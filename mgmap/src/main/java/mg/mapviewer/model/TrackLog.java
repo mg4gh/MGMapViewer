@@ -19,9 +19,11 @@ import androidx.annotation.NonNull;
 
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.PointModelUtil;
+import mg.mapviewer.util.pref.MGPref;
 
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.UUID;
 
 /** A TrackLog consists of multiple TrackLogSegment objects, a total TrackLogStatistic over all segments and a track log name */
 public class TrackLog extends Observable implements Comparable<TrackLog>{
@@ -30,7 +32,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected TrackLogStatistic trackStatistic = new TrackLogStatistic(-1);
     protected String name = "";
     protected boolean available = true;
-    protected boolean modified = false;
+    private MGPref<Boolean> prefModified = new MGPref<Boolean>(null, false, false);
 
 
     public void clear(){
@@ -66,12 +68,15 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
         this.available = available;
     }
 
-    public boolean isModified() {
-        return modified;
+    public MGPref<Boolean> getPrefModified() {
+        return prefModified;
     }
 
+    public boolean isModified(){
+        return this.prefModified.getValue();
+    }
     public void setModified(boolean modified) {
-        this.modified = modified;
+        this.prefModified.setValue(modified);
     }
 
     public ArrayList<TrackLogSegment> getTrackLogSegments(){

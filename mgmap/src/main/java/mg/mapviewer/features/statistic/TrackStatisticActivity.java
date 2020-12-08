@@ -14,70 +14,86 @@
  */
 package mg.mapviewer.features.statistic;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
-import android.util.SparseArray;
 import android.util.TypedValue;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 
+import mg.mapviewer.ControlView;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
+import mg.mapviewer.features.fullscreen.MSFullscreen;
 import mg.mapviewer.model.TrackLogRef;
-import mg.mapviewer.util.CC;
-import mg.mapviewer.util.ExtendedClickListener;
-import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogStatistic;
+import mg.mapviewer.util.PersistenceManager;
+import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.PrefTextView;
+import mg.mapviewer.view.TrackStatisticEntry;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 public class TrackStatisticActivity extends AppCompatActivity {
 
     private Context context = null;
     private MGMapApplication application = null;
 
-    public final Set<String> nameKeys = new TreeSet<>();
-    private SparseArray<TrackLog> existingTrackLogs = new SparseArray<>(); // maps viewId -> TrackLog
-    private SparseArray<TrackLog> selectedTrackLogs = new SparseArray<>(); // maps viewId -> TrackLog (only for selected entries)
-    private SparseArray<StatisticClickListener> statisticClickListeners = new SparseArray<>();
+    LinearLayout parent = null;
+    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
+    private final MGPref<Boolean> prefNoneSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+    private final MGPref<Boolean> prefAllSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+    private final MGPref<Boolean> prefMarkerAllowed = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+    private final MGPref<Boolean> prefDeleteAllowed = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+    private final MGPref<Boolean> prefNoneModified = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+
+    Observer reworkObserver = null;
+
+    Handler timer = new Handler();
+    Runnable ttReworkState = new Runnable() {
+        @Override
+        public void run() {
+            TrackStatisticActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    reworkState();
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(MGMapApplication.LABEL, NameUtil.context());
         setContentView(R.layout.track_statistic_activity);
         application = (MGMapApplication)getApplication();
-        context = application.getApplicationContext();
+//        context = application.getApplicationContext();
+        context = this;
 
         if (Build.VERSION.SDK_INT >= 24) {
             try {
@@ -100,18 +116,27 @@ public class TrackStatisticActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(MGMapApplication.LABEL, NameUtil.context());
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        LinearLayout parent = findViewById(R.id.trackStatisticEntries);
+        parent = findViewById(R.id.trackStatisticEntries);
+
+        reworkObserver = new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                timer.removeCallbacks(ttReworkState);
+                timer.postDelayed(ttReworkState,100);
+            }
+        };
 
 
-
-        addTrackLog(parent, application.recordingTrackLogObservable.getTrackLog(), R.color.RED100_A100, R.color.RED100_A150);
-        addTrackLog(parent, application.markerTrackLogObservable.getTrackLog(), R.color.PINK_A100, R.color.PINK_A150);
-        addTrackLog(parent, application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A100, R.color.PURPLE_A150);
-        addTrackLog(parent, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE100_A100, R.color.BLUE150_A150);
+        Set<String> nameKeys = new TreeSet<>();
+        addTrackLog(nameKeys, parent, application.recordingTrackLogObservable.getTrackLog(), R.color.RED100_A100, R.color.RED100_A150);
+        addTrackLog(nameKeys, parent, application.markerTrackLogObservable.getTrackLog(), R.color.PINK_A100, R.color.PINK_A150);
+        addTrackLog(nameKeys, parent, application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A100, R.color.PURPLE_A150);
+        addTrackLog(nameKeys, parent, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE100_A100, R.color.BLUE150_A150);
         for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
-            addTrackLog(parent, trackLog, R.color.GREEN100_A100, R.color.GREEN150_A150);
+            addTrackLog(nameKeys, parent, trackLog, R.color.GREEN100_A100, R.color.GREEN150_A150);
         }
         ArrayList<TrackLog> trackLogsRemain = new ArrayList<>(application.metaTrackLogs.values());
 
@@ -129,7 +154,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                                     Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainB working="+working+" size="+trackLogsRemain.size());
                                     for (int i=0; (i<30)&&(!trackLogsRemain.isEmpty()) ; i++){
                                         TrackLog trackLog = trackLogsRemain.remove(0);
-                                        addTrackLog(parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
+                                        addTrackLog(nameKeys, parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
                                     }
                                     Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainC working="+working+" size="+trackLogsRemain.size());
                                     working = false;
@@ -144,304 +169,292 @@ public class TrackStatisticActivity extends AppCompatActivity {
                 }
             }
         }.start();
+
+        initQuickControls();
+        reworkObserver.update(null,null);
+        reworkObserver.update(null,null);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(MGMapApplication.LABEL, NameUtil.context());
+
+        LinearLayout parent = findViewById(R.id.trackStatisticEntries);
+        for (int idx=0; idx<parent.getChildCount(); idx++){
+            if (parent.getChildAt(idx) instanceof TrackStatisticEntry) {
+                TrackStatisticEntry entry = (TrackStatisticEntry) parent.getChildAt(idx);
+                entry.onCleanup();
+                entry.getPrefSelected().deleteObserver(reworkObserver);
+                entry.getTrackLog().getPrefModified().deleteObserver(reworkObserver);
+            }
+        }
+        parent.removeAllViews();
+        ViewGroup qcs = findViewById(R.id.ts_qc);
+        qcs.removeAllViews();
+    }
+
+    private void initQuickControls(){
+        ViewGroup qcs = findViewById(R.id.ts_qc);
+
+        ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefFullscreen}, new int[]{R.drawable.fullscreen, R.drawable.fullscreen});
+        prefFullscreen.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                if (prefFullscreen.getValue()){
+                    MSFullscreen.setFullscreen(TrackStatisticActivity.this);
+                } else {
+                    MSFullscreen.hideFullscreen(TrackStatisticActivity.this);
+                }
+            }
+        });
+        prefFullscreen.onChange();
+
+
+        PrefTextView selectAll = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefAllSelected}, new int[]{R.drawable.select_all, R.drawable.select_all2});
+        selectAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setSelectedAll(true);
+            }
+        });
+        PrefTextView deselectAll = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.deselect_all,R.drawable.deselect_all2});
+        deselectAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setSelectedAll(false);
+            }
+        });
+
+        PrefTextView show = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.show,R.drawable.show2});
+        show.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                if (entries.size() > 0){
+                    TrackStatisticEntry sel = entries.remove(0);
+                    Intent intent = new Intent(TrackStatisticActivity.this, MGMapActivity.class);
+                    intent.putExtra("stl",sel.getTrackLog().getNameKey());
+                    List<String> list = getNames(entries,true);
+//                    ArrayList<String> list = new ArrayList<>();
+//                    for (TrackStatisticEntry entry : entries){
+//                        list.add(entry.getTrackLog().getNameKey()); // make a list of strings out of it
+//                    }
+                    if (list.size() > 0){
+                        intent.putExtra("atl",list.toString());
+                    }
+                    intent.setType("mgmap/showTrack");
+                    startActivity(intent);
+                }
+            }
+        });
+
+        PrefTextView mtlr = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefMarkerAllowed}, new int[]{R.drawable.mtlr,R.drawable.mtlr_2});
+        mtlr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                if (entries.size() == 1){
+                    TrackLog trackLog = entries.get(0).getTrackLog();
+                    Intent intent = new Intent(TrackStatisticActivity.this, MGMapActivity.class);
+                    intent.putExtra("stl",trackLog.getNameKey());
+                    intent.setType("mgmap/markTrack");
+                    startActivity(intent);
+                }
+            }
+        });
+
+
+        PrefTextView share = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.share,R.drawable.share2});
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                if (entries.size() > 0){
+                    Intent sendIntent = null;
+                    String title = "Share ...";
+                    if (entries.size() == 1){
+                        TrackLog trackLog = entries.get(0).getTrackLog();
+                        if (!PersistenceManager.getInstance().existsGpx(trackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
+                            GpxExporter.export(trackLog);
+//                            trackLog.setModified(false);
+                        }
+                        sendIntent = new Intent(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
+                        title = "Share "+trackLog.getName()+".gpx to ...";
+                    } else if (entries.size() >= 2){
+                        ArrayList<Uri> uris = new ArrayList<>();
+
+                        for(TrackStatisticEntry entry : entries){
+                            TrackLog aTrackLog = entry.getTrackLog();
+                            if (!PersistenceManager.getInstance().existsGpx(aTrackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
+                                GpxExporter.export(aTrackLog);
+//                                aTrackLog.setModified(false);
+                            }
+                            uris.add( PersistenceManager.getInstance().getGpxUri( aTrackLog.getName() ) );
+                        }
+                        sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                        sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
+                    }
+                    sendIntent.setType("*/*");
+                    sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(sendIntent, title));
+                }
+            }
+        });
+
+
+
+        PrefTextView save = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefNoneModified}, new int[]{R.drawable.save,R.drawable.save2});
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                for (TrackStatisticEntry entry : entries){
+                    if (entry.isModified()){
+                        TrackLog aTrackLog = entry.getTrackLog();
+                        GpxExporter.export(aTrackLog);
+//                        entry.setModified(false);
+                    }
+                }
+            }
+        });
+
+        PrefTextView delete = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.delete,R.drawable.delete2});
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(TrackStatisticActivity.this);
+                builder.setTitle(getResources().getString(R.string.ctx_stat_del_track));
+                String msg = getNames(entries, false).toString();
+                builder.setMessage(msg.substring(1,msg.length()-1));
+
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() +" confirm delete for list \""+msg+"\"");
+                        for(TrackStatisticEntry entry : entries){
+                            TrackLog aTrackLog = entry.getTrackLog();
+                            application.metaTrackLogs.remove(aTrackLog.getNameKey());
+                            application.availableTrackLogsObservable.availableTrackLogs.remove(aTrackLog);
+                            if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == aTrackLog) {
+                                application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
+                            }
+                            PersistenceManager.getInstance().deleteTrack(aTrackLog.getName()); // no problem, if no persistent file exists
+                        }
+                        TrackStatisticActivity.this.recreate();
+                    }
+                });
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() +" abort delete for list \""+msg+"\"");
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
+
+
+        PrefTextView ptvBack = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{}, new int[]{R.drawable.back});
+        ptvBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TrackStatisticActivity.this.finish();
+            }
+        });
+
+    }
+
+    private ArrayList<TrackStatisticEntry> getSelectedEntries(){
+        ArrayList<TrackStatisticEntry> list = new ArrayList<>();
+        for (int idx=0; idx < parent.getChildCount(); idx++){
+            if (parent.getChildAt(idx) instanceof TrackStatisticEntry) {
+                TrackStatisticEntry entry = (TrackStatisticEntry) parent.getChildAt(idx);
+                if (entry.isPrefSelected()){
+                    list.add(entry);
+                }
+            }
+        }
+        return list;
+    }
+    private ArrayList<TrackStatisticEntry> getModifiedEntries(){
+        ArrayList<TrackStatisticEntry> list = new ArrayList<>();
+        for (TrackStatisticEntry entry : getSelectedEntries()){
+            if (entry.isModified()){
+                list.add(entry);
+            }
+        }
+        return list;
+    }
+
+    private void setSelectedAll(boolean selected){
+        for (int idx=0; idx < parent.getChildCount(); idx++){
+            if (parent.getChildAt(idx) instanceof TrackStatisticEntry) {
+                TrackStatisticEntry entry = (TrackStatisticEntry) parent.getChildAt(idx);
+                entry.setPrefSelected(selected);
+            }
+        }
     }
 
     private int convertDp(float dp){
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
-    public PrefTextView createPTV(ViewGroup vgDashboard, float weight) {
-        PrefTextView ptv = new PrefTextView(application.getMgMapActivity()); // Need activity context for Theme.AppCompat (Otherwise we get error messages)
-        vgDashboard.addView(ptv);
-
-        TableRow.LayoutParams params = new TableRow.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT);
-        int margin = convertDp(0.8f);
-        params.setMargins(margin,margin,margin,margin);
-        params.weight = weight;
-        ptv.setLayoutParams(params);
-
-        int padding = convertDp(2.0f);
-        ptv.setPadding(padding, padding, padding, padding);
-        int drawablePadding = convertDp(3.0f);
-        ptv.setCompoundDrawablePadding(drawablePadding);
-        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.quick2, context.getTheme());
-
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        ptv.setCompoundDrawables(drawable,null,null,null);
-        ptv.setText("");
-        ptv.setTextColor(CC.getColor(R.color.WHITE));
-        ptv.setLines(1);
-        return ptv;
-    }
-
-
-    static Random random = new Random(System.currentTimeMillis());
-    public void addTrackLog(ViewGroup parent, TrackLog trackLog, int colorId, int colorIdSelected){
+    // nameKeys contains the nameKey values of all tracks, which are already added
+    public void addTrackLog(Set<String> nameKeys, ViewGroup parent, TrackLog trackLog, int colorId, int colorIdSelected){
         if (trackLog == null) return;
         if (nameKeys.contains(trackLog.getNameKey())) return; // this TrackLog is already added
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
         if (statistic.getNumPoints() == 0) return; // don't show empty tracks, especially possible for marker Tracks
         nameKeys.add(trackLog.getNameKey());
 
-        TableLayout tableLayout = new TableLayout(context);
-        parent.addView(tableLayout);
-        tableLayout.setId(View.generateViewId());
-        tableLayout.setPadding(0, convertDp(2),0,0);
-        existingTrackLogs.put(tableLayout.getId(), trackLog);
-        registerForContextMenu(tableLayout);
-
-        TableRow tableRow0 = new TableRow(context);
-        tableLayout.addView(tableRow0);
-        PrefTextView namePTV = createPTV(tableRow0,1).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null);
-        namePTV.setValue(trackLog.getName()+(trackLog.isModified()?"(*)":""));
-        namePTV.setMaxLines(5);
-
-        TableRow tableRow1 = new TableRow(context);
-        tableLayout.addView(tableRow1);
-        createPTV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null).setValue( (statistic.getSegmentIdx()<0)?"All":""+statistic.getSegmentIdx() );
-        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DATE).setPrefData(null,null).setValue( statistic.getTStart() );
-        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_TIME).setPrefData(null,null).setValue( statistic.getTStart() );
-        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setPrefData(null, new int[]{R.drawable.duration}).setValue( statistic.duration );
-        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setPrefData(null, new int[]{R.drawable.length}).setValue( statistic.getTotalLength() );
-
-        TableRow tableRow2 = new TableRow(context);
-        tableLayout.addView(tableRow2);
-        createPTV(tableRow2,10).setFormat(Formatter.FormatType.FORMAT_INT).setPrefData(null,null).setValue( statistic.getNumPoints() );
-        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.gain}).setValue( statistic.getGain() );
-        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.loss}).setValue( statistic.getLoss() );
-        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.maxele}).setValue( statistic.getMaxEle() );
-        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.minele}).setValue( statistic.getMinEle() );
-
-
-        setViewtreeColor(tableLayout, colorId);
-
-        if (trackLog != application.recordingTrackLogObservable.getTrackLog()) {
-            StatisticClickListener statisticClickListener = new StatisticClickListener(colorId,colorIdSelected,namePTV);
-            tableLayout.setOnClickListener(new StatisticClickListener(colorId,colorIdSelected,namePTV));
-            statisticClickListeners.put(tableLayout.getId(), statisticClickListener);
-        }
-
+        TrackStatisticEntry entry = new TrackStatisticEntry(context, trackLog, parent, colorId, colorIdSelected);
+        entry.getPrefSelected().addObserver(reworkObserver);
+        entry.getTrackLog().getPrefModified().addObserver(reworkObserver);
     }
 
-    public class StatisticClickListener extends ExtendedClickListener{
-        private int colorId;
-        private int colorIdSelected;
-        private PrefTextView namePTV;
-        public StatisticClickListener(int colorId, int colorIdSelected, PrefTextView namePTV){
-            this.colorId = colorId;
-            this.colorIdSelected = colorIdSelected;
-            this.namePTV = namePTV;
+    private List<String> getNames(List<TrackStatisticEntry> entries, boolean useNameKeys){
+        ArrayList<String> list = new ArrayList<>();
+        for (TrackStatisticEntry entry : entries){
+            TrackLog trackLog = entry.getTrackLog();
+            list.add((useNameKeys)?trackLog.getNameKey():trackLog.getName()); // make a list of strings out of it
         }
-        @Override
-        public void onSingleClick(View v) {
-            int id = v.getId();
-            if (selectedTrackLogs.get(id) == null){
-                selectedTrackLogs.put(id, existingTrackLogs.get(id));
-                setViewtreeColor(v, colorIdSelected);
-            } else {
-                selectedTrackLogs.remove(id);
-                setViewtreeColor(v, colorId);
-            }
-        }
-
-        private boolean sortName = false;
-        @Override
-        public void onDoubleClick(View v) {
-            sortName = !sortName;
-            TrackLog trackLog = existingTrackLogs.get(v.getId());
-            if (sortName){
-                namePTV.setText(trackLog.getNameKey());
-            } else {
-                namePTV.setText(trackLog.getName());
-            }
-            super.onDoubleClick(v);
-        }
-
+        return list;
     }
 
-    private void setViewtreeColor(View view, int colorId){
-        if (view instanceof TextView){
-            view.setBackgroundColor(getResources().getColor( colorId, getTheme()) );
+    private void reworkState(){
+        ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+ getNames(entries, false));
+        prefNoneSelected.setValue(entries.size() == 0);
+        prefAllSelected.setValue(parent.getChildCount() == entries.size());
+        boolean bMarker = (entries.size() == 1);
+        if (bMarker){
+            if (entries.get(0).getTrackLog() == application.routeTrackLogObservable.getTrackLog()) bMarker = false;
+            if (entries.get(0).getTrackLog() == application.markerTrackLogObservable.getTrackLog()) bMarker = false;
         }
-
-        if (view instanceof ViewGroup){
-            ViewGroup viewGroup = (ViewGroup)view;
-            for (int idx=0; idx<viewGroup.getChildCount(); idx++){
-                setViewtreeColor(viewGroup.getChildAt(idx), colorId);
+        prefMarkerAllowed.setValue(!bMarker);
+        boolean bDelete = (entries.size() > 0);
+        if (bDelete){
+            if (entries.get(0).getTrackLog() == application.recordingTrackLogObservable.getTrackLog()) bDelete = false;
+            for (TrackStatisticEntry entry : entries){
+                if (entry.getTrackLog() == application.markerTrackLogObservable.getTrackLog()) bDelete = true;
+                if (entry.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) bDelete = true;
             }
         }
-
+        prefDeleteAllowed.setValue(!bDelete);
+        prefNoneModified.setValue(getModifiedEntries().size() == 0);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        LinearLayout parent = findViewById(R.id.trackStatisticEntries);
-        parent.removeAllViews();
-        existingTrackLogs.clear();
-        selectedTrackLogs.clear();
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        menu.setHeaderTitle("MGMapViewer:");
-        if (v instanceof TableLayout){
-            if (existingTrackLogs.get(v.getId()) != application.recordingTrackLogObservable.getTrackLog()){
-                int id = v.getId();
-
-                if (selectedTrackLogs.get(id) == null) {
-                    StatisticClickListener scl = statisticClickListeners.get(id);
-                    scl.onSingleClick(v);
-                }
-
-                menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_stl_track));
-                boolean bModified = false;
-                for(int idx = 0; idx < selectedTrackLogs.size(); idx++) {
-                    TrackLog aTrackLog = selectedTrackLogs.valueAt(idx);
-                    if (aTrackLog.isModified()){
-                        bModified = true;
-                    }
-                }
-                if (bModified){
-                    menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_sav_track));
-                }
-                if (selectedTrackLogs.size() == 1){
-                    TrackLog trackLog = selectedTrackLogs.get(v.getId());
-                    boolean bProvideMarkerEntry = true;
-                    if (application.recordingTrackLogObservable.getTrackLog() == trackLog) bProvideMarkerEntry = false;
-                    if (application.markerTrackLogObservable.getTrackLog() == trackLog) bProvideMarkerEntry = false;
-                    if (application.routeTrackLogObservable.getTrackLog() == trackLog) bProvideMarkerEntry = false;
-                    if (bProvideMarkerEntry){
-                        menu.add(0, v.getId(),0,getResources().getString(R.string.ctx_stat_mtl_track));
-                    }
-                }
-                menu.add(0, v.getId(),0,getResources().getString(bModified?R.string.ctx_stat_shr_track2:R.string.ctx_stat_shr_track));
-                if (!bModified){
-                    menu.add(0, v.getId(),1,getResources().getString(R.string.ctx_stat_del_track));
-                }
-            }
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        super.onContextItemSelected(item);
-        TrackLog trackLog = existingTrackLogs.get(item.getItemId());
-        Log.i(MGMapApplication.LABEL, NameUtil.context() +" \""+item.getTitle()+"\" for track \"" + trackLog.getName()+"\"");
-
-        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_del_track) )) {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            builder.setTitle(item.getTitle());
-            ArrayList<String> list = new ArrayList<>();
-            for(int idx = 0; idx < selectedTrackLogs.size(); idx++){
-                list .add( selectedTrackLogs.valueAt(idx).getName()  );
-            }
-            String msg = list.toString();
-            builder.setMessage(msg.substring(1,msg.length()-1));
-
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    for(int idx = 0; idx < selectedTrackLogs.size(); idx++){
-                        TrackLog aTrackLog = selectedTrackLogs.valueAt(idx);
-                        application.metaTrackLogs.remove(aTrackLog.getNameKey());
-                        application.availableTrackLogsObservable.availableTrackLogs.remove(aTrackLog);
-                        if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == aTrackLog) {
-                            application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
-                        }
-                        Log.i(MGMapApplication.LABEL, NameUtil.context() +" confirm \""+item.getTitle()+"\" for track \"" + aTrackLog.getName()+"\"");
-                        PersistenceManager.getInstance().deleteTrack(aTrackLog.getName());
-                    }
-                    TrackStatisticActivity.this.recreate();
-                }
-            });
-
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Do nothing
-                    dialog.dismiss();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() +" abort \""+item.getTitle()+"\" for track \"" + trackLog.getName()+"\"");
-                }
-            });
-
-            AlertDialog alert = builder.create();
-            alert.show();
-
-        }
-        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_stl_track) )){
-            Intent intent = new Intent(this, MGMapActivity.class);
-            intent.putExtra("stl",trackLog.getNameKey());
-            ArrayList<String> list = new ArrayList<>();
-            for(int idx = 0; idx < selectedTrackLogs.size(); idx++){
-                list .add( selectedTrackLogs.valueAt(idx).getNameKey()  );
-            }
-            list.remove(trackLog.getNameKey());
-            if (list.size() > 0){
-                intent.putExtra("atl",list.toString());
-            }
-            intent.setType("mgmap/showTrack");
-            startActivity(intent);
-        }
-        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_mtl_track) )){
-            Intent intent = new Intent(this, MGMapActivity.class);
-            intent.putExtra("stl",trackLog.getNameKey());
-            intent.setType("mgmap/markTrack");
-            startActivity(intent);
-//            application.getMS(MSMarker.class).createMarkerTrackLog(trackLog);
-//            finish();
-        }
-        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_shr_track) ) || item.getTitle().equals( getResources().getString(R.string.ctx_stat_shr_track2) )){
-            Intent sendIntent = null;
-            String title = "Share ...";
-            if (selectedTrackLogs.size() == 1){
-                if (!PersistenceManager.getInstance().existsGpx(trackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
-                    GpxExporter.export(trackLog);
-                }
-                sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
-                title = "Share "+trackLog.getName()+".gpx to ...";
-            } else if (selectedTrackLogs.size() >= 2){
-                ArrayList<Uri> uris = new ArrayList<>();
-                for(int idx = 0; idx < selectedTrackLogs.size(); idx++){
-                    TrackLog aTrackLog = selectedTrackLogs.valueAt(idx);
-                    if (!PersistenceManager.getInstance().existsGpx(aTrackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
-                        GpxExporter.export(aTrackLog);
-                    }
-                    uris.add( PersistenceManager.getInstance().getGpxUri( aTrackLog.getName() ) );
-                }
-                sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-
-            }
-            sendIntent.setType("*/*");
-            sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(Intent.createChooser(sendIntent, title));
-        }
-//        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_hpr_track) )){
-//            application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRefZoom(trackLog, -1, true));
-//            application.availableTrackLogsObservable.changed();
-//            Intent intent = new Intent(this, HeightProfileActivity.class);
-//            startActivity(intent);
-//        }
-        if (item.getTitle().equals( getResources().getString(R.string.ctx_stat_sav_track) )){
-            for(int idx = 0; idx < selectedTrackLogs.size(); idx++) {
-                TrackLog aTrackLog = selectedTrackLogs.valueAt(idx);
-                if (aTrackLog.isModified()){
-                    GpxExporter.export(aTrackLog);
-//                    application.metaTrackLogs.put(aTrackLog.getNameKey(), aTrackLog);
-                    aTrackLog.setModified(false);
-                }
-            }
-            finish();
-        }
-        return true;
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

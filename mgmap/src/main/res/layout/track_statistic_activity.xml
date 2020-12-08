@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,8 +8,8 @@
     <mg.mapviewer.view.MyScrollView
 
         android:layout_height="match_parent"
-        android:layout_width="match_parent">
-
+        android:layout_width="match_parent"
+        >
 
         <LinearLayout
             android:id="@+id/trackStatisticEntries"
@@ -23,9 +23,11 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:id="@+id/ts_qc"
         android:orientation="horizontal"
+        android:background="@color/GRAY100_A100"
+        android:layout_alignParentBottom="true"
         >
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

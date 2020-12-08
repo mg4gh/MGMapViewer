@@ -1,5 +1,6 @@
 package mg.mapviewer.features.fullscreen;
 
+import android.app.Activity;
 import android.view.View;
 
 import mg.mapviewer.MGMapActivity;
@@ -37,33 +38,33 @@ public class MSFullscreen extends MGMicroService {
     }
 
     @Override
-    protected void doRefresh() {
+    public void doRefresh() {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (prefFullscreen.getValue()){
-                    setFullscreen();
+                    setFullscreen(getActivity());
                 } else {
-                    hideFullscreen();
+                    hideFullscreen(getActivity());
                 }
 
             }
         });
     }
 
-    void setFullscreen() {
-        int newUiOptions = getActivity().getWindow().getDecorView().getSystemUiVisibility();
+    public static void setFullscreen(Activity activity) {
+        int newUiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
         newUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         newUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
         newUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        getActivity().getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+        activity.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
     }
-    void hideFullscreen() {
-        int newUiOptions = getActivity().getWindow().getDecorView().getSystemUiVisibility();
+    public static void hideFullscreen(Activity activity) {
+        int newUiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
         newUiOptions &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         newUiOptions &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
         newUiOptions &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        getActivity().getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+        activity.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
 }

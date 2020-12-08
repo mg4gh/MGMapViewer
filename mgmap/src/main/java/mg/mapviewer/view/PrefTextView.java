@@ -16,6 +16,8 @@ import androidx.preference.PreferenceManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.PointModel;
@@ -25,8 +27,8 @@ import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.pref.MGPref;
 
-public class PrefTextView extends AppCompatTextView implements SharedPreferences.OnSharedPreferenceChangeListener {
-    
+public class PrefTextView extends AppCompatTextView  {
+
     public PrefTextView(Context context) {
         super(context, null);
     }
@@ -39,6 +41,7 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
     private int[] drawableIds = null;
     private Formatter.FormatType formatType = Formatter.FormatType.FORMAT_STRING;
     private int drawableSize = 0;
+    private Observer prefObserver = null;
 
     /**
      * Expect boolean Preferences.
@@ -50,12 +53,33 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
         this.drawableIds = (drawableIds==null)?new int[]{}:drawableIds;
 
         if (this.prefs.length > 0){
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-            sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+//            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+//            sharedPreferences.registerOnSharedPreferenceChangeListener(this);
             createOCLs();
+            prefObserver = createObserver();
+            for (MGPref<?> pref : prefs){
+                 pref.addObserver(prefObserver);
+            }
         }
+
         onChange("init");
         return this;
+    }
+
+    private Observer createObserver(){
+        return new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                String key = null;
+                if (o instanceof MGPref<?>) {
+                    MGPref<?> mgPref = (MGPref<?>) o;
+                    key = mgPref.getKey();
+                } else {
+                    key = o.toString();
+                }
+                onChange(key);
+            }
+        };
     }
 
     public void appendPrefData(MGPref<Boolean>[] prefs, int[] drawableIds) {
@@ -69,6 +93,9 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
         return this;
     }
 
+    public int getDrawableSize(){
+        return drawableSize;
+    }
     public PrefTextView setDrawableSize(int drawableSize){
         this.drawableSize = drawableSize;
         return this;
@@ -112,14 +139,14 @@ public class PrefTextView extends AppCompatTextView implements SharedPreferences
         }
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        for (MGPref<?> pref : prefs){
-            if (pref.getKey().equals(key)){
-                onChange(key);
-            }
-        }
-    }
+//    @Override
+//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+//        for (MGPref<?> pref : prefs){
+//            if (pref.getKey().equals(key)){
+//                onChange(key);
+//            }
+//        }
+//    }
 
     private void onChange(String key){
         if (drawableIds.length == 0) {
