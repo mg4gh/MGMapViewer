@@ -91,11 +91,12 @@ public class GGraphTile extends GGraph {
             //all highwas are in the map ... try to correct data ...
             for (int iIdx=0; iIdx<graph.nodes.size(); iIdx++){
                 GNode iNode = graph.nodes.get(iIdx);
-                if (iNode.countNeighbours() != 1) continue; // connect only end points
-                for (int nIdx=iIdx+1; nIdx<graph.nodes.size(); nIdx++ ){
+                int iNeighbours = iNode.countNeighbours();
+                for (int nIdx=iIdx+1; nIdx<graph.nodes.size(); nIdx++ ) {
                     GNode nNode = graph.nodes.get(nIdx);
                     if (iNode.laMdDiff(nNode) >= threshold) break; // go to next iIdx
-                    if ((iNode.laMdDiff(nNode)+iNode.loMdDiff(nNode)) >= threshold ) continue; // goto next mIdx
+                    if ((iNode.laMdDiff(nNode) + iNode.loMdDiff(nNode)) >= threshold)
+                        continue; // goto next mIdx
 
 //This doesn't work well for routing hints
 //                    graph.addSegment(iNode, nNode);
@@ -111,9 +112,30 @@ public class GGraphTile extends GGraph {
 //                        graph.addSegment(iNode, nextNeighbour.getNeighbourNode());
 //                    }
 
-                    if (nNode.countNeighbours() != 1) continue; // connect only end points
-                    // Third solution approach: connect only point with exactly 1 neighbour
-                    // Therefore this shouldn't be a Problem for routing hints, since both connected points have now 2 neighbours - so they are no routing points
+//And this is still not good: (Hollmuth,Heiligkreuzsteinach) there are 2 neighbours at on end ... and one on the other ... and this doesn't work
+//                    if (nNode.countNeighbours() != 1) continue; // connect only end points
+//                    // Third solution approach: connect only point with exactly 1 neighbour
+//                    // Therefore this shouldn't be a Problem for routing hints, since both connected points have now 2 neighbours - so they are no routing points
+//                    graph.addSegment(iNode, nNode);
+
+                    int nNeighbours = nNode.countNeighbours();
+                    if ((iNeighbours == 1) && (nNeighbours == 1)) { // 1:1 connect -> no routing hint problem
+                        graph.addSegment(iNode, nNode);
+                        continue;
+                    }
+                    if (isBorderPoint(graph.tbBox, nNode) || isBorderPoint(graph.tbBox, iNode)) { // border points must be kept for MultiTiles; accept potential routing hint problem
+                        graph.addSegment(iNode, nNode);
+                        continue;
+                    }
+                    if ((iNeighbours == 2) && (nNeighbours == 1)) { // 2:1 connect -> might give routing hint problem
+                        reduceGraph(graph, iNode, nNode);  // drop nNode; move neighbour form nNode to iNode
+                        continue;
+                    }
+                    if ((iNeighbours == 1) && (nNeighbours == 2)) { // 1:2 connect -> might give routing hint problem
+                        reduceGraph(graph, nNode, iNode); // drop iNode; move neighbour form iNode to nNode
+                        continue;
+                    }
+                    // else (n:m) accept routing hint issue
                     graph.addSegment(iNode, nNode);
 
                 }
@@ -133,6 +155,24 @@ public class GGraphTile extends GGraph {
             Log.d(MGMapApplication.LABEL,NameUtil.context()+ " Cache Size:"+cache.size()+" accessList Size:"+accessList.size());
         }
         return graph;
+    }
+
+    static boolean isBorderPoint(BBox bBox, GNode node){
+        return ((node.getLat() == bBox.maxLatitude) || (node.getLat() == bBox.minLatitude) ||
+                (node.getLon() == bBox.maxLongitude) || (node.getLon() == bBox.minLongitude));
+    }
+
+    // reduce Graph by dropping nNode, all Neighbours form nNode will get iNode as a Neighbour
+    static void reduceGraph(GGraphTile graph, GNode iNode, GNode nNode){
+        // iterate over al neighbours from nNode
+        GNeighbour nextNeighbour = nNode.getNeighbour();
+        while (nextNeighbour.getNextNeighbour() != null) {
+            nextNeighbour = nextNeighbour.getNextNeighbour();
+            // remove nNode as a Neighbour
+            nextNeighbour.getNeighbourNode().removeNeighbourNode(nNode);
+            graph.addSegment(iNode, nextNeighbour.getNeighbourNode());
+        }
+        graph.nodes.remove(nNode);
     }
 
     // be careful with this operation, it might crash a routing action
