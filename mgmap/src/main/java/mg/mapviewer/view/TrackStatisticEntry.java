@@ -29,7 +29,8 @@ public class TrackStatisticEntry extends TableLayout {
     private MGPref<Boolean> prefSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
 
     private TrackLog trackLog;
-    private PrefTextView namePTV;
+    private final MGPref<Boolean> prefShowNameKey = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+
 
     private Observer modifiedObserver;
 
@@ -51,8 +52,7 @@ public class TrackStatisticEntry extends TableLayout {
         TableRow tableRow0 = new TableRow(context);
         this.addView(tableRow0);
         createPTV(tableRow0,10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(new MGPref[]{prefSelected},new int[]{R.drawable.select_off,R.drawable.select_on});
-        namePTV = createPTV(tableRow0,81).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null);
-        refreshNamePTV();
+        PrefTextView namePTV = createPTV(tableRow0,81).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null);
         namePTV.setMaxLines(5);
 
         TableRow tableRow1 = new TableRow(context);
@@ -60,16 +60,16 @@ public class TrackStatisticEntry extends TableLayout {
         createPTV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null).setValue( (statistic.getSegmentIdx()<0)?"All":""+statistic.getSegmentIdx() );
         createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DATE).setPrefData(null,null).setValue( statistic.getTStart() );
         createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_TIME).setPrefData(null,null).setValue( statistic.getTStart() );
-        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setPrefData(null, new int[]{R.drawable.duration}).setValue( statistic.duration );
-        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setPrefData(null, new int[]{R.drawable.length}).setValue( statistic.getTotalLength() );
+        PrefTextView durationPTV = createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setPrefData(null, new int[]{R.drawable.duration});
+        PrefTextView lengthPTV = createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setPrefData(null, new int[]{R.drawable.length});
 
         TableRow tableRow2 = new TableRow(context);
         this.addView(tableRow2);
-        createPTV(tableRow2,10).setFormat(Formatter.FormatType.FORMAT_INT).setPrefData(null,null).setValue( statistic.getNumPoints() );
-        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.gain}).setValue( statistic.getGain() );
-        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.loss}).setValue( statistic.getLoss() );
-        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.maxele}).setValue( statistic.getMaxEle() );
-        createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.minele}).setValue( statistic.getMinEle() );
+        PrefTextView numPointsPTV = createPTV(tableRow2,10).setFormat(Formatter.FormatType.FORMAT_INT).setPrefData(null,null);
+        PrefTextView gainPTV = createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.gain});
+        PrefTextView lossPTV = createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.loss});
+        PrefTextView maxelePTV = createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.maxele});
+        PrefTextView minelePTV = createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.minele});
 
 
         setViewtreeColor(this, colorId);
@@ -87,15 +87,23 @@ public class TrackStatisticEntry extends TableLayout {
         modifiedObserver = new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-                refreshNamePTV();
+                namePTV.setValue( ((prefShowNameKey.getValue())?trackLog.getNameKey():trackLog.getName()) + (trackLog.isModified()?"*":""));
+                durationPTV.setValue(statistic.duration);
+                lengthPTV.setValue(statistic.getTotalLength());
+                numPointsPTV.setValue(statistic.getNumPoints());
+                gainPTV.setValue(statistic.getGain());
+                lossPTV.setValue(statistic.getLoss());
+                maxelePTV.setValue(statistic.getMaxEle());
+                minelePTV.setValue(statistic.getMinEle());
             }
         };
         trackLog.getPrefModified().addObserver(modifiedObserver);
+        prefShowNameKey.addObserver(modifiedObserver);
+
+        modifiedObserver.update(null,null);
+
     }
 
-    private void refreshNamePTV(){
-        namePTV.setValue(trackLog.getName()+(trackLog.isModified()?"*":""));
-    }
 
 
     public class StatisticClickListener extends ExtendedClickListener {
@@ -103,18 +111,13 @@ public class TrackStatisticEntry extends TableLayout {
 
         @Override
         public void onSingleClick(View v) {
-            setPrefSelected(!isPrefSelected());
+            prefSelected.toggle();
+//            setPrefSelected(!isPrefSelected());
         }
 
         @Override
         public void onDoubleClick(View v) {
-            showNameKey = !showNameKey;
-            if (showNameKey){
-                namePTV.setText(trackLog.getNameKey());
-            } else {
-                namePTV.setText(trackLog.getName());
-            }
-            super.onDoubleClick(v);
+            prefShowNameKey.toggle();
         }
 
     }
@@ -185,6 +188,7 @@ public class TrackStatisticEntry extends TableLayout {
 
     public void onCleanup(){
         trackLog.getPrefModified().deleteObserver(modifiedObserver);
+        prefShowNameKey.deleteObserver(modifiedObserver);
     }
 
 }

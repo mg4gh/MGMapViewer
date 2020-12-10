@@ -69,6 +69,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private final MGPref<Boolean> prefAllSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
     private final MGPref<Boolean> prefMarkerAllowed = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
     private final MGPref<Boolean> prefDeleteAllowed = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+    private final MGPref<Boolean> prefShareAllowed = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
     private final MGPref<Boolean> prefNoneModified = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
 
     Observer reworkObserver = null;
@@ -236,10 +237,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     Intent intent = new Intent(TrackStatisticActivity.this, MGMapActivity.class);
                     intent.putExtra("stl",sel.getTrackLog().getNameKey());
                     List<String> list = getNames(entries,true);
-//                    ArrayList<String> list = new ArrayList<>();
-//                    for (TrackStatisticEntry entry : entries){
-//                        list.add(entry.getTrackLog().getNameKey()); // make a list of strings out of it
-//                    }
                     if (list.size() > 0){
                         intent.putExtra("atl",list.toString());
                     }
@@ -265,7 +262,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         });
 
 
-        PrefTextView share = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.share,R.drawable.share2});
+        PrefTextView share = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefShareAllowed}, new int[]{R.drawable.share,R.drawable.share2});
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -277,7 +274,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
                         TrackLog trackLog = entries.get(0).getTrackLog();
                         if (!PersistenceManager.getInstance().existsGpx(trackLog.getName())){ // if it is not yet persisted, then do it now before the share intent
                             GpxExporter.export(trackLog);
-//                            trackLog.setModified(false);
                         }
                         sendIntent = new Intent(Intent.ACTION_SEND);
                         sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
@@ -315,13 +311,12 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     if (entry.isModified()){
                         TrackLog aTrackLog = entry.getTrackLog();
                         GpxExporter.export(aTrackLog);
-//                        entry.setModified(false);
                     }
                 }
             }
         });
 
-        PrefTextView delete = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.delete,R.drawable.delete2});
+        PrefTextView delete = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefDeleteAllowed}, new int[]{R.drawable.delete,R.drawable.delete2});
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -447,11 +442,19 @@ public class TrackStatisticActivity extends AppCompatActivity {
         if (bDelete){
             if (entries.get(0).getTrackLog() == application.recordingTrackLogObservable.getTrackLog()) bDelete = false;
             for (TrackStatisticEntry entry : entries){
-                if (entry.getTrackLog() == application.markerTrackLogObservable.getTrackLog()) bDelete = true;
-                if (entry.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) bDelete = true;
+                if (entry.getTrackLog() == application.markerTrackLogObservable.getTrackLog()) bDelete = false;
+                if (entry.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) bDelete = false;
             }
         }
         prefDeleteAllowed.setValue(!bDelete);
+        boolean bShare = (entries.size() > 0);
+        if (bShare){
+            for (TrackStatisticEntry entry : entries){
+                TrackLog aTrackLog = entry.getTrackLog();
+                if (!PersistenceManager.getInstance().existsGpx(aTrackLog.getName())) bShare = false;
+            }
+        }
+        prefShareAllowed.setValue((!bShare));
         prefNoneModified.setValue(getModifiedEntries().size() == 0);
     }
 

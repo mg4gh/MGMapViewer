@@ -180,6 +180,8 @@ public class RecordingTrackLog extends WriteableTrackLog {
             super.addPoint(lp);
             if (recordRaw) createRawEntry(RawType.E_POINT, lp.getTimestamp(), lp);
             changed(null);
+            setModified(true);
+            getPrefModified().onChange(); // propagate event, even if state is not changed
         }
     }
 
