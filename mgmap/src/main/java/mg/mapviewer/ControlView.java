@@ -435,6 +435,7 @@ public class ControlView extends RelativeLayout {
     private SeekBar createSeekBar(ViewGroup vgParent){
         SeekBar sb = new SeekBar(context);
         vgParent.addView(sb);
+        //sb.setScaleX(1.5f); does scale the thumb to a nice circle, but also scale the seekBar to the full width of the screen
         sb.setScaleY(1.5f);
         sb.setPadding(convertDp(20),0,convertDp(20),convertDp(10));
         return sb;
