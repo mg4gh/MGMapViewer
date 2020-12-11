@@ -1,9 +1,9 @@
 <small><small>[Back to Index](../../../index.md)</small></small>
 
-## Main Track Feature: routing
+## Main Track Feature: basic routing
 
 This feature provides a basic route calculation (shortest path) based on a [marker track](../MarkerTrack/markertrack.md).
-But for a basic usage of this feature this isn't important.
+But for a usage of the routing feature this isn't important, nevertheless it might be helpful for the understanding.
 The route calculation is using an simple [A\*](https://de.wikipedia.org/wiki/A*-Algorithmus) algorithm.
 There is a further feature [routing hints](../../FurtherFeatures/RoutingHints/hints.md), which is based on this routing feature.
 
@@ -50,32 +50,36 @@ air-line.
 If you reload it, the same route will be recalculated from this basis and you are still be able to change it again.
 - In contrast, if you want to pass this route as a .gpx to someone else, then use the route export.
 
-**Route export**
+**Marker Route export / Save Marker Route**
 
-The route menu provides also an option <span style="color:gray">*Route | Route export*</span> to save the calculated route to a gpx file in the directory ./MGMapViewer/track/gpx.
+The route menu provides also an option <span style="color:gray">*Menu | Route | Route export*</span> to save the calculated route to a gpx file in the directory ./MGMapViewer/track/gpx.
 The filename has the structure \<date>_\<time>_MarkerRoute.gpx. Compared to the marker track this gpx consists of much more track points to describe the
 exact path as it is visible in the map. So use this export, if you want to give it to other people and/or tools.
 
-**Route optimize**
+Similar to the marker track you can also open the [statistic activity](../../FurtherFeatures/Statistic/statistic.md). Select the marker route entry and then use the save button.
+
+**Marker Route optimize**
 
 This feature is **not** related to calculated routes as seen above. Instead, if you have a real world track then this track doesn't exactly 
 match the ways you have used. And especially on zigzag ways the calculated length may differ from real world. If you wan't to
 get precise data, then you need to match the recorded track to the map. Therefore the [graphhopper](https://www.graphhopper.com) project 
-calls this function map matching. But we want to do the same without the internet and a server infrastructure.
+calls this function map matching. But we want to do the same without the internet and a big server infrastructure.
 
-Attention: Before you try a load a GPS recorded track as marker track, switch off the "snap to way" option with  
-<span style="color:gray">*Menu | Settings and more | Further settings | Snap to way*</span>. Optionally you can also visualize the marker track  
-<span style="color:gray">*Menu | Settings and more | Further settings | Show marker track*</span>.
+Attention: Before you try a load a GPS recorded track as marker track, either ensure that you have
+- switched on <span style="color:gray">*Menu | Settings and more | Further settings | Automatic marker settings*</span>
+
+or you have set the marker track options:
+- switched on <span style="color:gray">*Menu | Settings and more | Further settings | Show marker track*</span>
+- switched off <span style="color:gray">*Menu | Settings and more | Further settings | Snap to way*</span>
 
 Now try to load the relevant track via
-- statistic view and the context menu marker track or
+- open statistic activity, select relevant track and then use the marker track quick control or
 - load it as selected track and then use <span style="color:gray">*Menu | Marker track | Import*</span>.
 
-After importing you can use the <span style="color:gray">*Menu | Route | Route optimize*</span> to correct the track.
-This cannot be succeed 100%, but it can correct most of the issues. If desired, you can correct remaining issues manually.
+After importing you can use the <span style="color:gray">*Menu | Route | Route optimize*</span> to optimize the track data.
+This cannot be successful for 100%, but it can correct most of the issues. If desired, you can correct remaining issues manually.
 In the result the optimized route reflects the real length of the track quite well.
 
-The route optimisation is triggered via <span style="color:gray">*Menu | Route | Route on*</span>.
 The next figures show two examples of typical route optimizations (each example with one picture before and one after optimization):
 
 <img src="./OPT1.png" width="400" />&nbsp;
