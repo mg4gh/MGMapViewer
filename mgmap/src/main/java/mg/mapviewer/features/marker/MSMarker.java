@@ -60,6 +60,7 @@ public class MSMarker extends MGMicroService {
     private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
 
     private final MGPref<Float> prefAlphaMtl = MGPref.get("alphaMTL", 1.0f);
+    private final MGPref<Boolean> prefAlphaMtlVisibility = MGPref.get("alphaMTL_visibility", false);
 
     MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
 
@@ -98,7 +99,7 @@ public class MSMarker extends MGMicroService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("mtl".equals(info)) {
-            lsl.initPrefData(prefAlphaMtl, CC.getColor(R.color.PINK), "MarkerTrackLog");
+            lsl.initPrefData(prefAlphaMtlVisibility, prefAlphaMtl, CC.getColor(R.color.PINK), "MarkerTrackLog");
         }
         return lsl;
     }
@@ -194,6 +195,7 @@ public class MSMarker extends MGMicroService {
         if ((mtl != null) && (prefShowMtl.getValue())){
             showTrack(mtl, CC.getAlphaClone(PAINT_STROKE_MTL, prefAlphaMtl.getValue()), false, (int)(DisplayModel.getDeviceScaleFactor()*5.0f), true);
         }
+        prefAlphaMtlVisibility.setValue( (mtl != null) && (mtl.getTrackStatistic().getNumPoints() >= 1) );
     }
 
 

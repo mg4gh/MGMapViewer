@@ -63,6 +63,7 @@ public class MSAlpha extends MGMicroService {
                     getActivity().findViewById(R.id.bars).setVisibility(visibility);
                     getActivity().findViewById(R.id.bars2).setVisibility(visibility2);
                 }
+                getControlView().reworkLabeledSliderVisibility();
             }
         });
     }

@@ -39,6 +39,7 @@ public class MSRecordingTrackLog extends MGMicroService {
     private ViewGroup dashboardRtls = null;
 
     private final MGPref<Float> prefAlphaRtl = MGPref.get("alphaRTL", 1.0f);
+    private final MGPref<Boolean> prefAlphaRtlVisibility = MGPref.get("alphaRTL_visibility", false);
 
 
     public MSRecordingTrackLog(MGMapActivity mmActivity) {
@@ -61,7 +62,7 @@ public class MSRecordingTrackLog extends MGMicroService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("rtl".equals(info)) {
-            lsl.initPrefData(prefAlphaRtl, CC.getColor(R.color.RED), "RecordingTrackLog");
+            lsl.initPrefData(prefAlphaRtlVisibility, prefAlphaRtl, CC.getColor(R.color.RED), "RecordingTrackLog");
         }
         return lsl;
     }
@@ -85,11 +86,14 @@ public class MSRecordingTrackLog extends MGMicroService {
             @Override
             public void run() {
                 RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+                boolean bRtlAlphaVisibility = false;
                 if ((rtl != null) && (rtl.isTrackRecording())) {
                     showRecordingTrackLog(rtl);
+                    bRtlAlphaVisibility = ( (rtl != null)  && (rtl.getTrackStatistic().getNumPoints()>=2) );
                 } else {
                     hideRecordingTrackLog();
                 }
+                prefAlphaRtlVisibility.setValue(bRtlAlphaVisibility);
             }
         });
     }

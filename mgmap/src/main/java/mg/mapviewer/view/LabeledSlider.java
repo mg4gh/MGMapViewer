@@ -4,11 +4,13 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Observable;
@@ -24,6 +26,7 @@ public class LabeledSlider extends LinearLayout {
 
     Context context;
     MGPref<Float> prefSlider = null;
+    MGPref<Boolean> prefSliderVisibility = null;
     private TextView label;
     private SeekBar seekBar;
 
@@ -42,13 +45,14 @@ public class LabeledSlider extends LinearLayout {
         seekBar = this.createSeekBar(this);
     }
 
-    public LabeledSlider initPrefData(MGPref<Float> pref, Integer color, String text){
+    public LabeledSlider initPrefData(MGPref<Boolean> prefSliderVisibility, MGPref<Float> prefSlider, Integer color, String text){
         label.setText(text);
-        prefSlider = pref;
-        prefSlider.addObserver(new Observer() {
+        this.prefSliderVisibility = prefSliderVisibility;
+        this.prefSlider = prefSlider;
+        this.prefSlider.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-                seekBar.setProgress( (int)(prefSlider.getValue() * 100));
+                seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100));
             }
         });
         prefSlider.onChange();
@@ -100,5 +104,18 @@ public class LabeledSlider extends LinearLayout {
 
     private int convertDp(float dp){
         return ControlView.convertDp(dp);
+    }
+
+    public MGPref<Boolean> getPrefSliderVisibility(){
+        return prefSliderVisibility;
+    }
+
+    @Override
+    public String toString() {
+        return "LabeledSlider{" +
+                "label=" + label.getText() +
+                " visibility="+prefSliderVisibility.getValue()+
+                " alpha="+prefSlider.getValue()+
+                '}';
     }
 }

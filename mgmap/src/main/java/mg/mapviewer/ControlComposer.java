@@ -79,7 +79,8 @@ public class ControlComposer {
         for (String prefKey : application.getMapLayerKeys()) {
             final String key = activity.sharedPreferences.getString(prefKey, "");
             if (MGMapLayerFactory.hasAlpha(key)){
-                coView.createLabeledSlider(parent).initPrefData(MGPref.get("alpha_" + key, 1.0f), null, key);
+                MGPref<Boolean> visibility = new MGPref<Boolean>("alpha_" + key+"_visibility", true, false);
+                coView.createLabeledSlider(parent).initPrefData(visibility, MGPref.get("alpha_" + key, 1.0f), null, key);
             }
         }
         parent.setVisibility(View.INVISIBLE);

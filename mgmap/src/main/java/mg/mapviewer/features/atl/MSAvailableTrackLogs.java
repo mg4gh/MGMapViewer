@@ -47,6 +47,8 @@ public class MSAvailableTrackLogs extends MGMicroService {
     private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.MSATL_pref_stlGl_key, true);
     private final MGPref<Float> prefAlphaStl = MGPref.get("alphaSTL", 1.0f);
     private final MGPref<Float> prefAlphaAtl = MGPref.get("alphaATL", 1.0f);
+    private final MGPref<Boolean> prefAlphaStlVisibility = MGPref.get("alphaSTL_visibility", false);
+    private final MGPref<Boolean> prefAlphaAtlVisibility = MGPref.get("alphaATL_visibility", false);
 
 
     private ViewGroup dashboardStl = null;
@@ -68,15 +70,13 @@ public class MSAvailableTrackLogs extends MGMicroService {
         return dvg;
     }
 
-    ViewGroup bar2 = null;
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("stl".equals(info)) {
-            lsl.initPrefData(prefAlphaStl, CC.getColor(R.color.BLUE), "SelectedTrackLog");
-            bar2 = (ViewGroup)lsl.getParent();
+            lsl.initPrefData(prefAlphaStlVisibility, prefAlphaStl, CC.getColor(R.color.BLUE), "SelectedTrackLog");
         }
         if ("atl".equals(info)) {
-            lsl.initPrefData(prefAlphaAtl, CC.getColor(R.color.GREEN), "AvailableTrackLog");
+            lsl.initPrefData(prefAlphaAtlVisibility, prefAlphaAtl, CC.getColor(R.color.GREEN), "AvailableTrackLog");
         }
         return lsl;
     }
@@ -110,12 +110,18 @@ public class MSAvailableTrackLogs extends MGMicroService {
         hideAvailableTrackLogs();
 
         MGMapApplication.AvailableTrackLogsObservable available = getApplication().availableTrackLogsObservable;
+        boolean bAtlAlphaVisibility = false;
         for (TrackLog trackLog: available.getAvailableTrackLogs()){
-            if (available.getSelectedTrackLogRef().getTrackLog() != trackLog) {
+            if ((trackLog != available.getSelectedTrackLogRef().getTrackLog()) &&
+                    (trackLog != getApplication().recordingTrackLogObservable.getTrackLog()) &&
+                    (trackLog != getApplication().markerTrackLogObservable.getTrackLog()) &&
+                    (trackLog != getApplication().routeTrackLogObservable.getTrackLog())  ) {
 //                showTrack(trackLog, PAINT_STROKE_ATL, false);
                 showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_ATL, prefAlphaAtl.getValue()), false);
+                bAtlAlphaVisibility = true;
             }
         }
+        prefAlphaAtlVisibility.setValue(bAtlAlphaVisibility);
         // handle selected track last, to get it on top
         TrackLog trackLog = available.getSelectedTrackLogRef().getTrackLog();
         if (trackLog!= null){
@@ -138,7 +144,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
                 }
             }
         }
-//        getControlView().reworkLabeledSliderVisibility(bar2);
+        prefAlphaStlVisibility.setValue((trackLog != null) && (trackLog.getTrackStatistic().getNumPoints() >=2));
     }
 
     private void hideAvailableTrackLogs(){

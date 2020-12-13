@@ -96,6 +96,7 @@ public class MSRouting extends MGMicroService {
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
     private final MGPref<Float> prefAlphaRotl = MGPref.get("alphaRoTL", 1.0f);
+    private final MGPref<Boolean> prefAlphaRotlVisibility = MGPref.get("alphaRoTL_visibility", false);
 
     private ViewGroup dashboardRoute = null;
 
@@ -116,7 +117,7 @@ public class MSRouting extends MGMicroService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("rotl".equals(info)) {
-            lsl.initPrefData(prefAlphaRotl, CC.getColor(R.color.PURPLE), "RouteTrackLog");
+            lsl.initPrefData(prefAlphaRotlVisibility, prefAlphaRotl, CC.getColor(R.color.PURPLE), "RouteTrackLog");
         }
         return lsl;
     }
@@ -141,11 +142,16 @@ public class MSRouting extends MGMicroService {
     @Override
     protected void doRefresh() {
         WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+        boolean bRoTLAlphaVisibility = false;
         if (prefShowRouting.getValue() && (mtl!= null)){
             updateRouting(mtl);
+            TrackLog roTL = getApplication().routeTrackLogObservable.getTrackLog();
+            bRoTLAlphaVisibility = ((roTL != null) && (roTL.getTrackStatistic().getNumPoints() >= 1));
         } else {
             hideRouting();
         }
+        prefAlphaRotlVisibility.setValue(bRoTLAlphaVisibility);
+
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
