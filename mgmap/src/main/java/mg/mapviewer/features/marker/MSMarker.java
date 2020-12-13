@@ -16,6 +16,9 @@ package mg.mapviewer.features.marker;
 
 import android.util.Log;
 
+import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.map.model.DisplayModel;
+
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
@@ -38,19 +41,25 @@ import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.model.WriteablePointModelImpl;
 import mg.mapviewer.util.AltitudeProvider;
 import mg.mapviewer.util.Assert;
+import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.PrefTextView;
 
 public class MSMarker extends MGMicroService {
 
+    private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
+
     private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
     private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
     private final MGPref<Boolean> prefShowMtl = MGPref.get(R.string.MSMarker_pref_showMtl_key, false);
     private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
+
+    private final MGPref<Float> prefAlphaMtl = MGPref.get("alphaMTL", 1.0f);
 
     MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
 
@@ -87,6 +96,14 @@ public class MSMarker extends MGMicroService {
     }
 
     @Override
+    public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
+        if ("mtl".equals(info)) {
+            lsl.initPrefData(prefAlphaMtl, CC.getColor(R.color.PINK), "MarkerTrackLog");
+        }
+        return lsl;
+    }
+
+    @Override
     protected void start() {
         super.start();
         prefEditMarkerTrack.setValue(false);
@@ -100,6 +117,8 @@ public class MSMarker extends MGMicroService {
         markerTrackLogObservable.addObserver(refreshObserver);
         getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
         ttRefreshTime = 20;
+
+        prefAlphaMtl.addObserver(refreshObserver);
     }
 
     @Override
@@ -108,6 +127,8 @@ public class MSMarker extends MGMicroService {
         getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
         prefEditMarkerTrack.deleteObserver(editMarkerTrackObserver);
         unregisterClass(MarkerControlLayer.class);
+
+        prefAlphaMtl.deleteObserver(refreshObserver);
     }
 
     @Override
@@ -171,10 +192,7 @@ public class MSMarker extends MGMicroService {
             unregisterAll();
         }
         if ((mtl != null) && (prefShowMtl.getValue())){
-            for (TrackLogSegment segment : mtl.getTrackLogSegments()){
-                MarkerTrackView mtv = new MarkerTrackView(segment);
-                register(mtv);
-            }
+            showTrack(mtl, CC.getAlphaClone(PAINT_STROKE_MTL, prefAlphaMtl.getValue()), false, (int)(DisplayModel.getDeviceScaleFactor()*5.0f), true);
         }
     }
 

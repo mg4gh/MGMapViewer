@@ -54,6 +54,7 @@ import mg.mapviewer.util.CC;
 import mg.mapviewer.util.HintControl;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.PrefTextView;
 
 /**
@@ -145,7 +146,9 @@ public class ControlView extends RelativeLayout {
             controlComposer.composeMenu(application, activity, this);
             setMenuVisibility(false);
 
-            prepareAlphaSliders();
+//            prepareAlphaSliders();
+            controlComposer.composeAlphaSlider(application,activity,this);
+            controlComposer.composeAlphaSlider2(application,activity,this);
 
 //            prepareStatusLine();
             controlComposer.composeStatusLine(application, activity, this);
@@ -423,80 +426,114 @@ public class ControlView extends RelativeLayout {
     // ********* Alpha Slider related stuff                                                   **********
     // *************************************************************************************************
 
-    Map<String, SeekBar> mapSliders = new HashMap<>();
-    Map<String, TextView> mapSliderNames = new HashMap<>();
+//    Map<String, SeekBar> mapSliders = new HashMap<>();
+//    Map<String, TextView> mapSliderNames = new HashMap<>();
+//
+//    private TextView createSeekBarLabel(ViewGroup vgParent){
+//        TextView tv = new TextView(context);
+//        tv.setPadding(convertDp(10),0,convertDp(10),convertDp(0));
+//        vgParent.addView(tv);
+//        return tv;
+//    }
+//
+//    private SeekBar createSeekBar(ViewGroup vgParent){
+//        SeekBar sb = new SeekBar(context);
+//        vgParent.addView(sb);
+//        //sb.setScaleX(1.5f); does scale the thumb to a nice circle, but also scale the seekBar to the full width of the screen
+//        sb.setScaleY(1.5f);
+//        sb.setPadding(convertDp(20),0,convertDp(20),convertDp(10));
+//        return sb;
+//    }
 
-    private TextView createSeekBarLabel(ViewGroup vgParent){
-        TextView tv = new TextView(context);
-        vgParent.addView(tv);
-        return tv;
+//    private void prepareAlphaSliders(){
+//        ViewGroup vgParent = findViewById(R.id.bars);
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), createSeekBarLabel(vgParent));
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), createSeekBar(vgParent));
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), createSeekBarLabel(vgParent));
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), createSeekBar(vgParent));
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), createSeekBarLabel(vgParent));
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), createSeekBar(vgParent));
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), createSeekBarLabel(vgParent));
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), createSeekBar(vgParent));
+//        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), createSeekBarLabel(vgParent));
+//        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), createSeekBar(vgParent));
+//
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+//        LinearLayout parentLayer = findViewById(R.id.bars);
+//        for (String prefKey : application.getMapLayerKeys()) {
+//            final String key = sharedPreferences.getString(prefKey, "");
+//            final String alphakey = "ControlView_alpha_"+key;
+//            SeekBar seekBar = mapSliders.get(prefKey);
+//            TextView seekBarName = mapSliderNames.get(prefKey);
+//            if (MGMapLayerFactory.hasAlpha(key)) {
+//                seekBarName.setText(key);
+//                float alpha = MGMapLayerFactory.getMapLayerAlpha(key);
+//                alpha = sharedPreferences.getFloat(alphakey, alpha);
+//                Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha);
+//                MGMapLayerFactory.setMapLayerAlpha(key, alpha);
+//                seekBar.setProgress((int) (alpha*100));
+//
+//                seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
+//                    @Override
+//                    public void onStopTrackingTouch(SeekBar seekBar) { }
+//
+//                    @Override
+//                    public void onStartTrackingTouch(SeekBar seekBar) { }
+//
+//                    @Override
+//                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                        Layer layer = MGMapLayerFactory.getMapLayer(key);
+//                        if (layer instanceof TileLayer) {
+//                            float alpha = progress/100.0f;
+//                            if (!fromUser){
+//                                alpha = sharedPreferences.getFloat(alphakey, alpha);
+//                                seekBar.setProgress((int) (alpha*100));
+//                            }
+//                            MGMapLayerFactory.setMapLayerAlpha(key, alpha);
+//                            Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha+ " "+seekBar);
+//                            sharedPreferences.edit().putFloat(alphakey, alpha).apply();
+//                            mapView.getLayerManager().redrawLayers();
+//                        }
+//                        Log.d(MGMapApplication.LABEL, NameUtil.context()+" progress="+progress);
+//                    }
+//                });
+//
+//            } else {
+//                parentLayer.removeView(seekBar);
+//                parentLayer.removeView(seekBarName);
+//            }
+//        }
+//    }
+//
+//    private void prepareAlphaSliders2(){
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+//        LinearLayout parentLayer = findViewById(R.id.bars);
+//
+//    }
+
+    HashMap<ViewGroup, ArrayList<LabeledSlider>> labeledSliderMap = new HashMap<>();
+
+    LabeledSlider createLabeledSlider(ViewGroup parent){
+        LabeledSlider labeledSlider = new LabeledSlider(context);
+        parent.addView(labeledSlider);
+
+        ArrayList<LabeledSlider> childList = labeledSliderMap.get(parent);
+        if (childList == null){
+            childList = new ArrayList<>();
+            labeledSliderMap.put(parent, childList);
+        }
+        childList.add(labeledSlider);
+        return labeledSlider;
     }
 
-    private SeekBar createSeekBar(ViewGroup vgParent){
-        SeekBar sb = new SeekBar(context);
-        vgParent.addView(sb);
-        //sb.setScaleX(1.5f); does scale the thumb to a nice circle, but also scale the seekBar to the full width of the screen
-        sb.setScaleY(1.5f);
-        sb.setPadding(convertDp(20),0,convertDp(20),convertDp(10));
-        return sb;
-    }
-
-    private void prepareAlphaSliders(){
-        ViewGroup vgParent = findViewById(R.id.bars);
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), createSeekBarLabel(vgParent));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap1_key), createSeekBar(vgParent));
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), createSeekBarLabel(vgParent));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap2_key), createSeekBar(vgParent));
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), createSeekBarLabel(vgParent));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap3_key), createSeekBar(vgParent));
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), createSeekBarLabel(vgParent));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap4_key), createSeekBar(vgParent));
-        mapSliderNames.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), createSeekBarLabel(vgParent));
-        mapSliders.put(context.getResources().getString( R.string.Layers_pref_chooseMap5_key), createSeekBar(vgParent));
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        LinearLayout parentLayer = findViewById(R.id.bars);
-        for (String prefKey : application.getMapLayerKeys()) {
-            final String key = sharedPreferences.getString(prefKey, "");
-            final String alphakey = "ControlView_alpha_"+key;
-            SeekBar seekBar = mapSliders.get(prefKey);
-            TextView seekBarName = mapSliderNames.get(prefKey);
-            if (MGMapLayerFactory.hasAlpha(key)) {
-                seekBarName.setText(key);
-                float alpha = MGMapLayerFactory.getMapLayerAlpha(key);
-                alpha = sharedPreferences.getFloat(alphakey, alpha);
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha);
-                MGMapLayerFactory.setMapLayerAlpha(key, alpha);
-                seekBar.setProgress((int) (alpha*100));
-
-                seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) { }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) { }
-
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        Layer layer = MGMapLayerFactory.getMapLayer(key);
-                        if (layer instanceof TileLayer) {
-                            float alpha = progress/100.0f;
-                            if (!fromUser){
-                                alpha = sharedPreferences.getFloat(alphakey, alpha);
-                                seekBar.setProgress((int) (alpha*100));
-                            }
-                            MGMapLayerFactory.setMapLayerAlpha(key, alpha);
-                            Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+alphakey+" "+alpha+ " "+seekBar);
-                            sharedPreferences.edit().putFloat(alphakey, alpha).apply();
-                            mapView.getLayerManager().redrawLayers();
-                        }
-                        Log.d(MGMapApplication.LABEL, NameUtil.context()+" progress="+progress);
-                    }
-                });
-
-            } else {
-                parentLayer.removeView(seekBar);
-                parentLayer.removeView(seekBarName);
+    public void reworkLabeledSliderVisibility(ViewGroup parent){
+        parent.removeAllViews();
+        ArrayList<LabeledSlider> children = labeledSliderMap.get(parent);
+        if (children != null){
+            for (LabeledSlider slider : children){
+                if (slider.getVisibility() == VISIBLE){
+                    parent.addView(slider);
+                }
             }
         }
     }

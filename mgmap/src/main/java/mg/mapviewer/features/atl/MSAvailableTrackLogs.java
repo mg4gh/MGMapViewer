@@ -36,6 +36,7 @@ import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.MetaDataUtil;
 import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.LabeledSlider;
 
 public class MSAvailableTrackLogs extends MGMicroService {
 
@@ -44,6 +45,9 @@ public class MSAvailableTrackLogs extends MGMicroService {
     private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
     private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.MSATL_pref_stlGl_key, true);
+    private final MGPref<Float> prefAlphaStl = MGPref.get("alphaSTL", 1.0f);
+    private final MGPref<Float> prefAlphaAtl = MGPref.get("alphaATL", 1.0f);
+
 
     private ViewGroup dashboardStl = null;
     private ViewGroup dashboardStls = null;
@@ -64,14 +68,31 @@ public class MSAvailableTrackLogs extends MGMicroService {
         return dvg;
     }
 
+    ViewGroup bar2 = null;
+    @Override
+    public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
+        if ("stl".equals(info)) {
+            lsl.initPrefData(prefAlphaStl, CC.getColor(R.color.BLUE), "SelectedTrackLog");
+            bar2 = (ViewGroup)lsl.getParent();
+        }
+        if ("atl".equals(info)) {
+            lsl.initPrefData(prefAlphaAtl, CC.getColor(R.color.GREEN), "AvailableTrackLog");
+        }
+        return lsl;
+    }
+
     @Override
     protected void start() {
         getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
+        prefAlphaStl.addObserver(refreshObserver);
+        prefAlphaAtl.addObserver(refreshObserver);
     }
 
     @Override
     protected void stop() {
         getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);
+        prefAlphaStl.deleteObserver(refreshObserver);
+        prefAlphaAtl.deleteObserver(refreshObserver);
     }
 
     @Override
@@ -87,10 +108,12 @@ public class MSAvailableTrackLogs extends MGMicroService {
 
     private void showAvailableTrackLogs(){
         hideAvailableTrackLogs();
+
         MGMapApplication.AvailableTrackLogsObservable available = getApplication().availableTrackLogsObservable;
         for (TrackLog trackLog: available.getAvailableTrackLogs()){
             if (available.getSelectedTrackLogRef().getTrackLog() != trackLog) {
-                showTrack(trackLog, PAINT_STROKE_ATL, false);
+//                showTrack(trackLog, PAINT_STROKE_ATL, false);
+                showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_ATL, prefAlphaAtl.getValue()), false);
             }
         }
         // handle selected track last, to get it on top
@@ -98,12 +121,12 @@ public class MSAvailableTrackLogs extends MGMicroService {
         if (trackLog!= null){
             Assert.check(available.getAvailableTrackLogs().contains(trackLog));
             if (prefStlGl.getValue()){
-                showTrack(trackLog, PAINT_STROKE_STL_GL, true);
+                CC.initGlPaints( prefAlphaStl.getValue() );
+                showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_STL_GL, prefAlphaStl.getValue()), true);
             } else {
-                showTrack(trackLog, PAINT_STROKE_STL, false);
+                showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_STL, prefAlphaStl.getValue()), false);
             }
             getControlView().setDashboardValue(true, dashboardStl ,trackLog.getTrackStatistic());
-//            getControlView().showHideUpdateDashboard(true, R.id.stl ,trackLog.getTrackStatistic());
             int segIdx = available.getSelectedTrackLogRef().getSegmentIdx();
             getControlView().setDashboardValue(trackLog.getNumberOfSegments()>1, dashboardStls,(segIdx>=0)?trackLog.getTrackLogSegment(segIdx).getStatistic():null);
             TrackLogRef ref = available.getSelectedTrackLogRef();
@@ -115,6 +138,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
                 }
             }
         }
+//        getControlView().reworkLabeledSliderVisibility(bar2);
     }
 
     private void hideAvailableTrackLogs(){

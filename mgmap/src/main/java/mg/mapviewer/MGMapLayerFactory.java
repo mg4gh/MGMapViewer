@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
 
 import mg.mapviewer.util.NameUtil;
@@ -53,6 +55,7 @@ import mg.mapviewer.features.tilestore.XmlTileSourceConfig;
 import mg.mapviewer.features.tilestore.XmlTileSourceConfigReader;
 import mg.mapviewer.features.tilestore.MGTileStore;
 import mg.mapviewer.features.tilestore.MGTileStoreLayer;
+import mg.mapviewer.util.pref.MGPref;
 
 /** The MGMapLayerFactory provides a list of keys of available map layers and it is able to create a map layer instance for a given key.
  * Available map layer have one of the following types:
@@ -247,6 +250,18 @@ public class MGMapLayerFactory {
             }
             if (layer != null){
                 mapLayers.put(key, layer);
+            }
+
+            if (layer instanceof TileLayer<?>) {
+                TileLayer<?> tileLayer = (TileLayer<?>) layer;
+                MGPref<Float> prefAlpha = MGPref.get("alpha_"+key,1.0f);
+                prefAlpha.addObserver(new Observer() {
+                    @Override
+                    public void update(Observable o, Object arg) {
+                        tileLayer.setAlpha(prefAlpha.getValue());
+                        tileLayer.requestRedraw();
+                    }
+                });
             }
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());

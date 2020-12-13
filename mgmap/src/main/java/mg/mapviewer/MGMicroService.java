@@ -32,6 +32,7 @@ import java.util.Observable;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogSegment;
 import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.util.MapViewUtility;
 import mg.mapviewer.view.MultiPointGLView;
@@ -62,9 +63,12 @@ public class MGMicroService {
 
     public class RefreshObserver implements Observer, java.util.Observer{
 
+        public  Observable last;
+
         @Override
         public void update(Observable o, Object arg) {
             Log.v(MGMapApplication.LABEL, NameUtil.context()+" o="+o+" arg="+arg);
+            last = o;
             onUpdate(o,arg);
             onChange();
         }
@@ -97,6 +101,9 @@ public class MGMicroService {
     }
     public ViewGroup initDashboard(ViewGroup dvg, String info){
         return dvg;
+    }
+    public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info){
+        return lsl;
     }
 
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL){

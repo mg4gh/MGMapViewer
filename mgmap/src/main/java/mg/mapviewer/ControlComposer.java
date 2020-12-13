@@ -26,9 +26,28 @@ import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.Formatter;
+import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.PrefTextView;
 
 public class ControlComposer {
+
+    void composeDashboard(MGMapApplication application, MGMapActivity activity, ControlView coView){
+        application.getMS(MSRecordingTrackLog.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "rtl");
+        application.getMS(MSRecordingTrackLog.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "rtls");
+        application.getMS(MSAvailableTrackLogs.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "stl");
+        application.getMS(MSAvailableTrackLogs.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "stls");
+        application.getMS(MSRouting.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "route");
+    }
+
+    ViewGroup composeDashboardEntry(ControlView coView, ViewGroup dashboardEntry){
+        coView.createDashboardPTV(dashboardEntry, 10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null, null);
+        coView.createDashboardPTV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setPrefData(null, new int[]{R.drawable.length});
+        coView.createDashboardPTV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.gain});
+        coView.createDashboardPTV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.loss});
+        coView.createDashboardPTV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_DURATION).setPrefData(null, new int[]{R.drawable.duration});
+        return dashboardEntry;
+    }
 
     void composeMenu(MGMapApplication application, MGMapActivity activity, ControlView coView){
         View alignHelper = null;
@@ -55,16 +74,25 @@ public class ControlComposer {
         alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btRoute), controls);
     }
 
-    void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
-        ViewGroup qcs = activity.findViewById(R.id.tr_qc);
-        application.getMS(MSFullscreen.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        application.getMS(MSAlpha.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        RoutingHintService.getInstance().initQuickControl(ptvEditMarker, null);
-        application.getMS(MSBB.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        application.getMS(MSSearch.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_in");
-        activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_out");
+    void composeAlphaSlider(MGMapApplication application, MGMapActivity activity, ControlView coView){
+        ViewGroup parent = activity.findViewById(R.id.bars);
+        for (String prefKey : application.getMapLayerKeys()) {
+            final String key = activity.sharedPreferences.getString(prefKey, "");
+            if (MGMapLayerFactory.hasAlpha(key)){
+                coView.createLabeledSlider(parent).initPrefData(MGPref.get("alpha_" + key, 1.0f), null, key);
+            }
+        }
+        parent.setVisibility(View.INVISIBLE);
+    }
+
+    void composeAlphaSlider2(MGMapApplication application, MGMapActivity activity, ControlView coView){
+        ViewGroup parent = activity.findViewById(R.id.bars2);
+        application.getMS(MSRecordingTrackLog.class).initLabeledSlider(coView.createLabeledSlider(parent), "rtl");
+        application.getMS(MSMarker.class).initLabeledSlider(coView.createLabeledSlider(parent), "mtl");
+        application.getMS(MSRouting.class).initLabeledSlider(coView.createLabeledSlider(parent), "rotl");
+        application.getMS(MSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider(parent), "stl");
+        application.getMS(MSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider(parent), "atl");
+        parent.setVisibility(View.INVISIBLE);
     }
 
     void composeStatusLine(MGMapApplication application, MGMapActivity activity, ControlView coView){
@@ -77,21 +105,18 @@ public class ControlComposer {
         application.getMS(MSTime.class).initStatusLine(coView.createStatusLinePTV(parent, 15), "bat");
     }
 
-    void composeDashboard(MGMapApplication application, MGMapActivity activity, ControlView coView){
-        application.getMS(MSRecordingTrackLog.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "rtl");
-        application.getMS(MSRecordingTrackLog.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "rtls");
-        application.getMS(MSAvailableTrackLogs.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "stl");
-        application.getMS(MSAvailableTrackLogs.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "stls");
-        application.getMS(MSRouting.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "route");
+    void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
+        ViewGroup qcs = activity.findViewById(R.id.tr_qc);
+        application.getMS(MSFullscreen.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        application.getMS(MSAlpha.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        RoutingHintService.getInstance().initQuickControl(ptvEditMarker, null);
+        application.getMS(MSBB.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        application.getMS(MSSearch.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_in");
+        activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_out");
     }
 
-    ViewGroup composeDashboardEntry(ControlView coView, ViewGroup dashboardEntry){
-        coView.createDashboardPTV(dashboardEntry, 10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null, null);
-        coView.createDashboardPTV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setPrefData(null, new int[]{R.drawable.length});
-        coView.createDashboardPTV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.gain});
-        coView.createDashboardPTV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.loss});
-        coView.createDashboardPTV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_DURATION).setPrefData(null, new int[]{R.drawable.duration});
-        return dashboardEntry;
-    }
+
 
 }

@@ -28,6 +28,8 @@ import mg.mapviewer.features.rtl.control.TrackStopSegmentControl;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.LabeledSlider;
 
 public class MSRecordingTrackLog extends MGMicroService {
 
@@ -35,6 +37,9 @@ public class MSRecordingTrackLog extends MGMicroService {
 
     private ViewGroup dashboardRtl = null;
     private ViewGroup dashboardRtls = null;
+
+    private final MGPref<Float> prefAlphaRtl = MGPref.get("alphaRTL", 1.0f);
+
 
     public MSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -54,13 +59,24 @@ public class MSRecordingTrackLog extends MGMicroService {
     }
 
     @Override
+    public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
+        if ("rtl".equals(info)) {
+            lsl.initPrefData(prefAlphaRtl, CC.getColor(R.color.RED), "RecordingTrackLog");
+        }
+        return lsl;
+    }
+
+
+    @Override
     protected void start() {
         getApplication().recordingTrackLogObservable.addObserver(refreshObserver);
+        prefAlphaRtl.addObserver(refreshObserver);
     }
 
     @Override
     protected void stop() {
         getApplication().recordingTrackLogObservable.deleteObserver(refreshObserver);
+        prefAlphaRtl.deleteObserver(refreshObserver);
     }
 
     @Override
@@ -81,7 +97,7 @@ public class MSRecordingTrackLog extends MGMicroService {
 
     private void showRecordingTrackLog(RecordingTrackLog rtl) {
         unregisterAll();
-        showTrack(rtl, PAINT_STROKE_RTL, false);
+        showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL, prefAlphaRtl.getValue()) , false);
 
         getControlView().setDashboardValue(true, dashboardRtl ,rtl.getTrackStatistic());
         int segIdx = rtl.getNumberOfSegments()-1;

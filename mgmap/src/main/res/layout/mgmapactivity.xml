@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainView"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -37,12 +38,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 >
-                <LinearLayout android:id="@+id/bars"
+                <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/bars_area"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
-                </LinearLayout>
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout android:id="@+id/bars"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="@id/bars_area"
+                        app:layout_constraintLeft_toLeftOf="@id/bars_area"
+                        app:layout_constraintRight_toRightOf="@id/bars_area"
+                        >
+                    </LinearLayout>
+                    <LinearLayout android:id="@+id/bars2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="@id/bars_area"
+                        app:layout_constraintLeft_toLeftOf="@id/bars_area"
+                        app:layout_constraintRight_toRightOf="@id/bars_area"
+                        >
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </TableRow>
             <TableRow
                 android:layout_width="match_parent"

@@ -14,6 +14,8 @@
  */
 package mg.mapviewer.view;
 
+import android.util.Log;
+
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Path;
@@ -23,9 +25,11 @@ import org.mapsforge.core.model.Point;
 
 import java.util.Iterator;
 
+import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.util.CC;
+import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 
 /** This view draws a track (segment) via its MultiPointModel. The special thing here is, that the
@@ -62,6 +66,7 @@ public class MultiPointGLView extends MultiPointView {
         }
 
         {
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" startGL");
             Path path = this.graphicFactory.createPath();
             PointModel pm1 = model.get(model.size() - 1), pm2;
             int x1 = lon2x(pm1.getLon()), x2=x1, x3=x2;
@@ -117,6 +122,7 @@ public class MultiPointGLView extends MultiPointView {
             }
             this.paintStroke.setStrokeWidth(w0);
 
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" endGL");
         }
     }
 

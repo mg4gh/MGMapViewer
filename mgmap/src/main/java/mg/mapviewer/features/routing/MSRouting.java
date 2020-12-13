@@ -22,6 +22,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.datastore.MapDataStore;
+import org.mapsforge.map.model.DisplayModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,13 +63,14 @@ import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.MultiPointView;
 import mg.mapviewer.view.PointView;
 
 public class MSRouting extends MGMicroService {
 
-    private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE_A150, 15);
+    private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE_A150, DisplayModel.getDeviceScaleFactor()*5.0f);
     private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE_A150);
     private static final Paint PAINT_APPROACH = CC.getStrokePaint(R.color.BLACK, 2);
     private static final Paint PAINT_RELAXED = CC.getStrokePaint(R.color.BLUE, 2);
@@ -93,6 +95,8 @@ public class MSRouting extends MGMicroService {
     private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
+    private final MGPref<Float> prefAlphaRotl = MGPref.get("alphaRoTL", 1.0f);
+
     private ViewGroup dashboardRoute = null;
 
     public MSRouting(MGMapActivity mmActivity) {
@@ -109,11 +113,20 @@ public class MSRouting extends MGMicroService {
         return dvg;
     }
 
+    @Override
+    public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
+        if ("rotl".equals(info)) {
+            lsl.initPrefData(prefAlphaRotl, CC.getColor(R.color.PURPLE), "RouteTrackLog");
+        }
+        return lsl;
+    }
+
 
     @Override
     protected void start() {
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
         getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
+        prefAlphaRotl.addObserver(refreshObserver);
         register(new RoutingControlLayer(), false);
     }
 
@@ -121,6 +134,7 @@ public class MSRouting extends MGMicroService {
     protected void stop() {
         getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
         getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
+        prefAlphaRotl.deleteObserver(refreshObserver);
         unregisterClass(RoutingControlLayer.class);
     }
 
@@ -279,9 +293,9 @@ public class MSRouting extends MGMicroService {
         }
         routeTrackLog.stopTrack(0);
 
-        showTrack(routeTrackLog, PAINT_ROUTE_STROKE, false, 0);
+        showTrack(routeTrackLog, CC.getAlphaClone(PAINT_ROUTE_STROKE, prefAlphaRotl.getValue()) , false, 0);
         if (!getSharedPreferences().getBoolean(getResources().getString(R.string.MSMarker_pref_showMtl_key), false)){
-            showTrack(mtl, PAINT_ROUTE_STROKE2, false, 15, true);
+            showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
         }
         calcRemainingStatistic(routeTrackLog);
         getControlView().setDashboardValue(true, dashboardRoute, routeTrackLog.getTrackStatistic());

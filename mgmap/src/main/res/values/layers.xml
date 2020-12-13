@@ -14,4 +14,5 @@
     <string name="Layers_pref_chooseMap5_title">Select map layer 5 (Foreground)</string>
 
     <string name="Layers_qc_showAlphaSlider">Layers.showAlphaSlider</string>
+    <string name="Layers_qc_showAlphaSlider2">Layers.showAlphaSlider2</string>
 </resources>

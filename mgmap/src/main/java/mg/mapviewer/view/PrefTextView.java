@@ -30,7 +30,7 @@ import mg.mapviewer.util.pref.MGPref;
 public class PrefTextView extends AppCompatTextView  {
 
     public PrefTextView(Context context) {
-        super(context, null);
+        this(context, null);
     }
 
     public PrefTextView(Context context,  AttributeSet attrs) {

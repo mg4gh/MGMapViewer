@@ -15,6 +15,7 @@
 package mg.mapviewer.util;
 
 import android.app.Activity;
+import android.graphics.Color;
 
 import androidx.core.content.ContextCompat;
 
@@ -65,12 +66,36 @@ public class CC { // short for ColorConstant
         return paint;
     }
 
+    public static int addAlpha(int color, float alpha){
+        float currentAlpha = ((color >> 24) & 0xFF) / 255.0f;
+        float newAlpha = currentAlpha * alpha;
+        return (color & 0x00FFFFFF) | (floatAlpha2int(newAlpha)<<24);
+    }
+
+    public static Paint getAlphaClone(Paint opaint, float fAlpha){
+        Paint paint = GRAPHIC_FACTORY.createPaint();
+        paint.setColor( addAlpha( opaint.getColor(), fAlpha ));
+        paint.setStrokeWidth(opaint.getStrokeWidth());
+        paint.setStyle(Style.STROKE);
+        return paint;
+    }
+    public static Paint getAlphaCloneFill(Paint opaint, float fAlpha){
+        Paint paint = GRAPHIC_FACTORY.createPaint();
+        paint.setColor( addAlpha( opaint.getColor(), fAlpha ));
+        paint.setStrokeWidth(opaint.getStrokeWidth());
+        paint.setStyle(Style.FILL);
+        return paint;
+    }
 
     private static Map<Integer, Paint> glPaints = new HashMap<>();
 
-    private static void initGlPaints(){
+    public static void initGlPaints(float fAlpha){
+        int a = floatAlpha2int(fAlpha);
+        if (glPaints.size() > 0){
+            if (Color.alpha(glPaints.get(0).getColor()) == a) return; // alpha unchanged
+        }
         int w=6;
-        int a=0xC0;
+//        int a=0xC0;
         int steps = 30;
         for (int i=1; i<=steps; i++){
             int r=0;
@@ -110,12 +135,16 @@ public class CC { // short for ColorConstant
 
 
     public static Paint getGlPaint(float glValue){
-        if (glPaints.size() == 0){ // init paint, if not yet done.
-            initGlPaints();
+        if (glPaints.size() == 0){ // init paint with default alpha, if not yet done.
+            initGlPaints(0xC0);
         }
         if (glValue > 20) glValue = 20;
         if (glValue < -20) glValue = -20;
         int glIndex = (int)(glValue*2); // each color corresponds to a half percent
         return glPaints.get(glIndex);
+    }
+
+    public static int floatAlpha2int(float fAlpha){
+        return (int)(fAlpha*255);
     }
 }
