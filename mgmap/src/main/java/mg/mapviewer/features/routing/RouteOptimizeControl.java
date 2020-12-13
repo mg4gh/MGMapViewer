@@ -22,6 +22,7 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.util.pref.MGPref;
 
 public class RouteOptimizeControl extends Control {
 
@@ -43,7 +44,7 @@ public class RouteOptimizeControl extends Control {
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
-        v.setEnabled( (mtl != null) && msRouting.prefShowRouting.getValue() );
+        v.setEnabled( (mtl != null) && (MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25) );
         setText(v, controlView.rstring(R.string.btRouteOptimize) );
     }
 }

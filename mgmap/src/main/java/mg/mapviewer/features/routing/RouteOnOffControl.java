@@ -19,10 +19,12 @@ import android.view.View;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.util.pref.MGPref;
 
 public class RouteOnOffControl extends Control {
 
     MSRouting msRouting;
+    MGPref<Float> prefAlphaRoTL = MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f);
 
     public RouteOnOffControl(MSRouting msRouting){
         super(true);
@@ -32,15 +34,16 @@ public class RouteOnOffControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
-        msRouting.prefShowRouting.toggle();
-        application.markerTrackLogObservable.changed();
+//        msRouting.prefShowRouting.toggle();
+        prefAlphaRoTL.setValue((prefAlphaRoTL.getValue() > 0.25f)?0f:1f);
+//        application.markerTrackLogObservable.changed();
 
     }
 
     @Override
     public void onPrepare(View v) {
-        boolean showRouting = msRouting.prefShowRouting.getValue();
-        setText(v, controlView.rstring(showRouting? R.string.btRouteOff:R.string.btRouteOn) );
+//        boolean showRouting = msRouting.prefShowRouting.getValue();
+        setText(v, controlView.rstring((prefAlphaRoTL.getValue() > 0.25f)? R.string.btRouteOff:R.string.btRouteOn) );
     }
 
 }

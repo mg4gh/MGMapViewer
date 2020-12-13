@@ -26,6 +26,7 @@ import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.util.pref.MGPref;
 
 public class RouteExportControl extends Control {
 
@@ -67,8 +68,9 @@ public class RouteExportControl extends Control {
     public void onPrepare(View v) {
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+        WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
-        v.setEnabled( (mtl != null) && msRouting.prefShowRouting.getValue() && (mtl.getTrackLogSegment(0).size() > 1));
+        v.setEnabled( (rotl != null) && (mtl.getTrackStatistic().getNumPoints() > 1) && (MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25));
         setText(v, controlView.rstring(R.string.btRouteExport) );
     }
 }

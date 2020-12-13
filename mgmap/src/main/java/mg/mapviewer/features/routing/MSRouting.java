@@ -89,7 +89,7 @@ public class MSRouting extends MGMicroService {
     private boolean routeRemainings = true;
     private RoutingLineRefProvider routingLineRefProvider;
 
-    final MGPref<Boolean> prefShowRouting = MGPref.get(R.string.MSRouting_bt_ShowRouting, true);
+//    final MGPref<Boolean> prefShowRouting = MGPref.get(R.string.MSRouting_bt_ShowRouting, true);
     private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.MSGrad_pref_WayDetails_key, false);
     private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
     private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
@@ -144,7 +144,7 @@ public class MSRouting extends MGMicroService {
     protected void doRefresh() {
         WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
         boolean bRoTLAlphaVisibility = false;
-        if (prefShowRouting.getValue() && (mtl!= null)){
+        if (mtl!= null){
             updateRouting(mtl);
 //            TrackLog roTL = getApplication().routeTrackLogObservable.getTrackLog();
             bRoTLAlphaVisibility = ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() >= 1)); // should be also visible, if mtl is visible
@@ -605,7 +605,7 @@ public class MSRouting extends MGMicroService {
         @Override
         public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
             if (!prefEditMarkerTrack.getValue()) return false;
-            if (!prefShowRouting.getValue()) return false;
+            if (prefAlphaRotl.getValue() < 0.25f) return false;
 
             WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
             if (mtl != null){
