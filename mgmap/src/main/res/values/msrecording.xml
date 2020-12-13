@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="MSRecording_pref_alphaRTL">MSRecording.alphaRTL</string>
+    <string name="MSRecording_pref_alphaRTL_visibility">MSRecording.alphaRTL_visibility</string>
+
+</resources>

@@ -95,8 +95,9 @@ public class MSRouting extends MGMicroService {
     private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
-    private final MGPref<Float> prefAlphaRotl = MGPref.get("alphaRoTL", 1.0f);
-    private final MGPref<Boolean> prefAlphaRotlVisibility = MGPref.get("alphaRoTL_visibility", false);
+    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
+    private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
+    private final MGPref<Boolean> prefAlphaRotlVisibility = MGPref.get(R.string.MSRouting_pref_alphaRoTL_visibility, false);
 
     private ViewGroup dashboardRoute = null;
 
@@ -145,8 +146,8 @@ public class MSRouting extends MGMicroService {
         boolean bRoTLAlphaVisibility = false;
         if (prefShowRouting.getValue() && (mtl!= null)){
             updateRouting(mtl);
-            TrackLog roTL = getApplication().routeTrackLogObservable.getTrackLog();
-            bRoTLAlphaVisibility = ((roTL != null) && (roTL.getTrackStatistic().getNumPoints() >= 1));
+//            TrackLog roTL = getApplication().routeTrackLogObservable.getTrackLog();
+            bRoTLAlphaVisibility = ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() >= 1)); // should be also visible, if mtl is visible
         } else {
             hideRouting();
         }
@@ -300,7 +301,8 @@ public class MSRouting extends MGMicroService {
         routeTrackLog.stopTrack(0);
 
         showTrack(routeTrackLog, CC.getAlphaClone(PAINT_ROUTE_STROKE, prefAlphaRotl.getValue()) , false, 0);
-        if (!getSharedPreferences().getBoolean(getResources().getString(R.string.MSMarker_pref_showMtl_key), false)){
+        if (prefAlphaMtl.getValue() < 0.5f){ // is considered as low visibility
+//        if (!getSharedPreferences().getBoolean(getResources().getString(R.string.MSMarker_pref_showMtl_key), false)){
             showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
         }
         calcRemainingStatistic(routeTrackLog);

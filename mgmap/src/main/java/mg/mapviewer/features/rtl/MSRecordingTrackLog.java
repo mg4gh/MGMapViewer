@@ -38,8 +38,8 @@ public class MSRecordingTrackLog extends MGMicroService {
     private ViewGroup dashboardRtl = null;
     private ViewGroup dashboardRtls = null;
 
-    private final MGPref<Float> prefAlphaRtl = MGPref.get("alphaRTL", 1.0f);
-    private final MGPref<Boolean> prefAlphaRtlVisibility = MGPref.get("alphaRTL_visibility", false);
+    private final MGPref<Float> prefAlphaRtl = MGPref.get(R.string.MSRecording_pref_alphaRTL, 1.0f);
+    private final MGPref<Boolean> prefAlphaRtlVisibility = MGPref.get(R.string.MSRecording_pref_alphaRTL_visibility, false);
 
 
     public MSRecordingTrackLog(MGMapActivity mmActivity) {
@@ -121,7 +121,5 @@ public class MSRecordingTrackLog extends MGMicroService {
                 new TrackStartSegmentControl(),
                 new TrackStopSegmentControl(),
                 new TrackStopControl() };
-
-
     }
 }

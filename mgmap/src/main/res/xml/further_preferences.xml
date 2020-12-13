@@ -72,14 +72,14 @@
             app:iconSpaceReserved="false"
             app:disableDependentsState="true"
             />
-        <SwitchPreference
-            app:defaultValue="false"
-            app:key="@string/MSMarker_pref_showMtl_key"
-            app:summary="@string/MSMarker_pref_showMtl_summary"
-            app:title="@string/MSMarker_pref_showMtl_title"
-            app:iconSpaceReserved="false"
-            app:dependency="@string/MSMarker_pref_auto_key"
-            />
+<!--        <SwitchPreference-->
+<!--            app:defaultValue="false"-->
+<!--            app:key="@string/MSMarker_pref_showMtl_key"-->
+<!--            app:summary="@string/MSMarker_pref_showMtl_summary"-->
+<!--            app:title="@string/MSMarker_pref_showMtl_title"-->
+<!--            app:iconSpaceReserved="false"-->
+<!--            app:dependency="@string/MSMarker_pref_auto_key"-->
+<!--            />-->
         <SwitchPreference
             app:defaultValue="true"
             app:key="@string/MSMarker_pref_snap2way_key"

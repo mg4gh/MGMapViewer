@@ -56,11 +56,11 @@ public class MSMarker extends MGMicroService {
 
     private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
     private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
-    private final MGPref<Boolean> prefShowMtl = MGPref.get(R.string.MSMarker_pref_showMtl_key, false);
+//    private final MGPref<Boolean> prefShowMtl = MGPref.get(R.string.MSMarker_pref_showMtl_key, false);
     private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
 
-    private final MGPref<Float> prefAlphaMtl = MGPref.get("alphaMTL", 1.0f);
-    private final MGPref<Boolean> prefAlphaMtlVisibility = MGPref.get("alphaMTL_visibility", false);
+    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
+    private final MGPref<Boolean> prefAlphaMtlVisibility = MGPref.get(R.string.MSMarker_pref_alphaMTL_visibility, false);
 
     MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
 
@@ -192,10 +192,12 @@ public class MSMarker extends MGMicroService {
         if (!msLayers.isEmpty()){
             unregisterAll();
         }
-        if ((mtl != null) && (prefShowMtl.getValue())){
+        boolean bMtlAlphaVisibility = false;
+        if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() >= 1)){
             showTrack(mtl, CC.getAlphaClone(PAINT_STROKE_MTL, prefAlphaMtl.getValue()), false, (int)(DisplayModel.getDeviceScaleFactor()*5.0f), true);
+            bMtlAlphaVisibility = true;
         }
-        prefAlphaMtlVisibility.setValue( (mtl != null) && (mtl.getTrackStatistic().getNumPoints() >= 1) );
+        prefAlphaMtlVisibility.setValue( bMtlAlphaVisibility );
     }
 
 
@@ -329,7 +331,7 @@ public class MSMarker extends MGMicroService {
 
     private void adaptAutoSettings(boolean smallMtl){
         if (prefAutoMarkerSetting.getValue()){
-            prefShowMtl.setValue(!smallMtl);
+            prefAlphaMtl.setValue(smallMtl?0.0f:1.0f);
             prefSnap2Way.setValue(smallMtl);
         }
     }

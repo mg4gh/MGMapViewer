@@ -45,10 +45,10 @@ public class MSAvailableTrackLogs extends MGMicroService {
     private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
     private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.MSATL_pref_stlGl_key, true);
-    private final MGPref<Float> prefAlphaStl = MGPref.get("alphaSTL", 1.0f);
-    private final MGPref<Float> prefAlphaAtl = MGPref.get("alphaATL", 1.0f);
-    private final MGPref<Boolean> prefAlphaStlVisibility = MGPref.get("alphaSTL_visibility", false);
-    private final MGPref<Boolean> prefAlphaAtlVisibility = MGPref.get("alphaATL_visibility", false);
+    private final MGPref<Float> prefAlphaStl = MGPref.get(R.string.MSATL_pref_alphaSTL , 1.0f);
+    private final MGPref<Float> prefAlphaAtl = MGPref.get(R.string.MSATL_pref_alphaATL, 1.0f);
+    private final MGPref<Boolean> prefAlphaStlVisibility = MGPref.get(R.string.MSATL_pref_alphaSTL_visibility, false);
+    private final MGPref<Boolean> prefAlphaAtlVisibility = MGPref.get(R.string.MSATL_pref_alphaATL_visibility, false);
 
 
     private ViewGroup dashboardStl = null;

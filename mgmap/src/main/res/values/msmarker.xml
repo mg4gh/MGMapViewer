@@ -8,12 +8,15 @@
     <string name="MSMarker_pref_auto_title">Automatic marker settings</string>
     <string name="MSMarker_pref_auto_summary">Do automatically set marker settings ("Show marker track" and  "Snap to way").</string>
 
-    <string name="MSMarker_pref_showMtl_key">MSMarker.showMarkerTrack</string>
-    <string name="MSMarker_pref_showMtl_title">Show marker track</string>
-    <string name="MSMarker_pref_showMtl_summary">Visualize the marker track</string>
+<!--    <string name="MSMarker_pref_showMtl_key">MSMarker.showMarkerTrack</string>-->
+<!--    <string name="MSMarker_pref_showMtl_title">Show marker track</string>-->
+<!--    <string name="MSMarker_pref_showMtl_summary">Visualize the marker track</string>-->
 
     <string name="MSMarker_pref_snap2way_key">MSMarker.snap2way</string>
     <string name="MSMarker_pref_snap2way_title">Snap to way</string>
     <string name="MSMarker_pref_snap2way_summary">Snap marker points automatically to close ways.</string>
+
+    <string name="MSMarker_pref_alphaMTL">MSMarker.alphaMTL</string>
+    <string name="MSMarker_pref_alphaMTL_visibility">MSMarker.alphaMTL_visibility</string>
 
 </resources>
