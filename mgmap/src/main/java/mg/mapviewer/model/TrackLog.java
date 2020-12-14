@@ -84,13 +84,11 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     }
 
     public TrackLogSegment getTrackLogSegment(int idx) {
-        TrackLogSegment segment = trackLogSegments.get(idx);
-        return segment;
+        return trackLogSegments.get(idx);
     }
 
     @Override
     public int compareTo(@NonNull TrackLog trackLog) {
-//        return name.compareTo(trackLog.name);
         return getNameKey().compareTo(trackLog.getNameKey());
     }
 

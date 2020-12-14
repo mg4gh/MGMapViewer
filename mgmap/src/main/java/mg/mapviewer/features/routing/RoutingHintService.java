@@ -34,9 +34,10 @@ public class RoutingHintService {
     private final MGPref<Boolean> prefRoutingHints = MGPref.get(R.string.MSRouting_qc_RoutingHint, false);
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
-    public void initQuickControl(PrefTextView ptv, String info) {
+    public PrefTextView initQuickControl(PrefTextView ptv, String info) {
         ptv.appendPrefData(new MGPref[]{prefRoutingHints},
                 new int[]{R.drawable.mtlr3, R.drawable.mtlr4});
+        return ptv;
     }
 
     private int  mediumAwayCnt = 0;
