@@ -66,7 +66,7 @@ public class MultiPointGLView extends MultiPointView {
         }
 
         {
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" startGL");
+//            Log.d(MGMapApplication.LABEL, NameUtil.context()+" startGL");
             Path path = this.graphicFactory.createPath();
             PointModel pm1 = model.get(model.size() - 1), pm2;
             int x1 = lon2x(pm1.getLon()), x2=x1, x3=x2;
@@ -122,7 +122,7 @@ public class MultiPointGLView extends MultiPointView {
             }
             this.paintStroke.setStrokeWidth(w0);
 
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" endGL");
+//            Log.d(MGMapApplication.LABEL, NameUtil.context()+" endGL");
         }
     }
 
