@@ -65,6 +65,7 @@ import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.model.BBox;
+import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.model.TrackLogRefApproach;
@@ -533,22 +534,46 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         layers.add(new MVLayer() {
             @Override
             protected boolean onTap(WriteablePointModel point) {
-                { // this section is just for analysis purposes
-                    WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-                    if (mtl != null){
-                        TrackLogRefApproach pointRef = mtl.getBestPoint(point, PointModelUtil.getCloseThreshold());
-                        if (pointRef != null){
-                            Log.i(MGMapApplication.LABEL, NameUtil.context() + "idx=" +pointRef.getEndPointIndex()+" "+ pointRef.getApproachPoint());
-                        }
-                    }
-                }
-
-                if (!getMS(MSAvailableTrackLogs.class).selectCloseTrack( point )){
+                TrackLogRef ref = getMS(MSAvailableTrackLogs.class).selectCloseTrack( point );
+                if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
+                    application.availableTrackLogsObservable.setSelectedTrackLogRef(ref);
+                } else {
                     coView.toggleMenuVisibility();
                 }
                 return true;
             }
 
+            @Override
+            protected boolean onLongPress(PointModel point) {
+                TrackLogRefApproach bestMatch = getMS(MSAvailableTrackLogs.class).selectCloseTrack( point );
+                TrackLog rtl = application.recordingTrackLogObservable.getTrackLog();
+                if (rtl != null){
+                    TrackLogRefApproach currentMatch = rtl.getBestDistance(point,bestMatch.getDistance());
+                    if (currentMatch != null){
+                        bestMatch = currentMatch;
+                    }
+                }
+                TrackLog rotl = application.routeTrackLogObservable.getTrackLog();
+                if (rotl != null){
+                    TrackLogRefApproach currentMatch = rotl.getBestDistance(point,bestMatch.getDistance());
+                    if (currentMatch != null){
+                        bestMatch = currentMatch;
+                    }
+                }
+                if (bestMatch.getTrackLog() == application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) {
+                    MGPref.get(R.string.MSATL_pref_stlGl_key, false).toggle();
+                    return true;
+                }
+                if (bestMatch.getTrackLog() == application.recordingTrackLogObservable.getTrackLog()) {
+                    MGPref.get(R.string.MSRecording_pref_rtlGl_key, false).toggle();
+                    return true;
+                }
+                if (bestMatch.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) {
+                    MGPref.get(R.string.MSMarker_qc_RouteGL, false).toggle();
+                    return true;
+                }
+                return super.onLongPress(point);
+            }
         });
     }
 

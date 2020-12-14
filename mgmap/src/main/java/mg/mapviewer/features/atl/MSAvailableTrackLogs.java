@@ -86,6 +86,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
         getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
         prefAlphaStl.addObserver(refreshObserver);
         prefAlphaAtl.addObserver(refreshObserver);
+        prefStlGl.addObserver(refreshObserver);
     }
 
     @Override
@@ -93,6 +94,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
         getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);
         prefAlphaStl.deleteObserver(refreshObserver);
         prefAlphaAtl.deleteObserver(refreshObserver);
+        prefStlGl.deleteObserver(refreshObserver);
     }
 
     @Override
@@ -153,9 +155,9 @@ public class MSAvailableTrackLogs extends MGMicroService {
         getControlView().setDashboardValue(false,dashboardStls,null);
     }
 
-    public boolean selectCloseTrack(PointModel pmTap) {
+    public TrackLogRefApproach selectCloseTrack(PointModel pmTap) {
         TreeSet<TrackLog> trackLogs = getApplication().availableTrackLogsObservable.availableTrackLogs;
-        if (trackLogs.size() < 1) return false;
+//        if (trackLogs.size() < 1) return false;
 
         TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1);
         bestMatch.setDistance(getMapViewUtility().getCloseThreshouldForZoomLevel());
@@ -166,11 +168,12 @@ public class MSAvailableTrackLogs extends MGMicroService {
                 bestMatch = currentMatch;
             }
         }
-        if ( bestMatch.getTrackLog() != null ){
-            getApplication().availableTrackLogsObservable.setSelectedTrackLogRef(bestMatch);
-            return true;
-        }
-        return false;
+        return bestMatch;
+//        if ( bestMatch.getTrackLog() != null ){
+//            getApplication().availableTrackLogsObservable.setSelectedTrackLogRef(bestMatch);
+//            return true;
+//        }
+//        return false;
     }
 
     public Control[] getMenuLoadControls(){

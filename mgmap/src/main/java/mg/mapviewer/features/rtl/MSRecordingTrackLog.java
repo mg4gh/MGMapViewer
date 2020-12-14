@@ -34,13 +34,14 @@ import mg.mapviewer.view.LabeledSlider;
 public class MSRecordingTrackLog extends MGMicroService {
 
     private final Paint PAINT_STROKE_RTL = CC.getStrokePaint(R.color.RED, getMapViewUtility().getTrackWidth());
+    private final Paint PAINT_STROKE_RTL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
     private ViewGroup dashboardRtl = null;
     private ViewGroup dashboardRtls = null;
 
     private final MGPref<Float> prefAlphaRtl = MGPref.get(R.string.MSRecording_pref_alphaRTL, 1.0f);
     private final MGPref<Boolean> prefAlphaRtlVisibility = MGPref.get(R.string.MSRecording_pref_alphaRTL_visibility, false);
-
+    private final MGPref<Boolean>  prefRtlGL = MGPref.get(R.string.MSRecording_pref_rtlGl_key, false);
 
     public MSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -72,12 +73,14 @@ public class MSRecordingTrackLog extends MGMicroService {
     protected void start() {
         getApplication().recordingTrackLogObservable.addObserver(refreshObserver);
         prefAlphaRtl.addObserver(refreshObserver);
+        prefRtlGL.addObserver(refreshObserver);
     }
 
     @Override
     protected void stop() {
         getApplication().recordingTrackLogObservable.deleteObserver(refreshObserver);
         prefAlphaRtl.deleteObserver(refreshObserver);
+        prefRtlGL.deleteObserver(refreshObserver);
     }
 
     @Override
@@ -101,7 +104,14 @@ public class MSRecordingTrackLog extends MGMicroService {
 
     private void showRecordingTrackLog(RecordingTrackLog rtl) {
         unregisterAll();
-        showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL, prefAlphaRtl.getValue()) , false);
+        if (prefRtlGL.getValue()){
+            CC.initGlPaints( prefAlphaRtl.getValue() );
+            showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL_GL, prefAlphaRtl.getValue()), true);
+        } else {
+            showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL, prefAlphaRtl.getValue()), false);
+        }
+
+//        showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL, prefAlphaRtl.getValue()) , false);
 
         getControlView().setDashboardValue(true, dashboardRtl ,rtl.getTrackStatistic());
         int segIdx = rtl.getNumberOfSegments()-1;

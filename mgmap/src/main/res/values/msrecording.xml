@@ -3,5 +3,5 @@
 
     <string name="MSRecording_pref_alphaRTL">MSRecording.alphaRTL</string>
     <string name="MSRecording_pref_alphaRTL_visibility">MSRecording.alphaRTL_visibility</string>
-
+    <string name="MSRecording_pref_rtlGl_key">MSRecording.rtlGl</string>
 </resources>
