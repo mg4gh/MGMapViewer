@@ -41,21 +41,10 @@ public class RouteExportControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
-//        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
         TrackLog trackLog = application.routeTrackLogObservable.getTrackLog();
-
-//        try {
-//            String oldName = trackLog.getName().split("__")[0];
-//            if (PersistenceManager.getInstance().existsGpx(oldName)){
-////                        PersistenceManager.getInstance().deleteTrack(oldName);
-//            }
-//        } catch (Exception e){
-//            Log.e(MGMapApplication.LABEL, NameUtil.context(),e );
-//        }
         GpxExporter.export(trackLog);
         try {
-//            application.metaTrackLogs.put(trackLog.getNameKey(), trackLog);
             TrackLogRef refSelected = new TrackLogRefZoom(trackLog,trackLog.getNumberOfSegments()-1,false);
             application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
         } catch (Exception e){

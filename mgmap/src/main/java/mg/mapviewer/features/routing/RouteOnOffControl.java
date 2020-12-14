@@ -34,15 +34,11 @@ public class RouteOnOffControl extends Control {
     public void onClick(View v) {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
-//        msRouting.prefShowRouting.toggle();
         prefAlphaRoTL.setValue((prefAlphaRoTL.getValue() > 0.25f)?0f:1f);
-//        application.markerTrackLogObservable.changed();
-
     }
 
     @Override
     public void onPrepare(View v) {
-//        boolean showRouting = msRouting.prefShowRouting.getValue();
         setText(v, controlView.rstring((prefAlphaRoTL.getValue() > 0.25f)? R.string.btRouteOff:R.string.btRouteOn) );
     }
 
