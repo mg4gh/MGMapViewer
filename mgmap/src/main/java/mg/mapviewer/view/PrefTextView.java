@@ -2,29 +2,19 @@ package mg.mapviewer.view;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.preference.PreferenceManager;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
-import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.model.PointModel;
 import mg.mapviewer.util.ArrayUtil;
 import mg.mapviewer.util.ExtendedClickListener;
 import mg.mapviewer.util.Formatter;
-import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.pref.MGPref;
 
 public class PrefTextView extends AppCompatTextView  {
@@ -53,8 +43,6 @@ public class PrefTextView extends AppCompatTextView  {
         this.drawableIds = (drawableIds==null)?new int[]{}:drawableIds;
 
         if (this.prefs.length > 0){
-//            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-//            sharedPreferences.registerOnSharedPreferenceChangeListener(this);
             prefObserver = createObserver();
             for (MGPref<?> pref : prefs){
                  pref.addObserver(prefObserver);
@@ -142,15 +130,6 @@ public class PrefTextView extends AppCompatTextView  {
         }
     }
 
-//    @Override
-//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//        for (MGPref<?> pref : prefs){
-//            if (pref.getKey().equals(key)){
-//                onChange(key);
-//            }
-//        }
-//    }
-
     private void onChange(String key){
         if (drawableIds.length == 0) {
             setCompoundDrawables(null,null,null,null);
@@ -160,7 +139,9 @@ public class PrefTextView extends AppCompatTextView  {
             if (prefs != null){
                 for (MGPref<Boolean> pref : prefs){
                     if (pref.getValue()){
-                        idx += cnt;
+                        if (idx + cnt < drawableIds.length){
+                            idx += cnt;
+                        }
                     }
                     cnt *= 2;
                 }

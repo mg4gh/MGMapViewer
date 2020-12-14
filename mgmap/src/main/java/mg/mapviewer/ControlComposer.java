@@ -112,6 +112,7 @@ public class ControlComposer {
         application.getMS(MSAlpha.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         RoutingHintService.getInstance().initQuickControl(ptvEditMarker, null);
+        application.getMS(MSRouting.class).initQuickControl(ptvEditMarker, null);
         application.getMS(MSBB.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         application.getMS(MSSearch.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_in");
