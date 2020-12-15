@@ -25,6 +25,7 @@ public class RouteOnOffControl extends Control {
 
     MSRouting msRouting;
     MGPref<Float> prefAlphaRoTL = MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f);
+    MGPref<Float> prefAlphaMTL = MGPref.get(R.string.MSMarker_pref_alphaMTL,0.0f);
 
     public RouteOnOffControl(MSRouting msRouting){
         super(true);
@@ -33,8 +34,8 @@ public class RouteOnOffControl extends Control {
 
     public void onClick(View v) {
         super.onClick(v);
-        MGMapApplication application = controlView.getApplication();
         prefAlphaRoTL.setValue((prefAlphaRoTL.getValue() > 0.25f)?0f:1f);
+        prefAlphaMTL.setValue(1.0f - prefAlphaRoTL.getValue());
     }
 
     @Override

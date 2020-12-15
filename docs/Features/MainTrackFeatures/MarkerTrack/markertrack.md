@@ -6,9 +6,7 @@ A marker track is a sequence of marker track points. Usually marker tracks are u
 
 For explanation purposes of the marker tracks we first change a few settings:
 - switch off <span style="color:gray">*Menu | Settings and more | Further settings | Automatic marker settings*</span>
-- switch on <span style="color:gray">*Menu | Settings and more | Further settings | Show marker track*</span>
-- switch off <span style="color:gray">*Menu | Settings and more | Further settings | Snap to way*</span>
-- switch off route visibility with <span style="color:gray">*Menu | Route | Route off*</span>.
+- switch <span style="color:gray">*Menu | Route | Route off*</span> to set marker route transparency on (and marker track transparency off).
 
 To start the special mode for a marker track press the corresponding quick control.
 As a visual feedback the icon on this button get red. This implies that the edit mode for the marker track is active.
