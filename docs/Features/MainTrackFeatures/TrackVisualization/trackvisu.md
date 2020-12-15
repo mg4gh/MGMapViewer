@@ -16,10 +16,20 @@ The following pictures show:
 <img src="./RecordingTrack1.png" width="400" />&nbsp;
 <img src="./AvailableTracks2.png" width="400" />&nbsp;
 
-For the selected track there are two main options:
-- visualize the selected track as blue line (as seen above)
-- visualize the selected track colored depending on gain/loss (see next
-  picture)
+Beside these three types of visualized tracks there might be also a [marker track](../MarkerTrack/markertrack.md) ( pink line) and
+a [route track](../Routing/routing.md) (purple line) visible.
+
+Out of these 5 types of tracks there are three of them, which allow an alternative gain/loss representation of this track:
+
+| track type | allow gain/loss representation | Controls to toggle representation |
+|---|---|---|
+| recording track | X | long press on track |
+| marker track | - | |
+| route track | X | double tap on marker quick control or via long press on track (only if marker track edit is switched off) |
+| selected track | X | via settings menu or via long press on track |
+| available track | - | |
+
+The following picture shows an selected track with gain/loss representation switched on.
 
 <img src="./gainLoss1.png" width="400" />&nbsp;
 
@@ -30,13 +40,20 @@ Colored depending on gain/loss means
 - yellow: moderate ascending
 - red: steep ascending
 
-To toggle the setting "Selected Track with Gain/Loss" use
-<span style="color:gray">*Menu | Settings and more | Further Settings | Selected Track with Gain/Loss*</span>
+**Track transparency**
 
-<img src="./set1.png" width="200" />&nbsp;
-<img src="./set2.png" width="200" />&nbsp;
-<img src="./set3.png" width="200" />&nbsp;
+It is possible to control the transparency for all track types. To do this use a long tap on the "transparency control" [quick control](../../FurtherFeatures/QuickControl/quickcontrols.md).
+The next figures show an example of the usage: First the marker track is invisible, while in the second figure the transparency of the marker track is reduced, so it becomes well visible.
 
+<img src="./alpha1.png" width="400" />&nbsp;
+<img src="./alpha2.png" width="400" />&nbsp;
+
+As a second example we increase transparency of the selected track. So the other available (green) track becomes much better visible and also the map properties are better visible.
+
+<img src="./alpha3.png" width="400" />&nbsp;
+
+There is no control for the recording track log visible, since there is currently no recording track. Switch off the track transparency controls with another long press of the same
+quick control.
 
 **Track selection**
 

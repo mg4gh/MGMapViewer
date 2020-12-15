@@ -47,8 +47,8 @@ These controls are (from left to right)
   enabled, if  there is at least one track selected and all selected tracks are stored persistent. Note: Always
 the persistent gpx will be shared. Not yet saved changes are not included!
 - save selected tracks  
-  enabled, if  there is at least one modified (not yet saved) track in the selected set. Unmodified tracks are
-untouched by this operation.
+  enabled, if  there is at least one modified (not yet saved) track in the selected set. Modified tracks
+are marked with a "*" at the end of the name. Unmodified tracks are untouched by this operation.
 - delete selected tracks  
   enabled, if there is at least one track selected and none of the RecordingTrackLog, MarkerTrackLog and
 RouteTrackLog is in the set of selected tracks.

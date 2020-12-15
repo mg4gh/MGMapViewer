@@ -8,9 +8,13 @@ At the very bottom of the screen there is a row with quick controls:
 
 There are seven quick controls:
 - Full Screen: toggle full screen mode (ON/OFF)
-- Transparency Control: toggle the visibility of the sliders for transparency control (see 
-[Overlay multiple map layers](../../MainMapFeatures/MapMulti/multimap.md) and control transparency per layer)
-- Marker Track Control: toggle Marker Track mode (see [Marker Track](../../MainTrackFeatures/MarkerTrack/markertrack.md))
+- Transparency Control: toggle the visibility of the sliders for transparency control
+  - short tap for map layer transparency - see [Overlay multiple map layers](../../MainMapFeatures/MapMulti/multimap.md)
+  - long tap for [track transparency](../../MainTrackFeatures/TrackVisualization/trackvisu.md)
+- Marker Track Control: toggle marker track/route features
+  - short tap to toggle Marker Track edit mode (see [Marker Track](../../MainTrackFeatures/MarkerTrack/markertrack.md))
+  - long tap to toggle Speach output mode (see [Routing Hints](../RoutingHints/hints.md))
+  - double tap to toggle gain/loss representation for route track (see [Routing](../../MainTrackFeatures/Routing/routing.md))
 - BoundingBox Control: toggle bounding box control layer (see [Bounding Box](../../MainTrackFeatures/BoundingBox/boundingbox.md))
 - Geocode: Toggle visibility of search control (see [Geocode](../../FurtherFeatures/Geocode/geocode.md) feature)  
 - Zoom In
