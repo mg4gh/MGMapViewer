@@ -61,6 +61,7 @@ public class MSMarker extends MGMicroService {
 
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
     private final MGPref<Boolean> prefAlphaMtlVisibility = MGPref.get(R.string.MSMarker_pref_alphaMTL_visibility, false);
+    private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
 
     MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
 
@@ -333,6 +334,9 @@ public class MSMarker extends MGMicroService {
         if (prefAutoMarkerSetting.getValue()){
             prefAlphaMtl.setValue(smallMtl?0.0f:1.0f);
             prefSnap2Way.setValue(smallMtl);
+            if (prefAlphaRotl.getValue() < 0.25f){
+                prefAlphaRotl.setValue(1.0f);
+            }
         }
     }
 }
