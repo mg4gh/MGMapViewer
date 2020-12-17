@@ -79,7 +79,8 @@
             android:name="mg.mapviewer.settings.SettingsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Settings"
-            android:parentActivityName="mg.mapviewer.MGMapActivity">
+            android:parentActivityName="mg.mapviewer.MGMapActivity"
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="mg.mapviewer.MGMapActivity" />
@@ -87,7 +88,8 @@
         <activity
             android:name="mg.mapviewer.features.statistic.TrackStatisticActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="Track Selection">
+            android:label="Track Selection"
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="mg.mapviewer.MGMapActivity" />

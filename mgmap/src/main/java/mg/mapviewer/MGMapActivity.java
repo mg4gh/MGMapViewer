@@ -49,6 +49,7 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import mg.mapviewer.control.MSControl;
 import mg.mapviewer.features.alpha.MSAlpha;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.bb.MSBB;
@@ -72,6 +73,7 @@ import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.model.WriteableTrackLog;
+import mg.mapviewer.settings.SettingsActivity;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.GpxImporter;
 import mg.mapviewer.util.MapViewUtility;
@@ -186,6 +188,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         microServices.add(new MSGDrive(this));
         microServices.add(new MSFullscreen(this));
         microServices.add(new MSAlpha(this));
+        microServices.add(new MSControl(this));
 
         try{
             Thread.sleep(100);
@@ -206,6 +209,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         for (MGMicroService microService : microServices) {
             try {
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" start " + microService + " beginning ");
                 microService.start();
             } catch (Exception e) {
                 Log.w(MGMapApplication.LABEL, NameUtil.context()+" start " + microService + " failed: " + e.getMessage(), e);

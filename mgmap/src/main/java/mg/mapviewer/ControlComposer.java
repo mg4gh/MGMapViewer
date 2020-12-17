@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import mg.mapviewer.control.MSControl;
 import mg.mapviewer.features.beeline.MSBeeline;
 import mg.mapviewer.features.position.CenterControl;
 import mg.mapviewer.features.position.GpsControl;
@@ -108,7 +109,9 @@ public class ControlComposer {
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
         ViewGroup qcs = activity.findViewById(R.id.tr_qc);
-        application.getMS(MSFullscreen.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        PrefTextView ptvFullscreen = application.getMS(MSFullscreen.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        application.getMS(MSControl.class).initQuickControl(ptvFullscreen, "home2");
+        application.getMS(MSControl.class).initQuickControl(ptvFullscreen, "qc2");
         application.getMS(MSAlpha.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         RoutingHintService.getInstance().initQuickControl(ptvEditMarker, null);
@@ -117,6 +120,17 @@ public class ControlComposer {
         application.getMS(MSSearch.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_in");
         activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_out");
+
+
+        ViewGroup qcs2 = activity.findViewById(R.id.tr_qc2);
+        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "settings");
+        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "fuSettings");
+        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "download");
+        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "statistic");
+        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "home");
+        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "todo");
+        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "exit");
+
     }
 
 

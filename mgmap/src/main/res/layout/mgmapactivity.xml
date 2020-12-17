@@ -78,6 +78,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </TableRow>
+            <TableRow
+                android:id="@+id/tr_qc2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </TableRow>
         </TableLayout>
 
         <LinearLayout

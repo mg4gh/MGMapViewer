@@ -25,7 +25,7 @@ Out of these 5 types of tracks there are three of them, which allow an alternati
 |---|---|---|
 | recording track | X | long press on track |
 | marker track | - | |
-| route track | X | double tap on marker quick control or via long press on track (only if marker track edit is switched off) |
+| route track | X | long press on track (only if marker track edit is switched off)  or long press on one of the marker track points (always) |
 | selected track | X | via settings menu or via long press on track |
 | available track | - | |
 

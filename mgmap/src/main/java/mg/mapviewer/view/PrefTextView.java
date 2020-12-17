@@ -160,8 +160,20 @@ public class PrefTextView extends AppCompatTextView  {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        for (MGPref<?> pref : prefs){
-            pref.deleteObserver(prefObserver);
+        if (prefs != null){
+            for (MGPref<?> pref : prefs){
+                pref.deleteObserver(prefObserver); //==> causes the Problem with second task bar
+            }
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (prefs != null){
+            for (MGPref<?> pref : prefs){
+                pref.addObserver(prefObserver); //==> causes the Problem with second task bar
+            }
         }
     }
 }
