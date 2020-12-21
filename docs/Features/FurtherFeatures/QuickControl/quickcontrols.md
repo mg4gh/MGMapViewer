@@ -6,13 +6,13 @@
 
 <table style="font-size: small">
 <th width="12%"> </th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ct1.png" width="75" height="50"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ct2.png" width="75" height="50"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ct3.png" width="75" height="50"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ct4.png" width="75" height="50"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ct5.png" width="75" height="50"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ct6.png" width="75" height="50"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ct7.png" width="75" height="50"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ct1.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ct2.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ct3.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ct4.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ct5.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ct6.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ct7.png" width="75px" height="50px"></th>
 <tr>
     <td>short tap</td>
     <td>toggle fullscreen</td>
@@ -47,14 +47,14 @@
 
 #### Extra quick controls (after double tap on fullscreen)
 <table style="font-size: small">
-<th width="12%" style="text-align:center; min-width:80px"> </th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ec1.png" width="75px" height="50px"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ec2.png" width="75px" height="50px"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ec3.png" width="75px" height="50px"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ec4.png" width="75px" height="50px"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ec5.png" width="75px" height="50px"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ec6.png" width="75px" height="50px"></th>
-<th width="12%" style="text-align:center; min-width:80px"><img src="./ec7.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"> </th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ec1.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ec2.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ec3.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ec4.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ec5.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ec6.png" width="75px" height="50px"></th>
+<th width="12%" style="text-align:center; min-width:100px"><img src="./ec7.png" width="75px" height="50px"></th>
 
 
 <tr>
@@ -73,11 +73,11 @@
 ####  Track controls
 <table style="font-size: small">
 <th width="12%"> </th>
-<th width="17%" style="text-align:center; min-width:80px"><img src="./RTL.png" width="75" height="50"></th>
-<th width="17%" style="text-align:center; min-width:80px"><img src="./RoTL.png" width="75" height="50"><br/>and<br/><img src="./ct3.png" width="75" height="50"></th>
-<th width="17%" style="text-align:center; min-width:80px"><img src="./RoTL.png" width="75" height="50"><br/>and<br/><img src="./ct3a.png" width="75" height="50"></th>
-<th width="17%" style="text-align:center; min-width:80px"><img src="./stl.png" width="75" height="50"></th>
-<th width="17%" style="text-align:center; min-width:80px"><img src="./atl.png" width="75" height="50"></th>
+<th width="17%" style="text-align:center; min-width:100px"><img src="./RTL.png" width="75" height="50"></th>
+<th width="17%" style="text-align:center; min-width:100px"><img src="./RoTL.png" width="75" height="50"><br/>and<br/><img src="./ct3.png" width="75" height="50"></th>
+<th width="17%" style="text-align:center; min-width:100px"><img src="./RoTL.png" width="75" height="50"><br/>and<br/><img src="./ct3a.png" width="75" height="50"></th>
+<th width="17%" style="text-align:center; min-width:100px"><img src="./stl.png" width="75" height="50"></th>
+<th width="17%" style="text-align:center; min-width:100px"><img src="./atl.png" width="75" height="50"></th>
 
 <tr>
     <td>short tap</td>
