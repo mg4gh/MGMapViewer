@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+
+import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
 
@@ -204,8 +206,12 @@ public class MGMapApplication extends Application {
 
     @Override
     public void onTerminate() {
-        Log.e(LABEL, NameUtil.context());
-        System.out.println("MGMapViewer Application stop");
+        Log.w(LABEL, NameUtil.context()+" MGMapViewer Application stop");
+        try {
+            NotificationManagerCompat.from(this).cancelAll();
+        } catch (Exception e) {
+            Log.e(LABEL, NameUtil.context(),e);
+        }
         super.onTerminate();
     }
 
