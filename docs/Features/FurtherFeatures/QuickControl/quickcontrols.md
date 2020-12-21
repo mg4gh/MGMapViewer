@@ -20,5 +20,49 @@ There are seven quick controls:
 - Zoom In
 - Zoom Out
 
+<table>
+<th> </th>
+<th width="100"><img src="./ct1.png" width="90" height="60"></th>
+<th width="100"><img src="./ct2.png" width="90" height="60"></th>
+<th width="100"><img src="./ct3.png" width="90" height="60"></th>
+<th width="100"><img src="./ct4.png" width="90" height="60"></th>
+<th width="100"><img src="./ct5.png" width="90" height="60"></th>
+<th width="100"><img src="./ct6.png" width="90" height="60"></th>
+<th width="100"><img src="./ct7.png" width="90" height="60"></th>
+
+<tr>
+    <td>short tap</td>
+    <td>toggle fullscreen</td>
+    <td>toggle slider for layer transparency</td>
+    <td>toggle edit marker track</td>
+    <td>toggle bounding box mode</td>
+    <td>toggle search mode</td>
+    <td>zoom in</td>
+    <td>zoom out</td>
+</tr>
+<tr>
+    <td>long tap</td>
+    <td>go to homescreen</td>
+    <td>toggle slider for track transparency</td>
+    <td>toggle routing hints</td>
+    <td>toggle bounding box mode on and mark central window</td>
+    <td> </td>
+    <td> </td>
+    <td> </td>
+</tr>
+<tr>
+    <td>double tap</td>
+    <td>more quick controls</td>
+    <td> </td>
+    <td>hide marker track/route</td>
+    <td> </td>
+    <td> </td>
+    <td> </td>
+    <td> </td>
+</tr>
+</table>
+
+
+
  <small><small>[Back to Index](../../../index.md)</small></small>
 
