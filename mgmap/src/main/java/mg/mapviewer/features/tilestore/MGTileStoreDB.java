@@ -66,10 +66,10 @@ public class MGTileStoreDB extends MGTileStore {
     }
 
 
-
     @Override
     public synchronized void destroy() {
         try {
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Try to close database.");
             db.close();
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
@@ -183,7 +183,8 @@ public class MGTileStoreDB extends MGTileStore {
             String sql = String.format(Locale.ENGLISH," ((%d < tile_column) AND (tile_column<%d) AND (%d<tile_row) AND (tile_row<%d));",tileXMin,tileXMax,tileYMin,tileYMax);
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" SQL: "+sql);
             db.delete("tiles", sql, null);
-            db.compileStatement("VACUUM").execute();
+//            db.compileStatement("VACUUM").execute(); // vacuum taken out - first it runs on each zoom level; second, it takes too much time in a large db; third, it's not needed in real world lifecycle
+//            Log.i(MGMapApplication.LABEL, NameUtil.context()+" VACUUM finished.");
 
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
