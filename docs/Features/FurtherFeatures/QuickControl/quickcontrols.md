@@ -3,15 +3,16 @@
 ## Further Features: quick controls
 
 #### Standard quick controls
-<table>
-<th width="80"> </th>
-<th width="80"><img src="./ct1.png" width="75" height="50"></th>
-<th width="80"><img src="./ct2.png" width="75" height="50"></th>
-<th width="80"><img src="./ct3.png" width="75" height="50"></th>
-<th width="80"><img src="./ct4.png" width="75" height="50"></th>
-<th width="80"><img src="./ct5.png" width="75" height="50"></th>
-<th width="80"><img src="./ct6.png" width="75" height="50"></th>
-<th width="80"><img src="./ct7.png" width="75" height="50"></th>
+<small>
+<table style="font-size: small">>
+<th width="12%"> </th>
+<th width="12%" style="text-align:center"><img src="./ct1.png" width="75" height="50"></th>
+<th width="12%" style="text-align:center"><img src="./ct2.png" width="75" height="50"></th>
+<th width="12%" style="text-align:center"><img src="./ct3.png" width="75" height="50"></th>
+<th width="12%" style="text-align:center"><img src="./ct4.png" width="75" height="50"></th>
+<th width="12%" style="text-align:center"><img src="./ct5.png" width="75" height="50"></th>
+<th width="12%" style="text-align:center"><img src="./ct6.png" width="75" height="50"></th>
+<th width="12%" style="text-align:center"><img src="./ct7.png" width="75" height="50"></th>
 
 <tr>
     <td>short tap</td>
@@ -44,17 +45,17 @@
     <td> </td>
 </tr>
 </table>
-
+</small>
 #### Extra quick controls (after double tap on fullscreen)
 <table>
 <th width="80"> </th>
-<th width="80"><img src="./ec1.png" width="75" height="50"></th>
-<th width="80"><img src="./ec2.png" width="75" height="50"></th>
-<th width="80"><img src="./ec3.png" width="75" height="50"></th>
-<th width="80"><img src="./ec4.png" width="75" height="50"></th>
-<th width="80"><img src="./ec5.png" width="75" height="50"></th>
-<th width="80"><img src="./ec6.png" width="75" height="50"></th>
-<th width="80"><img src="./ec7.png" width="75" height="50"></th>
+<th width="80" style="text-align:center"><img src="./ec1.png" width="75" height="50"></th>
+<th width="80" style="text-align:center"><img src="./ec2.png" width="75" height="50"></th>
+<th width="80" style="text-align:center"><img src="./ec3.png" width="75" height="50"></th>
+<th width="80" style="text-align:center"><img src="./ec4.png" width="75" height="50"></th>
+<th width="80" style="text-align:center"><img src="./ec5.png" width="75" height="50"></th>
+<th width="80" style="text-align:center"><img src="./ec6.png" width="75" height="50"></th>
+<th width="80" style="text-align:center"><img src="./ec7.png" width="75" height="50"></th>
 
 <tr>
     <td>short tap</td>
@@ -72,11 +73,11 @@
 ####  Track controls
 <table>
 <th width="80"> </th>
-<th width="118"><img src="./RTL.png" width="90" height="60"></th>
-<th width="118"><img src="./RoTL.png" width="90" height="60"> and <img src="./ct3.png" width="90" height="60"></th>
-<th width="118"><img src="./RoTL.png" width="90" height="60"> and <img src="./ct3a.png" width="90" height="60"></th>
-<th width="118"><img src="./STL.png" width="90" height="60"></th>
-<th width="118"><img src="./ATL.png" width="90" height="60"></th>
+<th width="118" style="text-align:center"><img src="./RTL.png" width="90" height="60"></th>
+<th width="118" style="text-align:center"><img src="./RoTL.png" width="90" height="60"><br/>and<br/><img src="./ct3.png" width="90" height="60"></th>
+<th width="118" style="text-align:center"><img src="./RoTL.png" width="90" height="60"><br/>and<br/><img src="./ct3a.png" width="90" height="60"></th>
+<th width="118" style="text-align:center"><img src="./STL.png" width="90" height="60"></th>
+<th width="118" style="text-align:center"><img src="./ATL.png" width="90" height="60"></th>
 
 <tr>
     <td>short tap</td>
