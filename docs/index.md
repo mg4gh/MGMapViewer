@@ -5,6 +5,7 @@ This library provides an excellent base for vector map visualisation. There were
 project to enable straight forward implementation in this app.
 
 This is the [Getting Started](./GettingStarted/GettingStarted.md).
+And here is a shortcut to the [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md).
 
 # Feature overview
 
@@ -41,9 +42,9 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Beeline distance](Features/FurtherFeatures/BeelineDistance/beeline.md): show the beeline distance between current position and the center position of the map
 - [Geocode](./Features/FurtherFeatures/Geocode/geocode.md): Search location by name and search entity by location
 - [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status line
-- [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md): show some state information in the status line
+- [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md): the quick controls allow to control most frequently used features
 - [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account 
-- [Routing Hints](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation.
+- [Routing Hints](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation
 
 ### Developer features
 - [Way details](./Features/DeveloperFeatures/WayDetails/waydetails.md) shows the ways of a tile 

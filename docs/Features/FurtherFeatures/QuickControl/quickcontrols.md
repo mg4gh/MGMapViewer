@@ -2,6 +2,8 @@
 
 ## Further Features: quick controls
 
+### MGMapActivity (main activity)
+
 #### Standard quick controls
 
 <table style="font-size: small">
