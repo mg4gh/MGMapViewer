@@ -2,33 +2,16 @@
 
 ## Further Features: quick controls
 
-At the very bottom of the screen there is a row with quick controls:
-
-<img src="./qc1.png" width="400" />&nbsp;
-
-There are seven quick controls:
-- Full Screen: toggle full screen mode (ON/OFF)
-- Transparency Control: toggle the visibility of the sliders for transparency control
-  - short tap for map layer transparency - see [Overlay multiple map layers](../../MainMapFeatures/MapMulti/multimap.md)
-  - long tap for [track transparency](../../MainTrackFeatures/TrackVisualization/trackvisu.md)
-- Marker Track Control: toggle marker track/route features
-  - short tap to toggle Marker Track edit mode (see [Marker Track](../../MainTrackFeatures/MarkerTrack/markertrack.md))
-  - long tap to toggle Speach output mode (see [Routing Hints](../RoutingHints/hints.md))
-  - double tap to toggle gain/loss representation for route track (see [Routing](../../MainTrackFeatures/Routing/routing.md))
-- BoundingBox Control: toggle bounding box control layer (see [Bounding Box](../../MainTrackFeatures/BoundingBox/boundingbox.md))
-- Geocode: Toggle visibility of search control (see [Geocode](../../FurtherFeatures/Geocode/geocode.md) feature)  
-- Zoom In
-- Zoom Out
-
+#### Standard quick controls
 <table>
-<th> </th>
-<th width="100"><img src="./ct1.png" width="90" height="60"></th>
-<th width="100"><img src="./ct2.png" width="90" height="60"></th>
-<th width="100"><img src="./ct3.png" width="90" height="60"></th>
-<th width="100"><img src="./ct4.png" width="90" height="60"></th>
-<th width="100"><img src="./ct5.png" width="90" height="60"></th>
-<th width="100"><img src="./ct6.png" width="90" height="60"></th>
-<th width="100"><img src="./ct7.png" width="90" height="60"></th>
+<th width="80"> </th>
+<th width="80"><img src="./ct1.png" width="75" height="50"></th>
+<th width="80"><img src="./ct2.png" width="75" height="50"></th>
+<th width="80"><img src="./ct3.png" width="75" height="50"></th>
+<th width="80"><img src="./ct4.png" width="75" height="50"></th>
+<th width="80"><img src="./ct5.png" width="75" height="50"></th>
+<th width="80"><img src="./ct6.png" width="75" height="50"></th>
+<th width="80"><img src="./ct7.png" width="75" height="50"></th>
 
 <tr>
     <td>short tap</td>
@@ -58,6 +41,57 @@ There are seven quick controls:
     <td> </td>
     <td> </td>
     <td> </td>
+    <td> </td>
+</tr>
+</table>
+
+#### Extra quick controls (after double tap on fullscreen)
+<table>
+<th width="80"> </th>
+<th width="80"><img src="./ec1.png" width="75" height="50"></th>
+<th width="80"><img src="./ec2.png" width="75" height="50"></th>
+<th width="80"><img src="./ec3.png" width="75" height="50"></th>
+<th width="80"><img src="./ec4.png" width="75" height="50"></th>
+<th width="80"><img src="./ec5.png" width="75" height="50"></th>
+<th width="80"><img src="./ec6.png" width="75" height="50"></th>
+<th width="80"><img src="./ec7.png" width="75" height="50"></th>
+
+<tr>
+    <td>short tap</td>
+    <td>settings preference screen</td>
+    <td>further settings preference screen</td>
+    <td>download preference screen</td>
+    <td>open statistic activity</td>
+    <td>go to homescreen</td>
+    <td> </td>
+    <td>close this app</td>
+</tr>
+</table>
+
+
+####  Track controls
+<table>
+<th width="80"> </th>
+<th width="118"><img src="./RTL.png" width="90" height="60"></th>
+<th width="118"><img src="./RoTL.png" width="90" height="60"> and <img src="./ct3.png" width="90" height="60"></th>
+<th width="118"><img src="./RoTL.png" width="90" height="60"> and <img src="./ct3a.png" width="90" height="60"></th>
+<th width="118"><img src="./STL.png" width="90" height="60"></th>
+<th width="118"><img src="./ATL.png" width="90" height="60"></th>
+
+<tr>
+    <td>short tap</td>
+    <td> </td>
+    <td> </td>
+    <td>on point: delete point<br/>on line: insert new point </td>
+    <td> </td>
+    <td>make this track to the selected</td>
+</tr>
+<tr>
+    <td>long tap</td>
+    <td>toggle gain/loss mode</td>
+    <td>toggle gain/loss mode </td>
+    <td>on point: toggle gain/loss mode<br/>on line: toggle direct route </td>
+    <td>toggle gain/loss mode</td>
     <td> </td>
 </tr>
 </table>
