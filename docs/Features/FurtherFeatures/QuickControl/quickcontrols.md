@@ -5,7 +5,7 @@
 #### Standard quick controls
 
 <table style="font-size: small">
-<th width="12%"> </th>
+<th width="12%" style="text-align:center; min-width:60px; max-width:60px"> </th>
 <th width="12%" style="text-align:center; min-width:100px"><img src="./ct1.png" width="75px" height="50px"></th>
 <th width="12%" style="text-align:center; min-width:100px"><img src="./ct2.png" width="75px" height="50px"></th>
 <th width="12%" style="text-align:center; min-width:100px"><img src="./ct3.png" width="75px" height="50px"></th>
@@ -47,7 +47,7 @@
 
 #### Extra quick controls (after double tap on fullscreen)
 <table style="font-size: small">
-<th width="12%" style="text-align:center; min-width:100px"> </th>
+<th width="12%" style="text-align:center; min-width:60px; max-width:60px"> </th>
 <th width="12%" style="text-align:center; min-width:100px"><img src="./ec1.png" width="75px" height="50px"></th>
 <th width="12%" style="text-align:center; min-width:100px"><img src="./ec2.png" width="75px" height="50px"></th>
 <th width="12%" style="text-align:center; min-width:100px"><img src="./ec3.png" width="75px" height="50px"></th>
@@ -72,7 +72,7 @@
 
 ####  Track controls
 <table style="font-size: small">
-<th width="12%"> </th>
+<th width="12%" style="text-align:center; min-width:60px; max-width:60px"> </th>
 <th width="17%" style="text-align:center; min-width:100px"><img src="./RTL.png" width="75" height="50"></th>
 <th width="17%" style="text-align:center; min-width:100px"><img src="./RoTL.png" width="75" height="50"><br/>and<br/><img src="./ct3.png" width="75" height="50"></th>
 <th width="17%" style="text-align:center; min-width:100px"><img src="./RoTL.png" width="75" height="50"><br/>and<br/><img src="./ct3a.png" width="75" height="50"></th>
