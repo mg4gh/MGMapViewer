@@ -123,10 +123,6 @@ public class MSControl extends MGMicroService {
         prefQC2Exit.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-//                Intent intent = new Intent ("com.android.systemui.recent.action.TOGGLE_RECENTS");
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-//                intent.setComponent(new ComponentName("com.android.systemui", "com.android.systemui.recent.RecentsActivity"));
-//                getActivity().startActivity (intent);
                 getActivity().finishAndRemoveTask();
             }
         });
