@@ -32,6 +32,12 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     int lo;
     float ele = NO_ELE;
 
+    public static PointModelImpl createFromLaLo(long lalo){
+        int la = (int)(lalo>>32);
+        int lo = (int)(lalo);
+        return createFromLaLo(la, lo);
+    }
+
     public static PointModelImpl createFromLaLo(int la, int lo){
         PointModelImpl pmi = new PointModelImpl();
         pmi.la = la;
@@ -125,5 +131,10 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     }
     public int loMdDiff(PointModelImpl otherPointModelImpl){
         return Math.abs(this.lo - otherPointModelImpl.lo);
+    }
+
+    @Override
+    public long getLaLo() {
+        return (((long)la)<<32) +lo;
     }
 }

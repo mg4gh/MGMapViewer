@@ -104,6 +104,7 @@ public class MGMapApplication extends Application {
         prefGpsOn = MGPref.get(R.string.MSPosition_prev_GpsOn, true);
         prefAppRestart.setValue(true);
         prefGpsOn.setValue(false);
+        MGPref.get(R.string.MSSearch_qc_showSearchResult, false).setValue(false);
 
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
 

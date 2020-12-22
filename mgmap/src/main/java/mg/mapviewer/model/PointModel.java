@@ -38,4 +38,5 @@ public interface PointModel {
 
     long getTimestamp();
 
+    long getLaLo();
 }

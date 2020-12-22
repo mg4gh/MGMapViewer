@@ -111,8 +111,8 @@ public class SearchView extends LinearLayout {
                 tv.setOnLongClickListener(new OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        activity.getMapViewUtility().setMapViewPosition(sr.pos);
-                        msSearch.showSearchPos(sr.pos);
+//                        activity.getMapViewUtility().setMapViewPosition(sr.pos);
+                        msSearch.setSearchResult(sr.pos);
                         return true;
                     }
                 });

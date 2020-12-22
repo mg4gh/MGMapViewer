@@ -52,7 +52,8 @@ public class MSSearch extends MGMicroService {
     private MSSControlLayer msscl = null; // feature control layer to manage feature specific events
 
     private final MGPref<Boolean> prefSearchOn = MGPref.get(R.string.MSSearch_qc_searchOn, false);
-    private final MGPref<Boolean> prefSearchResRemover = MGPref.get(R.string.MSSearch_qc_searchResRemover, false);
+    private final MGPref<Boolean> prefShowSearchResult = MGPref.get(R.string.MSSearch_qc_showSearchResult, false);
+    private final MGPref<Long> prefShowPos = MGPref.get(R.string.MSSearch_pref_SearchPos, 0l);
     private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
 
     private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
@@ -90,18 +91,24 @@ public class MSSearch extends MGMicroService {
             }
         });
         setSearchProvider(new Nominatim());
-        prefSearchResRemover.addObserver(new Observer() {
+
+        Observer showPositionObserver = new Observer() {
             @Override
             public void update(Observable o, Object arg) {
                 unregisterAll();
+                if (prefShowSearchResult.getValue()){
+                    showSearchPos();
+                }
             }
-        });
+        };
+        prefShowSearchResult.addObserver(showPositionObserver);
+        prefShowPos.addObserver(showPositionObserver);
     }
 
     @Override
     public PrefTextView initQuickControl(PrefTextView ptv, String info){
-        ptv.setPrefData(new MGPref[]{prefSearchOn, prefSearchResRemover},
-                new int[]{R.drawable.search,R.drawable.search});
+        ptv.setPrefData(new MGPref[]{prefSearchOn, prefShowSearchResult},
+                new int[]{R.drawable.search,R.drawable.search1b,R.drawable.search2,R.drawable.search2b});
         return ptv;
     }
 
@@ -206,10 +213,15 @@ public class MSSearch extends MGMicroService {
         }
     }
 
-    void showSearchPos(PointModel pos){
-        unregisterAll();
-        register(new PointViewSearch(pos).setRadius(10));
-        register(new PointViewSearch(pos).setRadius(1));
+    void showSearchPos(){
+        long lalo = prefShowPos.getValue();
+        if (lalo != 0){
+            PointModel pos = PointModelImpl.createFromLaLo(lalo);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pos);
+            getMapViewUtility().setMapViewPosition(pos);
+            register(new PointViewSearch(pos).setRadius(10));
+            register(new PointViewSearch(pos).setRadius(1));
+        }
     }
 
 
@@ -232,5 +244,11 @@ public class MSSearch extends MGMicroService {
 
     private void checkFullscreen(){
         prefFullscreen.onChange();
+    }
+
+    public void setSearchResult(PointModel pmSearchResult) {
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmSearchResult);
+        prefShowPos.setValue(pmSearchResult.getLaLo());
+        prefShowSearchResult.setValue(true);
     }
 }

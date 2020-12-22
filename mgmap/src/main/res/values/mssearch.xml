@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="MSSearch_qc_searchOn">MSSearch.searchOn</string>
-    <string name="MSSearch_qc_searchResRemover">MSSearch.searchResRemover</string>
+    <string name="MSSearch_qc_showSearchResult">MSSearch.showSearchResult</string>
+    <string name="MSSearch_pref_SearchPos">MSSearch.searchPos</string>
 </resources>
