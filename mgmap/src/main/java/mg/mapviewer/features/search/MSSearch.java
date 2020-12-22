@@ -103,6 +103,7 @@ public class MSSearch extends MGMicroService {
         };
         prefShowSearchResult.addObserver(showPositionObserver);
         prefShowPos.addObserver(showPositionObserver);
+        prefShowSearchResult.onChange();
     }
 
     @Override

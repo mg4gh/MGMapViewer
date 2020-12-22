@@ -124,6 +124,7 @@ public class MSControl extends MGMicroService {
             @Override
             public void update(Observable o, Object arg) {
                 getActivity().finishAndRemoveTask();
+                System.exit(0);
             }
         });
 
