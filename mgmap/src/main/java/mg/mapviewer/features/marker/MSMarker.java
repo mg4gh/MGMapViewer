@@ -117,7 +117,7 @@ public class MSMarker extends MGMicroService {
             refreshObserver.onChange();
         }
         markerTrackLogObservable.addObserver(refreshObserver);
-        getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
+//        getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
         ttRefreshTime = 20;
 
         prefAlphaMtl.addObserver(refreshObserver);
@@ -265,7 +265,9 @@ public class MSMarker extends MGMicroService {
                         }
                     }
                 }
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" dragData.dragObject="+dragData.getDragObject());
+                if (dragData.getDragObject() != null){
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" dragData.dragObject="+dragData.getDragObject());
+                }
             } catch (Exception e){
                 dragData.setDragObject(null);
             }
