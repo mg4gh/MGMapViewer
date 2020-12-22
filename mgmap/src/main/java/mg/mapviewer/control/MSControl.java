@@ -31,7 +31,7 @@ public class MSControl extends MGMicroService {
     private final MGPref<Boolean> prefQC2FuSettings = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
     private final MGPref<Boolean> prefQC2Statistic  = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
     private final MGPref<Boolean> prefQC2Download   = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    private final MGPref<Boolean> prefQC2Home       = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    public final MGPref<Boolean> prefQC2Home       = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
     private final MGPref<Boolean> prefQC2Exit       = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
 
     ViewGroup qcsParent = null;
@@ -189,7 +189,7 @@ public class MSControl extends MGMicroService {
         });
     }
 
-    public void launchHomeScreen(Activity activity) {
+    public static void launchHomeScreen(Activity activity) {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN, null);
         homeIntent.addCategory(Intent.CATEGORY_HOME);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);

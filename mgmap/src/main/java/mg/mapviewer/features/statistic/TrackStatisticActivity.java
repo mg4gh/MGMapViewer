@@ -38,6 +38,7 @@ import mg.mapviewer.ControlView;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
+import mg.mapviewer.control.MSControl;
 import mg.mapviewer.features.fullscreen.MSFullscreen;
 import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.util.GpxExporter;
@@ -198,7 +199,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private void initQuickControls(){
         ViewGroup qcs = findViewById(R.id.ts_qc);
 
-        ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefFullscreen}, new int[]{R.drawable.fullscreen, R.drawable.fullscreen});
+        PrefTextView ptvFullscreen = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefFullscreen}, new int[]{R.drawable.fullscreen, R.drawable.fullscreen});
         prefFullscreen.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
@@ -210,6 +211,13 @@ public class TrackStatisticActivity extends AppCompatActivity {
             }
         });
         prefFullscreen.onChange();
+        ptvFullscreen.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                MSControl.launchHomeScreen(TrackStatisticActivity.this);
+                return true;
+            }
+        });
 
 
         PrefTextView selectAll = ControlView.createQuickControlPTV(qcs,20).setPrefData(new MGPref[]{prefAllSelected}, new int[]{R.drawable.select_all, R.drawable.select_all2});
