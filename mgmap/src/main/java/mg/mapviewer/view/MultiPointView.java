@@ -108,7 +108,6 @@ public class MultiPointView extends MVLayer {
             int y = lat2y(pm.getLat());
             path.moveTo(x, y);
             drawPoint(canvas, x,y, zoomLevel);
-//            canvas.drawCircle(x, y, pointRadius, this.paintStroke);
 
             while (iterator.hasNext()) {
                 pm = iterator.next();
@@ -121,9 +120,6 @@ public class MultiPointView extends MVLayer {
                 }
                 if ( (! iterator.hasNext()) || showIntermediates ){
                     drawPoint(canvas, x,y, zoomLevel);
-//                    if (pointRadius > 0){
-//                        canvas.drawCircle(x, y, (int)(pointRadius* getScale(zoomLevel)), this.paintStroke);
-//                    }
                 }
             }
 
@@ -141,7 +137,6 @@ public class MultiPointView extends MVLayer {
 
     private void drawPoint(Canvas canvas, int x, int y, byte zoomLevel){
         if (pointRadius > 0){
-            if (showIntermediates) Log.v(MGMapApplication.LABEL, NameUtil.context()+" r="+(int)(pointRadius* getScale(zoomLevel))+" zoom="+zoomLevel+" sw="+(paintStroke.getStrokeWidth() * getScale(zoomLevel)));
             canvas.drawCircle(x, y, (int)(pointRadius* getScale(zoomLevel)), this.paintStroke);
         }
     }
