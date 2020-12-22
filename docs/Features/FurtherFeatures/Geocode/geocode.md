@@ -69,6 +69,9 @@ wait 10s. Then the keyboard will disappear automatically.
 
 Once you tap again on the input text field, the keyboard is shown again.
 
+After switching of the search mode the orange circle with the last searched point stays visible - so you can still use it for orientation
+and route planning. With a long tap on the search quick control you can hide it.
+
 #### Reverse Search
 
 Beside the search for with a given term, there is also a reverse search possible. Just make a long tap on the previous search result

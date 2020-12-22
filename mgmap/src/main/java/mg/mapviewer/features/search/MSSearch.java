@@ -29,6 +29,9 @@ import android.widget.TextView;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
@@ -44,12 +47,13 @@ import mg.mapviewer.view.PrefTextView;
 
 public class MSSearch extends MGMicroService {
 
-    private SearchView searchView;
+    private final SearchView searchView;
     private SearchProvider searchProvider = null;
     private MSSControlLayer msscl = null; // feature control layer to manage feature specific events
 
     private final MGPref<Boolean> prefSearchOn = MGPref.get(R.string.MSSearch_qc_searchOn, false);
-    private MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
+    private final MGPref<Boolean> prefSearchResRemover = MGPref.get(R.string.MSSearch_qc_searchResRemover, false);
+    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
 
     private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
 
@@ -85,13 +89,18 @@ public class MSSearch extends MGMicroService {
                 doSearch(searchText.getText().toString().trim(), -1);
             }
         });
-
         setSearchProvider(new Nominatim());
+        prefSearchResRemover.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                unregisterAll();
+            }
+        });
     }
 
     @Override
     public PrefTextView initQuickControl(PrefTextView ptv, String info){
-        ptv.setPrefData(new MGPref[]{prefSearchOn},
+        ptv.setPrefData(new MGPref[]{prefSearchOn, prefSearchResRemover},
                 new int[]{R.drawable.search,R.drawable.search});
         return ptv;
     }
@@ -139,7 +148,6 @@ public class MSSearch extends MGMicroService {
                 searchView.setVisibility( View.INVISIBLE );
                 searchView.setFocusable(false);
                 searchView.resetSearchResults();
-                unregisterAll();
                 unregister(msscl, false);
             }
         }

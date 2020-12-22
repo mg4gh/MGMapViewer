@@ -31,7 +31,7 @@
     <td>toggle slider for track transparency</td>
     <td>toggle routing hints</td>
     <td>toggle bounding box mode on and mark central window</td>
-    <td> </td>
+    <td>hide last searched point</td>
     <td> </td>
     <td> </td>
 </tr>
