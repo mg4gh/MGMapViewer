@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="btMarkerTrack">MARKER\nTRACK</string>
+    <string name="btMTHide">HIDE</string>
+    <string name="btMTLoadSelected">LOAD\nSELECTED</string>
+    <string name="btMTSave">SAVE</string>
+
     <string name="MSMarker_qc_EditMarkerTarck">MSMarker.EditMarkerTrack</string>
     <string name="MSMarker_qc_RouteGL">MSMarker.RouteGL</string>
 
@@ -8,10 +13,6 @@
     <string name="MSMarker_pref_auto_key">MSMarker.autoMarkerSettings</string>
     <string name="MSMarker_pref_auto_title">Automatic marker settings</string>
     <string name="MSMarker_pref_auto_summary">Do automatically set marker settings ("Show marker track" and  "Snap to way").</string>
-
-<!--    <string name="MSMarker_pref_showMtl_key">MSMarker.showMarkerTrack</string>-->
-<!--    <string name="MSMarker_pref_showMtl_title">Show marker track</string>-->
-<!--    <string name="MSMarker_pref_showMtl_summary">Visualize the marker track</string>-->
 
     <string name="MSMarker_pref_snap2way_key">MSMarker.snap2way</string>
     <string name="MSMarker_pref_snap2way_title">Snap to way</string>

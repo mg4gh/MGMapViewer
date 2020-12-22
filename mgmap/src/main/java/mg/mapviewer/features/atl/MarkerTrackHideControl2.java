@@ -12,37 +12,21 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mapviewer.features.marker;
+package mg.mapviewer.features.atl;
 
 import android.view.View;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
-import mg.mapviewer.model.WriteableTrackLog;
+import mg.mapviewer.features.marker.MarkerTrackHideControl;
+import mg.mapviewer.graph.GGraphTile;
 import mg.mapviewer.util.Control;
-import mg.mapviewer.util.GpxExporter;
 
-public class MarkerExportControl extends Control {
-
-    public MarkerExportControl(){
-        super(true);
-    }
-
-    @Override
-    public void onClick(View v) {
-        super.onClick(v);
-        MGMapApplication application = controlView.getApplication();
-        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-        GpxExporter.export(mtl);
-//        application.metaTrackLogs.put(mtl.getNameKey(), mtl);
-
-    }
+public class MarkerTrackHideControl2 extends MarkerTrackHideControl {
 
     @Override
     public void onPrepare(View v) {
-        MGMapApplication application = controlView.getApplication();
-        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-        v.setEnabled((mtl != null) && (mtl.getTrackLogSegment(0).size() > 0));
-        setText(v, controlView.rstring(R.string.btMTExport) );
+        super.onPrepare(v);
+        setText(v, controlView.rstring(R.string.btHideMarkerTrack) );
     }
 }

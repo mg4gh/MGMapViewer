@@ -16,7 +16,12 @@ package mg.mapviewer.features.atl;
 
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
+import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.util.Control;
 
 public class HideUnselectedControl extends Control {
@@ -33,6 +38,10 @@ public class HideUnselectedControl extends Control {
 
     @Override
     public void onPrepare(View v) {
+        MGMapApplication application = controlView.getApplication();
+        List<TrackLog> availableTracks = new ArrayList<>( application.availableTrackLogsObservable.availableTrackLogs );
+        availableTracks.remove(application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog());
+        v.setEnabled( availableTracks.size() > 0 );
         setText(v, controlView.rstring(R.string.btHideUnselected) );
     }
 }

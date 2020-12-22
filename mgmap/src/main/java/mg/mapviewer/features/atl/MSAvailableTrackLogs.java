@@ -25,6 +25,7 @@ import mg.mapviewer.R;
 
 import java.util.TreeSet;
 
+import mg.mapviewer.features.marker.MarkerTrackHideControl;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
@@ -180,15 +181,14 @@ public class MSAvailableTrackLogs extends MGMicroService {
         return new Control[]{
                 new LoadPrevControl(),
                 new LoadNextControl()};
-
     }
 
     public Control[] getMenuHideControls(){
         return new Control[]{
                 new HideAllControl(),
                 new HideSelectedControl(),
-                new HideUnselectedControl()};
-
+                new HideUnselectedControl(),
+                new MarkerTrackHideControl2()};
     }
 
 

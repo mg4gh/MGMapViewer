@@ -18,31 +18,31 @@ import android.view.View;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
-import mg.mapviewer.graph.GGraphTile;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.util.GpxExporter;
 
-public class MarkerDeleteAllControl extends Control {
+public class MarkerTrackSaveControl extends Control {
 
-    MSMarker msMarker;
-
-    public MarkerDeleteAllControl(MSMarker msMarker){
+    public MarkerTrackSaveControl(){
         super(true);
-        this.msMarker = msMarker;
     }
 
     @Override
     public void onClick(View v) {
         super.onClick(v);
         MGMapApplication application = controlView.getApplication();
-        application.markerTrackLogObservable.setTrackLog(null);
-        GGraphTile.clearCache();
+        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+        GpxExporter.export(mtl);
+//        application.metaTrackLogs.put(mtl.getNameKey(), mtl);
+
     }
 
     @Override
     public void onPrepare(View v) {
         MGMapApplication application = controlView.getApplication();
-        v.setEnabled( application.markerTrackLogObservable.getTrackLog() != null );
-        setText(v, controlView.rstring(R.string.btMDeleteAll) );
+        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+        v.setEnabled((mtl != null) && (mtl.getTrackLogSegment(0).size() > 0));
+        setText(v, controlView.rstring(R.string.btMTSave) );
     }
 }

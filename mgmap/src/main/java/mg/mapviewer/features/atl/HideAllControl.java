@@ -16,9 +16,13 @@ package mg.mapviewer.features.atl;
 
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.graph.GGraphTile;
+import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.util.Control;
 
 public class HideAllControl extends Control {
@@ -34,11 +38,14 @@ public class HideAllControl extends Control {
         application.availableTrackLogsObservable.removeAll();
         application.markerTrackLogObservable.setTrackLog(null);
         GGraphTile.clearCache();
-
     }
 
     @Override
     public void onPrepare(View v) {
+        MGMapApplication application = controlView.getApplication();
+        boolean enable = (application.availableTrackLogsObservable.availableTrackLogs.size() > 0);
+        enable |= ( application.markerTrackLogObservable.getTrackLog() != null );
+        v.setEnabled( enable );
         setText(v, controlView.rstring(R.string.btHideAll) );
     }
 }

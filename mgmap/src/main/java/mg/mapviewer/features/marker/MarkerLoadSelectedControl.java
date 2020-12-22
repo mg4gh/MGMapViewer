@@ -17,16 +17,15 @@ package mg.mapviewer.features.marker;
 import android.view.View;
 
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.R;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.util.Control;
 
-public class MarkerImportControl extends Control {
+public class MarkerLoadSelectedControl extends Control {
 
     MSMarker msMarker;
 
-    public MarkerImportControl(MSMarker msMarker){
+    public MarkerLoadSelectedControl(MSMarker msMarker){
         super(true);
         this.msMarker = msMarker;
     }
@@ -48,6 +47,6 @@ public class MarkerImportControl extends Control {
     public void onPrepare(View v) {
         MGMapApplication application = controlView.getApplication();
         v.setEnabled( application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() != null );
-        setText(v, controlView.rstring(R.string.btMTImport) );
+        setText(v, controlView.rstring(R.string.btMTLoadSelected) );
     }
 }

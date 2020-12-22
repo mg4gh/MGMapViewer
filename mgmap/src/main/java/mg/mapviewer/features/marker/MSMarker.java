@@ -316,9 +316,9 @@ public class MSMarker extends MGMicroService {
 
     public Control[] getMenuMarkerControls(){
         return new Control[]{
-                new MarkerDeleteAllControl(this),
-                new MarkerImportControl(this),
-                new MarkerExportControl()};
+                new MarkerTrackHideControl(),
+                new MarkerLoadSelectedControl(this),
+                new MarkerTrackSaveControl()};
     }
 
     public interface LineRefProvider{

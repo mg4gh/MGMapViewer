@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="btStartTrack">START\nTRACK</string>
+    <string name="btStartSegment">START\nSEGMENT</string>
+    <string name="btStopSegment">STOP\nSEGMENT</string>
+    <string name="btStopTrack">STOP\nTRACK</string>
 
     <string name="MSRecording_pref_alphaRTL">MSRecording.alphaRTL</string>
     <string name="MSRecording_pref_alphaRTL_visibility">MSRecording.alphaRTL_visibility</string>

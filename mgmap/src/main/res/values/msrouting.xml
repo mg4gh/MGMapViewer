@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="btRoute">ROUTE\nTRACK</string>
+    <string name="btRoTOn">ROUTE\nON</string>
+    <string name="btRoTOff">ROUTE\nOFF</string>
+    <string name="btRoTMapMatching">MAP\nMATCHING</string>
+    <string name="btRoTSave">SAVE</string>
+
     <string name="MSRouting_qc_RoutingHint">MSRouting.RoutingHint</string>
     <string name="MSRouting_bt_ShowRouting">MSRouting.ShowRouting</string>
 

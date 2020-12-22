@@ -16,8 +16,6 @@ package mg.mapviewer.features.routing;
 
 import android.view.View;
 
-import org.mapsforge.map.datastore.MapDataStore;
-
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.model.WriteableTrackLog;
@@ -45,6 +43,6 @@ public class RouteOptimizeControl extends Control {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
         v.setEnabled( (mtl != null) && (MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25) );
-        setText(v, controlView.rstring(R.string.btRouteOptimize) );
+        setText(v, controlView.rstring(R.string.btRoTMapMatching) );
     }
 }

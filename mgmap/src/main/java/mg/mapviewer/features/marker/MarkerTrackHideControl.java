@@ -12,31 +12,33 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mapviewer.features.atl;
+package mg.mapviewer.features.marker;
 
 import android.view.View;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
-import mg.mapviewer.model.TrackLog;
-import mg.mapviewer.model.TrackLogRef;
+import mg.mapviewer.graph.GGraphTile;
 import mg.mapviewer.util.Control;
 
-public class HideSelectedControl extends Control {
+public class MarkerTrackHideControl extends Control {
 
-    public HideSelectedControl(){
+    public MarkerTrackHideControl(){
         super(true);
     }
 
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        controlView.getApplication().availableTrackLogsObservable.removeSelected();
+        MGMapApplication application = controlView.getApplication();
+        application.markerTrackLogObservable.setTrackLog(null);
+        GGraphTile.clearCache();
     }
 
     @Override
     public void onPrepare(View v) {
-        v.setEnabled( controlView.getApplication().availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() != null );
-        setText(v, controlView.rstring(R.string.btHideSelected) );
+        MGMapApplication application = controlView.getApplication();
+        v.setEnabled( application.markerTrackLogObservable.getTrackLog() != null );
+        setText(v, controlView.rstring(R.string.btMTHide) );
     }
 }

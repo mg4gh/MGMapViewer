@@ -16,7 +16,6 @@ package mg.mapviewer.features.routing;
 
 import android.view.View;
 
-import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.pref.MGPref;
@@ -40,7 +39,7 @@ public class RouteOnOffControl extends Control {
 
     @Override
     public void onPrepare(View v) {
-        setText(v, controlView.rstring((prefAlphaRoTL.getValue() > 0.25f)? R.string.btRouteOff:R.string.btRouteOn) );
+        setText(v, controlView.rstring((prefAlphaRoTL.getValue() > 0.25f)? R.string.btRoTOff :R.string.btRoTOn) );
     }
 
 }

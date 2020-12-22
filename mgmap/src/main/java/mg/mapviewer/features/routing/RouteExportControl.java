@@ -60,6 +60,6 @@ public class RouteExportControl extends Control {
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
         v.setEnabled( (rotl != null) && (mtl.getTrackStatistic().getNumPoints() > 1) && (MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25));
-        setText(v, controlView.rstring(R.string.btRouteExport) );
+        setText(v, controlView.rstring(R.string.btRoTSave) );
     }
 }

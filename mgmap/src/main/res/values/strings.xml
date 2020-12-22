@@ -20,41 +20,20 @@
     <string name="btBB">BOUNDING\nBOX</string>
     <string name="btLoadTrack">LOAD\nTRACK</string>
     <string name="btHideTrack">HIDE\nTRACK</string>
-    <string name="btMarkerTrack">MARKER\nTRACK</string>
-    <string name="btRoute">ROUTE</string>
 
-    <string name="btStartTrack">START\nTRACK</string>
-    <string name="btStartSegment">START\nSEGMENT</string>
-    <string name="btStopSegment">STOP\nSEGMENT</string>
-    <string name="btStopTrack">STOP\nTRACK</string>
 
-    <string name="btNewBB">NEW</string>
     <string name="btLoadBB">LOAD</string>
-    <string name="btHideBB">HIDE</string>
     <string name="btLoadTSFromBBAll">LOAD STORE\nALL</string>
     <string name="btLoadTSFromBB">LOAD STORE\nREMAINING</string>
     <string name="btDropTSFromBB">DROP STORE\nALL</string>
 
     <string name="btLoadNext">NEXT</string>
-    <string name="btLoadPrev">PREV</string>
-    <string name="btLoadFromBB">FROM BB</string>
+    <string name="btLoadPrev">LATEST /\nPREV</string>
 
     <string name="btHideAll">ALL</string>
     <string name="btHideUnselected">NOT\nSELECTED</string>
     <string name="btHideSelected">SELECTED</string>
-
-    <string name="btMarkerModify1">CREATE</string>
-    <string name="btMarkerModify2">MODIFY</string>
-    <string name="btMDeleteAll">DELETE\nALL</string>
-    <string name="btMTImport">IMPORT</string>
-    <string name="btMTExport">EXPORT</string>
-    <string name="btMStop">MARKER\nSTOP</string>
-
-    <string name="btRouteOn">ROUTE\nON</string>
-    <string name="btRouteOff">ROUTE\nOFF</string>
-    <string name="btRouteOptimize">ROUTE\nOPTIMIZE</string>
-    <string name="btRouteExport">ROUTE\nEXPORT</string>
-
+    <string name="btHideMarkerTrack">MARKER\nTRACK</string>
 
 
     <string name="ctx_stat_del_track">Delete track</string>
