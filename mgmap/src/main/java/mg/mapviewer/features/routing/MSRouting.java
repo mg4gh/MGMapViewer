@@ -104,6 +104,7 @@ public class MSRouting extends MGMicroService {
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
     private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
     private final MGPref<Boolean> prefAlphaRotlVisibility = MGPref.get(R.string.MSRouting_pref_alphaRoTL_visibility, false);
+    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.MSPosition_prev_ZoomLevel, 15);
 
     private ViewGroup dashboardRoute = null;
 
@@ -139,7 +140,7 @@ public class MSRouting extends MGMicroService {
     @Override
     protected void start() {
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
-        getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
+        prefZoomLevel.addObserver(refreshObserver);
         prefAlphaRotl.addObserver(refreshObserver);
         prefRouteGL.addObserver(refreshObserver);
         register(new RoutingControlLayer(), false);
@@ -156,7 +157,7 @@ public class MSRouting extends MGMicroService {
     @Override
     protected void stop() {
         getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
-        getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
+        prefZoomLevel.deleteObserver(refreshObserver);
         prefAlphaRotl.deleteObserver(refreshObserver);
         prefRouteGL.deleteObserver(refreshObserver);
         unregisterClass(RoutingControlLayer.class);

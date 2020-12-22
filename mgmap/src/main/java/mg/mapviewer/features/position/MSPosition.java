@@ -42,7 +42,7 @@ public class MSPosition extends MGMicroService {
 
     private final MGPref<Boolean> prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, false);
     private final MGPref<Boolean> prefCenter = MGPref.get(R.string.MSPosition_prev_Center, true);
-    final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
     private PrefTextView ptvHeight = null;
 

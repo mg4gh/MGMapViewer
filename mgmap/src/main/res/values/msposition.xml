@@ -2,4 +2,5 @@
 <resources>
     <string name="MSPosition_prev_Center">MSPosition.Center</string>
     <string name="MSPosition_prev_GpsOn">MSPosition.GpsOn</string>
+    <string name="MSPosition_prev_ZoomLevel">MSPosition.ZoomLevel</string>
 </resources>

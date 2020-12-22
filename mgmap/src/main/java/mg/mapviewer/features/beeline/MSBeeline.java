@@ -42,6 +42,7 @@ public class MSBeeline extends MGMicroService {
     public static final Paint PAINT_BLACK_STROKE = CC.getStrokePaint(R.color.BLACK, 2);
 
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.MSPosition_prev_ZoomLevel, 15);
     private PrefTextView ptvCenter = null;
     private PrefTextView ptvZoom = null;
 
@@ -88,6 +89,7 @@ public class MSBeeline extends MGMicroService {
     @Override
     protected void doRefresh() {
         ttRefreshTime = 10;
+        int zoomLevel = getMapView().getModel().mapViewPosition.getZoomLevel();
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -97,9 +99,10 @@ public class MSBeeline extends MGMicroService {
                 } else {
                     showHidePositionToCenter(null);
                 }
-                getControlView().setStatusLineValue(ptvZoom, (int) (getMapView().getModel().mapViewPosition.getZoomLevel()));
+                getControlView().setStatusLineValue(ptvZoom, zoomLevel);
             }
         });
+        prefZoomLevel.setValue(zoomLevel);
     }
 
     private void showHidePositionToCenter(PointModel pm){
