@@ -89,7 +89,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * The main activity of the MgMapViewer. It is based on the mapsforge MapView and provides track logging
@@ -476,9 +475,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     public MapView getMapsforgeMapView(){
         return mapView;
     }
-//    public Handler getTimer(){
-//        return timer;
-//    }
+
     public MapViewUtility getMapViewUtility(){
         return mapViewUtility;
     }
@@ -565,18 +562,18 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 return super.onLongPress(point);
             }
 
-            public TrackLogRefApproach selectCloseTrack(PointModel pmTap) {
-                TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1,getMapViewUtility().getCloseThreshouldForZoomLevel());
-                for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
-                    TrackLogRefApproach currentMatch = trackLog.getBestDistance(pmTap,bestMatch.getDistance());
-                    if (currentMatch != null){
-                        bestMatch = currentMatch;
-                    }
-                }
-                return bestMatch;
-            }
-
         });
+    }
+
+    public TrackLogRefApproach selectCloseTrack(PointModel pmTap) {
+        TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1,getMapViewUtility().getCloseThreshouldForZoomLevel());
+        for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
+            TrackLogRefApproach currentMatch = trackLog.getBestDistance(pmTap,bestMatch.getDistance());
+            if (currentMatch != null){
+                bestMatch = currentMatch;
+            }
+        }
+        return bestMatch;
     }
 
 }

@@ -16,7 +16,6 @@ import mg.mapviewer.features.statistic.TrackStatisticControl;
 import mg.mapviewer.features.alpha.MSAlpha;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.bb.MSBB;
-import mg.mapviewer.features.fullscreen.MSFullscreen;
 import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.features.position.MSPosition;
 import mg.mapviewer.features.remainings.MSRemainings;
