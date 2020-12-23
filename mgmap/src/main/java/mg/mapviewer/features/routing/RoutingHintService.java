@@ -22,7 +22,8 @@ import mg.mapviewer.view.PrefTextView;
 public class RoutingHintService {
 
     private static final int THRESHOLD_FAR = 200;
-    private static final int THRESHOLD_KURS = 100;
+    private static final int THRESHOLD_NEAR = 40;
+    private static final int THRESHOLD_KURS = 100; // distance for kurs calculation
     private static final int TT_REFRESH_TIME = 150;
 
     private static RoutingHintService instance;
@@ -135,7 +136,7 @@ public class RoutingHintService {
                 if (last1Gps != null) { // have a new position to handle
                     TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(last1Gps, THRESHOLD_FAR);
                     if ((bestMatch != null)){
-                        if (bestMatch.getDistance() < PointModelUtil.getCloseThreshold()){
+                        if (bestMatch.getDistance() < THRESHOLD_NEAR){
                             checkHints(msRouting, bestMatch);
                             mediumAwayCnt = 0;
                         } else {
