@@ -45,7 +45,7 @@ import java.util.HashMap;
 
 public class GGraphTile extends GGraph {
 
-    private static final int CACHE_SIZE = 400;
+    private static final int CACHE_SIZE = 1000;
     private static HashMap<Long,GGraphTile> cache = new HashMap<>();
     private static ArrayList<GGraphTile>  accessList = new ArrayList<>();
 
@@ -205,6 +205,8 @@ public class GGraphTile extends GGraph {
             int tileYMin = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( bBox.maxLatitude , mapSize) , ZOOM_LEVEL, tileSize); // min and max reversed for tiles
             int tileYMax = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( bBox.minLatitude , mapSize) , ZOOM_LEVEL, tileSize);
 
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" create GGraphTileList with tileXMin="+tileXMin+" tileYMin="+tileYMin+" and tileXMax="+tileXMax+" tileYMax="+tileYMax+
+                    " - total tiles="+ ((tileXMax-tileXMin+1)*(tileYMax-tileYMin+1)));
             for (int tileX = tileXMin; tileX <= tileXMax; tileX++) {
                 for (int tileY = tileYMin; tileY <= tileYMax; tileY++) {
                     GGraphTile graph = GGraphTile.getGGraphTile(mapFile,tileX,tileY);
