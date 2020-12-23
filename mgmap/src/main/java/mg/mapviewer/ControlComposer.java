@@ -108,9 +108,7 @@ public class ControlComposer {
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
         ViewGroup qcs = activity.findViewById(R.id.tr_qc);
-        PrefTextView ptvFullscreen = application.getMS(MSFullscreen.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        application.getMS(MSControl.class).initQuickControl(ptvFullscreen, "home2");
-        application.getMS(MSControl.class).initQuickControl(ptvFullscreen, "qc2");
+        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs,20), "fullscreen+");
         application.getMS(MSAlpha.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
         RoutingHintService.getInstance().initQuickControl(ptvEditMarker, null);

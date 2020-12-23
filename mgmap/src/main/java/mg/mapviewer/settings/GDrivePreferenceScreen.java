@@ -31,7 +31,7 @@ public class GDrivePreferenceScreen extends MGPreferenceScreen {
                 MGMapApplication application = (MGMapApplication)getActivity().getApplication(); // getActivity() returns Settings Activity, not MGMapActivity
                 MGMapActivity mgMapActivity = application.getMgMapActivity();
 
-                MSGDrive msGDrive = mgMapActivity.getMS(MSGDrive.class);
+                MSGDrive msGDrive = application.getMS(MSGDrive.class);
                 msGDrive.trySynchronisation();
 
                 Intent intent = new Intent(mgMapActivity, MGMapActivity.class);

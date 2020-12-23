@@ -34,14 +34,6 @@ public class MGPref<T> extends Observable {
         sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
     }
 
-//    public static MGPref<?> get(String key){
-//        return prefMap.get(key);
-//    }
-//    public static MGPref<?> get(int keyId){
-//        String key = context.getResources().getString(keyId);
-//        return get(key);
-//    }
-
     public static <T> MGPref<T> get(int keyId, T defaultValue) {
         String key = context.getResources().getString(keyId);
         return get(key, defaultValue);
@@ -78,13 +70,6 @@ public class MGPref<T> extends Observable {
 
     public MGPref(String key, T initialValue){
         this(key, initialValue, true);
-//        if (initialValue == null){
-//            throw new RuntimeException("null not allowed");
-//        }
-//        this.key = key;
-//        value = initialValue;
-//        value = getSharedPreference();
-//        prefMap.put(key, this);
     }
     public MGPref(String key, T initialValue, boolean changeSharedPrefs){
         if (initialValue == null){

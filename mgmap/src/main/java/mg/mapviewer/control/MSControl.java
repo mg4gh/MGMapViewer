@@ -1,6 +1,5 @@
 package mg.mapviewer.control;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.view.ViewGroup;
 
@@ -16,11 +15,14 @@ import mg.mapviewer.settings.DownloadPreferenceScreen;
 import mg.mapviewer.settings.FurtherPreferenceScreen;
 import mg.mapviewer.settings.MainPreferenceScreen;
 import mg.mapviewer.settings.SettingsActivity;
+import mg.mapviewer.util.FullscreenObserver;
+import mg.mapviewer.util.HomeObserver;
 import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.PrefTextView;
 
 public class MSControl extends MGMicroService {
 
+    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
     private final MGPref<Boolean> prefQC2 = MGPref.get(R.string.MSControl_qc2_on, false);
 
     private final MGPref<Boolean> prefQC2Settings   = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
@@ -34,15 +36,48 @@ public class MSControl extends MGMicroService {
     ViewGroup qcs = null;
     ViewGroup qcs2 = null;
 
+    FullscreenObserver fullscreenObserver = new FullscreenObserver(getActivity());
+    HomeObserver homeObserver = new HomeObserver(getActivity());
+
+    Observer settingsPrefObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            prefQC2.toggle();
+            MGMapActivity activity = getActivity();
+            Intent intent = new Intent(activity, SettingsActivity.class);
+            String prefScreenClass = MainPreferenceScreen.class.getName();
+            if (o == prefQC2FuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
+            if (o == prefQC2Download) prefScreenClass = DownloadPreferenceScreen.class.getName();
+            intent.putExtra("MSControl.info", prefScreenClass);
+            activity.startActivity(intent);
+        }
+    };
+    Observer statisticObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            prefQC2.toggle();
+            MGMapActivity activity = getActivity();
+            Intent intent = new Intent(activity, TrackStatisticActivity.class);
+            activity.startActivity(intent);
+        }
+    };
+    Observer exitObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            getActivity().finishAndRemoveTask();
+            System.exit(0);
+        }
+    };
+
     public MSControl(MGMapActivity activity){
         super(activity);
     }
 
     @Override
     public PrefTextView initQuickControl(PrefTextView ptv, String info){
-        if ("qc2".equals(info)) {
-            ptv.appendPrefData(new MGPref[]{prefQC2},
-                    new int[]{});
+        if ("fullscreen+".equals(info)) {
+            ptv.setPrefData(new MGPref[]{prefFullscreen, prefQC2Home, prefQC2},
+                    new int[]{R.drawable.fullscreen});
         } else if ("settings".equals(info)) {
             ptv.setPrefData(new MGPref[]{prefQC2Settings},
                     new int[]{R.drawable.settings});
@@ -61,9 +96,6 @@ public class MSControl extends MGMicroService {
         } else if ("statistic".equals(info)) {
             ptv.setPrefData(new MGPref[]{prefQC2Statistic},
                     new int[]{R.drawable.statistik});
-        } else if ("home2".equals(info)) {
-            ptv.appendPrefData(new MGPref[]{prefQC2Home},
-                    new int[]{});
         }
 
 
@@ -78,64 +110,32 @@ public class MSControl extends MGMicroService {
         qcs = (qcs==null)?getActivity().findViewById(R.id.tr_qc):qcs;
         qcs2 = (qcs2==null)?getActivity().findViewById(R.id.tr_qc2):qcs2;
 
+        prefFullscreen.addObserver(fullscreenObserver);
+        prefQC2Home.addObserver(homeObserver);
         prefQC2.addObserver(refreshObserver);
-        prefQC2.setValue(false);
-        refreshObserver.onChange();
-
-        Observer settingsPrefObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefQC2.toggle();
-                MGMapActivity activity = getActivity();
-                Intent intent = new Intent(activity, SettingsActivity.class);
-                String prefScreenClass = MainPreferenceScreen.class.getName();
-                if (o == prefQC2FuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
-                if (o == prefQC2Download) prefScreenClass = DownloadPreferenceScreen.class.getName();
-                intent.putExtra("MSControl.info", prefScreenClass);
-                activity.startActivity(intent);
-            }
-        };
         prefQC2Settings.addObserver(settingsPrefObserver);
         prefQC2FuSettings.addObserver(settingsPrefObserver);
         prefQC2Download.addObserver(settingsPrefObserver);
+        prefQC2Statistic.addObserver(statisticObserver);
+        prefQC2Exit.addObserver(exitObserver);
 
-        prefQC2Statistic.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefQC2.toggle();
-                MGMapActivity activity = getActivity();
-                Intent intent = new Intent(activity, TrackStatisticActivity.class);
-                activity.startActivity(intent);
-            }
-        });
-
-        prefQC2Home.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                launchHomeScreen(getActivity());
-            }
-        });
-
-        prefQC2Exit.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                getActivity().finishAndRemoveTask();
-                System.exit(0);
-            }
-        });
-
+        prefFullscreen.onChange();
+        prefQC2.setValue(false);
+        refreshObserver.onChange();
     }
 
     @Override
     protected void stop() {
         super.stop();
-        prefQC2.deleteObservers();
-        prefQC2Settings.deleteObservers();
-        prefQC2FuSettings.deleteObservers();
-        prefQC2Download.deleteObservers();
-        prefQC2Statistic.deleteObservers();
-        prefQC2Home.deleteObservers();
-        prefQC2Exit.deleteObservers();
+
+        prefFullscreen.deleteObserver(fullscreenObserver);
+        prefQC2Home.deleteObserver(homeObserver);
+        prefQC2.deleteObserver(refreshObserver);
+        prefQC2Settings.deleteObserver(settingsPrefObserver);
+        prefQC2FuSettings.deleteObserver(settingsPrefObserver);
+        prefQC2Download.deleteObserver(settingsPrefObserver);
+        prefQC2Statistic.deleteObserver(statisticObserver);
+        prefQC2Exit.deleteObserver(exitObserver);
     }
 
     @Override
@@ -156,8 +156,6 @@ public class MSControl extends MGMicroService {
     }
     private void cancelTTHideQC2(){
         getTimer().removeCallbacks(ttHideQC2);
-
-
     }
 
     void setQCVisibility(){
@@ -186,10 +184,4 @@ public class MSControl extends MGMicroService {
         });
     }
 
-    public static void launchHomeScreen(Activity activity) {
-        Intent homeIntent = new Intent(Intent.ACTION_MAIN, null);
-        homeIntent.addCategory(Intent.CATEGORY_HOME);
-        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        activity.startActivity(homeIntent);
-    }
 }

@@ -53,7 +53,6 @@ import mg.mapviewer.control.MSControl;
 import mg.mapviewer.features.alpha.MSAlpha;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.bb.MSBB;
-import mg.mapviewer.features.fullscreen.MSFullscreen;
 import mg.mapviewer.features.gdrive.MSGDrive;
 import mg.mapviewer.features.grad.MSGraphDetails;
 import mg.mapviewer.features.marker.MSMarker;
@@ -90,6 +89,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The main activity of the MgMapViewer. It is based on the mapsforge MapView and provides track logging
@@ -122,19 +122,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         return sharedPreferences;
     }
 
-    /** Retruen the mirco service by type */
-    public <T> T getMS(Class<T> tClass){
-        for (MGMicroService service : microServices){
-            if (tClass.isInstance(service)) return (T)service;
-        }
-        return null;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler());
         Log.w(MGMapApplication.LABEL, NameUtil.context());
-        //for fullsrceen mode
+        //for fullscreen mode
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
@@ -177,11 +169,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         microServices.add(new MSMarker(this));
         microServices.add(new MSRouting(this));
         microServices.add(new MSRemainings(this));
-        microServices.add(new MSBB(this, getMS(MSAvailableTrackLogs.class)));
+        microServices.add(new MSBB(this, application.getMS(MSAvailableTrackLogs.class)));
         microServices.add(new MSGraphDetails(this));
         microServices.add(new MSSearch(this));
         microServices.add(new MSGDrive(this));
-        microServices.add(new MSFullscreen(this));
         microServices.add(new MSAlpha(this));
         microServices.add(new MSControl(this));
 
@@ -533,7 +524,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         layers.add(new MVLayer() {
             @Override
             protected boolean onTap(WriteablePointModel point) {
-                TrackLogRef ref = getMS(MSAvailableTrackLogs.class).selectCloseTrack( point );
+                TrackLogRef ref = selectCloseTrack( point );
                 if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
                     application.availableTrackLogsObservable.setSelectedTrackLogRef(ref);
                 } else {
@@ -544,7 +535,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
             @Override
             protected boolean onLongPress(PointModel point) {
-                TrackLogRefApproach bestMatch = getMS(MSAvailableTrackLogs.class).selectCloseTrack( point );
+                TrackLogRefApproach bestMatch = selectCloseTrack( point );
                 TrackLog rtl = application.recordingTrackLogObservable.getTrackLog();
                 if (rtl != null){
                     TrackLogRefApproach currentMatch = rtl.getBestDistance(point,bestMatch.getDistance());
@@ -573,6 +564,18 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 }
                 return super.onLongPress(point);
             }
+
+            public TrackLogRefApproach selectCloseTrack(PointModel pmTap) {
+                TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1,getMapViewUtility().getCloseThreshouldForZoomLevel());
+                for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
+                    TrackLogRefApproach currentMatch = trackLog.getBestDistance(pmTap,bestMatch.getDistance());
+                    if (currentMatch != null){
+                        bestMatch = currentMatch;
+                    }
+                }
+                return bestMatch;
+            }
+
         });
     }
 
