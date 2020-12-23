@@ -40,6 +40,12 @@ import mg.mapviewer.model.WriteablePointModelImpl;
  */
 public class PointModelUtil {
 
+    /**
+     * The equatorial radius as defined by the <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84
+     * ellipsoid</a>. WGS84 is the reference coordinate system used by the Global Positioning System.
+     */
+    public static final double EQUATORIAL_RADIUS = 6378137.0;
+
     protected static int closeThreshold;
 
     public static void init(int closeThreshold){
@@ -54,7 +60,8 @@ public class PointModelUtil {
         double dLon = Math.toRadians(long2 - long1);
         double a = Math.sin(dLat / 2.0D) * Math.sin(dLat / 2.0D) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2.0D) * Math.sin(dLon / 2.0D);
         double c = 2.0D * Math.atan2(Math.sqrt(a), Math.sqrt(1.0D - a));
-        return c * 6378137.0D;
+        return c * EQUATORIAL_RADIUS;
+//        return c * 6378137.0D;
     }
 
     public static double distance(MultiPointModel mpm){
@@ -262,13 +269,6 @@ public class PointModelUtil {
     public static double longitudeDistance(double meters, double latitude) {
         return (meters * 360) / (2 * Math.PI * EQUATORIAL_RADIUS * Math.cos(Math.toRadians(latitude)));
     }
-
-    /**
-     * The equatorial radius as defined by the <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84
-     * ellipsoid</a>. WGS84 is the reference coordinate system used by the Global Positioning System.
-     */
-    public static final double EQUATORIAL_RADIUS = 6378137.0;
-
 
     public static void getBestDistance(ArrayList<? extends MultiPointModel> mpms, PointModel pm, TrackLogRefApproach bestMatch){
         WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();
