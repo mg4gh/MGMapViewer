@@ -55,7 +55,7 @@ import mg.mapviewer.features.tilestore.XmlTileSourceConfig;
 import mg.mapviewer.features.tilestore.XmlTileSourceConfigReader;
 import mg.mapviewer.features.tilestore.MGTileStore;
 import mg.mapviewer.features.tilestore.MGTileStoreLayer;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 /** The MGMapLayerFactory provides a list of keys of available map layers and it is able to create a map layer instance for a given key.
  * Available map layer have one of the following types:

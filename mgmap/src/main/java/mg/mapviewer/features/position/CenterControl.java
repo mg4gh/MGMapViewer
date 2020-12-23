@@ -19,7 +19,7 @@ import android.view.View;
 
 import mg.mapviewer.R;
 import mg.mapviewer.util.Control;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 public class CenterControl extends Control {
 

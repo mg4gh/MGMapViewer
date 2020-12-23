@@ -30,7 +30,7 @@ import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.util.ExtrasUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 
 import java.io.IOException;

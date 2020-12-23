@@ -14,8 +14,6 @@
  */
 package mg.mapviewer.features.remainings;
 
-import android.view.View;
-
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
@@ -24,7 +22,7 @@ import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogSegment;
 import mg.mapviewer.util.Formatter;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.PrefTextView;
 
 public class MSRemainings extends MGMicroService {

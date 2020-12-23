@@ -20,7 +20,7 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.util.Control;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 public class RouteOptimizeControl extends Control {
 

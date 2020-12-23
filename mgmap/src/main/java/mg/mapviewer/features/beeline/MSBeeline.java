@@ -33,7 +33,7 @@ import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.MultiPointView;
 import mg.mapviewer.view.PrefTextView;
 

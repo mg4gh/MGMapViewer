@@ -1,9 +1,7 @@
 package mg.mapviewer.control;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.Observable;
@@ -11,7 +9,6 @@ import java.util.Observer;
 import java.util.UUID;
 
 import mg.mapviewer.MGMapActivity;
-import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.features.statistic.TrackStatisticActivity;
@@ -19,8 +16,7 @@ import mg.mapviewer.settings.DownloadPreferenceScreen;
 import mg.mapviewer.settings.FurtherPreferenceScreen;
 import mg.mapviewer.settings.MainPreferenceScreen;
 import mg.mapviewer.settings.SettingsActivity;
-import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.PrefTextView;
 
 public class MSControl extends MGMicroService {

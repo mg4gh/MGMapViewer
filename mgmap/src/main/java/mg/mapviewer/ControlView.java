@@ -16,10 +16,8 @@ package mg.mapviewer;
 
 import android.content.Context;
 
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -27,9 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -40,10 +36,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.layer.Layer;
-import org.mapsforge.map.layer.TileLayer;
 import org.mapsforge.map.model.DisplayModel;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +49,6 @@ import mg.mapviewer.util.CC;
 import mg.mapviewer.util.HintControl;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
-import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.PrefTextView;
 

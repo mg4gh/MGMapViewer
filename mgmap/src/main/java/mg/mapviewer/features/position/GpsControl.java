@@ -21,7 +21,7 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.util.Control;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 public class GpsControl extends Control {
 

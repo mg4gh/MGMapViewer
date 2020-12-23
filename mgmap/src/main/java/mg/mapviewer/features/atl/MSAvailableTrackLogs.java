@@ -25,7 +25,6 @@ import mg.mapviewer.R;
 
 import java.util.TreeSet;
 
-import mg.mapviewer.features.marker.MarkerTrackHideControl;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
@@ -36,7 +35,7 @@ import mg.mapviewer.util.Assert;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.MetaDataUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.LabeledSlider;
 
 public class MSAvailableTrackLogs extends MGMicroService {

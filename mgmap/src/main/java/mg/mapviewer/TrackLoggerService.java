@@ -32,7 +32,7 @@ import androidx.core.app.NotificationCompat;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 /**
  * Android Service that coordinates gps and barometer access

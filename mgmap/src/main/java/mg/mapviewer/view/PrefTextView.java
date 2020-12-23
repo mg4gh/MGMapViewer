@@ -15,7 +15,7 @@ import java.util.Observer;
 import mg.mapviewer.util.ArrayUtil;
 import mg.mapviewer.util.ExtendedClickListener;
 import mg.mapviewer.util.Formatter;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 public class PrefTextView extends AppCompatTextView  {
 

@@ -22,7 +22,7 @@ import mg.mapviewer.model.TrackLogStatistic;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.ExtendedClickListener;
 import mg.mapviewer.util.Formatter;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 public class TrackStatisticEntry extends TableLayout {
 

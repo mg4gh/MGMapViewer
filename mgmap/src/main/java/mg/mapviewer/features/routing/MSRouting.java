@@ -16,7 +16,6 @@ package mg.mapviewer.features.routing;
 
 
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
@@ -40,7 +39,6 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.features.marker.MSMarker;
-import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.graph.AStar;
 import mg.mapviewer.graph.GGraph;
 import mg.mapviewer.graph.GGraphMulti;
@@ -53,20 +51,18 @@ import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.WriteableTrackLog;
-import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.MultiPointModelImpl;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.model.TrackLogSegment;
-import mg.mapviewer.model.TrackLogStatistic;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.util.AltitudeProvider;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.MultiPointView;

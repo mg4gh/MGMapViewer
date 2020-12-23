@@ -26,7 +26,7 @@ import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 public class RouteExportControl extends Control {
 

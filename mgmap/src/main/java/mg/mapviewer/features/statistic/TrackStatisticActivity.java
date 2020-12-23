@@ -46,7 +46,7 @@ import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogStatistic;
 import mg.mapviewer.util.PersistenceManager;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.PrefTextView;
 import mg.mapviewer.view.TrackStatisticEntry;
 

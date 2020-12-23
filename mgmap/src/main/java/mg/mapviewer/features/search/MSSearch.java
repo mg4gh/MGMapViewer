@@ -41,7 +41,7 @@ import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.PrefTextView;
 

@@ -26,9 +26,8 @@ import mg.mapviewer.features.rtl.control.TrackStartSegmentControl;
 import mg.mapviewer.features.rtl.control.TrackStopControl;
 import mg.mapviewer.features.rtl.control.TrackStopSegmentControl;
 import mg.mapviewer.util.CC;
-import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.LabeledSlider;
 
 public class MSRecordingTrackLog extends MGMicroService {

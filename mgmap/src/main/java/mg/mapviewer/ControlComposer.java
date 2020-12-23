@@ -27,8 +27,7 @@ import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.Formatter;
-import mg.mapviewer.util.pref.MGPref;
-import mg.mapviewer.view.LabeledSlider;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.PrefTextView;
 
 public class ControlComposer {

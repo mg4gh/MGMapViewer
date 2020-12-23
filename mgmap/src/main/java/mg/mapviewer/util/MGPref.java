@@ -1,4 +1,4 @@
-package mg.mapviewer.util.pref;
+package mg.mapviewer.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,7 +11,6 @@ import java.util.Observable;
 import java.util.TreeSet;
 
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.util.NameUtil;
 
 public class MGPref<T> extends Observable {
 

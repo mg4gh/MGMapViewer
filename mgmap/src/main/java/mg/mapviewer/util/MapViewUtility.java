@@ -17,7 +17,6 @@ package mg.mapviewer.util;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.TextView;
 
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
@@ -30,7 +29,6 @@ import mg.mapviewer.R;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
-import mg.mapviewer.util.pref.MGPref;
 import mg.mapviewer.view.PrefTextView;
 
 /**

@@ -4,13 +4,11 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Observable;
@@ -20,7 +18,7 @@ import mg.mapviewer.ControlView;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 public class LabeledSlider extends LinearLayout {
 

@@ -6,7 +6,7 @@ import android.view.View;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.PrefTextView;
 
 public class MSFullscreen extends MGMicroService {

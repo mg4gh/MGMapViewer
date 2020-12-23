@@ -29,7 +29,7 @@ import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Formatter;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.PointView;
 import mg.mapviewer.view.PrefTextView;
 

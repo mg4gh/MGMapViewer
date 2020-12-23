@@ -19,11 +19,10 @@ import androidx.annotation.NonNull;
 
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.PointModelUtil;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 import java.util.ArrayList;
 import java.util.Observable;
-import java.util.UUID;
 
 /** A TrackLog consists of multiple TrackLogSegment objects, a total TrackLogStatistic over all segments and a track log name */
 public class TrackLog extends Observable implements Comparable<TrackLog>{

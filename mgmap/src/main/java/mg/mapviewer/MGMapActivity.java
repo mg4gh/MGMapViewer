@@ -62,7 +62,6 @@ import mg.mapviewer.features.position.MSPosition;
 import mg.mapviewer.features.remainings.MSRemainings;
 import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
-import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.model.BBox;
@@ -72,8 +71,6 @@ import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.model.WriteablePointModel;
-import mg.mapviewer.model.WriteableTrackLog;
-import mg.mapviewer.settings.SettingsActivity;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.GpxImporter;
 import mg.mapviewer.util.MapViewUtility;
@@ -84,17 +81,15 @@ import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.TopExceptionHandler;
 import mg.mapviewer.model.TrackLog;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.MVLayer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * The main activity of the MgMapViewer. It is based on the mapsforge MapView and provides track logging

@@ -11,7 +11,7 @@ import mg.mapviewer.util.Control;
 import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.MetaDataUtil;
 import mg.mapviewer.util.PersistenceManager;
-import mg.mapviewer.util.pref.MGPref;
+import mg.mapviewer.util.MGPref;
 
 public class TrackStopControl extends Control {
 
