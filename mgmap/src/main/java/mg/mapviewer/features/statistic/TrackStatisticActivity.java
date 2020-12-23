@@ -94,7 +94,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
         Log.d(MGMapApplication.LABEL, NameUtil.context());
         setContentView(R.layout.track_statistic_activity);
         application = (MGMapApplication)getApplication();
-//        context = application.getApplicationContext();
         context = this;
 
         if (Build.VERSION.SDK_INT >= 24) {
@@ -102,16 +101,10 @@ public class TrackStatisticActivity extends AppCompatActivity {
                 Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
                 m.invoke(null);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
             }
         }
     }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return true;
-    }
-
 
     boolean working = false;
 
@@ -174,7 +167,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
         initQuickControls();
         reworkObserver.update(null,null);
-        reworkObserver.update(null,null);
+//        reworkObserver.update(null,null);
     }
 
     @Override

@@ -87,9 +87,6 @@ public class ControlView extends RelativeLayout {
     TextView tv_hint = null;
     HintControl hintControl = null;
 
-    /** A Control object is an extension of a ViewOnClickListener. With this map it's easy to determine from the OnClickListener the corresponding View object. Furthermore this map provides a list of all menu and submenu views. */
-//    Map<Control, View> menuControlMap = new HashMap<>();
-
     private Map<View, ArrayList<View>> submenuMap = new HashMap<>();
     private Map<View, Control> menuControlMap = new HashMap<>();
 
@@ -115,7 +112,6 @@ public class ControlView extends RelativeLayout {
     }
 
     public static int convertDp(float dp){
-//        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
         return (int) (dp * DisplayModel.getDeviceScaleFactor());
     }
 
@@ -141,13 +137,11 @@ public class ControlView extends RelativeLayout {
             controlComposer.composeMenu(application, activity, this);
             setMenuVisibility(false);
 
-//            prepareAlphaSliders();
             controlComposer.composeAlphaSlider(application,activity,this);
             controlComposer.composeAlphaSlider2(application,activity,this);
             registerSliderObserver(); // do this after the init call, which set the visibility prefs
             reworkLabeledSliderVisibility();
 
-//            prepareStatusLine();
             controlComposer.composeStatusLine(application, activity, this);
             finalizeStatusLine();
 
@@ -473,14 +467,6 @@ public class ControlView extends RelativeLayout {
                         }
                     }
                 }
-//                parent.requestLayout();
-
-//                for (LabeledSlider slider : children) {
-//                    Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+slider.getPrefSliderVisibility().getKey()+" "+slider.getPrefSliderVisibility().getValue()+" "+ " "+slider+" "+slider.hashCode());
-//                }
-//                for (int i=0; i<parent.getChildCount(); i++){
-//                    Log.d(MGMapApplication.LABEL, NameUtil.context()+" i="+i+" "+parent.getChildAt(i).getClass().getName()+" "+parent.getChildAt(i).hashCode());
-//                }
             }
         }
 
@@ -547,7 +533,7 @@ public class ControlView extends RelativeLayout {
     }
 
     // *************************************************************************************************
-    // ********* Quick controls related stuff                                                    **********
+    // ********* Quick controls related stuff                                                 **********
     // *************************************************************************************************
 
     public static PrefTextView createQuickControlPTV(ViewGroup vgQuickControls, float weight) {
@@ -562,8 +548,6 @@ public class ControlView extends RelativeLayout {
         ptv.setLayoutParams(params);
 
         ptv.setPadding(0,convertDp(4),0,convertDp(4));
-        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.quick, context.getTheme());
-
         ptv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
         ptv.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
