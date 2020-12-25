@@ -33,6 +33,7 @@ import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.model.WriteablePointModelImpl;
 import mg.mapviewer.util.AltitudeProvider;
+import mg.mapviewer.util.LaLo;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 
@@ -68,7 +69,6 @@ public class GGraphTile extends GGraph {
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
             MapReadResult mapReadResult = mapFile.readMapData(tile);        // extractPoints relevant map data
             graph = new GGraphTile(tile);
-//            BoundingBox b = tile.getBoundingBox();
             for (Way way : mapReadResult.ways) {
                 if (isHighway(way)){
 
@@ -87,16 +87,22 @@ public class GGraphTile extends GGraph {
                     graph.rawWays.add(mpm);
                 }
             }
-            int threshold = GGraph.CONNECT_THRESHOLD / 2;
+            int latThreshold = LaLo.d2md( PointModelUtil.latitudeDistance(GGraph.CONNECT_THRESHOLD_METER) );
+            int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(GGraph.CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
             //all highwas are in the map ... try to correct data ...
             for (int iIdx=0; iIdx<graph.nodes.size(); iIdx++){
                 GNode iNode = graph.nodes.get(iIdx);
                 int iNeighbours = iNode.countNeighbours();
                 for (int nIdx=iIdx+1; nIdx<graph.nodes.size(); nIdx++ ) {
                     GNode nNode = graph.nodes.get(nIdx);
-                    if (iNode.laMdDiff(nNode) >= threshold) break; // go to next iIdx
-                    if ((iNode.laMdDiff(nNode) + iNode.loMdDiff(nNode)) >= threshold)
+                    if (iNode.laMdDiff(nNode) >= latThreshold) break; // go to next iIdx
+                    if (iNode.loMdDiff(nNode) >= lonThreshold)
                         continue; // goto next mIdx
+                    if (PointModelUtil.distance(iNode, nNode) > GGraph.CONNECT_THRESHOLD_METER)
+                        continue;
+                    if (iNode.hasNeighbour(nNode))
+                        continue; // is already neighbour
 
 //This doesn't work well for routing hints
 //                    graph.addSegment(iNode, nNode);

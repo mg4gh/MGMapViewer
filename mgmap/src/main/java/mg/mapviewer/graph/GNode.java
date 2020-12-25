@@ -63,6 +63,15 @@ public class GNode extends PointModelImpl implements PointModel {
         return cnt;
     }
 
+    boolean hasNeighbour(GNode oNode){
+        GNeighbour nextNeighbour = this.neighbour;
+        while (nextNeighbour.getNextNeighbour() != null) {
+            nextNeighbour = nextNeighbour.getNextNeighbour();
+            if (nextNeighbour.getNeighbourNode() == oNode) return true;
+        }
+        return false;
+    }
+
     public boolean isConnected() {
         return connected;
     }

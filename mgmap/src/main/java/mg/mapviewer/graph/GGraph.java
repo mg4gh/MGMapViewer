@@ -32,7 +32,8 @@ import mg.mapviewer.util.PointModelUtil;
 
 public class GGraph extends Observable {
 
-    public static final int CONNECT_THRESHOLD = 8;
+//    public static final int CONNECT_THRESHOLD = 8;
+    public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
 
     ArrayList<GNode> nodes = new ArrayList<>();
 
@@ -64,11 +65,11 @@ public class GGraph extends Observable {
         overlayNeighbours.add(new GOverlayNeighbour(node, neighbour, nextNeighbour));
     }
 
-    void resetNodeRefs(){
-        for (GNode node : getNodes()){
-            node.setNodeRef(null);
-        }
-    }
+//    void resetNodeRefs(){
+//        for (GNode node : getNodes()){
+//            node.setNodeRef(null);
+//        }
+//    }
 
     public GNeighbour getLastNeighbour(GNode node) {
         GNeighbour neighbour = node.getNeighbour();
