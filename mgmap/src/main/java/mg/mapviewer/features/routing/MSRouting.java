@@ -364,53 +364,59 @@ public class MSRouting extends MGMicroService {
         double distLimit = distanceCheck? acceptedRouteDistance(source.mtlp, target.mtlp):Double.MAX_VALUE;
         GGraph multi = null;
 
-        if ((gStart != null) && (gEnd != null) && (distLimit > 0) && !direct){
-            BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
-            bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
-            multi = new GGraphMulti(GGraphTile.getGGraphTileList(mapFile,bBox));
-            multi.createOverlaysForApproach(source.selectedApproach);
-            multi.createOverlaysForApproach(target.selectedApproach);
+        try {
+            if ((gStart != null) && (gEnd != null) && (distLimit > 0) && !direct){
+                BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
+                bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
+                ArrayList<GGraphTile> gGraphTileList = GGraphTile.getGGraphTileList(mapFile,bBox);
+                if (gGraphTileList.size() > GGraphTile.CACHE_LIMIT) throw new RuntimeException("Request for GGraphMulti exceeds cache size.");
+                multi = new GGraphMulti(gGraphTileList);
+                multi.createOverlaysForApproach(source.selectedApproach);
+                multi.createOverlaysForApproach(target.selectedApproach);
 
-            Log.v(MGMapApplication.LABEL, NameUtil.context());
-            { // perform an AStar on this graph
-                AStar d = new AStar(multi);
+                Log.v(MGMapApplication.LABEL, NameUtil.context());
+                { // perform an AStar on this graph
+                    AStar d = new AStar(multi);
 
-                for (PointView pv : relaxedViews){
-                    unregister(pv);
-                }
-                relaxedViews.clear();
-                List<GNodeRef> path = d.perform(gStart, gEnd, distLimit);
-                if (bShowRelaxed){
-                    for (GNode gNode : d.getRelaxedList()){
-                        PointView pv = new PointView(gNode, PAINT_RELAXED);
-                        relaxedViews.add(pv);
-                        register(pv);
+                    for (PointView pv : relaxedViews){
+                        unregister(pv);
+                    }
+                    relaxedViews.clear();
+                    List<GNodeRef> path = d.perform(gStart, gEnd, distLimit);
+                    if (bShowRelaxed){
+                        for (GNode gNode : d.getRelaxedList()){
+                            PointView pv = new PointView(gNode, PAINT_RELAXED);
+                            relaxedViews.add(pv);
+                            register(pv);
+                        }
+                    }
+
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+ " "+ " "+d.getResult());
+                    for (GNodeRef gnr : path){
+                        mpm.addPoint(gnr.getNode() );
                     }
                 }
+                Log.v(MGMapApplication.LABEL, NameUtil.context());
 
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " "+ " "+d.getResult());
-                for (GNodeRef gnr : path){
-                    mpm.addPoint(gnr.getNode() );
+                // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
+                if (mpm.size() == 3){
+                    double d = PointModelUtil.distance(mpm.get(0), mpm.get(2) );
+                    double d1 = PointModelUtil.distance(mpm.get(0), mpm.get(1) );
+                    double d2 = PointModelUtil.distance(mpm.get(1), mpm.get(2) );
+                    PointModel pm1 = mpm.get(1);
+                    if (d1 > d2){
+                        if (Math.abs(d1-(d2+d))<0.1){
+                            mpm.removePoint(pm1);
+                        }
+                    } else {
+                        if (Math.abs(d2-(d1+d))<0.1){
+                            mpm.removePoint(pm1);
+                        }
+                    }
                 }
             }
-            Log.v(MGMapApplication.LABEL, NameUtil.context());
-
-            // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
-            if (mpm.size() == 3){
-                double d = PointModelUtil.distance(mpm.get(0), mpm.get(2) );
-                double d1 = PointModelUtil.distance(mpm.get(0), mpm.get(1) );
-                double d2 = PointModelUtil.distance(mpm.get(1), mpm.get(2) );
-                PointModel pm1 = mpm.get(1);
-                if (d1 > d2){
-                    if (Math.abs(d1-(d2+d))<0.1){
-                        mpm.removePoint(pm1);
-                    }
-                } else {
-                    if (Math.abs(d2-(d1+d))<0.1){
-                        mpm.removePoint(pm1);
-                    }
-                }
-            }
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         }
         mpm.setRoute(mpm.size() != 0);
 

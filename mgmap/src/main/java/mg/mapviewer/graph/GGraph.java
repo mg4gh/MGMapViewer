@@ -32,7 +32,6 @@ import mg.mapviewer.util.PointModelUtil;
 
 public class GGraph extends Observable {
 
-//    public static final int CONNECT_THRESHOLD = 8;
     public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
 
     ArrayList<GNode> nodes = new ArrayList<>();

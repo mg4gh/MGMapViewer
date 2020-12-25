@@ -39,6 +39,7 @@ import mg.mapviewer.util.PointModelUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Represents the GGraph object for a particular tile (in terms of Mapsforge). These tile graph objects are kept in a cache for faster access.
@@ -46,9 +47,21 @@ import java.util.HashMap;
 
 public class GGraphTile extends GGraph {
 
-    private static final int CACHE_SIZE = 1000;
-    private static HashMap<Long,GGraphTile> cache = new HashMap<>();
-    private static ArrayList<GGraphTile>  accessList = new ArrayList<>();
+    public static final int CACHE_LIMIT = 1000;
+
+    private static LinkedHashMap<Long, GGraphTile> cache = new LinkedHashMap <Long, GGraphTile>(100, 0.6f, true) {
+        @Override
+        protected boolean removeEldestEntry(Entry<Long, GGraphTile> eldest) {
+            boolean bRes = (size() > CACHE_LIMIT);
+            if (bRes){
+                GGraphTile old = eldest.getValue();
+                old.setChanged();
+                old.notifyObservers();
+                Log.d(MGMapApplication.LABEL, NameUtil.context() + " remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
+            }
+            return bRes;
+        }
+    };
 
     private static final byte ZOOM_LEVEL = 15;
     private static final int TILE_SIZE = 256;
@@ -62,10 +75,8 @@ public class GGraphTile extends GGraph {
         long key = getKey(tileX,tileY);
 
         GGraphTile graph = cache.get(key);
-        if (graph != null){
-            accessList.remove(graph);
-        } else {
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+accessList.size()+")");
+        if (graph == null){
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+cache.size()+")");
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
             MapReadResult mapReadResult = mapFile.readMapData(tile);        // extractPoints relevant map data
             graph = new GGraphTile(tile);
@@ -146,19 +157,7 @@ public class GGraphTile extends GGraph {
 
                 }
             }
-        }
-
-        if (graph != null){
-            while (cache.size() >= CACHE_SIZE) {
-                GGraphTile old = accessList.remove(0);
-                cache.remove(getKey(old.tile.tileX, old.tile.tileY));
-                old.setChanged();
-                old.notifyObservers();
-                Log.d(MGMapApplication.LABEL,NameUtil.context()+ " remove tile x="+old.tile.tileX+" y="+old.tile.tileY+" Cache Size:"+cache.size());
-            }
-            accessList.add(graph);
             cache.put(key,graph);
-            Log.d(MGMapApplication.LABEL,NameUtil.context()+ " Cache Size:"+cache.size()+" accessList Size:"+accessList.size());
         }
         return graph;
     }
@@ -183,9 +182,9 @@ public class GGraphTile extends GGraph {
 
     // be careful with this operation, it might crash a routing action
     public static void clearCache(){
-        for (long key : cache.keySet()){
-            cache.get(key).setChanged();
-            cache.get(key).notifyObservers();
+        for (GGraphTile gGraphTile : cache.values()){
+            gGraphTile.setChanged();
+            gGraphTile.notifyObservers();
         }
         cache.clear();
     }
@@ -289,9 +288,6 @@ public class GGraphTile extends GGraph {
      * @return
      */
     private GNode getAddNode(double latitude, double longitude, int low, int high){
-//        if ((latitude == 49.453486) && (longitude == 8.656784)){
-//            Log.i(MGMapApplication.LABEL, NameUtil.context() + " low="+low+" high="+high);
-//        }
         if (high - low == 1){
             float hgtAlt = AltitudeProvider.getAltitude(latitude, longitude);
             GNode node = new GNode(latitude, longitude, hgtAlt, 0);

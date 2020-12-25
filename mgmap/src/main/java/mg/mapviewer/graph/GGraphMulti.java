@@ -232,26 +232,27 @@ public class GGraphMulti extends GGraph {
         if ((remainingNodes1.size() > 0) && ((remainingNodes2.size() > 0))){
             ArrayList<GNode> stillRemainingNodes1 = new ArrayList<>(remainingNodes1);
             ArrayList<GNode> stillRemainingNodes2 = new ArrayList<>(remainingNodes2);
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+borderNodes1);
+//            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+borderNodes1);
             Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+remainingNodes1);
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+borderNodes2);
+//            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+borderNodes2);
             Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+remainingNodes2);
             for (GNode node1 : remainingNodes1){
                 for (GNode node2 : remainingNodes2){
-                    if ((node1.countNeighbours() == 1) && (node2.countNeighbours() == 1)){
+                    if ((node1.countNeighbours() == 1) && (node2.countNeighbours() == 1) && (PointModelUtil.distance(node1,node2)<CONNECT_THRESHOLD_METER*20)){
                         GNode node1Neighbour = node1.getNeighbour().getNextNeighbour().getNeighbourNode();
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" node1neighbour "+node1Neighbour);
+//                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" node1 "+node1+" node1neighbour "+node1Neighbour);
                         GNode node2Neighbour = node2.getNeighbour().getNextNeighbour().getNeighbourNode();
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" node2neighbour "+node2Neighbour);
+//                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" node2 "+node2+" node2neighbour "+node2Neighbour);
                         WriteablePointModel approchPoint = new WriteablePointModelImpl();
                         if (!PointModelUtil.findApproach(node1,node1Neighbour,node2Neighbour,approchPoint,0)) continue; // approach not found try next ponits
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" approachPoint1 "+approchPoint);
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" node1 distance "+PointModelUtil.distance(approchPoint,node1));
-                        if (PointModelUtil.distance(approchPoint,node1) > 0.5) continue;
+//                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" approachPoint1 "+approchPoint);
+//                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" node1 distance "+PointModelUtil.distance(approchPoint,node1));
+                        if (PointModelUtil.distance(approchPoint,node1) > CONNECT_THRESHOLD_METER) continue;
                         if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approchPoint,0)) continue; // approach not found try next ponits
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" approachPoint2 "+approchPoint);
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" node2 distance "+PointModelUtil.distance(approchPoint,node2));
-                        if (PointModelUtil.distance(approchPoint,node2) > 0.5) continue;
+//                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" approachPoint2 "+approchPoint);
+//                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" node2 distance "+PointModelUtil.distance(approchPoint,node2));
+                        if (PointModelUtil.distance(approchPoint,node2) > CONNECT_THRESHOLD_METER) continue;
+                        Log.d(MGMapApplication.LABEL, NameUtil.context()+" OK, connect: node1 "+node1+" node1neighbour "+node1Neighbour+" node2 "+node2+" node2neighbour "+node2Neighbour);
                         connect(node1Neighbour, node2Neighbour);
                         stillRemainingNodes1.remove(node1);
                         stillRemainingNodes2.remove(node2);
