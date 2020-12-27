@@ -95,7 +95,6 @@ public class MSRouting extends MGMicroService {
     private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
     private final MGPref<Boolean> prefRouteGL = MGPref.get(R.string.MSMarker_qc_RouteGL, false);
-    private final MGPref<Boolean> prefHideMtlRotl = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
 
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
     private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
@@ -126,13 +125,6 @@ public class MSRouting extends MGMicroService {
         return lsl;
     }
 
-    public PrefTextView initQuickControl(PrefTextView ptv, String info) {
-        ptv.appendPrefData(new MGPref[]{prefHideMtlRotl},
-                new int[]{});
-        return ptv;
-    }
-
-
     @Override
     protected void start() {
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
@@ -140,14 +132,6 @@ public class MSRouting extends MGMicroService {
         prefAlphaRotl.addObserver(refreshObserver);
         prefRouteGL.addObserver(refreshObserver);
         register(new RoutingControlLayer(), false);
-        prefHideMtlRotl.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                getApplication().markerTrackLogObservable.setTrackLog(null);
-                GGraphTile.clearCache();
-                prefEditMarkerTrack.setValue(false);
-            }
-        });
     }
 
     @Override
@@ -157,7 +141,6 @@ public class MSRouting extends MGMicroService {
         prefAlphaRotl.deleteObserver(refreshObserver);
         prefRouteGL.deleteObserver(refreshObserver);
         unregisterClass(RoutingControlLayer.class);
-        prefHideMtlRotl.deleteObservers();
     }
 
     @Override

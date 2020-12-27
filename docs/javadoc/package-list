@@ -8,8 +8,6 @@ mg.mapviewer.features.alpha
 mg.mapviewer.features.atl
 mg.mapviewer.features.bb
 mg.mapviewer.features.beeline
-mg.mapviewer.features.download
-mg.mapviewer.features.fullscreen
 mg.mapviewer.features.gdrive
 mg.mapviewer.features.grad
 mg.mapviewer.features.marker
@@ -20,11 +18,11 @@ mg.mapviewer.features.rtl
 mg.mapviewer.features.rtl.control
 mg.mapviewer.features.search
 mg.mapviewer.features.search.provider
+mg.mapviewer.features.statistic
 mg.mapviewer.features.tilestore
 mg.mapviewer.features.time
 mg.mapviewer.graph
 mg.mapviewer.model
 mg.mapviewer.settings
 mg.mapviewer.util
-mg.mapviewer.util.pref
 mg.mapviewer.view

@@ -107,25 +107,25 @@ public class ControlComposer {
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
         ViewGroup qcs = activity.findViewById(R.id.tr_qc);
-        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs,20), "fullscreen+");
-        application.getMS(MSAlpha.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
+        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), "fullscreen+");
+        application.getMS(MSAlpha.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), null);
+        PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), "edit_mtl");
         RoutingHintService.getInstance().initQuickControl(ptvEditMarker, null);
-        application.getMS(MSRouting.class).initQuickControl(ptvEditMarker, null);
-        application.getMS(MSBB.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        application.getMS(MSSearch.class).initQuickControl(coView.createQuickControlPTV(qcs,20), null);
-        activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_in");
-        activity.getMapViewUtility().initQuickControl(coView.createQuickControlPTV(qcs,20), "zoom_out");
+        application.getMS(MSMarker.class).initQuickControl(ptvEditMarker, "hide_mtl");
+        application.getMS(MSBB.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), null);
+        application.getMS(MSSearch.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), null);
+        activity.getMapViewUtility().initQuickControl(ControlView.createQuickControlPTV(qcs,20), "zoom_in");
+        activity.getMapViewUtility().initQuickControl(ControlView.createQuickControlPTV(qcs,20), "zoom_out");
 
 
         ViewGroup qcs2 = activity.findViewById(R.id.tr_qc2);
-        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "settings");
-        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "fuSettings");
-        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "download");
-        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "statistic");
-        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "home");
-        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "todo");
-        application.getMS(MSControl.class).initQuickControl(coView.createQuickControlPTV(qcs2,20), "exit");
+        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "settings");
+        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "fuSettings");
+        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "download");
+        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "statistic");
+        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "home");
+        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "todo");
+        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "exit");
 
     }
 

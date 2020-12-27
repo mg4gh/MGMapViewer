@@ -29,8 +29,10 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import mg.mapviewer.R;
+import mg.mapviewer.graph.GGraphTile;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
@@ -62,20 +64,28 @@ public class MSMarker extends MGMicroService {
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
     private final MGPref<Boolean> prefAlphaMtlVisibility = MGPref.get(R.string.MSMarker_pref_alphaMTL_visibility, false);
     private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
+    private final MGPref<Boolean> prefHideMtl = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
 
     MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
 
     public MSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
-        editMarkerTrackObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                checkStartStopMCL();
-            }
-        };
     }
 
-    private final Observer editMarkerTrackObserver;
+    private final Observer editMarkerTrackObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            checkStartStopMCL();
+        }
+    };
+    private final Observer hideMarkerTrackObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            getApplication().markerTrackLogObservable.setTrackLog(null);
+            GGraphTile.clearCache();
+            prefEditMarkerTrack.setValue(false);
+        }
+    };
     public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
     private TimerTask ttHide = new TimerTask() {
@@ -90,12 +100,6 @@ public class MSMarker extends MGMicroService {
         getTimer().postDelayed(ttHide,ttHideTime);
     }
 
-    @Override
-    public PrefTextView initQuickControl(PrefTextView ptv, String info) {
-        ptv.setPrefData(new MGPref[]{prefEditMarkerTrack},
-                new int[]{R.drawable.mtlr, R.drawable.mtlr2});
-        return ptv;
-    }
 
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
@@ -103,6 +107,19 @@ public class MSMarker extends MGMicroService {
             lsl.initPrefData(prefAlphaMtlVisibility, prefAlphaMtl, CC.getColor(R.color.PINK), "MarkerTrackLog");
         }
         return lsl;
+    }
+
+    @Override
+    public PrefTextView initQuickControl(PrefTextView ptv, String info) {
+        if ("edit_mtl".equals(info)){
+            ptv.setPrefData(new MGPref[]{prefEditMarkerTrack},
+                    new int[]{R.drawable.mtlr, R.drawable.mtlr2});
+        } else if ("hide_mtl".equals(info)){
+            ptv.appendPrefData(new MGPref[]{prefHideMtl},
+                    new int[]{});
+
+        }
+        return ptv;
     }
 
     @Override
@@ -117,10 +134,10 @@ public class MSMarker extends MGMicroService {
             refreshObserver.onChange();
         }
         markerTrackLogObservable.addObserver(refreshObserver);
-//        getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
         ttRefreshTime = 20;
 
         prefAlphaMtl.addObserver(refreshObserver);
+        prefHideMtl.addObserver(hideMarkerTrackObserver);
     }
 
     @Override
@@ -131,6 +148,7 @@ public class MSMarker extends MGMicroService {
         unregisterClass(MarkerControlLayer.class);
 
         prefAlphaMtl.deleteObserver(refreshObserver);
+        prefHideMtl.deleteObserver(hideMarkerTrackObserver);
     }
 
     @Override
