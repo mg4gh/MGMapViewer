@@ -48,14 +48,14 @@ public class MSTime extends MGMicroService {
     }
 
     @Override
-    protected void start() {
-        super.start();
+    protected void onResume() {
+        super.onResume();
         getTimer().postDelayed(timerTaskTime,1000);
     }
 
     @Override
-    protected void stop() {
-        super.stop();
+    protected void onPause() {
+        super.onPause();
         getTimer().removeCallbacks(timerTaskTime);
     }
 

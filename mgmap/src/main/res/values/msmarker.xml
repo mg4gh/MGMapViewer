@@ -19,6 +19,6 @@
     <string name="MSMarker_pref_snap2way_summary">Snap marker points automatically to close ways.</string>
 
     <string name="MSMarker_pref_alphaMTL">MSMarker.alphaMTL</string>
-    <string name="MSMarker_pref_alphaMTL_visibility">MSMarker.alphaMTL_visibility</string>
+    <string name="MSMarker_pref_MTL_visibility">MSMarker.MTL_visibility</string>
 
 </resources>

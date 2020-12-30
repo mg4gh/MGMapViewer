@@ -8,7 +8,9 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
+import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
+import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
@@ -17,120 +19,119 @@ import mg.mapviewer.model.TrackLogSegment;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.MGPref;
-import mg.mapviewer.view.PrefTextView;
+import mg.mapviewer.view.ExtendedTextView;
 
-public class RoutingHintService {
+public class MSRoutingHintService extends MGMicroService {
 
     private static final int THRESHOLD_FAR = 200;
     private static final int THRESHOLD_NEAR = 40;
     private static final int THRESHOLD_KURS = 100; // distance for kurs calculation
     private static final int TT_REFRESH_TIME = 150;
 
-    private static RoutingHintService instance;
-    public static RoutingHintService getInstance(){
-        return instance;
-    }
-
     private enum ServiceState { OFF , INIT, ON };
     private final MGPref<Boolean> prefRoutingHints = MGPref.get(R.string.MSRouting_qc_RoutingHint, false);
+    private final MGPref<Boolean> prefRoutingHintsEnabled = MGPref.anonymous(false);
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
 
-    public PrefTextView initQuickControl(PrefTextView ptv, String info) {
-        ptv.appendPrefData(new MGPref[]{prefRoutingHints},
-                new int[]{R.drawable.mtlr3, R.drawable.mtlr4});
-        return ptv;
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        etv.setData(prefRoutingHints,R.drawable.routing_hints1, R.drawable.routing_hints2);
+        etv.setPrAction(prefRoutingHints);
+        etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
+        return etv;
     }
 
     private int  mediumAwayCnt = 0;
     private PointModel lastHintPoint = null;
     private boolean lastHintClose = false;
 
-    private final MGMapApplication application;
-    private final Handler timer;
     private ServiceState serviceState = ServiceState.OFF;
     private TextToSpeech tts = null;
 
-    public RoutingHintService(MGMapApplication application){
-        if (instance == null){
-            instance = this;
-        } else {
-            String error = "Only one Instance allowed";
-            Log.e(MGMapApplication.LABEL, NameUtil.context()+ error);
-            throw new RuntimeException(error);
+    public MSRoutingHintService(MGMapActivity mmActivity){
+        super(mmActivity);
+
+        if (MGPref.get(R.string.MGMapApplication_pref_Restart, false).getValue()){
+            prefRoutingHints.setValue(false);
         }
-        this.application = application;
-        this.timer = new Handler();
-        prefRoutingHints.setValue(false);
         prefRoutingHints.addObserver(new RoutingHintObserver());
+        Observer routingHintsEnabledObserver = new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                prefRoutingHintsEnabled.setValue( prefGps.getValue() && prefMtlVisibility.getValue());
+                if (!prefRoutingHintsEnabled.getValue()){
+                    prefRoutingHints.setValue(false);
+                }
+            }
+        };
+        prefGps.addObserver(routingHintsEnabledObserver);
+        prefMtlVisibility.addObserver(routingHintsEnabledObserver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        tryStopTTSService();
     }
 
     public class RoutingHintObserver implements Observer {
-
         @Override
         public void update(Observable o, Object arg) {
-
             if (prefRoutingHints.getValue()){
-                if (serviceState == ServiceState.OFF){
-                    serviceState = ServiceState.INIT;
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech start");
-                    tts = new TextToSpeech(application.getApplicationContext(), new TextToSpeech.OnInitListener() {
-                        @Override
-                        public void onInit(int status) {
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech started status="+status);
-                            if(status != TextToSpeech.ERROR) {
-                                tts.setLanguage(Locale.GERMAN);
-                                serviceState = ServiceState.ON;
-                            }
-                        }
-                    });
-                    application.lastPositionsObservable.addObserver(locationObserver);
-                }
+                tryStartTTSService();
             } else {
-                if (serviceState != ServiceState.OFF){
-                    serviceState  = ServiceState.OFF;
-                    application.lastPositionsObservable.deleteObserver(locationObserver);
-                    if (tts != null) {
-                        tts.stop();
-                        tts.shutdown();
-                        tts = null;
-                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " TextToSpeech stoped");
+                tryStopTTSService();
+            }
+        }
+    }
+
+    private void tryStartTTSService(){
+        if (serviceState == ServiceState.OFF){
+            serviceState = ServiceState.INIT;
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech start");
+            tts = new TextToSpeech(getApplication().getApplicationContext(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech started status="+status);
+                    if(status != TextToSpeech.ERROR) {
+                        tts.setLanguage(Locale.GERMAN);
+                        serviceState = ServiceState.ON;
                     }
                 }
+            });
+            getApplication().lastPositionsObservable.addObserver(refreshObserver);
+        }
+    }
+
+    private void tryStopTTSService(){
+        if (serviceState != ServiceState.OFF){
+            serviceState  = ServiceState.OFF;
+            getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
+            if (tts != null) {
+                tts.stop();
+                tts.shutdown();
+                tts = null;
+                Log.i(MGMapApplication.LABEL, NameUtil.context() + " TextToSpeech stoped");
             }
-
-
         }
     }
 
 
-    public Observer locationObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            timer.removeCallbacks(ttRefresh);
-            timer.postDelayed(ttRefresh, TT_REFRESH_TIME);
-        }
-    };
-
-    private Runnable ttRefresh = new Runnable() {
-        @Override
-        public void run() {
-            handleNewPoint();
-        }
-    };
-
-
-
+    @Override
+    protected void doRefresh() {
+        handleNewPoint();
+    }
 
 
     protected void handleNewPoint() {
         try {
-            MSRouting msRouting = application.getMS(MSRouting.class);
+            MSRouting msRouting = getApplication().getMS(MSRouting.class);
             if (msRouting == null) return;
-            TrackLog routeTrackLog = application.routeTrackLogObservable.getTrackLog();
+            TrackLog routeTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
             if (routeTrackLog == null) return;
 
             if ((tts != null) && (serviceState == ServiceState.ON) && prefGps.getValue()){
-                PointModel last1Gps = application.lastPositionsObservable.lastGpsPoint;
+                PointModel last1Gps = getApplication().lastPositionsObservable.lastGpsPoint;
 
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" lastGps="+last1Gps);
                 if (last1Gps != null) { // have a new position to handle

@@ -1,0 +1,66 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportHeight="32.0"
+    android:viewportWidth="32.0">
+    <path
+        android:strokeColor="#FFC0C0C0"
+        android:fillColor="#FFB0B0B0"
+        android:strokeWidth="1"
+        android:pathData="
+            M-8,-8 l12,0 l0,12, l-12,0, l0,-12.5
+            M4,-8 l12,0 l0,12, l-12,0, l0,-12.5
+            M16,-8 l12,0 l0,12, l-12,0, l0,-12.5
+            M28,-8 l12,0 l0,12, l-12,0, l0,-12.5
+
+            M-8,4 l12,0 l0,12, l-12,0, l0,-12.5
+            M4,4 l12,0 l0,12, l-12,0, l0,-12.5
+            M16,4 l12,0 l0,12, l-12,0, l0,-12.5
+            M28,4 l12,0 l0,12, l-12,0, l0,-12.5
+
+            M-8,16 l12,0 l0,12, l-12,0, l0,-12.5
+            M4,16 l12,0 l0,12, l-12,0, l0,-12.5
+
+            M-8,28 l12,0 l0,12, l-12,0, l0,-12.5
+            M4,28 l12,0 l0,12, l-12,0, l0,-12.5
+        "/>
+
+    <path
+        android:strokeColor="#FFC0C0C0"
+        android:fillColor="#FFA0A0A0"
+        android:strokeWidth="1"
+        android:pathData="
+
+            M16,16 l12,0 l0,12, l-12,0, l0,-12.5
+            M28,16 l12,0 l0,12, l-12,0, l0,-12.5
+
+            M16,28 l12,0 l0,12, l-12,0, l0,-12.5
+            M28,28 l12,0 l0,12, l-12,0, l0,-12.5
+
+        "/>
+
+    <path
+        android:strokeColor="#FFC0C0C0"
+        android:strokeWidth="1"
+        android:pathData="
+
+            M4,4  m3,6 l6,0 m-3,-3 l0,6
+            M16,4  m3,6 l6,0 m-3,-3 l0,6
+            M4,16  m3,6 l6,0 m-3,-3 l0,6
+            M16,16  m3,6 l6,0 m-3,-3 l0,6
+        "/>
+
+
+
+    <path
+        android:strokeColor="#FFC0C0C0"
+        android:strokeWidth="1"
+        android:pathData="
+
+            M4,4 l24,0 l0,24 l-24,0 l0,-24.5
+        "/>
+
+
+
+
+</vector>

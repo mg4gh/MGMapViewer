@@ -6,7 +6,9 @@
 
     <string name="MSATL_pref_alphaATL">MSATL.alphaATL</string>
     <string name="MSATL_pref_alphaSTL">MSATL.alphaSTL</string>
-    <string name="MSATL_pref_alphaATL_visibility">MSATL.alphaATL_visibility</string>
-    <string name="MSATL_pref_alphaSTL_visibility">MSATL.alphaSTL_visibility</string>
+    <string name="MSATL_pref_ATL_visibility">MSATL.ATL_visibility</string>
+    <string name="MSATL_pref_STL_visibility">MSATL.STL_visibility</string>
+
+    <string name="MSATL_pref_hideAll">MSATL.hideAll</string>
 
 </resources>

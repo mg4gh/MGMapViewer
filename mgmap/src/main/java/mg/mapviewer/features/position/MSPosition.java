@@ -25,11 +25,13 @@ import java.util.Observer;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
+import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogPoint;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.PointView;
 import mg.mapviewer.view.PrefTextView;
 
@@ -43,11 +45,23 @@ public class MSPosition extends MGMicroService {
     private final MGPref<Boolean> prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, false);
     private final MGPref<Boolean> prefCenter = MGPref.get(R.string.MSPosition_prev_Center, true);
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefGpsEnabled = MGPref.anonymous(false);
 
     private PrefTextView ptvHeight = null;
 
     public MSPosition(MGMapActivity mmActivity) {
         super(mmActivity);
+        if (prefAppRestart.getValue()){
+            prefCenter.setValue(true);
+        }
+        getApplication().recordingTrackLogObservable.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+                prefGpsEnabled.setValue( (rtl == null) || (!rtl.isTrackRecording()) );
+            }
+        });
+        prefGps.addObserver(refreshObserver);
     }
 
     @Override
@@ -61,10 +75,24 @@ public class MSPosition extends MGMicroService {
     }
 
     @Override
-    protected void start() {
-        if (prefAppRestart.getValue()){
-            prefCenter.setValue(true);
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        if ("gps".equals(info)){
+            etv.setData(prefGps, R.drawable.gps1,R.drawable.gps2);
+            etv.setPrAction(prefGps);
+            etv.setDisabledData(prefGpsEnabled, R.drawable.gps_dis);
+        } else if ("center".equals(info)){
+            etv.setData(prefCenter,R.drawable.center1,R.drawable.center2);
+            etv.setPrAction(prefCenter);
+            etv.setDisabledData(prefGps, R.drawable.center_dis);
+        } else if ("group_record".equals(info)){
+            etv.setData(prefGps,R.drawable.group_record1,R.drawable.group_record2);
+            etv.setPrAction(MGPref.anonymous(false));
         }
+        return etv;
+    }
+
+    @Override
+    protected void onResume() {
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
         refreshObserver.onChange();
         prefCenter.addObserver(new Observer() {
@@ -76,7 +104,7 @@ public class MSPosition extends MGMicroService {
     }
 
     @Override
-    protected void stop() {
+    protected void onPause() {
         getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
     }
 

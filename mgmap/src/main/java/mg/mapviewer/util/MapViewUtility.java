@@ -104,25 +104,4 @@ public class MapViewUtility {
         imvp.setCenter(new LatLong(pm.getLat(), pm.getLon()));
     }
 
-    public void initQuickControl(PrefTextView ptv, String info){
-        if (info.toLowerCase().endsWith("in")){
-            ptv.setPrefData(new MGPref[]{},
-                    new int[]{R.drawable.zoom_in});
-            ptv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mapView.getModel().mapViewPosition.zoomIn();
-                }
-            });
-        } else if (info.toLowerCase().endsWith("out")){
-            ptv.setPrefData(new MGPref[]{},
-                    new int[]{R.drawable.zoom_out});
-            ptv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mapView.getModel().mapViewPosition.zoomOut();
-                }
-            });
-        }
-    }
 }

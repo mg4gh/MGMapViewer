@@ -4,6 +4,7 @@ package mg.mapviewer.view;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.widget.AppCompatTextView;
@@ -11,13 +12,24 @@ import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.UUID;
 
+import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.util.ArrayUtil;
 import mg.mapviewer.util.ExtendedClickListener;
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.util.NameUtil;
 
 public class PrefTextView extends AppCompatTextView  {
+
+    private MGPref<Boolean>[] prefs = new MGPref[]{};
+    private int[] drawableIds = new int[]{};
+    private Formatter.FormatType formatType = Formatter.FormatType.FORMAT_STRING;
+    private int drawableSize = 0;
+    private Observer prefObserver = createObserver();
+    private MGPref<Boolean> prefEnabled;
+    private int drawableIdDisabled;
 
     public PrefTextView(Context context) {
         this(context, null);
@@ -25,13 +37,8 @@ public class PrefTextView extends AppCompatTextView  {
 
     public PrefTextView(Context context,  AttributeSet attrs) {
         super(context, attrs);
+        setDisabledData(new MGPref<Boolean>(UUID.randomUUID().toString(), true, false), 0);
     }
-
-    private MGPref<Boolean>[] prefs = null;
-    private int[] drawableIds = null;
-    private Formatter.FormatType formatType = Formatter.FormatType.FORMAT_STRING;
-    private int drawableSize = 0;
-    private Observer prefObserver = null;
 
     /**
      * Expect boolean Preferences.
@@ -39,18 +46,24 @@ public class PrefTextView extends AppCompatTextView  {
      * @param drawableIds
      */
     public PrefTextView setPrefData(MGPref<Boolean>[] prefs, int[] drawableIds) {
-        this.prefs = (prefs==null)?new MGPref[]{}:prefs;
-        this.drawableIds = (drawableIds==null)?new int[]{}:drawableIds;
-
-        if (this.prefs.length > 0){
-            prefObserver = createObserver();
-            for (MGPref<?> pref : prefs){
-                 pref.addObserver(prefObserver);
-            }
-            createOCLs();
+        prefs = (prefs==null)?new MGPref[]{}:prefs;
+        drawableIds = (drawableIds==null)?new int[]{}:drawableIds;
+        this.prefs = ArrayUtil.concat(this.prefs, prefs);
+        this.drawableIds = ArrayUtil.concat(this.drawableIds, drawableIds);
+        for (MGPref<?> pref : prefs){ // iterate only over the new prefs
+            pref.addObserver(prefObserver);
         }
+        createOCLs();
 
         onChange("init");
+        return this;
+    }
+
+    public PrefTextView setDisabledData(MGPref<Boolean> prefEnabled, int drawableIdDisabled){
+        this.prefEnabled = prefEnabled;
+        prefEnabled.addObserver(prefObserver);
+        this.drawableIdDisabled = drawableIdDisabled;
+        onChange("initDis");
         return this;
     }
 
@@ -59,6 +72,7 @@ public class PrefTextView extends AppCompatTextView  {
             @Override
             public void update(Observable o, Object arg) {
                 String key = null;
+//                Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+prefs.length+" "+o);
                 if (o instanceof MGPref<?>) {
                     MGPref<?> mgPref = (MGPref<?>) o;
                     key = mgPref.getKey();
@@ -70,14 +84,14 @@ public class PrefTextView extends AppCompatTextView  {
         };
     }
 
-    public void appendPrefData(MGPref<Boolean>[] prefs, int[] drawableIds) {
-        this.prefs = ArrayUtil.concat(this.prefs, prefs);
-        this.drawableIds = ArrayUtil.concat(this.drawableIds, drawableIds);
-        for (MGPref<?> pref : prefs){ // add the prefObserver to the additional prefs
-            pref.addObserver(prefObserver);
-        }
-        createOCLs();
-    }
+//    public void appendPrefData(MGPref<Boolean>[] prefs, int[] drawableIds) {
+//        this.prefs = ArrayUtil.concat(this.prefs, prefs);
+//        this.drawableIds = ArrayUtil.concat(this.drawableIds, drawableIds);
+//        for (MGPref<?> pref : prefs){ // add the prefObserver to the additional prefs
+//            pref.addObserver(prefObserver);
+//        }
+//        createOCLs();
+//    }
 
     public PrefTextView setFormat(Formatter.FormatType formatType){
         this.formatType = formatType;
@@ -108,13 +122,13 @@ public class PrefTextView extends AppCompatTextView  {
                 @Override
                 public void onSingleClick(View v) {
                     doubleClickTimeout = (prefs.length<=2)?0:doubleClickTimeout;
-                    prefs[0].toggle();
+                    handleOnClick(v,0);
                 }
 
                 @Override
-                public void onDoubleClick(View view) {
+                public void onDoubleClick(View v) {
                     if (prefs.length >= 3){
-                        prefs[2].toggle();
+                        handleOnClick(v,2);
                     }
                 }
             });
@@ -123,57 +137,63 @@ public class PrefTextView extends AppCompatTextView  {
             setOnLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    prefs[1].toggle();
+                    handleOnClick(v,1);
                     return true;
                 }
             });
         }
     }
 
-    private void onChange(String key){
+    protected void handleOnClick(View v, int i){
+        if (prefEnabled.getValue() && (i>=0)){
+            prefs[i].toggle();
+        }
+    }
+
+    protected void onChange(String key){
+
         if (drawableIds.length == 0) {
             setCompoundDrawables(null,null,null,null);
         } else {
-            int idx = 0;
-            int cnt = 1;
-            if (prefs != null){
-                for (MGPref<Boolean> pref : prefs){
-                    if (pref.getValue()){
-                        if (idx + cnt < drawableIds.length){
-                            idx += cnt;
-                        }
+            int idx = calcState();
+            setDrawable(idx);
+        }
+    }
+
+    protected int calcState(){
+        int idx = 0;
+        int cnt = 1;
+        if (prefs != null){
+            for (MGPref<Boolean> pref : prefs){
+                if (pref.getValue()){
+                    if (idx + cnt < drawableIds.length){
+                        idx += cnt;
                     }
-                    cnt *= 2;
                 }
+                cnt *= 2;
             }
+        }
+        return idx;
+    }
 
-            if (idx<drawableIds.length){
-                Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drawableIds[idx], getContext().getTheme());
-                if (drawable != null){
-                    drawable.setBounds(0,0,drawableSize,drawableSize);
-                    setCompoundDrawables(drawable,null,null,null);
-                }
+    protected void setDrawable(int idx){
+        int drId = (drawableIds.length>0)?drawableIds[0]:0;
+        if ((prefEnabled.getValue()) || (drawableIdDisabled == 0)){
+            if (idx < drawableIds.length){
+                drId = drawableIds[idx];
             }
+        } else {
+            drId = drawableIdDisabled;
+        }
+        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drId, getContext().getTheme());
+        if (drawable != null){
+            drawable.setBounds(0,0,drawableSize,drawableSize);
+            setCompoundDrawables(drawable,null,null,null);
         }
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (prefs != null){
-            for (MGPref<?> pref : prefs){
-                pref.deleteObserver(prefObserver); //==> causes the Problem with second task bar
-            }
-        }
+    public void setPrefEnabled(boolean enabled){
+        prefEnabled.setValue(enabled);
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (prefs != null){
-            for (MGPref<?> pref : prefs){
-                pref.addObserver(prefObserver); //==> causes the Problem with second task bar
-            }
-        }
-    }
 }

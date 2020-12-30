@@ -52,7 +52,7 @@ public class MSRemainings extends MGMicroService {
     }
 
     @Override
-    protected void start() {
+    protected void onResume() {
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
         getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
@@ -69,7 +69,7 @@ public class MSRemainings extends MGMicroService {
     }
 
     @Override
-    protected void stop() {
+    protected void onPause() {
         getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
         getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
         getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);

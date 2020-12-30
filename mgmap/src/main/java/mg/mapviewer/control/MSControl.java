@@ -7,6 +7,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
 
+import mg.mapviewer.HeightProfileActivity;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
@@ -18,23 +19,26 @@ import mg.mapviewer.settings.SettingsActivity;
 import mg.mapviewer.util.FullscreenObserver;
 import mg.mapviewer.util.HomeObserver;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.PrefTextView;
 
 public class MSControl extends MGMicroService {
 
+    MGPref<Integer> prefQcs = MGPref.get(R.string.MSControl_qc_selector, 0);
     private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
-    private final MGPref<Boolean> prefQC2 = MGPref.get(R.string.MSControl_qc2_on, false);
 
-    private final MGPref<Boolean> prefQC2Settings   = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    private final MGPref<Boolean> prefQC2FuSettings = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    private final MGPref<Boolean> prefQC2Statistic  = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    private final MGPref<Boolean> prefQC2Download   = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    public final MGPref<Boolean> prefQC2Home       = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    private final MGPref<Boolean> prefQC2Exit       = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    private final MGPref<Boolean> prefSettings = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefFuSettings = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefStatistic = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefHeightProfile = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefDownload = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefHome = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefExit = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefZoomIn = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefZoomOut = MGPref.anonymous(false);
 
     ViewGroup qcsParent = null;
-    ViewGroup qcs = null;
-    ViewGroup qcs2 = null;
+    ViewGroup[] qcss = null;
 
     FullscreenObserver fullscreenObserver = new FullscreenObserver(getActivity());
     HomeObserver homeObserver = new HomeObserver(getActivity());
@@ -42,12 +46,11 @@ public class MSControl extends MGMicroService {
     Observer settingsPrefObserver = new Observer() {
         @Override
         public void update(Observable o, Object arg) {
-            prefQC2.toggle();
             MGMapActivity activity = getActivity();
             Intent intent = new Intent(activity, SettingsActivity.class);
             String prefScreenClass = MainPreferenceScreen.class.getName();
-            if (o == prefQC2FuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
-            if (o == prefQC2Download) prefScreenClass = DownloadPreferenceScreen.class.getName();
+            if (o == prefFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
+            if (o == prefDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
             intent.putExtra("MSControl.info", prefScreenClass);
             activity.startActivity(intent);
         }
@@ -55,9 +58,16 @@ public class MSControl extends MGMicroService {
     Observer statisticObserver = new Observer() {
         @Override
         public void update(Observable o, Object arg) {
-            prefQC2.toggle();
             MGMapActivity activity = getActivity();
             Intent intent = new Intent(activity, TrackStatisticActivity.class);
+            activity.startActivity(intent);
+        }
+    };
+    Observer heightProfileObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            MGMapActivity activity = getActivity();
+            Intent intent = new Intent(activity, HeightProfileActivity.class);
             activity.startActivity(intent);
         }
     };
@@ -71,71 +81,113 @@ public class MSControl extends MGMicroService {
 
     public MSControl(MGMapActivity activity){
         super(activity);
+
+        prefFullscreen.addObserver(fullscreenObserver);
+        prefHome.addObserver(homeObserver);
+        prefQcs.addObserver(refreshObserver);
+        prefSettings.addObserver(settingsPrefObserver);
+        prefFuSettings.addObserver(settingsPrefObserver);
+        prefDownload.addObserver(settingsPrefObserver);
+        prefStatistic.addObserver(statisticObserver);
+        prefHeightProfile.addObserver(heightProfileObserver);
+        prefExit.addObserver(exitObserver);
+        prefZoomIn.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                getMapView().getModel().mapViewPosition.zoomIn();
+                setupTTHideQCS();
+            }
+        });
+        prefZoomOut.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                getMapView().getModel().mapViewPosition.zoomOut();
+                setupTTHideQCS();
+            }
+        });
+    }
+
+    public void initQcss(ViewGroup[] qcss){
+        this.qcss = qcss;
     }
 
     @Override
-    public PrefTextView initQuickControl(PrefTextView ptv, String info){
-        if ("fullscreen+".equals(info)) {
-            ptv.setPrefData(new MGPref[]{prefFullscreen, prefQC2Home, prefQC2},
-                    new int[]{R.drawable.fullscreen});
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        if ("group_multi".equals(info)) {
+            etv.setPrAction(MGPref.anonymous(false),prefHome);
+            etv.setData(R.drawable.multi);
+        } else if ("group_task".equals(info)) {
+            etv.setPrAction(MGPref.anonymous(false));
+            etv.setData(R.drawable.group_task);
+        } else if ("fullscreen".equals(info)) {
+            etv.setPrAction(prefFullscreen);
+            etv.setData(R.drawable.fullscreen);
         } else if ("settings".equals(info)) {
-            ptv.setPrefData(new MGPref[]{prefQC2Settings},
-                    new int[]{R.drawable.settings});
+            etv.setPrAction(prefSettings);
+            etv.setData(R.drawable.settings);
         } else if ("fuSettings".equals(info)) {
-            ptv.setPrefData(new MGPref[]{prefQC2FuSettings},
-                    new int[]{R.drawable.settings_fu});
+            etv.setPrAction(prefFuSettings);
+            etv.setData(R.drawable.settings_fu);
         } else if ("home".equals(info)) {
-            ptv.setPrefData(new MGPref[]{prefQC2Home},
-                    new int[]{R.drawable.home});
+            etv.setPrAction(prefHome);
+            etv.setData(R.drawable.home);
         } else if ("exit".equals(info)) {
-            ptv.setPrefData(new MGPref[]{prefQC2Exit},
-                    new int[]{R.drawable.exit});
+            etv.setPrAction(prefExit);
+            etv.setData(R.drawable.exit);
         }else if ("download".equals(info)) {
-            ptv.setPrefData(new MGPref[]{prefQC2Download},
-                    new int[]{R.drawable.download});
+            etv.setPrAction(prefDownload);
+            etv.setData(R.drawable.download);
         } else if ("statistic".equals(info)) {
-            ptv.setPrefData(new MGPref[]{prefQC2Statistic},
-                    new int[]{R.drawable.statistik});
+            etv.setPrAction(prefStatistic);
+            etv.setData(R.drawable.statistik);
+        } else if ("heightProfile".equals(info)) {
+            etv.setPrAction(prefHeightProfile);
+            etv.setData(R.drawable.height_profile);
+        } else if ("empty".equals(info)) {
+            etv.setPrAction(MGPref.anonymous(false));
+            etv.setData(R.drawable.empty);
+        } else if ("zoom_in".equals(info)) {
+            etv.setPrAction(prefZoomIn);
+            etv.setData(R.drawable.zoom_in);
+        } else if ("zoom_out".equals(info)) {
+            etv.setPrAction(prefZoomOut);
+            etv.setData(R.drawable.zoom_out);
         }
 
 
-        return ptv;
+        return etv;
     }
 
     @Override
-    protected void start() {
-        super.start();
+    protected void onResume() {
+        super.onResume();
 
-        qcsParent = (qcsParent==null)?getActivity().findViewById(R.id.base):qcsParent;
-        qcs = (qcs==null)?getActivity().findViewById(R.id.tr_qc):qcs;
-        qcs2 = (qcs2==null)?getActivity().findViewById(R.id.tr_qc2):qcs2;
+        if (qcsParent == null){
+            qcsParent = getActivity().findViewById(R.id.base);
+        }
+//        qcsParent = (qcsParent==null)?getActivity().findViewById(R.id.base):qcsParent;
+//        qcs = (qcs==null)?getActivity().findViewById(R.id.tr_qc):qcs;
+//        qcs2 = (qcs2==null)?getActivity().findViewById(R.id.tr_qc2):qcs2;
 
-        prefFullscreen.addObserver(fullscreenObserver);
-        prefQC2Home.addObserver(homeObserver);
-        prefQC2.addObserver(refreshObserver);
-        prefQC2Settings.addObserver(settingsPrefObserver);
-        prefQC2FuSettings.addObserver(settingsPrefObserver);
-        prefQC2Download.addObserver(settingsPrefObserver);
-        prefQC2Statistic.addObserver(statisticObserver);
-        prefQC2Exit.addObserver(exitObserver);
 
+        prefQcs.setValue(0);
         prefFullscreen.onChange();
-        prefQC2.setValue(false);
+//        prefQC2.setValue(false);
         refreshObserver.onChange();
     }
 
     @Override
-    protected void stop() {
-        super.stop();
+    protected void onPause() {
+        super.onPause();
 
-        prefFullscreen.deleteObserver(fullscreenObserver);
-        prefQC2Home.deleteObserver(homeObserver);
-        prefQC2.deleteObserver(refreshObserver);
-        prefQC2Settings.deleteObserver(settingsPrefObserver);
-        prefQC2FuSettings.deleteObserver(settingsPrefObserver);
-        prefQC2Download.deleteObserver(settingsPrefObserver);
-        prefQC2Statistic.deleteObserver(statisticObserver);
-        prefQC2Exit.deleteObserver(exitObserver);
+//        prefFullscreen.deleteObserver(fullscreenObserver);
+//        prefQC2Home.deleteObserver(homeObserver);
+//        prefQcs.deleteObserver(refreshObserver);
+//        prefQC2Settings.deleteObserver(settingsPrefObserver);
+//        prefQC2FuSettings.deleteObserver(settingsPrefObserver);
+//        prefQC2Download.deleteObserver(settingsPrefObserver);
+//        prefQC2Statistic.deleteObserver(statisticObserver);
+//        prefQC2Exit.deleteObserver(exitObserver);
     }
 
     @Override
@@ -143,43 +195,47 @@ public class MSControl extends MGMicroService {
         setQCVisibility();
     }
 
-    private Runnable ttHideQC2 = new Runnable() {
+    private Runnable ttHideQCS = new Runnable() {
         @Override
         public void run() {
-            prefQC2.setValue(false);
+//            prefQC2.setValue(false);
+            prefQcs.setValue(0);
         }
     };
 
-    private void setupTTHideQC2(){
-        getTimer().removeCallbacks(ttHideQC2);
-        getTimer().postDelayed(ttHideQC2, 3000);
+    private void setupTTHideQCS(){
+        getTimer().removeCallbacks(ttHideQCS);
+        getTimer().postDelayed(ttHideQCS, 3000);
     }
-    private void cancelTTHideQC2(){
-        getTimer().removeCallbacks(ttHideQC2);
+    private void cancelTTHideQCS(){
+        getTimer().removeCallbacks(ttHideQCS);
     }
 
     void setQCVisibility(){
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                cancelTTHideQC2();
-                if (prefQC2.getValue()){
-                    if (qcs.getParent() != null){
-                        qcsParent.removeView(qcs);
-                    }
-                    if (qcs2.getParent() == null){
-                        qcsParent.addView(qcs2);
-                        setupTTHideQC2();
-                    }
-                } else {
-                    if (qcs.getParent() == null){
-                        qcsParent.addView(qcs);
-                    }
-                    if (qcs2.getParent() != null){
-                        cancelTTHideQC2();
-                        qcsParent.removeView(qcs2);
+                cancelTTHideQCS();
+                for (int idx=0; idx<8; idx++){
+                    ViewGroup qcs = qcss[idx];
+                    if (prefQcs.getValue() == idx){ // should be visible
+                        if (qcs.getParent() == null){ // but is not yet visible
+
+                            qcsParent.addView(qcs);
+                        }
+                    } else { // should not be visible
+                        if (qcs.getParent() != null){ // ... but is visible
+                            qcsParent.removeView(qcs);
+                        }
+
                     }
                 }
+                if (prefQcs.getValue() > 0){
+                    setupTTHideQCS();
+                } else {
+                    cancelTTHideQCS();
+                }
+
             }
         });
     }

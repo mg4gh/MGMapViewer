@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="MSControl_qc2_on">MSControl.qc2_on</string>
+    <string name="MSControl_qc_selector">MSControl.qc_selector</string>
 </resources>

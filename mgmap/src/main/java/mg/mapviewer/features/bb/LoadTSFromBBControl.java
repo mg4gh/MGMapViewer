@@ -88,7 +88,7 @@ public class LoadTSFromBBControl extends Control {
         }
     }
 
-    private ArrayList<MGTileStore> identifyTS(){
+    public static ArrayList<MGTileStore> identifyTS(){
         ArrayList<MGTileStore> tss = new ArrayList<>();
         for (Layer layer : MGMapLayerFactory.mapLayers.values()){
             if (layer instanceof MGTileStoreLayer) {

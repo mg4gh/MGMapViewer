@@ -10,6 +10,6 @@
     <string name="MSRouting_bt_ShowRouting">MSRouting.ShowRouting</string>
 
     <string name="MSRouting_pref_alphaRoTL">MSRouting.alphaRoTL</string>
-    <string name="MSRouting_pref_alphaRoTL_visibility">MSRouting.alphaRoTL_visibility</string>
+    <string name="MSRouting_pref_RoTL_visibility">MSRouting.RoTL_visibility</string>
 
 </resources>

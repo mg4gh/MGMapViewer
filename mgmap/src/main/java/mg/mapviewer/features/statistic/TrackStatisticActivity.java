@@ -107,30 +107,30 @@ public class TrackStatisticActivity extends AppCompatActivity {
         parent = findViewById(R.id.trackStatisticEntries);
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
-        ControlView.createQuickControlPTV(qcs,20)
+        ControlView.createQuickControlPTV(qcs)
                 .setPrefData(new MGPref[]{prefFullscreen,prefHome}, new int[]{R.drawable.fullscreen});
-        ControlView.createQuickControlPTV(qcs,20)
+        ControlView.createQuickControlPTV(qcs)
                 .setPrefData(new MGPref[]{prefAllSelected}, new int[]{R.drawable.select_all, R.drawable.select_all2})
                 .setOnClickListener(new SelectOCL(parent, true));
-        ControlView.createQuickControlPTV(qcs,20)
+        ControlView.createQuickControlPTV(qcs)
                 .setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.deselect_all,R.drawable.deselect_all2})
                 .setOnClickListener(new SelectOCL(parent, false));
-        ControlView.createQuickControlPTV(qcs,20)
+        ControlView.createQuickControlPTV(qcs)
                 .setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.show,R.drawable.show2})
                 .setOnClickListener(createShowOCL());
-        ControlView.createQuickControlPTV(qcs,20)
+        ControlView.createQuickControlPTV(qcs)
                 .setPrefData(new MGPref[]{prefMarkerAllowed}, new int[]{R.drawable.mtlr_2,R.drawable.mtlr})
                 .setOnClickListener(createMarkerOCL());
-        ControlView.createQuickControlPTV(qcs,20)
+        ControlView.createQuickControlPTV(qcs)
                 .setPrefData(new MGPref[]{prefShareAllowed}, new int[]{R.drawable.share2,R.drawable.share})
                 .setOnClickListener(createShareOCL());
-        ControlView.createQuickControlPTV(qcs,20).
+        ControlView.createQuickControlPTV(qcs).
                 setPrefData(new MGPref[]{prefNoneModified}, new int[]{R.drawable.save,R.drawable.save2})
                 .setOnClickListener(createSaveOCL());
-        ControlView.createQuickControlPTV(qcs,20)
+        ControlView.createQuickControlPTV(qcs)
                 .setPrefData(new MGPref[]{prefDeleteAllowed}, new int[]{R.drawable.delete2,R.drawable.delete})
                 .setOnClickListener(createDeleteOCL());
-        ControlView.createQuickControlPTV(qcs,20)
+        ControlView.createQuickControlPTV(qcs)
                 .setPrefData(new MGPref[]{}, new int[]{R.drawable.back})
                 .setOnClickListener(createBackOCL());
 

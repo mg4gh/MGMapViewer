@@ -17,13 +17,23 @@ package mg.mapviewer.features.bb;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import org.mapsforge.map.layer.Layer;
+
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
+import mg.mapviewer.MGMapLayerFactory;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
+import mg.mapviewer.features.tilestore.MGTileStore;
+import mg.mapviewer.features.tilestore.MGTileStoreLayer;
+import mg.mapviewer.features.tilestore.TileStoreLoader;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.WriteablePointModel;
@@ -32,18 +42,54 @@ import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.PrefTextView;
 
 public class MSBB extends MGMicroService {
 
     private final MGPref<Boolean> prefBboxOn = MGPref.get(R.string.MSBB_qc_bboxOn, false);
-    private final MGPref<Boolean> prefBboxCenter = MGPref.get(R.string.MSBB_qc_bboxCenter, true);
+
+    private final MGPref<Boolean> prefLoadFromBB = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    private final MGPref<Boolean> prefLoadFromBBEnabled = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+    private final MGPref<Boolean> prefTSLaodRemain = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    private final MGPref<Boolean> prefTSActionsEnabled = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+    private final MGPref<Boolean> prefTSLaodAll = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    private final MGPref<Boolean> prefTSDeleteAll = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+
+    private final ArrayList<MGTileStore> tss = identifyTS();
+    private boolean initSquare = false;
 
     private MSAvailableTrackLogs msAvailableTrackLogs;
+
     public MSBB(MGMapActivity mmActivity, MSAvailableTrackLogs msAvailableTrackLogs) {
         super(mmActivity);
         this.msAvailableTrackLogs = msAvailableTrackLogs;
+
+        prefLoadFromBB.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                loadFromBB();
+            }
+        });
+        prefTSLaodRemain.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                tsAction(false, false);
+            }
+        });
+        prefTSLaodAll.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                tsAction(false, true);
+            }
+        });
+        prefTSDeleteAll.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                tsAction(true, true);
+            }
+        });
     }
 
     private WriteablePointModel p1 = null;
@@ -61,25 +107,45 @@ public class MSBB extends MGMicroService {
     }
 
     @Override
-    public PrefTextView initQuickControl(PrefTextView ptv, String info){
-        ptv.setPrefData(new MGPref[]{prefBboxOn,prefBboxCenter},
-                new int[]{R.drawable.bbox,R.drawable.bbox2,R.drawable.bbox,R.drawable.bbox2});
-        return ptv;
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        if ("group_bbox".equals(info)){
+            etv.setPrAction(MGPref.anonymous(false));
+            etv.setData(prefBboxOn,R.drawable.group_bbox1,R.drawable.group_bbox2);
+        } else if ("loadFromBB".equals(info)){
+            etv.setPrAction(prefLoadFromBB);
+            etv.setData(R.drawable.load_from_bb);
+            etv.setDisabledData(prefLoadFromBBEnabled, R.drawable.load_from_bb_dis);
+        } else if ("bbox_on".equals(info)){
+            etv.setPrAction(prefBboxOn);
+            etv.setData(prefBboxOn,R.drawable.bbox,R.drawable.bbox2);
+        } else if ("TSLoadRemain".equals(info)){
+            etv.setPrAction(prefTSLaodRemain);
+            etv.setData(R.drawable.bb_ts_load_remain);
+            etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_remain_dis);
+        }else if ("TSLoadAll".equals(info)){
+            etv.setPrAction(prefTSLaodAll);
+            etv.setData(R.drawable.bb_ts_load_all);
+            etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_all_dis);
+        }else if ("TSDeleteAll".equals(info)){
+            etv.setPrAction(prefTSDeleteAll);
+            etv.setData(R.drawable.bb_ts_delete_all);
+            etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_delete_all_dis);
+        }
+        return etv;
     }
 
     @Override
-    protected void start() {
-        super.start();
+    protected void onResume() {
+        super.onResume();
         prefBboxOn.addObserver(refreshObserver);
-        prefBboxCenter.addObserver(refreshObserver);
         prefBboxOn.setValue(false);
+        refreshObserver.onChange();
     }
 
     @Override
-    protected void stop() {
-        super.stop();
+    protected void onPause() {
+        super.onPause();
         prefBboxOn.deleteObserver(refreshObserver);
-        prefBboxCenter.deleteObserver(refreshObserver);
     }
 
     public void triggerRefresh(){
@@ -91,17 +157,15 @@ public class MSBB extends MGMicroService {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (prefBboxCenter.getValue()){
-                    prefBboxOn.setValue(true);
-                }
                 if (prefBboxOn.getValue()){
                     if (bbcl == null){
                         bbcl = new BBControlLayer();
                         register(bbcl, false);
+                        initSquare = true;
                         triggerRefresh();
-                    } else if (prefBboxCenter.getValue()){
+                    } else if (initSquare){
                         if (bbcl.initFromScreen()){
-                            prefBboxCenter.setValue(false);
+                            initSquare = false;
                         } else {
                             triggerRefresh();
                         }
@@ -109,7 +173,9 @@ public class MSBB extends MGMicroService {
                 } else {
                     hideBB();
                 }
-//                getControlView().updateTvZoom(getMapView().getModel().mapViewPosition.getZoomLevel());
+                prefLoadFromBBEnabled.setValue(isLoadAllowed());
+                boolean tsOpsAllowed = isLoadAllowed() && (tss.size() > 0);
+                prefTSActionsEnabled.setValue(tsOpsAllowed);
             }
         });
     }
@@ -264,4 +330,33 @@ public class MSBB extends MGMicroService {
 
     }
 
+    private ArrayList<MGTileStore> identifyTS(){
+        ArrayList<MGTileStore> tss = new ArrayList<>();
+        for (Layer layer : MGMapLayerFactory.mapLayers.values()){
+            if (layer instanceof MGTileStoreLayer) {
+                MGTileStoreLayer mgTileStoreLayer = (MGTileStoreLayer) layer;
+                MGTileStore mgTileStore = mgTileStoreLayer.getMGTileStore();
+                if (mgTileStore.hasConfig()){
+                    tss.add(mgTileStore);
+                }
+            }
+        }
+        return tss;
+    }
+
+    private void tsAction(boolean bDrop, boolean bAll){
+        for (MGTileStore ts : tss){
+            try {
+                TileStoreLoader tileStoreLoader = new TileStoreLoader(getActivity(), getApplication(), ts);
+                if (bDrop){
+                    tileStoreLoader.dropFromBB(getBBox());
+                } else {
+                    tileStoreLoader.loadFromBB(getBBox(), bAll);
+                }
+
+            } catch (Exception e) {
+                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            }
+        }
+    }
 }

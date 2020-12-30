@@ -66,7 +66,7 @@ public class MSBeeline extends MGMicroService {
     }
 
     @Override
-    protected void start() {
+    protected void onResume() {
         getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
 
@@ -76,7 +76,7 @@ public class MSBeeline extends MGMicroService {
 
     @Override
     @SuppressWarnings("EmptyCatchBlock")
-    protected void stop() {
+    protected void onPause() {
         getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
         getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
     }

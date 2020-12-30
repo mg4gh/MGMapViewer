@@ -5,6 +5,10 @@ import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
 import mg.mapviewer.control.MSControl;
 import mg.mapviewer.features.beeline.MSBeeline;
 import mg.mapviewer.features.position.CenterControl;
@@ -20,16 +24,18 @@ import mg.mapviewer.features.marker.MSMarker;
 import mg.mapviewer.features.position.MSPosition;
 import mg.mapviewer.features.remainings.MSRemainings;
 import mg.mapviewer.features.routing.MSRouting;
-import mg.mapviewer.features.routing.RoutingHintService;
+import mg.mapviewer.features.routing.MSRoutingHintService;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.MGPref;
-import mg.mapviewer.view.PrefTextView;
+import mg.mapviewer.view.ExtendedTextView;
 
 public class ControlComposer {
+
+    MGPref<Integer> prefQcs = MGPref.get(R.string.MSControl_qc_selector, 0);
 
     void composeDashboard(MGMapApplication application, MGMapActivity activity, ControlView coView){
         application.getMS(MSRecordingTrackLog.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "rtl");
@@ -106,27 +112,92 @@ public class ControlComposer {
     }
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
-        ViewGroup qcs = activity.findViewById(R.id.tr_qc);
-        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), "fullscreen+");
-        application.getMS(MSAlpha.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), null);
-        PrefTextView ptvEditMarker = application.getMS(MSMarker.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), "edit_mtl");
-        RoutingHintService.getInstance().initQuickControl(ptvEditMarker, null);
-        application.getMS(MSMarker.class).initQuickControl(ptvEditMarker, "hide_mtl");
-        application.getMS(MSBB.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), null);
-        application.getMS(MSSearch.class).initQuickControl(ControlView.createQuickControlPTV(qcs,20), null);
-        activity.getMapViewUtility().initQuickControl(ControlView.createQuickControlPTV(qcs,20), "zoom_in");
-        activity.getMapViewUtility().initQuickControl(ControlView.createQuickControlPTV(qcs,20), "zoom_out");
 
+        ViewGroup qcsParent = activity.findViewById(R.id.base);
+        ViewGroup[] qcss = new ViewGroup[8];
+        ArrayList<Observer> gos = new ArrayList<>();
+        for (int idx=0; idx<qcss.length; idx++){
+            qcss[idx] = ControlView.createRow(coView.getContext());
+            final int iidx = idx;
+            gos.add(new Observer() {
+                @Override
+                public void update(Observable o, Object arg) {
+                    prefQcs.setValue(iidx);
+                }
+            });
+        }
+        application.getMS(MSControl.class).initQcss(qcss);
 
-        ViewGroup qcs2 = activity.findViewById(R.id.tr_qc2);
-        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "settings");
-        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "fuSettings");
-        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "download");
-        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "statistic");
-        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "home");
-        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "todo");
-        application.getMS(MSControl.class).initQuickControl(ControlView.createQuickControlPTV(qcs2,20), "exit");
+        ViewGroup qcs = qcss[0];
+        createQC(application,MSControl.class,qcss[0],"group_task",gos.get(1));
+        createQC(application,MSSearch.class,qcss[0],"group_search",gos.get(2));
+        ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false))
+                .setData(MGPref.bool(R.string.MSMarker_qc_EditMarkerTarck),MGPref.bool(R.string.MSRouting_qc_RoutingHint),
+                R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4).addActionObserver(gos.get(3));
+        createQC(application,MSBB.class,qcss[0],"group_bbox",gos.get(4));
+        createQC(application,MSPosition.class,qcss[0],"group_record",gos.get(5));
+        ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false)).setData(R.drawable.show_hide).addActionObserver(gos.get(6));
+        createQC(application,MSControl.class,qcss[0],"group_multi",gos.get(7));
 
+        createQC(application,MSControl.class,qcss[1],"help_task",gos.get(1));
+        createQC(application,MSControl.class,qcss[1],"settings",gos.get(0));
+        createQC(application,MSControl.class,qcss[1],"fuSettings",gos.get(0));
+        createQC(application,MSControl.class,qcss[1],"statistic",gos.get(0));
+        createQC(application,MSControl.class,qcss[1],"heightProfile",gos.get(0));
+        createQC(application,MSControl.class,qcss[1],"download",gos.get(0));
+        createQC(application,MSControl.class,qcss[1],"empty",gos.get(0));
+
+        createQC(application,MSSearch.class,qcss[2],"help_search",gos.get(2));
+        createQC(application,MSSearch.class,qcss[2],"search",gos.get(0));
+        createQC(application,MSSearch.class,qcss[2],"searchRes",gos.get(0));
+        createQC(application,MSControl.class,qcss[2],"empty",gos.get(0));
+        createQC(application,MSControl.class,qcss[2],"empty",gos.get(0));
+        createQC(application,MSControl.class,qcss[2],"empty",gos.get(0));
+        createQC(application,MSControl.class,qcss[2],"empty",gos.get(0));
+
+        createQC(application,MSSearch.class,qcss[3],"help_marker",gos.get(3));
+        createQC(application,MSControl.class,qcss[3],"empty",gos.get(0));
+        createQC(application,MSMarker.class,qcss[3],"markerEdit",gos.get(0));
+        createQC(application,MSRoutingHintService.class,qcss[3],"routingHint",gos.get(0));
+        createQC(application,MSControl.class,qcss[3],"empty",gos.get(0));
+        createQC(application,MSControl.class,qcss[3],"empty",gos.get(0));
+        createQC(application,MSControl.class,qcss[3],"empty",gos.get(0));
+
+        createQC(application,MSBB.class,qcss[4],"help_bb",gos.get(4));
+        createQC(application,MSControl.class,qcss[4],"empty",gos.get(0));
+        createQC(application,MSBB.class,qcss[4],"loadFromBB",gos.get(0));
+        createQC(application,MSBB.class,qcss[4],"bbox_on",gos.get(0));
+        createQC(application,MSBB.class,qcss[4],"TSLoadRemain",gos.get(0));
+        createQC(application,MSBB.class,qcss[4],"TSLoadAll",gos.get(0));
+        createQC(application,MSBB.class,qcss[4],"TSDeleteAll",gos.get(0));
+
+        createQC(application,MSControl.class,qcss[5],"help_record",gos.get(5));
+        createQC(application,MSControl.class,qcss[5],"empty",gos.get(0));
+        createQC(application,MSPosition.class,qcss[5],"center",gos.get(0));
+        createQC(application,MSPosition.class,qcss[5],"gps",gos.get(0));
+        createQC(application,MSRecordingTrackLog.class,qcss[5],"track",gos.get(0));
+        createQC(application,MSRecordingTrackLog.class,qcss[5],"segment",gos.get(0));
+        createQC(application,MSControl.class,qcss[5],"empty",gos.get(0));
+
+        createQC(application,MSControl.class,qcss[6],"help_hide",gos.get(6));
+        createQC(application,MSAlpha.class,qcss[6],"alpha_layers",gos.get(0));
+        createQC(application,MSAlpha.class,qcss[6],"alpha_tracks",gos.get(0));
+        createQC(application,MSAvailableTrackLogs.class,qcss[6],"hide_stl",gos.get(0));
+        createQC(application,MSAvailableTrackLogs.class,qcss[6],"hide_atl",gos.get(0));
+        createQC(application,MSAvailableTrackLogs.class,qcss[6],"hide_all",gos.get(0));
+        createQC(application,MSMarker.class,qcss[6],"hide_mtl",gos.get(0));
+
+        createQC(application,MSControl.class,qcss[7],"help_extra",gos.get(7));
+        createQC(application,MSControl.class,qcss[7],"exit",gos.get(0));
+        createQC(application,MSControl.class,qcss[7],"empty",gos.get(0));
+        createQC(application,MSControl.class,qcss[7],"fullscreen",gos.get(0));
+        createQC(application,MSControl.class,qcss[7],"zoom_in",gos.get(7));
+        createQC(application,MSControl.class,qcss[7],"zoom_out",gos.get(7));
+        createQC(application,MSControl.class,qcss[7],"home",gos.get(0));
+    }
+
+    private ExtendedTextView createQC(MGMapApplication application, Class<? extends MGMicroService> clazz, ViewGroup viewGroup, String info, Observer grObserver){
+        return application.getMS(clazz).initQuickControl(ControlView.createQuickControlETV(viewGroup), info).addActionObserver(grObserver);
     }
 
 

@@ -3,16 +3,18 @@ package mg.mapviewer.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.View;
 
 import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import mg.mapviewer.MGMapApplication;
 
-public class MGPref<T> extends Observable {
+public class MGPref<T> extends Observable implements View.OnClickListener, View.OnLongClickListener {
 
     private static Context context = null;
     private static SharedPreferences sharedPreferences = null;
@@ -34,10 +36,21 @@ public class MGPref<T> extends Observable {
         sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
     }
 
+    public static <T> MGPref<T> anonymous(T initialValue) {
+        String key = UUID.randomUUID().toString();
+        return new MGPref<T>(key, initialValue, false);
+    }
+
+    public static MGPref<Boolean> bool(int keyId) {
+        String key = context.getResources().getString(keyId);
+        return get(key, false);
+    }
+
     public static <T> MGPref<T> get(int keyId, T defaultValue) {
         String key = context.getResources().getString(keyId);
         return get(key, defaultValue);
     }
+
     public static <T> MGPref<T> get(String key, T defaultValue){
         MGPref<?> pref = prefMap.get(key);
         if (pref == null){
@@ -55,6 +68,9 @@ public class MGPref<T> extends Observable {
             sPrefs += pref.toString()+" "+pref.getSharedPreference().toString()+"\n";
         }
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sPrefs);
+    }
+    public static void clear(){
+        prefMap.clear();
     }
 
 
@@ -158,6 +174,19 @@ public class MGPref<T> extends Observable {
         } else {
             throw new RuntimeException("type not allowed: "+value.getClass().getName());
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.isEnabled()){
+            toggle();
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        toggle();
+        return true;
     }
 
     public void onChange(){

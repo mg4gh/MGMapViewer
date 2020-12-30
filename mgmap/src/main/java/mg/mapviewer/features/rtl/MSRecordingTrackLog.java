@@ -18,6 +18,9 @@ import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
@@ -25,9 +28,14 @@ import mg.mapviewer.features.rtl.control.TrackStartControl;
 import mg.mapviewer.features.rtl.control.TrackStartSegmentControl;
 import mg.mapviewer.features.rtl.control.TrackStopControl;
 import mg.mapviewer.features.rtl.control.TrackStopSegmentControl;
+import mg.mapviewer.model.TrackLogRef;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Control;
+import mg.mapviewer.util.GpxExporter;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.util.MetaDataUtil;
+import mg.mapviewer.util.PersistenceManager;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
 
 public class MSRecordingTrackLog extends MGMicroService {
@@ -38,12 +46,76 @@ public class MSRecordingTrackLog extends MGMicroService {
     private ViewGroup dashboardRtl = null;
     private ViewGroup dashboardRtls = null;
 
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
     private final MGPref<Float> prefAlphaRtl = MGPref.get(R.string.MSRecording_pref_alphaRTL, 1.0f);
-    private final MGPref<Boolean> prefAlphaRtlVisibility = MGPref.get(R.string.MSRecording_pref_alphaRTL_visibility, false);
+    private final MGPref<Boolean> prefRtlVisibility = MGPref.get(R.string.MSRecording_pref_RTL_visibility, false);
     private final MGPref<Boolean>  prefRtlGL = MGPref.get(R.string.MSRecording_pref_rtlGl_key, false);
+    private final MGPref<Boolean> prefRecordTrackAction = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefRecordTrackState = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefRecordSegmentAction = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefRecordSegmentState = MGPref.anonymous(false);
 
     public MSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);
+        getApplication().recordingTrackLogObservable.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                final RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+                prefRecordTrackState.setValue( (rtl != null) && ( rtl.isTrackRecording()) );
+                prefRecordSegmentState.setValue( (rtl != null) && ( rtl.isTrackRecording()) && (rtl.isSegmentRecording()));
+            }
+        });
+        prefRecordTrackAction.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+                long timestamp = System.currentTimeMillis();
+                if (rtl == null){
+                    rtl = new RecordingTrackLog(true);
+                    getApplication().recordingTrackLogObservable.setTrackLog(rtl);
+                    rtl.startTrack(timestamp);
+                    rtl.startSegment(timestamp);
+                    prefGps.setValue(true);
+                } else {
+                    if (rtl.isSegmentRecording()) {
+                        rtl.stopSegment(timestamp);
+                        prefGps.setValue(false);
+                        getApplication().lastPositionsObservable.handlePoint(null);
+                    }
+                    rtl.stopTrack(timestamp);
+                    GpxExporter.export(rtl);
+                    PersistenceManager.getInstance().clearRaw();
+
+                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
+                    getApplication().metaTrackLogs.put(rtl.getNameKey(), rtl);
+                    getApplication().recordingTrackLogObservable.setTrackLog(null);
+
+                    MetaDataUtil.createMetaData(rtl);
+                    MetaDataUtil.writeMetaData(PersistenceManager.getInstance().openMetaOutput(rtl.getName()), rtl);
+                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
+
+                    TrackLogRef selected = new TrackLogRef(rtl,rtl.getNumberOfSegments()-1);
+                    getApplication().availableTrackLogsObservable.setSelectedTrackLogRef(selected);
+                }
+            }
+        });
+        prefRecordSegmentAction.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                long timestamp = System.currentTimeMillis();
+                RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+                if ((rtl != null) && (rtl.isTrackRecording())){
+                    if (!rtl.isSegmentRecording()){
+                        rtl.startSegment(timestamp);
+                        prefGps.setValue(true);
+                    } else {
+                        rtl.stopSegment(timestamp);
+                        prefGps.setValue(false);
+                        getApplication().lastPositionsObservable.handlePoint(null);
+                    }
+                }
+            }
+        });
     }
 
 
@@ -62,21 +134,35 @@ public class MSRecordingTrackLog extends MGMicroService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("rtl".equals(info)) {
-            lsl.initPrefData(prefAlphaRtlVisibility, prefAlphaRtl, CC.getColor(R.color.RED), "RecordingTrackLog");
+            lsl.initPrefData(prefRtlVisibility, prefAlphaRtl, CC.getColor(R.color.RED), "RecordingTrackLog");
         }
         return lsl;
     }
 
 
+
     @Override
-    protected void start() {
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        if ("track".equals(info)){
+            etv.setData(prefRecordTrackState,R.drawable.record_track1,R.drawable.record_track2);
+            etv.setPrAction(prefRecordTrackAction);
+        } else if ("segment".equals(info)){
+            etv.setData(prefRecordSegmentState,R.drawable.record_segment1,R.drawable.record_segment2);
+            etv.setPrAction(prefRecordSegmentAction);
+            etv.setDisabledData(prefRecordTrackState, R.drawable.record_segment_dis);
+        }
+        return etv;
+    }
+
+    @Override
+    protected void onResume() {
         getApplication().recordingTrackLogObservable.addObserver(refreshObserver);
         prefAlphaRtl.addObserver(refreshObserver);
         prefRtlGL.addObserver(refreshObserver);
     }
 
     @Override
-    protected void stop() {
+    protected void onPause() {
         getApplication().recordingTrackLogObservable.deleteObserver(refreshObserver);
         prefAlphaRtl.deleteObserver(refreshObserver);
         prefRtlGL.deleteObserver(refreshObserver);
@@ -95,7 +181,7 @@ public class MSRecordingTrackLog extends MGMicroService {
                 } else {
                     hideRecordingTrackLog();
                 }
-                prefAlphaRtlVisibility.setValue(bRtlAlphaVisibility);
+                prefRtlVisibility.setValue(bRtlAlphaVisibility);
             }
         });
     }
