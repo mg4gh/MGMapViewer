@@ -57,7 +57,10 @@ public class TrackStatisticEntry extends TableLayout {
 
         TableRow tableRow1 = new TableRow(context);
         this.addView(tableRow1);
-        createPTV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null).setValue( (statistic.getSegmentIdx()<0)?"All":""+statistic.getSegmentIdx() );
+        String sIdx = "I="+statistic.getSegmentIdx();
+        if (statistic.getSegmentIdx() == -1) sIdx = "All";
+        if (statistic.getSegmentIdx() == -2) sIdx = "R";
+        createPTV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null).setValue( sIdx );
         createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DATE).setPrefData(null,null).setValue( statistic.getTStart() );
         createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_TIME).setPrefData(null,null).setValue( statistic.getTStart() );
         PrefTextView durationPTV = createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setPrefData(null, new int[]{R.drawable.duration});

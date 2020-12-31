@@ -1,5 +1,7 @@
 package mg.mapviewer.model;
 
+import mg.mapviewer.util.MGPref;
+
 /**
  * Creates new TrackLog objects based on existing GPX data, requires special handling with the timestamps.
  * Created by Martin on 16.10.2017.
@@ -82,5 +84,9 @@ public class WriteableTrackLog extends TrackLog {
         for (TrackLogSegment segment : getTrackLogSegments()){
             trackStatistic.updateWithStatistics(segment.getStatistic());
         }
+    }
+
+    public void setPrefModified(MGPref<Boolean> prefModified){
+        this.prefModified = prefModified;
     }
 }

@@ -116,14 +116,15 @@ public class MSRouting extends MGMicroService {
                 optimize();
             }
         });
-        Observer matchingDisObserver = new Observer() {
+        Observer matchingEnabledObserver = new Observer() {
             @Override
             public void update(Observable o, Object arg) {
                 prefMapMatchingEnabled.setValue( prefMtlVisibility.getValue() && (prefAlphaRotl.getValue() > 0.25f) );
             }
         };
-        prefMtlVisibility.addObserver(matchingDisObserver);
-        prefAlphaRotl.addObserver(matchingDisObserver);
+        prefMtlVisibility.addObserver(matchingEnabledObserver);
+        prefAlphaRotl.addObserver(matchingEnabledObserver);
+
     }
 
     @Override
@@ -158,11 +159,15 @@ public class MSRouting extends MGMicroService {
         prefZoomLevel.addObserver(refreshObserver);
         prefAlphaRotl.addObserver(refreshObserver);
         prefRouteGL.addObserver(refreshObserver);
+        prefGps.addObserver(refreshObserver);
+        getApplication().lastPositionsObservable.addObserver(refreshObserver);
         register(new RoutingControlLayer(), false);
     }
 
     @Override
     protected void onPause() {
+        getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
+        prefGps.deleteObserver(refreshObserver);
         getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
         prefZoomLevel.deleteObserver(refreshObserver);
         prefAlphaRotl.deleteObserver(refreshObserver);
@@ -243,7 +248,7 @@ public class MSRouting extends MGMicroService {
 
 
 
-    private void updateRouting(WriteableTrackLog mtl){
+    synchronized private void updateRouting(WriteableTrackLog mtl){
         unregisterAll(MultiPointView.class);
         if (mtl.getTrackStatistic().getNumPoints() == 0) return;
         MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
@@ -299,8 +304,13 @@ public class MSRouting extends MGMicroService {
         routeTrackLog.setName(name);
         routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
         WriteableTrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
-        if ((oldRouteTrackLog != null) && oldRouteTrackLog.isModified()) routeModified = true;
-        routeTrackLog.setModified(routeModified);
+        if (oldRouteTrackLog != null){
+            routeTrackLog.setPrefModified(oldRouteTrackLog.getPrefModified());
+        }
+        if (routeModified){
+            routeTrackLog.setModified(routeModified);
+        }
+        routeTrackLog.getPrefModified().onChange();
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             routeTrackLog.startSegment(0);
@@ -349,7 +359,6 @@ public class MSRouting extends MGMicroService {
                 if ((bestMatch != null) && (bestMatch.getApproachPoint() != null)){
                     routeTrackLog.recalcStatistic(bestMatch.getApproachPoint(), bestMatch.getSegmentIdx(), bestMatch.getEndPointIndex());
                     routeTrackLog.getTrackStatistic().segmentIdx = -2; // indicates Remainings statistic
-
                 }
             }
         }
