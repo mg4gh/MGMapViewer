@@ -537,7 +537,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
                     application.availableTrackLogsObservable.setSelectedTrackLogRef(ref);
                 } else {
-                    coView.toggleMenuVisibility();
+                    if (sharedPreferences.getBoolean("main_menu", false)){
+                        coView.toggleMenuVisibility();
+                    }
                 }
                 return true;
             }

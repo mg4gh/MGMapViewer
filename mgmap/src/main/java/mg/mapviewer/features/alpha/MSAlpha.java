@@ -38,6 +38,7 @@ public class MSAlpha extends MGMicroService {
         prefAtlVisibility.addObserver(prefSliderTracksObserver);
         prefMtlVisibility.addObserver(prefSliderTracksObserver);
         prefRtlVisibility.addObserver(prefSliderTracksObserver);
+        prefSliderTracksObserver.update(null, null);
     }
 
     @Override
@@ -45,10 +46,12 @@ public class MSAlpha extends MGMicroService {
         if ("alpha_layers".equals(info)){
             etv.setPrAction(prefAlpha);
             etv.setData(R.drawable.slider_layer);
+            etv.setHelp(r(R.string.MSAlpha_qcAlphaLayers_Help));
         } else if ("alpha_tracks".equals(info)){
             etv.setPrAction(prefAlpha2);
             etv.setData(R.drawable.slider_track);
             etv.setDisabledData(prefSliderTracksEnabled, R.drawable.slider_track_dis);
+            etv.setHelp(r(R.string.MSAlpha_qcAlphaTracks_Help));
         }
         setSliderVisibility();
         return etv;

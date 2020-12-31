@@ -129,14 +129,17 @@ public class MSAvailableTrackLogs extends MGMicroService {
             etv.setData(R.drawable.hide_stl);
             etv.setPrAction(prefHideStl);
             etv.setDisabledData(prefStlVisibility, R.drawable.hide_stl_dis);
+            etv.setHelp(r(R.string.MSAtl_qcHideStl_Help));
         } else if ("hide_atl".equals(info)){
             etv.setData(R.drawable.hide_atl);
             etv.setPrAction(prefHideAtl);
             etv.setDisabledData(prefAtlVisibility,R.drawable.hide_atl_dis);
+            etv.setHelp(r(R.string.MSAtl_qcHideAtl_Help));
         } else if ("hide_all".equals(info)){
             etv.setData(R.drawable.hide_all);
             etv.setPrAction(prefHideAll);
             etv.setDisabledData(prefHideAllEnabled,R.drawable.hide_all_dis);
+            etv.setHelp(r(R.string.MSAtl_qcHideAll_Help));
         }
         return etv;
     }

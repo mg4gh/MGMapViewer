@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="MSAlpha_qcAlphaLayers_Help">Provide seek bars for layer transparency</string>
+    <string name="MSAlpha_qcAlphaTracks_Help">Provide seek bars for track transparency</string>
+
+</resources>

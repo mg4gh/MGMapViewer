@@ -219,7 +219,7 @@ public class MGMicroService {
     protected Resources getResources(){
         return mmActivity.getApplicationContext().getResources();
     }
-
+    protected String r(int id){return getResources().getString(id); }
 
     protected void onResume(){ }
     protected void onPause(){ }

@@ -132,22 +132,22 @@ public class ControlComposer {
         createQC(application,MSControl.class,qcss[0],"group_task",gos.get(1));
         createQC(application,MSSearch.class,qcss[0],"group_search",gos.get(2));
         ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false))
-                .setData(MGPref.bool(R.string.MSMarker_qc_EditMarkerTarck),MGPref.bool(R.string.MSRouting_qc_RoutingHint),
+                .setData(MGPref.bool(R.string.MSMarker_qc_EditMarkerTrack),MGPref.bool(R.string.MSRouting_qc_RoutingHint),
                 R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4).addActionObserver(gos.get(3));
         createQC(application,MSBB.class,qcss[0],"group_bbox",gos.get(4));
         createQC(application,MSPosition.class,qcss[0],"group_record",gos.get(5));
         ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false)).setData(R.drawable.show_hide).addActionObserver(gos.get(6));
         createQC(application,MSControl.class,qcss[0],"group_multi",gos.get(7));
 
-        createQC(application,MSControl.class,qcss[1],"help_task",gos.get(1));
+        createQC(application,MSControl.class,qcss[1],"help");
         createQC(application,MSControl.class,qcss[1],"settings",gos.get(0));
         createQC(application,MSControl.class,qcss[1],"fuSettings",gos.get(0));
         createQC(application,MSControl.class,qcss[1],"statistic",gos.get(0));
         createQC(application,MSControl.class,qcss[1],"heightProfile",gos.get(0));
         createQC(application,MSControl.class,qcss[1],"download",gos.get(0));
-        createQC(application,MSControl.class,qcss[1],"empty",gos.get(0));
+        createQC(application,MSControl.class,qcss[1],"themes",gos.get(0));
 
-        createQC(application,MSSearch.class,qcss[2],"help_search",gos.get(2));
+        createQC(application,MSControl.class,qcss[2],"help");
         createQC(application,MSSearch.class,qcss[2],"search",gos.get(0));
         createQC(application,MSSearch.class,qcss[2],"searchRes",gos.get(0));
         createQC(application,MSControl.class,qcss[2],"empty",gos.get(0));
@@ -155,15 +155,15 @@ public class ControlComposer {
         createQC(application,MSControl.class,qcss[2],"empty",gos.get(0));
         createQC(application,MSControl.class,qcss[2],"empty",gos.get(0));
 
-        createQC(application,MSSearch.class,qcss[3],"help_marker",gos.get(3));
+        createQC(application,MSControl.class,qcss[3],"help");
         createQC(application,MSControl.class,qcss[3],"empty",gos.get(0));
         createQC(application,MSMarker.class,qcss[3],"markerEdit",gos.get(0));
         createQC(application,MSRoutingHintService.class,qcss[3],"routingHint",gos.get(0));
         createQC(application,MSControl.class,qcss[3],"empty",gos.get(0));
-        createQC(application,MSControl.class,qcss[3],"empty",gos.get(0));
+        createQC(application,MSRouting.class,qcss[3],"matching",gos.get(0));
         createQC(application,MSControl.class,qcss[3],"empty",gos.get(0));
 
-        createQC(application,MSBB.class,qcss[4],"help_bb",gos.get(4));
+        createQC(application,MSControl.class,qcss[4],"help");
         createQC(application,MSControl.class,qcss[4],"empty",gos.get(0));
         createQC(application,MSBB.class,qcss[4],"loadFromBB",gos.get(0));
         createQC(application,MSBB.class,qcss[4],"bbox_on",gos.get(0));
@@ -171,7 +171,7 @@ public class ControlComposer {
         createQC(application,MSBB.class,qcss[4],"TSLoadAll",gos.get(0));
         createQC(application,MSBB.class,qcss[4],"TSDeleteAll",gos.get(0));
 
-        createQC(application,MSControl.class,qcss[5],"help_record",gos.get(5));
+        createQC(application,MSControl.class,qcss[5],"help");
         createQC(application,MSControl.class,qcss[5],"empty",gos.get(0));
         createQC(application,MSPosition.class,qcss[5],"center",gos.get(0));
         createQC(application,MSPosition.class,qcss[5],"gps",gos.get(0));
@@ -179,7 +179,7 @@ public class ControlComposer {
         createQC(application,MSRecordingTrackLog.class,qcss[5],"segment",gos.get(0));
         createQC(application,MSControl.class,qcss[5],"empty",gos.get(0));
 
-        createQC(application,MSControl.class,qcss[6],"help_hide",gos.get(6));
+        createQC(application,MSControl.class,qcss[6],"help");
         createQC(application,MSAlpha.class,qcss[6],"alpha_layers",gos.get(0));
         createQC(application,MSAlpha.class,qcss[6],"alpha_tracks",gos.get(0));
         createQC(application,MSAvailableTrackLogs.class,qcss[6],"hide_stl",gos.get(0));
@@ -187,15 +187,18 @@ public class ControlComposer {
         createQC(application,MSAvailableTrackLogs.class,qcss[6],"hide_all",gos.get(0));
         createQC(application,MSMarker.class,qcss[6],"hide_mtl",gos.get(0));
 
-        createQC(application,MSControl.class,qcss[7],"help_extra",gos.get(7));
+        createQC(application,MSControl.class,qcss[7],"help");
         createQC(application,MSControl.class,qcss[7],"exit",gos.get(0));
         createQC(application,MSControl.class,qcss[7],"empty",gos.get(0));
         createQC(application,MSControl.class,qcss[7],"fullscreen",gos.get(0));
-        createQC(application,MSControl.class,qcss[7],"zoom_in",gos.get(7));
-        createQC(application,MSControl.class,qcss[7],"zoom_out",gos.get(7));
+        createQC(application,MSControl.class,qcss[7],"zoom_in");
+        createQC(application,MSControl.class,qcss[7],"zoom_out");
         createQC(application,MSControl.class,qcss[7],"home",gos.get(0));
     }
 
+    private ExtendedTextView createQC(MGMapApplication application, Class<? extends MGMicroService> clazz, ViewGroup viewGroup, String info){
+        return createQC(application,clazz,viewGroup,info,null);
+    }
     private ExtendedTextView createQC(MGMapApplication application, Class<? extends MGMicroService> clazz, ViewGroup viewGroup, String info, Observer grObserver){
         return application.getMS(clazz).initQuickControl(ControlView.createQuickControlETV(viewGroup), info).addActionObserver(grObserver);
     }

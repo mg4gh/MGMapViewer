@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -27,6 +28,8 @@ public class ExtendedTextView extends AppCompatTextView {
 
     private Formatter.FormatType formatType = Formatter.FormatType.FORMAT_STRING;
     private int drawableSize = 0;
+    private String help = "";
+    private String help1 = null, help2 = null, help3 = null, help4 = null;
 
 
     private final Observer prefObserver = createObserver();
@@ -83,6 +86,49 @@ public class ExtendedTextView extends AppCompatTextView {
         setEnabled();
         onChange("setDisabledData");
         return this;
+    }
+    public ExtendedTextView setHelp(String help){
+        this.help = help;
+        return this;
+    }
+    public ExtendedTextView setHelp(String help1,String help2){
+        this.help1 = help1;
+        this.help2 = help2;
+        return this;
+    }
+    public ExtendedTextView setHelp(String help1,String help2,String help3,String help4){
+        this.help1 = help1;
+        this.help2 = help2;
+        this.help3 = help4;
+        this.help4 = help3;
+        return this;
+    }
+    public String getHelp(){
+        String line2 = null;
+        if ((prEnabled!=null) && (!prEnabled.getValue())){
+            line2 = "disabled";
+        } else {
+            if (prEnabled==null){
+                line2 = "";
+            } else {
+                line2 = "enabled";
+            }
+            String res = null;
+            if ((prState1 != null) && (prState2 == null)){
+                res = prState1.getValue()?help2:help1;
+            }
+            if ((prState1 != null) && (prState2 != null)){
+                if (prState2.getValue()){
+                    res = prState1.getValue()?help4:help3;
+                } else {
+                    res = prState1.getValue()?help2:help1;
+                }
+            }
+            if ((res!=null) && (res.length() > 0)){
+                line2 += (line2.length() > 0)?"; ":""  + res;
+            }
+        }
+        return (help.length()>0)?(help + ((line2.length()>0)?(System.lineSeparator()+line2):"")):"";
     }
     public ExtendedTextView addActionObserver(Observer action1Observer){
         if ((prAction1!=null) && (action1Observer!=null)) prAction1.addObserver(action1Observer);

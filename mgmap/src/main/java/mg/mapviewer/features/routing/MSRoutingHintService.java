@@ -38,6 +38,7 @@ public class MSRoutingHintService extends MGMicroService {
         etv.setData(prefRoutingHints,R.drawable.routing_hints1, R.drawable.routing_hints2);
         etv.setPrAction(prefRoutingHints);
         etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
+        etv.setHelp(r(R.string.MSRouting_qcRoutingHint_Help)).setHelp(r(R.string.MSRouting_qcRoutingHint_Help),r(R.string.MSRouting_qcRoutingHint_Help));
         return etv;
     }
 
@@ -55,6 +56,7 @@ public class MSRoutingHintService extends MGMicroService {
             prefRoutingHints.setValue(false);
         }
         prefRoutingHints.addObserver(new RoutingHintObserver());
+        prefRoutingHints.onChange();
         Observer routingHintsEnabledObserver = new Observer() {
             @Override
             public void update(Observable o, Object arg) {
@@ -66,6 +68,7 @@ public class MSRoutingHintService extends MGMicroService {
         };
         prefGps.addObserver(routingHintsEnabledObserver);
         prefMtlVisibility.addObserver(routingHintsEnabledObserver);
+
     }
 
     @Override

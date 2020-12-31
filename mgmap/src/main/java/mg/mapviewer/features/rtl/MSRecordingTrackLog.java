@@ -146,10 +146,12 @@ public class MSRecordingTrackLog extends MGMicroService {
         if ("track".equals(info)){
             etv.setData(prefRecordTrackState,R.drawable.record_track1,R.drawable.record_track2);
             etv.setPrAction(prefRecordTrackAction);
+            etv.setHelp(r(R.string.MSRecording_qcRec_help)).setHelp(r(R.string.MSRecording_qcRec_help1),r(R.string.MSRecording_qcRec_help2));
         } else if ("segment".equals(info)){
             etv.setData(prefRecordSegmentState,R.drawable.record_segment1,R.drawable.record_segment2);
             etv.setPrAction(prefRecordSegmentAction);
             etv.setDisabledData(prefRecordTrackState, R.drawable.record_segment_dis);
+            etv.setHelp(r(R.string.MSRecording_qcRecSeg_help)).setHelp(r(R.string.MSRecording_qcRecSeg_help1),r(R.string.MSRecording_qcRecSeg_help2));
         }
         return etv;
     }

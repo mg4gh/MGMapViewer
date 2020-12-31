@@ -80,10 +80,12 @@ public class MSPosition extends MGMicroService {
             etv.setData(prefGps, R.drawable.gps1,R.drawable.gps2);
             etv.setPrAction(prefGps);
             etv.setDisabledData(prefGpsEnabled, R.drawable.gps_dis);
+            etv.setHelp("GPS state").setHelp("Switch GPS ON","Switch GPS OFF");
         } else if ("center".equals(info)){
             etv.setData(prefCenter,R.drawable.center1,R.drawable.center2);
             etv.setPrAction(prefCenter);
             etv.setDisabledData(prefGps, R.drawable.center_dis);
+            etv.setHelp("Center GPS position").setHelp("Switch ON","Switch OFF");
         } else if ("group_record".equals(info)){
             etv.setData(prefGps,R.drawable.group_record1,R.drawable.group_record2);
             etv.setPrAction(MGPref.anonymous(false));

@@ -48,6 +48,7 @@ import mg.mapviewer.view.PrefTextView;
 
 public class MSBB extends MGMicroService {
 
+    private final MGPref<Boolean> prefBboxOnAction = MGPref.anonymous(false);
     private final MGPref<Boolean> prefBboxOn = MGPref.get(R.string.MSBB_qc_bboxOn, false);
 
     private final MGPref<Boolean> prefLoadFromBB = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
@@ -66,6 +67,12 @@ public class MSBB extends MGMicroService {
         super(mmActivity);
         this.msAvailableTrackLogs = msAvailableTrackLogs;
 
+        prefBboxOnAction.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                prefBboxOn.toggle();
+            }
+        });
         prefLoadFromBB.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
@@ -100,10 +107,13 @@ public class MSBB extends MGMicroService {
             prefBboxOn.setValue(false);
         }
     };
-    long ttHideTime = 15000;
+    long ttHideTime = 30000;
     private void refreshTTHide(){
         getTimer().removeCallbacks(ttHide);
         getTimer().postDelayed(ttHide,ttHideTime);
+    }
+    public void cancelTTHide(){
+        getTimer().removeCallbacks(ttHide);
     }
 
     @Override
@@ -115,21 +125,26 @@ public class MSBB extends MGMicroService {
             etv.setPrAction(prefLoadFromBB);
             etv.setData(R.drawable.load_from_bb);
             etv.setDisabledData(prefLoadFromBBEnabled, R.drawable.load_from_bb_dis);
+            etv.setHelp(r(R.string.MSBB_qcLoadFromBB_Help));
         } else if ("bbox_on".equals(info)){
-            etv.setPrAction(prefBboxOn);
+            etv.setPrAction(prefBboxOnAction);
             etv.setData(prefBboxOn,R.drawable.bbox,R.drawable.bbox2);
+            etv.setHelp(r(R.string.MSBB_qcBBox_Help)).setHelp(r(R.string.MSBB_qcBBox_Help1),r(R.string.MSBB_qcBBox_Help2));
         } else if ("TSLoadRemain".equals(info)){
             etv.setPrAction(prefTSLaodRemain);
             etv.setData(R.drawable.bb_ts_load_remain);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_remain_dis);
+            etv.setHelp(r(R.string.MSBB_qcTSLoadRemainFromBB_Help));
         }else if ("TSLoadAll".equals(info)){
             etv.setPrAction(prefTSLaodAll);
             etv.setData(R.drawable.bb_ts_load_all);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_all_dis);
+            etv.setHelp(r(R.string.MSBB_qcTSLoadAllFromBB_Help));
         }else if ("TSDeleteAll".equals(info)){
             etv.setPrAction(prefTSDeleteAll);
             etv.setData(R.drawable.bb_ts_delete_all);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_delete_all_dis);
+            etv.setHelp(r(R.string.MSBB_qcTSDeleteAllFromBB_Help));
         }
         return etv;
     }
@@ -313,7 +328,7 @@ public class MSBB extends MGMicroService {
         }
         bbcl = null;
         unregisterAll();
-        getTimer().removeCallbacks(ttHide);
+        cancelTTHide();
     }
 
     boolean isLoadAllowed(){

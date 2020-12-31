@@ -130,12 +130,12 @@ public class MSSearch extends MGMicroService {
         } else if ("search".equals(info)){
             etv.setData(prefSearchOn,R.drawable.search,R.drawable.search1b);
             etv.setPrAction(prefSearchOn);
+            etv.setHelp(r(R.string.MSRecording_qcSearch_help)).setHelp(r(R.string.MSRecording_qcSearch_help1),r(R.string.MSRecording_qcSearch_help2));
         } else if ("searchRes".equals(info)){
             etv.setData(prefShowSearchResult,R.drawable.search_res1,R.drawable.search_res2);
             etv.setPrAction(prefShowSearchResult);
             etv.setDisabledData(prefShowSearchResultEnabled, R.drawable.search_res3);
-        } else if ("help_search".equals(info)){
-
+            etv.setHelp(r(R.string.MSRecording_qcSearchRes_help)).setHelp(r(R.string.MSRecording_qcSearchRes_help1),r(R.string.MSRecording_qcSearchRes_help2));
         }
         return etv;
     }

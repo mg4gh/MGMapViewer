@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import mg.mapviewer.R;
 import mg.mapviewer.graph.GGraphTile;
@@ -51,13 +50,13 @@ import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
-import mg.mapviewer.view.PrefTextView;
 
 public class MSMarker extends MGMicroService {
 
     private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
-    private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
+    private final MGPref<Boolean> prefEditMarkerTrackAction =  MGPref.anonymous(false);
+    private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTrack, false);
     private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
     private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
 
@@ -71,6 +70,12 @@ public class MSMarker extends MGMicroService {
 
     public MSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
+        prefEditMarkerTrackAction.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                prefEditMarkerTrack.toggle();
+            }
+        });
     }
 
     private final Observer editMarkerTrackObserver = new Observer() {
@@ -114,11 +119,13 @@ public class MSMarker extends MGMicroService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
         if ("markerEdit".equals(info)){
             etv.setData(prefEditMarkerTrack,R.drawable.mtlr, R.drawable.mtlr2);
-            etv.setPrAction(prefEditMarkerTrack);
+            etv.setPrAction(prefEditMarkerTrackAction);
+            etv.setHelp(r(R.string.MSMarker_qcEditMarkerTrack_Help)).setHelp(r(R.string.MSMarker_qcEditMarkerTrack_Help1),r(R.string.MSMarker_qcEditMarkerTrack_Help2));
         } else if ("hide_mtl".equals(info)){
             etv.setData(R.drawable.hide_mtl);
             etv.setPrAction(prefHideMtl);
             etv.setDisabledData(prefMtlVisibility,R.drawable.hide_mtl_dis);
+            etv.setHelp(r(R.string.MSMarker_qcHideMtl_Help));
         }
         return etv;
     }

@@ -11,4 +11,8 @@
 
     <string name="MSATL_pref_hideAll">MSATL.hideAll</string>
 
+    <string name="MSAtl_qcHideStl_Help">Hide selected track log</string>
+    <string name="MSAtl_qcHideAtl_Help">Hide not selected track logs</string>
+    <string name="MSAtl_qcHideAll_Help">Hide all track logs</string>
+
 </resources>
