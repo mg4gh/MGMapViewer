@@ -128,11 +128,11 @@ public class MSSearch extends MGMicroService {
             etv.setData(prefSearchOn, prefShowSearchResult, R.drawable.group_search1,R.drawable.group_search2,R.drawable.group_search3,R.drawable.group_search4);
             etv.setPrAction(MGPref.anonymous(false));
         } else if ("search".equals(info)){
-            etv.setData(prefSearchOn,R.drawable.search,R.drawable.search1b);
+            etv.setData(prefSearchOn,R.drawable.search1b,R.drawable.search);
             etv.setPrAction(prefSearchOn);
             etv.setHelp(r(R.string.MSRecording_qcSearch_help)).setHelp(r(R.string.MSRecording_qcSearch_help1),r(R.string.MSRecording_qcSearch_help2));
         } else if ("searchRes".equals(info)){
-            etv.setData(prefShowSearchResult,R.drawable.search_res1,R.drawable.search_res2);
+            etv.setData(prefShowSearchResult,R.drawable.search_res2,R.drawable.search_res1);
             etv.setPrAction(prefShowSearchResult);
             etv.setDisabledData(prefShowSearchResultEnabled, R.drawable.search_res3);
             etv.setHelp(r(R.string.MSRecording_qcSearchRes_help)).setHelp(r(R.string.MSRecording_qcSearchRes_help1),r(R.string.MSRecording_qcSearchRes_help2));

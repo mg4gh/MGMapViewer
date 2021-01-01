@@ -34,14 +34,6 @@ public class MSRoutingHintService extends MGMicroService {
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
     private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
 
-    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
-        etv.setData(prefRoutingHints,R.drawable.routing_hints1, R.drawable.routing_hints2);
-        etv.setPrAction(prefRoutingHints);
-        etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
-        etv.setHelp(r(R.string.MSRouting_qcRoutingHint_Help)).setHelp(r(R.string.MSRouting_qcRoutingHint_Help),r(R.string.MSRouting_qcRoutingHint_Help));
-        return etv;
-    }
-
     private int  mediumAwayCnt = 0;
     private PointModel lastHintPoint = null;
     private boolean lastHintClose = false;
@@ -69,6 +61,14 @@ public class MSRoutingHintService extends MGMicroService {
         prefGps.addObserver(routingHintsEnabledObserver);
         prefMtlVisibility.addObserver(routingHintsEnabledObserver);
 
+    }
+
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        etv.setData(prefRoutingHints,R.drawable.routing_hints2, R.drawable.routing_hints1);
+        etv.setPrAction(prefRoutingHints);
+        etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
+        etv.setHelp(r(R.string.MSRouting_qcRoutingHint_Help)).setHelp(r(R.string.MSRouting_qcRoutingHint_Help),r(R.string.MSRouting_qcRoutingHint_Help));
+        return etv;
     }
 
     @Override

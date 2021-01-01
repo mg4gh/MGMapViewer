@@ -118,7 +118,7 @@ public class MSMarker extends MGMicroService {
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
         if ("markerEdit".equals(info)){
-            etv.setData(prefEditMarkerTrack,R.drawable.mtlr, R.drawable.mtlr2);
+            etv.setData(prefEditMarkerTrack,R.drawable.mtlr2, R.drawable.mtlr);
             etv.setPrAction(prefEditMarkerTrackAction);
             etv.setHelp(r(R.string.MSMarker_qcEditMarkerTrack_Help)).setHelp(r(R.string.MSMarker_qcEditMarkerTrack_Help1),r(R.string.MSMarker_qcEditMarkerTrack_Help2));
         } else if ("hide_mtl".equals(info)){

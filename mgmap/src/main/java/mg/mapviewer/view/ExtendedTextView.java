@@ -125,7 +125,7 @@ public class ExtendedTextView extends AppCompatTextView {
                 }
             }
             if ((res!=null) && (res.length() > 0)){
-                line2 += (line2.length() > 0)?"; ":""  + res;
+                line2 += ((line2.length() > 0)?"; ":"")  + res;
             }
         }
         return (help.length()>0)?(help + ((line2.length()>0)?(System.lineSeparator()+line2):"")):"";

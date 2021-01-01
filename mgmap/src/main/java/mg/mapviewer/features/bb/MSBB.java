@@ -128,7 +128,7 @@ public class MSBB extends MGMicroService {
             etv.setHelp(r(R.string.MSBB_qcLoadFromBB_Help));
         } else if ("bbox_on".equals(info)){
             etv.setPrAction(prefBboxOnAction);
-            etv.setData(prefBboxOn,R.drawable.bbox,R.drawable.bbox2);
+            etv.setData(prefBboxOn,R.drawable.bbox2,R.drawable.bbox);
             etv.setHelp(r(R.string.MSBB_qcBBox_Help)).setHelp(r(R.string.MSBB_qcBBox_Help1),r(R.string.MSBB_qcBBox_Help2));
         } else if ("TSLoadRemain".equals(info)){
             etv.setPrAction(prefTSLaodRemain);
