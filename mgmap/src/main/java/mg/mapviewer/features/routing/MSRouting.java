@@ -95,6 +95,8 @@ public class MSRouting extends MGMicroService {
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
     private final MGPref<Boolean> prefRouteGL = MGPref.get(R.string.MSMarker_qc_RouteGL, false);
 
+    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.MSMarker_pref_auto_switcher, true);
+    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
     private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
     private final MGPref<Boolean> prefRotlVisibility = MGPref.get(R.string.MSRouting_pref_RoTL_visibility, false);
@@ -124,7 +126,16 @@ public class MSRouting extends MGMicroService {
         };
         prefMtlVisibility.addObserver(matchingEnabledObserver);
         prefAlphaRotl.addObserver(matchingEnabledObserver);
-
+        prefAutoSwitcher.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                if (prefAutoMarkerSetting.getValue()){
+                    if (prefAlphaRotl.getValue() < 0.25f){
+                        prefAlphaRotl.setValue(1.0f);
+                    }
+                }
+            }
+        });
     }
 
     @Override

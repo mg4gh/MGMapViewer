@@ -62,9 +62,9 @@ public class MSMarker extends MGMicroService {
 
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
     private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
-    private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
     private final MGPref<Boolean> prefHideMtl = MGPref.anonymous(false);
     private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.MSATL_pref_hideAll, false);
+    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.MSMarker_pref_auto_switcher, true);
 
     MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
 
@@ -76,6 +76,7 @@ public class MSMarker extends MGMicroService {
                 prefEditMarkerTrack.toggle();
             }
         });
+        prefAutoSwitcher.addObserver(autoSwitchObserver);
     }
 
     private final Observer editMarkerTrackObserver = new Observer() {
@@ -94,7 +95,18 @@ public class MSMarker extends MGMicroService {
     };
     public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
-    private TimerTask ttHide = new TimerTask() {
+    private Observer autoSwitchObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            boolean smallMtl = prefAutoSwitcher.getValue();
+            if (prefAutoMarkerSetting.getValue()){
+                prefAlphaMtl.setValue(smallMtl?0.0f:1.0f);
+                prefSnap2Way.setValue(smallMtl);
+            }
+        }
+    };
+
+     private TimerTask ttHide = new TimerTask() {
         @Override
         public void run() {
             prefEditMarkerTrack.setValue(false);
@@ -183,7 +195,7 @@ public class MSMarker extends MGMicroService {
 
 
     public void createMarkerTrackLog(TrackLog trackLog){
-        adaptAutoSettings(trackLog.getTrackStatistic().getNumPoints() < 200);
+        setAutoSwitcher(trackLog.getTrackStatistic().getNumPoints() < 200); // < 200 means rather small MTL with corresponding settings
         WriteableTrackLog mtl = new WriteableTrackLog(trackLog.getName()+"__MarkerTrack");
         mtl.startTrack(trackLog.getTrackStatistic().getTStart());
         for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
@@ -207,7 +219,7 @@ public class MSMarker extends MGMicroService {
     }
 
     private void initMarkerTrackLog(){
-        adaptAutoSettings(true);
+        setAutoSwitcher(true);
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
         long now = System.currentTimeMillis();
         WriteableTrackLog mtl = new WriteableTrackLog(sdf2.format(new Date(now))+"_MarkerTrack");
@@ -360,18 +372,13 @@ public class MSMarker extends MGMicroService {
         }
     }
 
-    private void adaptAutoSettings(boolean smallMtl){
-        if (prefAutoMarkerSetting.getValue()){
-            prefAlphaMtl.setValue(smallMtl?0.0f:1.0f);
-            prefSnap2Way.setValue(smallMtl);
-            if (prefAlphaRotl.getValue() < 0.25f){
-                prefAlphaRotl.setValue(1.0f);
-            }
-        }
+    private void setAutoSwitcher(boolean bValue){
+        prefAutoSwitcher.setValue(bValue);
+        prefAutoSwitcher.onChange();
     }
 
-    public void hideMarkerTrackLog(){
-        getApplication().markerTrackLogObservable.setTrackLog(null);
-        GGraphTile.clearCache();
-    }
+//    public void hideMarkerTrackLog(){
+//        getApplication().markerTrackLogObservable.setTrackLog(null);
+//        GGraphTile.clearCache();
+//    }
 }
