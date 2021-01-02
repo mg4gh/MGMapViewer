@@ -29,7 +29,7 @@
         android:strokeWidth="1"
         android:pathData="
             M6,24  a12,12,0  0 0 20,0  M6,24  a12,12,0  0 1 20,0
-            M11,24  a5,5,0    0 0 10,0  M11,24  a5,5,0   0 1 10,0
+            M11,24  a5,5,0 1 1 0,0.0001
         "
         />
     <path
@@ -45,7 +45,7 @@
         android:strokeWidth="1"
         android:fillColor="#FFFFFFFF"
         android:pathData="
-            M14,24  a2,2,0 0 0 4,0   M14,24  a2,2,0 0 1 4,0
+            M14,24  a2,2,0 1 1 0,0.0001
            "
         />
 

@@ -18,17 +18,15 @@
         android:fillColor="#FFE0E0E0"
         android:strokeWidth="1"
         android:pathData="
-            M5,9 A7,7,0 0 0 19,9
-            M5,9 A7,7,0 0 1 19,9  "
-        />
+            M5,9 a7,7,0 1 1 0,0.0001
+        " />
 
     <path
         android:strokeColor="#FFFFFFFF"
         android:fillColor="#FFF0F0F0"
         android:strokeWidth="1"
         android:pathData="
-            M7,9 A5,5,0 0 0 17,9
-            M7,9 A5,5,0 0 1 17,9
+            M7,9 a5,5,0 1 1 0,0.0001
         " />
 
 
