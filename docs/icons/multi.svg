@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="background:#B0B0B0" width="80" height="80" viewBox="0 0 48.00 48.00">
   <path style="stroke-width:1;stroke:#FFFFFF;fill:none" d="M10,15 l0,6 l-5,0 a0.5,0.5,0 0 1 -0.5,-0.5 l0,-8 l-1,1                 a0.75,0.75,0 0 1 -1,-1 l9,-9 a0.5,0.5,0 0 1 0.6,0 l3,3 l0,-2                 a0.75,0.75,0 0 1 1.4,0 l0,3.4 l4.6,4.6                 a0.75,0.75,0 0 1 -1,1 l-1,-1 l0,8 a0.5,0.5,0 0 1 -0.5,0.5 l-5,0                 l0,-6 l-4,0             " />
   <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M26,7 L26,2 L31,2   M26,17 L26,22 L31,22  M46,17 L46,22 L41,22  M46,7 L46,2 L41,2 " />
-  <path style="stroke-width:2;stroke:#FFFFFF;fill:#000000;fill-opacity:0.00" d="M12,26 m0,0 a10,10 0 6,0 0.001 0 " />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M12,26 m0,0 a10,10,0 1 0 0.001,0 " />
   <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M12,31 L12,41 M7,36 L17,36  " />
-  <path style="stroke-width:2;stroke:#FFFFFF;fill:#000000;fill-opacity:0.00" d="M36,26 m0,0 a10,10 0 6,0 0.001 0 " />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M36,26 m0,0 a10,10,0 1 0 0.001,0" />
   <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M31,36 L41,36  " />
 </svg>
