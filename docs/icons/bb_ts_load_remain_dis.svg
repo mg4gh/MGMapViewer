@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="background:#B0B0B0" width="80" height="80" viewBox="0 0 32.00 32.00">
+  <path style="stroke-width:1;stroke:#C0C0C0;fill:#B0B0B0" d="             M-8,-8 l12,0 l0,12, l-12,0, l0,-12.5             M4,-8 l12,0 l0,12, l-12,0, l0,-12.5             M16,-8 l12,0 l0,12, l-12,0, l0,-12.5             M28,-8 l12,0 l0,12, l-12,0, l0,-12.5              M-8,4 l12,0 l0,12, l-12,0, l0,-12.5             M4,4 l12,0 l0,12, l-12,0, l0,-12.5             M16,4 l12,0 l0,12, l-12,0, l0,-12.5             M28,4 l12,0 l0,12, l-12,0, l0,-12.5              M-8,16 l12,0 l0,12, l-12,0, l0,-12.5             M4,16 l12,0 l0,12, l-12,0, l0,-12.5              M-8,28 l12,0 l0,12, l-12,0, l0,-12.5             M4,28 l12,0 l0,12, l-12,0, l0,-12.5           " />
+  <path style="stroke-width:1;stroke:#C0C0C0;fill:#A0A0A0" d="              M16,16 l12,0 l0,12, l-12,0, l0,-12.5             M28,16 l12,0 l0,12, l-12,0, l0,-12.5              M16,28 l12,0 l0,12, l-12,0, l0,-12.5             M28,28 l12,0 l0,12, l-12,0, l0,-12.5          " />
+  <path style="stroke-width:1;stroke:#C0C0C0;fill:none" d="              M16,16  m3,6 l6,0 m-3,-3 l0,6         " />
+  <path style="stroke-width:1;stroke:#C0C0C0;fill:none" d="              M4,4 l24,0 l0,24 l-24,0 l0,-24.5         " />
+</svg>
