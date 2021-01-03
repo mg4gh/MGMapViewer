@@ -42,7 +42,7 @@ Colored depending on gain/loss means
 
 **Track transparency**
 
-It is possible to control the transparency for all track types. To do this use a long tap on the "transparency control" [quick control](../../FurtherFeatures/QuickControl/quickcontrols.md).
+It is possible to control the transparency for all track types. To do this use a long tap on the "transparency control" [quick control](../../FurtherFeatures/QuickControl/qcs_tracks.md).
 The next figures show an example of the usage: First the marker track is invisible, while in the second figure the transparency of the marker track is reduced, so it becomes well visible.
 
 <img src="./alpha1.png" width="400" />&nbsp;

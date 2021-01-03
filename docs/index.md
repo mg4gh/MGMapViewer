@@ -5,7 +5,7 @@ This library provides an excellent base for vector map visualisation. There were
 project to enable straight forward implementation in this app.
 
 This is the [Getting Started](./GettingStarted/GettingStarted.md).
-And here is a shortcut to the [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md).
+For the usage please check the quick control sections, especially those of the [MGMapActivity](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md).
 
 # Feature overview
 
@@ -42,8 +42,11 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Beeline distance](Features/FurtherFeatures/BeelineDistance/beeline.md): show the beeline distance between current position and the center position of the map
 - [Geocode](./Features/FurtherFeatures/Geocode/geocode.md): Search location by name and search entity by location
 - [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status line
-- [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md): the quick controls allow to control most frequently used features
-- [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account 
+- Quick controls of the app:
+  - [Quick controls of MGMapActivity](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md): these quick controls allow to control most frequently used features
+  - [Quick controls for tracks](Features/FurtherFeatures/QuickControl/qcs_tracks.md): special quick controls for tracks
+  - [Quick controls of statistic activity](Features/FurtherFeatures/QuickControl/qcs_statistic.md): the quick controls of the statistic activity
+- [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account
 - [Routing Hints](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation
 
 ### Developer features

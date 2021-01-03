@@ -268,6 +268,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void createSharedPreferences() {
         super.createSharedPreferences();
         MGMapLayerFactory.setSharedPreferences(sharedPreferences);
+        String prefLang = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "de");
+        sharedPreferences.edit().putString(getResources().getString(R.string.preferences_language_key), prefLang).apply();
         MGMapLayerFactory.setXmlRenderTheme(getRenderTheme());
 
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + Float.toString(DisplayModel.getDeviceScaleFactor()));

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="MSAlpha_qcAlphaLayers_Help">Provide seek bars for layer transparency</string>
+    <string name="MSAlpha_qcAlphaLayers_Help1">on tap: controls become visible</string>
+    <string name="MSAlpha_qcAlphaLayers_Help2">on tap: controls become invisible</string>
     <string name="MSAlpha_qcAlphaTracks_Help">Provide seek bars for track transparency</string>
+    <string name="MSAlpha_qcAlphaTracks_Help1">on tap: controls become visible</string>
+    <string name="MSAlpha_qcAlphaTracks_Help2">on tap: controls become invisible</string>
 
 </resources>

@@ -105,7 +105,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
 
 
     protected void setMapScaleBar() {
-        String value = this.sharedPreferences.getString(getResources().getString(R.string.preferences_scalebar_key), getResources().getString(R.string.preferences_scalebar_both_key));
+        String value = this.sharedPreferences.getString(getResources().getString(R.string.preferences_scalebar_key), getResources().getString(R.string.preferences_scalebar_metric_key));
 
         if (getResources().getString(R.string.preferences_scalebar_none_key).equals(value)) {
             AndroidUtil.setMapScaleBar(this.mapView, null, null);

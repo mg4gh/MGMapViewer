@@ -64,6 +64,7 @@ public class Zipper
     }
 
     public void unpack(URL url, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" extract url="+url+" extractedZipFilePath="+extractedZipFilePath);
         URLConnection connection = url.openConnection();
         connection.connect();
         bgJob.setMax((int)(connection.getContentLengthLong()/1000));

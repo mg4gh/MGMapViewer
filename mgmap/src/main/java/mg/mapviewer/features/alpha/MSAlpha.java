@@ -2,14 +2,12 @@ package mg.mapviewer.features.alpha;
 
 import java.util.Observable;
 import java.util.Observer;
-import java.util.UUID;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
-import mg.mapviewer.view.PrefTextView;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -45,13 +43,13 @@ public class MSAlpha extends MGMicroService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         if ("alpha_layers".equals(info)){
             etv.setPrAction(prefAlpha);
-            etv.setData(R.drawable.slider_layer);
-            etv.setHelp(r(R.string.MSAlpha_qcAlphaLayers_Help));
+            etv.setData(prefAlpha,R.drawable.slider_layer2,R.drawable.slider_layer1);
+            etv.setHelp(r(R.string.MSAlpha_qcAlphaLayers_Help)).setHelp(r(R.string.MSAlpha_qcAlphaLayers_Help1),r(R.string.MSAlpha_qcAlphaLayers_Help2));
         } else if ("alpha_tracks".equals(info)){
             etv.setPrAction(prefAlpha2);
-            etv.setData(R.drawable.slider_track);
+            etv.setData(prefAlpha2,R.drawable.slider_track2,R.drawable.slider_track1);
             etv.setDisabledData(prefSliderTracksEnabled, R.drawable.slider_track_dis);
-            etv.setHelp(r(R.string.MSAlpha_qcAlphaTracks_Help));
+            etv.setHelp(r(R.string.MSAlpha_qcAlphaTracks_Help)).setHelp(r(R.string.MSAlpha_qcAlphaTracks_Help1),r(R.string.MSAlpha_qcAlphaTracks_Help2));
         }
         setSliderVisibility();
         return etv;

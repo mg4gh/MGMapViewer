@@ -11,7 +11,7 @@ This page is split into the following sections, which represent typical steps in
 - switch off the bounding box feature 
 
 ### Switch bounding box feature on and mark a relevant area
-To switch on the bounding box feature, press the bounding box control (part of the [quick controls](../../FurtherFeatures/QuickControl/quickcontrols.md)).
+To switch on the bounding box feature, press the bounding box control (part of the [quick controls](../../FurtherFeatures/QuickControl/qcs_tracks.md)).
 As a visual feedback you see the quick control in blue color.
 
 <img src="./bb_m1.png" width="200" />&nbsp;
