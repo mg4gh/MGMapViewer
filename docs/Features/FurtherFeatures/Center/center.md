@@ -18,10 +18,17 @@ manually to the current position. But if you want to check some other area
 e.g. to verify the route, it might be annoying if you scroll to a certain position
 and then the app jumps back due to a new location from GPS sensor. Therefore this
 feature allows to disable/enable this function to automatically center GPS position.
-This is done with <span style="color:gray">*Menu | Center off*</span> and 
-<span style="color:gray">*Menu | Center on*</span>.
 
-<img src="./centeroff.png" width="200" />&nbsp;
-<img src="./centeron.png" width="200" />&nbsp;
+Use <img src="../../../icons/group_record2.svg" width="24"/> + <img src="../../../icons/center1.svg" width="24"/> to switch the feature off.
+
+If you move further, then the screen isn't anymore aligned to new GPS locations
+
+<img src="./center5.png" width="200" />&nbsp;
+<img src="./center6.png" width="200" />&nbsp;
+
+As soon as you switch the feature again on
+(<img src="../../../icons/group_record2.svg" width="24"/> + <img src="../../../icons/center2.svg" width="24"/>), the screen will be aligned
+to the last GPS position.
+
 
 <small><small>[Back to Index](../../../index.md)</small></small>
