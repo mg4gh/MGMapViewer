@@ -540,7 +540,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             @Override
             protected boolean onTap(WriteablePointModel point) {
                 TrackLogRef ref = selectCloseTrack( point );
-                if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
+//                if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
+                if (ref.getTrackLog() != null){
                     application.availableTrackLogsObservable.setSelectedTrackLogRef(ref);
                 } else {
                     if (sharedPreferences.getBoolean("main_menu", false)){

@@ -130,7 +130,7 @@ public class MSRouting extends MGMicroService {
             @Override
             public void update(Observable o, Object arg) {
                 if (prefAutoMarkerSetting.getValue()){
-                    if (prefAlphaRotl.getValue() < 0.25f){
+                    if (prefAlphaRotl.getValue() < 0.75f){
                         prefAlphaRotl.setValue(1.0f);
                     }
                 }

@@ -27,15 +27,20 @@ So next figures show some more examples of these dashboard entries:
 <img src="./Route.png" width="400" />&nbsp;
 <img src="./Mixed1.png" width="400" />&nbsp;
 
-As we can see with the last example, there can exist multiple entries at the same time, 
-depending on whether there is currently a track recording, a selected track and/or a route.
+As we can see with the last example, multiple entries can exist at the same time,
+depending on whether there is currently a recording track, a selected track and/or a route track.
 
-If a track has multiple segments, then it gets two dashboard entries, one for the whole
-track and the second for one of the segments. The segment can be changed by tap on the
+If a track has multiple segments, then may have two dashboard entries, one for the whole
+track and the second for one of the segments. For a recording track you always see the
+whole track statistic and the statistic of the current recording segment:
+
+<img src="./recTrack.png" width="400" />&nbsp;
+
+For a selected track the segment can be changed by tap on the
 desired segment. The next example illustrates a track with two segments:
 
+<img src="./MultiSegment0.png" width="400" />&nbsp;
 <img src="./MultiSegment1.png" width="400" />&nbsp;
-<img src="./MultiSegment2.png" width="400" />&nbsp;
 
 The total values of the track correspond to the sum of the segment values.
 
