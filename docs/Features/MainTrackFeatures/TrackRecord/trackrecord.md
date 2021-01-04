@@ -2,7 +2,8 @@
 
 ## Main Track Feature: record a track
 
-Start track recording with <span style="color:gray">*Menu | Track Record | Start Track*</span>.
+Use <img src="../../../icons/group_record1.svg" width="24"/> + <img src="../../../icons/record_track1.svg" width="24"/>
+to start track recording.
 
 <img src="./Track_Record_1.png" width="400" />&nbsp;
 <img src="./Track_Record_2.png" width="400" />&nbsp;
@@ -11,21 +12,15 @@ Move a little bit around
 
 <img src="./Track_Record_3.png" width="400" />&nbsp;
 
-and then stop recording with <span style="color:gray">*Menu | Track Record | Stop Track*</span>.
-
-<img src="./Track_Record_4.png" width="400" />&nbsp;
-<img src="./Track_Record_5.png" width="400" />&nbsp;
+and then stop recording with <img src="../../../icons/group_record2.svg" width="24"/> + <img src="../../../icons/record_track2.svg" width="24"/>.
 
 After the stop recording action this track becomes the "selected track":
  
 <img src="./Track_Record_6.png" width="400" />&nbsp;
 
-Each green segment represents the line between 2 successive recorded points. The small inner (gray) line
-points in the direction of moving. The color green represents the fact, that the area is flat, so the 
-track is neither ascending nor descending.
-
-If you use instead of "Stop Track" the "Stop segment" button, then you can continue the track recording later
-with the "Start Segment" Button. So a track consists of a number of segments, which is typically just 1.
+If you use instead of the "stop track" <img src="../../../icons/record_track2.svg" width="24"/>  the "stop segment" <img src="../../../icons/record_segment2.svg" width="24"/>,
+then you can continue this track recording later with the "start segment" <img src="../../../icons/record_segment1.svg" width="24"/> action.
+So a track consists of a number of segments, which is typically just 1.
 
 **Note**: As long as the GPS is switched on there is a Notification active. It disappears after switching the GPS off.
 

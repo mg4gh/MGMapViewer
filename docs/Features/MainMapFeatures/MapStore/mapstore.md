@@ -3,7 +3,7 @@
 ## Main map Feature: mapstore
 The term tile store or offline tile store will be also used for this kind of store.
 
-There are tow options available:
+There are two options available:
 - Tile store based on file system structure
 - Tile store based on SQLite database (*.mbtiles file) 
 
@@ -38,8 +38,7 @@ They are well suited as background maps.
 Another usecase of these tile stores is to setup your own tile database.
 Create a store similar to an [online store](../MapOnline/maponline.md)
 with a [config.xml](../MapOnline/config.xml) that specifies a source of
-tiles. Put a copy of the tiles. Put a copy of the <a
-href="../../../more/store.mbtiles">empty tile store</a>
+tiles. Put a copy of the <a href="../../../more/store.mbtiles">empty tile store</a>
 in the store directory. Now you can fill this store using the
 [bounding box](../../MainTrackFeatures/BoundingBox/boundingbox.md)
 feature.

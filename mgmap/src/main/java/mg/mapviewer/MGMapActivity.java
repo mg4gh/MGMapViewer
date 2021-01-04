@@ -255,10 +255,14 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 Log.w(MGMapApplication.LABEL, NameUtil.context()+" stop " + microService + " failed: " + e.getMessage());
             }
         }
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
         MGPref.clear(); // Clear cached Prefs (to free observers registered on these Prefs
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
         application.setMgMapActivity(null);
         AndroidGraphicFactory.clearResourceMemoryCache();
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
         mapView.destroyAll();
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
         super.onDestroy();
     }
 

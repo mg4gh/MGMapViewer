@@ -118,8 +118,8 @@ public class MSSearch extends MGMicroService {
         if (MGPref.get(R.string.MGMapApplication_pref_Restart, true).getValue()){
             prefShowPos.setValue(0l);
         }
+        prefShowPos.onChange();
         prefShowSearchResult.onChange();
-
     }
 
     @Override

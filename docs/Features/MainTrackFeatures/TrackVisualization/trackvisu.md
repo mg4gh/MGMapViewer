@@ -18,16 +18,9 @@ The following pictures show:
 
 Beside these three types of visualized tracks there might be also a [marker track](../MarkerTrack/markertrack.md) ( pink line) and
 a [route track](../Routing/routing.md) (purple line) visible.
-
-Out of these 5 types of tracks there are three of them, which allow an alternative gain/loss representation of this track:
-
-| track type | allow gain/loss representation | Controls to toggle representation |
-|---|---|---|
-| recording track | X | long press on track |
-| marker track | - | |
-| route track | X | long press on track (only if marker track edit is switched off)  or long press on one of the marker track points (always) |
-| selected track | X | via settings menu or via long press on track |
-| available track | - | |
+Out of these 5 types of tracks there are three of them (recording track, route track and selected track),
+which allow an alternative gain/loss representation of this track.
+Please check the [track controls](../../FurtherFeatures/QuickControl/qcs_tracks.md) how to enable/disable this mode.
 
 The following picture shows an selected track with gain/loss representation switched on.
 
@@ -42,7 +35,8 @@ Colored depending on gain/loss means
 
 **Track transparency**
 
-It is possible to control the transparency for all track types. To do this use a long tap on the "transparency control" [quick control](../../FurtherFeatures/QuickControl/qcs_tracks.md).
+It is possible to control the transparency for all track types. To do this use
+<img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/slider_layer2.svg" width="24"/>.
 The next figures show an example of the usage: First the marker track is invisible, while in the second figure the transparency of the marker track is reduced, so it becomes well visible.
 
 <img src="./alpha1.png" width="400" />&nbsp;
@@ -52,18 +46,12 @@ As a second example we increase transparency of the selected track. So the other
 
 <img src="./alpha3.png" width="400" />&nbsp;
 
-There is no control for the recording track log visible, since there is currently no recording track. Switch off the track transparency controls with another long press of the same
-quick control.
+There is no control for the recording track log visible, since there is currently no recording track. Switch off the track transparency controls again with
+<img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/slider_layer1.svg" width="24"/>.
 
 **Track selection**
 
-There are multiple options to make a track the selected track:
-- If there is more than one available track, then just tap on a track and this track becomes the new selected track.
-- Use the <span style="color:gray">*Menu | Load Track | Prev*</span> &nbsp;&nbsp;and&nbsp;
-  <span style="color:gray">*Menu | Load Track | Next*</span> &nbsp;to get the
-  previous/next track (from the set of MetaTrackLogs). This corresponds to the set of known tracks sorted by name.
-- Use the track statistics activity and choose a
-  new selected track via the context menu entry "Select Track" of the track.
+Use the [Statistic activity](../../FurtherFeatures/Statistic/statistic.md) to load tracks as available, selected and marker track.
 
 <small><small>[Back to Index](../../../index.md)</small></small>
 

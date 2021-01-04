@@ -82,7 +82,7 @@ public class MSPosition extends MGMicroService {
             etv.setDisabledData(prefGpsEnabled, R.drawable.gps_dis);
             etv.setHelp(r(R.string.MSPosition_qcGps_Help)).setHelp(r(R.string.MSPosition_qcGps_Help1),r(R.string.MSPosition_qcGps_Help2));
         } else if ("center".equals(info)){
-            etv.setData(prefCenter,R.drawable.center1,R.drawable.center2);
+            etv.setData(prefCenter,R.drawable.center2,R.drawable.center1);
             etv.setPrAction(prefCenter);
             etv.setDisabledData(prefGps, R.drawable.center_dis);
             etv.setHelp(r(R.string.MSPosition_qcCenter_Help)).setHelp(r(R.string.MSPosition_qcCenter_Help1),r(R.string.MSPosition_qcCenter_Help2));
