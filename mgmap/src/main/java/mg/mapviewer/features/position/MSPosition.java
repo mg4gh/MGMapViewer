@@ -121,9 +121,9 @@ public class MSPosition extends MGMicroService {
                     centerCurrentPosition(pm);
                 } else {
                     hidePosition();
-                    if (pm != null){
-                        centerCurrentPosition(pm);
-                    }
+//                    if (pm != null){
+//                        centerCurrentPosition(pm);
+//                    }
                 }
             }
         });
