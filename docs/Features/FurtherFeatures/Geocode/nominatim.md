@@ -11,8 +11,8 @@ The implementation for the Nominatim search engine defines a square of 10km arou
 center position of the map. Starting with zoom level 11, this size doubles with each lower
 zoom level. The number of result is limited to 5.
 
-Nominatim service doesn't provide an autocompletion - so e.g. while the search for "Ladenburge" (without last "r")
-doesn't return any result, the search for "Ladenburger" returns 5 result of different "Ladenburger" streets in the area.
+Nominatim service doesn't provide an autocompletion - so e.g. while the search for "Hauptst 20, Heidelberg" (without last "r")
+doesn't return any result, the search for "Hauptstr 20, Heidelberg" returns 5 results.
 
 #### Reverse Search 
 

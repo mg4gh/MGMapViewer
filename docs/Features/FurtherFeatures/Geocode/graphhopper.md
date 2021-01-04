@@ -24,19 +24,23 @@ This implementation is using the geocode API
 As soon as the search text length exceeds 5 character, the search will be started.
 
 
-So after "Ladenb" is the result
+So after "Haupts" is the result somewhere in the world:
 
-<img src="./graphh1.png" width="300" />&nbsp; 
+<img src="./graphh0.png" width="300" />&nbsp;
 
-But after "Ladenb hei" the "Ladenburger" street is found.
+But after "Haupts Hei" the "Hauptstraße" in Heidelberg is already found.
 
-<img src="./graphh2.png" width="300" />&nbsp; 
+<img src="./graphh1.png" width="300" />&nbsp;
+
+With "Haupts 20 Heidel" we are able to find the correct position of address "Hauptstraße 20, Heidelberg".
+
+<img src="./graphh2.png" width="300" />&nbsp;
 
 
 #### Reverse Search 
 
-Graphhopper supports also reverse geocoding. It's the same API as above, just with an additional parameter: reverse=true.
-A long press on the result of the first search provides the following result:
+Graphhopper supports also reverse geocoding. It's the same API as above, just with an additional parameter: reverse=true.  
+A long press on the position of "Hauptstr 20, Heidelberg" delivers following result:
 
 <img src="./graphh3.png" width="300" />&nbsp; 
 

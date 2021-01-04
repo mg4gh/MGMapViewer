@@ -39,47 +39,82 @@ So if you want to be able to use all of them, you need the files
 
 The usage will be explained with the nominatim geocode provider.
 
-The geocode feature can be used via a quick control. Use it to toggle the visibility of geocode related input and output views.
-Once you have pressed the quick control to enable geocode search, there will be a text view on top of the screen, where you can enter your
+There are two states related to the geocode feature:
+- search mode
+- show search result mode
+
+Switch on the search mode with <img src="../../../icons/group_search1.svg" width="24"/> + <img src="../../../icons/search1b.svg" width="24"/>.
+
+Once you have switched on search mode, there will be a text view on top of the screen, where you can enter your
 search term.
 
 <img src="./use0.png" width="300" />&nbsp;
-<img src="./use1.png" width="300" />&nbsp;
 
 #### Forward search 
 
-E.g. if your current map position is Heidelberg and you enter "Ladenburger" and the ok Button of the soft keyboard, then
+E.g. if your current map position is Heidelberg and you enter "Hauptstr 20, Heidelberg" and the ok Button of the soft keyboard, then
 upto 5 search results will be shown.
 
 <img src="./use2.png" width="300" />&nbsp;
 <img src="./use3.png" width="300" />&nbsp;
 
+Please notice, that the state of the search quick control changed from <img src="../../../icons/group_search1.svg" width="24"/>
+to <img src="../../../icons/group_search2.svg" width="24"/>, which reflects, that the search mode is switched on.
+
 A short tap to a search result will temporary enlarge the result (just for the case you don't have the glasses with you).
 
 <img src="./use4.png" width="300" />&nbsp;
 
-A long tap to a search result jump to the objects position. This means, that the map will be centerd to the position of the object.
-Additionally this position will be highlited with an orange circle.
+A long tap to a search result jump to the objects position. The "show search result mode" is automatically switched on.
+This means, that the map will be centered to the position of the object. This search result position will be highlighted with an orange circle.
  
 <img src="./use5.png" width="300" />&nbsp;
 
-If the keyboard is shown and you decide to abort your search, then you cannot directly toggle the quick control, since it is hided 
-due to the soft keyboard. Then you can either trigger a (senseless) search via ok button to get rid of the keyboard or you can just 
-wait 10s. Then the keyboard will disappear automatically. 
+Again this state change will be reflected in the search quick control (change from <img src="../../../icons/group_search2.svg" width="24"/>
+to <img src="../../../icons/group_search4.svg" width="24"/>)
 
-Once you tap again on the input text field, the keyboard is shown again.
+If the keyboard is shown and you decide to abort your search, then you cannot directly switch off the search edit mode, since the
+quick controls are hidden due to the soft keyboard. Then you can either trigger a (senseless) search via ok button to get rid of the keyboard or you can just
+wait 10s. Then the keyboard will disappear automatically. Once you tap again on the input text field, the keyboard is shown again.
 
-After switching of the search mode the orange circle with the last searched point stays visible - so you can still use it for orientation
-and route planning. With a long tap on the search quick control you can hide it.
+Now we want to switch off the search mode with <img src="../../../icons/group_search4.svg" width="24"/> + <img src="../../../icons/search.svg" width="24"/>.
+
+<img src="./use6.png" width="300" />&nbsp;
+
+As you can easily notice, the search text fields (input and output) disappeared. The search result remains still visible, since the "show search result mode"
+is still "on". This behaviour is also reflected in the search quick control (changed from <img src="../../../icons/group_search4.svg" width="24"/>
+to <img src="../../../icons/group_search3.svg" width="24"/>)
+
+So you can still use the searched position for orientation and route planning.
+
+
+Once you are finished with this, you can switch off the "show search result mode"
+with <img src="../../../icons/group_search3.svg" width="24"/> + <img src="../../../icons/search_res1.svg" width="24"/>.
+Then the orange circle will disappear.
+
+The search quick control will change from <img src="../../../icons/group_search3.svg" width="24"/>
+to <img src="../../../icons/group_search1.svg" width="24"/>.
+
+If you recognize later that you need again the last search position, then you can also
+switch on again the "show search result mode" (<img src="../../../icons/group_search1.svg" width="24"/> + <img src="../../../icons/search_res2.svg" width="24"/>).
+In this case you'll get again the orange circle and the map will be aligned to this position.
+
+
 
 #### Reverse Search
 
-Beside the search for with a given term, there is also a reverse search possible. Just make a long tap on the previous search result
-on the map and a reverse search for this position will be triggered. 
+Beside the search for a given term, there is also a reverse search possible.
 
-You will get the result as seen. A long tap on this result lets the map jump again to this position of the search result.
+Switch on again the search mode with <img src="../../../icons/group_search1.svg" width="24"/> + <img src="../../../icons/search1b.svg" width="24"/>.
+And (just for demonstration) switch also on again the "show search result mode" (<img src="../../../icons/group_search2.svg" width="24"/> + <img src="../../../icons/search_res2.svg" width="24"/>).
+
+Just make a long tap on any map position and a reverse search for this position will be triggered.
+For explanation purposes tap on the previous search result position on the map.
+
+You will get the result like this.
 
 <img src="./use_r1.png" width="300" />&nbsp;
-<img src="./use_r2.png" width="300" />&nbsp;
+
+The number and the quality of the search results may vary drastically between different search providers!
 
 <small><small>[Back to Index](../../../index.md)</small></small>
