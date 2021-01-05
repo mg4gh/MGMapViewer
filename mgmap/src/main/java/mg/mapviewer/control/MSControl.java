@@ -264,8 +264,25 @@ public class MSControl extends MGMicroService {
         @Override
         public void run() {
             prefQcs.setValue(0);
+            // if we go back to the main menu, then disable menu buttons for 500ms (the click might be for the disappeared submenu, su don't execute it for another context)
+            getTimer().postDelayed(ttEnableQCS, 500);
+            setEnableMenu(false);
         }
     };
+    private Runnable ttEnableQCS = new Runnable() {
+        @Override
+        public void run() {
+            setEnableMenu(true);
+        }
+    };
+
+    private void setEnableMenu(boolean enable){
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+" enable="+enable);
+        if (qcss[0]==null) return; // should never happen
+        for (int cIdx=0; cIdx<qcss[0].getChildCount();cIdx++){
+            qcss[0].getChildAt(cIdx).setEnabled(enable);
+        }
+    }
 
     private void setupTTHideQCS(){
         getTimer().removeCallbacks(ttHideQCS);

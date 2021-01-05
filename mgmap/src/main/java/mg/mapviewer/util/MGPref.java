@@ -178,9 +178,10 @@ public class MGPref<T> extends Observable implements View.OnClickListener, View.
 
     @Override
     public void onClick(View v) {
-        if (v.isEnabled()){
-            toggle();
-        }
+//        Log.d(MGMapApplication.LABEL, NameUtil.context() +" key="+key);
+//        if (v.isEnabled()){
+        toggle();
+//        }
     }
 
     @Override
