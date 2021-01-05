@@ -41,7 +41,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Remaining distance](./Features/FurtherFeatures/Remaining/remaining.md): show distance along the selected track 
 - [Beeline distance](Features/FurtherFeatures/BeelineDistance/beeline.md): show the beeline distance between current position and the center position of the map
 - [Geocode](./Features/FurtherFeatures/Geocode/geocode.md): Search location by name and search entity by location
-- [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status line
+- [Status line](Features/FurtherFeatures/Statusline/status.md): show some state information in the status line
 - Quick controls of the app:
   - [Quick controls of MGMapActivity](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md): these quick controls allow to control most frequently used features
   - [Quick controls for tracks](Features/FurtherFeatures/QuickControl/qcs_tracks.md): special quick controls for tracks
