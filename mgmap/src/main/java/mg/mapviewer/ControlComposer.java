@@ -1,7 +1,9 @@
 package mg.mapviewer;
 
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -203,6 +205,16 @@ public class ControlComposer {
         return application.getMS(clazz).initQuickControl(ControlView.createQuickControlETV(viewGroup), info).addActionObserver(grObserver);
     }
 
-
-
+    public void composeHelpControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
+        LinearLayout help = activity.findViewById(R.id.help);
+        LinearLayout help1 = coView.createHelpPanel(help, Gravity.CENTER, 0);
+        application.getMS(MSControl.class).initHelpControl(coView.createHelpText1(help1), "help1");
+        LinearLayout help2 = coView.createHelpPanel(help, Gravity.START, -90);
+        for (int i = 0; i < 7; i++) {
+            application.getMS(MSControl.class).initHelpControl(coView.createHelpText2(help2), "help2");
+        }
+        LinearLayout help3 = coView.createHelpPanel(help, Gravity.START, 0);
+        application.getMS(MSControl.class).initHelpControl(coView.createHelpText3(help3), "help3");
+        help.setVisibility(View.INVISIBLE);
+    }
 }

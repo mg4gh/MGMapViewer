@@ -1,26 +1,14 @@
 package mg.mapviewer.control;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.core.content.res.ResourcesCompat;
-
-import org.mapsforge.map.model.DisplayModel;
-
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.UUID;
 
 import mg.mapviewer.HeightProfileActivity;
 import mg.mapviewer.MGMapActivity;
@@ -33,13 +21,11 @@ import mg.mapviewer.settings.DownloadPreferenceScreen;
 import mg.mapviewer.settings.FurtherPreferenceScreen;
 import mg.mapviewer.settings.MainPreferenceScreen;
 import mg.mapviewer.settings.SettingsActivity;
-import mg.mapviewer.util.CC;
 import mg.mapviewer.util.FullscreenObserver;
 import mg.mapviewer.util.HomeObserver;
 import mg.mapviewer.util.MGPref;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.view.ExtendedTextView;
-import mg.mapviewer.view.PrefTextView;
 
 public class MSControl extends MGMicroService {
 
@@ -60,6 +46,7 @@ public class MSControl extends MGMicroService {
 
     ViewGroup qcsParent = null;
     ViewGroup[] qcss = null;
+    ArrayList<TextView> helpTexts = new ArrayList<>();
 
     FullscreenObserver fullscreenObserver = new FullscreenObserver(getActivity());
     HomeObserver homeObserver = new HomeObserver(getActivity());
@@ -148,7 +135,7 @@ public class MSControl extends MGMicroService {
                         if (qcs.getChildAt(i) instanceof ExtendedTextView) {
                             try {
                                 ExtendedTextView etv = (ExtendedTextView) qcs.getChildAt(i);
-                                TextView tv = (TextView)(ll2.getChildAt(i));
+                                TextView tv = helpTexts.get(i);
                                 tv.setText(etv.getHelp());
                             } catch (Exception e) {
                                 Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
@@ -159,13 +146,10 @@ public class MSControl extends MGMicroService {
                 } else {
                     setupTTHideQCS();
                 }
-                ll1.setVisibility(iVis);
-                ll2.setVisibility(iVis);
-                ll3.setVisibility(iVis);
+                getActivity().findViewById(R.id.help).setVisibility(iVis);
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" change Visibility to "+ prefHelp.getValue());
             }
         });
-        createHelp();
     }
 
     public void initQcss(ViewGroup[] qcss){
@@ -232,9 +216,22 @@ public class MSControl extends MGMicroService {
             etv.setData(R.drawable.help);
             etv.setHelp(r(R.string.MSControl_qcHelp_help));
         }
-
-
         return etv;
+    }
+
+    public TextView initHelpControl(TextView helpView, String info){
+        if ("help1".equals(info)) {
+            helpView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    prefHelp.setValue(false);
+                    setupTTHideQCS();
+                }
+            });
+        } else if ("help2".equals(info)) {
+            helpTexts.add(helpView);
+        }
+        return helpView;
     }
 
     @Override
@@ -246,7 +243,6 @@ public class MSControl extends MGMicroService {
         }
         prefQcs.setValue(0);
         prefFullscreen.onChange();
-//        prefQC2.setValue(false);
         refreshObserver.onChange();
     }
 
@@ -260,7 +256,7 @@ public class MSControl extends MGMicroService {
         setQCVisibility();
     }
 
-    private Runnable ttHideQCS = new Runnable() {
+    private final Runnable ttHideQCS = new Runnable() {
         @Override
         public void run() {
             prefQcs.setValue(0);
@@ -269,7 +265,7 @@ public class MSControl extends MGMicroService {
             setEnableMenu(false);
         }
     };
-    private Runnable ttEnableQCS = new Runnable() {
+    private final Runnable ttEnableQCS = new Runnable() {
         @Override
         public void run() {
             setEnableMenu(true);
@@ -310,7 +306,6 @@ public class MSControl extends MGMicroService {
                         if (qcs.getParent() != null){ // ... but is visible
                             qcsParent.removeView(qcs);
                         }
-
                     }
                 }
                 if ((prefQcs.getValue() > 0) && (!prefHelp.getValue())){
@@ -323,95 +318,4 @@ public class MSControl extends MGMicroService {
         });
     }
 
-    private LinearLayout ll1 = null;
-    private LinearLayout ll2 = null;
-    private LinearLayout ll3 = null;
-
-    private void createHelp(){
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point point = new Point();
-        display.getSize(point);
-
-        LinearLayout help = getActivity().findViewById(R.id.help);
-        Context context = help.getContext();
-
-
-        {
-            ll1 = new LinearLayout(help.getContext());
-            LinearLayout.LayoutParams lp_ll1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            ll1.setOrientation(LinearLayout.VERTICAL);
-            ll1.setLayoutParams(lp_ll1);
-            help.addView(ll1);
-            ll1.setGravity(Gravity.CENTER);
-
-
-            TextView tv1 = new TextView(help.getContext());
-            LinearLayout.LayoutParams lp_tv1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            tv1.setLayoutParams(lp_tv1);
-            tv1.setPadding(30,30,30,30);
-            tv1.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
-            ll1.addView(tv1);
-            Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.exit, context.getTheme());
-            if (drawable != null){
-                drawable.setBounds(0,0,60,60);
-                tv1.setCompoundDrawables(drawable,null,null,null);
-            }
-            tv1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    prefHelp.setValue(false);
-                    setupTTHideQCS();
-                }
-            });
-            ll1.setVisibility(View.INVISIBLE);
-        }
-
-        {
-            ll2 = new LinearLayout(help.getContext());
-            LinearLayout.LayoutParams lp_ll2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            ll2.setLayoutParams(lp_ll2);
-            ll2.setOrientation(LinearLayout.VERTICAL);
-            help.addView(ll2);
-
-
-            for (int i=0; i<7; i++){
-
-
-                TextView tv2 = new TextView(help.getContext());
-                LinearLayout.LayoutParams lp_tv2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (point.x / 7)-4);
-                lp_tv2.setMargins(2,2,2,2);
-                tv2.setLayoutParams(lp_tv2);
-                tv2.setGravity(Gravity.CENTER_VERTICAL);
-//                tv2.setText("Hello World from tv2_"+(i+1));
-                tv2.setTextSize(20);
-                tv2.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
-                tv2.setTextColor(CC.getColor(R.color.WHITE));
-                tv2.setPadding(40,0,20,0);
-//                Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.statistik, context.getTheme());
-//                if (drawable != null){
-//                    drawable.setBounds(0,0,60,60);
-//                    tv2.setCompoundDrawables(drawable,null,null,null);
-//                }
-
-                ll2.addView(tv2);
-            }
-            ll2.setRotation(-90);
-            ll2.setVisibility(View.INVISIBLE);
-        }
-
-        {
-            ll3 = new LinearLayout(help.getContext());
-            TableLayout.LayoutParams lp_ll3 = new TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            ll3.setLayoutParams(lp_ll3);
-            ll3.setOrientation(LinearLayout.VERTICAL);
-            help.addView(ll3);
-            TextView tv3 = new TextView(help.getContext());
-            TableRow.LayoutParams lp_tv3 = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp_tv3.height=120;
-            tv3.setLayoutParams(lp_tv3);
-            tv3.setText(" ");
-            ll3.addView(tv3);
-            ll3.setVisibility(View.INVISIBLE);
-        }
-    }
 }

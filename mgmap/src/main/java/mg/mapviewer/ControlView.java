@@ -16,11 +16,14 @@ package mg.mapviewer;
 
 import android.content.Context;
 
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -89,8 +92,8 @@ public class ControlView extends RelativeLayout {
     TextView tv_hint = null;
     HintControl hintControl = null;
 
-    private Map<View, ArrayList<View>> submenuMap = new HashMap<>();
-    private Map<View, Control> menuControlMap = new HashMap<>();
+    private final Map<View, ArrayList<View>> submenuMap = new HashMap<>();
+    private final Map<View, Control> menuControlMap = new HashMap<>();
 
     public ControlView(Context context) {
         super(context);
@@ -149,6 +152,7 @@ public class ControlView extends RelativeLayout {
 
             controlComposer.composeQuickControls(application, activity, this);
 
+            controlComposer.composeHelpControls(application, activity, this);
         } catch (Exception e){
             Log.e(MGMapApplication.LABEL, NameUtil.context()+"", e);
         }
@@ -538,8 +542,6 @@ public class ControlView extends RelativeLayout {
     // ********* Quick controls related stuff                                                 **********
     // *************************************************************************************************
 
-
-
     public static ExtendedTextView createQuickControlETV(ViewGroup vgQuickControls) {
         Context context = vgQuickControls.getContext();
         ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(convertDp(36));
@@ -598,4 +600,63 @@ public class ControlView extends RelativeLayout {
         tableRow.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return tableRow;
     }
+
+
+    // *************************************************************************************************
+    // ********* Help related stuff                                                           **********
+    // *************************************************************************************************
+
+    public LinearLayout createHelpPanel(ViewGroup parent, int gravity, int rotation){
+        LinearLayout ll = new LinearLayout(parent.getContext());
+        TableLayout.LayoutParams lp_ll3 = new TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ll.setLayoutParams(lp_ll3);
+        ll.setOrientation(LinearLayout.VERTICAL);
+        parent.addView(ll);
+        ll.setGravity(gravity);
+        ll.setRotation(rotation);
+        return ll;
+    }
+
+    public TextView createHelpText1(ViewGroup parent){
+        TextView tv = new TextView(parent.getContext());
+        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        tv.setLayoutParams(lp_tv);
+        tv.setPadding(30,30,30,30);
+        tv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
+        parent.addView(tv);
+        Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.exit, context.getTheme());
+        if (drawable != null){
+            drawable.setBounds(0,0,60,60);
+            tv.setCompoundDrawables(drawable,null,null,null);
+        }
+        return tv;
+    }
+
+    public TextView createHelpText2(ViewGroup parent){
+        Point displaySize = new Point();
+        getActivity().getWindowManager().getDefaultDisplay().getSize(displaySize);
+
+        TextView tv = new TextView(parent.getContext());
+        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (displaySize.x / 7)-4);
+        lp_tv.setMargins(2,2,2,2);
+        tv.setLayoutParams(lp_tv);
+        tv.setGravity(Gravity.CENTER_VERTICAL);
+        tv.setTextSize(20);
+        tv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
+        tv.setTextColor(CC.getColor(R.color.WHITE));
+        tv.setPadding(40,0,20,0);
+        parent.addView(tv);
+        return tv;
+    }
+
+    public TextView createHelpText3(ViewGroup parent){
+        TextView tv = new TextView(parent.getContext());
+        TableRow.LayoutParams lp_tv3 = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp_tv3.height=120;
+        tv.setLayoutParams(lp_tv3);
+        tv.setText(" ");
+        parent.addView(tv);
+        return tv;
+    }
+
 }
