@@ -16,8 +16,8 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-O
-<table style="font-size: x-small; padding:2px">
+P
+<table style="font-size: x-small; padding:5px">
 <tr>
 	<th></th>
     <th style="text-align:center">Menu Task</th>
@@ -50,7 +50,6 @@ O
 </tr>
 <tr>
 <td  style="padding:5px;vertical-align:top">Menu<br/>states</td>
-
 <td></td>
 <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
 	<li>search mode<br/><img src="../../../icons/group_search1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_search2.svg" width="48px" height="32px"></li>
@@ -63,7 +62,7 @@ O
 <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
 	<li>bbox mode<br/><img src="../../../icons/group_bbox1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_bbox2.svg" width="48px" height="32px"></li>
 </ul></td>
-<td> style="padding:5px;vertical-align:top"<ul style="padding-left:10px">
+<td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
 	<li>GPS mode<br/>(GPS or track recording or track segment recording)<br/><img src="../../../icons/group_record1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_record2.svg" width="48px" height="32px"></li>
 </ul></td>
 <td></td>
@@ -73,7 +72,7 @@ O
 
 #### Menu Task
 
-<table style="font-size: small">
+<table style="font-size: x-small; padding:5px">
 <tr>
 	<th></th>
     <th style="text-align:center">Help</th>
@@ -95,14 +94,14 @@ O
 <td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/themes.svg" width="60px" height="60px"></td>
 </tr>
 <tr>
-	<td style="min-width:50px;max-width:60px">Action<br/>functions</td>
-    <td>Provide help</td>
-    <td>Start settings activity with main preference screen</td>
-    <td>Start settings activity with further preference screen</td>
-    <td>Start statistic activity</td>
-    <td>Start height profile activity</td>
-    <td>Start settings activity with download preference screen</td>
-    <td>Start theme settings activity</td>
+	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
+    <td style="padding:5px;vertical-align:top">Provide help</td>
+    <td style="padding:5px;vertical-align:top">Start settings activity with main preference screen</td>
+    <td style="padding:5px;vertical-align:top">Start settings activity with further preference screen</td>
+    <td style="padding:5px;vertical-align:top">Start statistic activity</td>
+    <td style="padding:5px;vertical-align:top">Start height profile activity</td>
+    <td style="padding:5px;vertical-align:top">Start settings activity with download preference screen</td>
+    <td style="padding:5px;vertical-align:top">Start theme settings activity</td>
 </tr>
 </table>
 
