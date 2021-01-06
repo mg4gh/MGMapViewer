@@ -134,13 +134,13 @@ S
     <td style="padding:5px;vertical-align:top">Provide help</td>
     <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search1b.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
-		</table>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search1b.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none"><small>Switch on</small></td></tr>
+			<tr><td width="40%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none"><small>Switch off</small></td></tr>
+		</table3
 	</td>
     <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
+			<tr><td width="40%" style="padding:5px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
 			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
 			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res3.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
 		</table>
