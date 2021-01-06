@@ -567,34 +567,7 @@ public class ControlView extends RelativeLayout {
         });
         return etv;
     }
-
-
-    public static PrefTextView createQuickControlPTV(ViewGroup vgQuickControls) {
-        Context context = vgQuickControls.getContext();
-        PrefTextView ptv = new PrefTextView(context).setDrawableSize(convertDp(36));
-        vgQuickControls.addView(ptv);
-
-        TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
-        int margin = convertDp(1.5f);
-        params.setMargins(margin,margin,margin,margin);
-        params.weight = 20;
-        ptv.setLayoutParams(params);
-
-        ptv.setPadding(0,convertDp(4),0,convertDp(4));
-        ptv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
-        ptv.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
-                    int paddingHorizontal = Math.max((right-left - ptv.getDrawableSize()) / 2, 0);
-                    int paddingVertical = Math.max((bottom-top - ptv.getDrawableSize()) / 2, 0);
-                    ptv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
-                }
-            }
-        });
-        return ptv;
-    }
-
+    
     public static TableRow createRow(Context context){
         TableRow tableRow = new TableRow(context);
         tableRow.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

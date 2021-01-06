@@ -107,31 +107,32 @@ public class TrackStatisticActivity extends AppCompatActivity {
         parent = findViewById(R.id.trackStatisticEntries);
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
-        ControlView.createQuickControlPTV(qcs)
-                .setPrefData(new MGPref[]{prefFullscreen,prefHome}, new int[]{R.drawable.fullscreen});
-        ControlView.createQuickControlPTV(qcs)
-                .setPrefData(new MGPref[]{prefAllSelected}, new int[]{R.drawable.select_all, R.drawable.select_all2})
+        ControlView.createQuickControlETV(qcs)
+                .setData(R.drawable.fullscreen)
+                .setPrAction(prefFullscreen,prefHome);
+        ControlView.createQuickControlETV(qcs)
+                .setData(prefAllSelected,R.drawable.select_all, R.drawable.select_all2)
                 .setOnClickListener(new SelectOCL(parent, true));
-        ControlView.createQuickControlPTV(qcs)
-                .setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.deselect_all,R.drawable.deselect_all2})
+        ControlView.createQuickControlETV(qcs)
+                .setData(prefNoneSelected,R.drawable.deselect_all,R.drawable.deselect_all2)
                 .setOnClickListener(new SelectOCL(parent, false));
-        ControlView.createQuickControlPTV(qcs)
-                .setPrefData(new MGPref[]{prefNoneSelected}, new int[]{R.drawable.show,R.drawable.show2})
+        ControlView.createQuickControlETV(qcs)
+                .setData(prefNoneSelected,R.drawable.show,R.drawable.show2)
                 .setOnClickListener(createShowOCL());
-        ControlView.createQuickControlPTV(qcs)
-                .setPrefData(new MGPref[]{prefMarkerAllowed}, new int[]{R.drawable.mtlr_2,R.drawable.mtlr})
+        ControlView.createQuickControlETV(qcs)
+                .setData(prefMarkerAllowed,R.drawable.mtlr_2,R.drawable.mtlr)
                 .setOnClickListener(createMarkerOCL());
-        ControlView.createQuickControlPTV(qcs)
-                .setPrefData(new MGPref[]{prefShareAllowed}, new int[]{R.drawable.share2,R.drawable.share})
+        ControlView.createQuickControlETV(qcs)
+                .setData(prefShareAllowed,R.drawable.share2,R.drawable.share)
                 .setOnClickListener(createShareOCL());
-        ControlView.createQuickControlPTV(qcs).
-                setPrefData(new MGPref[]{prefNoneModified}, new int[]{R.drawable.save,R.drawable.save2})
+        ControlView.createQuickControlETV(qcs)
+                .setData(prefNoneModified,R.drawable.save,R.drawable.save2)
                 .setOnClickListener(createSaveOCL());
-        ControlView.createQuickControlPTV(qcs)
-                .setPrefData(new MGPref[]{prefDeleteAllowed}, new int[]{R.drawable.delete2,R.drawable.delete})
+        ControlView.createQuickControlETV(qcs)
+                .setData(prefDeleteAllowed,R.drawable.delete2,R.drawable.delete)
                 .setOnClickListener(createDeleteOCL());
-        ControlView.createQuickControlPTV(qcs)
-                .setPrefData(new MGPref[]{}, new int[]{R.drawable.back})
+        ControlView.createQuickControlETV(qcs)
+                .setData(R.drawable.back)
                 .setOnClickListener(createBackOCL());
 
         if (Build.VERSION.SDK_INT >= 24) {
