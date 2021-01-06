@@ -176,7 +176,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 <td width="12%" style="text-align:center; min-width:90px"> </td>
 </tr>
 <tr>
-	<td  style="padding:5px;vertical-align:top">Action<br/>functions</td>
+	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
     <td style="padding:5px;vertical-align:top">Provide help</td>
     <td></td>
     <td style="padding:5px;vertical-align:top">
@@ -229,7 +229,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 </tr>
 <tr>
 	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
-    <td>Provide help</td>
+    <td style="padding:5px;vertical-align:top">Provide help</td>
     <td></td>
     <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
@@ -290,7 +290,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 </tr>
 <tr>
 	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
-    <td>Provide help</td>
+    <td style="padding:5px;vertical-align:top">Provide help</td>
     <td></td>
 	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
@@ -349,7 +349,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 </tr>
 <tr>
 	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
-    <td>Provide help</td>
+    <td style="padding:5px;vertical-align:top">Provide help</td>
 	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
 			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_layer2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
