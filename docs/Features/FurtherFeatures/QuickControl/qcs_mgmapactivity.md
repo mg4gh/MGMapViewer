@@ -16,7 +16,6 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-U
 <table style="font-size: x-small; padding:5px">
 <tr>
 	<th></th>
@@ -290,7 +289,7 @@ U
 <td width="12%" style="text-align:center; min-width:90px"> </td>
 </tr>
 <tr>
-	<td style="padding:5px;vertical-align:top"">Action<br/>functions</td>
+	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
     <td>Provide help</td>
     <td></td>
 	<td style="padding:5px;vertical-align:top">
