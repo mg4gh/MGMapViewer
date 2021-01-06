@@ -30,5 +30,7 @@ As soon as you switch the feature again on
 (<img src="../../../icons/group_record2.svg" width="24"/> + <img src="../../../icons/center2.svg" width="24"/>), the screen will be aligned
 to the last GPS position.
 
+<img src="./center7.png" width="200" />&nbsp;
+
 
 <small><small>[Back to Index](../../../index.md)</small></small>
