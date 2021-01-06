@@ -41,7 +41,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 	<td style="min-width:50px;max-width:60px">Menu<br/>functions</td>
     <td><ul><li>settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
     <td><ul><li>toggle search mode</li><li>toggle show search result mode</li></ul></td>
-    <td><ul><li>toggle marker edit mode</li><li>toggle routing hint mode</li><li>map matching action</li></ul></td>
+    <td><ul><li>toggle marker edit mode</li><li>toggle turning instruction mode</li><li>map matching action</li></ul></td>
     <td><ul><li>load from bbox</li><li>toggle bbox mode</li><li>load all tiles for tilestore</li><li>load missing tiles for tilestore</li><li>delete all tiles from tilestore</li></ul></td>
     <td><ul><li>toggle center mode</li><li>toggle GPS mode</li><li>toggle record track mode</li><li>toggle record track segment mode</li></ul></td>
     <td><ul><li>toggle layer transparency controls</li><li>toggle track transparency controls</li><li>hide selected track</li><li>hide not selected tracks</li><li>hide all tracks</li><li>hide marker/route track</li></ul></td>
@@ -57,7 +57,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 </ul></td>
 <td><ul>
 	<li>marker edit mode<br/><img src="../../../icons/group_marker1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_marker2.svg" width="48px" height="32px"></li>
-	<li>routing hint mode<br/><img src="../../../icons/group_marker1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_marker3.svg" width="48px" height="32px"></li>
+	<li>turning instruction mode<br/><img src="../../../icons/group_marker1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_marker3.svg" width="48px" height="32px"></li>
 </ul></td>
 <td><ul>
 	<li>bbox mode<br/><img src="../../../icons/group_bbox1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_bbox2.svg" width="48px" height="32px"></li>
