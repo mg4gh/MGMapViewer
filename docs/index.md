@@ -44,7 +44,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Status line](Features/FurtherFeatures/Statusline/status.md): show some state information in the status line
 - [Quick controls](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of MGMapActivity: these quick controls allow to control most frequently used features
 - [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account
-- [Routing Hints](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation
+- [Turning instructions](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation
 
 ### Developer features
 - [Way details](./Features/DeveloperFeatures/WayDetails/waydetails.md) shows the ways of a tile 
