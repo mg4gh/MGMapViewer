@@ -10,6 +10,13 @@
     <string name="MSRouting_bt_ShowRouting">MSRouting.ShowRouting</string>
 
     <string name="MSRouting_pref_alphaRoTL">MSRouting.alphaRoTL</string>
-    <string name="MSRouting_pref_alphaRoTL_visibility">MSRouting.alphaRoTL_visibility</string>
+    <string name="MSRouting_pref_RoTL_visibility">MSRouting.RoTL_visibility</string>
+
+    <string name="MSRouting_qcRoutingHint_Help">Routing hint service</string>
+    <string name="MSRouting_qcRoutingHint_Help1">on tap: Switch hint mode on</string>
+    <string name="MSRouting_qcRoutingHint_Help2">on tap: switch hint mode off</string>
+
+    <string name="MSRouting_qcMapMatching_Help">Route optimization (map matching)</string>
+
 
 </resources>

@@ -3,17 +3,17 @@
 ## Main Track Feature: track storage
 
 Tracks will be stored in ".gpx" format in the directory "./MGMapViewer/track/gpx/". 
-A real world example is [this](./20200324_102303_GPS.gpx). 
+A real world example is [this](./20210101_121925_GPS.gpx).
 
 The following picture shows a subset of this:
 
-<img src="./gpx_example.png" width="1200" />
+<img src="./gpx.png" width="1200" />
 
 The structure with with 
 \<trk>, \<trkseg> and \<trkpt> is well visible. Each track point contains information about the
 recorded latitude and longitude. It contains also elevation information and a timestamp.
 But there are a couple more information available, which is placed in the comment tag to
-be complient to the .gpx format.
+be compliant to the .gpx format.
 
 After recording of a track the corresponding .gpx file will be automatically generated and stored 
 in the directory "./MGMapViewer/track/gpx/". Alternatively you can place gpx files manually in this

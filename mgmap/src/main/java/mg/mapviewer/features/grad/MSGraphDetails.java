@@ -64,7 +64,7 @@ public class MSGraphDetails extends MGMicroService {
     }
 
     @Override
-    protected void start() {
+    protected void onResume() {
         if (prefWayDetails.getValue()){
             controlLayer = new GradControlLayer();
             register(controlLayer, false);
@@ -72,7 +72,7 @@ public class MSGraphDetails extends MGMicroService {
     }
 
     @Override
-    protected void stop() {
+    protected void onPause() {
         unregisterClass(GradControlLayer.class);
         unregisterAll();
         controlLayer = null;

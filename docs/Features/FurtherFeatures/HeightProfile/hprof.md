@@ -2,29 +2,35 @@
 
 ## Further Features: height profile
 
-To enter the statistic view use <span style="color:gray">*Menu | Height Profile*</span>.
+#### Height profile
 
-<img src="./hprof1.png" width="200" />&nbsp;
+For illustration purposes we have here a recording track, a route track and a selected track:
 
-The following figure shows an example of the height profile view:
+<img src="./hprof1.png" width="300" />&nbsp;
 
-<img src="./hprof2.png" width="400" />&nbsp;
+To enter now the height profile activity use
+<img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/height_profile.svg" width="24"/>.
 
-As it is visible in the example, the height profile can visualize multiple tracks at the same time.
-For coloring please check the [track definitions](../../track.md). 
+As the result we see the height profiles of all three tracks. For coloring please check the [track definitions](../../track.md).
 
-There is one more option: you can toggle on an ascent profile as an addition to the height profile.
-To do this toggle the setting <span style="color:gray">*Menu | Settings and more | Further Settings | Ascent height profile*</span>.
+<img src="./hprof2.png" width="300" />&nbsp;
 
-<img src="./hp1.png" width="200" />&nbsp;
-<img src="./hp2.png" width="200" />&nbsp;
-<img src="./hp3.png" width="200" />&nbsp;
+#### Ascent profile
 
-With this setting switched on the route as seen on the first picture provides a height graph
-(thick purple line) and an ascent graph (thin purple line)
+For the next example we take the following start situation: We have a route track with following height profile:
 
-<img src="./hp4.png" width="400" />&nbsp;
-<img src="./hp5.png" width="400" />&nbsp;
+<img src="./hp1.png" width="300" />&nbsp;
+<img src="./hp3.png" width="300" />&nbsp;
+
+Now you can toggle on an ascent profile as an addition to the height profile (
+<img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/settings_fu.svg" width="24"/> +
+ <span style="color:gray">*Ascent height profile*</span>).
+
+Now if we open the height profile activity
+<img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/height_profile.svg" width="24"/>), then we see
+the same height graph (thick purple line) and additionally an ascent graph (thin purple line)
+
+<img src="./hp2.png" width="300" />&nbsp;
 
 Be aware of the second scale on the right side, which is valid for the ascent graph.
 

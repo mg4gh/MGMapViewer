@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
@@ -63,11 +62,11 @@ import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.MultiPointView;
 import mg.mapviewer.view.PointView;
-import mg.mapviewer.view.PrefTextView;
 
 public class MSRouting extends MGMicroService {
 
@@ -84,22 +83,27 @@ public class MSRouting extends MGMicroService {
 
     HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
-    private HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
-    private ArrayList<PointView> relaxedViews = new ArrayList<>();
+    private final HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
+    private final ArrayList<PointView> relaxedViews = new ArrayList<>();
 
     private boolean routeRemainings = true;
-    private RoutingLineRefProvider routingLineRefProvider;
+    private final RoutingLineRefProvider routingLineRefProvider;
 
     private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.MSGrad_pref_WayDetails_key, false);
     private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
-    private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
+    private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTrack, false);
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
     private final MGPref<Boolean> prefRouteGL = MGPref.get(R.string.MSMarker_qc_RouteGL, false);
 
+    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.MSMarker_pref_auto_switcher, true);
+    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
     private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
-    private final MGPref<Boolean> prefAlphaRotlVisibility = MGPref.get(R.string.MSRouting_pref_alphaRoTL_visibility, false);
+    private final MGPref<Boolean> prefRotlVisibility = MGPref.get(R.string.MSRouting_pref_RoTL_visibility, false);
+    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
     private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.MSPosition_prev_ZoomLevel, 15);
+    private final MGPref<Boolean> prefMapMatching = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefMapMatchingEnabled = MGPref.anonymous(false);
 
     private ViewGroup dashboardRoute = null;
 
@@ -108,6 +112,30 @@ public class MSRouting extends MGMicroService {
         ttRefreshTime = 50;
         routingLineRefProvider = new RoutingLineRefProvider();
         getApplication().getMS(MSMarker.class).lineRefProvider = routingLineRefProvider;
+        prefMapMatching.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                optimize();
+            }
+        });
+        Observer matchingEnabledObserver = new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                prefMapMatchingEnabled.setValue( prefMtlVisibility.getValue() && (prefAlphaRotl.getValue() > 0.25f) );
+            }
+        };
+        prefMtlVisibility.addObserver(matchingEnabledObserver);
+        prefAlphaRotl.addObserver(matchingEnabledObserver);
+        prefAutoSwitcher.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                if (prefAutoMarkerSetting.getValue()){
+                    if (prefAlphaRotl.getValue() < 0.75f){
+                        prefAlphaRotl.setValue(1.0f);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -120,22 +148,37 @@ public class MSRouting extends MGMicroService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("rotl".equals(info)) {
-            lsl.initPrefData(prefAlphaRotlVisibility, prefAlphaRotl, CC.getColor(R.color.PURPLE), "RouteTrackLog");
+            lsl.initPrefData(prefRotlVisibility, prefAlphaRotl, CC.getColor(R.color.PURPLE), "RouteTrackLog");
         }
         return lsl;
     }
 
     @Override
-    protected void start() {
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        if ("matching".equals(info)) {
+            etv.setPrAction(prefMapMatching);
+            etv.setData(R.drawable.matching);
+            etv.setDisabledData(prefMapMatchingEnabled,R.drawable.matching_dis);
+            etv.setHelp(r(R.string.MSRouting_qcMapMatching_Help));
+        }
+        return etv;
+    }
+
+    @Override
+    protected void onResume() {
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
         prefZoomLevel.addObserver(refreshObserver);
         prefAlphaRotl.addObserver(refreshObserver);
         prefRouteGL.addObserver(refreshObserver);
+        prefGps.addObserver(refreshObserver);
+        getApplication().lastPositionsObservable.addObserver(refreshObserver);
         register(new RoutingControlLayer(), false);
     }
 
     @Override
-    protected void stop() {
+    protected void onPause() {
+        getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
+        prefGps.deleteObserver(refreshObserver);
         getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
         prefZoomLevel.deleteObserver(refreshObserver);
         prefAlphaRotl.deleteObserver(refreshObserver);
@@ -153,7 +196,7 @@ public class MSRouting extends MGMicroService {
         } else {
             hideRouting();
         }
-        prefAlphaRotlVisibility.setValue(bRoTLAlphaVisibility);
+        prefRotlVisibility.setValue(bRoTLAlphaVisibility);
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -216,7 +259,7 @@ public class MSRouting extends MGMicroService {
 
 
 
-    private void updateRouting(WriteableTrackLog mtl){
+    synchronized private void updateRouting(WriteableTrackLog mtl){
         unregisterAll(MultiPointView.class);
         if (mtl.getTrackStatistic().getNumPoints() == 0) return;
         MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
@@ -272,8 +315,13 @@ public class MSRouting extends MGMicroService {
         routeTrackLog.setName(name);
         routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
         WriteableTrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
-        if ((oldRouteTrackLog != null) && oldRouteTrackLog.isModified()) routeModified = true;
-        routeTrackLog.setModified(routeModified);
+        if (oldRouteTrackLog != null){
+            routeTrackLog.setPrefModified(oldRouteTrackLog.getPrefModified());
+        }
+        if (routeModified){
+            routeTrackLog.setModified(routeModified);
+        }
+        routeTrackLog.getPrefModified().onChange();
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             routeTrackLog.startSegment(0);
@@ -322,7 +370,6 @@ public class MSRouting extends MGMicroService {
                 if ((bestMatch != null) && (bestMatch.getApproachPoint() != null)){
                     routeTrackLog.recalcStatistic(bestMatch.getApproachPoint(), bestMatch.getSegmentIdx(), bestMatch.getEndPointIndex());
                     routeTrackLog.getTrackStatistic().segmentIdx = -2; // indicates Remainings statistic
-
                 }
             }
         }

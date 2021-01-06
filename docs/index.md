@@ -5,7 +5,7 @@ This library provides an excellent base for vector map visualisation. There were
 project to enable straight forward implementation in this app.
 
 This is the [Getting Started](./GettingStarted/GettingStarted.md).
-And here is a shortcut to the [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md).
+For the usage please check the [quick control sections](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of the MGMapActivity.
 
 # Feature overview
 
@@ -35,15 +35,15 @@ Each feature contains a link to the corresponding detailed feature description.
 - [enlarge](./Features/FurtherFeatures/Enlarge/enlarge.md) temporary a view entry (dashboard, status line) on a tap event (becomes readable without glasses)
 - [toggle GPS](./Features/FurtherFeatures/GPS/gps.md) (without recording)
 - [center](./Features/FurtherFeatures/Center/center.md) automatically current GPS position
-- [Statistic view](./Features/FurtherFeatures/Statistic/statistic.md): show a table of all stored tracks with basic statistic information
+- [Statistic activity](./Features/FurtherFeatures/Statistic/statistic.md): show a table of all stored tracks with basic statistic information
 - [Height profile](./Features/FurtherFeatures/HeightProfile/hprof.md): Show the height profile form the recording track, the selected track or the current route 
 - [Height data](./Features/FurtherFeatures/HeightData/heightdata.md): Provide height information for given points. This is useful for height profiles and statistics of planned routes.
 - [Remaining distance](./Features/FurtherFeatures/Remaining/remaining.md): show distance along the selected track 
 - [Beeline distance](Features/FurtherFeatures/BeelineDistance/beeline.md): show the beeline distance between current position and the center position of the map
 - [Geocode](./Features/FurtherFeatures/Geocode/geocode.md): Search location by name and search entity by location
-- [Status line](./Features/FurtherFeatures/Status/status.md): show some state information in the status line
-- [Quick controls](./Features/FurtherFeatures/QuickControl/quickcontrols.md): the quick controls allow to control most frequently used features
-- [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account 
+- [Status line](Features/FurtherFeatures/Statusline/status.md): show some state information in the status line
+- [Quick controls](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of MGMapActivity: these quick controls allow to control most frequently used features
+- [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account
 - [Routing Hints](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation
 
 ### Developer features

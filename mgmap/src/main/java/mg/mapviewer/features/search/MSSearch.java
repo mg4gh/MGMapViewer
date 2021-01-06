@@ -31,6 +31,7 @@ import org.mapsforge.core.model.Point;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.UUID;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
@@ -42,10 +43,13 @@ import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.PrefTextView;
 
 public class MSSearch extends MGMicroService {
+
+    private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
 
     private final SearchView searchView;
     private SearchProvider searchProvider = null;
@@ -53,11 +57,11 @@ public class MSSearch extends MGMicroService {
 
     private final MGPref<Boolean> prefSearchOn = MGPref.get(R.string.MSSearch_qc_searchOn, false);
     private final MGPref<Boolean> prefShowSearchResult = MGPref.get(R.string.MSSearch_qc_showSearchResult, false);
+    private final MGPref<Boolean> prefShowSearchResultEnabled = new MGPref<Boolean>(UUID.randomUUID().toString(),false,false);
     private final MGPref<Long> prefShowPos = MGPref.get(R.string.MSSearch_pref_SearchPos, 0l);
     private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
 
-    private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
-
+//    private PrefTextView ptvSearchRes = null;
 
     public MSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -103,26 +107,49 @@ public class MSSearch extends MGMicroService {
         };
         prefShowSearchResult.addObserver(showPositionObserver);
         prefShowPos.addObserver(showPositionObserver);
+
+        prefShowPos.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                prefShowSearchResultEnabled.setValue(prefShowPos.getValue() != 0l);
+            }
+        });
+
+        if (MGPref.get(R.string.MGMapApplication_pref_Restart, true).getValue()){
+            prefShowPos.setValue(0l);
+        }
+        prefShowPos.onChange();
         prefShowSearchResult.onChange();
     }
 
     @Override
-    public PrefTextView initQuickControl(PrefTextView ptv, String info){
-        ptv.setPrefData(new MGPref[]{prefSearchOn, prefShowSearchResult},
-                new int[]{R.drawable.search,R.drawable.search1b,R.drawable.search2,R.drawable.search2b});
-        return ptv;
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        if ("group_search".equals(info)){
+            etv.setData(prefSearchOn, prefShowSearchResult, R.drawable.group_search1,R.drawable.group_search2,R.drawable.group_search3,R.drawable.group_search4);
+            etv.setPrAction(MGPref.anonymous(false));
+        } else if ("search".equals(info)){
+            etv.setData(prefSearchOn,R.drawable.search1b,R.drawable.search);
+            etv.setPrAction(prefSearchOn);
+            etv.setHelp(r(R.string.MSRecording_qcSearch_help)).setHelp(r(R.string.MSRecording_qcSearch_help1),r(R.string.MSRecording_qcSearch_help2));
+        } else if ("searchRes".equals(info)){
+            etv.setData(prefShowSearchResult,R.drawable.search_res2,R.drawable.search_res1);
+            etv.setPrAction(prefShowSearchResult);
+            etv.setDisabledData(prefShowSearchResultEnabled, R.drawable.search_res3);
+            etv.setHelp(r(R.string.MSRecording_qcSearchRes_help)).setHelp(r(R.string.MSRecording_qcSearchRes_help1),r(R.string.MSRecording_qcSearchRes_help2));
+        }
+        return etv;
     }
 
     @Override
-    protected void start() {
-        super.start();
+    protected void onResume() {
+        super.onResume();
         prefSearchOn.addObserver(refreshObserver);
         refreshObserver.onChange();
     }
 
     @Override
-    protected void stop() {
-        super.stop();
+    protected void onPause() {
+        super.onPause();
         prefSearchOn.deleteObserver(refreshObserver);
     }
 

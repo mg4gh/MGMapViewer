@@ -11,8 +11,9 @@ Here is an example of such a map:
 
 <img src="./mapsforge_map.png" width="400" />
 
-A shown already in the  [Getting Started](../../../GettingStarted/GettingStarted.md) you can use the mechanisms via
-<span style="color:gray">*Menu | Settings and more | Download | Download maps*</span> to download the map you want.
+As shown already in the  [Getting Started](../../../GettingStarted/GettingStarted.md) you can use the mechanisms via
+<img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/download.svg" width="24"/>
+to download the map you want.
 
 Since map files are large you can share mapfiles for multiple apps. 
 For this reason you can also use a reference to such a map file.
@@ -28,6 +29,6 @@ Remark 1: Mapsforge maps require installation of corresponding [themes](../Mapsf
 Remark 2: Unfortunately the external storage is in Android devices formatted in a way that it does NOT support symlinks , which would be easier.
 
 Remark 3: The references to other storage locations are deprecated in Android 10, and they will not longer work in Android 11 !!
-Since storage space is increasing over the last few years, this feature is recommended only for older devices.
+Since storage space is increasing over the last few years, this feature (referencing maps) is recommended only for older devices.
 
 <small><small>[Back to Index](../../../index.md)</small></small>

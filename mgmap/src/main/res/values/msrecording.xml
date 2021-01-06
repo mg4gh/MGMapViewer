@@ -6,6 +6,14 @@
     <string name="btStopTrack">STOP\nTRACK</string>
 
     <string name="MSRecording_pref_alphaRTL">MSRecording.alphaRTL</string>
-    <string name="MSRecording_pref_alphaRTL_visibility">MSRecording.alphaRTL_visibility</string>
+    <string name="MSRecording_pref_RTL_visibility">MSRecording.RTL_visibility</string>
     <string name="MSRecording_pref_rtlGl_key">MSRecording.rtlGl</string>
+
+    <string name="MSRecording_qcRec_help">Record a track</string>
+    <string name="MSRecording_qcRec_help1">Start recording</string>
+    <string name="MSRecording_qcRec_help2">Stop recording</string>
+
+    <string name="MSRecording_qcRecSeg_help">Segment recording</string>
+    <string name="MSRecording_qcRecSeg_help1">Start new segment</string>
+    <string name="MSRecording_qcRecSeg_help2">Stop current segment</string>
 </resources>

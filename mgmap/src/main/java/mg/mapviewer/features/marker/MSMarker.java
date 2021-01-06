@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import mg.mapviewer.R;
 import mg.mapviewer.graph.GGraphTile;
@@ -48,28 +47,36 @@ import mg.mapviewer.util.Control;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
-import mg.mapviewer.view.PrefTextView;
 
 public class MSMarker extends MGMicroService {
 
     private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
-    private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTarck, false);
+    private final MGPref<Boolean> prefEditMarkerTrackAction =  MGPref.anonymous(false);
+    private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTrack, false);
     private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
-//    private final MGPref<Boolean> prefShowMtl = MGPref.get(R.string.MSMarker_pref_showMtl_key, false);
     private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
 
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
-    private final MGPref<Boolean> prefAlphaMtlVisibility = MGPref.get(R.string.MSMarker_pref_alphaMTL_visibility, false);
-    private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
-    private final MGPref<Boolean> prefHideMtl = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
+    private final MGPref<Boolean> prefHideMtl = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.MSATL_pref_hideAll, false);
+    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.MSMarker_pref_auto_switcher, true);
 
     MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
 
     public MSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
+        prefEditMarkerTrackAction.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                prefEditMarkerTrack.toggle();
+            }
+        });
+        prefAutoSwitcher.addObserver(autoSwitchObserver);
     }
 
     private final Observer editMarkerTrackObserver = new Observer() {
@@ -88,7 +95,18 @@ public class MSMarker extends MGMicroService {
     };
     public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
-    private TimerTask ttHide = new TimerTask() {
+    private Observer autoSwitchObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            boolean smallMtl = prefAutoSwitcher.getValue();
+            if (prefAutoMarkerSetting.getValue()){
+                prefAlphaMtl.setValue(smallMtl?0.0f:1.0f);
+                prefSnap2Way.setValue(smallMtl);
+            }
+        }
+    };
+
+     private TimerTask ttHide = new TimerTask() {
         @Override
         public void run() {
             prefEditMarkerTrack.setValue(false);
@@ -104,27 +122,29 @@ public class MSMarker extends MGMicroService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("mtl".equals(info)) {
-            lsl.initPrefData(prefAlphaMtlVisibility, prefAlphaMtl, CC.getColor(R.color.PINK), "MarkerTrackLog");
+            lsl.initPrefData(prefMtlVisibility, prefAlphaMtl, CC.getColor(R.color.PINK), "MarkerTrackLog");
         }
         return lsl;
     }
 
     @Override
-    public PrefTextView initQuickControl(PrefTextView ptv, String info) {
-        if ("edit_mtl".equals(info)){
-            ptv.setPrefData(new MGPref[]{prefEditMarkerTrack},
-                    new int[]{R.drawable.mtlr, R.drawable.mtlr2});
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        if ("markerEdit".equals(info)){
+            etv.setData(prefEditMarkerTrack,R.drawable.mtlr2, R.drawable.mtlr);
+            etv.setPrAction(prefEditMarkerTrackAction);
+            etv.setHelp(r(R.string.MSMarker_qcEditMarkerTrack_Help)).setHelp(r(R.string.MSMarker_qcEditMarkerTrack_Help1),r(R.string.MSMarker_qcEditMarkerTrack_Help2));
         } else if ("hide_mtl".equals(info)){
-            ptv.appendPrefData(new MGPref[]{prefHideMtl},
-                    new int[]{});
-
+            etv.setData(R.drawable.hide_mtl);
+            etv.setPrAction(prefHideMtl);
+            etv.setDisabledData(prefMtlVisibility,R.drawable.hide_mtl_dis);
+            etv.setHelp(r(R.string.MSMarker_qcHideMtl_Help));
         }
-        return ptv;
+        return etv;
     }
 
     @Override
-    protected void start() {
-        super.start();
+    protected void onResume() {
+        super.onResume();
         prefEditMarkerTrack.setValue(false);
         prefEditMarkerTrack.addObserver(editMarkerTrackObserver);
 
@@ -138,10 +158,11 @@ public class MSMarker extends MGMicroService {
 
         prefAlphaMtl.addObserver(refreshObserver);
         prefHideMtl.addObserver(hideMarkerTrackObserver);
+        prefHideAll.addObserver(hideMarkerTrackObserver);
     }
 
     @Override
-    protected void stop() {
+    protected void onPause() {
         markerTrackLogObservable.deleteObserver(refreshObserver);
         getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
         prefEditMarkerTrack.deleteObserver(editMarkerTrackObserver);
@@ -149,6 +170,7 @@ public class MSMarker extends MGMicroService {
 
         prefAlphaMtl.deleteObserver(refreshObserver);
         prefHideMtl.deleteObserver(hideMarkerTrackObserver);
+        prefHideAll.deleteObserver(hideMarkerTrackObserver);
     }
 
     @Override
@@ -173,7 +195,7 @@ public class MSMarker extends MGMicroService {
 
 
     public void createMarkerTrackLog(TrackLog trackLog){
-        adaptAutoSettings(trackLog.getTrackStatistic().getNumPoints() < 200);
+        setAutoSwitcher(trackLog.getTrackStatistic().getNumPoints() < 200); // < 200 means rather small MTL with corresponding settings
         WriteableTrackLog mtl = new WriteableTrackLog(trackLog.getName()+"__MarkerTrack");
         mtl.startTrack(trackLog.getTrackStatistic().getTStart());
         for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
@@ -197,7 +219,7 @@ public class MSMarker extends MGMicroService {
     }
 
     private void initMarkerTrackLog(){
-        adaptAutoSettings(true);
+        setAutoSwitcher(true);
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
         long now = System.currentTimeMillis();
         WriteableTrackLog mtl = new WriteableTrackLog(sdf2.format(new Date(now))+"_MarkerTrack");
@@ -216,7 +238,7 @@ public class MSMarker extends MGMicroService {
             showTrack(mtl, CC.getAlphaClone(PAINT_STROKE_MTL, prefAlphaMtl.getValue()), false, (int)(DisplayModel.getDeviceScaleFactor()*5.0f), true);
             bMtlAlphaVisibility = true;
         }
-        prefAlphaMtlVisibility.setValue( bMtlAlphaVisibility );
+        prefMtlVisibility.setValue( bMtlAlphaVisibility );
     }
 
 
@@ -350,13 +372,13 @@ public class MSMarker extends MGMicroService {
         }
     }
 
-    private void adaptAutoSettings(boolean smallMtl){
-        if (prefAutoMarkerSetting.getValue()){
-            prefAlphaMtl.setValue(smallMtl?0.0f:1.0f);
-            prefSnap2Way.setValue(smallMtl);
-            if (prefAlphaRotl.getValue() < 0.25f){
-                prefAlphaRotl.setValue(1.0f);
-            }
-        }
+    private void setAutoSwitcher(boolean bValue){
+        prefAutoSwitcher.setValue(bValue);
+        prefAutoSwitcher.onChange();
     }
+
+//    public void hideMarkerTrackLog(){
+//        getApplication().markerTrackLogObservable.setTrackLog(null);
+//        GGraphTile.clearCache();
+//    }
 }

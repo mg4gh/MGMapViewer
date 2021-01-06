@@ -16,7 +16,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.IMapViewPosition;
 
-import mg.mapviewer.features.routing.RoutingHintService;
+import mg.mapviewer.features.routing.MSRoutingHintService;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogRef;
@@ -101,7 +101,7 @@ public class MGMapApplication extends Application {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         MGPref.init(this);
         prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, true);
-        prefGpsOn = MGPref.get(R.string.MSPosition_prev_GpsOn, true);
+        prefGpsOn = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
         prefAppRestart.setValue(true);
         prefGpsOn.setValue(false);
         MGPref.get(R.string.MSSearch_qc_showSearchResult, false).setValue(false);
@@ -117,7 +117,6 @@ public class MGMapApplication extends Application {
         for (int id : prefIds){
             mapLayerKeys.add( getResources().getString( id ));
         }
-        new RoutingHintService(this);
 
 
 
@@ -380,6 +379,15 @@ public class MGMapApplication extends Application {
 
     public void setMgMapActivity(MGMapActivity mgMapActivity) {
         this.mgMapActivity = mgMapActivity;
+        if (mgMapActivity == null){
+            //cleanup according to termination of MGMapActivity
+            microServices.clear();
+            availableTrackLogsObservable.deleteObservers();
+            recordingTrackLogObservable.deleteObservers();
+            markerTrackLogObservable.deleteObservers();
+            routeTrackLogObservable.deleteObservers();
+            lastPositionsObservable.deleteObservers();
+        }
     }
 
     /** Retruen the mirco service by type  - duplicate code of MGMapActivity, but here it is also available for other activities */

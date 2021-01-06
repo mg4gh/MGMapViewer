@@ -3,4 +3,13 @@
     <string name="MSPosition_prev_Center">MSPosition.Center</string>
     <string name="MSPosition_prev_GpsOn">MSPosition.GpsOn</string>
     <string name="MSPosition_prev_ZoomLevel">MSPosition.ZoomLevel</string>
+
+    <string name="MSPosition_qcGps_Help">GPS state</string>
+    <string name="MSPosition_qcGps_Help1">on tap: switch GPS on</string>
+    <string name="MSPosition_qcGps_Help2">on tap: switch GPS off</string>
+
+    <string name="MSPosition_qcCenter_Help">Center GPS position</string>
+    <string name="MSPosition_qcCenter_Help1">on tap: switch center position on</string>
+    <string name="MSPosition_qcCenter_Help2">on tap: switch center position off</string>
+
 </resources>

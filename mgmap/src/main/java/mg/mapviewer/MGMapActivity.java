@@ -60,6 +60,7 @@ import mg.mapviewer.features.beeline.MSBeeline;
 import mg.mapviewer.features.position.MSPosition;
 import mg.mapviewer.features.remainings.MSRemainings;
 import mg.mapviewer.features.routing.MSRouting;
+import mg.mapviewer.features.routing.MSRoutingHintService;
 import mg.mapviewer.features.rtl.MSRecordingTrackLog;
 import mg.mapviewer.features.search.MSSearch;
 import mg.mapviewer.features.time.MSTime;
@@ -88,6 +89,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 
 /**
@@ -108,9 +111,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     /** Reference to the MapViewUtility - provides so servoices around the MapView object */
     MapViewUtility mapViewUtility = null;
-    /** Registry of MicroServices - see also {@link mg.mapviewer.MGMicroService} for the micro service concept. */
-    ArrayList<MGMicroService> microServices = null;
 
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
 
 
     public ControlView getControlView(){
@@ -154,32 +156,33 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         coView = getControlView();
         mapViewUtility = new MapViewUtility(this, mapView);
 
-        // micro service registry is stored in the context of the application
-        microServices = application.microServices;
-        // but is setup fresh on activity restart
-        microServices.clear();
-
-
-        microServices.add(new MSTime(this));
-        microServices.add(new MSBeeline(this));
-        microServices.add(new MSPosition(this));
-        microServices.add(new MSRecordingTrackLog(this));
-        microServices.add(new MSAvailableTrackLogs(this));
-        microServices.add(new MSMarker(this));
-        microServices.add(new MSRouting(this));
-        microServices.add(new MSRemainings(this));
-        microServices.add(new MSBB(this, application.getMS(MSAvailableTrackLogs.class)));
-        microServices.add(new MSGraphDetails(this));
-        microServices.add(new MSSearch(this));
-        microServices.add(new MSGDrive(this));
-        microServices.add(new MSAlpha(this));
-        microServices.add(new MSControl(this));
+        application.microServices.add(new MSTime(this));
+        application.microServices.add(new MSBeeline(this));
+        application.microServices.add(new MSPosition(this));
+        application.microServices.add(new MSRecordingTrackLog(this));
+        application.microServices.add(new MSAvailableTrackLogs(this));
+        application.microServices.add(new MSMarker(this));
+        application.microServices.add(new MSRouting(this));
+        application.microServices.add(new MSRoutingHintService(this));
+        application.microServices.add(new MSRemainings(this));
+        application.microServices.add(new MSBB(this, application.getMS(MSAvailableTrackLogs.class)));
+        application.microServices.add(new MSGraphDetails(this));
+        application.microServices.add(new MSSearch(this));
+        application.microServices.add(new MSGDrive(this));
+        application.microServices.add(new MSAlpha(this));
+        application.microServices.add(new MSControl(this));
 
         try{
             Thread.sleep(100);
         }catch (Exception e){}
         coView.init(application, this);
         onNewIntent(getIntent());
+        prefGps.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                triggerTrackLoggerService();
+            }
+        });
 
         application.prefAppRestart.setValue(false);
         MGPref.dumpPrefs();
@@ -192,12 +195,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         application = (MGMapApplication) getApplication();
 
-        for (MGMicroService microService : microServices) {
+        for (MGMicroService microService : application.microServices) {
             try {
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" start " + microService + " beginning ");
-                microService.start();
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" onResume " + microService + " beginning ");
+                microService.onResume();
             } catch (Exception e) {
-                Log.w(MGMapApplication.LABEL, NameUtil.context()+" start " + microService + " failed: " + e.getMessage(), e);
+                Log.w(MGMapApplication.LABEL, NameUtil.context()+" onResume " + microService + " failed: " + e.getMessage(), e);
             }
         }
         for (Layer layer : mapView.getLayerManager().getLayers()){
@@ -217,13 +220,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void onPause() {
         Log.i(MGMapApplication.LABEL, NameUtil.context());
 
-        if (microServices == null) return;
-        for (int i = microServices.size() - 1; i >= 0; i--) {
-            MGMicroService microService = microServices.get(i);
+//        if (microServices == null) return;
+        for (int i = application.microServices.size() - 1; i >= 0; i--) { // reverse order
+            MGMicroService microService = application.microServices.get(i);
             try {
-                microService.stop();
+                microService.onPause();
             } catch (Exception e) {
-                Log.w(MGMapApplication.LABEL, NameUtil.context()+" stop " + microService + " failed: " + e.getMessage());
+                Log.w(MGMapApplication.LABEL, NameUtil.context()+" onPause " + microService + " failed: " + e.getMessage());
             }
         }
         for (Layer layer : mapView.getLayerManager().getLayers()){
@@ -244,9 +247,22 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @Override
     protected void onDestroy() {
         Log.w(MGMapApplication.LABEL, NameUtil.context());
-        mapView.destroyAll();
-        AndroidGraphicFactory.clearResourceMemoryCache();
+        for (int i = application.microServices.size() - 1; i >= 0; i--) { // reverse order
+            MGMicroService microService = application.microServices.get(i);
+            try {
+                microService.onDestroy();
+            } catch (Exception e) {
+                Log.w(MGMapApplication.LABEL, NameUtil.context()+" stop " + microService + " failed: " + e.getMessage());
+            }
+        }
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
+        MGPref.clear(); // Clear cached Prefs (to free observers registered on these Prefs
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
         application.setMgMapActivity(null);
+        AndroidGraphicFactory.clearResourceMemoryCache();
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
+        mapView.destroyAll();
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
         super.onDestroy();
     }
 
@@ -256,6 +272,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void createSharedPreferences() {
         super.createSharedPreferences();
         MGMapLayerFactory.setSharedPreferences(sharedPreferences);
+        String prefLang = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "de");
+        sharedPreferences.edit().putString(getResources().getString(R.string.preferences_language_key), prefLang).apply();
         MGMapLayerFactory.setXmlRenderTheme(getRenderTheme());
 
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + Float.toString(DisplayModel.getDeviceScaleFactor()));
@@ -522,10 +540,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             @Override
             protected boolean onTap(WriteablePointModel point) {
                 TrackLogRef ref = selectCloseTrack( point );
-                if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
+//                if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
+                if (ref.getTrackLog() != null){
                     application.availableTrackLogsObservable.setSelectedTrackLogRef(ref);
                 } else {
-                    coView.toggleMenuVisibility();
+                    if (sharedPreferences.getBoolean("main_menu", false)){
+                        coView.toggleMenuVisibility();
+                    }
                 }
                 return true;
             }

@@ -80,10 +80,10 @@ public class MSGDrive extends MGMicroService {
     }
 
     @Override
-    protected void start() { }
+    protected void onResume() { }
 
     @Override
-    protected void stop() { }
+    protected void onPause() { }
 
     public void trySynchronisation() {
         new Thread(){

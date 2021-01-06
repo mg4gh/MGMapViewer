@@ -23,14 +23,14 @@ restaurants, public amenities in the POI database. The database itself contains 
 which contains a couple of subfields - but they are only accessible via the database by slow text-search
 processing. Therefore the implementation does not realize an incremental search.
 
-Nevertheless searching for the "Ladenburger" street is again successful, even with just the starting string "Ladenb".
+Nevertheless searching with just the starting string "Haupts" is again successful.
 The result are POIs in this street. 
  
 <img src="./poi1.png" width="300" />&nbsp; 
 
 But there is another special aspect - since the database entry contains more information
-then the typical result visualize. So sometime you might wonder, why the entry match the search criteria, or you 
-want to know, how to find more entries of a certain kind of POI. By double tap on an entry this entry will be switched 
+then the typical result visualize. So you might wonder, why the entry "Schmitt & Hahn" match the search criteria.
+By double tap on an entry this entry will be switched
 to a detailed mode - which presents all data of this entry. With this information it's mostly possible to answer the 
 above questions. 
  
@@ -58,12 +58,14 @@ defines a square of 100m around the current center position of the map.
 All returned POIs in that square are sorted by their distance to the search position.
 Finally the closest five entries are shown as the result.
 
+Reverse search on the position of "Haupstr 20, Heidelberg" provides following consistent result:
+
 <img src="./poi3.png" width="300" />&nbsp; 
 
 #### Summary
 
 Although especially for address search this engine is not comparable to Graphhopper or Pelias
-it might be useful in case there is no internet and also for some very special search
+it might be useful if there is no internet and also for some very special search
 requests.
 
 <small><small>[Back to Index](../../../index.md)</small></small>

@@ -32,6 +32,7 @@ import java.util.Observable;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogSegment;
 import mg.mapviewer.util.NameUtil;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.util.MapViewUtility;
@@ -95,6 +96,9 @@ public class MGMicroService {
 
     public PrefTextView initQuickControl(PrefTextView ptv, String info){
         return ptv;
+    }
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        return etv;
     }
     public PrefTextView initStatusLine(PrefTextView ptv, String info){
         return ptv;
@@ -215,9 +219,10 @@ public class MGMicroService {
     protected Resources getResources(){
         return mmActivity.getApplicationContext().getResources();
     }
+    protected String r(int id){return getResources().getString(id); }
 
-
-    protected void start(){ }
-    protected void stop(){ }
+    protected void onResume(){ }
+    protected void onPause(){ }
+    protected void onDestroy(){ }
 
 }

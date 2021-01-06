@@ -31,7 +31,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected TrackLogStatistic trackStatistic = new TrackLogStatistic(-1);
     protected String name = "";
     protected boolean available = true;
-    private MGPref<Boolean> prefModified = new MGPref<Boolean>(null, false, false);
+    protected MGPref<Boolean> prefModified = new MGPref<Boolean>(null, false, false);
 
 
     public void clear(){

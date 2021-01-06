@@ -21,19 +21,19 @@ This implementation is using the autocomplete API
 [https://api.openrouteservice.org/geocode/autocomplete](https://github.com/pelias/documentation/blob/master/autocomplete.md)
 As soon as the search text length exceeds 5 character, the search will be started.
 
-If we search for the "Ladenburger street, we don't have to type the full name.
-Already the search string "Ladenb" contains as the third result already the "Ladenburger" street in Heidelberg.
+If we search for the "Hauptstraße street, we don't have to type the full name.
+Already the search string "Haupts" contains as the first result already the "Hauptstraße" street in Heidelberg.
 
 <img src="./pelias1.png" width="300" />&nbsp; 
 
-Nevertheless, if you try to combine incomplete terms, e.g. "Ladenb Hei" - then the search doesn't give you any result!
+Nevertheless, if you try to combine incomplete terms, e.g. "Haupts Hei" - then the search doesn't give you any result!
 
 #### Reverse Search 
 
 Pelias also supports the reverse geocoding search via 
 [https://api.openrouteservice.org/geocode/reverse](https://github.com/pelias/documentation/blob/master/reverse.md#reverse-geocoding)
 
-A long press on the result of the first search provides the following result:
+A long press on the "Haupstraße 20, Heidelberg" provides the following result:
 
 <img src="./pelias2.png" width="300" />&nbsp; 
 

@@ -14,12 +14,11 @@ we can get the following picture:
 <img src="./multi_map1.png" width="400" />
 
 For each tile-based layer (mapsforge, mapstore, maponline) we can get a
-slider to control the transparency of this layer as it is for the
+seek bar to control the transparency of this layer as it is for the
 "MAPSFORGE:&nbsp;bw.map" layer and the "MAPSTORES:&nbsp;heatmap" layer in the
 example above.
 
-You can toggle the visibility of these sliders via the second quick control:
-
-<img src="./multi_map2.png" width="400" />
+You can toggle the visibility of these seek bars via
+<img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/slider_layer1.svg" width="24"/>
 
 <small><small>[Back to Index](../../../index.md)</small></small>

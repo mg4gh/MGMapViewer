@@ -3,12 +3,13 @@
 ## Further Features: GDrive Synchronisation
 
 This feature allows the synchronisation of gpx TrackLogs with a folder on your Google Drive account.
+Currently this synchronisation has to be triggered manually.
+An automatic synchronisation might be implemented in future.
 
-Currently this synchronisation has to be triggered manually. 
-An automatic synchronisation might be implemented in future. To start the GDrive synchronization process use
-<span style="color:gray">*Menu | GDrive | Synchronize with GDrive*</span>;
+To start the GDrive synchronization process use
+<img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/settings.svg" width="24"/> and
+<span style="color:gray">GDrive | Synchronize with GDrive*</span>;
 
-<img src="./Menu_Settings.png" width="200" />
 <img src="./settings_gdrive.png" width="200" />
 <img src="./settings_gdrive_prefScreen.png" width="200" />
 

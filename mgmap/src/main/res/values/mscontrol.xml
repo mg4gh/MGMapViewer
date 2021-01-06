@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="MSControl_qc2_on">MSControl.qc2_on</string>
+    <string name="MSControl_qc_selector">MSControl.qc_selector</string>
+
+    <string name="MSControl_qcFullscreen_help">Toggle fullscreen mode</string>
+    <string name="MSControl_qcSettings_help">Settings screen</string>
+    <string name="MSControl_qcFuSettings_help">Further settings screen</string>
+    <string name="MSControl_qcHome_help">Lunch Android home screen</string>
+    <string name="MSControl_qcExit_help">Terminate and leave MgMapViewer application</string>
+    <string name="MSControl_qcDownload_help">Download actions screen</string>
+    <string name="MSControl_qcStatistic_help">Statistic activity</string>
+    <string name="MSControl_qcHeightProfile_help">Height profile activity</string>
+    <string name="MSControl_qcZoomIn_help">Zoom in</string>
+    <string name="MSControl_qcZoomOut_help">Zoom out</string>
+    <string name="MSControl_qcThemes_help">Theme settings screen</string>
+    <string name="MSControl_qcHelp_help">Provide this help</string>
+
 </resources>

@@ -16,6 +16,8 @@ package mg.mapviewer.features.atl;
 
 import android.view.ViewGroup;
 
+import androidx.lifecycle.Lifecycle;
+
 import org.mapsforge.core.graphics.Paint;
 
 import mg.mapviewer.MGMapActivity;
@@ -23,20 +25,22 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 
-import java.util.TreeSet;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.UUID;
 
 import mg.mapviewer.model.BBox;
-import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogRef;
-import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogRefZoom;
 import mg.mapviewer.util.Assert;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.util.MetaDataUtil;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
+import mg.mapviewer.view.PrefTextView;
 
 public class MSAvailableTrackLogs extends MGMicroService {
 
@@ -47,15 +51,53 @@ public class MSAvailableTrackLogs extends MGMicroService {
     private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.MSATL_pref_stlGl_key, true);
     private final MGPref<Float> prefAlphaStl = MGPref.get(R.string.MSATL_pref_alphaSTL , 1.0f);
     private final MGPref<Float> prefAlphaAtl = MGPref.get(R.string.MSATL_pref_alphaATL, 1.0f);
-    private final MGPref<Boolean> prefAlphaStlVisibility = MGPref.get(R.string.MSATL_pref_alphaSTL_visibility, false);
-    private final MGPref<Boolean> prefAlphaAtlVisibility = MGPref.get(R.string.MSATL_pref_alphaATL_visibility, false);
+    private final MGPref<Boolean> prefStlVisibility = MGPref.get(R.string.MSATL_pref_STL_visibility, false);
+    private final MGPref<Boolean> prefAtlVisibility = MGPref.get(R.string.MSATL_pref_ATL_visibility, false);
+    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
 
+    private final MGPref<Boolean> prefHideStl = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefHideAtl = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.MSATL_pref_hideAll, false);
+    private final MGPref<Boolean> prefHideAllEnabled = MGPref.anonymous(false);
 
     private ViewGroup dashboardStl = null;
     private ViewGroup dashboardStls = null;
 
     public MSAvailableTrackLogs(MGMapActivity mmActivity) {
         super(mmActivity);
+        prefHideStl.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                getApplication().availableTrackLogsObservable.removeSelected();
+            }
+        });
+        prefHideAtl.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                getApplication().availableTrackLogsObservable.removeUnselected();
+            }
+        });
+        prefHideAll.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                getApplication().availableTrackLogsObservable.removeAll();
+            }
+        });
+        Observer hideAllEnabledObserver = new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                prefHideAllEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() );
+            }
+        };
+        prefStlVisibility.addObserver(hideAllEnabledObserver);
+        prefAtlVisibility.addObserver(hideAllEnabledObserver);
+        prefMtlVisibility.addObserver(hideAllEnabledObserver);
+
+        getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
+        prefAlphaStl.addObserver(refreshObserver);
+        prefAlphaAtl.addObserver(refreshObserver);
+        prefStlGl.addObserver(refreshObserver);
+
     }
 
     @Override
@@ -73,38 +115,61 @@ public class MSAvailableTrackLogs extends MGMicroService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("stl".equals(info)) {
-            lsl.initPrefData(prefAlphaStlVisibility, prefAlphaStl, CC.getColor(R.color.BLUE), "SelectedTrackLog");
+            lsl.initPrefData(prefStlVisibility, prefAlphaStl, CC.getColor(R.color.BLUE), "SelectedTrackLog");
         }
         if ("atl".equals(info)) {
-            lsl.initPrefData(prefAlphaAtlVisibility, prefAlphaAtl, CC.getColor(R.color.GREEN), "AvailableTrackLog");
+            lsl.initPrefData(prefAtlVisibility, prefAlphaAtl, CC.getColor(R.color.GREEN), "AvailableTrackLog");
         }
         return lsl;
     }
 
     @Override
-    protected void start() {
-        getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
-        prefAlphaStl.addObserver(refreshObserver);
-        prefAlphaAtl.addObserver(refreshObserver);
-        prefStlGl.addObserver(refreshObserver);
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        if ("hide_stl".equals(info)){
+            etv.setData(R.drawable.hide_stl);
+            etv.setPrAction(prefHideStl);
+            etv.setDisabledData(prefStlVisibility, R.drawable.hide_stl_dis);
+            etv.setHelp(r(R.string.MSAtl_qcHideStl_Help));
+        } else if ("hide_atl".equals(info)){
+            etv.setData(R.drawable.hide_atl);
+            etv.setPrAction(prefHideAtl);
+            etv.setDisabledData(prefAtlVisibility,R.drawable.hide_atl_dis);
+            etv.setHelp(r(R.string.MSAtl_qcHideAtl_Help));
+        } else if ("hide_all".equals(info)){
+            etv.setData(R.drawable.hide_all);
+            etv.setPrAction(prefHideAll);
+            etv.setDisabledData(prefHideAllEnabled,R.drawable.hide_all_dis);
+            etv.setHelp(r(R.string.MSAtl_qcHideAll_Help));
+        }
+        return etv;
     }
 
     @Override
-    protected void stop() {
-        getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);
-        prefAlphaStl.deleteObserver(refreshObserver);
-        prefAlphaAtl.deleteObserver(refreshObserver);
-        prefStlGl.deleteObserver(refreshObserver);
+    protected void onResume() {
+//        getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
+//        prefAlphaStl.addObserver(refreshObserver);
+//        prefAlphaAtl.addObserver(refreshObserver);
+//        prefStlGl.addObserver(refreshObserver);
+    }
+
+    @Override
+    protected void onPause() {
+//        getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);
+//        prefAlphaStl.deleteObserver(refreshObserver);
+//        prefAlphaAtl.deleteObserver(refreshObserver);
+//        prefStlGl.deleteObserver(refreshObserver);
     }
 
     @Override
     protected void doRefresh() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                showAvailableTrackLogs();
-            }
-        });
+        if (getActivity().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED){
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showAvailableTrackLogs();
+                }
+            });
+        }
     }
 
 
@@ -122,7 +187,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
                 bAtlAlphaVisibility = true;
             }
         }
-        prefAlphaAtlVisibility.setValue(bAtlAlphaVisibility);
+        prefAtlVisibility.setValue(bAtlAlphaVisibility);
         // handle selected track last, to get it on top
         TrackLog trackLog = available.getSelectedTrackLogRef().getTrackLog();
         if (trackLog!= null){
@@ -145,7 +210,8 @@ public class MSAvailableTrackLogs extends MGMicroService {
                 }
             }
         }
-        prefAlphaStlVisibility.setValue((trackLog != null) && (trackLog.getTrackStatistic().getNumPoints() >=2));
+        prefStlVisibility.setValue((trackLog != null) && (trackLog.getTrackStatistic().getNumPoints() >=2));
+
     }
 
     private void hideAvailableTrackLogs(){
