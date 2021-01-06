@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-Q
+R
 <table style="font-size: x-small; padding:5px">
 <tr>
 	<th></th>
@@ -120,25 +120,25 @@ Q
     <th style="text-align:center"></th>
 </tr>
 <tr>
-<td width="5%" style="min-width:50px;max-width:60px">Action<br/>icon</td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/search.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/search_res1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"> </td>
-<td width="12%" style="text-align:center; min-width:100px"> </td>
-<td width="12%" style="text-align:center; min-width:100px"> </td>
-<td width="12%" style="text-align:center; min-width:100px"> </td>
+<td width="6%"  style="padding:5px;vertical-align:top">Action<br/>icon</td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/search.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/search_res1.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"> </td>
+<td width="12%" style="text-align:center; min-width:90px"> </td>
+<td width="12%" style="text-align:center; min-width:90"> </td>
+<td width="12%" style="text-align:center; min-width:90px"> </td>
 </tr>
 <tr>
-	<td style="min-width:50px;max-width:60px">Action<br/>functions</td>
-    <td>Provide help</td>
-    <td>
+	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
+    <td style="padding:5px;vertical-align:top">Provide help</td>
+    <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
 			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search1b.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
 			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
 		</table>
 	</td>
-    <td>
+    <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
 			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
 			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
