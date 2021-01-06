@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-K
+M
 <table style="font-size: x-small; padding:2px">
 <tr>
 	<th></th>
@@ -29,7 +29,7 @@ K
     <th style="text-align:center">Menu Multi</th>
 </tr>
 <tr>
-<td width="6%" style="min-width:50px;max-width:60px">Menu<br/>icon</td>
+<td width="6%" style="padding:5px;vertical-align:top">Menu<br/>icon</td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/group_task.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/group_search1.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/group_marker1.svg" width="60px" height="60px"></td>
@@ -39,8 +39,8 @@ K
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/multi.svg" width="60px" height="60px"></td>
 </tr>
 <tr>
-	<td style="min-width:50px;max-width:60px;padding:5px">Menu<br/>functions</td>
-    <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px;"><li>settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
+	<td style="padding:5px;vertical-align:top">Menu<br/>functions</td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding:10px;"><li>settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
     <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>toggle search mode</li><li>toggle show search result mode</li></ul></td>
     <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>toggle marker edit mode</li><li>toggle turning instruction mode</li><li>map matching action</li></ul></td>
     <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>load from bbox</li><li>toggle bbox mode</li><li>load all tiles for tilestore</li><li>load missing tiles for tilestore</li><li>delete all tiles from tilestore</li></ul></td>
