@@ -32,6 +32,5 @@ public class MyScrollView extends ScrollView {
         int nv = (int)(v*f);
         Log.i("MyScroll", "fling "+velocityY+" "+nv);
         super.fling(nv);
-        ;
     }
 }
