@@ -164,7 +164,6 @@ public class MSMarker extends MGMicroService {
     @Override
     protected void onPause() {
         markerTrackLogObservable.deleteObserver(refreshObserver);
-        getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
         prefEditMarkerTrack.deleteObserver(editMarkerTrackObserver);
         unregisterClass(MarkerControlLayer.class);
 
