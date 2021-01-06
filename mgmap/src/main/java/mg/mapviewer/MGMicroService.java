@@ -38,7 +38,6 @@ import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.util.MapViewUtility;
 import mg.mapviewer.view.MultiPointGLView;
 import mg.mapviewer.view.MultiPointView;
-import mg.mapviewer.view.PrefTextView;
 
 /**
  * <p>The concept of MicroServices helps to split the overall functionality into smaller parts. These parts are realized as features in separate packages and they are mostly independent from each other.</p>
@@ -94,9 +93,6 @@ public class MGMicroService {
 
     protected void doRefresh(){}
 
-    public PrefTextView initQuickControl(PrefTextView ptv, String info){
-        return ptv;
-    }
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         return etv;
     }

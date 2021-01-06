@@ -40,7 +40,6 @@ import mg.mapviewer.util.MetaDataUtil;
 import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
-import mg.mapviewer.view.PrefTextView;
 
 public class MSAvailableTrackLogs extends MGMicroService {
 

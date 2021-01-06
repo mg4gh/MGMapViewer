@@ -55,7 +55,6 @@ import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
-import mg.mapviewer.view.PrefTextView;
 
 /**
  * The control view is the parent container view object. So it is the parent for
@@ -195,28 +194,28 @@ public class ControlView extends RelativeLayout {
         return tr;
     }
 
-    public PrefTextView createDashboardPTV(ViewGroup vgDashboard, float weight) {
-        PrefTextView ptv = new PrefTextView(context).setDrawableSize(convertDp(16));
-        vgDashboard.addView(ptv);
+    public ExtendedTextView createDashboardETV(ViewGroup vgDashboard, float weight) {
+        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(convertDp(16));
+        vgDashboard.addView(etv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
         int margin = convertDp(0.8f);
         params.setMargins(margin,margin,margin,margin);
         params.weight = weight;
-        ptv.setLayoutParams(params);
+        etv.setLayoutParams(params);
 
         int padding = convertDp(2.0f);
-        ptv.setPadding(padding, padding, padding, padding);
+        etv.setPadding(padding, padding, padding, padding);
         int drawablePadding = convertDp(3.0f);
-        ptv.setCompoundDrawablePadding(drawablePadding);
+        etv.setCompoundDrawablePadding(drawablePadding);
         Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
 
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        ptv.setCompoundDrawables(drawable,null,null,null);
-        ptv.setText("");
-        ptv.setLines(1);
-        ptv.setOnClickListener(hintControl);
-        return ptv;
+        etv.setCompoundDrawables(drawable,null,null,null);
+        etv.setText("");
+        etv.setLines(1);
+        etv.setOnClickListener(hintControl);
+        return etv;
     }
 
     public void setViewGroupColors(ViewGroup viewGroup, int textColorId, int bgColorId){
@@ -255,11 +254,11 @@ public class ControlView extends RelativeLayout {
             if (statistic.getSegmentIdx() == -1) sIdx = "All";
             if (statistic.getSegmentIdx() == -2) sIdx = "R";
 //            String sIdx = ("I"+statistic.getSegmentIdx()).replaceFirst("I=-1","All").replaceFirst("I=-2","R");
-            ((PrefTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
-            ((PrefTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
-            ((PrefTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
-            ((PrefTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
-            ((PrefTextView) dashboardEntry.getChildAt(4)).setValue(statistic.duration);
+            ((ExtendedTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
+            ((ExtendedTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
+            ((ExtendedTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
+            ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
+            ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.duration);
         }
     }
 

@@ -45,7 +45,6 @@ import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.MVLayer;
-import mg.mapviewer.view.PrefTextView;
 
 public class MSSearch extends MGMicroService {
 

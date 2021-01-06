@@ -25,11 +25,9 @@ import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.IMapViewPosition;
 
-import mg.mapviewer.R;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
-import mg.mapviewer.view.PrefTextView;
 
 /**
  * Utility for functionality related to the mapsforge MapView.

@@ -51,28 +51,28 @@ public class TrackStatisticEntry extends TableLayout {
 
         TableRow tableRow0 = new TableRow(context);
         this.addView(tableRow0);
-        createPTV(tableRow0,10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(new MGPref[]{prefSelected},new int[]{R.drawable.select_off,R.drawable.select_on});
-        PrefTextView namePTV = createPTV(tableRow0,81).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null);
-        namePTV.setMaxLines(5);
+        createETV(tableRow0,10).setFormat(Formatter.FormatType.FORMAT_STRING).setData(prefSelected,R.drawable.select_off,R.drawable.select_on);
+        ExtendedTextView nameETV = createETV(tableRow0,81).setFormat(Formatter.FormatType.FORMAT_STRING);
+        nameETV.setMaxLines(5);
 
         TableRow tableRow1 = new TableRow(context);
         this.addView(tableRow1);
         String sIdx = "I="+statistic.getSegmentIdx();
         if (statistic.getSegmentIdx() == -1) sIdx = "All";
         if (statistic.getSegmentIdx() == -2) sIdx = "R";
-        createPTV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setPrefData(null,null).setValue( sIdx );
-        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DATE).setPrefData(null,null).setValue( statistic.getTStart() );
-        createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_TIME).setPrefData(null,null).setValue( statistic.getTStart() );
-        PrefTextView durationPTV = createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setPrefData(null, new int[]{R.drawable.duration});
-        PrefTextView lengthPTV = createPTV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setPrefData(null, new int[]{R.drawable.length});
+        createETV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setValue( sIdx );
+        createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DATE).setValue( statistic.getTStart() );
+        createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_TIME).setValue( statistic.getTStart() );
+        ExtendedTextView durationETV = createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setData(R.drawable.duration);
+        ExtendedTextView lengthETV = createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setData(R.drawable.length);
 
         TableRow tableRow2 = new TableRow(context);
         this.addView(tableRow2);
-        PrefTextView numPointsPTV = createPTV(tableRow2,10).setFormat(Formatter.FormatType.FORMAT_INT).setPrefData(null,null);
-        PrefTextView gainPTV = createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.gain});
-        PrefTextView lossPTV = createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.loss});
-        PrefTextView maxelePTV = createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.maxele});
-        PrefTextView minelePTV = createPTV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setPrefData(null, new int[]{R.drawable.minele});
+        ExtendedTextView numPointsETV = createETV(tableRow2,10).setFormat(Formatter.FormatType.FORMAT_INT);
+        ExtendedTextView gainETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.gain);
+        ExtendedTextView lossETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.loss);
+        ExtendedTextView maxeleETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.maxele);
+        ExtendedTextView mineleETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.minele);
 
 
         setViewtreeColor(this, colorId);
@@ -90,14 +90,14 @@ public class TrackStatisticEntry extends TableLayout {
         modifiedObserver = new Observer() {
             @Override
             public void update(Observable o, Object arg) {
-                namePTV.setValue( ((prefShowNameKey.getValue())?trackLog.getNameKey():trackLog.getName()) + (trackLog.isModified()?"*":""));
-                durationPTV.setValue(statistic.duration);
-                lengthPTV.setValue(statistic.getTotalLength());
-                numPointsPTV.setValue(statistic.getNumPoints());
-                gainPTV.setValue(statistic.getGain());
-                lossPTV.setValue(statistic.getLoss());
-                maxelePTV.setValue(statistic.getMaxEle());
-                minelePTV.setValue(statistic.getMinEle());
+                nameETV.setValue( ((prefShowNameKey.getValue())?trackLog.getNameKey():trackLog.getName()) + (trackLog.isModified()?"*":""));
+                durationETV.setValue(statistic.duration);
+                lengthETV.setValue(statistic.getTotalLength());
+                numPointsETV.setValue(statistic.getNumPoints());
+                gainETV.setValue(statistic.getGain());
+                lossETV.setValue(statistic.getLoss());
+                maxeleETV.setValue(statistic.getMaxEle());
+                mineleETV.setValue(statistic.getMinEle());
             }
         };
         trackLog.getPrefModified().addObserver(modifiedObserver);
@@ -110,46 +110,42 @@ public class TrackStatisticEntry extends TableLayout {
 
 
     public class StatisticClickListener extends ExtendedClickListener {
-        private boolean showNameKey = false;
-
         @Override
         public void onSingleClick(View v) {
             prefSelected.toggle();
-//            setPrefSelected(!isPrefSelected());
         }
 
         @Override
         public void onDoubleClick(View v) {
             prefShowNameKey.toggle();
         }
-
     }
 
 
 
 
-    public PrefTextView createPTV(ViewGroup viewGroup, float weight) {
-        PrefTextView ptv = new PrefTextView(getContext()).setDrawableSize(dp2px(16)); // Need activity context for Theme.AppCompat (Otherwise we get error messages)
-        viewGroup.addView(ptv);
+    public ExtendedTextView createETV(ViewGroup viewGroup, float weight) {
+        ExtendedTextView etv = new ExtendedTextView(getContext()).setDrawableSize(dp2px(16)); // Need activity context for Theme.AppCompat (Otherwise we get error messages)
+        viewGroup.addView(etv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT);
         int margin = dp2px(0.8f);
         params.setMargins(margin,margin,margin,margin);
         params.weight = weight;
-        ptv.setLayoutParams(params);
+        etv.setLayoutParams(params);
 
         int padding = dp2px(2.0f);
-        ptv.setPadding(padding, padding, padding, padding);
+        etv.setPadding(padding, padding, padding, padding);
         int drawablePadding = dp2px(3.0f);
-        ptv.setCompoundDrawablePadding(drawablePadding);
+        etv.setCompoundDrawablePadding(drawablePadding);
         Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
 
-        drawable.setBounds(0, 0, ptv.getDrawableSize(), ptv.getDrawableSize());
-        ptv.setCompoundDrawables(drawable,null,null,null);
-        ptv.setText("");
-        ptv.setTextColor(CC.getColor(R.color.WHITE));
-        ptv.setLines(1);
-        return ptv;
+        drawable.setBounds(0, 0, etv.getDrawableSize(), etv.getDrawableSize());
+        etv.setCompoundDrawables(drawable,null,null,null);
+        etv.setText("");
+        etv.setTextColor(CC.getColor(R.color.WHITE));
+        etv.setLines(1);
+        return etv;
     }
 
     private void setViewtreeColor(View view, int colorId){
