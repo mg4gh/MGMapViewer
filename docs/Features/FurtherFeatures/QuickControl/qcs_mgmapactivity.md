@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-<table style="font-size: small">
+<table style="font-size: x-small; padding:5px">
 <tr>
 	<th></th>
     <th style="text-align:center">Menu Task</th>
