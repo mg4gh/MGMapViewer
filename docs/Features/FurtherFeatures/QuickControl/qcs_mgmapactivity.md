@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-J
+K
 <table style="font-size: x-small; padding:2px">
 <tr>
 	<th></th>
@@ -40,7 +40,7 @@ J
 </tr>
 <tr>
 	<td style="min-width:50px;max-width:60px;padding:5px">Menu<br/>functions</td>
-    <td style="padding:5px;vertical-align:top"><ul style="padding:5px;"><li>settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px;"><li>settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
     <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>toggle search mode</li><li>toggle show search result mode</li></ul></td>
     <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>toggle marker edit mode</li><li>toggle turning instruction mode</li><li>map matching action</li></ul></td>
     <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>load from bbox</li><li>toggle bbox mode</li><li>load all tiles for tilestore</li><li>load missing tiles for tilestore</li><li>delete all tiles from tilestore</li></ul></td>
