@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-<table style="font-size: x-small; padding:5px">
+<table style="font-size: x-small; padding:2px">
 <tr>
 	<th></th>
     <th style="text-align:center">Menu Task</th>
@@ -37,9 +37,9 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 <td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/show_hide.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/multi.svg" width="60px" height="60px"></td>
 </tr>
-<tr>
+<tr style="padding:2px">
 	<td style="min-width:50px;max-width:60px">Menu<br/>functions</td>
-    <td><ul><li>settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
+    <td style="padding:2px"><ul style="padding:2px"><li style="padding:2px">settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
     <td><ul><li>toggle search mode</li><li>toggle show search result mode</li></ul></td>
     <td><ul><li>toggle marker edit mode</li><li>toggle turning instruction mode</li><li>map matching action</li></ul></td>
     <td><ul><li>load from bbox</li><li>toggle bbox mode</li><li>load all tiles for tilestore</li><li>load missing tiles for tilestore</li><li>delete all tiles from tilestore</li></ul></td>
