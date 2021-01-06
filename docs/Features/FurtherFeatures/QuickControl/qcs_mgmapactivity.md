@@ -136,7 +136,7 @@ T
 		<table style="padding:0px;border:none">
 			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search1b.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none"><small>Switch on</small></td></tr>
 			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none"><small>Switch off</small></td></tr>
-		</table3
+		</table>
 	</td>
     <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
