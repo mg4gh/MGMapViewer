@@ -3,7 +3,7 @@
 ## Further Features: quick controls of MGMapActivity (main activity)
 
 The MGMapActivity (main activity) provides seven quick control buttons, where each of them represents a menu button.
-Whenever you tap on of them, the corresponding submenu will be shown - so you will see a set of action buttons instead.
+Whenever you tap on of them, the corresponding submenu will be shown, so you will see a set of action buttons instead.
 If you don't use one of them, the buttons switch back after 3 seconds to the normal menu. If you tap on an action button,
 then the corresponding action is executed and the buttons switch also back to the menu. These new quick controls
 allow the full control with single tap actions. All submenus with action buttons provide on the
