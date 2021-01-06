@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-V
+U
 <table style="font-size: x-small; padding:5px">
 <tr>
 	<th></th>
@@ -207,7 +207,7 @@ V
 
 #### Menu Bounding box (bbox)
 
-<table style="font-size: small">
+<table style="font-size: x-small">
 <tr>
 	<th></th>
     <th style="text-align:center">Help</th>
@@ -219,47 +219,47 @@ V
     <th style="text-align:center">Delete all tiles from tilestore</th>
 </tr>
 <tr>
-<td width="5%" style="min-width:50px;max-width:60px">Action<br/>icon</td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"> </td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/load_from_bb.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/bbox.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/bb_ts_load_remain.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/bb_ts_load_all.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/bb_ts_delete_all.svg" width="60px" height="60px"></td>
+<td width="6%" style="padding:5px;vertical-align:top">Action<br/>icon</td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"> </td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/load_from_bb.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/bbox.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/bb_ts_load_remain.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/bb_ts_load_all.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90"><img src="../../../icons/bb_ts_delete_all.svg" width="60px" height="60px"></td>
 </tr>
 <tr>
-	<td style="min-width:50px;max-width:60px">Action<br/>functions</td>
+	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
     <td>Provide help</td>
     <td></td>
-    <td>
+    <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/load_from_bb.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Load tracks by bbox</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/load_from_bb_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Diasabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/load_from_bb.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Load tracks by bbox</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/load_from_bb_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td>
+    <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bbox2.svg" width="32px" height="40px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bbox.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bbox2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bbox.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch off</td></tr>
 		</table>
 	</td>
-    <td>
+    <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_load_remain.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Load missing tiles by bbox</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_load_remain_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Diasabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_load_remain.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Load missing tiles by bbox</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_load_remain_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td>
+    <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_load_all.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Load all tiles by bbox</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_load_all_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Diasabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_load_all.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Load all tiles by bbox</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_load_all_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td>
+    <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_delete_all.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Delete all tiles by bbox</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_delete_all_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Diasabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_delete_all.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Delete all tiles by bbox</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/bb_ts_delete_all_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
 </tr>
@@ -268,7 +268,7 @@ V
 
 #### Menu Record
 
-<table style="font-size: small">
+<table style="font-size: x-small">
 <tr>
 	<th></th>
     <th style="text-align:center">Help</th>
@@ -280,44 +280,44 @@ V
     <th style="text-align:center"></th>
 </tr>
 <tr>
-<td width="5%" style="min-width:50px;max-width:60px">Action<br/>icon</td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"> </td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/center1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/gps1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/record_track1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/record_segment1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"> </td>
+<td width="6%" style="padding:5px;vertical-align:top">Action<br/>icon</td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"> </td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/center1.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/gps1.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/record_track1.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/record_segment1.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"> </td>
 </tr>
 <tr>
-	<td style="min-width:50px;max-width:60px">Action<br/>functions</td>
+	<td style="padding:5px;vertical-align:top"">Action<br/>functions</td>
     <td>Provide help</td>
     <td></td>
-    <td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/center2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/center1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/center_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/center2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/center1.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch off</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/center_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/gps1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/gps2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/gps_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/gps1.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/gps2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch off</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/gps_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_track1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_track2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_track1.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_track2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch off</td></tr>
 		</table>
 	</td>
-    <td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_segment1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_segment2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_segment_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_segment1.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_segment2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch off</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/record_segment_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
     <td></td>
@@ -326,7 +326,7 @@ V
 
 #### Menu Show/Hide
 
-<table style="font-size: small">
+<table style="font-size: x-small">
 <tr>
 	<th></th>
     <th style="text-align:center">Help</th>
@@ -339,52 +339,53 @@ V
 </tr>
 
 <tr>
-<td width="5%" style="min-width:50px;max-width:60px">Action<br/>icon</td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/slider_layer1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/slider_track1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/hide_stl.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/hide_atl.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/hide_all.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/hide_mtl.svg" width="60px" height="60px"></td>
+<td width="6%" style="padding:5px;vertical-align:top">Action<br/>icon</td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/slider_layer1.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/slider_track1.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/hide_stl.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90"><img src="../../../icons/hide_atl.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/hide_all.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/hide_mtl.svg" width="60px" height="60px"></td>
 </tr>
 <tr>
-	<td style="min-width:50px;max-width:60px">Action<br/>functions</td>
+	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
     <td>Provide help</td>
-	<td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_layer2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_layer1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
-		</table>
-    <td>
-		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_track2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_track1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_track_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_layer2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_layer1.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch off</td></tr>
 		</table>
 	</td>
-    <td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_stl.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Hide selected track</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_stl_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_track2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_track1.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch off</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/slider_track_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_atl.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Hide not selected tracks</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_atl_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_stl.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Hide selected track</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_stl_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_all.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Hide all tracks</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_all_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_atl.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Hide not selected track</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_atl_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td>
+	<td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_mtl.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Hide marker/route track</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_mtl_dis.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_all.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Hide all tracks</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_all_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
+		</table>
+	</td>
+	<td style="padding:5px;vertical-align:top">
+		<table style="padding:0px;border:none">
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_mtl.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Hide marker/route track</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/hide_mtl_dis.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
 </tr>
@@ -392,7 +393,7 @@ V
 
 #### Menu Multi
 
-<table style="font-size: small">
+<table style="font-size: x-small">
 <tr>
 	<th></th>
     <th style="text-align:center">Help</th>
@@ -404,24 +405,24 @@ V
     <th style="text-align:center">Home</th>
 </tr>
 <tr>
-<td width="5%" style="min-width:50px;max-width:60px">Action<br/>icon</td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/exit.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"> </td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/fullscreen.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/zoom_in.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/zoom_out.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/home.svg" width="60px" height="60px"></td>
+<td width="6%" style="padding:5px;vertical-align:top">Action<br/>icon</td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/exit.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"> </td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/fullscreen.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/zoom_in.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/zoom_out.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/home.svg" width="60px" height="60px"></td>
 </tr>
 <tr>
-	<td style="min-width:50px;max-width:60px">Action<br/>functions</td>
-    <td>Provide help</td>
-    <td>Exit: Leave the app</td>
-    <td> </td>
-    <td>Toggle fullscreen mode</td>
-    <td>Zoom in</td>
-    <td>Zoom out</td>
-    <td>Lunch Android homescreen</td>
+	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
+    <td style="padding:5px;vertical-align:top">Provide help</td>
+    <td style="padding:5px;vertical-align:top">Exit: Leave the app</td>
+    <td style="padding:5px;vertical-align:top"> </td>
+    <td style="padding:5px;vertical-align:top">Toggle fullscreen mode</td>
+    <td style="padding:5px;vertical-align:top">Zoom in</td>
+    <td style="padding:5px;vertical-align:top">Zoom out</td>
+    <td style="padding:5px;vertical-align:top">Lunch Android homescreen</td>
 </tr>
 </table>
 
