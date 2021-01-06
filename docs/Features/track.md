@@ -27,7 +27,7 @@ The following terminology is used for TrackLog objects in this description (and 
 <tr>
     <td width="12%" style="padding:5px;vertical-align:top;min-width=100px">MarkerTrackLog</td>
     <td style="padding:5px;vertical-align:top">thin pink line</td>
-    <td style="padding:5px;vertical-align:top"> X </td>
+    <td style="padding:5px;vertical-align:top"> - </td>
     <td style="padding:5px;vertical-align:top"> - </td>
     <td style="padding:5px;vertical-align:top">pink entry</td>
     <td style="padding:5px;vertical-align:top">Track from marked points for planning</td>
@@ -35,7 +35,7 @@ The following terminology is used for TrackLog objects in this description (and 
 <tr>
     <td width="12%" style="padding:5px;vertical-align:top;min-width=100px">RouteTrackLog</td>
     <td style="padding:5px;vertical-align:top">purple line</td>
-    <td style="padding:5px;vertical-align:top"> - </td>
+    <td style="padding:5px;vertical-align:top"> X (purple circle for marker points)</td>
     <td style="padding:5px;vertical-align:top">purple entry</td>
     <td style="padding:5px;vertical-align:top">purple entry</td>
     <td style="padding:5px;vertical-align:top">calculated route based on MarkerTrack</td>
@@ -43,7 +43,7 @@ The following terminology is used for TrackLog objects in this description (and 
 <tr>
     <td width="12%" style="padding:5px;vertical-align:top;min-width=100px">SelectedTrackLog</td>
     <td style="padding:5px;vertical-align:top">blue line</td>
-    <td style="padding:5px;vertical-align:top"> X (purple circle for marker points) </td>
+    <td style="padding:5px;vertical-align:top"> X </td>
     <td style="padding:5px;vertical-align:top">blue entry</td>
     <td style="padding:5px;vertical-align:top">blue entry</td>
     <td style="padding:5px;vertical-align:top">one specific TrackLog from the amount of AvailableTrackLogs</td>
