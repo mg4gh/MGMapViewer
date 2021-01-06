@@ -105,12 +105,12 @@ public class ControlComposer {
 
     void composeStatusLine(MGMapApplication application, MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.tr_states);
-        application.getMS(MSBeeline.class).initStatusLine(coView.createStatusLinePTV(parent, 20), "center");
-        application.getMS(MSBeeline.class).initStatusLine(coView.createStatusLinePTV(parent, 10), "zoom");
-        application.getMS(MSTime.class).initStatusLine(coView.createStatusLinePTV(parent, 15), "time");
-        application.getMS(MSPosition.class).initStatusLine(coView.createStatusLinePTV(parent, 20), "height");
-        application.getMS(MSRemainings.class).initStatusLine(coView.createStatusLinePTV(parent, 20), "remain");
-        application.getMS(MSTime.class).initStatusLine(coView.createStatusLinePTV(parent, 15), "bat");
+        application.getMS(MSBeeline.class).initStatusLine(coView.createStatusLineETV(parent, 20), "center");
+        application.getMS(MSBeeline.class).initStatusLine(coView.createStatusLineETV(parent, 10), "zoom");
+        application.getMS(MSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "time");
+        application.getMS(MSPosition.class).initStatusLine(coView.createStatusLineETV(parent, 20), "height");
+        application.getMS(MSRemainings.class).initStatusLine(coView.createStatusLineETV(parent, 20), "remain");
+        application.getMS(MSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "bat");
     }
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {

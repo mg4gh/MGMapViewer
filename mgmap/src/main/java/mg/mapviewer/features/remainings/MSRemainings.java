@@ -23,7 +23,7 @@ import mg.mapviewer.model.TrackLogRefApproach;
 import mg.mapviewer.model.TrackLogSegment;
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.MGPref;
-import mg.mapviewer.view.PrefTextView;
+import mg.mapviewer.view.ExtendedTextView;
 
 public class MSRemainings extends MGMicroService {
 
@@ -36,19 +36,17 @@ public class MSRemainings extends MGMicroService {
     private final MGPref<Boolean> prefReverse = MGPref.get(R.string.MSRemaining_pref_Reverse, false);
     private final MGPref<Boolean> prefInterval = MGPref.get(R.string.MSRemaining_pref_Interval, false);
 
-
-//    private boolean bReverseRemainings = false;
-
-    private PrefTextView ptvRemain = null;
+    private ExtendedTextView etvRemain = null;
 
     @Override
-    public PrefTextView initStatusLine(PrefTextView ptv, String info) {
+    public ExtendedTextView initStatusLine(ExtendedTextView etv, String info) {
         if (info.equals("remain")){
-            ptv.setPrefData(new MGPref[]{prefInterval, prefReverse}, new int[]{R.drawable.remaining, R.drawable.remaining3, R.drawable.remaining2, R.drawable.remaining3 });
-            ptv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
-            ptvRemain = ptv;
+            etv.setData(prefInterval, prefReverse,R.drawable.remaining, R.drawable.remaining3, R.drawable.remaining2, R.drawable.remaining3);
+            etv.setPrAction(prefInterval, prefReverse);
+            etv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
+            etvRemain = etv;
         }
-        return ptv;
+        return etv;
     }
 
     @Override
@@ -57,15 +55,7 @@ public class MSRemainings extends MGMicroService {
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
         getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
         prefReverse.addObserver(refreshObserver);
-
-//        getControlView().tv_remain.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//                bReverseRemainings = !bReverseRemainings;
-//                refreshObserver.update(null,null);
-//                return true;
-//            }
-//        });
+        prefGps.addObserver(refreshObserver);
     }
 
     @Override
@@ -74,6 +64,7 @@ public class MSRemainings extends MGMicroService {
         getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
         getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);
         prefReverse.deleteObserver(refreshObserver);
+        prefGps.deleteObserver(refreshObserver);
     }
 
     @Override
@@ -98,8 +89,6 @@ public class MSRemainings extends MGMicroService {
         int drawableId = 0;
         boolean interval = false;
         if (selectedTrackLog != null){
-//            String text = "";
-
             TrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
             if (mtl != null) {
                 if (mtl.getNumberOfSegments() == 1) {
@@ -111,10 +100,8 @@ public class MSRemainings extends MGMicroService {
                             drawableId = R.drawable.remaining;
                             if (prefReverse.getValue()) {
                                 dist = selectedTrackLog.getTrackLogSegment(ref1.getSegmentIdx()).getStatistic().getTotalLength() - dist;
-//                                dist = selectedTrackLog.getSegmentStatistics().get(ref1.getSegmentIdx()).getTotalLength() - dist;
                                 drawableId = R.drawable.remaining2;
                             }
-//                            text = String.format(Locale.ENGLISH, " %.2f km", dist / 1000.0);
                         }
                     }
                     if (segment.size() == 2) {
@@ -124,7 +111,6 @@ public class MSRemainings extends MGMicroService {
                             dist = selectedTrackLog.getRemainingDistance(ref1, ref2);
                             drawableId = R.drawable.remaining3;
                             interval = true;
-//                            text = String.format(Locale.ENGLISH, " %.2f km", dist / 1000.0);
                         }
                     }
                 }
@@ -141,13 +127,12 @@ public class MSRemainings extends MGMicroService {
                             dist = total - dist;
                             drawableId = R.drawable.remaining2;
                         }
-//                        text = String.format(Locale.ENGLISH, " %.2f km", dist);
                     }
                 }
             }
         }
         prefInterval.setValue(interval);
-        getControlView().setStatusLineValue(ptvRemain, dist);
+        getControlView().setStatusLineValue(etvRemain, dist);
     }
 
 }

@@ -482,30 +482,30 @@ public class ControlView extends RelativeLayout {
     // ********* Status line related stuff                                                    **********
     // *************************************************************************************************
 
-    public PrefTextView createStatusLinePTV(ViewGroup vgParent, float weight){
-        PrefTextView ptv = new PrefTextView(context).setDrawableSize(convertDp(16));
-        vgParent.addView(ptv);
-        tvList.add(ptv);
+    public ExtendedTextView createStatusLineETV(ViewGroup vgParent, float weight){
+        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(convertDp(16));
+        vgParent.addView(etv);
+        tvList.add(etv);
         TableRow.LayoutParams llParms = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
         int margin = convertDp(0.8f);
         llParms.setMargins(margin,margin,margin,margin);
         llParms.weight = weight;
-        ptv.setLayoutParams(llParms);
+        etv.setLayoutParams(llParms);
 
         int padding = convertDp(2.0f);
-        ptv.setPadding(padding, padding, padding, padding);
+        etv.setPadding(padding, padding, padding, padding);
         int drawablePadding = convertDp(3.0f);
-        ptv.setCompoundDrawablePadding(drawablePadding);
+        etv.setCompoundDrawablePadding(drawablePadding);
         Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
         if (drawable != null){
-            drawable.setBounds(0, 0, ptv.getDrawableSize(), ptv.getDrawableSize());
+            drawable.setBounds(0, 0, etv.getDrawableSize(), etv.getDrawableSize());
         }
-        ptv.setCompoundDrawables(drawable,null,null,null);
-        ptv.setText("");
-        ptv.setLines(1);
-        ptv.setTextColor(CC.getColor(R.color.BLACK));
-        ptv.setBackgroundColor(CC.getColor(R.color.WHITE_A150));
-        return ptv;
+        etv.setCompoundDrawables(drawable,null,null,null);
+        etv.setText("");
+        etv.setLines(1);
+        etv.setTextColor(CC.getColor(R.color.BLACK));
+        etv.setBackgroundColor(CC.getColor(R.color.WHITE_A150));
+        return etv;
     }
 
     void reworkStatusLine(){
@@ -523,9 +523,9 @@ public class ControlView extends RelativeLayout {
         }
     }
 
-    public void setStatusLineValue(PrefTextView ptv, Object value){
-        if (ptv != null) {
-            if (ptv.setValue(value)){
+    public void setStatusLineValue(ExtendedTextView etv, Object value){
+        if (etv != null) {
+            if (etv.setValue(value)){
                 reworkStatusLine();
             }
         }
@@ -567,7 +567,7 @@ public class ControlView extends RelativeLayout {
         });
         return etv;
     }
-    
+
     public static TableRow createRow(Context context){
         TableRow tableRow = new TableRow(context);
         tableRow.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

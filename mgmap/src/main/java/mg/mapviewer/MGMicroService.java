@@ -100,8 +100,8 @@ public class MGMicroService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         return etv;
     }
-    public PrefTextView initStatusLine(PrefTextView ptv, String info){
-        return ptv;
+    public ExtendedTextView initStatusLine(ExtendedTextView etv, String info){
+        return etv;
     }
     public ViewGroup initDashboard(ViewGroup dvg, String info){
         return dvg;

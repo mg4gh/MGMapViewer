@@ -21,30 +21,30 @@ import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 import mg.mapviewer.util.Formatter;
-import mg.mapviewer.view.PrefTextView;
+import mg.mapviewer.view.ExtendedTextView;
 
 public class MSTime extends MGMicroService {
 
-    private PrefTextView ptvTime = null;
-    private PrefTextView ptvBat = null;
+    private ExtendedTextView etvTime = null;
+    private ExtendedTextView etvBat = null;
 
     public MSTime(MGMapActivity mmActivity) {
         super(mmActivity);
     }
 
     @Override
-    public PrefTextView initStatusLine(PrefTextView ptv, String info) {
+    public ExtendedTextView initStatusLine(ExtendedTextView etv, String info) {
         if (info.equals("time")){
-            ptv.setPrefData(null, new int[]{R.drawable.duration2});
-            ptv.setFormat(Formatter.FormatType.FORMAT_TIME);
-            ptvTime = ptv;
+            etv.setData(R.drawable.duration2);
+            etv.setFormat(Formatter.FormatType.FORMAT_TIME);
+            etvTime = etv;
         }
         if (info.equals("bat")){
-            ptv.setPrefData(null, new int[]{R.drawable.bat});
-            ptv.setFormat(Formatter.FormatType.FORMAT_INT);
-            ptvBat = ptv;
+            etv.setData(R.drawable.bat);
+            etv.setFormat(Formatter.FormatType.FORMAT_INT);
+            etvBat = etv;
         }
-        return ptv;
+        return etv;
     }
 
     @Override
@@ -64,13 +64,13 @@ public class MSTime extends MGMicroService {
         @Override
         public void run() {
 //            getControlView().updateTvTime(System.currentTimeMillis());
-            getControlView().setStatusLineValue(ptvTime, System.currentTimeMillis());
+            getControlView().setStatusLineValue(etvTime, System.currentTimeMillis());
             getTimer().postDelayed(timerTaskTime,1000);
 
             if (--batCnt <= 0){
                 batCnt = 60;
 //                getControlView().updateTvBat(getBatteryPercent());
-                getControlView().setStatusLineValue(ptvBat, getBatteryPercent());
+                getControlView().setStatusLineValue(etvBat, getBatteryPercent());
             }
         }
     };

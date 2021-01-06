@@ -33,7 +33,6 @@ import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.PointView;
-import mg.mapviewer.view.PrefTextView;
 
 public class MSPosition extends MGMicroService {
 
@@ -47,7 +46,7 @@ public class MSPosition extends MGMicroService {
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
     private final MGPref<Boolean> prefGpsEnabled = MGPref.anonymous(false);
 
-    private PrefTextView ptvHeight = null;
+    private ExtendedTextView etvHeight = null;
 
     public MSPosition(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -65,13 +64,13 @@ public class MSPosition extends MGMicroService {
     }
 
     @Override
-    public PrefTextView initStatusLine(PrefTextView ptv, String info) {
+    public ExtendedTextView initStatusLine(ExtendedTextView etv, String info) {
         if (info.equals("height")){
-            ptv.setPrefData(null, new int[]{R.drawable.ele});
-            ptv.setFormat(Formatter.FormatType.FORMAT_HEIGHT);
-            ptvHeight = ptv;
+            etv.setData(R.drawable.ele);
+            etv.setFormat(Formatter.FormatType.FORMAT_HEIGHT);
+            etvHeight = etv;
         }
-        return ptv;
+        return etv;
     }
 
     @Override
@@ -132,7 +131,7 @@ public class MSPosition extends MGMicroService {
 
     private void hidePosition(){
         unregisterAll();
-        getControlView().setStatusLineValue(ptvHeight, PointModel.NO_ELE);
+        getControlView().setStatusLineValue(etvHeight, PointModel.NO_ELE);
     }
 
     private void showPosition(PointModel pm) {
@@ -147,7 +146,7 @@ public class MSPosition extends MGMicroService {
         }
         register(new PointView(pm, PAINT_FIX2_STROKE, PAINT_FIX2_FILL).setRadius( 6 ));
 
-        getControlView().setStatusLineValue(ptvHeight, pm.getEleA());
+        getControlView().setStatusLineValue(etvHeight, pm.getEleA());
     }
 
     private void centerCurrentPosition(PointModel pm){

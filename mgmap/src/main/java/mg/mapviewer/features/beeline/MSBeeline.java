@@ -34,8 +34,8 @@ import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.MultiPointView;
-import mg.mapviewer.view.PrefTextView;
 
 public class MSBeeline extends MGMicroService {
 
@@ -43,26 +43,26 @@ public class MSBeeline extends MGMicroService {
 
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
     private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.MSPosition_prev_ZoomLevel, 15);
-    private PrefTextView ptvCenter = null;
-    private PrefTextView ptvZoom = null;
+    private ExtendedTextView etvCenter = null;
+    private ExtendedTextView etvZoom = null;
 
     public MSBeeline(MGMapActivity mmActivity) {
         super(mmActivity);
     }
 
     @Override
-    public PrefTextView initStatusLine(PrefTextView ptv, String info) {
+    public ExtendedTextView initStatusLine(ExtendedTextView etv, String info) {
         if (info.equals("center")){
-            ptv.setPrefData(null, new int[]{R.drawable.distance});
-            ptv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
-            ptvCenter = ptv;
+            etv.setData(R.drawable.distance);
+            etv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
+            etvCenter = etv;
         }
         if (info.equals("zoom")){
-            ptv.setPrefData(null, new int[]{R.drawable.zoom});
-            ptv.setFormat(Formatter.FormatType.FORMAT_INT);
-            ptvZoom = ptv;
+            etv.setData(R.drawable.zoom);
+            etv.setFormat(Formatter.FormatType.FORMAT_INT);
+            etvZoom = etv;
         }
-        return ptv;
+        return etv;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class MSBeeline extends MGMicroService {
                 } else {
                     showHidePositionToCenter(null);
                 }
-                getControlView().setStatusLineValue(ptvZoom, zoomLevel);
+                getControlView().setStatusLineValue(etvZoom, zoomLevel);
             }
         });
         prefZoomLevel.setValue(zoomLevel);
@@ -125,7 +125,7 @@ public class MSBeeline extends MGMicroService {
         } else {
             distance = -1;
         }
-        getControlView().setStatusLineValue(ptvCenter, distance);
+        getControlView().setStatusLineValue(etvCenter, distance);
     }
 
 }
