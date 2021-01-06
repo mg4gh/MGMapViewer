@@ -17,7 +17,7 @@ be compliant to the .gpx format.
 
 After recording of a track the corresponding .gpx file will be automatically generated and stored 
 in the directory "./MGMapViewer/track/gpx/". Alternatively you can place gpx files manually in this
-directory.
+directory. To do this remember the  [file system structure](../../../GettingStarted/FileSystem.md).
 
 
 Beside the ".gpx" format there is a second file format ".meta", which is stored consequently in the
