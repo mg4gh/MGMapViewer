@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-S
+T
 <table style="font-size: x-small; padding:5px">
 <tr>
 	<th></th>
@@ -108,7 +108,7 @@ S
 
 #### Menu Search
 
-<table style="font-size: small">
+<table style="font-size: x-small">
 <tr>
 	<th></th>
     <th style="text-align:center">Help</th>
@@ -126,7 +126,7 @@ S
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/search_res1.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"> </td>
 <td width="12%" style="text-align:center; min-width:90px"> </td>
-<td width="12%" style="text-align:center; min-width:90"> </td>
+<td width="12%" style="text-align:center; min-width:90px"> </td>
 <td width="12%" style="text-align:center; min-width:90px"> </td>
 </tr>
 <tr>
@@ -135,14 +135,14 @@ S
     <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
 			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search1b.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none"><small>Switch off</small></td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none"><small>Switch off</small></td></tr>
 		</table3
 	</td>
     <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
-			<tr><td width="40%" style="padding:5px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch on</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Switch off</small></td></tr>
-			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res3.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none"><small>Disabled</small></td></tr>
+			<tr><td width="40%" style="padding:5px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res2.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none">Switch on</td></tr>
+			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res1.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none">Switch off</td></tr>
+			<tr><td width="40%" style="padding-top:10px;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res3.svg" width="32px" height="32px"></td><td width="60%" style="padding-top:5px;border:none">Disabled</td></tr>
 		</table>
 	</td>
     <td></td>
