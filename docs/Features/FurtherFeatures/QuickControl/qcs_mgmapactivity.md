@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-P
+Q
 <table style="font-size: x-small; padding:5px">
 <tr>
 	<th></th>
@@ -52,18 +52,18 @@ P
 <td  style="padding:5px;vertical-align:top">Menu<br/>states</td>
 <td></td>
 <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
-	<li>search mode<br/><img src="../../../icons/group_search1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_search2.svg" width="48px" height="32px"></li>
-	<li>show search result mode<br/><img src="../../../icons/group_search1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_search3.svg" width="48px" height="32px"></li>
+	<li>search mode<br/><img src="../../../icons/group_search1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_search2.svg" width="32px" height="32px"></li>
+	<li>show search result mode<br/><img src="../../../icons/group_search1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_search3.svg" width="32px" height="32px"></li>
 </ul></td>
 <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
-	<li>marker edit mode<br/><img src="../../../icons/group_marker1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_marker2.svg" width="48px" height="32px"></li>
-	<li>turning instruction mode<br/><img src="../../../icons/group_marker1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_marker3.svg" width="48px" height="32px"></li>
+	<li>marker edit mode<br/><img src="../../../icons/group_marker1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_marker2.svg" width="32px" height="32px"></li>
+	<li>turning instruction mode<br/><img src="../../../icons/group_marker1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_marker3.svg" width="32px" height="32px"></li>
 </ul></td>
 <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
-	<li>bbox mode<br/><img src="../../../icons/group_bbox1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_bbox2.svg" width="48px" height="32px"></li>
+	<li>bbox mode<br/><img src="../../../icons/group_bbox1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_bbox2.svg" width="32px" height="32px"></li>
 </ul></td>
 <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
-	<li>GPS mode<br/>(GPS or track recording or track segment recording)<br/><img src="../../../icons/group_record1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_record2.svg" width="48px" height="32px"></li>
+	<li>GPS mode<br/>(GPS or track recording or track segment recording)<br/><img src="../../../icons/group_record1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_record2.svg" width="32px" height="32px"></li>
 </ul></td>
 <td></td>
 <td></td>
@@ -84,14 +84,14 @@ P
     <th style="text-align:center">Themes</th>
 </tr>
 <tr>
-<td width="5%" style="min-width:50px;max-width:60px">Action<br/>icon</td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/settings.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/settings_fu.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/statistik.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/height_profile.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/download.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:100px"><img src="../../../icons/themes.svg" width="60px" height="60px"></td>
+<td width="6%" style="padding:5px;vertical-align:top">Action<br/>icon</td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/settings.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/settings_fu.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/statistik.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/height_profile.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/download.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/themes.svg" width="60px" height="60px"></td>
 </tr>
 <tr>
 	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
