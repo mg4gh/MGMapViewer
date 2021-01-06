@@ -16,7 +16,7 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 
 #### Main menu quick controls
 
-I
+J
 <table style="font-size: x-small; padding:2px">
 <tr>
 	<th></th>
@@ -40,30 +40,30 @@ I
 </tr>
 <tr>
 	<td style="min-width:50px;max-width:60px;padding:5px">Menu<br/>functions</td>
-    <td style="padding:5px;vertical-align:top"><ul style="padding:2px;"><li>settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
-    <td><ul style="padding:2px"><li>toggle search mode</li><li>toggle show search result mode</li></ul></td>
-    <td><ul style="padding:2px"><li>toggle marker edit mode</li><li>toggle turning instruction mode</li><li>map matching action</li></ul></td>
-    <td><ul style="padding:2px"><li>load from bbox</li><li>toggle bbox mode</li><li>load all tiles for tilestore</li><li>load missing tiles for tilestore</li><li>delete all tiles from tilestore</li></ul></td>
-    <td><ul style="padding:2px"><li>toggle center mode</li><li>toggle GPS mode</li><li>toggle record track mode</li><li>toggle record track segment mode</li></ul></td>
-    <td><ul style="padding:2px"><li>toggle layer transparency controls</li><li>toggle track transparency controls</li><li>hide selected track</li><li>hide not selected tracks</li><li>hide all tracks</li><li>hide marker/route track</li></ul></td>
-    <td><ul style="padding:2px"><li>leave the app</li><li>toggle fullscreen mode</li><li>zoom in</li><li>zoom out</li><li>lunch Android homescreen</li></ul></td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding:5px;"><li>settings</li><li>further settings</li><li>statistics</li><li>height profile</li><li>download</li><li>themes</li></ul></td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>toggle search mode</li><li>toggle show search result mode</li></ul></td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>toggle marker edit mode</li><li>toggle turning instruction mode</li><li>map matching action</li></ul></td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>load from bbox</li><li>toggle bbox mode</li><li>load all tiles for tilestore</li><li>load missing tiles for tilestore</li><li>delete all tiles from tilestore</li></ul></td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>toggle center mode</li><li>toggle GPS mode</li><li>toggle record track mode</li><li>toggle record track segment mode</li></ul></td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>toggle layer transparency controls</li><li>toggle track transparency controls</li><li>hide selected track</li><li>hide not selected tracks</li><li>hide all tracks</li><li>hide marker/route track</li></ul></td>
+    <td style="padding:5px;vertical-align:top"><ul style="padding:5px"><li>leave the app</li><li>toggle fullscreen mode</li><li>zoom in</li><li>zoom out</li><li>lunch Android homescreen</li></ul></td>
 </tr>
 <tr>
-<td style="min-width:50px;max-width:60px;padding:5px">Menu<br/>states</td>
+<td  style="padding:5px;vertical-align:top">Menu<br/>states</td>
 
 <td></td>
-<td><ul style="padding:2px">
+<td style="padding:5px;vertical-align:top"><ul style="padding:5px">
 	<li>search mode<br/><img src="../../../icons/group_search1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_search2.svg" width="48px" height="32px"></li>
 	<li>show search result mode<br/><img src="../../../icons/group_search1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_search3.svg" width="48px" height="32px"></li>
 </ul></td>
-<td><ul style="padding:2px">
+<td style="padding:5px;vertical-align:top"><ul style="padding:5px">
 	<li>marker edit mode<br/><img src="../../../icons/group_marker1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_marker2.svg" width="48px" height="32px"></li>
 	<li>turning instruction mode<br/><img src="../../../icons/group_marker1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_marker3.svg" width="48px" height="32px"></li>
 </ul></td>
-<td><ul style="padding:2px">
+<td style="padding:5px;vertical-align:top"><ul style="padding:5px">
 	<li>bbox mode<br/><img src="../../../icons/group_bbox1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_bbox2.svg" width="48px" height="32px"></li>
 </ul></td>
-<td><ul style="padding:2px">
+<td> style="padding:5px;vertical-align:top"<ul style="padding:5px">
 	<li>GPS mode<br/>(GPS or track recording or track segment recording)<br/><img src="../../../icons/group_record1.svg" width="48px" height="32px">&nbsp;<img src="../../../icons/group_record2.svg" width="48px" height="32px"></li>
 </ul></td>
 <td></td>
