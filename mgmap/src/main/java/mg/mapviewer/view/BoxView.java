@@ -30,7 +30,6 @@ public class BoxView extends MVLayer {
     private Paint paintStroke;
     private Paint paintFill = null;
     private boolean keepAligned = true;
-    private int pointRadius = 4;
 
     private static GraphicFactory graphicFactory = AndroidGraphicFactory.INSTANCE;
 
