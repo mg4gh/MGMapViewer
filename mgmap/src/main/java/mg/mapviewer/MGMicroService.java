@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -20,6 +20,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.ViewGroup;
+
+import androidx.lifecycle.Lifecycle;
 
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.android.view.MapView;
@@ -52,13 +54,15 @@ import mg.mapviewer.view.MultiPointView;
 public class MGMicroService {
 
     /** A timer object. */
-    private static Handler timer = new Handler();
+    private static final Handler timer = new Handler();
 
-    private MGMapActivity mmActivity;
+    private final MGMapActivity mmActivity;
     protected ArrayList<Layer> msLayers = new ArrayList<>();
+    protected String logName;
 
     public MGMicroService(MGMapActivity mmActivity){
         this.mmActivity = mmActivity;
+        logName = this.getClass().getSimpleName();
     }
 
     public class RefreshObserver implements Observer, java.util.Observer{
@@ -67,7 +71,7 @@ public class MGMicroService {
 
         @Override
         public void update(Observable o, Object arg) {
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" o="+o+" arg="+arg);
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+" c="+logName+" o="+o+" arg="+arg);
             last = o;
             onUpdate(o,arg);
             onChange();
@@ -75,7 +79,7 @@ public class MGMicroService {
 
         @Override
         public void onChange() {
-            getTimer().removeCallbacks(ttRefresh);
+            cancelRefresh();
             getTimer().postDelayed(ttRefresh,ttRefreshTime);
         }
     }
@@ -83,20 +87,30 @@ public class MGMicroService {
     protected void onUpdate(Observable o, Object arg){} //hook for derived classes
 
     protected long ttRefreshTime = 100;
-    private Runnable ttRefresh = new Runnable() {
-        @Override
-        public void run() {
-            doRefresh();
-        }
-    };
+    private final Runnable ttRefresh = this::doRefresh;
     protected RefreshObserver refreshObserver = new RefreshObserver();
 
-    protected void doRefresh(){}
+    protected void doRefresh(){
+        if (getActivity().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED){
+            doRefreshResumed();
+        }
+    }
+
+    protected void doRefreshResumed(){
+//        Log.v(MGMapApplication.LABEL, NameUtil.context() + " "+this.getClass().getName()+" doRefreshResumed");
+        getActivity().runOnUiThread(this::doRefreshResumedUI);
+    }
+    protected void doRefreshResumedUI(){}
+    protected void cancelRefresh(){
+        getTimer().removeCallbacks(ttRefresh);
+    }
 
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        etv.setName(info);
         return etv;
     }
     public ExtendedTextView initStatusLine(ExtendedTextView etv, String info){
+        etv.setName(info);
         return etv;
     }
     public ViewGroup initDashboard(ViewGroup dvg, String info){
@@ -136,12 +150,7 @@ public class MGMicroService {
             if (addToMsLayers) msLayers.add(layer);
             getMapView().getLayerManager().getLayers().add(layer);
         } else {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    register(layer, addToMsLayers);
-                }
-            });
+            getActivity().runOnUiThread(() -> register(layer, addToMsLayers));
         }
     }
     protected void unregister(Layer layer){
@@ -153,15 +162,10 @@ public class MGMicroService {
             if (removeFromMsLayers) msLayers.remove(layer);
             getMapView().getLayerManager().getLayers().remove(layer);
         } else {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    unregister(layer, removeFromMsLayers);
-                }
-            });
+            getActivity().runOnUiThread(() -> unregister(layer, removeFromMsLayers));
         }
     }
-    protected <T> int unregisterClass(Class<T> tClass){
+    protected <T> void unregisterClass(Class<T> tClass){
         ArrayList<Layer> layers2Bremoved  = new ArrayList<>();
         for (Layer layer : getMapView().getLayerManager().getLayers()){
             if (tClass.isInstance(layer)){
@@ -171,7 +175,6 @@ public class MGMicroService {
         for (Layer layer : layers2Bremoved){
             unregister(layer, false);
         }
-        return layers2Bremoved.size();
     }
 
     protected <T>  void unregisterAll(Class<T> tClass){

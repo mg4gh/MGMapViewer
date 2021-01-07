@@ -89,7 +89,6 @@ public class MSGraphDetails extends MGMicroService {
                 MultiPointView multiPointView = new MultiPointView(multiPointModel, PAINT_GRAD_STROKE);
                 multiPointView.setShowIntermediates(true);
                 register(multiPointView);
-//                return true;
             }
         }
         return false;

@@ -1,6 +1,19 @@
+/*
+ * Copyright 2017 - 2021 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package mg.mapviewer.features.alpha;
 
-import java.util.Observable;
 import java.util.Observer;
 
 import mg.mapviewer.MGMapActivity;
@@ -26,21 +39,21 @@ public class MSAlpha extends MGMicroService {
     public MSAlpha(MGMapActivity activity){
         super(activity);
 
-        Observer  prefSliderTracksObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefSliderTracksEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() || prefRtlVisibility.getValue() );
-            }
-        };
+        Observer  prefSliderTracksObserver =
+                (o,args)-> prefSliderTracksEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() || prefRtlVisibility.getValue() );
         prefStlVisibility.addObserver(prefSliderTracksObserver);
         prefAtlVisibility.addObserver(prefSliderTracksObserver);
         prefMtlVisibility.addObserver(prefSliderTracksObserver);
         prefRtlVisibility.addObserver(prefSliderTracksObserver);
         prefSliderTracksObserver.update(null, null);
+
+        prefAlpha.addObserver(refreshObserver);
+        prefAlpha2.addObserver(refreshObserver);
     }
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        super.initQuickControl(etv,info);
         if ("alpha_layers".equals(info)){
             etv.setPrAction(prefAlpha);
             etv.setData(prefAlpha,R.drawable.slider_layer2,R.drawable.slider_layer1);
@@ -58,8 +71,6 @@ public class MSAlpha extends MGMicroService {
     @Override
     protected void onResume() {
         super.onResume();
-        prefAlpha.addObserver(refreshObserver);
-        prefAlpha2.addObserver(refreshObserver);
         prefAlpha.setValue(false);
         prefAlpha2.setValue(false);
     }
@@ -67,34 +78,26 @@ public class MSAlpha extends MGMicroService {
     @Override
     protected void onPause() {
         super.onPause();
-        prefAlpha.deleteObserver(refreshObserver);
-        prefAlpha2.deleteObserver(refreshObserver);
     }
 
     @Override
-    protected void doRefresh() {
+    protected void doRefreshResumedUI() {
         setSliderVisibility();
     }
 
     private void setSliderVisibility(){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                int visibility = prefAlpha.getValue()?VISIBLE:INVISIBLE;
-                int visibility2 = prefAlpha2.getValue()?VISIBLE:INVISIBLE;
-                if ((visibility == VISIBLE) && (visibility2 == VISIBLE)){
-                    if (refreshObserver.last == prefAlpha2){
-                        prefAlpha.setValue(false);
-                    } else {
-                        prefAlpha2.setValue(false);
-                    }
-                } else {
-                    getActivity().findViewById(R.id.bars).setVisibility(visibility);
-                    getActivity().findViewById(R.id.bars2).setVisibility(visibility2);
-                }
-                getControlView().reworkLabeledSliderVisibility();
+        int visibility = prefAlpha.getValue()?VISIBLE:INVISIBLE;
+        int visibility2 = prefAlpha2.getValue()?VISIBLE:INVISIBLE;
+        if ((visibility == VISIBLE) && (visibility2 == VISIBLE)){
+            if (refreshObserver.last == prefAlpha2){
+                prefAlpha.setValue(false);
+            } else {
+                prefAlpha2.setValue(false);
             }
-        });
+        } else {
+            getActivity().findViewById(R.id.bars).setVisibility(visibility);
+            getActivity().findViewById(R.id.bars2).setVisibility(visibility2);
+        }
+        getControlView().reworkLabeledSliderVisibility();
     }
-
 }

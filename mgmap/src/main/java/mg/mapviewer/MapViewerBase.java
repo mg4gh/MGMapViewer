@@ -124,10 +124,9 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key).toString());
-
         // Some preference changes take effect due to activity restart - those need to be listed in recreatePreferences
         if (recreatePreferences.contains(key)){
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key).toString());
             for (TileCache tileCache : tileCaches) {
                 tileCache.purge();
             }

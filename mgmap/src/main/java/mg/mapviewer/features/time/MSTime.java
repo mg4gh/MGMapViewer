@@ -30,10 +30,12 @@ public class MSTime extends MGMicroService {
 
     public MSTime(MGMapActivity mmActivity) {
         super(mmActivity);
+        ttRefreshTime = 1000;
     }
 
     @Override
     public ExtendedTextView initStatusLine(ExtendedTextView etv, String info) {
+        super.initStatusLine(etv,info);
         if (info.equals("time")){
             etv.setData(R.drawable.duration2);
             etv.setFormat(Formatter.FormatType.FORMAT_TIME);
@@ -50,30 +52,26 @@ public class MSTime extends MGMicroService {
     @Override
     protected void onResume() {
         super.onResume();
-        getTimer().postDelayed(timerTaskTime,1000);
+        refreshObserver.onChange();
     }
 
     @Override
     protected void onPause() {
+        cancelRefresh();
         super.onPause();
-        getTimer().removeCallbacks(timerTaskTime);
     }
 
-    int batCnt = 1;
-    private final Runnable timerTaskTime = new Runnable() {
-        @Override
-        public void run() {
-//            getControlView().updateTvTime(System.currentTimeMillis());
-            getControlView().setStatusLineValue(etvTime, System.currentTimeMillis());
-            getTimer().postDelayed(timerTaskTime,1000);
+    private int batCnt = 1;
 
-            if (--batCnt <= 0){
-                batCnt = 60;
-//                getControlView().updateTvBat(getBatteryPercent());
-                getControlView().setStatusLineValue(etvBat, getBatteryPercent());
-            }
+    @Override
+    protected void doRefreshResumedUI() {
+        getControlView().setStatusLineValue(etvTime, System.currentTimeMillis());
+        refreshObserver.onChange();
+        if (--batCnt <= 0){
+            batCnt = 60;
+            getControlView().setStatusLineValue(etvBat, getBatteryPercent());
         }
-    };
+    }
 
     private int getBatteryPercent(){
         BatteryManager bm = (BatteryManager) getActivity().getApplicationContext().getSystemService(Context.BATTERY_SERVICE);

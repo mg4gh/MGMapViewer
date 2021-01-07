@@ -26,9 +26,7 @@ import mg.mapviewer.MGMicroService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Observable;
 import java.util.Observer;
-import java.util.TimerTask;
 
 import mg.mapviewer.R;
 import mg.mapviewer.graph.GGraphTile;
@@ -55,7 +53,7 @@ public class MSMarker extends MGMicroService {
 
     private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
-    private final MGPref<Boolean> prefEditMarkerTrackAction =  MGPref.anonymous(false);
+    private final MGPref<Boolean> prefEditMarkerTrackAction =  MGPref.anonymous(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
     private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTrack, false);
     private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
     private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
@@ -66,52 +64,37 @@ public class MSMarker extends MGMicroService {
     private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.MSATL_pref_hideAll, false);
     private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.MSMarker_pref_auto_switcher, true);
 
-    MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable;
+    final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
 
     public MSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
-        prefEditMarkerTrackAction.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefEditMarkerTrack.toggle();
+        prefEditMarkerTrackAction.addObserver((o, arg) -> prefEditMarkerTrack.toggle());
+        prefEditMarkerTrack.addObserver((o, arg) -> checkStartStopMCL());
+
+        prefAutoSwitcher.addObserver((o, arg) -> {
+            boolean smallMtl = prefAutoSwitcher.getValue();
+            if (prefAutoMarkerSetting.getValue()) {
+                prefAlphaMtl.setValue(smallMtl ? 0.0f : 1.0f);
+                prefSnap2Way.setValue(smallMtl);
             }
         });
-        prefAutoSwitcher.addObserver(autoSwitchObserver);
-    }
 
-    private final Observer editMarkerTrackObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            checkStartStopMCL();
-        }
-    };
-    private final Observer hideMarkerTrackObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
+        ttRefreshTime = 20;
+        markerTrackLogObservable.addObserver(refreshObserver);
+        prefAlphaMtl.addObserver(refreshObserver);
+
+        Observer hideMarkerTrackObserver = (o, arg) -> {
             getApplication().markerTrackLogObservable.setTrackLog(null);
             GGraphTile.clearCache();
             prefEditMarkerTrack.setValue(false);
-        }
-    };
+        };
+        prefHideMtl.addObserver(hideMarkerTrackObserver);
+        prefHideAll.addObserver(hideMarkerTrackObserver);
+    }
+
     public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
-    private Observer autoSwitchObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            boolean smallMtl = prefAutoSwitcher.getValue();
-            if (prefAutoMarkerSetting.getValue()){
-                prefAlphaMtl.setValue(smallMtl?0.0f:1.0f);
-                prefSnap2Way.setValue(smallMtl);
-            }
-        }
-    };
-
-     private TimerTask ttHide = new TimerTask() {
-        @Override
-        public void run() {
-            prefEditMarkerTrack.setValue(false);
-        }
-    };
+    private final Runnable ttHide = () -> prefEditMarkerTrack.setValue(false);
     long ttHideTime = 15000;
     private void refreshTTHide(){
         getTimer().removeCallbacks(ttHide);
@@ -129,6 +112,7 @@ public class MSMarker extends MGMicroService {
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        super.initQuickControl(etv,info);
         if ("markerEdit".equals(info)){
             etv.setData(prefEditMarkerTrack,R.drawable.mtlr2, R.drawable.mtlr);
             etv.setPrAction(prefEditMarkerTrackAction);
@@ -146,34 +130,19 @@ public class MSMarker extends MGMicroService {
     protected void onResume() {
         super.onResume();
         prefEditMarkerTrack.setValue(false);
-        prefEditMarkerTrack.addObserver(editMarkerTrackObserver);
-
-        markerTrackLogObservable = getApplication().markerTrackLogObservable;
-        WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
-        if (mtl != null){
+        if (markerTrackLogObservable.getTrackLog() != null){
             refreshObserver.onChange();
         }
-        markerTrackLogObservable.addObserver(refreshObserver);
-        ttRefreshTime = 20;
-
-        prefAlphaMtl.addObserver(refreshObserver);
-        prefHideMtl.addObserver(hideMarkerTrackObserver);
-        prefHideAll.addObserver(hideMarkerTrackObserver);
     }
 
     @Override
     protected void onPause() {
-        markerTrackLogObservable.deleteObserver(refreshObserver);
-        prefEditMarkerTrack.deleteObserver(editMarkerTrackObserver);
         unregisterClass(MarkerControlLayer.class);
-
-        prefAlphaMtl.deleteObserver(refreshObserver);
-        prefHideMtl.deleteObserver(hideMarkerTrackObserver);
-        prefHideAll.deleteObserver(hideMarkerTrackObserver);
+        super.onPause();
     }
 
     @Override
-    protected void doRefresh() {
+    protected void doRefreshResumedUI() {
         showHide(markerTrackLogObservable.getTrackLog());
         refreshTTHide();
     }
@@ -365,7 +334,7 @@ public class MSMarker extends MGMicroService {
     public interface LineRefProvider{
         TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) ;
     }
-    public class MarkerLineRefProvider implements LineRefProvider{
+    public static class MarkerLineRefProvider implements LineRefProvider{
         public TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) {
             return mtl.getBestDistance(pm,threshold);
         }
@@ -375,9 +344,4 @@ public class MSMarker extends MGMicroService {
         prefAutoSwitcher.setValue(bValue);
         prefAutoSwitcher.onChange();
     }
-
-//    public void hideMarkerTrackLog(){
-//        getApplication().markerTrackLogObservable.setTrackLog(null);
-//        GGraphTile.clearCache();
-//    }
 }

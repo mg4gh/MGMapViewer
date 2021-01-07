@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import mg.mapviewer.control.MSControl;
+import mg.mapviewer.features.control.MSControl;
 import mg.mapviewer.features.beeline.MSBeeline;
 import mg.mapviewer.features.position.CenterControl;
 import mg.mapviewer.features.position.GpsControl;
-import mg.mapviewer.control.HeightProfileControl;
-import mg.mapviewer.control.SettingsControl;
-import mg.mapviewer.control.ThemeSettingsControl;
+import mg.mapviewer.features.control.HeightProfileControl;
+import mg.mapviewer.features.control.SettingsControl;
+import mg.mapviewer.features.control.ThemeSettingsControl;
 import mg.mapviewer.features.statistic.TrackStatisticControl;
 import mg.mapviewer.features.alpha.MSAlpha;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
@@ -135,10 +135,12 @@ public class ControlComposer {
         createQC(application,MSSearch.class,qcss[0],"group_search",gos.get(2));
         ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false))
                 .setData(MGPref.bool(R.string.MSMarker_qc_EditMarkerTrack),MGPref.bool(R.string.MSRouting_qc_RoutingHint),
-                R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4).addActionObserver(gos.get(3));
+                R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4)
+                .setName("group_marker").addActionObserver(gos.get(3));
         createQC(application,MSBB.class,qcss[0],"group_bbox",gos.get(4));
         createQC(application,MSPosition.class,qcss[0],"group_record",gos.get(5));
-        ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false)).setData(R.drawable.show_hide).addActionObserver(gos.get(6));
+        ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false)).setData(R.drawable.show_hide)
+                .setName("group_showHide").addActionObserver(gos.get(6));
         createQC(application,MSControl.class,qcss[0],"group_multi",gos.get(7));
 
         createQC(application,MSControl.class,qcss[1],"help");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -29,9 +29,7 @@ import android.widget.TextView;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 
-import java.util.Observable;
 import java.util.Observer;
-import java.util.UUID;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
@@ -43,12 +41,14 @@ import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.MGPref;
+import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.MVLayer;
 
 public class MSSearch extends MGMicroService {
 
     private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
+    private static final long NO_POS = PointModelUtil.NO_POS; // default invalid position for prefShowPos
 
     private final SearchView searchView;
     private SearchProvider searchProvider = null;
@@ -56,11 +56,9 @@ public class MSSearch extends MGMicroService {
 
     private final MGPref<Boolean> prefSearchOn = MGPref.get(R.string.MSSearch_qc_searchOn, false);
     private final MGPref<Boolean> prefShowSearchResult = MGPref.get(R.string.MSSearch_qc_showSearchResult, false);
-    private final MGPref<Boolean> prefShowSearchResultEnabled = new MGPref<Boolean>(UUID.randomUUID().toString(),false,false);
-    private final MGPref<Long> prefShowPos = MGPref.get(R.string.MSSearch_pref_SearchPos, 0l);
+    private final MGPref<Boolean> prefShowSearchResultEnabled = MGPref.anonymous(false);
+    private final MGPref<Long> prefShowPos = MGPref.get(R.string.MSSearch_pref_SearchPos, NO_POS);
     private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
-
-//    private PrefTextView ptvSearchRes = null;
 
     public MSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -95,34 +93,28 @@ public class MSSearch extends MGMicroService {
         });
         setSearchProvider(new Nominatim());
 
-        Observer showPositionObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                unregisterAll();
-                if (prefShowSearchResult.getValue()){
-                    showSearchPos();
-                }
+        Observer showPositionObserver = (o, arg) -> {
+            unregisterAll();
+            if (prefShowSearchResult.getValue()){
+                showSearchPos();
             }
         };
         prefShowSearchResult.addObserver(showPositionObserver);
         prefShowPos.addObserver(showPositionObserver);
 
-        prefShowPos.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefShowSearchResultEnabled.setValue(prefShowPos.getValue() != 0l);
-            }
-        });
+        prefShowPos.addObserver((o, arg) -> prefShowSearchResultEnabled.setValue(prefShowPos.getValue() != NO_POS));
 
         if (MGPref.get(R.string.MGMapApplication_pref_Restart, true).getValue()){
-            prefShowPos.setValue(0l);
+            prefShowPos.setValue(NO_POS);
         }
+        prefSearchOn.addObserver(refreshObserver);
         prefShowPos.onChange();
         prefShowSearchResult.onChange();
     }
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        super.initQuickControl(etv,info);
         if ("group_search".equals(info)){
             etv.setData(prefSearchOn, prefShowSearchResult, R.drawable.group_search1,R.drawable.group_search2,R.drawable.group_search3,R.drawable.group_search4);
             etv.setPrAction(MGPref.anonymous(false));
@@ -142,18 +134,16 @@ public class MSSearch extends MGMicroService {
     @Override
     protected void onResume() {
         super.onResume();
-        prefSearchOn.addObserver(refreshObserver);
         refreshObserver.onChange();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        prefSearchOn.deleteObserver(refreshObserver);
     }
 
     @Override
-    protected void doRefresh() {
+    protected void doRefreshResumedUI() {
         boolean visibility = prefSearchOn.getValue();
         changeVisibility(visibility);
         getControlView().setDashboardVisibility(!visibility);
@@ -207,12 +197,7 @@ public class MSSearch extends MGMicroService {
     }
 
 
-    private Runnable ttHideKeyboard = new Runnable() {
-        @Override
-        public void run() {
-            hideKeyboard();
-        }
-    };
+    private final Runnable ttHideKeyboard = this::hideKeyboard;
     private void triggerTTHideKeyboard(){
         getTimer().removeCallbacks(ttHideKeyboard);
         getTimer().postDelayed(ttHideKeyboard, T_HIDE_KEYBOARD);
@@ -229,13 +214,11 @@ public class MSSearch extends MGMicroService {
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" text="+text+" actionId="+actionId+" timestamp="+timestamp);
         PointModel pos = new PointModelImpl( getActivity().getMapViewUtility().getCenter() );
         searchProvider.doSearch(new SearchRequest(text, actionId, timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
-
         if (actionId == EditorInfo.IME_ACTION_GO
                 || actionId == EditorInfo.IME_ACTION_DONE
                 || actionId == EditorInfo.IME_ACTION_NEXT
                 || actionId == EditorInfo.IME_ACTION_SEND
                 || actionId == EditorInfo.IME_ACTION_SEARCH ) {
-
             hideKeyboard();
         }
     }

@@ -49,7 +49,7 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
-import mg.mapviewer.control.MSControl;
+import mg.mapviewer.features.control.MSControl;
 import mg.mapviewer.features.alpha.MSAlpha;
 import mg.mapviewer.features.atl.MSAvailableTrackLogs;
 import mg.mapviewer.features.bb.MSBB;

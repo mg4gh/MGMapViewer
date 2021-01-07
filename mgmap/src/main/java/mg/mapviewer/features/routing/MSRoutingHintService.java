@@ -64,10 +64,11 @@ public class MSRoutingHintService extends MGMicroService {
     }
 
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        super.initQuickControl(etv,info);
         etv.setData(prefRoutingHints,R.drawable.routing_hints2, R.drawable.routing_hints1);
         etv.setPrAction(prefRoutingHints);
         etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
-        etv.setHelp(r(R.string.MSRouting_qcRoutingHint_Help)).setHelp(r(R.string.MSRouting_qcRoutingHint_Help),r(R.string.MSRouting_qcRoutingHint_Help));
+        etv.setHelp(r(R.string.MSRouting_qcRoutingHint_Help)).setHelp(r(R.string.MSRouting_qcRoutingHint_Help1),r(R.string.MSRouting_qcRoutingHint_Help2));
         return etv;
     }
 

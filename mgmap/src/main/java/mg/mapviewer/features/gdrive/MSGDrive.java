@@ -14,7 +14,6 @@
  */
 package mg.mapviewer.features.gdrive;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -37,9 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Observable;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
@@ -70,7 +68,7 @@ public class MSGDrive extends MGMicroService {
     /**
      * <p>If modifying these scopes, delete your previously saved tokens/ folder.
      */
-    private static final List<String> SCOPES = Arrays.asList( DriveScopes.DRIVE);
+    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
 
@@ -113,7 +111,8 @@ public class MSGDrive extends MGMicroService {
 
             Zipper zip = new Zipper(props.getProperty(GDRIVE_CONFIG_ZIP_PW_KEY,"geheimXgeheim!"));
 
-            Set<String> localSet = new TreeSet<String>();
+            Set<String> localSet = new TreeSet<>();
+            //noinspection ConstantConditions
             for (String filename : gpxFolder.list()){
                 if (filename.endsWith(".gpx")){
                     localSet.add(filename);
@@ -155,16 +154,12 @@ public class MSGDrive extends MGMicroService {
 
         } catch (Throwable t) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), t);
-            return;
         }
     }
 
 
     /**
      * Creates an authorized Credential object.
-     *
-     * @return an authorized Credential object.
-     * @throws IOException
      */
     private Credential authorize() throws IOException {
         // Load client secrets.
@@ -174,7 +169,6 @@ public class MSGDrive extends MGMicroService {
         }
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow =
                 new GoogleAuthorizationCodeFlow.Builder(
@@ -182,26 +176,18 @@ public class MSGDrive extends MGMicroService {
                         .setDataStoreFactory(DATA_STORE_FACTORY)
                         .setAccessType("offline")
                         .build();
-
-        AuthorizationCodeInstalledApp.Browser browser = new AuthorizationCodeInstalledApp.Browser() {
-            @Override
-            public void browse(String url) throws IOException {
-                try {
-                    Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse( url ));
-                    getActivity().startActivity(myIntent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        AuthorizationCodeInstalledApp.Browser browser = url -> {
+            try {
+                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse( url ));
+                getActivity().startActivity(myIntent);
+            } catch (Exception e) {
+                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
             }
         };
-
         AuthorizationCodeInstalledApp aa =    new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver(), browser);
-
         Credential credential = aa.authorize("user");
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" got credentials.");
         return credential;
     }
-
-
 
 }

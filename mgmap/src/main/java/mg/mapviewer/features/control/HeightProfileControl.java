@@ -12,34 +12,35 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mapviewer.control;
+package mg.mapviewer.features.control;
 
 import android.content.Intent;
 import android.view.View;
 
+import mg.mapviewer.HeightProfileActivity;
 import mg.mapviewer.MGMapActivity;
+import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
-import mg.mapviewer.ThemeSettings;
 import mg.mapviewer.util.Control;
 
-public class ThemeSettingsControl extends Control {
+public class HeightProfileControl extends Control {
 
-    public ThemeSettingsControl(){
+    public HeightProfileControl(){
         super(true);
     }
 
     public void onClick(View v) {
         super.onClick(v);
         MGMapActivity activity = controlView.getActivity();
-        Intent intent = new Intent(activity, ThemeSettings.class);
-        if (activity.getRenderThemeStyleMenu() != null) {
-            intent.putExtra(activity.getResources().getString(R.string.my_rendertheme_menu_key), activity.getRenderThemeStyleMenu());
-        }
+        Intent intent = new Intent(activity, HeightProfileActivity.class);
         activity.startActivity(intent);
     }
 
     @Override
     public void onPrepare(View v) {
-        setText(v, controlView.rstring(R.string.btThemes) );
+        setText(v, controlView.rstring(R.string.btHeightProfile) );
+        MGMapApplication application = controlView.getApplication();
+        v.setEnabled(HeightProfileActivity.check4trackLogRef(application));
     }
+
 }

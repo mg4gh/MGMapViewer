@@ -155,6 +155,7 @@ public class MSRouting extends MGMicroService {
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        super.initQuickControl(etv,info);
         if ("matching".equals(info)) {
             etv.setPrAction(prefMapMatching);
             etv.setData(R.drawable.matching);

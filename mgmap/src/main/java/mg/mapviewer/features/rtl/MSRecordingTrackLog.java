@@ -116,6 +116,9 @@ public class MSRecordingTrackLog extends MGMicroService {
                 }
             }
         });
+        getApplication().recordingTrackLogObservable.addObserver(refreshObserver);
+        prefAlphaRtl.addObserver(refreshObserver);
+        prefRtlGL.addObserver(refreshObserver);
     }
 
 
@@ -143,6 +146,7 @@ public class MSRecordingTrackLog extends MGMicroService {
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        super.initQuickControl(etv,info);
         if ("track".equals(info)){
             etv.setData(prefRecordTrackState,R.drawable.record_track1,R.drawable.record_track2);
             etv.setPrAction(prefRecordTrackAction);
@@ -158,34 +162,25 @@ public class MSRecordingTrackLog extends MGMicroService {
 
     @Override
     protected void onResume() {
-        getApplication().recordingTrackLogObservable.addObserver(refreshObserver);
-        prefAlphaRtl.addObserver(refreshObserver);
-        prefRtlGL.addObserver(refreshObserver);
+        super.onResume();
     }
 
     @Override
     protected void onPause() {
-        getApplication().recordingTrackLogObservable.deleteObserver(refreshObserver);
-        prefAlphaRtl.deleteObserver(refreshObserver);
-        prefRtlGL.deleteObserver(refreshObserver);
+        super.onPause();
     }
 
     @Override
-    protected void doRefresh() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
-                boolean bRtlAlphaVisibility = false;
-                if ((rtl != null) && (rtl.isTrackRecording())) {
-                    showRecordingTrackLog(rtl);
-                    bRtlAlphaVisibility = ( (rtl != null)  && (rtl.getTrackStatistic().getNumPoints()>=2) );
-                } else {
-                    hideRecordingTrackLog();
-                }
-                prefRtlVisibility.setValue(bRtlAlphaVisibility);
-            }
-        });
+    protected void doRefreshResumedUI() {
+        RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+        boolean bRtlAlphaVisibility = false;
+        if ((rtl != null) && (rtl.isTrackRecording())) {
+            showRecordingTrackLog(rtl);
+            bRtlAlphaVisibility = (rtl.getTrackStatistic().getNumPoints() >= 2);
+        } else {
+            hideRecordingTrackLog();
+        }
+        prefRtlVisibility.setValue(bRtlAlphaVisibility);
     }
 
 
@@ -197,9 +192,6 @@ public class MSRecordingTrackLog extends MGMicroService {
         } else {
             showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL, prefAlphaRtl.getValue()), false);
         }
-
-//        showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL, prefAlphaRtl.getValue()) , false);
-
         getControlView().setDashboardValue(true, dashboardRtl ,rtl.getTrackStatistic());
         int segIdx = rtl.getNumberOfSegments()-1;
         getControlView().setDashboardValue(segIdx > 0, dashboardRtls,(segIdx>0)?rtl.getTrackLogSegment(segIdx).getStatistic():null);

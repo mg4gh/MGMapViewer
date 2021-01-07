@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -20,10 +20,6 @@ import android.util.Log;
 import org.mapsforge.map.layer.Layer;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.TimerTask;
-import java.util.UUID;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
@@ -50,62 +46,33 @@ public class MSBB extends MGMicroService {
     private final MGPref<Boolean> prefBboxOnAction = MGPref.anonymous(false);
     private final MGPref<Boolean> prefBboxOn = MGPref.get(R.string.MSBB_qc_bboxOn, false);
 
-    private final MGPref<Boolean> prefLoadFromBB = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    private final MGPref<Boolean> prefLoadFromBBEnabled = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
-    private final MGPref<Boolean> prefTSLaodRemain = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    private final MGPref<Boolean> prefTSActionsEnabled = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
-    private final MGPref<Boolean> prefTSLaodAll = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
-    private final MGPref<Boolean> prefTSDeleteAll = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    private final MGPref<Boolean> prefLoadFromBB = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefLoadFromBBEnabled = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefTSLoadRemain = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefTSActionsEnabled = MGPref.anonymous(true);
+    private final MGPref<Boolean> prefTSLoadAll = MGPref.anonymous(false);
+    private final MGPref<Boolean> prefTSDeleteAll = MGPref.anonymous(false);
 
     private final ArrayList<MGTileStore> tss = identifyTS();
     private boolean initSquare = false;
 
-    private MSAvailableTrackLogs msAvailableTrackLogs;
+    private final MSAvailableTrackLogs msAvailableTrackLogs;
 
     public MSBB(MGMapActivity mmActivity, MSAvailableTrackLogs msAvailableTrackLogs) {
         super(mmActivity);
         this.msAvailableTrackLogs = msAvailableTrackLogs;
 
-        prefBboxOnAction.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefBboxOn.toggle();
-            }
-        });
-        prefLoadFromBB.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                loadFromBB();
-            }
-        });
-        prefTSLaodRemain.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                tsAction(false, false);
-            }
-        });
-        prefTSLaodAll.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                tsAction(false, true);
-            }
-        });
-        prefTSDeleteAll.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                tsAction(true, true);
-            }
-        });
+        prefBboxOnAction.addObserver( (o,args) -> prefBboxOn.toggle());
+        prefLoadFromBB.addObserver( (o,args) -> loadFromBB());
+        prefTSLoadRemain.addObserver( (o, args) -> tsAction(false, false));
+        prefTSLoadAll.addObserver( (o, args) -> tsAction(false, true));
+        prefTSDeleteAll.addObserver( (o,args) -> tsAction(true, true));
+        prefBboxOn.addObserver(refreshObserver);
     }
 
     private WriteablePointModel p1 = null;
     private WriteablePointModel p2 = null;
-    private TimerTask ttHide = new TimerTask() {
-        @Override
-        public void run() {
-            prefBboxOn.setValue(false);
-        }
-    };
+    private final Runnable ttHide = () -> prefBboxOn.setValue(false);
     long ttHideTime = 30000;
     private void refreshTTHide(){
         getTimer().removeCallbacks(ttHide);
@@ -117,6 +84,7 @@ public class MSBB extends MGMicroService {
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        super.initQuickControl(etv,info);
         if ("group_bbox".equals(info)){
             etv.setPrAction(MGPref.anonymous(false));
             etv.setData(prefBboxOn,R.drawable.group_bbox1,R.drawable.group_bbox2);
@@ -130,12 +98,12 @@ public class MSBB extends MGMicroService {
             etv.setData(prefBboxOn,R.drawable.bbox2,R.drawable.bbox);
             etv.setHelp(r(R.string.MSBB_qcBBox_Help)).setHelp(r(R.string.MSBB_qcBBox_Help1),r(R.string.MSBB_qcBBox_Help2));
         } else if ("TSLoadRemain".equals(info)){
-            etv.setPrAction(prefTSLaodRemain);
+            etv.setPrAction(prefTSLoadRemain);
             etv.setData(R.drawable.bb_ts_load_remain);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_remain_dis);
             etv.setHelp(r(R.string.MSBB_qcTSLoadRemainFromBB_Help));
         }else if ("TSLoadAll".equals(info)){
-            etv.setPrAction(prefTSLaodAll);
+            etv.setPrAction(prefTSLoadAll);
             etv.setData(R.drawable.bb_ts_load_all);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_all_dis);
             etv.setHelp(r(R.string.MSBB_qcTSLoadAllFromBB_Help));
@@ -151,7 +119,6 @@ public class MSBB extends MGMicroService {
     @Override
     protected void onResume() {
         super.onResume();
-        prefBboxOn.addObserver(refreshObserver);
         prefBboxOn.setValue(false);
         refreshObserver.onChange();
     }
@@ -159,39 +126,29 @@ public class MSBB extends MGMicroService {
     @Override
     protected void onPause() {
         super.onPause();
-        prefBboxOn.deleteObserver(refreshObserver);
-    }
-
-    public void triggerRefresh(){
-        refreshObserver.onChange();
     }
 
     @Override
-    protected void doRefresh() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (prefBboxOn.getValue()){
-                    if (bbcl == null){
-                        bbcl = new BBControlLayer();
-                        register(bbcl, false);
-                        initSquare = true;
-                        triggerRefresh();
-                    } else if (initSquare){
-                        if (bbcl.initFromScreen()){
-                            initSquare = false;
-                        } else {
-                            triggerRefresh();
-                        }
-                    }
+    protected void doRefreshResumedUI() {
+        if (prefBboxOn.getValue()){
+            if (bbcl == null){
+                bbcl = new BBControlLayer();
+                register(bbcl, false);
+                initSquare = true;
+                refreshObserver.onChange();
+            } else if (initSquare){
+                if (bbcl.initFromScreen()){
+                    initSquare = false;
                 } else {
-                    hideBB();
+                    refreshObserver.onChange();
                 }
-                prefLoadFromBBEnabled.setValue(isLoadAllowed());
-                boolean tsOpsAllowed = isLoadAllowed() && (tss.size() > 0);
-                prefTSActionsEnabled.setValue(tsOpsAllowed);
             }
-        });
+        } else {
+            hideBB();
+        }
+        prefLoadFromBBEnabled.setValue(isLoadAllowed());
+        boolean tsOpsAllowed = isLoadAllowed() && (tss.size() > 0);
+        prefTSActionsEnabled.setValue(tsOpsAllowed);
     }
 
     public class BBControlLayer extends MVLayer {
@@ -300,12 +257,6 @@ public class MSBB extends MGMicroService {
 
 
     private BBControlLayer bbcl = null;
-
-    void newBB(){
-        hideBB();
-        bbcl = new BBControlLayer();
-        register(bbcl, false); // the false prevents register to msLayers
-    }
 
     public BBox getBBox(){
         return new BBox().extend(p1).extend(p2);

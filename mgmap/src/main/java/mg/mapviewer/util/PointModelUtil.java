@@ -40,6 +40,8 @@ import mg.mapviewer.model.WriteablePointModelImpl;
  */
 public class PointModelUtil {
 
+    public static final long NO_POS = new PointModelImpl(PointModel.NO_LAT_LONG, PointModel.NO_LAT_LONG).getLaLo();
+
     /**
      * The equatorial radius as defined by the <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84
      * ellipsoid</a>. WGS84 is the reference coordinate system used by the Global Positioning System.

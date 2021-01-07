@@ -30,6 +30,11 @@ public class MSRemainings extends MGMicroService {
 
     public MSRemainings(MGMapActivity mmActivity) {
         super(mmActivity);
+        getApplication().lastPositionsObservable.addObserver(refreshObserver);
+        getApplication().markerTrackLogObservable.addObserver(refreshObserver);
+        getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
+        prefReverse.addObserver(refreshObserver);
+        prefGps.addObserver(refreshObserver);
     }
 
     private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
@@ -40,6 +45,7 @@ public class MSRemainings extends MGMicroService {
 
     @Override
     public ExtendedTextView initStatusLine(ExtendedTextView etv, String info) {
+        super.initStatusLine(etv,info);
         if (info.equals("remain")){
             etv.setData(prefInterval, prefReverse,R.drawable.remaining, R.drawable.remaining3, R.drawable.remaining2, R.drawable.remaining3);
             etv.setPrAction(prefInterval, prefReverse);
@@ -51,30 +57,18 @@ public class MSRemainings extends MGMicroService {
 
     @Override
     protected void onResume() {
-        getApplication().lastPositionsObservable.addObserver(refreshObserver);
-        getApplication().markerTrackLogObservable.addObserver(refreshObserver);
-        getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
-        prefReverse.addObserver(refreshObserver);
-        prefGps.addObserver(refreshObserver);
+        super.onResume();
+        refreshObserver.onChange();
     }
 
     @Override
     protected void onPause() {
-        getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
-        getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
-        getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);
-        prefReverse.deleteObserver(refreshObserver);
-        prefGps.deleteObserver(refreshObserver);
+        super.onPause();
     }
 
     @Override
-    protected void doRefresh() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                refreshRemainings();
-            }
-        });
+    protected void doRefreshResumedUI() {
+        refreshRemainings();
     }
 
     /**

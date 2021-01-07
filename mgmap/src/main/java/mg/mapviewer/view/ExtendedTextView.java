@@ -30,7 +30,7 @@ public class ExtendedTextView extends AppCompatTextView {
     private int drawableSize = 0;
     private String help = "";
     private String help1 = null, help2 = null, help3 = null, help4 = null;
-
+    private String logName = "";
 
     private final Observer prefObserver = createObserver();
 
@@ -42,6 +42,10 @@ public class ExtendedTextView extends AppCompatTextView {
         super(context, attrs);
     }
 
+    public ExtendedTextView setName(String logName){
+        this.logName = logName;
+        return this;
+    }
     public ExtendedTextView setData(int drId){
         drId1 = drId;
         onChange("setData0");
@@ -147,9 +151,9 @@ public class ExtendedTextView extends AppCompatTextView {
                 String info;
                 if (o instanceof MGPref<?>) {
                     MGPref<?> mgPref = (MGPref<?>) o;
-                    info = "key=\""+mgPref.getKey()+"\" value=\""+mgPref.getValue()+"\"";
+                    info = "update on "+mgPref.getKey();
                 } else {
-                    info = o.toString();
+                    info = "update on "+o.toString();
                 }
                 if (o == prEnabled){
                     setEnabled();
@@ -171,7 +175,7 @@ public class ExtendedTextView extends AppCompatTextView {
         String newText = Formatter.format(formatType, value);
         if (!newText.equals(getText())){
             setText( newText );
-            onChange("onSetValue");
+            onChange("onSetValue: "+newText);
             return true;
         }
         return false;
@@ -186,7 +190,7 @@ public class ExtendedTextView extends AppCompatTextView {
     }
 
     private void onChange(String reason){
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+reason);
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" "+reason);
         int drId = 0;
         if ((prEnabled != null) && (!prEnabled.getValue())){
             drId = drIdDis;

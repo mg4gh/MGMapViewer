@@ -187,9 +187,9 @@ public class MGMapApplication extends Application {
                 while (true){
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            pLogcat.waitFor(10, TimeUnit.SECONDS );
+                            pLogcat.waitFor(30, TimeUnit.SECONDS );
                         } else {
-                            Thread.sleep(10000);
+                            Thread.sleep(30000);
                         }
 
                         int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException

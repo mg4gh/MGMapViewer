@@ -19,9 +19,6 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.model.IMapViewPosition;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
@@ -53,18 +50,18 @@ public class MSPosition extends MGMicroService {
         if (prefAppRestart.getValue()){
             prefCenter.setValue(true);
         }
-        getApplication().recordingTrackLogObservable.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
-                prefGpsEnabled.setValue( (rtl == null) || (!rtl.isTrackRecording()) );
-            }
+        getApplication().recordingTrackLogObservable.addObserver((o, arg) -> {
+            RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+            prefGpsEnabled.setValue( (rtl == null) || (!rtl.isTrackRecording()) );
         });
         prefGps.addObserver(refreshObserver);
+        prefCenter.addObserver(refreshObserver);
+        getApplication().lastPositionsObservable.addObserver(refreshObserver);
     }
 
     @Override
     public ExtendedTextView initStatusLine(ExtendedTextView etv, String info) {
+        super.initStatusLine(etv,info);
         if (info.equals("height")){
             etv.setData(R.drawable.ele);
             etv.setFormat(Formatter.FormatType.FORMAT_HEIGHT);
@@ -75,6 +72,7 @@ public class MSPosition extends MGMicroService {
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        super.initQuickControl(etv,info);
         if ("gps".equals(info)){
             etv.setData(prefGps, R.drawable.gps1,R.drawable.gps2);
             etv.setPrAction(prefGps);
@@ -94,40 +92,25 @@ public class MSPosition extends MGMicroService {
 
     @Override
     protected void onResume() {
-        getApplication().lastPositionsObservable.addObserver(refreshObserver);
+        super.onResume();
         refreshObserver.onChange();
-        prefCenter.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                refreshObserver.onChange();
-            }
-        });
     }
 
     @Override
     protected void onPause() {
-        getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
+        super.onPause();
     }
 
     @Override
-    protected void doRefresh() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                PointModel pm = getApplication().lastPositionsObservable.lastGpsPoint;
-                if (prefGps.getValue() && (pm != null)){
-                    showPosition(pm);
-                    centerCurrentPosition(pm);
-                } else {
-                    hidePosition();
-//                    if (pm != null){
-//                        centerCurrentPosition(pm);
-//                    }
-                }
-            }
-        });
+    protected void doRefreshResumedUI() {
+        PointModel pm = getApplication().lastPositionsObservable.lastGpsPoint;
+        if (prefGps.getValue() && (pm != null)){
+            showPosition(pm);
+            centerCurrentPosition(pm);
+        } else {
+            hidePosition();
+        }
     }
-
 
     private void hidePosition(){
         unregisterAll();

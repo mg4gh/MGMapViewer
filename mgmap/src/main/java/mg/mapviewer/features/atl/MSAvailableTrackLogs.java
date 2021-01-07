@@ -16,8 +16,6 @@ package mg.mapviewer.features.atl;
 
 import android.view.ViewGroup;
 
-import androidx.lifecycle.Lifecycle;
-
 import org.mapsforge.core.graphics.Paint;
 
 import mg.mapviewer.MGMapActivity;
@@ -25,9 +23,7 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMicroService;
 import mg.mapviewer.R;
 
-import java.util.Observable;
 import java.util.Observer;
-import java.util.UUID;
 
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.TrackLog;
@@ -64,30 +60,10 @@ public class MSAvailableTrackLogs extends MGMicroService {
 
     public MSAvailableTrackLogs(MGMapActivity mmActivity) {
         super(mmActivity);
-        prefHideStl.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                getApplication().availableTrackLogsObservable.removeSelected();
-            }
-        });
-        prefHideAtl.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                getApplication().availableTrackLogsObservable.removeUnselected();
-            }
-        });
-        prefHideAll.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                getApplication().availableTrackLogsObservable.removeAll();
-            }
-        });
-        Observer hideAllEnabledObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefHideAllEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() );
-            }
-        };
+        prefHideStl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeSelected());
+        prefHideAtl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeUnselected());
+        prefHideAll.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeAll());
+        Observer hideAllEnabledObserver = (o, arg) -> prefHideAllEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() );
         prefStlVisibility.addObserver(hideAllEnabledObserver);
         prefAtlVisibility.addObserver(hideAllEnabledObserver);
         prefMtlVisibility.addObserver(hideAllEnabledObserver);
@@ -124,6 +100,7 @@ public class MSAvailableTrackLogs extends MGMicroService {
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
+        super.initQuickControl(etv,info);
         if ("hide_stl".equals(info)){
             etv.setData(R.drawable.hide_stl);
             etv.setPrAction(prefHideStl);
@@ -145,32 +122,18 @@ public class MSAvailableTrackLogs extends MGMicroService {
 
     @Override
     protected void onResume() {
-//        getApplication().availableTrackLogsObservable.addObserver(refreshObserver);
-//        prefAlphaStl.addObserver(refreshObserver);
-//        prefAlphaAtl.addObserver(refreshObserver);
-//        prefStlGl.addObserver(refreshObserver);
+        super.onResume();
     }
 
     @Override
     protected void onPause() {
-//        getApplication().availableTrackLogsObservable.deleteObserver(refreshObserver);
-//        prefAlphaStl.deleteObserver(refreshObserver);
-//        prefAlphaAtl.deleteObserver(refreshObserver);
-//        prefStlGl.deleteObserver(refreshObserver);
+        super.onPause();
     }
 
     @Override
-    protected void doRefresh() {
-        if (getActivity().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED){
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    showAvailableTrackLogs();
-                }
-            });
-        }
+    protected void doRefreshResumedUI() {
+        showAvailableTrackLogs();
     }
-
 
     private void showAvailableTrackLogs(){
         hideAvailableTrackLogs();

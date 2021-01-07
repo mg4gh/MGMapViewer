@@ -48,10 +48,14 @@ public class MSBeeline extends MGMicroService {
 
     public MSBeeline(MGMapActivity mmActivity) {
         super(mmActivity);
+        getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
+        getApplication().lastPositionsObservable.addObserver(refreshObserver);
+        prefGps.addObserver(refreshObserver);
     }
 
     @Override
     public ExtendedTextView initStatusLine(ExtendedTextView etv, String info) {
+        super.initStatusLine(etv,info);
         if (info.equals("center")){
             etv.setData(R.drawable.distance);
             etv.setFormat(Formatter.FormatType.FORMAT_DISTANCE);
@@ -67,18 +71,12 @@ public class MSBeeline extends MGMicroService {
 
     @Override
     protected void onResume() {
-        getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
-        getApplication().lastPositionsObservable.addObserver(refreshObserver);
-
+        super.onResume();
     }
 
-
-
     @Override
-    @SuppressWarnings("EmptyCatchBlock")
     protected void onPause() {
-        getMapView().getModel().mapViewPosition.removeObserver(refreshObserver);
-        getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
+        super.onPause();
     }
 
     @Override
@@ -87,21 +85,16 @@ public class MSBeeline extends MGMicroService {
     }
 
     @Override
-    protected void doRefresh() {
+    protected void doRefreshResumedUI() {
         ttRefreshTime = 10;
         int zoomLevel = getMapView().getModel().mapViewPosition.getZoomLevel();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                PointModel lp = getApplication().lastPositionsObservable.lastGpsPoint;
-                if (prefGps.getValue() && (lp != null)){
-                    showHidePositionToCenter(lp);
-                } else {
-                    showHidePositionToCenter(null);
-                }
-                getControlView().setStatusLineValue(etvZoom, zoomLevel);
-            }
-        });
+        PointModel lp = getApplication().lastPositionsObservable.lastGpsPoint;
+        if (prefGps.getValue() && (lp != null)){
+            showHidePositionToCenter(lp);
+        } else {
+            showHidePositionToCenter(null);
+        }
+        getControlView().setStatusLineValue(etvZoom, zoomLevel);
         prefZoomLevel.setValue(zoomLevel);
     }
 
@@ -114,7 +107,7 @@ public class MSBeeline extends MGMicroService {
         double distance = 0;
         if (showNewValue){
             distance = PointModelUtil.distance(pm, pmCenter);
-            showNewValue &= (distance > 10.0); //m
+            showNewValue = (distance > 10.0); //m
         }
         if (showNewValue){
             Log.v(MGMapApplication.LABEL, NameUtil.context()+" pm="+pm+" pmCenter="+pmCenter);

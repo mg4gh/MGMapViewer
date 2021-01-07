@@ -1,4 +1,18 @@
-package mg.mapviewer.control;
+/*
+ * Copyright 2017 - 2021 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package mg.mapviewer.features.control;
 
 import android.content.Intent;
 import android.util.Log;
@@ -7,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.Observer;
 
 import mg.mapviewer.HeightProfileActivity;
@@ -44,58 +57,43 @@ public class MSControl extends MGMicroService {
     private final MGPref<Boolean> prefThemes = MGPref.anonymous(false);
     private final MGPref<Boolean> prefHelp = MGPref.anonymous(false);
 
-    ViewGroup qcsParent = null;
-    ViewGroup[] qcss = null;
-    ArrayList<TextView> helpTexts = new ArrayList<>();
+    ViewGroup qcsParent = null; // quick controls parent
+    ViewGroup[] qcss = null; // quick controls groups (index 0 is menu control group and index 1..7 are seven sub action menus)
+    ArrayList<TextView> helpTexts = new ArrayList<>(); // TextView Instances, which are used to show the help Info
 
     FullscreenObserver fullscreenObserver = new FullscreenObserver(getActivity());
     HomeObserver homeObserver = new HomeObserver(getActivity());
 
-    Observer settingsPrefObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            MGMapActivity activity = getActivity();
-            Intent intent = new Intent(activity, SettingsActivity.class);
-            String prefScreenClass = MainPreferenceScreen.class.getName();
-            if (o == prefFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
-            if (o == prefDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
-            intent.putExtra("MSControl.info", prefScreenClass);
-            activity.startActivity(intent);
-        }
+    Observer settingsPrefObserver = (o, arg) -> {
+        MGMapActivity activity = getActivity();
+        Intent intent = new Intent(activity, SettingsActivity.class);
+        String prefScreenClass = MainPreferenceScreen.class.getName();
+        if (o == prefFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
+        if (o == prefDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
+        intent.putExtra("MSControl.info", prefScreenClass);
+        activity.startActivity(intent);
     };
-    Observer statisticObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            MGMapActivity activity = getActivity();
-            Intent intent = new Intent(activity, TrackStatisticActivity.class);
-            activity.startActivity(intent);
-        }
+    Observer statisticObserver = (o, arg) -> {
+        MGMapActivity activity = getActivity();
+        Intent intent = new Intent(activity, TrackStatisticActivity.class);
+        activity.startActivity(intent);
     };
-    Observer heightProfileObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            MGMapActivity activity = getActivity();
-            Intent intent = new Intent(activity, HeightProfileActivity.class);
-            activity.startActivity(intent);
-        }
+    Observer heightProfileObserver = (o, arg) -> {
+        MGMapActivity activity = getActivity();
+        Intent intent = new Intent(activity, HeightProfileActivity.class);
+        activity.startActivity(intent);
     };
-    Observer exitObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            getActivity().finishAndRemoveTask();
-            System.exit(0);
-        }
+    Observer exitObserver = (o, arg) -> {
+        getActivity().finishAndRemoveTask();
+        System.exit(0);
     };
-    Observer themesObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            MGMapActivity activity = getActivity();
-            Intent intent = new Intent(activity, ThemeSettings.class);
-            if (activity.getRenderThemeStyleMenu() != null) {
-                intent.putExtra(activity.getResources().getString(R.string.my_rendertheme_menu_key), activity.getRenderThemeStyleMenu());
-            }
-            activity.startActivity(intent);
+    Observer themesObserver = (o, arg) -> {
+        MGMapActivity activity = getActivity();
+        Intent intent = new Intent(activity, ThemeSettings.class);
+        if (activity.getRenderThemeStyleMenu() != null) {
+            intent.putExtra(activity.getResources().getString(R.string.my_rendertheme_menu_key), activity.getRenderThemeStyleMenu());
         }
+        activity.startActivity(intent);
     };
 
     public MSControl(MGMapActivity activity){
@@ -110,45 +108,36 @@ public class MSControl extends MGMicroService {
         prefStatistic.addObserver(statisticObserver);
         prefHeightProfile.addObserver(heightProfileObserver);
         prefExit.addObserver(exitObserver);
-        prefZoomIn.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                getMapView().getModel().mapViewPosition.zoomIn();
-                setupTTHideQCS();
-            }
+        prefZoomIn.addObserver((o, arg) -> {
+            getMapView().getModel().mapViewPosition.zoomIn();
+            setupTTHideQCS();
         });
-        prefZoomOut.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                getMapView().getModel().mapViewPosition.zoomOut();
-                setupTTHideQCS();
-            }
+        prefZoomOut.addObserver((o, arg) -> {
+            getMapView().getModel().mapViewPosition.zoomOut();
+            setupTTHideQCS();
         });
         prefThemes.addObserver(themesObserver);
-        prefHelp.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                int iVis = (prefHelp.getValue())?View.VISIBLE:View.INVISIBLE;
-                if (prefHelp.getValue()){
-                    ViewGroup qcs = qcss[prefQcs.getValue()];
-                    for (int i=0; i<qcs.getChildCount(); i++){
-                        if (qcs.getChildAt(i) instanceof ExtendedTextView) {
-                            try {
-                                ExtendedTextView etv = (ExtendedTextView) qcs.getChildAt(i);
-                                TextView tv = helpTexts.get(i);
-                                tv.setText(etv.getHelp());
-                            } catch (Exception e) {
-                                Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
-                            }
+        prefHelp.addObserver((o, arg) -> {
+            int iVis = (prefHelp.getValue())?View.VISIBLE:View.INVISIBLE;
+            if (prefHelp.getValue()){
+                ViewGroup qcs = qcss[prefQcs.getValue()];
+                for (int i=0; i<qcs.getChildCount(); i++){
+                    if (qcs.getChildAt(i) instanceof ExtendedTextView) {
+                        try {
+                            ExtendedTextView etv = (ExtendedTextView) qcs.getChildAt(i);
+                            TextView tv = helpTexts.get(i);
+                            tv.setText(etv.getHelp());
+                        } catch (Exception e) {
+                            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
                         }
                     }
-                    cancelTTHideQCS();
-                } else {
-                    setupTTHideQCS();
                 }
-                getActivity().findViewById(R.id.help).setVisibility(iVis);
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" change Visibility to "+ prefHelp.getValue());
+                cancelTTHideQCS();
+            } else {
+                setupTTHideQCS();
             }
+            getActivity().findViewById(R.id.help).setVisibility(iVis);
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" change Visibility to "+ prefHelp.getValue());
         });
     }
 
@@ -158,6 +147,7 @@ public class MSControl extends MGMicroService {
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        super.initQuickControl(etv,info);
         if ("group_multi".equals(info)) {
             etv.setPrAction(MGPref.anonymous(false),prefHome);
             etv.setData(R.drawable.multi);
@@ -221,12 +211,9 @@ public class MSControl extends MGMicroService {
 
     public TextView initHelpControl(TextView helpView, String info){
         if ("help1".equals(info)) {
-            helpView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    prefHelp.setValue(false);
-                    setupTTHideQCS();
-                }
+            helpView.setOnClickListener(v -> {
+                prefHelp.setValue(false);
+                setupTTHideQCS();
             });
         } else if ("help2".equals(info)) {
             helpTexts.add(helpView);
@@ -237,7 +224,6 @@ public class MSControl extends MGMicroService {
     @Override
     protected void onResume() {
         super.onResume();
-
         if (qcsParent == null){
             qcsParent = getActivity().findViewById(R.id.base);
         }
@@ -252,24 +238,16 @@ public class MSControl extends MGMicroService {
     }
 
     @Override
-    protected void doRefresh() {
+    protected void doRefreshResumedUI() {
         setQCVisibility();
     }
 
-    private final Runnable ttHideQCS = new Runnable() {
-        @Override
-        public void run() {
-            prefQcs.setValue(0);
-            // if we go back to the main menu, then disable menu buttons for 500ms (the click might be for the disappeared submenu, su don't execute it for another context)
-            getTimer().postDelayed(ttEnableQCS, 500);
-            setEnableMenu(false);
-        }
-    };
-    private final Runnable ttEnableQCS = new Runnable() {
-        @Override
-        public void run() {
-            setEnableMenu(true);
-        }
+    private final Runnable ttEnableMenuQCS = () -> setEnableMenu(true);
+    private final Runnable ttHideSubQCS = () -> {
+        prefQcs.setValue(0);
+        // if we go back to the main menu, then disable menu buttons for 500ms (the click might be for the disappeared submenu, su don't execute it for another context)
+        getTimer().postDelayed(ttEnableMenuQCS, 500);
+        setEnableMenu(false);
     };
 
     private void setEnableMenu(boolean enable){
@@ -281,41 +259,35 @@ public class MSControl extends MGMicroService {
     }
 
     private void setupTTHideQCS(){
-        getTimer().removeCallbacks(ttHideQCS);
-        getTimer().postDelayed(ttHideQCS, 3000);
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" Help Timer 3000 ");
+        getTimer().removeCallbacks(ttHideSubQCS);
+        getTimer().postDelayed(ttHideSubQCS, 3000);
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" Help Timer 3000 ");
     }
     private void cancelTTHideQCS(){
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" cancel Help Timer ");
-        getTimer().removeCallbacks(ttHideQCS);
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" cancel Help Timer ");
+        getTimer().removeCallbacks(ttHideSubQCS);
     }
 
     void setQCVisibility(){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                cancelTTHideQCS();
-                prefHelp.setValue(false);
-                for (int idx=0; idx<8; idx++){
-                    ViewGroup qcs = qcss[idx];
-                    if (prefQcs.getValue() == idx){ // should be visible
-                        if (qcs.getParent() == null){ // but is not yet visible
-                            qcsParent.addView(qcs);
-                        }
-                    } else { // should not be visible
-                        if (qcs.getParent() != null){ // ... but is visible
-                            qcsParent.removeView(qcs);
-                        }
-                    }
+//        cancelTTHideQCS();
+        prefHelp.setValue(false);
+        for (int idx=0; idx<8; idx++){
+            ViewGroup qcs = qcss[idx];
+            if (prefQcs.getValue() == idx){ // should be visible
+                if (qcs.getParent() == null){ // but is not yet visible
+                    qcsParent.addView(qcs);
                 }
-                if ((prefQcs.getValue() > 0) && (!prefHelp.getValue())){
-                    setupTTHideQCS();
-                } else {
-                    cancelTTHideQCS();
+            } else { // should not be visible
+                if (qcs.getParent() != null){ // ... but is visible
+                    qcsParent.removeView(qcs);
                 }
-
             }
-        });
+        }
+        if ((prefQcs.getValue() > 0) && (!prefHelp.getValue())){
+            setupTTHideQCS();
+        } else {
+            cancelTTHideQCS();
+        }
     }
 
 }
