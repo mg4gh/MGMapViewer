@@ -56,19 +56,36 @@ public class WriteableTrackLog extends TrackLog {
         trackStatistic.updateWithPoint(lp);
     }
 
-    public void recalcStatistic(PointModel approachPoint, int idxSegmentStart, int idxPointStart) { // calculate remainings statistic from given approach point - continue with given segment and point index
-        for (int idxSegment = 0; idxSegment < getNumberOfSegments() ; idxSegment++){
-            if (idxSegment < idxSegmentStart) continue;
-            TrackLogSegment segment = getTrackLogSegment(idxSegment);
-            TrackLogStatistic segmentStatistic = segment.getStatistic();
-            segmentStatistic.reset();
-            if (idxSegment == idxSegmentStart) segmentStatistic.updateWithPoint(approachPoint);
-            for (int idxPoint=0; idxPoint < segment.size(); idxPoint++){
-                if ((idxSegment == idxSegmentStart) && (idxPoint<idxPointStart)) continue;
-                segmentStatistic.updateWithPoint(segment.get(idxPoint));
-            }
+//    public void recalcStatistic(PointModel approachPoint, int idxSegmentStart, int idxPointStart) { // calculate remainings statistic from given approach point - continue with given segment and point index
+//        for (int idxSegment = 0; idxSegment < getNumberOfSegments() ; idxSegment++){
+//            if (idxSegment < idxSegmentStart) continue;
+//            TrackLogSegment segment = getTrackLogSegment(idxSegment);
+//            TrackLogStatistic segmentStatistic = segment.getStatistic();
+//            segmentStatistic.reset();
+//            if (idxSegment == idxSegmentStart) segmentStatistic.updateWithPoint(approachPoint);
+//            for (int idxPoint=0; idxPoint < segment.size(); idxPoint++){
+//                if ((idxSegment == idxSegmentStart) && (idxPoint<idxPointStart)) continue;
+//                segmentStatistic.updateWithPoint(segment.get(idxPoint));
+//            }
+//        }
+//        recalcTrackStatistic();
+//    }
+
+
+    // calculate remainings statistic from given approach point - continue with given segment and point index
+    // but don't change the TrackLog statistic itself, rather calculate on a separate TrackLogStatistic Object
+    public void remainStatistic(TrackLogStatistic rStat, PointModel approachPoint, int idxSegmentStart, int idxPointStart) {
+        rStat.reset();
+        TrackLogSegment segment = getTrackLogSegment(idxSegmentStart);
+        if (segment == null) return;
+        rStat.updateWithPoint(approachPoint);
+        for (int idxPoint=idxPointStart; idxPoint < segment.size(); idxPoint++){ // update with remaining points in this segment
+            rStat.updateWithPoint(segment.get(idxPoint));
         }
-        recalcTrackStatistic();
+        for (int idxSegment=idxSegmentStart+1;idxSegment<getNumberOfSegments();idxSegment++){ // update with remaining segments
+            segment = getTrackLogSegment(idxSegment);
+            rStat.updateWithStatistics(segment.getStatistic());
+        }
     }
 
     public void recalcStatistic(){

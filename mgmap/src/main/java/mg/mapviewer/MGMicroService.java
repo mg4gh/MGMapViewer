@@ -178,12 +178,15 @@ public class MGMicroService {
     }
 
     protected <T>  void unregisterAll(Class<T> tClass){
+        ArrayList<Layer> removeLayers = null;
         for (Layer layer : msLayers){
             if (tClass.isInstance(layer)){
                 getMapView().getLayerManager().getLayers().remove(layer);
+                if (removeLayers == null) removeLayers = new ArrayList<>();
+                removeLayers.add(layer);
             }
         }
-        msLayers.clear();
+        if (removeLayers != null) msLayers.removeAll(removeLayers);
     }
 
     protected void unregisterAll(){

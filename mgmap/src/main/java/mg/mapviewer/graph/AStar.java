@@ -31,7 +31,6 @@ public class AStar extends Dijkstra {
     @Override
     double heuristic(GNode node) {
         return PointModelUtil.distance(node, target) * 0.999;
-//        return LatLongUtils.sphericalDistance(node.getLatLong(), target.getLatLong()) * 0.999;
     }
 
 }

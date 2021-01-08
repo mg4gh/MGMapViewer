@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import mg.mapviewer.model.PointModel;
+
 /**
  * Implementation of the Dijkstra algorithm.
  */
@@ -43,7 +45,7 @@ public class Dijkstra {
     private int cntRelaxed = 0;
     private int cntSettled = 0;
     private int resultPathLength = 0;
-    private ArrayList<GNode> relaxedList = new ArrayList<>();
+//    private ArrayList<GNode> relaxedList = new ArrayList<>();
 
 
     public Dijkstra(GGraph graph) {
@@ -52,15 +54,16 @@ public class Dijkstra {
     }
 
 
-    public List<GNodeRef> perform(GNode source, GNode target, double costLimit){
+    public List<GNodeRef> perform(GNode source, GNode target, double costLimit, ArrayList<PointModel> relaxedList){
         List<GNode> sources = new ArrayList<>();
         sources.add(source);
-        return perform(sources,target,costLimit);
+        return perform(sources,target,costLimit,relaxedList);
     }
 
-    public List<GNodeRef> perform(List<GNode> sources, GNode target, double costLimit){
+    public List<GNodeRef> perform(List<GNode> sources, GNode target, double costLimit, ArrayList<PointModel> relaxedList){
         prioQueue = new TreeSet<>();
         resetNodeRefs();
+        if (relaxedList != null) relaxedList.clear();
 
         this.target = target;
         long tStart = System.currentTimeMillis();
@@ -103,7 +106,7 @@ public class Dijkstra {
                 cntTotal++;
                 if (node.getNodeRef() != null){
                     cntRelaxed++;
-                    relaxedList.add(node);
+                    if (relaxedList != null) relaxedList.add(node);
                     if (node.getNodeRef().isSetteled()){
                         cntSettled++;
                     }
@@ -134,7 +137,7 @@ public class Dijkstra {
         for (int i=0; i< CHECK_CONNECTED_ATTEMPTS; i++) {
             int sIdx = (int) (Math.random() * (nodes.size() - 0.1));
             GNode source = nodes.get(sIdx); // check random index
-            perform(source, null, Double.MAX_VALUE);
+            perform(source, null, Double.MAX_VALUE, null);
             if ((double) (cntRelaxed) / cntTotal > 0.6) {
                 for (GNode node : nodes) {
                     if (node.getNodeRef() != null) node.setConnected(true);
@@ -164,7 +167,4 @@ public class Dijkstra {
         return res;
     }
 
-    public ArrayList<GNode> getRelaxedList(){
-        return relaxedList;
-    }
 }

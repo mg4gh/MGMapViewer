@@ -5,15 +5,14 @@ import android.util.Log;
 import org.mapsforge.map.datastore.MapDataStore;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.graph.ApproachModel;
-import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.MultiPointModelImpl;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogSegment;
-import mg.mapviewer.model.WriteablePointModel;
 import mg.mapviewer.util.Assert;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PointModelUtil;
@@ -45,7 +44,7 @@ public class RouteOptimizer {
         RoutePointModel rpmSource =  getRoutePointModel(segment.get(startIdx) );
         RoutePointModel rpmTarget =  getRoutePointModel(segment.get(endIdx) );
 
-        MultiPointModelImpl route = msRouting.calcRouting(mapFile, rpmSource, rpmTarget, false, true);
+        MultiPointModelImpl route = msRouting.calcRouting(mapFile, rpmSource, rpmTarget);
         if (!route.isRoute()) return false;
 
         Assert.check(rpmSource.getApproachNode() == route.get(0));
@@ -95,10 +94,10 @@ public class RouteOptimizer {
     }
 
     private class Scorer{
-        private int hops;
-        private int jump;
-        private double max;
-        private HashMap<PointModel, ApproachModel> checkResults = new HashMap<>();
+        private final int hops;
+        private final int jump;
+        private final double max;
+        private final HashMap<PointModel, ApproachModel> checkResults = new HashMap<>();
 
         int next=0;
         private Scorer(int hops, int jump, double max) {
@@ -108,8 +107,6 @@ public class RouteOptimizer {
         }
 
         private void score(TrackLogSegment segment, int idx){
-            PointModel pmd = segment.get(idx);
-
             if (idx == next){ // do scoring
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+hops+" "+idx);
                 int end = idx;
@@ -140,7 +137,7 @@ public class RouteOptimizer {
 
                         for (PointModel pm : checkResults.keySet()){
                             ApproachModel am = checkResults.get(pm);
-                            double amScore  = scoreMap.keySet().contains(am)?scoreMap.get(am) : 0;
+                            double amScore  = getScore(am);
                             scoreMap.put(am, amScore+score);
                         }
                     }
@@ -152,7 +149,12 @@ public class RouteOptimizer {
     }
 
 
-    private HashMap<ApproachModel, Double> scoreMap = new HashMap<>();
+    private final HashMap<ApproachModel, Double> scoreMap = new HashMap<>();
+    private double getScore(ApproachModel am){
+        Double dScore = scoreMap.get(am);
+        return (dScore != null)? dScore : 0;
+    }
+
     public void optimize(TrackLogSegment segment){
         Scorer s1 = new Scorer(3,2,500);
         Scorer s2 = new Scorer(7,4,1000);
@@ -164,14 +166,14 @@ public class RouteOptimizer {
             s3.score(segment, idx);
             RoutePointModel rpm = getRoutePointModel(segment.get(idx));
             double highScore = 0;
-            String log = "";
+            StringBuilder log = new StringBuilder();
             for (ApproachModel am : rpm.getApproaches()){
-                double amScore  = scoreMap.keySet().contains(am)?scoreMap.get(am) : 0;
-                log += " "+String.format("%.2f",amScore);
+                double amScore  = getScore(am);
+                log.append(String.format(Locale.ENGLISH, " %.2f", amScore));
                 if (amScore > highScore){
                     highScore = amScore;
                     rpm.selectedApproach = am;
-                    log += "+";
+                    log.append("+");
                 }
             }
             Log.i(MGMapApplication.LABEL, NameUtil.context()+"idx="+idx+" "+segment.get(idx)+ log);

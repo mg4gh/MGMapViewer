@@ -27,9 +27,7 @@ import org.mapsforge.map.model.DisplayModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
 
@@ -49,6 +47,7 @@ import mg.mapviewer.graph.ApproachModel;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModelImpl;
 import mg.mapviewer.model.TrackLogRefApproach;
+import mg.mapviewer.model.TrackLogStatistic;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.MultiPointModelImpl;
 import mg.mapviewer.model.PointModel;
@@ -84,9 +83,9 @@ public class MSRouting extends MGMicroService {
     HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private final HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
-    private final ArrayList<PointView> relaxedViews = new ArrayList<>();
+    private final ArrayList<PointModel> currentRelaxedNodes = new ArrayList<>();
+    private TrackLogStatistic dashboardStatistic = null;
 
-    private boolean routeRemainings = true;
     private final RoutingLineRefProvider routingLineRefProvider;
 
     private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.MSGrad_pref_WayDetails_key, false);
@@ -99,7 +98,6 @@ public class MSRouting extends MGMicroService {
     private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
     private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
     private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
-    private final MGPref<Boolean> prefRotlVisibility = MGPref.get(R.string.MSRouting_pref_RoTL_visibility, false);
     private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
     private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.MSPosition_prev_ZoomLevel, 15);
     private final MGPref<Boolean> prefMapMatching = MGPref.anonymous(false);
@@ -112,30 +110,32 @@ public class MSRouting extends MGMicroService {
         ttRefreshTime = 50;
         routingLineRefProvider = new RoutingLineRefProvider();
         getApplication().getMS(MSMarker.class).lineRefProvider = routingLineRefProvider;
-        prefMapMatching.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                optimize();
-            }
-        });
-        Observer matchingEnabledObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefMapMatchingEnabled.setValue( prefMtlVisibility.getValue() && (prefAlphaRotl.getValue() > 0.25f) );
-            }
-        };
+        prefMapMatching.addObserver((o, arg) -> optimize());
+        Observer matchingEnabledObserver = (o, arg) -> prefMapMatchingEnabled.setValue( prefMtlVisibility.getValue() && (prefAlphaRotl.getValue() > 0.25f) );
         prefMtlVisibility.addObserver(matchingEnabledObserver);
         prefAlphaRotl.addObserver(matchingEnabledObserver);
-        prefAutoSwitcher.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                if (prefAutoMarkerSetting.getValue()){
-                    if (prefAlphaRotl.getValue() < 0.75f){
-                        prefAlphaRotl.setValue(1.0f);
-                    }
+        prefAutoSwitcher.addObserver((o, arg) -> {
+            if (prefAutoMarkerSetting.getValue()){
+                if (prefAlphaRotl.getValue() < 0.75f){
+                    prefAlphaRotl.setValue(1.0f);
                 }
             }
         });
+
+        getApplication().markerTrackLogObservable.addObserver((o, arg) -> new Thread(){
+            @Override
+            public void run() {
+                updateRouting( getApplication().markerTrackLogObservable.getTrackLog() );
+            }
+        }.start());
+
+        prefZoomLevel.addObserver(refreshObserver);
+        prefAlphaRotl.addObserver(refreshObserver);
+        prefRouteGL.addObserver(refreshObserver);
+        prefGps.addObserver(refreshObserver);
+        getApplication().lastPositionsObservable.addObserver(refreshObserver);
+
+        register(new RoutingControlLayer(), false);
     }
 
     @Override
@@ -148,7 +148,7 @@ public class MSRouting extends MGMicroService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("rotl".equals(info)) {
-            lsl.initPrefData(prefRotlVisibility, prefAlphaRotl, CC.getColor(R.color.PURPLE), "RouteTrackLog");
+            lsl.initPrefData(prefMtlVisibility, prefAlphaRotl, CC.getColor(R.color.PURPLE), "RouteTrackLog");
         }
         return lsl;
     }
@@ -167,57 +167,39 @@ public class MSRouting extends MGMicroService {
 
     @Override
     protected void onResume() {
-        getApplication().markerTrackLogObservable.addObserver(refreshObserver);
-        prefZoomLevel.addObserver(refreshObserver);
-        prefAlphaRotl.addObserver(refreshObserver);
-        prefRouteGL.addObserver(refreshObserver);
-        prefGps.addObserver(refreshObserver);
-        getApplication().lastPositionsObservable.addObserver(refreshObserver);
-        register(new RoutingControlLayer(), false);
+        super.onResume();
     }
 
     @Override
     protected void onPause() {
-        getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
-        prefGps.deleteObserver(refreshObserver);
-        getApplication().markerTrackLogObservable.deleteObserver(refreshObserver);
-        prefZoomLevel.deleteObserver(refreshObserver);
-        prefAlphaRotl.deleteObserver(refreshObserver);
-        prefRouteGL.deleteObserver(refreshObserver);
-        unregisterClass(RoutingControlLayer.class);
+        super.onPause();
     }
 
     @Override
-    protected void doRefresh() {
+    protected void doRefreshResumedUI() {
+        unregisterAll();
         WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
-        boolean bRoTLAlphaVisibility = false;
-        if (mtl!= null){
-            updateRouting(mtl);
-            bRoTLAlphaVisibility = ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() >= 1)); // should be also visible, if mtl is visible
-        } else {
-            hideRouting();
+        WriteableTrackLog rotl = getApplication().routeTrackLogObservable.getTrackLog();
+
+        if (rotl != null){
+            if (prefRouteGL.getValue()){
+                CC.initGlPaints( prefAlphaRotl.getValue() );
+                showTrack(rotl, CC.getAlphaClone(PAINT_STROKE_GL, prefAlphaRotl.getValue()), true, 0);
+            } else {
+                showTrack(rotl, CC.getAlphaClone(PAINT_ROUTE_STROKE, prefAlphaRotl.getValue()), false,0);
+            }
         }
-        prefRotlVisibility.setValue(bRoTLAlphaVisibility);
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                checkApproachViews();
+        if (mtl != null){
+            if (prefAlphaMtl.getValue() < 0.5f){ // is considered as low visibility
+                showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
             }
-        });
+        }
+        calcRemainingStatistic(rotl);
+        getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, dashboardStatistic);
 
+        checkRelaxedViews(mtl);
+        checkApproachViews(mtl);
 
-    }
-
-    private void hideRouting(){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                unregisterAll();
-                getControlView().setDashboardValue(false, dashboardRoute,null);
-                getApplication().routeTrackLogObservable.setTrackLog(null);
-            }
-        });
     }
 
 
@@ -258,19 +240,23 @@ public class MSRouting extends MGMicroService {
         return rpm;
     }
 
-
-
     synchronized private void updateRouting(WriteableTrackLog mtl){
-        unregisterAll(MultiPointView.class);
-        if (mtl.getTrackStatistic().getNumPoints() == 0) return;
-        MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
-        if (mapFile == null){
-            Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
-            hideRouting();
-            return;
+        WriteableTrackLog routeTrackLog = null;
+        if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
+            MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
+            if (mapFile == null){
+                Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
+            } else {
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Start");
+                routeTrackLog = updateRouting2(mapFile, mtl);
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
+            }
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Start");
+        getApplication().routeTrackLogObservable.setTrackLog(routeTrackLog);
+        refreshObserver.onChange(); // trigger visualization
+    }
 
+    private WriteableTrackLog updateRouting2(MapDataStore mapFile, TrackLog mtl){
         boolean routeModified = false;
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             if (segment.size() < 1) continue;
@@ -300,7 +286,7 @@ public class MSRouting extends MGMicroService {
 
                 if (bRecalcRoute){
                     routeModified = true;
-                    current.newMPM = calcRouting(mapFile, prev, current, current.direct, true, current.routingHints);
+                    current.newMPM = calcRouting(mapFile, prev, current, current.direct, current.routingHints, currentRelaxedNodes);
                 }
             }
         }
@@ -319,10 +305,8 @@ public class MSRouting extends MGMicroService {
         if (oldRouteTrackLog != null){
             routeTrackLog.setPrefModified(oldRouteTrackLog.getPrefModified());
         }
-        if (routeModified){
-            routeTrackLog.setModified(routeModified);
-        }
-        routeTrackLog.getPrefModified().onChange();
+        routeTrackLog.setModified(routeTrackLog.isModified() || routeModified); // was already in state modified  or  route is now modified
+//        routeTrackLog.getPrefModified().onChange();
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             routeTrackLog.startSegment(0);
@@ -347,30 +331,22 @@ public class MSRouting extends MGMicroService {
             routeTrackLog.stopSegment(0);
         }
         routeTrackLog.stopTrack(0);
-
-        if (prefRouteGL.getValue()){
-            CC.initGlPaints( prefAlphaRotl.getValue() );
-            showTrack(routeTrackLog, CC.getAlphaClone(PAINT_STROKE_GL, prefAlphaRotl.getValue()), true, 0);
-        } else {
-            showTrack(routeTrackLog, CC.getAlphaClone(PAINT_ROUTE_STROKE, prefAlphaRotl.getValue()), false,0);
-        }
-        if (prefAlphaMtl.getValue() < 0.5f){ // is considered as low visibility
-            showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
-        }
-        calcRemainingStatistic(routeTrackLog);
-        getControlView().setDashboardValue(true, dashboardRoute, routeTrackLog.getTrackStatistic());
-        getApplication().routeTrackLogObservable.setTrackLog(routeTrackLog);
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
+        return routeTrackLog;
     }
 
     private void calcRemainingStatistic(WriteableTrackLog routeTrackLog){
-        if (routeRemainings && prefGps.getValue()){
-            PointModel lastPos = getApplication().lastPositionsObservable.lastGpsPoint;
-            if (lastPos != null){
-                TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(lastPos);
-                if ((bestMatch != null) && (bestMatch.getApproachPoint() != null)){
-                    routeTrackLog.recalcStatistic(bestMatch.getApproachPoint(), bestMatch.getSegmentIdx(), bestMatch.getEndPointIndex());
-                    routeTrackLog.getTrackStatistic().segmentIdx = -2; // indicates Remainings statistic
+        dashboardStatistic = null;
+        if (routeTrackLog != null){
+            dashboardStatistic = routeTrackLog.getTrackStatistic();
+            if (prefGps.getValue()){
+                PointModel lastPos = getApplication().lastPositionsObservable.lastGpsPoint;
+                if (lastPos != null){
+                    TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(lastPos);
+                    if ((bestMatch != null) && (bestMatch.getApproachPoint() != null)){
+                        dashboardStatistic = new TrackLogStatistic();
+                        routeTrackLog.remainStatistic(dashboardStatistic, bestMatch.getApproachPoint(), bestMatch.getSegmentIdx(), bestMatch.getEndPointIndex());
+                        dashboardStatistic.segmentIdx = -2; // indicates Remainings statistic
+                    }
                 }
             }
         }
@@ -378,21 +354,20 @@ public class MSRouting extends MGMicroService {
 
 
 
-    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, boolean distanceCheck) {
-        return calcRouting(mapFile,source,target,direct,distanceCheck,null);
+    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target) {
+        return calcRouting(mapFile,source,target,false,null,null);
     }
 
-    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, boolean distanceCheck, Map<PointModel, RoutingHint> hints){
+    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, Map<PointModel, RoutingHint> hints, ArrayList<PointModel> relaxedNodes){
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
         Log.d(MGMapApplication.LABEL, NameUtil.context()+" Start");
-        boolean bShowRelaxed = (prefWayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY);
 
         GNode gStart = source.getApproachNode();
         GNode gEnd = target.getApproachNode();
         Log.i(MGMapApplication.LABEL, NameUtil.context()+ " start "+gStart+" end "+gEnd);
 
-        double distLimit = distanceCheck? acceptedRouteDistance(source.mtlp, target.mtlp):Double.MAX_VALUE;
+        double distLimit = acceptedRouteDistance(source.mtlp, target.mtlp);
         GGraph multi = null;
 
         try {
@@ -405,29 +380,12 @@ public class MSRouting extends MGMicroService {
                 multi.createOverlaysForApproach(source.selectedApproach);
                 multi.createOverlaysForApproach(target.selectedApproach);
 
-                Log.v(MGMapApplication.LABEL, NameUtil.context());
-                { // perform an AStar on this graph
-                    AStar d = new AStar(multi);
-
-                    for (PointView pv : relaxedViews){
-                        unregister(pv);
-                    }
-                    relaxedViews.clear();
-                    List<GNodeRef> path = d.perform(gStart, gEnd, distLimit);
-                    if (bShowRelaxed){
-                        for (GNode gNode : d.getRelaxedList()){
-                            PointView pv = new PointView(gNode, PAINT_RELAXED);
-                            relaxedViews.add(pv);
-                            register(pv);
-                        }
-                    }
-
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+ " "+ " "+d.getResult());
-                    for (GNodeRef gnr : path){
-                        mpm.addPoint(gnr.getNode() );
-                    }
+                // perform an AStar on this graph
+                AStar aStar = new AStar(multi);
+                for (GNodeRef gnr : aStar.perform(gStart, gEnd, distLimit, relaxedNodes)){
+                    mpm.addPoint(gnr.getNode() );
                 }
-                Log.v(MGMapApplication.LABEL, NameUtil.context());
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+aStar.getResult());
 
                 // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
                 if (mpm.size() == 3){
@@ -451,7 +409,7 @@ public class MSRouting extends MGMicroService {
         }
         mpm.setRoute(mpm.size() != 0);
 
-        if (mpm.size() == 0) { // no bRouting required or bRouting not possible due to missing approach or no route found
+        if (mpm.size() == 0) { // no routing required or routing not possible due to missing approach or no route found
             if (gStart != null){
                 mpm.addPoint(gStart);
             } else {
@@ -586,9 +544,18 @@ public class MSRouting extends MGMicroService {
 
     }
 
+    private void checkRelaxedViews(TrackLog mtl){
+        if ((mtl != null) && prefWayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY){
+            if (mtl.getTrackStatistic().getNumPoints() >= 2){
+                for (PointModel pm : currentRelaxedNodes){
+                    register( new PointView(pm, PAINT_RELAXED));
+                }
+            }
+        }
+    }
 
-    private void checkApproachViews(){
-        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+    private void checkApproachViews(TrackLog mtl){
+//        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
 
         boolean visibility = ((getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_APPROACHES_VISIBILITY) && (prefWayDetails.getValue()));
 
@@ -677,8 +644,7 @@ public class MSRouting extends MGMicroService {
                 RoutePointModel rpm = routePointMap2.get(rtlpm);
                 PointModel mtlp = rpm.getMtlp();
                 WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
-                TrackLogRefApproach bestPoint = mtl.getBestPoint(mtlp, 1);
-                return bestPoint;
+                return mtl.getBestPoint(mtlp, 1);
             }
         }
         return null;
