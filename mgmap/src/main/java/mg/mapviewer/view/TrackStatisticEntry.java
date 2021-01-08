@@ -36,7 +36,7 @@ public class TrackStatisticEntry extends TableLayout {
 
 
     private int dp2px(float dp){
-        return ControlView.convertDp(dp);
+        return ControlView.dp(dp);
     }
 
     public TrackStatisticEntry(Context context, TrackLog trackLog, ViewGroup parent, int colorId, int colorIdSelected){

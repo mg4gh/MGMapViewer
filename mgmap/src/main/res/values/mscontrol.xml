@@ -7,7 +7,7 @@
     <string name="MSControl_qcSettings_help">Settings screen</string>
     <string name="MSControl_qcFuSettings_help">Further settings screen</string>
     <string name="MSControl_qcHome_help">Lunch Android home screen</string>
-    <string name="MSControl_qcExit_help">Terminate and leave MgMapViewer application</string>
+    <string name="MSControl_qcExit_help">Terminate and leave application</string>
     <string name="MSControl_qcDownload_help">Download actions screen</string>
     <string name="MSControl_qcStatistic_help">Statistic activity</string>
     <string name="MSControl_qcHeightProfile_help">Height profile activity</string>

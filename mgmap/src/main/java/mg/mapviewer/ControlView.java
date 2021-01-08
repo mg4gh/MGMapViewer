@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,13 +43,11 @@ import org.mapsforge.map.model.DisplayModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 
 import mg.mapviewer.model.TrackLogStatistic;
 import mg.mapviewer.util.CC;
-import mg.mapviewer.util.HintControl;
-import mg.mapviewer.util.MGPref;
+import mg.mapviewer.util.EnlargeControl;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.Control;
 import mg.mapviewer.view.ExtendedTextView;
@@ -88,8 +85,8 @@ public class ControlView extends RelativeLayout {
     /** List will be filled with all members of the status line */
     ArrayList<TextView> tvList = new ArrayList<>();
 
-    TextView tv_hint = null;
-    HintControl hintControl = null;
+    TextView tv_enlarge = null;
+    EnlargeControl enlargeControl = null;
 
     private final Map<View, ArrayList<View>> submenuMap = new HashMap<>();
     private final Map<View, Control> menuControlMap = new HashMap<>();
@@ -115,8 +112,8 @@ public class ControlView extends RelativeLayout {
         return getResources().getString(id);
     }
 
-    public static int convertDp(float dp){
-        return (int) (dp * DisplayModel.getDeviceScaleFactor());
+    public static int dp(float f){
+        return (int) (f * DisplayModel.getDeviceScaleFactor());
     }
 
 
@@ -129,9 +126,9 @@ public class ControlView extends RelativeLayout {
 
             mapView = activity.getMapsforgeMapView();
             // this is necessary to get the scalbar above the quick controls and the status line
-            mapView.getMapScaleBar().setMarginVertical((int)(convertDp(65)));
+            mapView.getMapScaleBar().setMarginVertical(dp(65));
 
-            prepareHintControl();
+            prepareEnlargeControl();
 
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
             dashboard = findViewById(R.id.dashboard);
@@ -158,25 +155,24 @@ public class ControlView extends RelativeLayout {
     }
 
 // *************************************************************************************************
-// ********* HintControl related stuff                                                      **********
+// ********* EnlargeControl related stuff                                                      **********
 // *************************************************************************************************
 
-    void prepareHintControl(){
-        tv_hint = findViewById(R.id.hint);
-        tv_hint.setVisibility(INVISIBLE);
-        hintControl = new HintControl(tv_hint);
+    void prepareEnlargeControl(){
+        tv_enlarge = findViewById(R.id.enlarge);
+        tv_enlarge.setVisibility(INVISIBLE);
+        enlargeControl = new EnlargeControl(tv_enlarge);
 
-        View parent = (View)tv_hint.getParent();
+        View parent = (View) tv_enlarge.getParent();
         RelativeLayout.LayoutParams parentLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        parentLayoutParams.setMargins(convertDp(90),convertDp(350),convertDp(90),convertDp(0));
+        parentLayoutParams.setMargins(dp(90), dp(350), dp(90), dp(0));
         parent.setLayoutParams(parentLayoutParams);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        tv_hint.setLines(1);
-        tv_hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
-        int padding = convertDp(5);
-        tv_hint.setPadding(padding,padding,padding,padding);
-        tv_hint.setBackgroundResource(R.drawable.shape);
+        tv_enlarge.setLines(1);
+        tv_enlarge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
+        int padding = dp(5);
+        tv_enlarge.setPadding(padding,padding,padding,padding);
+        tv_enlarge.setBackgroundResource(R.drawable.shape);
     }
 
 // *************************************************************************************************
@@ -195,18 +191,18 @@ public class ControlView extends RelativeLayout {
     }
 
     public ExtendedTextView createDashboardETV(ViewGroup vgDashboard, float weight) {
-        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(convertDp(16));
+        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(16));
         vgDashboard.addView(etv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
-        int margin = convertDp(0.8f);
+        int margin = dp(0.8f);
         params.setMargins(margin,margin,margin,margin);
         params.weight = weight;
         etv.setLayoutParams(params);
 
-        int padding = convertDp(2.0f);
+        int padding = dp(2.0f);
         etv.setPadding(padding, padding, padding, padding);
-        int drawablePadding = convertDp(3.0f);
+        int drawablePadding = dp(3.0f);
         etv.setCompoundDrawablePadding(drawablePadding);
         Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
 
@@ -214,7 +210,7 @@ public class ControlView extends RelativeLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
-        etv.setOnClickListener(hintControl);
+        etv.setOnClickListener(enlargeControl);
         return etv;
     }
 
@@ -281,7 +277,7 @@ public class ControlView extends RelativeLayout {
         button.setBackgroundResource(R.drawable.shape);
         button.setPadding(0, 0, 0, 0);
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int margin = convertDp(2.5f);
+        int margin = dp(2.5f);
         layoutParams.setMargins(margin, margin, margin, margin);
         button.setLayoutParams(layoutParams);
 
@@ -289,16 +285,16 @@ public class ControlView extends RelativeLayout {
         set.clone(parent);
         if (alignViewTop == null) {
             if (isSubmenuButton){ // then it's a main menu button
-                set.connect(button.getId(), ConstraintSet.TOP, alignViewSide.getId(), ConstraintSet.TOP, convertDp(0));
+                set.connect(button.getId(), ConstraintSet.TOP, alignViewSide.getId(), ConstraintSet.TOP, dp(0));
             } else {
-                set.connect(button.getId(), ConstraintSet.TOP, parent.getId(), ConstraintSet.TOP, convertDp(150));
+                set.connect(button.getId(), ConstraintSet.TOP, parent.getId(), ConstraintSet.TOP, dp(150));
             }
         } else {
-            set.connect(button.getId(), ConstraintSet.TOP, alignViewTop.getId(), ConstraintSet.BOTTOM, convertDp(2.5f));
+            set.connect(button.getId(), ConstraintSet.TOP, alignViewTop.getId(), ConstraintSet.BOTTOM, dp(2.5f));
         }
         int startSide = (alignEnd)?ConstraintSet.RIGHT:ConstraintSet.LEFT;
         int endSide =  (alignEnd == isSubmenuButton)?ConstraintSet.LEFT:ConstraintSet.RIGHT;
-        set.connect(button.getId(), startSide, alignViewSide.getId(), endSide, convertDp(2.5f));
+        set.connect(button.getId(), startSide, alignViewSide.getId(), endSide, dp(2.5f));
         set.applyTo(parent);
 
         if (submenuEntries > 0){
@@ -404,7 +400,7 @@ public class ControlView extends RelativeLayout {
         setMenuVisibility(findViewById(R.id.menuBase).getVisibility() != VISIBLE);
     }
 
-    private Handler timer = new Handler();
+    private final Handler timer = new Handler();
     final Runnable ttHideButtons = new Runnable() { // define timerTask to hide menu buttons
         @Override
         public void run() {
@@ -424,12 +420,7 @@ public class ControlView extends RelativeLayout {
 
 
     HashMap<ViewGroup, ArrayList<LabeledSlider>> labeledSliderMap = new HashMap<>();
-    Observer sliderVisibilityChangeObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            reworkLabeledSliderVisibility();
-        }
-    };
+    Observer sliderVisibilityChangeObserver = (o, arg) -> reworkLabeledSliderVisibility();
 
     LabeledSlider createLabeledSlider(ViewGroup parent){
         LabeledSlider labeledSlider = new LabeledSlider(context);
@@ -482,18 +473,18 @@ public class ControlView extends RelativeLayout {
     // *************************************************************************************************
 
     public ExtendedTextView createStatusLineETV(ViewGroup vgParent, float weight){
-        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(convertDp(16));
+        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(16));
         vgParent.addView(etv);
         tvList.add(etv);
         TableRow.LayoutParams llParms = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
-        int margin = convertDp(0.8f);
+        int margin = dp(0.8f);
         llParms.setMargins(margin,margin,margin,margin);
         llParms.weight = weight;
         etv.setLayoutParams(llParms);
 
-        int padding = convertDp(2.0f);
+        int padding = dp(2.0f);
         etv.setPadding(padding, padding, padding, padding);
-        int drawablePadding = convertDp(3.0f);
+        int drawablePadding = dp(3.0f);
         etv.setCompoundDrawablePadding(drawablePadding);
         Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
         if (drawable != null){
@@ -533,7 +524,7 @@ public class ControlView extends RelativeLayout {
     void finalizeStatusLine(){
         tr_states = activity.findViewById(R.id.tr_states);
         for (int idx=0; idx<tr_states.getChildCount();idx++){
-            tr_states.getChildAt(idx).setOnClickListener(hintControl);
+            tr_states.getChildAt(idx).setOnClickListener(enlargeControl);
         }
     }
 
@@ -543,25 +534,22 @@ public class ControlView extends RelativeLayout {
 
     public static ExtendedTextView createQuickControlETV(ViewGroup vgQuickControls) {
         Context context = vgQuickControls.getContext();
-        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(convertDp(36));
+        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(36));
         vgQuickControls.addView(etv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
-        int margin = convertDp(1.5f);
+        int margin = dp(1.5f);
         params.setMargins(margin,margin,margin,margin);
         params.weight = 20;
         etv.setLayoutParams(params);
 
-        etv.setPadding(0,convertDp(4),0,convertDp(4));
+        etv.setPadding(0, dp(4),0, dp(4));
         etv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
-        etv.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
-                    int paddingHorizontal = Math.max((right-left - etv.getDrawableSize()) / 2, 0);
-                    int paddingVertical = Math.max((bottom-top - etv.getDrawableSize()) / 2, 0);
-                    etv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
-                }
+        etv.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
+                int paddingHorizontal = Math.max((right-left - etv.getDrawableSize()) / 2, 0);
+                int paddingVertical = Math.max((bottom-top - etv.getDrawableSize()) / 2, 0);
+                etv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
             }
         });
         return etv;
@@ -592,13 +580,14 @@ public class ControlView extends RelativeLayout {
     public TextView createHelpText1(ViewGroup parent){
         TextView tv = new TextView(parent.getContext());
         LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp_tv.setMargins(dp(1),dp(1),dp(1),dp(2));
         tv.setLayoutParams(lp_tv);
-        tv.setPadding(30,30,30,30);
+        tv.setPadding(dp(12),dp(12),dp(12),dp(12));
         tv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
         parent.addView(tv);
         Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.exit, context.getTheme());
         if (drawable != null){
-            drawable.setBounds(0,0,60,60);
+            drawable.setBounds(0,0,dp(36),dp(36));
             tv.setCompoundDrawables(drawable,null,null,null);
         }
         return tv;
@@ -609,14 +598,14 @@ public class ControlView extends RelativeLayout {
         getActivity().getWindowManager().getDefaultDisplay().getSize(displaySize);
 
         TextView tv = new TextView(parent.getContext());
-        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (displaySize.x / 7)-4);
-        lp_tv.setMargins(2,2,2,2);
+        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (displaySize.x / 7)-dp(2));
+        lp_tv.setMargins(dp(1),dp(1),dp(1),dp(1));
         tv.setLayoutParams(lp_tv);
         tv.setGravity(Gravity.CENTER_VERTICAL);
-        tv.setTextSize(20);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         tv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
         tv.setTextColor(CC.getColor(R.color.WHITE));
-        tv.setPadding(40,0,20,0);
+        tv.setPadding(dp(16),0,dp(8),0);
         parent.addView(tv);
         return tv;
     }
@@ -624,7 +613,7 @@ public class ControlView extends RelativeLayout {
     public TextView createHelpText3(ViewGroup parent){
         TextView tv = new TextView(parent.getContext());
         TableRow.LayoutParams lp_tv3 = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp_tv3.height=120;
+        lp_tv3.height=dp(48);
         tv.setLayoutParams(lp_tv3);
         tv.setText(" ");
         parent.addView(tv);

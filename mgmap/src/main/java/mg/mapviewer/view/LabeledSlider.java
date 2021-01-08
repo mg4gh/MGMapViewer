@@ -101,7 +101,7 @@ public class LabeledSlider extends LinearLayout {
     }
 
     private int convertDp(float dp){
-        return ControlView.convertDp(dp);
+        return ControlView.dp(dp);
     }
 
     public MGPref<Boolean> getPrefSliderVisibility(){

@@ -8,7 +8,6 @@ import android.widget.LinearLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.Observer;
 
 import mg.mapviewer.features.control.MSControl;
@@ -115,22 +114,15 @@ public class ControlComposer {
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
 
-        ViewGroup qcsParent = activity.findViewById(R.id.base);
         ViewGroup[] qcss = new ViewGroup[8];
         ArrayList<Observer> gos = new ArrayList<>();
         for (int idx=0; idx<qcss.length; idx++){
             qcss[idx] = ControlView.createRow(coView.getContext());
             final int iidx = idx;
-            gos.add(new Observer() {
-                @Override
-                public void update(Observable o, Object arg) {
-                    prefQcs.setValue(iidx);
-                }
-            });
+            gos.add((o, arg) -> prefQcs.setValue(iidx));
         }
         application.getMS(MSControl.class).initQcss(qcss);
 
-        ViewGroup qcs = qcss[0];
         createQC(application,MSControl.class,qcss[0],"group_task",gos.get(1));
         createQC(application,MSSearch.class,qcss[0],"group_search",gos.get(2));
         ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false))

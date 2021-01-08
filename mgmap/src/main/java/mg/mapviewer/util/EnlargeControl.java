@@ -8,22 +8,20 @@ import android.widget.TextView;
 
 import org.mapsforge.map.model.DisplayModel;
 
-import mg.mapviewer.MGMapApplication;
+public class EnlargeControl extends ExtendedClickListener {
 
-public class HintControl extends ExtendedClickListener {
+    private final TextView tvEnlarge;
 
-    private final TextView tvHint;
-
-    private Handler timer = new Handler();
-    private Runnable ttHide = new Runnable() {
+    private final Handler timer = new Handler();
+    private final Runnable ttHide = new Runnable() {
         @Override
         public void run() {
-            tvHint.setVisibility(View.INVISIBLE);
+            tvEnlarge.setVisibility(View.INVISIBLE);
         }
     };
 
-    public HintControl(TextView tvHint){
-        this.tvHint = tvHint;
+    public EnlargeControl(TextView tvEnlarge){
+        this.tvEnlarge = tvEnlarge;
     }
 
     @Override
@@ -36,22 +34,22 @@ public class HintControl extends ExtendedClickListener {
         if (v instanceof TextView) {
             TextView tv = (TextView) v;
             String text = tv.getText().toString();
-            tvHint.setText(text);
+            tvEnlarge.setText(text);
             if (tv.getBackground() instanceof ColorDrawable) {
                 ColorDrawable cd = (ColorDrawable) tv.getBackground();
                 int colorCode = cd.getColor();
-                tvHint.setBackgroundColor(colorCode);
+                tvEnlarge.setBackgroundColor(colorCode);
             }
             Drawable[] ds = tv.getCompoundDrawables();
             if (ds[0] != null){
                 Drawable clone = ds[0].getConstantState().newDrawable();
                 float scale = DisplayModel.getDeviceScaleFactor();
                 clone.setBounds(0,0, (int)(30*scale),(int)(30*scale));
-                tvHint.setCompoundDrawables(clone,null,null,null);
+                tvEnlarge.setCompoundDrawables(clone,null,null,null);
             }
             int fgColor = tv.getTextColors().getDefaultColor();
-            tvHint.setTextColor(fgColor);
-            tvHint.setVisibility(View.VISIBLE);
+            tvEnlarge.setTextColor(fgColor);
+            tvEnlarge.setVisibility(View.VISIBLE);
         }
     }
 }
