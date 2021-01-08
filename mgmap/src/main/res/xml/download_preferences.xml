@@ -1,7 +1,7 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <mg.mapviewer.settings.PreferenceCategoryEx
+    <mg.mgmap.settings.PreferenceCategoryEx
         app:title="@string/preferences_dl_maps_title"
         app:summary="@string/preferences_dl_maps_desc"
         app:icon="@drawable/im"
@@ -23,9 +23,9 @@
             app:summary="@string/preferences_dl_maps_de_desc"
             />
 
-    </mg.mapviewer.settings.PreferenceCategoryEx>
+    </mg.mgmap.settings.PreferenceCategoryEx>
 
-    <mg.mapviewer.settings.PreferenceCategoryEx
+    <mg.mgmap.settings.PreferenceCategoryEx
         app:title="@string/preferences_dl_theme_title"
         app:summary="@string/preferences_dl_theme_desc"
         app:icon="@drawable/it"
@@ -36,9 +36,9 @@
             app:summary="@string/preferences_dl_theme_el_desc"
             />
 
-    </mg.mapviewer.settings.PreferenceCategoryEx>
+    </mg.mgmap.settings.PreferenceCategoryEx>
 
-    <mg.mapviewer.settings.PreferenceCategoryEx
+    <mg.mgmap.settings.PreferenceCategoryEx
         app:title="@string/preferences_dl_sw_title"
         app:summary="@string/preferences_dl_sw_desc"
         app:icon="@drawable/github"
@@ -55,6 +55,6 @@
             app:summary="@string/preferences_dl_sw_other_desc"
             />
 
-    </mg.mapviewer.settings.PreferenceCategoryEx>
+    </mg.mgmap.settings.PreferenceCategoryEx>
 
 </PreferenceScreen>

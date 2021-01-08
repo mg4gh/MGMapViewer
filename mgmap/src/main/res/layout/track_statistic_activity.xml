@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <mg.mapviewer.view.MyScrollView
+    <mg.mgmap.view.MyScrollView
 
         android:layout_height="match_parent"
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
 
         </LinearLayout>
 
-    </mg.mapviewer.view.MyScrollView>
+    </mg.mgmap.view.MyScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
