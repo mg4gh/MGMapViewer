@@ -23,9 +23,9 @@ import mg.mapviewer.util.Control;
 
 public class MarkerLoadSelectedControl extends Control {
 
-    MSMarker msMarker;
+    FSMarker msMarker;
 
-    public MarkerLoadSelectedControl(MSMarker msMarker){
+    public MarkerLoadSelectedControl(FSMarker msMarker){
         super(true);
         this.msMarker = msMarker;
     }

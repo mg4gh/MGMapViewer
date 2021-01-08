@@ -24,9 +24,9 @@ import mg.mapviewer.util.MGPref;
 
 public class RouteOptimizeControl extends Control {
 
-    MSRouting msRouting;
+    FSRouting msRouting;
 
-    public RouteOptimizeControl(MSRouting msRouting){
+    public RouteOptimizeControl(FSRouting msRouting){
         super(true);
         this.msRouting = msRouting;
     }
@@ -42,7 +42,7 @@ public class RouteOptimizeControl extends Control {
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
-        v.setEnabled( (mtl != null) && (MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25) );
+        v.setEnabled( (mtl != null) && (MGPref.get(R.string.FSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25) );
         setText(v, controlView.rstring(R.string.btRoTMapMatching) );
     }
 }

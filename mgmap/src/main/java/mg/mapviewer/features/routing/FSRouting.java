@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -33,9 +33,9 @@ import java.util.TreeSet;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
-import mg.mapviewer.features.marker.MSMarker;
+import mg.mapviewer.features.marker.FSMarker;
 import mg.mapviewer.graph.AStar;
 import mg.mapviewer.graph.GGraph;
 import mg.mapviewer.graph.GGraphMulti;
@@ -67,7 +67,7 @@ import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.MultiPointView;
 import mg.mapviewer.view.PointView;
 
-public class MSRouting extends MGMicroService {
+public class FSRouting extends FeatureService {
 
     private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE_A150, DisplayModel.getDeviceScaleFactor()*5.0f);
     private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE_A150);
@@ -88,28 +88,28 @@ public class MSRouting extends MGMicroService {
 
     private final RoutingLineRefProvider routingLineRefProvider;
 
-    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.MSGrad_pref_WayDetails_key, false);
-    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
-    private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.MSMarker_qc_EditMarkerTrack, false);
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
-    private final MGPref<Boolean> prefRouteGL = MGPref.get(R.string.MSMarker_qc_RouteGL, false);
+    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.FSGrad_pref_WayDetails_key, false);
+    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.FSMarker_pref_snap2way_key, true);
+    private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.FSMarker_qc_EditMarkerTrack, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefRouteGL = MGPref.get(R.string.FSMarker_qc_RouteGL, false);
 
-    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.MSMarker_pref_auto_switcher, true);
-    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
-    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
-    private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.MSRouting_pref_alphaRoTL, 1.0f);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
-    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.MSPosition_prev_ZoomLevel, 15);
+    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.FSMarker_pref_auto_switcher, true);
+    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.FSMarker_pref_auto_key, true);
+    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.FSMarker_pref_alphaMTL, 1.0f);
+    private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.FSRouting_pref_alphaRoTL, 1.0f);
+    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
+    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.FSPosition_prev_ZoomLevel, 15);
     private final MGPref<Boolean> prefMapMatching = MGPref.anonymous(false);
     private final MGPref<Boolean> prefMapMatchingEnabled = MGPref.anonymous(false);
 
     private ViewGroup dashboardRoute = null;
 
-    public MSRouting(MGMapActivity mmActivity) {
+    public FSRouting(MGMapActivity mmActivity) {
         super(mmActivity);
         ttRefreshTime = 50;
         routingLineRefProvider = new RoutingLineRefProvider();
-        getApplication().getMS(MSMarker.class).lineRefProvider = routingLineRefProvider;
+        getApplication().getFS(FSMarker.class).lineRefProvider = routingLineRefProvider;
         prefMapMatching.addObserver((o, arg) -> optimize());
         Observer matchingEnabledObserver = (o, arg) -> prefMapMatchingEnabled.setValue( prefMtlVisibility.getValue() && (prefAlphaRotl.getValue() > 0.25f) );
         prefMtlVisibility.addObserver(matchingEnabledObserver);
@@ -160,7 +160,7 @@ public class MSRouting extends MGMicroService {
             etv.setPrAction(prefMapMatching);
             etv.setData(R.drawable.matching);
             etv.setDisabledData(prefMapMatchingEnabled,R.drawable.matching_dis);
-            etv.setHelp(r(R.string.MSRouting_qcMapMatching_Help));
+            etv.setHelp(r(R.string.FSRouting_qcMapMatching_Help));
         }
         return etv;
     }
@@ -627,7 +627,7 @@ public class MSRouting extends MGMicroService {
 
     }
 
-    public class RoutingLineRefProvider implements MSMarker.LineRefProvider{
+    public class RoutingLineRefProvider implements FSMarker.LineRefProvider{
         @Override
         public TrackLogRefApproach getBestDistance(WriteableTrackLog mtl, PointModel pm, double threshold) {
             return getRoutingLineApproach(pm, threshold);

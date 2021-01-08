@@ -18,13 +18,11 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
@@ -33,7 +31,7 @@ import java.util.Observer;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 import mg.mapviewer.features.search.provider.Nominatim;
 import mg.mapviewer.model.PointModel;
@@ -45,22 +43,22 @@ import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.MVLayer;
 
-public class MSSearch extends MGMicroService {
+public class FSSearch extends FeatureService {
 
     private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
     private static final long NO_POS = PointModelUtil.NO_POS; // default invalid position for prefShowPos
 
     private final SearchView searchView;
     private SearchProvider searchProvider = null;
-    private MSSControlLayer msscl = null; // feature control layer to manage feature specific events
+    private SearchControlLayer scl = null; // feature control layer to manage feature specific events
 
-    private final MGPref<Boolean> prefSearchOn = MGPref.get(R.string.MSSearch_qc_searchOn, false);
-    private final MGPref<Boolean> prefShowSearchResult = MGPref.get(R.string.MSSearch_qc_showSearchResult, false);
+    private final MGPref<Boolean> prefSearchOn = MGPref.get(R.string.FSSearch_qc_searchOn, false);
+    private final MGPref<Boolean> prefShowSearchResult = MGPref.get(R.string.FSSearch_qc_showSearchResult, false);
     private final MGPref<Boolean> prefShowSearchResultEnabled = MGPref.anonymous(false);
-    private final MGPref<Long> prefShowPos = MGPref.get(R.string.MSSearch_pref_SearchPos, NO_POS);
-    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
+    private final MGPref<Long> prefShowPos = MGPref.get(R.string.FSSearch_pref_SearchPos, NO_POS);
+    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.FSFullscreen_qc_On, true);
 
-    public MSSearch(MGMapActivity mmActivity) {
+    public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
         prefSearchOn.setValue(false);
 
@@ -71,13 +69,10 @@ public class MSSearch extends MGMicroService {
 
         EditText searchText = searchView.searchText;
         searchText.setSelectAllOnFocus(true);
-        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView tv, int actionId, KeyEvent event) {
-                doSearch(tv.getText().toString().trim(), actionId);
-                checkFullscreen();
-                return true;
-            }
+        searchText.setOnEditorActionListener((tv, actionId, event) -> {
+            doSearch(tv.getText().toString().trim(), actionId);
+            checkFullscreen();
+            return true;
         });
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -121,12 +116,12 @@ public class MSSearch extends MGMicroService {
         } else if ("search".equals(info)){
             etv.setData(prefSearchOn,R.drawable.search1b,R.drawable.search);
             etv.setPrAction(prefSearchOn);
-            etv.setHelp(r(R.string.MSRecording_qcSearch_help)).setHelp(r(R.string.MSRecording_qcSearch_help1),r(R.string.MSRecording_qcSearch_help2));
+            etv.setHelp(r(R.string.FSRecording_qcSearch_help)).setHelp(r(R.string.FSRecording_qcSearch_help1),r(R.string.FSRecording_qcSearch_help2));
         } else if ("searchRes".equals(info)){
             etv.setData(prefShowSearchResult,R.drawable.search_res2,R.drawable.search_res1);
             etv.setPrAction(prefShowSearchResult);
             etv.setDisabledData(prefShowSearchResultEnabled, R.drawable.search_res3);
-            etv.setHelp(r(R.string.MSRecording_qcSearchRes_help)).setHelp(r(R.string.MSRecording_qcSearchRes_help1),r(R.string.MSRecording_qcSearchRes_help2));
+            etv.setHelp(r(R.string.FSRecording_qcSearchRes_help)).setHelp(r(R.string.FSRecording_qcSearchRes_help1),r(R.string.FSRecording_qcSearchRes_help2));
         }
         return etv;
     }
@@ -163,8 +158,8 @@ public class MSSearch extends MGMicroService {
                 searchView.setFocusable(true);
                 searchView.requestFocus();
                 showKeyboard();
-                msscl = new MSSControlLayer();
-                register(msscl, false);
+                scl = new SearchControlLayer();
+                register(scl, false);
                 triggerTTHideKeyboard();
             }
         } else {
@@ -172,13 +167,13 @@ public class MSSearch extends MGMicroService {
                 searchView.setVisibility( View.INVISIBLE );
                 searchView.setFocusable(false);
                 searchView.resetSearchResults();
-                unregister(msscl, false);
+                unregister(scl, false);
             }
         }
     }
 
 
-    public class MSSControlLayer extends MVLayer {
+    public class SearchControlLayer extends MVLayer {
 
         @Override
         protected boolean onTap(WriteablePointModel point) {

@@ -25,7 +25,7 @@ import mg.mapviewer.util.MGPref;
 
 public class GpsControl extends Control {
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
 
     public GpsControl(){
         super(true);

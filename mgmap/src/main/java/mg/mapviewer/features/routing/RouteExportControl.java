@@ -30,9 +30,9 @@ import mg.mapviewer.util.MGPref;
 
 public class RouteExportControl extends Control {
 
-    MSRouting msRouting;
+    FSRouting msRouting;
 
-    public RouteExportControl(MSRouting msRouting){
+    public RouteExportControl(FSRouting msRouting){
         super(true);
         this.msRouting = msRouting;
     }
@@ -59,7 +59,7 @@ public class RouteExportControl extends Control {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
-        v.setEnabled( (rotl != null) && (mtl.getTrackStatistic().getNumPoints() > 1) && (MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25));
+        v.setEnabled( (rotl != null) && (mtl.getTrackStatistic().getNumPoints() > 1) && (MGPref.get(R.string.FSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25));
         setText(v, controlView.rstring(R.string.btRoTSave) );
     }
 }

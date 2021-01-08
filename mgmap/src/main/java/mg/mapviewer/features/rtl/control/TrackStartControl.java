@@ -11,7 +11,7 @@ import mg.mapviewer.util.MGPref;
 
 public class TrackStartControl extends Control {
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
 
     public TrackStartControl(){
         super(true);

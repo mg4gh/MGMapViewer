@@ -14,17 +14,12 @@
  */
 package mg.mapviewer.features.bb;
 
-import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.model.Point;
 
 import mg.mapviewer.R;
 import mg.mapviewer.model.BBox;
-import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.util.CC;
 import mg.mapviewer.view.BoxView;
-import mg.mapviewer.view.MultiPointView;
 
 public class BoxViewBB extends BoxView{
 

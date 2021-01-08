@@ -19,16 +19,16 @@ import mg.mapviewer.util.PointModelUtil;
 
 public class RouteOptimizer {
 
-    MSRouting msRouting;
+    FSRouting fsRouting;
     MapDataStore mapFile;
 
-    public RouteOptimizer(MSRouting msRouting, MapDataStore mapFile){
-        this.msRouting = msRouting;
+    public RouteOptimizer(FSRouting fsRouting, MapDataStore mapFile){
+        this.fsRouting = fsRouting;
         this.mapFile = mapFile;
     }
 
     private RoutePointModel getRoutePointModel(PointModel pm){
-        return msRouting.getRoutePointModel( mapFile, pm );
+        return fsRouting.getRoutePointModel( mapFile, pm );
     }
 
     private void replaceNode(MultiPointModelImpl mpmi, int idx, PointModel pm){
@@ -44,7 +44,7 @@ public class RouteOptimizer {
         RoutePointModel rpmSource =  getRoutePointModel(segment.get(startIdx) );
         RoutePointModel rpmTarget =  getRoutePointModel(segment.get(endIdx) );
 
-        MultiPointModelImpl route = msRouting.calcRouting(mapFile, rpmSource, rpmTarget);
+        MultiPointModelImpl route = fsRouting.calcRouting(mapFile, rpmSource, rpmTarget);
         if (!route.isRoute()) return false;
 
         Assert.check(rpmSource.getApproachNode() == route.get(0));
@@ -62,7 +62,7 @@ public class RouteOptimizer {
 
 
         for (int idx=startIdx+1; idx < endIdx; idx++){
-            RoutePointModel rpm = msRouting.getRoutePointModel( mapFile, segment.get(idx) );
+            RoutePointModel rpm = fsRouting.getRoutePointModel( mapFile, segment.get(idx) );
 
             ApproachModel match = null;
 

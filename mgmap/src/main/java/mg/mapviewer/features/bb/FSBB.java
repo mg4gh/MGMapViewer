@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.MGMapLayerFactory;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
-import mg.mapviewer.features.atl.MSAvailableTrackLogs;
+import mg.mapviewer.features.atl.FSAvailableTrackLogs;
 import mg.mapviewer.features.tilestore.MGTileStore;
 import mg.mapviewer.features.tilestore.MGTileStoreLayer;
 import mg.mapviewer.features.tilestore.TileStoreLoader;
@@ -41,10 +41,10 @@ import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.MVLayer;
 
-public class MSBB extends MGMicroService {
+public class FSBB extends FeatureService {
 
     private final MGPref<Boolean> prefBboxOnAction = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefBboxOn = MGPref.get(R.string.MSBB_qc_bboxOn, false);
+    private final MGPref<Boolean> prefBboxOn = MGPref.get(R.string.FSBB_qc_bboxOn, false);
 
     private final MGPref<Boolean> prefLoadFromBB = MGPref.anonymous(false);
     private final MGPref<Boolean> prefLoadFromBBEnabled = MGPref.anonymous(false);
@@ -56,11 +56,11 @@ public class MSBB extends MGMicroService {
     private final ArrayList<MGTileStore> tss = identifyTS();
     private boolean initSquare = false;
 
-    private final MSAvailableTrackLogs msAvailableTrackLogs;
+    private final FSAvailableTrackLogs fsAvailableTrackLogs;
 
-    public MSBB(MGMapActivity mmActivity, MSAvailableTrackLogs msAvailableTrackLogs) {
+    public FSBB(MGMapActivity mmActivity, FSAvailableTrackLogs fsAvailableTrackLogs) {
         super(mmActivity);
-        this.msAvailableTrackLogs = msAvailableTrackLogs;
+        this.fsAvailableTrackLogs = fsAvailableTrackLogs;
 
         prefBboxOnAction.addObserver( (o,args) -> prefBboxOn.toggle());
         prefLoadFromBB.addObserver( (o,args) -> loadFromBB());
@@ -92,26 +92,26 @@ public class MSBB extends MGMicroService {
             etv.setPrAction(prefLoadFromBB);
             etv.setData(R.drawable.load_from_bb);
             etv.setDisabledData(prefLoadFromBBEnabled, R.drawable.load_from_bb_dis);
-            etv.setHelp(r(R.string.MSBB_qcLoadFromBB_Help));
+            etv.setHelp(r(R.string.FSBB_qcLoadFromBB_Help));
         } else if ("bbox_on".equals(info)){
             etv.setPrAction(prefBboxOnAction);
             etv.setData(prefBboxOn,R.drawable.bbox2,R.drawable.bbox);
-            etv.setHelp(r(R.string.MSBB_qcBBox_Help)).setHelp(r(R.string.MSBB_qcBBox_Help1),r(R.string.MSBB_qcBBox_Help2));
+            etv.setHelp(r(R.string.FSBB_qcBBox_Help)).setHelp(r(R.string.FSBB_qcBBox_Help1),r(R.string.FSBB_qcBBox_Help2));
         } else if ("TSLoadRemain".equals(info)){
             etv.setPrAction(prefTSLoadRemain);
             etv.setData(R.drawable.bb_ts_load_remain);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_remain_dis);
-            etv.setHelp(r(R.string.MSBB_qcTSLoadRemainFromBB_Help));
+            etv.setHelp(r(R.string.FSBB_qcTSLoadRemainFromBB_Help));
         }else if ("TSLoadAll".equals(info)){
             etv.setPrAction(prefTSLoadAll);
             etv.setData(R.drawable.bb_ts_load_all);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_all_dis);
-            etv.setHelp(r(R.string.MSBB_qcTSLoadAllFromBB_Help));
+            etv.setHelp(r(R.string.FSBB_qcTSLoadAllFromBB_Help));
         }else if ("TSDeleteAll".equals(info)){
             etv.setPrAction(prefTSDeleteAll);
             etv.setData(R.drawable.bb_ts_delete_all);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_delete_all_dis);
-            etv.setHelp(r(R.string.MSBB_qcTSDeleteAllFromBB_Help));
+            etv.setHelp(r(R.string.FSBB_qcTSDeleteAllFromBB_Help));
         }
         return etv;
     }
@@ -231,7 +231,7 @@ public class MSBB extends MGMicroService {
                 BBox bBox = new BBox().extend(p1).extend(p2);
                 Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
                 if (bBox.contains(pm)){
-                    if (msAvailableTrackLogs.loadFromBB(bBox)){
+                    if (fsAvailableTrackLogs.loadFromBB(bBox)){
                         prefBboxOn.setValue(false);
                     }
                     return true;
@@ -266,7 +266,7 @@ public class MSBB extends MGMicroService {
         if ((p1!= null) && (p2!= null)){
             BBox bBox = new BBox().extend(p1).extend(p2);
             Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
-            msAvailableTrackLogs.loadFromBB(bBox);
+            fsAvailableTrackLogs.loadFromBB(bBox);
         }
     }
 

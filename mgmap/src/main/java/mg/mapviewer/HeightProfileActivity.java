@@ -27,17 +27,13 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import mg.mapviewer.features.routing.MSRouting;
 import mg.mapviewer.model.MultiPointModel;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
 import mg.mapviewer.model.TrackLogSegment;
-import mg.mapviewer.util.GpxImporter;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.util.PointModelUtil;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 

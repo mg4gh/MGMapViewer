@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="FSRemaining_pref_Reverse">FSRemaining.Reverse</string>
+    <string name="FSRemaining_pref_Interval">FSRemaining.Interval</string>
+
+
+</resources>

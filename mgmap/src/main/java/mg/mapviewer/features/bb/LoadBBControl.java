@@ -16,15 +16,14 @@ package mg.mapviewer.features.bb;
 
 import android.view.View;
 
-import mg.mapviewer.features.bb.MSBB;
 import mg.mapviewer.R;
 import mg.mapviewer.util.Control;
 
 public class LoadBBControl extends Control {
 
-    MSBB msBB;
+    FSBB msBB;
 
-    public LoadBBControl(MSBB msBB){
+    public LoadBBControl(FSBB msBB){
         super(true);
         this.msBB = msBB;
     }

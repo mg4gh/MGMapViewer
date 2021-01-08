@@ -1,6 +1,19 @@
+/*
+ * Copyright 2017 - 2021 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package mg.mapviewer.features.routing;
 
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
@@ -10,7 +23,7 @@ import java.util.Observer;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
@@ -21,7 +34,7 @@ import mg.mapviewer.util.PointModelUtil;
 import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 
-public class MSRoutingHintService extends MGMicroService {
+public class FSRoutingHintService extends FeatureService {
 
     private static final int THRESHOLD_FAR = 200;
     private static final int THRESHOLD_NEAR = 40;
@@ -29,10 +42,10 @@ public class MSRoutingHintService extends MGMicroService {
     private static final int TT_REFRESH_TIME = 150;
 
     private enum ServiceState { OFF , INIT, ON };
-    private final MGPref<Boolean> prefRoutingHints = MGPref.get(R.string.MSRouting_qc_RoutingHint, false);
+    private final MGPref<Boolean> prefRoutingHints = MGPref.get(R.string.FSRouting_qc_RoutingHint, false);
     private final MGPref<Boolean> prefRoutingHintsEnabled = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
 
     private int  mediumAwayCnt = 0;
     private PointModel lastHintPoint = null;
@@ -41,7 +54,7 @@ public class MSRoutingHintService extends MGMicroService {
     private ServiceState serviceState = ServiceState.OFF;
     private TextToSpeech tts = null;
 
-    public MSRoutingHintService(MGMapActivity mmActivity){
+    public FSRoutingHintService(MGMapActivity mmActivity){
         super(mmActivity);
 
         if (MGPref.get(R.string.MGMapApplication_pref_Restart, false).getValue()){
@@ -68,7 +81,7 @@ public class MSRoutingHintService extends MGMicroService {
         etv.setData(prefRoutingHints,R.drawable.routing_hints2, R.drawable.routing_hints1);
         etv.setPrAction(prefRoutingHints);
         etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
-        etv.setHelp(r(R.string.MSRouting_qcRoutingHint_Help)).setHelp(r(R.string.MSRouting_qcRoutingHint_Help1),r(R.string.MSRouting_qcRoutingHint_Help2));
+        etv.setHelp(r(R.string.FSRouting_qcRoutingHint_Help)).setHelp(r(R.string.FSRouting_qcRoutingHint_Help1),r(R.string.FSRouting_qcRoutingHint_Help2));
         return etv;
     }
 
@@ -129,8 +142,8 @@ public class MSRoutingHintService extends MGMicroService {
 
     protected void handleNewPoint() {
         try {
-            MSRouting msRouting = getApplication().getMS(MSRouting.class);
-            if (msRouting == null) return;
+            FSRouting fsRouting = getApplication().getFS(FSRouting.class);
+            if (fsRouting == null) return;
             TrackLog routeTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
             if (routeTrackLog == null) return;
 
@@ -142,7 +155,7 @@ public class MSRoutingHintService extends MGMicroService {
                     TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(last1Gps, THRESHOLD_FAR);
                     if ((bestMatch != null)){
                         if (bestMatch.getDistance() < THRESHOLD_NEAR){
-                            checkHints(msRouting, bestMatch);
+                            checkHints(fsRouting, bestMatch);
                             mediumAwayCnt = 0;
                         } else {
                             // not really close
@@ -175,7 +188,7 @@ public class MSRoutingHintService extends MGMicroService {
     }
 
 
-    private void checkHints(MSRouting msRouting, TrackLogRefApproach bestMatch){
+    private void checkHints(FSRouting fsRouting, TrackLogRefApproach bestMatch){
         int abstand = (int)bestMatch.getDistance();
         String text = "";
         Log.i(MGMapApplication.LABEL, NameUtil.context()+"SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
@@ -203,7 +216,7 @@ public class MSRoutingHintService extends MGMicroService {
 
             routeDistance += newDistance;
 
-            RoutingHint hint = msRouting.routePointMap2.get(pm).routingHints.get(pm);
+            RoutingHint hint = fsRouting.routePointMap2.get(pm).routingHints.get(pm);
             if (hint != null){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
                         +" l="+PointModelUtil.clock4degree(hint.nextLeftDegree)+" r="+PointModelUtil.clock4degree(hint.nextRightDegree));

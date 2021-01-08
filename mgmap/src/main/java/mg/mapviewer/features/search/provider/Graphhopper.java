@@ -3,12 +3,8 @@ package mg.mapviewer.features.search.provider;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -22,7 +18,7 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.features.search.MSSearch;
+import mg.mapviewer.features.search.FSSearch;
 import mg.mapviewer.features.search.SearchProvider;
 import mg.mapviewer.features.search.SearchRequest;
 import mg.mapviewer.features.search.SearchResult;
@@ -42,8 +38,8 @@ public class Graphhopper extends SearchProvider {
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     @Override
-    protected void init(MGMapApplication application, MSSearch msSearch, SearchView searchView, SharedPreferences preferences) {
-        super.init(application, msSearch, searchView, preferences);
+    protected void init(MGMapApplication application, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences) {
+        super.init(application, fsSearch, searchView, preferences);
         Properties props = PersistenceManager.getInstance().getConfigProperties("search",this.getClass().getSimpleName()+".cfg");
         apiKey = props.getProperty("API_KEY");
     }

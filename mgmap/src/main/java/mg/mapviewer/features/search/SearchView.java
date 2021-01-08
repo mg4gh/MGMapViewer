@@ -18,14 +18,14 @@ import mg.mapviewer.util.ZoomOCL;
 
 public class SearchView extends LinearLayout {
 
-    MSSearch msSearch = null;
+    FSSearch fsSearch = null;
     MGMapActivity activity = null;
     Context context;
 
-    public SearchView(Context context, MSSearch msSearch) {
+    public SearchView(Context context, FSSearch fsSearch) {
         super(context);
         this.context = context;
-        this.msSearch = msSearch;
+        this.fsSearch = fsSearch;
     }
 
     EditText searchText = null;
@@ -48,11 +48,6 @@ public class SearchView extends LinearLayout {
         searchText.setSelectAllOnFocus(true);
         this.addView(searchText);
 
-        float scaleFactor = activity.getMapsforgeMapView().getModel().displayModel.getScaleFactor();
-        ZoomOCL ocl = new ZoomOCL(scaleFactor);
-//        ocl.setToMillis(2500);
-//        searchText.setOnClickListener(ocl);
-
         for (int i=0; i<NUM_SEARCH_RESULTS; i++){
             TextView textView = new TextView(context);
             LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -72,14 +67,7 @@ public class SearchView extends LinearLayout {
 
 
     public void setResList(ArrayList<SearchResult>  srs){
-
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setResListUI(srs);
-            }
-        });
-
+        activity.runOnUiThread(() -> setResListUI(srs));
     }
 
     public void setResListUI(ArrayList<SearchResult>  srs){
@@ -111,8 +99,7 @@ public class SearchView extends LinearLayout {
                 tv.setOnLongClickListener(new OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-//                        activity.getMapViewUtility().setMapViewPosition(sr.pos);
-                        msSearch.setSearchResult(sr.pos);
+                        fsSearch.setSearchResult(sr.pos);
                         return true;
                     }
                 });

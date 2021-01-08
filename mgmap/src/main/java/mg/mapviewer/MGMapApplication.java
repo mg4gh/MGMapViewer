@@ -16,7 +16,6 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.IMapViewPosition;
 
-import mg.mapviewer.features.routing.MSRoutingHintService;
 import mg.mapviewer.model.WriteableTrackLog;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLogRef;
@@ -66,8 +65,8 @@ public class MGMapApplication extends Application {
 
     boolean initFinished = false;
     private MGMapActivity mgMapActivity = null;
-    ArrayList<MGMicroService> microServices = new ArrayList<>();
-    private ArrayList<BgJob> bgJobs = new ArrayList<>();
+    ArrayList<FeatureService> featureServices = new ArrayList<>();
+    private final ArrayList<BgJob> bgJobs = new ArrayList<>();
 
     MGPref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
     MGPref<Boolean> prefGpsOn = null; // property to distinguish ApplicationStart from ActivityRecreate
@@ -101,10 +100,10 @@ public class MGMapApplication extends Application {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         MGPref.init(this);
         prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, true);
-        prefGpsOn = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+        prefGpsOn = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
         prefAppRestart.setValue(true);
         prefGpsOn.setValue(false);
-        MGPref.get(R.string.MSSearch_qc_showSearchResult, false).setValue(false);
+        MGPref.get(R.string.FSSearch_qc_showSearchResult, false).setValue(false);
 
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
 
@@ -381,7 +380,7 @@ public class MGMapApplication extends Application {
         this.mgMapActivity = mgMapActivity;
         if (mgMapActivity == null){
             //cleanup according to termination of MGMapActivity
-            microServices.clear();
+            featureServices.clear();
             availableTrackLogsObservable.deleteObservers();
             recordingTrackLogObservable.deleteObservers();
             markerTrackLogObservable.deleteObservers();
@@ -391,8 +390,8 @@ public class MGMapApplication extends Application {
     }
 
     /** Retruen the mirco service by type  - duplicate code of MGMapActivity, but here it is also available for other activities */
-    public <T> T getMS(Class<T> tClass){
-        for (MGMicroService service : microServices){
+    public <T> T getFS(Class<T> tClass){
+        for (FeatureService service : featureServices){
             if (tClass.isInstance(service)) return (T)service;
         }
         return null;
@@ -443,9 +442,9 @@ public class MGMapApplication extends Application {
     }
 
     public void refresh(){
-        if (!microServices.isEmpty()){
-            MGMicroService ms = microServices.get(0);
-            MapView mapView = ms.getMapView();
+        if (!featureServices.isEmpty()){
+            FeatureService fs = featureServices.get(0);
+            MapView mapView = fs.getMapView();
 
             IMapViewPosition mvp = mapView.getModel().mapViewPosition;
             mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));

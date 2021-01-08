@@ -19,7 +19,7 @@ public class SettingsActivity extends AppCompatActivity {
         PreferenceFragmentCompat pfc = new MainPreferenceScreen();
         Intent intent = getIntent();
         if (intent != null){
-            String clazzname = intent.getStringExtra("MSControl.info");
+            String clazzname = intent.getStringExtra("FSControl.info");
             if (clazzname != null){
                 try {
                     Class<?> clazz = Class.forName(clazzname);

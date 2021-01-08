@@ -46,7 +46,7 @@ public class TrackLoggerService extends Service {
     private BarometerListener barometerListener = null;
     private boolean active = false;
     private Notification notification = null;
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
 
     public static void setPressureAlt(TrackLogPoint lp){
         if (lp.getPressure() != PointModel.NO_PRES){

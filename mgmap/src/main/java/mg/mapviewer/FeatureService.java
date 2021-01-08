@@ -51,16 +51,16 @@ import mg.mapviewer.view.MultiPointView;
  * <p>A second feature of the MicroServices is the register/unregister functionality for MapView layers. Beside the registration in the MapView.Layers object these Layers get also a reference to the MapViewUtility and
  * (depending on a parameter) their reference is also stored in the layer registry of the service.</p>
  */
-public class MGMicroService {
+public class FeatureService {
 
     /** A timer object. */
     private static final Handler timer = new Handler();
 
     private final MGMapActivity mmActivity;
-    protected ArrayList<Layer> msLayers = new ArrayList<>();
+    protected ArrayList<Layer> fsLayers = new ArrayList<>();
     protected String logName;
 
-    public MGMicroService(MGMapActivity mmActivity){
+    public FeatureService(MGMapActivity mmActivity){
         this.mmActivity = mmActivity;
         logName = this.getClass().getSimpleName();
     }
@@ -142,27 +142,27 @@ public class MGMicroService {
     protected void register(Layer layer){
         register(layer, true);
     }
-    protected void register(final Layer layer, final boolean addToMsLayers){
+    protected void register(final Layer layer, final boolean addToFsLayers){
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             if (layer instanceof MVLayer) {
                 ((MVLayer) layer).setMapViewUtility(getMapViewUtility());
             }
-            if (addToMsLayers) msLayers.add(layer);
+            if (addToFsLayers) fsLayers.add(layer);
             getMapView().getLayerManager().getLayers().add(layer);
         } else {
-            getActivity().runOnUiThread(() -> register(layer, addToMsLayers));
+            getActivity().runOnUiThread(() -> register(layer, addToFsLayers));
         }
     }
     protected void unregister(Layer layer){
         unregister(layer, true);
     }
-    protected void unregister(final Layer layer, final boolean removeFromMsLayers){
+    protected void unregister(final Layer layer, final boolean removeFromFsLayers){
         if (layer == null) return;
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-            if (removeFromMsLayers) msLayers.remove(layer);
+            if (removeFromFsLayers) fsLayers.remove(layer);
             getMapView().getLayerManager().getLayers().remove(layer);
         } else {
-            getActivity().runOnUiThread(() -> unregister(layer, removeFromMsLayers));
+            getActivity().runOnUiThread(() -> unregister(layer, removeFromFsLayers));
         }
     }
     protected <T> void unregisterClass(Class<T> tClass){
@@ -179,21 +179,21 @@ public class MGMicroService {
 
     protected <T>  void unregisterAll(Class<T> tClass){
         ArrayList<Layer> removeLayers = null;
-        for (Layer layer : msLayers){
+        for (Layer layer : fsLayers){
             if (tClass.isInstance(layer)){
                 getMapView().getLayerManager().getLayers().remove(layer);
                 if (removeLayers == null) removeLayers = new ArrayList<>();
                 removeLayers.add(layer);
             }
         }
-        if (removeLayers != null) msLayers.removeAll(removeLayers);
+        if (removeLayers != null) fsLayers.removeAll(removeLayers);
     }
 
     protected void unregisterAll(){
-        for (Layer layer : msLayers){
+        for (Layer layer : fsLayers){
             getMapView().getLayerManager().getLayers().remove(layer);
         }
-        msLayers.clear();
+        fsLayers.clear();
     }
 
     protected MGMapActivity getActivity(){

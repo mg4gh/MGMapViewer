@@ -63,7 +63,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private MGMapApplication application = null;
 
     LinearLayout parent = null;
-    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
+    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.FSFullscreen_qc_On, true);
     private final MGPref<Boolean> prefHome = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
     private final MGPref<Boolean> prefNoneSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
     private final MGPref<Boolean> prefAllSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);

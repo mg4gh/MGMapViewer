@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="MSFullscreen_qc_On">MSFullscreen.On</string>
+    <string name="FSFullscreen_qc_On">FSFullscreen.On</string>
 </resources>

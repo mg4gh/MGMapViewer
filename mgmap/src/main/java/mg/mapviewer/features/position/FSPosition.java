@@ -20,7 +20,7 @@ import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.model.IMapViewPosition;
 
 import mg.mapviewer.MGMapActivity;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 import mg.mapviewer.features.rtl.RecordingTrackLog;
 import mg.mapviewer.model.PointModel;
@@ -31,7 +31,7 @@ import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.PointView;
 
-public class MSPosition extends MGMicroService {
+public class FSPosition extends FeatureService {
 
     private static final Paint PAINT_FIX2_FILL = CC.getFillPaint(R.color.RED_A50);
     private static final Paint PAINT_FIX2_STROKE = CC.getStrokePaint(R.color.RED, 5);
@@ -39,13 +39,13 @@ public class MSPosition extends MGMicroService {
     private static final Paint PAINT_ACC_STROKE = CC.getStrokePaint(R.color.BLUE_A150, 5);
 
     private final MGPref<Boolean> prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, false);
-    private final MGPref<Boolean> prefCenter = MGPref.get(R.string.MSPosition_prev_Center, true);
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefCenter = MGPref.get(R.string.FSPosition_prev_Center, true);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
     private final MGPref<Boolean> prefGpsEnabled = MGPref.anonymous(false);
 
     private ExtendedTextView etvHeight = null;
 
-    public MSPosition(MGMapActivity mmActivity) {
+    public FSPosition(MGMapActivity mmActivity) {
         super(mmActivity);
         if (prefAppRestart.getValue()){
             prefCenter.setValue(true);
@@ -77,12 +77,12 @@ public class MSPosition extends MGMicroService {
             etv.setData(prefGps, R.drawable.gps1,R.drawable.gps2);
             etv.setPrAction(prefGps);
             etv.setDisabledData(prefGpsEnabled, R.drawable.gps_dis);
-            etv.setHelp(r(R.string.MSPosition_qcGps_Help)).setHelp(r(R.string.MSPosition_qcGps_Help1),r(R.string.MSPosition_qcGps_Help2));
+            etv.setHelp(r(R.string.FSPosition_qcGps_Help)).setHelp(r(R.string.FSPosition_qcGps_Help1),r(R.string.FSPosition_qcGps_Help2));
         } else if ("center".equals(info)){
             etv.setData(prefCenter,R.drawable.center2,R.drawable.center1);
             etv.setPrAction(prefCenter);
             etv.setDisabledData(prefGps, R.drawable.center_dis);
-            etv.setHelp(r(R.string.MSPosition_qcCenter_Help)).setHelp(r(R.string.MSPosition_qcCenter_Help1),r(R.string.MSPosition_qcCenter_Help2));
+            etv.setHelp(r(R.string.FSPosition_qcCenter_Help)).setHelp(r(R.string.FSPosition_qcCenter_Help1),r(R.string.FSPosition_qcCenter_Help2));
         } else if ("group_record".equals(info)){
             etv.setData(prefGps,R.drawable.group_record1,R.drawable.group_record2);
             etv.setPrAction(MGPref.anonymous(false));

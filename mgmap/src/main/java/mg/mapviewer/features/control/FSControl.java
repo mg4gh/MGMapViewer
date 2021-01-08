@@ -26,7 +26,7 @@ import java.util.Observer;
 import mg.mapviewer.HeightProfileActivity;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 import mg.mapviewer.ThemeSettings;
 import mg.mapviewer.features.statistic.TrackStatisticActivity;
@@ -40,10 +40,10 @@ import mg.mapviewer.util.MGPref;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.view.ExtendedTextView;
 
-public class MSControl extends MGMicroService {
+public class FSControl extends FeatureService {
 
-    MGPref<Integer> prefQcs = MGPref.get(R.string.MSControl_qc_selector, 0);
-    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
+    MGPref<Integer> prefQcs = MGPref.get(R.string.FSControl_qc_selector, 0);
+    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.FSFullscreen_qc_On, true);
 
     private final MGPref<Boolean> prefSettings = MGPref.anonymous(false);
     private final MGPref<Boolean> prefFuSettings = MGPref.anonymous(false);
@@ -70,7 +70,7 @@ public class MSControl extends MGMicroService {
         String prefScreenClass = MainPreferenceScreen.class.getName();
         if (o == prefFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
         if (o == prefDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
-        intent.putExtra("MSControl.info", prefScreenClass);
+        intent.putExtra("FSControl.info", prefScreenClass);
         activity.startActivity(intent);
     };
     Observer statisticObserver = (o, arg) -> {
@@ -96,7 +96,7 @@ public class MSControl extends MGMicroService {
         activity.startActivity(intent);
     };
 
-    public MSControl(MGMapActivity activity){
+    public FSControl(MGMapActivity activity){
         super(activity);
 
         prefFullscreen.addObserver(fullscreenObserver);
@@ -157,54 +157,54 @@ public class MSControl extends MGMicroService {
         } else if ("fullscreen".equals(info)) {
             etv.setPrAction(prefFullscreen);
             etv.setData(R.drawable.fullscreen);
-            etv.setHelp(r(R.string.MSControl_qcFullscreen_help));
+            etv.setHelp(r(R.string.FSControl_qcFullscreen_help));
         } else if ("settings".equals(info)) {
             etv.setPrAction(prefSettings);
             etv.setData(R.drawable.settings);
-            etv.setHelp(r(R.string.MSControl_qcSettings_help));
+            etv.setHelp(r(R.string.FSControl_qcSettings_help));
         } else if ("fuSettings".equals(info)) {
             etv.setPrAction(prefFuSettings);
             etv.setData(R.drawable.settings_fu);
-            etv.setHelp(r(R.string.MSControl_qcFuSettings_help));
+            etv.setHelp(r(R.string.FSControl_qcFuSettings_help));
         } else if ("home".equals(info)) {
             etv.setPrAction(prefHome);
             etv.setData(R.drawable.home);
-            etv.setHelp(r(R.string.MSControl_qcHome_help));
+            etv.setHelp(r(R.string.FSControl_qcHome_help));
         } else if ("exit".equals(info)) {
             etv.setPrAction(prefExit);
             etv.setData(R.drawable.exit);
-            etv.setHelp(r(R.string.MSControl_qcExit_help));
+            etv.setHelp(r(R.string.FSControl_qcExit_help));
         }else if ("download".equals(info)) {
             etv.setPrAction(prefDownload);
             etv.setData(R.drawable.download);
-            etv.setHelp(r(R.string.MSControl_qcDownload_help));
+            etv.setHelp(r(R.string.FSControl_qcDownload_help));
         } else if ("statistic".equals(info)) {
             etv.setPrAction(prefStatistic);
             etv.setData(R.drawable.statistik);
-            etv.setHelp(r(R.string.MSControl_qcStatistic_help));
+            etv.setHelp(r(R.string.FSControl_qcStatistic_help));
         } else if ("heightProfile".equals(info)) {
             etv.setPrAction(prefHeightProfile);
             etv.setData(R.drawable.height_profile);
-            etv.setHelp(r(R.string.MSControl_qcHeightProfile_help));
+            etv.setHelp(r(R.string.FSControl_qcHeightProfile_help));
         } else if ("empty".equals(info)) {
             etv.setPrAction(MGPref.anonymous(false));
             etv.setData(R.drawable.empty);
         } else if ("zoom_in".equals(info)) {
             etv.setPrAction(prefZoomIn);
             etv.setData(R.drawable.zoom_in);
-            etv.setHelp(r(R.string.MSControl_qcZoomIn_help));
+            etv.setHelp(r(R.string.FSControl_qcZoomIn_help));
         } else if ("zoom_out".equals(info)) {
             etv.setPrAction(prefZoomOut);
             etv.setData(R.drawable.zoom_out);
-            etv.setHelp(r(R.string.MSControl_qcZoomOut_help));
+            etv.setHelp(r(R.string.FSControl_qcZoomOut_help));
         } else if ("themes".equals(info)) {
             etv.setPrAction(prefThemes);
             etv.setData(R.drawable.themes);
-            etv.setHelp(r(R.string.MSControl_qcThemes_help));
+            etv.setHelp(r(R.string.FSControl_qcThemes_help));
         } else if ("help".equals(info)) {
             etv.setPrAction(prefHelp);
             etv.setData(R.drawable.help);
-            etv.setHelp(r(R.string.MSControl_qcHelp_help));
+            etv.setHelp(r(R.string.FSControl_qcHelp_help));
         }
         return etv;
     }

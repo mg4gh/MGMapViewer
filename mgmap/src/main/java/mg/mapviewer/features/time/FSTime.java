@@ -18,17 +18,17 @@ import android.content.Context;
 import android.os.BatteryManager;
 
 import mg.mapviewer.MGMapActivity;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 import mg.mapviewer.util.Formatter;
 import mg.mapviewer.view.ExtendedTextView;
 
-public class MSTime extends MGMicroService {
+public class FSTime extends FeatureService {
 
     private ExtendedTextView etvTime = null;
     private ExtendedTextView etvBat = null;
 
-    public MSTime(MGMapActivity mmActivity) {
+    public FSTime(MGMapActivity mmActivity) {
         super(mmActivity);
         ttRefreshTime = 1000;
     }

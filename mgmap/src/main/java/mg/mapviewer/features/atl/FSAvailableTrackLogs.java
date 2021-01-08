@@ -20,7 +20,7 @@ import org.mapsforge.core.graphics.Paint;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 
 import java.util.Observer;
@@ -37,28 +37,28 @@ import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
 
-public class MSAvailableTrackLogs extends MGMicroService {
+public class FSAvailableTrackLogs extends FeatureService {
 
     private final Paint PAINT_STROKE_ATL = CC.getStrokePaint(R.color.GREEN, getMapViewUtility().getTrackWidth());
     private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.BLUE, getMapViewUtility().getTrackWidth());
     private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
-    private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.MSATL_pref_stlGl_key, true);
-    private final MGPref<Float> prefAlphaStl = MGPref.get(R.string.MSATL_pref_alphaSTL , 1.0f);
-    private final MGPref<Float> prefAlphaAtl = MGPref.get(R.string.MSATL_pref_alphaATL, 1.0f);
-    private final MGPref<Boolean> prefStlVisibility = MGPref.get(R.string.MSATL_pref_STL_visibility, false);
-    private final MGPref<Boolean> prefAtlVisibility = MGPref.get(R.string.MSATL_pref_ATL_visibility, false);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
+    private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.FSATL_pref_stlGl_key, true);
+    private final MGPref<Float> prefAlphaStl = MGPref.get(R.string.FSATL_pref_alphaSTL, 1.0f);
+    private final MGPref<Float> prefAlphaAtl = MGPref.get(R.string.FSATL_pref_alphaATL, 1.0f);
+    private final MGPref<Boolean> prefStlVisibility = MGPref.get(R.string.FSATL_pref_STL_visibility, false);
+    private final MGPref<Boolean> prefAtlVisibility = MGPref.get(R.string.FSATL_pref_ATL_visibility, false);
+    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
 
     private final MGPref<Boolean> prefHideStl = MGPref.anonymous(false);
     private final MGPref<Boolean> prefHideAtl = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.MSATL_pref_hideAll, false);
+    private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.FSATL_pref_hideAll, false);
     private final MGPref<Boolean> prefHideAllEnabled = MGPref.anonymous(false);
 
     private ViewGroup dashboardStl = null;
     private ViewGroup dashboardStls = null;
 
-    public MSAvailableTrackLogs(MGMapActivity mmActivity) {
+    public FSAvailableTrackLogs(MGMapActivity mmActivity) {
         super(mmActivity);
         prefHideStl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeSelected());
         prefHideAtl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeUnselected());
@@ -105,17 +105,17 @@ public class MSAvailableTrackLogs extends MGMicroService {
             etv.setData(R.drawable.hide_stl);
             etv.setPrAction(prefHideStl);
             etv.setDisabledData(prefStlVisibility, R.drawable.hide_stl_dis);
-            etv.setHelp(r(R.string.MSAtl_qcHideStl_Help));
+            etv.setHelp(r(R.string.FSATL_qcHideStl_Help));
         } else if ("hide_atl".equals(info)){
             etv.setData(R.drawable.hide_atl);
             etv.setPrAction(prefHideAtl);
             etv.setDisabledData(prefAtlVisibility,R.drawable.hide_atl_dis);
-            etv.setHelp(r(R.string.MSAtl_qcHideAtl_Help));
+            etv.setHelp(r(R.string.FSATL_qcHideAtl_Help));
         } else if ("hide_all".equals(info)){
             etv.setData(R.drawable.hide_all);
             etv.setPrAction(prefHideAll);
             etv.setDisabledData(prefHideAllEnabled,R.drawable.hide_all_dis);
-            etv.setHelp(r(R.string.MSAtl_qcHideAll_Help));
+            etv.setHelp(r(R.string.FSATL_qcHideAll_Help));
         }
         return etv;
     }

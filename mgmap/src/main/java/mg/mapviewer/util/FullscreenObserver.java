@@ -10,7 +10,7 @@ import mg.mapviewer.R;
 
 public class FullscreenObserver implements Observer {
 
-    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.MSFullscreen_qc_On, true);
+    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.FSFullscreen_qc_On, true);
 
     private final Activity activity;
 

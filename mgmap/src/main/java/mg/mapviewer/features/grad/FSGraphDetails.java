@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 import mg.mapviewer.graph.GGraphTile;
 import mg.mapviewer.graph.GNeighbour;
@@ -41,7 +41,7 @@ import mg.mapviewer.view.MVLayer;
 import mg.mapviewer.view.MultiMultiPointView;
 import mg.mapviewer.view.MultiPointView;
 
-public class MSGraphDetails extends MGMicroService {
+public class FSGraphDetails extends FeatureService {
 
     private static final Paint PAINT_GRAD_STROKE =  CC.getStrokePaint(R.color.RED_A150, 3);
     public static final Paint PAINT_GRAD_ALL_STROKE = CC.getStrokePaint(R.color.GRAY100_A150, 3);
@@ -57,9 +57,9 @@ public class MSGraphDetails extends MGMicroService {
 
     private GradControlLayer controlLayer = null;
 
-    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.MSGrad_pref_WayDetails_key, false);
+    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.FSGrad_pref_WayDetails_key, false);
 
-    public MSGraphDetails(MGMapActivity mmActivity) {
+    public FSGraphDetails(MGMapActivity mmActivity) {
         super(mmActivity);
     }
 

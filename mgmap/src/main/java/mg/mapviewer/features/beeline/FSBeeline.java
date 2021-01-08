@@ -24,7 +24,7 @@ import java.util.Observable;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 import mg.mapviewer.model.MultiPointModelImpl;
 import mg.mapviewer.model.PointModel;
@@ -37,16 +37,16 @@ import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.MultiPointView;
 
-public class MSBeeline extends MGMicroService {
+public class FSBeeline extends FeatureService {
 
     public static final Paint PAINT_BLACK_STROKE = CC.getStrokePaint(R.color.BLACK, 2);
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
-    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.MSPosition_prev_ZoomLevel, 15);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.FSPosition_prev_ZoomLevel, 15);
     private ExtendedTextView etvCenter = null;
     private ExtendedTextView etvZoom = null;
 
-    public MSBeeline(MGMapActivity mmActivity) {
+    public FSBeeline(MGMapActivity mmActivity) {
         super(mmActivity);
         getMapView().getModel().mapViewPosition.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
@@ -81,7 +81,7 @@ public class MSBeeline extends MGMicroService {
 
     @Override
     protected void onUpdate(Observable o, Object arg) {
-        ttRefreshTime = 150; // avoid refresh faster than MSPosition
+        ttRefreshTime = 150; // avoid refresh faster than FSPosition
     }
 
     @Override
@@ -99,7 +99,7 @@ public class MSBeeline extends MGMicroService {
     }
 
     private void showHidePositionToCenter(PointModel pm){
-        if (msLayers.isEmpty() && (pm == null)) return; // default is fast
+        if (fsLayers.isEmpty() && (pm == null)) return; // default is fast
         unregisterAll();
         LatLong center = getMapView().getModel().mapViewPosition.getCenter();
         PointModel pmCenter = new PointModelImpl(center);

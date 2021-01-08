@@ -23,7 +23,7 @@ import mg.mapviewer.util.MGPref;
 
 public class CenterControl extends Control {
 
-    private final MGPref<Boolean> prefCenter = MGPref.get(R.string.MSPosition_prev_Center, true);
+    private final MGPref<Boolean> prefCenter = MGPref.get(R.string.FSPosition_prev_Center, true);
 
     public CenterControl(){
         super(true);

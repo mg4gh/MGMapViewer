@@ -19,7 +19,6 @@ import android.view.View;
 
 import org.mapsforge.map.layer.Layer;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import mg.mapviewer.MGMapActivity;
@@ -36,17 +35,17 @@ public class LoadTSFromBBControl extends Control {
 
     MGMapActivity activity;
     MGMapApplication application;
-    MSBB msbb;
+    FSBB fsbb;
     ArrayList<MGTileStore> tss = null;
     private boolean bAll; // load all tiles of bb or only remaining tiles (which are not yet available)
     private boolean bDrop; // delete tiles (instead of load) - default is false
 
 
-    public LoadTSFromBBControl(MGMapActivity activity, MGMapApplication application, MSBB msbb, boolean bAll, boolean bDrop){
+    public LoadTSFromBBControl(MGMapActivity activity, MGMapApplication application, FSBB fsbb, boolean bAll, boolean bDrop){
         super(true);
         this.application = application;
         this.activity = activity;
-        this.msbb = msbb;
+        this.fsbb = fsbb;
         this.bAll = bAll;
         this.bDrop = bDrop;
     }
@@ -59,9 +58,9 @@ public class LoadTSFromBBControl extends Control {
             try {
                 TileStoreLoader tileStoreLoader = new TileStoreLoader(activity, application, ts);
                 if (bDrop){
-                    tileStoreLoader.dropFromBB(msbb.getBBox());
+                    tileStoreLoader.dropFromBB(fsbb.getBBox());
                 } else {
-                    tileStoreLoader.loadFromBB(msbb.getBBox(), bAll);
+                    tileStoreLoader.loadFromBB(fsbb.getBBox(), bAll);
                 }
 
             } catch (Exception e) {
@@ -75,7 +74,7 @@ public class LoadTSFromBBControl extends Control {
     @Override
     public void onPrepare(View v) {
         v.setEnabled(false);
-        if (msbb.isLoadAllowed()){
+        if (fsbb.isLoadAllowed()){
             tss = identifyTS();
             if (tss.size() > 0){
                 v.setEnabled(true);

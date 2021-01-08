@@ -49,21 +49,21 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
-import mg.mapviewer.features.control.MSControl;
-import mg.mapviewer.features.alpha.MSAlpha;
-import mg.mapviewer.features.atl.MSAvailableTrackLogs;
-import mg.mapviewer.features.bb.MSBB;
-import mg.mapviewer.features.gdrive.MSGDrive;
-import mg.mapviewer.features.grad.MSGraphDetails;
-import mg.mapviewer.features.marker.MSMarker;
-import mg.mapviewer.features.beeline.MSBeeline;
-import mg.mapviewer.features.position.MSPosition;
-import mg.mapviewer.features.remainings.MSRemainings;
-import mg.mapviewer.features.routing.MSRouting;
-import mg.mapviewer.features.routing.MSRoutingHintService;
-import mg.mapviewer.features.rtl.MSRecordingTrackLog;
-import mg.mapviewer.features.search.MSSearch;
-import mg.mapviewer.features.time.MSTime;
+import mg.mapviewer.features.atl.FSAvailableTrackLogs;
+import mg.mapviewer.features.bb.FSBB;
+import mg.mapviewer.features.control.FSControl;
+import mg.mapviewer.features.alpha.FSAlpha;
+import mg.mapviewer.features.gdrive.FSGDrive;
+import mg.mapviewer.features.grad.FSGraphDetails;
+import mg.mapviewer.features.marker.FSMarker;
+import mg.mapviewer.features.beeline.FSBeeline;
+import mg.mapviewer.features.position.FSPosition;
+import mg.mapviewer.features.remainings.FSRemainings;
+import mg.mapviewer.features.routing.FSRouting;
+import mg.mapviewer.features.routing.FSRoutingHintService;
+import mg.mapviewer.features.rtl.FSRecordingTrackLog;
+import mg.mapviewer.features.search.FSSearch;
+import mg.mapviewer.features.time.FSTime;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.PointModelImpl;
@@ -112,7 +112,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     /** Reference to the MapViewUtility - provides so servoices around the MapView object */
     MapViewUtility mapViewUtility = null;
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
 
 
     public ControlView getControlView(){
@@ -156,21 +156,21 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         coView = getControlView();
         mapViewUtility = new MapViewUtility(this, mapView);
 
-        application.microServices.add(new MSTime(this));
-        application.microServices.add(new MSBeeline(this));
-        application.microServices.add(new MSPosition(this));
-        application.microServices.add(new MSRecordingTrackLog(this));
-        application.microServices.add(new MSAvailableTrackLogs(this));
-        application.microServices.add(new MSMarker(this));
-        application.microServices.add(new MSRouting(this));
-        application.microServices.add(new MSRoutingHintService(this));
-        application.microServices.add(new MSRemainings(this));
-        application.microServices.add(new MSBB(this, application.getMS(MSAvailableTrackLogs.class)));
-        application.microServices.add(new MSGraphDetails(this));
-        application.microServices.add(new MSSearch(this));
-        application.microServices.add(new MSGDrive(this));
-        application.microServices.add(new MSAlpha(this));
-        application.microServices.add(new MSControl(this));
+        application.featureServices.add(new FSTime(this));
+        application.featureServices.add(new FSBeeline(this));
+        application.featureServices.add(new FSPosition(this));
+        application.featureServices.add(new FSRecordingTrackLog(this));
+        application.featureServices.add(new FSAvailableTrackLogs(this));
+        application.featureServices.add(new FSMarker(this));
+        application.featureServices.add(new FSRouting(this));
+        application.featureServices.add(new FSRoutingHintService(this));
+        application.featureServices.add(new FSRemainings(this));
+        application.featureServices.add(new FSBB(this, application.getFS(FSAvailableTrackLogs.class)));
+        application.featureServices.add(new FSGraphDetails(this));
+        application.featureServices.add(new FSSearch(this));
+        application.featureServices.add(new FSGDrive(this));
+        application.featureServices.add(new FSAlpha(this));
+        application.featureServices.add(new FSControl(this));
 
         try{
             Thread.sleep(100);
@@ -195,7 +195,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         application = (MGMapApplication) getApplication();
 
-        for (MGMicroService microService : application.microServices) {
+        for (FeatureService microService : application.featureServices) {
             try {
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" onResume " + microService + " beginning ");
                 microService.onResume();
@@ -221,8 +221,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Log.i(MGMapApplication.LABEL, NameUtil.context());
 
 //        if (microServices == null) return;
-        for (int i = application.microServices.size() - 1; i >= 0; i--) { // reverse order
-            MGMicroService microService = application.microServices.get(i);
+        for (int i = application.featureServices.size() - 1; i >= 0; i--) { // reverse order
+            FeatureService microService = application.featureServices.get(i);
             try {
                 microService.onPause();
             } catch (Exception e) {
@@ -247,8 +247,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @Override
     protected void onDestroy() {
         Log.w(MGMapApplication.LABEL, NameUtil.context());
-        for (int i = application.microServices.size() - 1; i >= 0; i--) { // reverse order
-            MGMicroService microService = application.microServices.get(i);
+        for (int i = application.featureServices.size() - 1; i >= 0; i--) { // reverse order
+            FeatureService microService = application.featureServices.get(i);
             try {
                 microService.onDestroy();
             } catch (Exception e) {
@@ -346,7 +346,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     BBox bBox2show = new BBox();
                     TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
                     if (selectedTrackLog != null){
-                        application.getMS(MSMarker.class).createMarkerTrackLog(selectedTrackLog);
+                        application.getFS(FSMarker.class).createMarkerTrackLog(selectedTrackLog);
                         bBox2show.extend(selectedTrackLog.getBBox());
                     }
 
@@ -569,15 +569,15 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     }
                 }
                 if (bestMatch.getTrackLog() == application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) {
-                    MGPref.get(R.string.MSATL_pref_stlGl_key, false).toggle();
+                    MGPref.get(R.string.FSATL_pref_stlGl_key, false).toggle();
                     return true;
                 }
                 if (bestMatch.getTrackLog() == application.recordingTrackLogObservable.getTrackLog()) {
-                    MGPref.get(R.string.MSRecording_pref_rtlGl_key, false).toggle();
+                    MGPref.get(R.string.FSRecording_pref_rtlGl_key, false).toggle();
                     return true;
                 }
                 if (bestMatch.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) {
-                    MGPref.get(R.string.MSMarker_qc_RouteGL, false).toggle();
+                    MGPref.get(R.string.FSMarker_qc_RouteGL, false).toggle();
                     return true;
                 }
                 return super.onLongPress(point);

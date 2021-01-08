@@ -22,11 +22,11 @@ import mg.mapviewer.util.MGPref;
 
 public class RouteOnOffControl extends Control {
 
-    MSRouting msRouting;
-    MGPref<Float> prefAlphaRoTL = MGPref.get(R.string.MSRouting_pref_alphaRoTL,1.0f);
-    MGPref<Float> prefAlphaMTL = MGPref.get(R.string.MSMarker_pref_alphaMTL,0.0f);
+    FSRouting msRouting;
+    MGPref<Float> prefAlphaRoTL = MGPref.get(R.string.FSRouting_pref_alphaRoTL,1.0f);
+    MGPref<Float> prefAlphaMTL = MGPref.get(R.string.FSMarker_pref_alphaMTL,0.0f);
 
-    public RouteOnOffControl(MSRouting msRouting){
+    public RouteOnOffControl(FSRouting msRouting){
         super(true);
         this.msRouting = msRouting;
     }

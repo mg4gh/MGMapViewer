@@ -1,6 +1,5 @@
 package mg.mapviewer.settings;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,7 +8,7 @@ import androidx.preference.Preference;
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.R;
-import mg.mapviewer.features.gdrive.MSGDrive;
+import mg.mapviewer.features.gdrive.FSGDrive;
 
 public class GDrivePreferenceScreen extends MGPreferenceScreen {
     @Override
@@ -31,7 +30,7 @@ public class GDrivePreferenceScreen extends MGPreferenceScreen {
                 MGMapApplication application = (MGMapApplication)getActivity().getApplication(); // getActivity() returns Settings Activity, not MGMapActivity
                 MGMapActivity mgMapActivity = application.getMgMapActivity();
 
-                MSGDrive msGDrive = application.getMS(MSGDrive.class);
+                FSGDrive msGDrive = application.getFS(FSGDrive.class);
                 msGDrive.trySynchronisation();
 
                 Intent intent = new Intent(mgMapActivity, MGMapActivity.class);

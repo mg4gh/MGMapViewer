@@ -15,7 +15,7 @@
 package mg.mapviewer.features.remainings;
 
 import mg.mapviewer.MGMapActivity;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.R;
 import mg.mapviewer.model.PointModel;
 import mg.mapviewer.model.TrackLog;
@@ -25,10 +25,10 @@ import mg.mapviewer.util.Formatter;
 import mg.mapviewer.util.MGPref;
 import mg.mapviewer.view.ExtendedTextView;
 
-public class MSRemainings extends MGMicroService {
+public class FSRemainings extends FeatureService {
 
 
-    public MSRemainings(MGMapActivity mmActivity) {
+    public FSRemainings(MGMapActivity mmActivity) {
         super(mmActivity);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
         getApplication().markerTrackLogObservable.addObserver(refreshObserver);
@@ -37,9 +37,9 @@ public class MSRemainings extends MGMicroService {
         prefGps.addObserver(refreshObserver);
     }
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.MSPosition_prev_GpsOn, false);
-    private final MGPref<Boolean> prefReverse = MGPref.get(R.string.MSRemaining_pref_Reverse, false);
-    private final MGPref<Boolean> prefInterval = MGPref.get(R.string.MSRemaining_pref_Interval, false);
+    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private final MGPref<Boolean> prefReverse = MGPref.get(R.string.FSRemaining_pref_Reverse, false);
+    private final MGPref<Boolean> prefInterval = MGPref.get(R.string.FSRemaining_pref_Interval, false);
 
     private ExtendedTextView etvRemain = null;
 

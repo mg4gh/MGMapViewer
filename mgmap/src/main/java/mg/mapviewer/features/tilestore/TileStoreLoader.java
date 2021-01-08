@@ -1,6 +1,5 @@
 package mg.mapviewer.features.tilestore;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 
@@ -8,7 +7,6 @@ import android.util.Log;
 
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
-import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.layer.queue.Job;
 
 import java.io.BufferedReader;
@@ -31,13 +29,8 @@ import mg.mapviewer.MGMapApplication;
 import mg.mapviewer.model.BBox;
 import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.NameUtil;
-import mg.mapviewer.util.Permissions;
 
 public class TileStoreLoader {
-
-
-
-
 
     public File storeDir;
     MGMapApplication application;
@@ -59,7 +52,6 @@ public class TileStoreLoader {
             BufferedReader in = new BufferedReader(new FileReader(sample));
             String line = in.readLine();
             in.close();
-
 
             String[] parts = line.split(" -H ");
             for (int i=1; i<parts.length;i++){
@@ -226,6 +218,5 @@ public class TileStoreLoader {
         AlertDialog alert = builder.create();
         alert.show();
     }
-
 
 }

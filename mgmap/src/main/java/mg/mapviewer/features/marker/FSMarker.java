@@ -21,7 +21,7 @@ import org.mapsforge.map.model.DisplayModel;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,24 +49,24 @@ import mg.mapviewer.view.ExtendedTextView;
 import mg.mapviewer.view.LabeledSlider;
 import mg.mapviewer.view.MVLayer;
 
-public class MSMarker extends MGMicroService {
+public class FSMarker extends FeatureService {
 
     private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
     private final MGPref<Boolean> prefEditMarkerTrackAction =  MGPref.anonymous(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
-    private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.MSMarker_qc_EditMarkerTrack, false);
-    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.MSMarker_pref_auto_key, true);
-    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.MSMarker_pref_snap2way_key, true);
+    private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.FSMarker_qc_EditMarkerTrack, false);
+    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.FSMarker_pref_auto_key, true);
+    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.FSMarker_pref_snap2way_key, true);
 
-    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.MSMarker_pref_alphaMTL, 1.0f);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.MSMarker_pref_MTL_visibility, false);
+    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.FSMarker_pref_alphaMTL, 1.0f);
+    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
     private final MGPref<Boolean> prefHideMtl = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.MSATL_pref_hideAll, false);
-    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.MSMarker_pref_auto_switcher, true);
+    private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.FSATL_pref_hideAll, false);
+    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.FSMarker_pref_auto_switcher, true);
 
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
 
-    public MSMarker(MGMapActivity mmActivity) {
+    public FSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
         prefEditMarkerTrackAction.addObserver((o, arg) -> prefEditMarkerTrack.toggle());
         prefEditMarkerTrack.addObserver((o, arg) -> checkStartStopMCL());
@@ -116,12 +116,12 @@ public class MSMarker extends MGMicroService {
         if ("markerEdit".equals(info)){
             etv.setData(prefEditMarkerTrack,R.drawable.mtlr2, R.drawable.mtlr);
             etv.setPrAction(prefEditMarkerTrackAction);
-            etv.setHelp(r(R.string.MSMarker_qcEditMarkerTrack_Help)).setHelp(r(R.string.MSMarker_qcEditMarkerTrack_Help1),r(R.string.MSMarker_qcEditMarkerTrack_Help2));
+            etv.setHelp(r(R.string.FSMarker_qcEditMarkerTrack_Help)).setHelp(r(R.string.FSMarker_qcEditMarkerTrack_Help1),r(R.string.FSMarker_qcEditMarkerTrack_Help2));
         } else if ("hide_mtl".equals(info)){
             etv.setData(R.drawable.hide_mtl);
             etv.setPrAction(prefHideMtl);
             etv.setDisabledData(prefMtlVisibility,R.drawable.hide_mtl_dis);
-            etv.setHelp(r(R.string.MSMarker_qcHideMtl_Help));
+            etv.setHelp(r(R.string.FSMarker_qcHideMtl_Help));
         }
         return etv;
     }
@@ -198,7 +198,7 @@ public class MSMarker extends MGMicroService {
 
 
     private void showHide(WriteableTrackLog mtl){
-        if (!msLayers.isEmpty()){
+        if (!fsLayers.isEmpty()){
             unregisterAll();
         }
         boolean bMtlAlphaVisibility = false;

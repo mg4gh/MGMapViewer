@@ -45,13 +45,13 @@ import java.util.TreeSet;
 
 import mg.mapviewer.MGMapActivity;
 import mg.mapviewer.MGMapApplication;
-import mg.mapviewer.MGMicroService;
+import mg.mapviewer.FeatureService;
 import mg.mapviewer.util.BgJob;
 import mg.mapviewer.util.NameUtil;
 import mg.mapviewer.util.PersistenceManager;
 import mg.mapviewer.util.Zipper;
 
-public class MSGDrive extends MGMicroService {
+public class FSGDrive extends FeatureService {
 
     /** Directory to store authorization tokens for this application. */
     private static final String GDRIVE_CONFIG = "gdrive.cfg";
@@ -73,7 +73,7 @@ public class MSGDrive extends MGMicroService {
 
 
 
-    public MSGDrive(MGMapActivity mmActivity) {
+    public FSGDrive(MGMapActivity mmActivity) {
         super(mmActivity);
     }
 
@@ -163,7 +163,7 @@ public class MSGDrive extends MGMicroService {
      */
     private Credential authorize() throws IOException {
         // Load client secrets.
-        InputStream in = MSGDrive.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        InputStream in = FSGDrive.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         if (in == null) {
             throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
         }

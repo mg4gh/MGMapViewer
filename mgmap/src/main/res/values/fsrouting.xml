@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="btRoute">ROUTE\nTRACK</string>
+    <string name="btRoTOn">ROUTE\nON</string>
+    <string name="btRoTOff">ROUTE\nOFF</string>
+    <string name="btRoTMapMatching">MAP\nMATCHING</string>
+    <string name="btRoTSave">SAVE</string>
+
+    <string name="FSRouting_qc_RoutingHint">FSRouting.RoutingHint</string>
+    <string name="FSRouting_bt_ShowRouting">FSRouting.ShowRouting</string>
+
+    <string name="FSRouting_pref_alphaRoTL">FSRouting.alphaRoTL</string>
+    <string name="FSRouting_pref_RoTL_visibility">FSRouting.RoTL_visibility</string>
+
+    <string name="FSRouting_qcRoutingHint_Help">Turning instruction service</string>
+    <string name="FSRouting_qcRoutingHint_Help1">on tap: Switch instructions on</string>
+    <string name="FSRouting_qcRoutingHint_Help2">on tap: switch instructions off</string>
+
+    <string name="FSRouting_qcMapMatching_Help">Route optimization (map matching)</string>
+
+
+</resources>
