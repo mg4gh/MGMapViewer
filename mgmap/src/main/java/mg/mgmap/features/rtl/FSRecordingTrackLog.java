@@ -124,6 +124,7 @@ public class FSRecordingTrackLog extends FeatureService {
 
     @Override
     public ViewGroup initDashboard(ViewGroup dvg, String info) {
+        super.initDashboard(dvg,info);
         getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.RED100_A100);
         if ("rtl".equals(info)) {
             dashboardRtl = dvg;

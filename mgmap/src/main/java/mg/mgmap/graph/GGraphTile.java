@@ -98,7 +98,7 @@ public class GGraphTile extends GGraph {
             }
             int latThreshold = LaLo.d2md( PointModelUtil.latitudeDistance(GGraph.CONNECT_THRESHOLD_METER) );
             int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(GGraph.CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
+//            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
             //all highwas are in the map ... try to correct data ...
             for (int iIdx=0; iIdx<graph.nodes.size(); iIdx++){
                 GNode iNode = graph.nodes.get(iIdx);

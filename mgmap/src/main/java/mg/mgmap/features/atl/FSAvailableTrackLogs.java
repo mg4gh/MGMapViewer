@@ -77,6 +77,7 @@ public class FSAvailableTrackLogs extends FeatureService {
 
     @Override
     public ViewGroup initDashboard(ViewGroup dvg, String info) {
+        super.initDashboard(dvg,info);
         getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.BLUE100_A100);
         if ("stl".equals(info)) {
             dashboardStl = dvg;

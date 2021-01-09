@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 public class MGMapApplication extends Application {
 
     // Label for Logging.
-    public static final String LABEL = "MGMapViewer";
+    public static final String LABEL = "MGMap";
     private Process pLogcat = null;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();

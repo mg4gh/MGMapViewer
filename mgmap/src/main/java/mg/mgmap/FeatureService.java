@@ -114,6 +114,12 @@ public class FeatureService {
         return etv;
     }
     public ViewGroup initDashboard(ViewGroup dvg, String info){
+        for (int i=0; i<dvg.getChildCount(); i++){
+            if (dvg.getChildAt(i) instanceof ExtendedTextView) {
+                ExtendedTextView child = (ExtendedTextView) dvg.getChildAt(i);
+                child.setName(info);
+            }
+        }
         return dvg;
     }
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info){

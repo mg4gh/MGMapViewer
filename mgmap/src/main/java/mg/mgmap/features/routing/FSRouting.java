@@ -140,6 +140,7 @@ public class FSRouting extends FeatureService {
 
     @Override
     public ViewGroup initDashboard(ViewGroup dvg, String info) {
+        super.initDashboard(dvg,info);
         getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.PURPLE_A100);
         dashboardRoute = dvg;
         return dvg;
@@ -226,7 +227,7 @@ public class FSRouting extends FeatureService {
             if (rpm.selectedApproach != null){
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
                     if (pm instanceof WriteablePointModel) {
-                        Log.i(MGMapApplication.LABEL, NameUtil.context());
+                        Log.d(MGMapApplication.LABEL, NameUtil.context());
                         WriteablePointModel wpm = (WriteablePointModel) pm;
                         wpm.setLat(rpm.selectedApproach.getApproachNode().getLat());
                         wpm.setLon(rpm.selectedApproach.getApproachNode().getLon());
@@ -247,7 +248,7 @@ public class FSRouting extends FeatureService {
             if (mapFile == null){
                 Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
             } else {
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Start");
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
                 routeTrackLog = updateRouting2(mapFile, mtl);
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
             }
