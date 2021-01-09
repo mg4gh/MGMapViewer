@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
@@ -40,7 +41,7 @@ import java.util.Locale;
 /**
  * An Activity to show the height profile of a given {@link mg.mgmap.model.TrackLog}
  */
-public class HeightProfileActivity extends Activity {
+public class HeightProfileActivity extends AppCompatActivity {
 
 
     @Override

@@ -105,14 +105,6 @@ public class FeatureService {
         getTimer().removeCallbacks(ttRefresh);
     }
 
-    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
-        etv.setName(info);
-        return etv;
-    }
-    public ExtendedTextView initStatusLine(ExtendedTextView etv, String info){
-        etv.setName(info);
-        return etv;
-    }
     public ViewGroup initDashboard(ViewGroup dvg, String info){
         for (int i=0; i<dvg.getChildCount(); i++){
             if (dvg.getChildAt(i) instanceof ExtendedTextView) {
@@ -124,6 +116,14 @@ public class FeatureService {
     }
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info){
         return lsl;
+    }
+    public ExtendedTextView initStatusLine(ExtendedTextView etv, String info){
+        etv.setName(info);
+        return etv;
+    }
+    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
+        etv.setName(info);
+        return etv;
     }
 
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL){

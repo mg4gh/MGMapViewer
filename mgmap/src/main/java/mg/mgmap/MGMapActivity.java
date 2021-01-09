@@ -60,7 +60,7 @@ import mg.mgmap.features.beeline.FSBeeline;
 import mg.mgmap.features.position.FSPosition;
 import mg.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.features.routing.FSRouting;
-import mg.mgmap.features.routing.FSRoutingHintService;
+import mg.mgmap.features.routing.FSRoutingHints;
 import mg.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.features.search.FSSearch;
 import mg.mgmap.features.time.FSTime;
@@ -163,7 +163,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.featureServices.add(new FSAvailableTrackLogs(this));
         application.featureServices.add(new FSMarker(this));
         application.featureServices.add(new FSRouting(this));
-        application.featureServices.add(new FSRoutingHintService(this));
+        application.featureServices.add(new FSRoutingHints(this));
         application.featureServices.add(new FSRemainings(this));
         application.featureServices.add(new FSBB(this, application.getFS(FSAvailableTrackLogs.class)));
         application.featureServices.add(new FSGraphDetails(this));

@@ -34,7 +34,7 @@ import mg.mgmap.util.PointModelUtil;
 import mg.mgmap.util.MGPref;
 import mg.mgmap.view.ExtendedTextView;
 
-public class FSRoutingHintService extends FeatureService {
+public class FSRoutingHints extends FeatureService {
 
     private static final int THRESHOLD_FAR = 200;
     private static final int THRESHOLD_NEAR = 40;
@@ -54,7 +54,7 @@ public class FSRoutingHintService extends FeatureService {
     private ServiceState serviceState = ServiceState.OFF;
     private TextToSpeech tts = null;
 
-    public FSRoutingHintService(MGMapActivity mmActivity){
+    public FSRoutingHints(MGMapActivity mmActivity){
         super(mmActivity);
 
         if (MGPref.get(R.string.MGMapApplication_pref_Restart, false).getValue()){
