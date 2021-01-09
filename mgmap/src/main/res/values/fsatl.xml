@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="FSATL_pref_stlGl_key">FSATL.stlGl</string>
+    <string name="FSATL_pref_stlGl_title">Selected track with gain/loss</string>
+    <string name="FSATL_pref_stlGl_desc">Visualize the selected track with colors based on gain/loss."</string>
+
+    <string name="FSATL_pref_alphaATL">FSATL.alphaATL</string>
+    <string name="FSATL_pref_alphaSTL">FSATL.alphaSTL</string>
+    <string name="FSATL_pref_ATL_visibility">FSATL.ATL_visibility</string>
+    <string name="FSATL_pref_STL_visibility">FSATL.STL_visibility</string>
+
+    <string name="FSATL_pref_hideAll">FSATL.hideAll</string>
+
+    <string name="FSATL_qcHideStl_Help">Hide selected track log</string>
+    <string name="FSATL_qcHideAtl_Help">Hide not selected track logs</string>
+    <string name="FSATL_qcHideAll_Help">Hide all track logs</string>
+
+</resources>

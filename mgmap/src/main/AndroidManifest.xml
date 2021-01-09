@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="mg.mapviewer"
+    package="mg.mgmap"
     android:installLocation="auto">
 
 
@@ -21,7 +21,7 @@
     <!-- uses-sdk android:targetSdkVersion="26" / -->
 
     <application
-        android:name="mg.mapviewer.MGMapApplication"
+        android:name="mg.mgmap.MGMapApplication"
         android:allowBackup="true"
         android:icon="@drawable/mg_map"
         android:label="MGMapViewer"
@@ -29,7 +29,7 @@
         android:theme="@style/AppFullScreenTheme">
 
         <activity
-            android:name="mg.mapviewer.MGMapActivity"
+            android:name="mg.mgmap.MGMapActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask">
             <intent-filter>
@@ -76,49 +76,49 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="mg.mapviewer.settings.SettingsActivity"
+            android:name="mg.mgmap.settings.SettingsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Settings"
-            android:parentActivityName="mg.mapviewer.MGMapActivity"
+            android:parentActivityName="mg.mgmap.MGMapActivity"
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="mg.mapviewer.MGMapActivity" />
+                android:value="mg.mgmap.MGMapActivity" />
         </activity>
         <activity
-            android:name="mg.mapviewer.features.statistic.TrackStatisticActivity"
+            android:name="mg.mgmap.features.statistic.TrackStatisticActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Track Selection"
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="mg.mapviewer.MGMapActivity" />
+                android:value="mg.mgmap.MGMapActivity" />
         </activity>
         <activity
-            android:name="mg.mapviewer.ThemeSettings"
+            android:name="mg.mgmap.ThemeSettings"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Theme_Settings"
-            android:parentActivityName="mg.mapviewer.MGMapActivity">
+            android:parentActivityName="mg.mgmap.MGMapActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="mg.mapviewer.MGMapActivity" />
+                android:value="mg.mgmap.MGMapActivity" />
         </activity>
         <activity
-            android:name="mg.mapviewer.HeightProfileActivity"
+            android:name="mg.mgmap.HeightProfileActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Height Profile"
-            android:parentActivityName="mg.mapviewer.MGMapActivity">
+            android:parentActivityName="mg.mgmap.MGMapActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="mg.mapviewer.MGMapActivity" />
+                android:value="mg.mgmap.MGMapActivity" />
         </activity>
 
         <service
-            android:name="mg.mapviewer.TrackLoggerService"
+            android:name="mg.mgmap.TrackLoggerService"
             android:exported="false"
             android:foregroundServiceType="location" />
         <service
-            android:name="mg.mapviewer.BgJobService"
+            android:name="mg.mgmap.BgJobService"
             android:exported="false"/>
 
         <provider

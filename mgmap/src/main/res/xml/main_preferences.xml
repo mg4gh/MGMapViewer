@@ -12,13 +12,13 @@
             app:iconSpaceReserved="false"
             />
 
-        <mg.mapviewer.settings.ThemeListPreference
+        <mg.mgmap.settings.ThemeListPreference
             app:key="@string/preference_choose_theme_key"
             app:title="@string/preference_choose_theme_title"
             app:iconSpaceReserved="false"
             />
 
-        <mg.mapviewer.settings.SearchProviderListPreference
+        <mg.mgmap.settings.SearchProviderListPreference
             app:key="@string/preference_choose_search_key"
             app:title="@string/preference_choose_search_title"
             app:iconSpaceReserved="false"

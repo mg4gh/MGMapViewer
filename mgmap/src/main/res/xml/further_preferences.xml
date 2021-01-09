@@ -44,9 +44,9 @@
         >
         <SwitchPreference
             app:defaultValue="true"
-            app:key="@string/MSATL_pref_stlGl_key"
-            app:summary="@string/MSATL_pref_stlGl_desc"
-            app:title="@string/MSATL_pref_stlGl_title"
+            app:key="@string/FSATL_pref_stlGl_key"
+            app:summary="@string/FSATL_pref_stlGl_desc"
+            app:title="@string/FSATL_pref_stlGl_title"
             app:iconSpaceReserved="false"
             />
         <SwitchPreference
@@ -66,9 +66,9 @@
         >
         <SwitchPreference
             app:defaultValue="true"
-            app:key="@string/MSMarker_pref_auto_key"
-            app:summary="@string/MSMarker_pref_auto_summary"
-            app:title="@string/MSMarker_pref_auto_title"
+            app:key="@string/FSMarker_pref_auto_key"
+            app:summary="@string/FSMarker_pref_auto_summary"
+            app:title="@string/FSMarker_pref_auto_title"
             app:iconSpaceReserved="false"
             app:disableDependentsState="true"
             />
@@ -82,11 +82,11 @@
 <!--            />-->
         <SwitchPreference
             app:defaultValue="true"
-            app:key="@string/MSMarker_pref_snap2way_key"
-            app:summary="@string/MSMarker_pref_snap2way_summary"
-            app:title="@string/MSMarker_pref_snap2way_title"
+            app:key="@string/FSMarker_pref_snap2way_key"
+            app:summary="@string/FSMarker_pref_snap2way_summary"
+            app:title="@string/FSMarker_pref_snap2way_title"
             app:iconSpaceReserved="false"
-            app:dependency="@string/MSMarker_pref_auto_key"
+            app:dependency="@string/FSMarker_pref_auto_key"
             />
     </PreferenceCategory>
 
@@ -97,9 +97,9 @@
         >
         <SwitchPreference
             app:defaultValue="false"
-            app:key="@string/MSGrad_pref_WayDetails_key"
-            app:summary="@string/MSGrad_pref_WayDetails_desc"
-            app:title="@string/MSGrad_pref_WayDetails_title"
+            app:key="@string/FSGrad_pref_WayDetails_key"
+            app:summary="@string/FSGrad_pref_WayDetails_desc"
+            app:title="@string/FSGrad_pref_WayDetails_title"
             app:iconSpaceReserved="false"
             />
         <SwitchPreference
