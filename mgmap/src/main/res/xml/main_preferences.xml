@@ -8,7 +8,7 @@
         <Preference
             app:title="@string/Layers_pref_chooseMap_title"
             app:summary="@string/Layers_pref_chooseMap_summary"
-            app:fragment="mg.mapviewer.settings.MapLayersPreferenceScreen"
+            app:fragment="mg.mgmap.settings.MapLayersPreferenceScreen"
             app:iconSpaceReserved="false"
             />
 
@@ -27,7 +27,7 @@
         <Preference
             app:title="@string/preferences_screen_further_title"
             app:summary="@string/preferences_screen_further_desc"
-            app:fragment="mg.mapviewer.settings.FurtherPreferenceScreen"
+            app:fragment="mg.mgmap.settings.FurtherPreferenceScreen"
             app:iconSpaceReserved="false"
             />
 
@@ -42,14 +42,14 @@
         <Preference
             app:title="@string/preferences_screen_download"
             app:summary="@string/preferences_screen_desc_download"
-            app:fragment="mg.mapviewer.settings.DownloadPreferenceScreen"
+            app:fragment="mg.mgmap.settings.DownloadPreferenceScreen"
             app:iconSpaceReserved="false"
             />
 
         <Preference
             app:title="@string/preferences_screen_gdrive"
             app:summary="@string/preferences_screen_gdrive_desc"
-            app:fragment="mg.mapviewer.settings.GDrivePreferenceScreen"
+            app:fragment="mg.mgmap.settings.GDrivePreferenceScreen"
             app:iconSpaceReserved="false"
             />
 

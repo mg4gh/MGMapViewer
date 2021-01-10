@@ -389,7 +389,7 @@ public class MGMapApplication extends Application {
         }
     }
 
-    /** Retruen the mirco service by type  - duplicate code of MGMapActivity, but here it is also available for other activities */
+    /** Return the feature service by type  */
     public <T> T getFS(Class<T> tClass){
         for (FeatureService service : featureServices){
             if (tClass.isInstance(service)) return (T)service;

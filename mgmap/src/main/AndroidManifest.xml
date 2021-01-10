@@ -80,38 +80,25 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Settings"
             android:parentActivityName="mg.mgmap.MGMapActivity"
-            android:launchMode="singleTask">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="mg.mgmap.MGMapActivity" />
-        </activity>
+            android:launchMode="singleTask"/>
         <activity
             android:name="mg.mgmap.features.statistic.TrackStatisticActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Track Selection"
-            android:launchMode="singleTask">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="mg.mgmap.MGMapActivity" />
-        </activity>
+            android:parentActivityName="mg.mgmap.MGMapActivity"
+            android:launchMode="singleTask"/>
         <activity
             android:name="mg.mgmap.ThemeSettings"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Theme_Settings"
-            android:parentActivityName="mg.mgmap.MGMapActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="mg.mgmap.MGMapActivity" />
-        </activity>
+            android:parentActivityName="mg.mgmap.MGMapActivity"
+            android:launchMode="singleTask"/>
         <activity
             android:name="mg.mgmap.HeightProfileActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Height Profile"
-            android:parentActivityName="mg.mgmap.MGMapActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="mg.mgmap.MGMapActivity" />
-        </activity>
+            android:parentActivityName="mg.mgmap.MGMapActivity"
+            android:launchMode="singleTask"/>
 
         <service
             android:name="mg.mgmap.TrackLoggerService"
