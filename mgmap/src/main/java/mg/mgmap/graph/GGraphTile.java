@@ -74,7 +74,7 @@ public class GGraphTile extends GGraph {
 
         GGraphTile graph = cache.get(key);
         if (graph == null){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+cache.size()+")");
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+cache.size()+")");
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
             MapReadResult mapReadResult = mapFile.readMapData(tile);        // extractPoints relevant map data
             graph = new GGraphTile(tile);

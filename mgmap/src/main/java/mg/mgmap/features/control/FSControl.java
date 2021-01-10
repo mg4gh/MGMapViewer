@@ -137,7 +137,7 @@ public class FSControl extends FeatureService {
                 setupTTHideQCS();
             }
             getActivity().findViewById(R.id.help).setVisibility(iVis);
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" change Visibility to "+ prefHelp.getValue());
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" change help Visibility to "+ prefHelp.getValue());
         });
     }
 

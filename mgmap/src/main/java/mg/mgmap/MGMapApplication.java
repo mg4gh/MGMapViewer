@@ -73,7 +73,7 @@ public class MGMapApplication extends Application {
 
     public void startLogging(){
         try {
-            String cmd = "logcat "+ LABEL+":i -f "+PersistenceManager.getInstance(this).getLogDir().getAbsolutePath()+"/log.txt -r 10000 -n10";
+            String cmd = "logcat "+ LABEL+":i *:W -f "+PersistenceManager.getInstance(this).getLogDir().getAbsolutePath()+"/log.txt -r 10000 -n10";
             Log.i(LABEL, NameUtil.context()+" Start Logging: "+cmd);
             pLogcat = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
@@ -334,39 +334,39 @@ public class MGMapApplication extends Application {
         }
     }
 
-    public class BooleanObservable extends Observable{
-        private boolean value;
-
-        public BooleanObservable(boolean initValue){
-            this.value = initValue;
-        }
-
-        public void toggle(){
-            setValue(!getValue());
-        }
-
-        public void setValue(boolean value) {
-            this.value = value;
-            changed();
-        }
-
-        public boolean getValue() {
-            return value;
-        }
-
-        public void changed(){
-            setChanged();
-            notifyObservers();
-        }
-    }
-
+//    public class BooleanObservable extends Observable{
+//        private boolean value;
+//
+//        public BooleanObservable(boolean initValue){
+//            this.value = initValue;
+//        }
+//
+//        public void toggle(){
+//            setValue(!getValue());
+//        }
+//
+//        public void setValue(boolean value) {
+//            this.value = value;
+//            changed();
+//        }
+//
+//        public boolean getValue() {
+//            return value;
+//        }
+//
+//        public void changed(){
+//            setChanged();
+//            notifyObservers();
+//        }
+//    }
+//
 
 
 
     /** queue for new (unhandled) TrackLogPoint objects */
-    private ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
+    private final ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
 
-    private ArrayList<String> mapLayerKeys = new ArrayList<>();
+    private final ArrayList<String> mapLayerKeys = new ArrayList<>();
 
     public ArrayList<String> getMapLayerKeys() {
         return mapLayerKeys;
