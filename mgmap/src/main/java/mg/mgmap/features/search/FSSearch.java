@@ -18,6 +18,7 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -86,6 +87,7 @@ public class FSSearch extends FeatureService {
                 doSearch(searchText.getText().toString().trim(), -1);
             }
         });
+        searchText.setOnClickListener(v -> triggerTTHideKeyboard());
         setSearchProvider(new Nominatim());
 
         Observer showPositionObserver = (o, arg) -> {
@@ -149,7 +151,7 @@ public class FSSearch extends FeatureService {
             if (searchView.getVisibility() == View.INVISIBLE){
                 try {
                     String sProvider = getSharedPreferences().getString(getResources().getString(R.string.preference_choose_search_key), "Nominatim");
-                    setSearchProvider( (SearchProvider) Class.forName("mg.mapviewer.features.search.provider."+sProvider).newInstance() );
+                    setSearchProvider( (SearchProvider) Class.forName("mg.mgmap.features.search.provider."+sProvider).newInstance() );
                 } catch (Exception e) {
                     Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
                 }
@@ -164,6 +166,7 @@ public class FSSearch extends FeatureService {
             }
         } else {
             if (searchView.getVisibility() == View.VISIBLE){
+                hideKeyboard();
                 searchView.setVisibility( View.INVISIBLE );
                 searchView.setFocusable(false);
                 searchView.resetSearchResults();
