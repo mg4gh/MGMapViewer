@@ -69,7 +69,7 @@ public class MGMapApplication extends Application {
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
 
     MGPref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
-    MGPref<Boolean> prefGpsOn = null; // property to distinguish ApplicationStart from ActivityRecreate
+    MGPref<Boolean> prefGps = null; // property to distinguish ApplicationStart from ActivityRecreate
 
     public void startLogging(){
         try {
@@ -100,9 +100,9 @@ public class MGMapApplication extends Application {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         MGPref.init(this);
         prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, true);
-        prefGpsOn = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+        prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
         prefAppRestart.setValue(true);
-        prefGpsOn.setValue(false);
+        prefGps.setValue(false);
         MGPref.get(R.string.FSSearch_qc_showSearchResult, false).setValue(false);
 
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
@@ -219,7 +219,7 @@ public class MGMapApplication extends Application {
         if (recordingTrackLogObservable.getTrackLog() != null){
             recordingTrackLogObservable.getTrackLog().setRecordRaw(true); // from now on record new entries in the tracklog
             if (recordingTrackLogObservable.getTrackLog().isSegmentRecording()){
-                prefGpsOn.setValue(true);
+                prefGps.setValue(true);
                 Intent intent = new Intent(this, TrackLoggerService.class);
                 startService(intent);
 

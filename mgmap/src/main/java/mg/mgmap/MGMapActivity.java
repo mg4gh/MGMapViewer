@@ -256,7 +256,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         }
         Log.w(MGMapApplication.LABEL, NameUtil.context());
-        MGPref.clear(); // Clear cached Prefs (to free observers registered on these Prefs
+        MGPref.clear(); // Clear cached Prefs (to free observers registered on these Prefs)
         Log.w(MGMapApplication.LABEL, NameUtil.context());
         application.setMgMapActivity(null);
         AndroidGraphicFactory.clearResourceMemoryCache();
