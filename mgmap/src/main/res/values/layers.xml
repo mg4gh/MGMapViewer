@@ -13,6 +13,6 @@
     <string name="Layers_pref_chooseMap5_key">SelectMap5</string>
     <string name="Layers_pref_chooseMap5_title">Select map layer 5 (Foreground)</string>
 
-    <string name="Layers_qc_showAlphaSlider">Layers.showAlphaSlider</string>
-    <string name="Layers_qc_showAlphaSlider2">Layers.showAlphaSlider2</string>
+    <string name="Layers_qc_showAlphaLayers">Layers.showAlphaLayers</string>
+    <string name="Layers_qc_showAlphaTracks">Layers.showAlphaTracks</string>
 </resources>

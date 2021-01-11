@@ -2,7 +2,7 @@
 <resources>
     <string name="FSPosition_prev_Center">FSPosition.Center</string>
     <string name="FSPosition_prev_GpsOn">FSPosition.GpsOn</string>
-    <string name="FSPosition_prev_ZoomLevel">MSPosition.ZoomLevel</string>
+    <string name="FSPosition_prev_ZoomLevel">FSPosition.ZoomLevel</string>
 
     <string name="FSPosition_qcGps_Help">GPS state</string>
     <string name="FSPosition_qcGps_Help1">on tap: switch GPS on</string>
