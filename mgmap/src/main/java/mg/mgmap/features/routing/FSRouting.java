@@ -125,7 +125,7 @@ public class FSRouting extends FeatureService {
         getApplication().markerTrackLogObservable.addObserver((o, arg) -> new Thread(){
             @Override
             public void run() {
-                updateRouting( getApplication().markerTrackLogObservable.getTrackLog() );
+                updateRouting();
             }
         }.start());
 
@@ -241,23 +241,24 @@ public class FSRouting extends FeatureService {
         return rpm;
     }
 
-    synchronized private void updateRouting(WriteableTrackLog mtl){
-        WriteableTrackLog routeTrackLog = null;
+    synchronized private void updateRouting(){
+        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+        WriteableTrackLog rotl = getApplication().routeTrackLogObservable.getTrackLog();
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
             MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
             if (mapFile == null){
                 Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
             } else {
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
-                routeTrackLog = updateRouting2(mapFile, mtl);
+                rotl = updateRouting2(mapFile, mtl, rotl);
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
             }
         }
-        getApplication().routeTrackLogObservable.setTrackLog(routeTrackLog);
+        getApplication().routeTrackLogObservable.setTrackLog(rotl);
         refreshObserver.onChange(); // trigger visualization
     }
 
-    private WriteableTrackLog updateRouting2(MapDataStore mapFile, TrackLog mtl){
+    private WriteableTrackLog updateRouting2(MapDataStore mapFile, TrackLog mtl, WriteableTrackLog rotl){
         boolean routeModified = false;
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             if (segment.size() < 1) continue;
@@ -292,46 +293,51 @@ public class FSRouting extends FeatureService {
             }
         }
 
-        // do three things:
-        // 1.) move newMPM to currentMPM information
-        // 2.) recalc route statistic
-        // 3.) setup routingMPMs
-        routePointMap2.clear();
-        WriteableTrackLog routeTrackLog = new WriteableTrackLog();
-        String name = mtl.getName();
-        name = name.replaceAll("MarkerTrack$","MarkerRoute");
-        routeTrackLog.setName(name);
-        routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
-        WriteableTrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
-        if (oldRouteTrackLog != null){
-            routeTrackLog.setPrefModified(oldRouteTrackLog.getPrefModified());
-        }
-        routeTrackLog.setModified(routeTrackLog.isModified() || routeModified); // was already in state modified  or  route is now modified
+        WriteableTrackLog routeTrackLog = rotl;  // default is: route not modified, return the old one.
+        if (routeModified){
+            // do three things:
+            // 1.) move newMPM to currentMPM information
+            // 2.) recalc route statistic
+            // 3.) setup routingMPMs
+            routePointMap2.clear();
+            routeTrackLog = new WriteableTrackLog();
+            String name = mtl.getName();
+            name = name.replaceAll("MarkerTrack$","MarkerRoute");
+            routeTrackLog.setName(name);
+            routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
+//            WriteableTrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
+//            if (oldRouteTrackLog != null){
+//                routeTrackLog.setPrefModified(oldRouteTrackLog.getPrefModified());
+//            }
+            routeTrackLog.setModified(true);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Route modified: "+name);
 //        routeTrackLog.getPrefModified().onChange();
 
-        for (TrackLogSegment segment : mtl.getTrackLogSegments()){
-            routeTrackLog.startSegment(0);
-            PointModel lastPM = null;
-            for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
-                RoutePointModel rpm = routePointMap.get(segment.get(idx));
-                if (rpm != null){
-                    rpm.currentMPM = rpm.newMPM;
-                    rpm.directChanged = false;
-                    rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
-                    if (rpm.newMPM != null){
-                        for (PointModel pm : rpm.newMPM){
-                            if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
-                                routeTrackLog.addPoint(pm);
-                                routePointMap2.put(pm,rpm);
+            for (TrackLogSegment segment : mtl.getTrackLogSegments()){
+                routeTrackLog.startSegment(0);
+                PointModel lastPM = null;
+                for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
+                    RoutePointModel rpm = routePointMap.get(segment.get(idx));
+                    if (rpm != null){
+                        rpm.currentMPM = rpm.newMPM;
+                        rpm.directChanged = false;
+                        rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
+                        if (rpm.newMPM != null){
+                            for (PointModel pm : rpm.newMPM){
+                                if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
+                                    routeTrackLog.addPoint(pm);
+                                    routePointMap2.put(pm,rpm);
+                                }
+                                lastPM = pm;
                             }
-                            lastPM = pm;
                         }
                     }
                 }
+                routeTrackLog.stopSegment(0);
             }
-            routeTrackLog.stopSegment(0);
+            routeTrackLog.stopTrack(0);
+
         }
-        routeTrackLog.stopTrack(0);
         return routeTrackLog;
     }
 
