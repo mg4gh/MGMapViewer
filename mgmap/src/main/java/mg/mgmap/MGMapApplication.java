@@ -316,16 +316,18 @@ public class MGMapApplication extends Application {
         };
 
         public void setTrackLog(T trackLog){
-            if (this.trackLog != null){
-                this.trackLog.deleteObserver(proxyObserver);
+            if (this.trackLog != trackLog){ // if the trackLog object is not changed, do nothing.
+                if (this.trackLog != null){
+                    this.trackLog.deleteObserver(proxyObserver);
+                }
+                this.trackLog = trackLog;
+                if (this.trackLog != null){
+                    this.trackLog.addObserver(proxyObserver);
+                    metaTrackLogs.put(trackLog.getNameKey(), trackLog);
+                }
+                setChanged();
+                notifyObservers();
             }
-            this.trackLog = trackLog;
-            if (this.trackLog != null){
-                this.trackLog.addObserver(proxyObserver);
-                metaTrackLogs.put(trackLog.getNameKey(), trackLog);
-            }
-            setChanged();
-            notifyObservers();
         }
 
         public void changed(){
