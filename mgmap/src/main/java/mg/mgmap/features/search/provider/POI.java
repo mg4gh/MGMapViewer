@@ -68,7 +68,7 @@ public class POI extends SearchProvider {
         File mapsDir = PersistenceManager.getInstance().getMapsDir();
         File mapsforgeDir = new File (mapsDir, "mapsforge");
         poiFile = null;
-        for (String prefKey : application.getMapLayerKeys()){
+        for (String prefKey : activity.getMapLayerKeys()){
             String key =  preferences.getString(prefKey, "");
             if (key.startsWith("MAPSFORGE:")){
                 File poi = new File(mapsforgeDir, key.replaceAll("MAPSFORGE: ", "").replaceAll("map$","poi"));

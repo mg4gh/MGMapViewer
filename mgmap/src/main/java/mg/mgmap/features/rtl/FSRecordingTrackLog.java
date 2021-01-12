@@ -50,10 +50,10 @@ public class FSRecordingTrackLog extends FeatureService {
     private final Pref<Float> prefAlphaRtl = getPref(R.string.FSRecording_pref_alphaRTL, 1.0f);
     private final Pref<Boolean> prefRtlVisibility = getPref(R.string.FSRecording_pref_RTL_visibility, false);
     private final Pref<Boolean> prefRtlGL = getPref(R.string.FSRecording_pref_rtlGl_key, false);
-    private final Pref<Boolean> prefRecordTrackAction = new Pref<>(false);
-    private final Pref<Boolean> prefRecordTrackState = new Pref<>(false);
-    private final Pref<Boolean> prefRecordSegmentAction = new Pref<>(false);
-    private final Pref<Boolean> prefRecordSegmentState = new Pref<>(false);
+    private final Pref<Boolean> toggleRecordTrack = new Pref<>(false);
+    private final Pref<Boolean> prefRecordTrack = new Pref<>(false);
+    private final Pref<Boolean> toggleRecordSegment = new Pref<>(false);
+    private final Pref<Boolean> prefRecordSegment = new Pref<>(false);
 
     public FSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -61,11 +61,11 @@ public class FSRecordingTrackLog extends FeatureService {
             @Override
             public void update(Observable o, Object arg) {
                 final RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
-                prefRecordTrackState.setValue( (rtl != null) && ( rtl.isTrackRecording()) );
-                prefRecordSegmentState.setValue( (rtl != null) && ( rtl.isTrackRecording()) && (rtl.isSegmentRecording()));
+                prefRecordTrack.setValue( (rtl != null) && ( rtl.isTrackRecording()) );
+                prefRecordSegment.setValue( (rtl != null) && ( rtl.isTrackRecording()) && (rtl.isSegmentRecording()));
             }
         });
-        prefRecordTrackAction.addObserver(new Observer() {
+        toggleRecordTrack.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
                 RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
@@ -99,7 +99,7 @@ public class FSRecordingTrackLog extends FeatureService {
                 }
             }
         });
-        prefRecordSegmentAction.addObserver(new Observer() {
+        toggleRecordSegment.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
                 long timestamp = System.currentTimeMillis();
@@ -149,13 +149,13 @@ public class FSRecordingTrackLog extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
         super.initQuickControl(etv,info);
         if ("track".equals(info)){
-            etv.setData(prefRecordTrackState,R.drawable.record_track1,R.drawable.record_track2);
-            etv.setPrAction(prefRecordTrackAction);
+            etv.setData(prefRecordTrack,R.drawable.record_track1,R.drawable.record_track2);
+            etv.setPrAction(toggleRecordTrack);
             etv.setHelp(r(R.string.FSRecording_qcRec_help)).setHelp(r(R.string.FSRecording_qcRec_help1),r(R.string.FSRecording_qcRec_help2));
         } else if ("segment".equals(info)){
-            etv.setData(prefRecordSegmentState,R.drawable.record_segment1,R.drawable.record_segment2);
-            etv.setPrAction(prefRecordSegmentAction);
-            etv.setDisabledData(prefRecordTrackState, R.drawable.record_segment_dis);
+            etv.setData(prefRecordSegment,R.drawable.record_segment1,R.drawable.record_segment2);
+            etv.setPrAction(toggleRecordSegment);
+            etv.setDisabledData(prefRecordTrack, R.drawable.record_segment_dis);
             etv.setHelp(r(R.string.FSRecording_qcRecSeg_help)).setHelp(r(R.string.FSRecording_qcRecSeg_help1),r(R.string.FSRecording_qcRecSeg_help2));
         }
         return etv;

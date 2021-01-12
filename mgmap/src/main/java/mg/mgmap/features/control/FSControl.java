@@ -45,16 +45,16 @@ public class FSControl extends FeatureService {
     Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
     private final Pref<Boolean> prefFullscreen = getPref(R.string.FSFullscreen_qc_On, true);
 
-    private final Pref<Boolean> prefSettings = new Pref<>(false);
-    private final Pref<Boolean> prefFuSettings = new Pref<>(false);
-    private final Pref<Boolean> prefStatistic = new Pref<>(false);
-    private final Pref<Boolean> prefHeightProfile = new Pref<>(false);
-    private final Pref<Boolean> prefDownload = new Pref<>(false);
-    private final Pref<Boolean> prefHome = new Pref<>(false);
-    private final Pref<Boolean> prefExit = new Pref<>(false);
-    private final Pref<Boolean> prefZoomIn = new Pref<>(false);
-    private final Pref<Boolean> prefZoomOut = new Pref<>(false);
-    private final Pref<Boolean> prefThemes = new Pref<>(false);
+    private final Pref<Boolean> triggerSettings = new Pref<>(false);
+    private final Pref<Boolean> triggerFuSettings = new Pref<>(false);
+    private final Pref<Boolean> triggerStatistic = new Pref<>(false);
+    private final Pref<Boolean> triggerHeightProfile = new Pref<>(false);
+    private final Pref<Boolean> triggerDownload = new Pref<>(false);
+    private final Pref<Boolean> triggerHome = new Pref<>(false);
+    private final Pref<Boolean> triggerExit = new Pref<>(false);
+    private final Pref<Boolean> triggerZoomIn = new Pref<>(false);
+    private final Pref<Boolean> triggerZoomOut = new Pref<>(false);
+    private final Pref<Boolean> triggerThemes = new Pref<>(false);
     private final Pref<Boolean> prefHelp = new Pref<>(false);
 
     ViewGroup qcsParent = null; // quick controls parent
@@ -67,8 +67,8 @@ public class FSControl extends FeatureService {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, SettingsActivity.class);
         String prefScreenClass = MainPreferenceScreen.class.getName();
-        if (o == prefFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
-        if (o == prefDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
+        if (o == triggerFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
+        if (o == triggerDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
         intent.putExtra("FSControl.info", prefScreenClass);
         activity.startActivity(intent);
     };
@@ -100,23 +100,23 @@ public class FSControl extends FeatureService {
 
 //        prefFullscreen.addObserver(fullscreenObserver);
         prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue()));
-        prefHome.addObserver(homeObserver);
+        triggerHome.addObserver(homeObserver);
         prefQcs.addObserver(refreshObserver);
-        prefSettings.addObserver(settingsPrefObserver);
-        prefFuSettings.addObserver(settingsPrefObserver);
-        prefDownload.addObserver(settingsPrefObserver);
-        prefStatistic.addObserver(statisticObserver);
-        prefHeightProfile.addObserver(heightProfileObserver);
-        prefExit.addObserver(exitObserver);
-        prefZoomIn.addObserver((o, arg) -> {
+        triggerSettings.addObserver(settingsPrefObserver);
+        triggerFuSettings.addObserver(settingsPrefObserver);
+        triggerDownload.addObserver(settingsPrefObserver);
+        triggerStatistic.addObserver(statisticObserver);
+        triggerHeightProfile.addObserver(heightProfileObserver);
+        triggerExit.addObserver(exitObserver);
+        triggerZoomIn.addObserver((o, arg) -> {
             getMapView().getModel().mapViewPosition.zoomIn();
             setupTTHideQCS();
         });
-        prefZoomOut.addObserver((o, arg) -> {
+        triggerZoomOut.addObserver((o, arg) -> {
             getMapView().getModel().mapViewPosition.zoomOut();
             setupTTHideQCS();
         });
-        prefThemes.addObserver(themesObserver);
+        triggerThemes.addObserver(themesObserver);
         prefHelp.addObserver((o, arg) -> {
             int iVis = (prefHelp.getValue())?View.VISIBLE:View.INVISIBLE;
             if (prefHelp.getValue()){
@@ -149,7 +149,7 @@ public class FSControl extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         super.initQuickControl(etv,info);
         if ("group_multi".equals(info)) {
-            etv.setPrAction(new Pref<>(false),prefHome);
+            etv.setPrAction(new Pref<>(false), triggerHome);
             etv.setData(R.drawable.multi);
         } else if ("group_task".equals(info)) {
             etv.setPrAction(new Pref<>(false));
@@ -159,46 +159,46 @@ public class FSControl extends FeatureService {
             etv.setData(R.drawable.fullscreen);
             etv.setHelp(r(R.string.FSControl_qcFullscreen_help));
         } else if ("settings".equals(info)) {
-            etv.setPrAction(prefSettings);
+            etv.setPrAction(triggerSettings);
             etv.setData(R.drawable.settings);
             etv.setHelp(r(R.string.FSControl_qcSettings_help));
         } else if ("fuSettings".equals(info)) {
-            etv.setPrAction(prefFuSettings);
+            etv.setPrAction(triggerFuSettings);
             etv.setData(R.drawable.settings_fu);
             etv.setHelp(r(R.string.FSControl_qcFuSettings_help));
         } else if ("home".equals(info)) {
-            etv.setPrAction(prefHome);
+            etv.setPrAction(triggerHome);
             etv.setData(R.drawable.home);
             etv.setHelp(r(R.string.FSControl_qcHome_help));
         } else if ("exit".equals(info)) {
-            etv.setPrAction(prefExit);
+            etv.setPrAction(triggerExit);
             etv.setData(R.drawable.exit);
             etv.setHelp(r(R.string.FSControl_qcExit_help));
         }else if ("download".equals(info)) {
-            etv.setPrAction(prefDownload);
+            etv.setPrAction(triggerDownload);
             etv.setData(R.drawable.download);
             etv.setHelp(r(R.string.FSControl_qcDownload_help));
         } else if ("statistic".equals(info)) {
-            etv.setPrAction(prefStatistic);
+            etv.setPrAction(triggerStatistic);
             etv.setData(R.drawable.statistik);
             etv.setHelp(r(R.string.FSControl_qcStatistic_help));
         } else if ("heightProfile".equals(info)) {
-            etv.setPrAction(prefHeightProfile);
+            etv.setPrAction(triggerHeightProfile);
             etv.setData(R.drawable.height_profile);
             etv.setHelp(r(R.string.FSControl_qcHeightProfile_help));
         } else if ("empty".equals(info)) {
             etv.setPrAction(new Pref<>(false));
             etv.setData(R.drawable.empty);
         } else if ("zoom_in".equals(info)) {
-            etv.setPrAction(prefZoomIn);
+            etv.setPrAction(triggerZoomIn);
             etv.setData(R.drawable.zoom_in);
             etv.setHelp(r(R.string.FSControl_qcZoomIn_help));
         } else if ("zoom_out".equals(info)) {
-            etv.setPrAction(prefZoomOut);
+            etv.setPrAction(triggerZoomOut);
             etv.setData(R.drawable.zoom_out);
             etv.setHelp(r(R.string.FSControl_qcZoomOut_help));
         } else if ("themes".equals(info)) {
-            etv.setPrAction(prefThemes);
+            etv.setPrAction(triggerThemes);
             etv.setData(R.drawable.themes);
             etv.setHelp(r(R.string.FSControl_qcThemes_help));
         } else if ("help".equals(info)) {

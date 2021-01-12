@@ -81,7 +81,7 @@ public class ControlComposer {
 
     void composeAlphaSlider(MGMapApplication application, MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.bars);
-        for (String prefKey : application.getMapLayerKeys()) {
+        for (String prefKey : activity.getMapLayerKeys()) {
             final String key = activity.sharedPreferences.getString(prefKey, "");
             if (MGMapLayerFactory.hasAlpha(key)){
                 Pref<Boolean> visibility = new Pref<Boolean>("alpha_" + key+"_visibility", true, null);

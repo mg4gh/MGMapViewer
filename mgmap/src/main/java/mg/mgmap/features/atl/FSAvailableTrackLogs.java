@@ -50,9 +50,9 @@ public class FSAvailableTrackLogs extends FeatureService {
     private final Pref<Boolean> prefAtlVisibility = getPref(R.string.FSATL_pref_ATL_visibility, false);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
 
-    private final Pref<Boolean> prefHideStl = new Pref<>(false);
-    private final Pref<Boolean> prefHideAtl = new Pref<>(false);
-    private final Pref<Boolean> prefHideAll = getPref(R.string.FSATL_pref_hideAll, false);
+    private final Pref<Boolean> triggerHideStl = new Pref<>(false);
+    private final Pref<Boolean> triggerHideAtl = new Pref<>(false);
+    private final Pref<Boolean> triggerHideAll = getPref(R.string.FSATL_pref_hideAll, false);
     private final Pref<Boolean> prefHideAllEnabled = new Pref<>(false);
 
     private ViewGroup dashboardStl = null;
@@ -60,9 +60,9 @@ public class FSAvailableTrackLogs extends FeatureService {
 
     public FSAvailableTrackLogs(MGMapActivity mmActivity) {
         super(mmActivity);
-        prefHideStl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeSelected());
-        prefHideAtl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeUnselected());
-        prefHideAll.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeAll());
+        triggerHideStl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeSelected());
+        triggerHideAtl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeUnselected());
+        triggerHideAll.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeAll());
         Observer hideAllEnabledObserver = (o, arg) -> prefHideAllEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() );
         prefStlVisibility.addObserver(hideAllEnabledObserver);
         prefAtlVisibility.addObserver(hideAllEnabledObserver);
@@ -104,17 +104,17 @@ public class FSAvailableTrackLogs extends FeatureService {
         super.initQuickControl(etv,info);
         if ("hide_stl".equals(info)){
             etv.setData(R.drawable.hide_stl);
-            etv.setPrAction(prefHideStl);
+            etv.setPrAction(triggerHideStl);
             etv.setDisabledData(prefStlVisibility, R.drawable.hide_stl_dis);
             etv.setHelp(r(R.string.FSATL_qcHideStl_Help));
         } else if ("hide_atl".equals(info)){
             etv.setData(R.drawable.hide_atl);
-            etv.setPrAction(prefHideAtl);
+            etv.setPrAction(triggerHideAtl);
             etv.setDisabledData(prefAtlVisibility,R.drawable.hide_atl_dis);
             etv.setHelp(r(R.string.FSATL_qcHideAtl_Help));
         } else if ("hide_all".equals(info)){
             etv.setData(R.drawable.hide_all);
-            etv.setPrAction(prefHideAll);
+            etv.setPrAction(triggerHideAll);
             etv.setDisabledData(prefHideAllEnabled,R.drawable.hide_all_dis);
             etv.setHelp(r(R.string.FSATL_qcHideAll_Help));
         }

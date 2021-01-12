@@ -111,18 +111,6 @@ public class MGMapApplication extends Application {
 
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
 
-        int[] prefIds = new int[]{
-                R.string.Layers_pref_chooseMap1_key,
-                R.string.Layers_pref_chooseMap2_key,
-                R.string.Layers_pref_chooseMap3_key,
-                R.string.Layers_pref_chooseMap4_key,
-                R.string.Layers_pref_chooseMap5_key};
-        for (int id : prefIds){
-            mapLayerKeys.add( getResources().getString( id ));
-        }
-
-
-
         // Recover state of RecordingTrackLog
         new AsyncTask<Object, Integer, RecordingTrackLog>() {
             @Override
@@ -312,12 +300,9 @@ public class MGMapApplication extends Application {
             return trackLog;
         }
 
-        Observer proxyObserver = new Observer() {
-            @Override
-            public void update(Observable observable, Object o) {
-                setChanged();
-                notifyObservers(o);
-            }
+        Observer proxyObserver = (observable, o) -> {
+            setChanged();
+            notifyObservers(o);
         };
 
         public void setTrackLog(T trackLog){
@@ -341,43 +326,10 @@ public class MGMapApplication extends Application {
         }
     }
 
-//    public class BooleanObservable extends Observable{
-//        private boolean value;
-//
-//        public BooleanObservable(boolean initValue){
-//            this.value = initValue;
-//        }
-//
-//        public void toggle(){
-//            setValue(!getValue());
-//        }
-//
-//        public void setValue(boolean value) {
-//            this.value = value;
-//            changed();
-//        }
-//
-//        public boolean getValue() {
-//            return value;
-//        }
-//
-//        public void changed(){
-//            setChanged();
-//            notifyObservers();
-//        }
-//    }
-//
-
 
 
     /** queue for new (unhandled) TrackLogPoint objects */
     private final ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
-
-    private final ArrayList<String> mapLayerKeys = new ArrayList<>();
-
-    public ArrayList<String> getMapLayerKeys() {
-        return mapLayerKeys;
-    }
 
     public MGMapActivity getMgMapActivity() {
         return mgMapActivity;
@@ -452,7 +404,6 @@ public class MGMapApplication extends Application {
         if (!featureServices.isEmpty()){
             FeatureService fs = featureServices.get(0);
             MapView mapView = fs.getMapView();
-
             IMapViewPosition mvp = mapView.getModel().mapViewPosition;
             mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));
         }

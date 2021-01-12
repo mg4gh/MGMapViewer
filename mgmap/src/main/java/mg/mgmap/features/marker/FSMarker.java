@@ -53,22 +53,22 @@ public class FSMarker extends FeatureService {
 
     private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
-    private final Pref<Boolean> prefEditMarkerTrackAction =  new Pref<>(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
+    private final Pref<Boolean> toggleEditMarkerTrack =  new Pref<>(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     private final Pref<Boolean> prefAutoMarkerSetting = getPref(R.string.FSMarker_pref_auto_key, true);
     private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSMarker_pref_snap2way_key, true);
 
     private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
-    private final Pref<Boolean> prefHideMtl = new Pref<>(false);
-    private final Pref<Boolean> prefHideAll = getPref(R.string.FSATL_pref_hideAll, false);
+    private final Pref<Boolean> triggerHideMtl = new Pref<>(false);
+    private final Pref<Boolean> triggerHideAll = getPref(R.string.FSATL_pref_hideAll, false);
     private final Pref<Boolean> prefAutoSwitcher = getPref(R.string.FSMarker_pref_auto_switcher, true);
 
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
 
     public FSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
-        prefEditMarkerTrackAction.addObserver((o, arg) -> prefEditMarkerTrack.toggle());
+        toggleEditMarkerTrack.addObserver((o, arg) -> prefEditMarkerTrack.toggle());
         prefEditMarkerTrack.addObserver((o, arg) -> checkStartStopMCL());
 
         prefAutoSwitcher.addObserver((o, arg) -> {
@@ -88,8 +88,8 @@ public class FSMarker extends FeatureService {
             GGraphTile.clearCache();
             prefEditMarkerTrack.setValue(false);
         };
-        prefHideMtl.addObserver(hideMarkerTrackObserver);
-        prefHideAll.addObserver(hideMarkerTrackObserver);
+        triggerHideMtl.addObserver(hideMarkerTrackObserver);
+        triggerHideAll.addObserver(hideMarkerTrackObserver);
     }
 
     public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
@@ -115,11 +115,11 @@ public class FSMarker extends FeatureService {
         super.initQuickControl(etv,info);
         if ("markerEdit".equals(info)){
             etv.setData(prefEditMarkerTrack,R.drawable.mtlr2, R.drawable.mtlr);
-            etv.setPrAction(prefEditMarkerTrackAction);
+            etv.setPrAction(toggleEditMarkerTrack);
             etv.setHelp(r(R.string.FSMarker_qcEditMarkerTrack_Help)).setHelp(r(R.string.FSMarker_qcEditMarkerTrack_Help1),r(R.string.FSMarker_qcEditMarkerTrack_Help2));
         } else if ("hide_mtl".equals(info)){
             etv.setData(R.drawable.hide_mtl);
-            etv.setPrAction(prefHideMtl);
+            etv.setPrAction(triggerHideMtl);
             etv.setDisabledData(prefMtlVisibility,R.drawable.hide_mtl_dis);
             etv.setHelp(r(R.string.FSMarker_qcHideMtl_Help));
         }

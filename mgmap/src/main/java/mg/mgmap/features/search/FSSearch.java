@@ -202,7 +202,7 @@ public class FSSearch extends FeatureService {
 
     private void setSearchProvider(SearchProvider searchProvider){
         this.searchProvider = searchProvider;
-        searchProvider.init( getApplication(),this, searchView, getSharedPreferences());
+        searchProvider.init( getActivity(),this, searchView, getSharedPreferences());
     }
 
     private void doSearch(String text, int actionId){

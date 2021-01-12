@@ -61,9 +61,9 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private Context context = null;
     private MGMapApplication application = null;
 
-    LinearLayout parent = null;
+    private LinearLayout parent = null;
 
-    PrefCache prefCache = null;
+    private PrefCache prefCache = null;
 
     private Pref<Boolean> prefFullscreen;
     private final Pref<Boolean> prefNoneSelected = new Pref<>(true);
@@ -97,15 +97,15 @@ public class TrackStatisticActivity extends AppCompatActivity {
         prefCache = new PrefCache(context);
         prefFullscreen = prefCache.get(R.string.FSFullscreen_qc_On, true);
         prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(TrackStatisticActivity.this, prefFullscreen.getValue()));
-        Pref<Boolean> prefHome = new Pref<>(true);
-        prefHome.addObserver( new HomeObserver(this) );
+        Pref<Boolean> triggerHome = new Pref<>(true);
+        triggerHome.addObserver( new HomeObserver(this) );
 
         parent = findViewById(R.id.trackStatisticEntries);
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
         ControlView.createQuickControlETV(qcs)
                 .setData(R.drawable.fullscreen)
-                .setPrAction(prefFullscreen,prefHome);
+                .setPrAction(prefFullscreen,triggerHome);
         ControlView.createQuickControlETV(qcs)
                 .setData(prefAllSelected,R.drawable.select_all, R.drawable.select_all2)
                 .setOnClickListener(new SelectOCL(parent, true));

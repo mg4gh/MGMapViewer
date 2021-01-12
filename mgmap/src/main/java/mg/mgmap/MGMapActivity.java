@@ -498,9 +498,23 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
 
+    public ArrayList<String> getMapLayerKeys(){
+        ArrayList<String> mapLayerKeys = new ArrayList<>();
+        int[] prefIds = new int[]{
+                R.string.Layers_pref_chooseMap1_key,
+                R.string.Layers_pref_chooseMap2_key,
+                R.string.Layers_pref_chooseMap3_key,
+                R.string.Layers_pref_chooseMap4_key,
+                R.string.Layers_pref_chooseMap5_key};
+        for (int id : prefIds){
+            mapLayerKeys.add( getResources().getString( id ));
+        }
+        return mapLayerKeys;
+    }
+
     /** Return a MapDataStore if it contains a given BBox. This is used e.g. to find the MapDataStore for route calculation. */
     public MapDataStore getMapDataStore(BBox bBox) {
-        for (String prefKey : application.getMapLayerKeys()){
+        for (String prefKey : getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "none");
 
             Layer layer = MGMapLayerFactory.getMapLayer(key);
@@ -523,7 +537,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void createLayers() {
         MGMapLayerFactory.setMapView(mapView);
         Layers layers = mapView.getLayerManager().getLayers();
-        for (String prefKey : application.getMapLayerKeys()){
+        for (String prefKey : getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
             Layer layer = null;
             layer = MGMapLayerFactory.getMapLayer(key);
