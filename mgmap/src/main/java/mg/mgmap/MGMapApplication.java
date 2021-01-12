@@ -46,8 +46,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * The application of the MgMapActivity.
  * Mainly it provides some Observable objects that represent the application state.
- * These state objects ensure that the applications state survive a restart of the activity.
- * Second this decouples the sensors, which change the model objects from the services, which act depending on these changes.
  */
 public class MGMapApplication extends Application {
 
@@ -98,10 +96,7 @@ public class MGMapApplication extends Application {
         AndroidGraphicFactory.createInstance(this);
         ExtrasUtil.checkCreateMeta();
 
-//        PrefCache.init(true);
         prefCache = new PrefCache(this);
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        MGPref.init(this);
 
         prefAppRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
         prefGps = prefCache.get(R.string.FSPosition_prev_GpsOn, false);
