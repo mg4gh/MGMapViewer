@@ -34,34 +34,33 @@ import mg.mgmap.settings.DownloadPreferenceScreen;
 import mg.mgmap.settings.FurtherPreferenceScreen;
 import mg.mgmap.settings.MainPreferenceScreen;
 import mg.mgmap.settings.SettingsActivity;
-import mg.mgmap.util.FullscreenObserver;
+import mg.mgmap.util.FullscreenUtil;
 import mg.mgmap.util.HomeObserver;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.view.ExtendedTextView;
 
 public class FSControl extends FeatureService {
 
-    MGPref<Integer> prefQcs = MGPref.get(R.string.FSControl_qc_selector, 0);
-    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.FSFullscreen_qc_On, true);
+    Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
+    private final Pref<Boolean> prefFullscreen = getPref(R.string.FSFullscreen_qc_On, true);
 
-    private final MGPref<Boolean> prefSettings = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefFuSettings = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefStatistic = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefHeightProfile = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefDownload = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefHome = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefExit = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefZoomIn = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefZoomOut = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefThemes = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefHelp = MGPref.anonymous(false);
+    private final Pref<Boolean> prefSettings = new Pref<>(false);
+    private final Pref<Boolean> prefFuSettings = new Pref<>(false);
+    private final Pref<Boolean> prefStatistic = new Pref<>(false);
+    private final Pref<Boolean> prefHeightProfile = new Pref<>(false);
+    private final Pref<Boolean> prefDownload = new Pref<>(false);
+    private final Pref<Boolean> prefHome = new Pref<>(false);
+    private final Pref<Boolean> prefExit = new Pref<>(false);
+    private final Pref<Boolean> prefZoomIn = new Pref<>(false);
+    private final Pref<Boolean> prefZoomOut = new Pref<>(false);
+    private final Pref<Boolean> prefThemes = new Pref<>(false);
+    private final Pref<Boolean> prefHelp = new Pref<>(false);
 
     ViewGroup qcsParent = null; // quick controls parent
     ViewGroup[] qcss = null; // quick controls groups (index 0 is menu control group and index 1..7 are seven sub action menus)
     ArrayList<TextView> helpTexts = new ArrayList<>(); // TextView Instances, which are used to show the help Info
 
-    FullscreenObserver fullscreenObserver = new FullscreenObserver(getActivity());
     HomeObserver homeObserver = new HomeObserver(getActivity());
 
     Observer settingsPrefObserver = (o, arg) -> {
@@ -99,7 +98,8 @@ public class FSControl extends FeatureService {
     public FSControl(MGMapActivity activity){
         super(activity);
 
-        prefFullscreen.addObserver(fullscreenObserver);
+//        prefFullscreen.addObserver(fullscreenObserver);
+        prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue()));
         prefHome.addObserver(homeObserver);
         prefQcs.addObserver(refreshObserver);
         prefSettings.addObserver(settingsPrefObserver);
@@ -149,10 +149,10 @@ public class FSControl extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         super.initQuickControl(etv,info);
         if ("group_multi".equals(info)) {
-            etv.setPrAction(MGPref.anonymous(false),prefHome);
+            etv.setPrAction(new Pref<>(false),prefHome);
             etv.setData(R.drawable.multi);
         } else if ("group_task".equals(info)) {
-            etv.setPrAction(MGPref.anonymous(false));
+            etv.setPrAction(new Pref<>(false));
             etv.setData(R.drawable.group_task);
         } else if ("fullscreen".equals(info)) {
             etv.setPrAction(prefFullscreen);
@@ -187,7 +187,7 @@ public class FSControl extends FeatureService {
             etv.setData(R.drawable.height_profile);
             etv.setHelp(r(R.string.FSControl_qcHeightProfile_help));
         } else if ("empty".equals(info)) {
-            etv.setPrAction(MGPref.anonymous(false));
+            etv.setPrAction(new Pref<>(false));
             etv.setData(R.drawable.empty);
         } else if ("zoom_in".equals(info)) {
             etv.setPrAction(prefZoomIn);

@@ -31,7 +31,7 @@ import mg.mgmap.model.TrackLogRefApproach;
 import mg.mgmap.model.TrackLogSegment;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 
 public class FSRoutingHints extends FeatureService {
@@ -42,10 +42,10 @@ public class FSRoutingHints extends FeatureService {
     private static final int TT_REFRESH_TIME = 150;
 
     private enum ServiceState { OFF , INIT, ON };
-    private final MGPref<Boolean> prefRoutingHints = MGPref.get(R.string.FSRouting_qc_RoutingHint, false);
-    private final MGPref<Boolean> prefRoutingHintsEnabled = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
+    private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
+    private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
 
     private int  mediumAwayCnt = 0;
     private PointModel lastHintPoint = null;
@@ -57,7 +57,7 @@ public class FSRoutingHints extends FeatureService {
     public FSRoutingHints(MGMapActivity mmActivity){
         super(mmActivity);
 
-        if (MGPref.get(R.string.MGMapApplication_pref_Restart, false).getValue()){
+        if (getPref(R.string.MGMapApplication_pref_Restart, false).getValue()){
             prefRoutingHints.setValue(false);
         }
         prefRoutingHints.addObserver(new RoutingHintObserver());

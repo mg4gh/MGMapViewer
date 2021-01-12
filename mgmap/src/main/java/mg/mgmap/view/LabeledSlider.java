@@ -18,13 +18,13 @@ import mg.mgmap.ControlView;
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 
 public class LabeledSlider extends LinearLayout {
 
     Context context;
-    MGPref<Float> prefSlider = null;
-    MGPref<Boolean> prefSliderVisibility = null;
+    Pref<Float> prefSlider = null;
+    Pref<Boolean> prefSliderVisibility = null;
     private TextView label;
     private SeekBar seekBar;
 
@@ -43,7 +43,7 @@ public class LabeledSlider extends LinearLayout {
         seekBar = this.createSeekBar(this);
     }
 
-    public LabeledSlider initPrefData(MGPref<Boolean> prefSliderVisibility, MGPref<Float> prefSlider, Integer color, String text){
+    public LabeledSlider initPrefData(Pref<Boolean> prefSliderVisibility, Pref<Float> prefSlider, Integer color, String text){
         label.setText(text);
         this.prefSliderVisibility = prefSliderVisibility;
         this.prefSlider = prefSlider;
@@ -104,7 +104,7 @@ public class LabeledSlider extends LinearLayout {
         return ControlView.dp(dp);
     }
 
-    public MGPref<Boolean> getPrefSliderVisibility(){
+    public Pref<Boolean> getPrefSliderVisibility(){
         return prefSliderVisibility;
     }
 

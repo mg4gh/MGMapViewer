@@ -33,7 +33,7 @@ import mg.mgmap.util.Assert;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.MetaDataUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.LabeledSlider;
 
@@ -43,17 +43,17 @@ public class FSAvailableTrackLogs extends FeatureService {
     private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.BLUE, getMapViewUtility().getTrackWidth());
     private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
-    private final MGPref<Boolean> prefStlGl = MGPref.get(R.string.FSATL_pref_stlGl_key, true);
-    private final MGPref<Float> prefAlphaStl = MGPref.get(R.string.FSATL_pref_alphaSTL, 1.0f);
-    private final MGPref<Float> prefAlphaAtl = MGPref.get(R.string.FSATL_pref_alphaATL, 1.0f);
-    private final MGPref<Boolean> prefStlVisibility = MGPref.get(R.string.FSATL_pref_STL_visibility, false);
-    private final MGPref<Boolean> prefAtlVisibility = MGPref.get(R.string.FSATL_pref_ATL_visibility, false);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
+    private final Pref<Boolean> prefStlGl = getPref(R.string.FSATL_pref_stlGl_key, true);
+    private final Pref<Float> prefAlphaStl = getPref(R.string.FSATL_pref_alphaSTL, 1.0f);
+    private final Pref<Float> prefAlphaAtl = getPref(R.string.FSATL_pref_alphaATL, 1.0f);
+    private final Pref<Boolean> prefStlVisibility = getPref(R.string.FSATL_pref_STL_visibility, false);
+    private final Pref<Boolean> prefAtlVisibility = getPref(R.string.FSATL_pref_ATL_visibility, false);
+    private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
 
-    private final MGPref<Boolean> prefHideStl = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefHideAtl = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.FSATL_pref_hideAll, false);
-    private final MGPref<Boolean> prefHideAllEnabled = MGPref.anonymous(false);
+    private final Pref<Boolean> prefHideStl = new Pref<>(false);
+    private final Pref<Boolean> prefHideAtl = new Pref<>(false);
+    private final Pref<Boolean> prefHideAll = getPref(R.string.FSATL_pref_hideAll, false);
+    private final Pref<Boolean> prefHideAllEnabled = new Pref<>(false);
 
     private ViewGroup dashboardStl = null;
     private ViewGroup dashboardStls = null;

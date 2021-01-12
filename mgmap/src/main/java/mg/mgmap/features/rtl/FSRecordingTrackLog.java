@@ -32,7 +32,7 @@ import mg.mgmap.model.TrackLogRef;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.GpxExporter;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.util.MetaDataUtil;
 import mg.mgmap.util.PersistenceManager;
 import mg.mgmap.view.ExtendedTextView;
@@ -46,14 +46,14 @@ public class FSRecordingTrackLog extends FeatureService {
     private ViewGroup dashboardRtl = null;
     private ViewGroup dashboardRtls = null;
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-    private final MGPref<Float> prefAlphaRtl = MGPref.get(R.string.FSRecording_pref_alphaRTL, 1.0f);
-    private final MGPref<Boolean> prefRtlVisibility = MGPref.get(R.string.FSRecording_pref_RTL_visibility, false);
-    private final MGPref<Boolean>  prefRtlGL = MGPref.get(R.string.FSRecording_pref_rtlGl_key, false);
-    private final MGPref<Boolean> prefRecordTrackAction = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefRecordTrackState = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefRecordSegmentAction = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefRecordSegmentState = MGPref.anonymous(false);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    private final Pref<Float> prefAlphaRtl = getPref(R.string.FSRecording_pref_alphaRTL, 1.0f);
+    private final Pref<Boolean> prefRtlVisibility = getPref(R.string.FSRecording_pref_RTL_visibility, false);
+    private final Pref<Boolean> prefRtlGL = getPref(R.string.FSRecording_pref_rtlGl_key, false);
+    private final Pref<Boolean> prefRecordTrackAction = new Pref<>(false);
+    private final Pref<Boolean> prefRecordTrackState = new Pref<>(false);
+    private final Pref<Boolean> prefRecordSegmentAction = new Pref<>(false);
+    private final Pref<Boolean> prefRecordSegmentState = new Pref<>(false);
 
     public FSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);

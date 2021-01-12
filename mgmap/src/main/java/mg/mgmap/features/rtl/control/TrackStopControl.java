@@ -2,6 +2,7 @@ package mg.mgmap.features.rtl.control;
 
 import android.view.View;
 
+import mg.mgmap.ControlView;
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.R;
@@ -11,11 +12,17 @@ import mg.mgmap.util.Control;
 import mg.mgmap.util.GpxExporter;
 import mg.mgmap.util.MetaDataUtil;
 import mg.mgmap.util.PersistenceManager;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 
 public class TrackStopControl extends Control {
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private Pref<Boolean> prefGps;
+
+    @Override
+    public void setControlView(ControlView controlView) {
+        super.setControlView(controlView);
+        prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    }
 
     public TrackStopControl(){
         super(true);

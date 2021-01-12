@@ -31,12 +31,11 @@ import mg.mgmap.features.search.FSSearch;
 import mg.mgmap.features.time.FSTime;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.Formatter;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 
 public class ControlComposer {
 
-    MGPref<Integer> prefQcs = MGPref.get(R.string.FSControl_qc_selector, 0);
 
     void composeDashboard(MGMapApplication application, MGMapActivity activity, ControlView coView){
         application.getFS(FSRecordingTrackLog.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "rtl");
@@ -85,8 +84,8 @@ public class ControlComposer {
         for (String prefKey : application.getMapLayerKeys()) {
             final String key = activity.sharedPreferences.getString(prefKey, "");
             if (MGMapLayerFactory.hasAlpha(key)){
-                MGPref<Boolean> visibility = new MGPref<Boolean>("alpha_" + key+"_visibility", true, false);
-                coView.createLabeledSlider(parent).initPrefData(visibility, MGPref.get("alpha_" + key, 1.0f), null, key);
+                Pref<Boolean> visibility = new Pref<Boolean>("alpha_" + key+"_visibility", true, null);
+                coView.createLabeledSlider(parent).initPrefData(visibility, activity.getPrefCache().get("alpha_" + key, 1.0f), null, key);
             }
         }
         parent.setVisibility(View.INVISIBLE);
@@ -113,6 +112,9 @@ public class ControlComposer {
     }
 
     void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
+        Pref<Boolean> prefEditMarkerTrack = activity.getPrefCache().get(R.string.FSMarker_qc_EditMarkerTrack, false);
+        Pref<Boolean> prefRoutingHints = activity.getPrefCache().get(R.string.FSRouting_qc_RoutingHint, false);
+        Pref<Integer> prefQcs = activity.getPrefCache().get(R.string.FSControl_qc_selector, 0);
 
         ViewGroup[] qcss = new ViewGroup[8];
         ArrayList<Observer> gos = new ArrayList<>();
@@ -125,13 +127,13 @@ public class ControlComposer {
 
         createQC(application, FSControl.class,qcss[0],"group_task",gos.get(1));
         createQC(application, FSSearch.class,qcss[0],"group_search",gos.get(2));
-        ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false))
-                .setData(MGPref.bool(R.string.FSMarker_qc_EditMarkerTrack),MGPref.bool(R.string.FSRouting_qc_RoutingHint),
-                R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4)
+        ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false))
+//                .setData(MGPref.bool(R.string.FSMarker_qc_EditMarkerTrack),MGPref.bool(R.string.FSRouting_qc_RoutingHint),
+                .setData(prefEditMarkerTrack,prefRoutingHints,R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4)
                 .setName("group_marker").addActionObserver(gos.get(3));
         createQC(application, FSBB.class,qcss[0],"group_bbox",gos.get(4));
         createQC(application, FSPosition.class,qcss[0],"group_record",gos.get(5));
-        ControlView.createQuickControlETV(qcss[0]).setPrAction(MGPref.anonymous(false)).setData(R.drawable.show_hide)
+        ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false)).setData(R.drawable.show_hide)
                 .setName("group_showHide").addActionObserver(gos.get(6));
         createQC(application, FSControl.class,qcss[0],"group_multi",gos.get(7));
 

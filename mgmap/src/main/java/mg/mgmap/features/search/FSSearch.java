@@ -18,7 +18,6 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -39,7 +38,7 @@ import mg.mgmap.model.PointModel;
 import mg.mgmap.model.PointModelImpl;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.util.PointModelUtil;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.MVLayer;
@@ -53,11 +52,11 @@ public class FSSearch extends FeatureService {
     private SearchProvider searchProvider = null;
     private SearchControlLayer scl = null; // feature control layer to manage feature specific events
 
-    private final MGPref<Boolean> prefSearchOn = MGPref.get(R.string.FSSearch_qc_searchOn, false);
-    private final MGPref<Boolean> prefShowSearchResult = MGPref.get(R.string.FSSearch_qc_showSearchResult, false);
-    private final MGPref<Boolean> prefShowSearchResultEnabled = MGPref.anonymous(false);
-    private final MGPref<Long> prefShowPos = MGPref.get(R.string.FSSearch_pref_SearchPos, NO_POS);
-    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.FSFullscreen_qc_On, true);
+    private final Pref<Boolean> prefSearchOn = getPref(R.string.FSSearch_qc_searchOn, false);
+    private final Pref<Boolean> prefShowSearchResult = getPref(R.string.FSSearch_qc_showSearchResult, false);
+    private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
+    private final Pref<Long> prefShowPos = getPref(R.string.FSSearch_pref_SearchPos, NO_POS);
+    private final Pref<Boolean> prefFullscreen = getPref(R.string.FSFullscreen_qc_On, true);
 
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -101,7 +100,7 @@ public class FSSearch extends FeatureService {
 
         prefShowPos.addObserver((o, arg) -> prefShowSearchResultEnabled.setValue(prefShowPos.getValue() != NO_POS));
 
-        if (MGPref.get(R.string.MGMapApplication_pref_Restart, true).getValue()){
+        if (getPref(R.string.MGMapApplication_pref_Restart, true).getValue()){
             prefShowPos.setValue(NO_POS);
         }
         prefSearchOn.addObserver(refreshObserver);
@@ -114,7 +113,7 @@ public class FSSearch extends FeatureService {
         super.initQuickControl(etv,info);
         if ("group_search".equals(info)){
             etv.setData(prefSearchOn, prefShowSearchResult, R.drawable.group_search1,R.drawable.group_search2,R.drawable.group_search3,R.drawable.group_search4);
-            etv.setPrAction(MGPref.anonymous(false));
+            etv.setPrAction(new Pref<>(false));
         } else if ("search".equals(info)){
             etv.setData(prefSearchOn,R.drawable.search1b,R.drawable.search);
             etv.setPrAction(prefSearchOn);

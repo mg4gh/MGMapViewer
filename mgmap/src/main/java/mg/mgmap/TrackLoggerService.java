@@ -32,7 +32,8 @@ import androidx.core.app.NotificationCompat;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLogPoint;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
+import mg.mgmap.util.PrefCache;
 
 /**
  * Android Service that coordinates gps and barometer access
@@ -46,7 +47,8 @@ public class TrackLoggerService extends Service {
     private BarometerListener barometerListener = null;
     private boolean active = false;
     private Notification notification = null;
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private PrefCache prefCache = null;
+    private Pref<Boolean> prefGps;
 
     public static void setPressureAlt(TrackLogPoint lp){
         if (lp.getPressure() != PointModel.NO_PRES){
@@ -58,6 +60,8 @@ public class TrackLoggerService extends Service {
     public void onCreate() {
         super.onCreate();
         application = (MGMapApplication)getApplication();
+        prefCache = new PrefCache(this);
+        prefGps = prefCache.get(R.string.FSPosition_prev_GpsOn, false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String CHANNEL_ID = "my_channel_01";
@@ -142,4 +146,10 @@ public class TrackLoggerService extends Service {
         return null;
     }
 
+
+    @Override
+    public void onDestroy() {
+        prefCache.cleanup();
+        super.onDestroy();
+    }
 }

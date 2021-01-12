@@ -16,19 +16,26 @@ package mg.mgmap.features.position;
 
 import android.view.View;
 
+import mg.mgmap.ControlView;
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.util.Control;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 
 public class GpsControl extends Control {
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private Pref<Boolean> prefGps;
 
     public GpsControl(){
         super(true);
+    }
+
+    @Override
+    public void setControlView(ControlView controlView) {
+        super.setControlView(controlView);
+        prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
     }
 
     public void onClick(View v) {

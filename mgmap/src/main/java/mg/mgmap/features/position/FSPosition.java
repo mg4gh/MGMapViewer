@@ -27,7 +27,7 @@ import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLogPoint;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.Formatter;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.PointView;
 
@@ -38,10 +38,10 @@ public class FSPosition extends FeatureService {
     private static final Paint PAINT_ACC_FILL = CC.getFillPaint(R.color.BLUE_A50);
     private static final Paint PAINT_ACC_STROKE = CC.getStrokePaint(R.color.BLUE_A150, 5);
 
-    private final MGPref<Boolean> prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, false);
-    private final MGPref<Boolean> prefCenter = MGPref.get(R.string.FSPosition_prev_Center, true);
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-    private final MGPref<Boolean> prefGpsEnabled = MGPref.anonymous(false);
+    private final Pref<Boolean> prefAppRestart = getPref(R.string.MGMapApplication_pref_Restart, false);
+    private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_prev_Center, true);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    private final Pref<Boolean> prefGpsEnabled = new Pref<>(false);
 
     private ExtendedTextView etvHeight = null;
 
@@ -85,7 +85,7 @@ public class FSPosition extends FeatureService {
             etv.setHelp(r(R.string.FSPosition_qcCenter_Help)).setHelp(r(R.string.FSPosition_qcCenter_Help1),r(R.string.FSPosition_qcCenter_Help2));
         } else if ("group_record".equals(info)){
             etv.setData(prefGps,R.drawable.group_record1,R.drawable.group_record2);
-            etv.setPrAction(MGPref.anonymous(false));
+            etv.setPrAction(new Pref<>(false));
         }
         return etv;
     }

@@ -60,7 +60,7 @@ import mg.mgmap.util.CC;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.LabeledSlider;
 import mg.mgmap.view.MVLayer;
@@ -88,20 +88,20 @@ public class FSRouting extends FeatureService {
 
     private final RoutingLineRefProvider routingLineRefProvider;
 
-    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.FSGrad_pref_WayDetails_key, false);
-    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.FSMarker_pref_snap2way_key, true);
-    private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.FSMarker_qc_EditMarkerTrack, false);
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-    private final MGPref<Boolean> prefRouteGL = MGPref.get(R.string.FSMarker_qc_RouteGL, false);
+    private final Pref<Boolean> prefWayDetails = getPref(R.string.FSGrad_pref_WayDetails_key, false);
+    private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSMarker_pref_snap2way_key, true);
+    private final Pref<Boolean> prefEditMarkerTrack = getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    private final Pref<Boolean> prefRouteGL = getPref(R.string.FSMarker_qc_RouteGL, false);
 
-    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.FSMarker_pref_auto_switcher, true);
-    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.FSMarker_pref_auto_key, true);
-    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.FSMarker_pref_alphaMTL, 1.0f);
-    private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.FSRouting_pref_alphaRoTL, 1.0f);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
-    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.FSPosition_prev_ZoomLevel, 15);
-    private final MGPref<Boolean> prefMapMatching = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefMapMatchingEnabled = MGPref.anonymous(false);
+    private final Pref<Boolean> prefAutoSwitcher = getPref(R.string.FSMarker_pref_auto_switcher, true);
+    private final Pref<Boolean> prefAutoMarkerSetting = getPref(R.string.FSMarker_pref_auto_key, true);
+    private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
+    private final Pref<Float> prefAlphaRotl = getPref(R.string.FSRouting_pref_alphaRoTL, 1.0f);
+    private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
+    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_prev_ZoomLevel, 15);
+    private final Pref<Boolean> prefMapMatching = new Pref<>(false);
+    private final Pref<Boolean> prefMapMatchingEnabled = new Pref<>(false);
 
     private ViewGroup dashboardRoute = null;
 

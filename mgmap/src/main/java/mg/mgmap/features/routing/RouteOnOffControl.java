@@ -16,19 +16,27 @@ package mg.mgmap.features.routing;
 
 import android.view.View;
 
+import mg.mgmap.ControlView;
 import mg.mgmap.R;
 import mg.mgmap.util.Control;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 
 public class RouteOnOffControl extends Control {
 
     FSRouting msRouting;
-    MGPref<Float> prefAlphaRoTL = MGPref.get(R.string.FSRouting_pref_alphaRoTL,1.0f);
-    MGPref<Float> prefAlphaMTL = MGPref.get(R.string.FSMarker_pref_alphaMTL,0.0f);
+    Pref<Float> prefAlphaRoTL;
+    Pref<Float> prefAlphaMTL;
 
     public RouteOnOffControl(FSRouting msRouting){
         super(true);
         this.msRouting = msRouting;
+    }
+
+    @Override
+    public void setControlView(ControlView controlView) {
+        super.setControlView(controlView);
+        prefAlphaRoTL = getPref(R.string.FSRouting_pref_alphaRoTL,1.0f);
+        prefAlphaMTL = getPref(R.string.FSMarker_pref_alphaMTL,0.0f);
     }
 
     public void onClick(View v) {

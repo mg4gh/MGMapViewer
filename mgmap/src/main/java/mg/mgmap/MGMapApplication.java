@@ -2,12 +2,11 @@ package mg.mgmap;
 
 import android.app.Application;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
-import androidx.preference.PreferenceManager;
+
 import android.util.Log;
 
 import org.mapsforge.core.model.MapPosition;
@@ -29,7 +28,8 @@ import mg.mgmap.util.PersistenceManager;
 import mg.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.util.ExtrasUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
+import mg.mgmap.util.PrefCache;
 
 
 import java.io.IOException;
@@ -68,8 +68,9 @@ public class MGMapApplication extends Application {
     ArrayList<FeatureService> featureServices = new ArrayList<>();
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
 
-    MGPref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
-    MGPref<Boolean> prefGps = null; // property to distinguish ApplicationStart from ActivityRecreate
+    PrefCache prefCache = null;
+    Pref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
+    Pref<Boolean> prefGps = null; // property to distinguish ApplicationStart from ActivityRecreate
 
     public void startLogging(){
         try {
@@ -97,13 +98,16 @@ public class MGMapApplication extends Application {
         AndroidGraphicFactory.createInstance(this);
         ExtrasUtil.checkCreateMeta();
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        MGPref.init(this);
-        prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, true);
-        prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+//        PrefCache.init(true);
+        prefCache = new PrefCache(this);
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        MGPref.init(this);
+
+        prefAppRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
+        prefGps = prefCache.get(R.string.FSPosition_prev_GpsOn, false);
         prefAppRestart.setValue(true);
         prefGps.setValue(false);
-        MGPref.get(R.string.FSSearch_qc_showSearchResult, false).setValue(false);
+        prefCache.get(R.string.FSSearch_qc_showSearchResult, false).setValue(false);
 
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
 
@@ -208,6 +212,7 @@ public class MGMapApplication extends Application {
         Log.w(LABEL, NameUtil.context()+" MGMapViewer Application stop");
         try {
             NotificationManagerCompat.from(this).cancelAll();
+            prefCache.cleanup();
         } catch (Exception e) {
             Log.e(LABEL, NameUtil.context(),e);
         }

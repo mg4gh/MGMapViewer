@@ -79,9 +79,9 @@ import mg.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.util.Permissions;
 import mg.mgmap.util.PersistenceManager;
 import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.util.PrefCache;
 import mg.mgmap.util.TopExceptionHandler;
 import mg.mgmap.model.TrackLog;
-import mg.mgmap.util.MGPref;
 import mg.mgmap.view.MVLayer;
 
 import java.io.File;
@@ -89,8 +89,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 /**
@@ -112,8 +110,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     /** Reference to the MapViewUtility - provides so servoices around the MapView object */
     MapViewUtility mapViewUtility = null;
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-
+//    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private PrefCache prefCache;
 
     public ControlView getControlView(){
         return (ControlView) findViewById(R.id.controlView);
@@ -121,6 +119,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     SharedPreferences getSharedPreferences(){
         return sharedPreferences;
+    }
+    public PrefCache getPrefCache(){
+        return prefCache;
     }
 
     @Override
@@ -140,6 +141,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.setMgMapActivity(this);
         createSharedPreferences();
         setContentView(R.layout.mgmapactivity);
+
+        prefCache = new PrefCache(this);
 
         initMapView();
         createLayers();
@@ -177,15 +180,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         }catch (Exception e){}
         coView.init(application, this);
         onNewIntent(getIntent());
-        prefGps.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                triggerTrackLoggerService();
-            }
-        });
+        prefCache.get(R.string.FSPosition_prev_GpsOn, false).addObserver((o, arg) -> triggerTrackLoggerService());
 
         application.prefAppRestart.setValue(false);
-        MGPref.dumpPrefs();
+        prefCache.dumpPrefs();
     }
 
 
@@ -256,13 +254,14 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         }
         Log.w(MGMapApplication.LABEL, NameUtil.context());
-        MGPref.clear(); // Clear cached Prefs (to free observers registered on these Prefs)
+//        MGPref.clear(); // Clear cached Prefs (to free observers registered on these Prefs)
         Log.w(MGMapApplication.LABEL, NameUtil.context());
         application.setMgMapActivity(null);
         AndroidGraphicFactory.clearResourceMemoryCache();
         Log.w(MGMapApplication.LABEL, NameUtil.context());
         mapView.destroyAll();
         Log.w(MGMapApplication.LABEL, NameUtil.context());
+        prefCache.cleanup();
         super.onDestroy();
     }
 
@@ -569,15 +568,15 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     }
                 }
                 if (bestMatch.getTrackLog() == application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) {
-                    MGPref.get(R.string.FSATL_pref_stlGl_key, false).toggle();
+                    prefCache.get(R.string.FSATL_pref_stlGl_key, false).toggle();
                     return true;
                 }
                 if (bestMatch.getTrackLog() == application.recordingTrackLogObservable.getTrackLog()) {
-                    MGPref.get(R.string.FSRecording_pref_rtlGl_key, false).toggle();
+                    prefCache.get(R.string.FSRecording_pref_rtlGl_key, false).toggle();
                     return true;
                 }
                 if (bestMatch.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) {
-                    MGPref.get(R.string.FSMarker_qc_RouteGL, false).toggle();
+                    prefCache.get(R.string.FSMarker_qc_RouteGL, false).toggle();
                     return true;
                 }
                 return super.onLongPress(point);

@@ -44,7 +44,7 @@ import mg.mgmap.util.CC;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.LabeledSlider;
 import mg.mgmap.view.MVLayer;
@@ -53,16 +53,16 @@ public class FSMarker extends FeatureService {
 
     private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
-    private final MGPref<Boolean> prefEditMarkerTrackAction =  MGPref.anonymous(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
-    private final MGPref<Boolean> prefEditMarkerTrack =  MGPref.get(R.string.FSMarker_qc_EditMarkerTrack, false);
-    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.FSMarker_pref_auto_key, true);
-    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.FSMarker_pref_snap2way_key, true);
+    private final Pref<Boolean> prefEditMarkerTrackAction =  new Pref<>(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
+    private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
+    private final Pref<Boolean> prefAutoMarkerSetting = getPref(R.string.FSMarker_pref_auto_key, true);
+    private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSMarker_pref_snap2way_key, true);
 
-    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.FSMarker_pref_alphaMTL, 1.0f);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
-    private final MGPref<Boolean> prefHideMtl = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefHideAll = MGPref.get(R.string.FSATL_pref_hideAll, false);
-    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.FSMarker_pref_auto_switcher, true);
+    private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
+    private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
+    private final Pref<Boolean> prefHideMtl = new Pref<>(false);
+    private final Pref<Boolean> prefHideAll = getPref(R.string.FSATL_pref_hideAll, false);
+    private final Pref<Boolean> prefAutoSwitcher = getPref(R.string.FSMarker_pref_auto_switcher, true);
 
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
 

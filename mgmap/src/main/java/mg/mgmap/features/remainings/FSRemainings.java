@@ -22,7 +22,7 @@ import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.TrackLogRefApproach;
 import mg.mgmap.model.TrackLogSegment;
 import mg.mgmap.util.Formatter;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 
 public class FSRemainings extends FeatureService {
@@ -37,9 +37,9 @@ public class FSRemainings extends FeatureService {
         prefGps.addObserver(refreshObserver);
     }
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-    private final MGPref<Boolean> prefReverse = MGPref.get(R.string.FSRemaining_pref_Reverse, false);
-    private final MGPref<Boolean> prefInterval = MGPref.get(R.string.FSRemaining_pref_Interval, false);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    private final Pref<Boolean> prefReverse = getPref(R.string.FSRemaining_pref_Reverse, false);
+    private final Pref<Boolean> prefInterval = getPref(R.string.FSRemaining_pref_Interval, false);
 
     private ExtendedTextView etvRemain = null;
 

@@ -33,6 +33,7 @@ import java.util.Observable;
 
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.TrackLogSegment;
+import mg.mgmap.util.Pref;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.LabeledSlider;
@@ -232,5 +233,9 @@ public class FeatureService {
     protected void onResume(){ }
     protected void onPause(){ }
     protected void onDestroy(){ }
+
+    protected <T> Pref<T> getPref(int id, T defaultValue){
+        return mmActivity.getPrefCache().get(id,defaultValue);
+    }
 
 }

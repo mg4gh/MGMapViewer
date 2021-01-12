@@ -55,7 +55,7 @@ import mg.mgmap.features.tilestore.XmlTileSourceConfig;
 import mg.mgmap.features.tilestore.XmlTileSourceConfigReader;
 import mg.mgmap.features.tilestore.MGTileStore;
 import mg.mgmap.features.tilestore.MGTileStoreLayer;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 
 /** The MGMapLayerFactory provides a list of keys of available map layers and it is able to create a map layer instance for a given key.
  * Available map layer have one of the following types:
@@ -254,7 +254,7 @@ public class MGMapLayerFactory {
 
             if (layer instanceof TileLayer<?>) {
                 TileLayer<?> tileLayer = (TileLayer<?>) layer;
-                MGPref<Float> prefAlpha = MGPref.get("alpha_"+key,1.0f);
+                Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,1.0f);
                 prefAlpha.addObserver(new Observer() {
                     @Override
                     public void update(Observable o, Object arg) {

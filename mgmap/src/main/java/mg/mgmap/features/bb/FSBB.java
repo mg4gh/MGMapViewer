@@ -37,21 +37,21 @@ import mg.mgmap.model.WriteablePointModelImpl;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.MVLayer;
 
 public class FSBB extends FeatureService {
 
-    private final MGPref<Boolean> prefBboxOnAction = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefBboxOn = MGPref.get(R.string.FSBB_qc_bboxOn, false);
+    private final Pref<Boolean> prefBboxOnAction = new Pref<>(false);
+    private final Pref<Boolean> prefBboxOn = getPref(R.string.FSBB_qc_bboxOn, false);
 
-    private final MGPref<Boolean> prefLoadFromBB = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefLoadFromBBEnabled = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefTSLoadRemain = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefTSActionsEnabled = MGPref.anonymous(true);
-    private final MGPref<Boolean> prefTSLoadAll = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefTSDeleteAll = MGPref.anonymous(false);
+    private final Pref<Boolean> prefLoadFromBB = new Pref<>(false);
+    private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefTSLoadRemain = new Pref<>(false);
+    private final Pref<Boolean> prefTSActionsEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefTSLoadAll = new Pref<>(false);
+    private final Pref<Boolean> prefTSDeleteAll = new Pref<>(false);
 
     private final ArrayList<MGTileStore> tss = identifyTS();
     private boolean initSquare = false;
@@ -86,7 +86,7 @@ public class FSBB extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         super.initQuickControl(etv,info);
         if ("group_bbox".equals(info)){
-            etv.setPrAction(MGPref.anonymous(false));
+            etv.setPrAction(new Pref<>(false));
             etv.setData(prefBboxOn,R.drawable.group_bbox1,R.drawable.group_bbox2);
         } else if ("loadFromBB".equals(info)){
             etv.setPrAction(prefLoadFromBB);

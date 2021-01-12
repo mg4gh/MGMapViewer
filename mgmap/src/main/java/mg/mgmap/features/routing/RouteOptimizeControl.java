@@ -20,7 +20,6 @@ import mg.mgmap.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.model.WriteableTrackLog;
 import mg.mgmap.util.Control;
-import mg.mgmap.util.MGPref;
 
 public class RouteOptimizeControl extends Control {
 
@@ -42,7 +41,7 @@ public class RouteOptimizeControl extends Control {
         MGMapApplication application = controlView.getApplication();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
 
-        v.setEnabled( (mtl != null) && (MGPref.get(R.string.FSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25) );
+        v.setEnabled( (mtl != null) && (getPref(R.string.FSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25) );
         setText(v, controlView.rstring(R.string.btRoTMapMatching) );
     }
 }

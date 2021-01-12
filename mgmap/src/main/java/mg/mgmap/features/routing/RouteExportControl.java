@@ -26,7 +26,6 @@ import mg.mgmap.model.TrackLogRefZoom;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.GpxExporter;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.MGPref;
 
 public class RouteExportControl extends Control {
 
@@ -59,7 +58,7 @@ public class RouteExportControl extends Control {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
-        v.setEnabled( (rotl != null) && (mtl.getTrackStatistic().getNumPoints() > 1) && (MGPref.get(R.string.FSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25));
+        v.setEnabled( (rotl != null) && (mtl.getTrackStatistic().getNumPoints() > 1) && (getPref(R.string.FSRouting_pref_alphaRoTL,1.0f).getValue() > 0.25));
         setText(v, controlView.rstring(R.string.btRoTSave) );
     }
 }
