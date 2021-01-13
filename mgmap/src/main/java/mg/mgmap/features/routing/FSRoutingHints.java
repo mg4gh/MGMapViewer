@@ -25,6 +25,7 @@ import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.FeatureService;
 import mg.mgmap.R;
+import mg.mgmap.model.ExtendedPointModel;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.TrackLogRefApproach;
@@ -216,7 +217,12 @@ public class FSRoutingHints extends FeatureService {
 
             routeDistance += newDistance;
 
-            RoutingHint hint = fsRouting.routePointMap2.get(pm).routingHints.get(pm);
+//            RoutingHint hint = fsRouting.routePointMap2.get(pm).routingHints.get(pm);
+            RoutingHint hint = null;
+            if (pm instanceof ExtendedPointModel<?>) {
+                ExtendedPointModel<RoutingHint> pmr = (ExtendedPointModel<RoutingHint>) pm;
+                hint = pmr.getExtent();
+            }
             if (hint != null){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
                         +" l="+PointModelUtil.clock4degree(hint.nextLeftDegree)+" r="+PointModelUtil.clock4degree(hint.nextRightDegree));

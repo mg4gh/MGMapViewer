@@ -45,6 +45,7 @@ import mg.mgmap.graph.GNode;
 import mg.mgmap.graph.GNodeRef;
 import mg.mgmap.graph.ApproachModel;
 import mg.mgmap.model.BBox;
+import mg.mgmap.model.ExtendedPointModelImpl;
 import mg.mgmap.model.PointModelImpl;
 import mg.mgmap.model.TrackLogRefApproach;
 import mg.mgmap.model.TrackLogStatistic;
@@ -233,7 +234,7 @@ public class FSRouting extends FeatureService {
                         wpm.setLon(rpm.selectedApproach.getApproachNode().getLon());
                         rpm.resetApproaches();
                         calcApproaches(mapFile, rpm);
-                        getApplication().markerTrackLogObservable.changed();
+//                        getApplication().markerTrackLogObservable.changed();
                     }
                 }
             }
@@ -243,14 +244,14 @@ public class FSRouting extends FeatureService {
 
     synchronized private void updateRouting(){
         WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
-        WriteableTrackLog rotl = getApplication().routeTrackLogObservable.getTrackLog();
+        WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
             MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
             if (mapFile == null){
                 Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
             } else {
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
-                rotl = updateRouting2(mapFile, mtl, rotl);
+                rotl = updateRouting2(mapFile, mtl, getApplication().routeTrackLogObservable.getTrackLog());
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
             }
         }
@@ -260,6 +261,7 @@ public class FSRouting extends FeatureService {
 
     private WriteableTrackLog updateRouting2(MapDataStore mapFile, TrackLog mtl, WriteableTrackLog rotl){
         boolean routeModified = false;
+
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             if (segment.size() < 1) continue;
             Iterator<PointModel> iter = segment.iterator();
@@ -290,6 +292,30 @@ public class FSRouting extends FeatureService {
                     routeModified = true;
                     current.newMPM = calcRouting(mapFile, prev, current, current.direct, current.routingHints, currentRelaxedNodes);
                 }
+            }
+        }
+
+        if (!routeModified){
+            if ((rotl != null) && (mtl.getNumberOfSegments() == rotl.getNumberOfSegments())) {
+                for (int i=0; i<mtl.getNumberOfSegments(); i++) {
+                    TrackLogSegment mtlSegment = mtl.getTrackLogSegment(i);
+                    TrackLogSegment rotlSegment = rotl.getTrackLogSegment(i);
+                    if ((mtlSegment.size() > 0) && (rotlSegment.size() > 0)){
+                        if (PointModelUtil.compareTo( getRoutePointModel(mtlSegment.get(0)).getApproachNode(), rotlSegment.get(0) ) != 0){
+//                        if (routePointMap2.get(rotlSegment.get(0)).mtlp != mtlSegment.get(0) ){
+                            routeModified = true;
+                            break;
+                        }
+                        int l = mtlSegment.size()-1;
+                        if (PointModelUtil.compareTo( getRoutePointModel(mtlSegment.get(mtlSegment.size()-1)).getApproachNode(), rotlSegment.get(rotlSegment.size()-1) ) != 0){
+//                        if (routePointMap2.get(rotlSegment.get(l)).mtlp != mtlSegment.get(l) ){
+                            routeModified = true;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                routeModified = true;
             }
         }
 
@@ -325,8 +351,10 @@ public class FSRouting extends FeatureService {
                         if (rpm.newMPM != null){
                             for (PointModel pm : rpm.newMPM){
                                 if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
-                                    routeTrackLog.addPoint(pm);
-                                    routePointMap2.put(pm,rpm);
+                                    ExtendedPointModelImpl<RoutingHint> pmr = new ExtendedPointModelImpl<>(pm,rpm.routingHints.get(pm));
+                                    routeTrackLog.addPoint(pmr);
+//                                    routeTrackLog.addPoint(pm);
+                                    routePointMap2.put(pmr,rpm);
                                 }
                                 lastPM = pm;
                             }

@@ -241,6 +241,7 @@ public class HeightProfileActivity extends AppCompatActivity {
                 }
                 lastTlp = pm;
             }
+            segmentHeightProfile.put( (int)(distance+deltaDistance), (int)(lastPM.getEleA()*1000));
 
             for (int i=1; i< segmentAscentProfileRaw.size()-1; i++){
                 int gl0 = segmentAscentProfileRaw.valueAt(i-1);

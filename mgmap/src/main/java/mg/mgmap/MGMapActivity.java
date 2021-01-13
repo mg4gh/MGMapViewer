@@ -234,10 +234,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         }
 
-        application.recordingTrackLogObservable.changed();
-        application.availableTrackLogsObservable.changed();
-        application.lastPositionsObservable.changed();
-        application.markerTrackLogObservable.changed();
+//        application.recordingTrackLogObservable.changed();
+//        application.availableTrackLogsObservable.changed();
+//        application.lastPositionsObservable.changed();
+//        application.markerTrackLogObservable.changed();
 
         super.onPause();
     }

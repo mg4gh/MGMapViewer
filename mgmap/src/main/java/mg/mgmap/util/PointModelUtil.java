@@ -215,6 +215,9 @@ public class PointModelUtil {
     }
 
     public static int compareTo(PointModel pm1, PointModel pm2){
+        if ((pm1 == null) && (pm2 == null)) return 0;
+        if (pm1 == null) return -1;
+        if (pm2 == null) return 1;
         return compareTo(pm1.getLat(), pm1.getLon(), pm2.getLat(), pm2.getLon() );
     }
 
