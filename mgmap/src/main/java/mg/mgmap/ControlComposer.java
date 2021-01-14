@@ -25,7 +25,6 @@ import mg.mgmap.features.alpha.FSAlpha;
 import mg.mgmap.features.bb.FSBB;
 import mg.mgmap.features.position.FSPosition;
 import mg.mgmap.features.remainings.FSRemainings;
-import mg.mgmap.features.routing.FSRoutingHints;
 import mg.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.features.search.FSSearch;
 import mg.mgmap.features.time.FSTime;
@@ -156,7 +155,7 @@ public class ControlComposer {
         createQC(application, FSControl.class,qcss[3],"help");
         createQC(application, FSControl.class,qcss[3],"empty",gos.get(0));
         createQC(application, FSMarker.class,qcss[3],"markerEdit",gos.get(0));
-        createQC(application, FSRoutingHints.class,qcss[3],"routingHint",gos.get(0));
+        createQC(application, FSRouting.class,qcss[3],"routingHint",gos.get(0));
         createQC(application, FSControl.class,qcss[3],"empty",gos.get(0));
         createQC(application, FSRouting.class,qcss[3],"matching",gos.get(0));
         createQC(application, FSControl.class,qcss[3],"empty",gos.get(0));

@@ -29,6 +29,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import mg.mgmap.features.routing.TurningInstructionService;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLogPoint;
 import mg.mgmap.util.NameUtil;
@@ -45,6 +46,7 @@ public class TrackLoggerService extends Service {
 
     private LocationListener locationListener = null;
     private BarometerListener barometerListener = null;
+    private TurningInstructionService turningInstructionService = null;
     private boolean active = false;
     private Notification notification = null;
     private PrefCache prefCache = null;
@@ -62,6 +64,8 @@ public class TrackLoggerService extends Service {
         application = (MGMapApplication)getApplication();
         prefCache = new PrefCache(this);
         prefGps = prefCache.get(R.string.FSPosition_prev_GpsOn, false);
+
+        turningInstructionService = new TurningInstructionService(application, application, prefCache);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String CHANNEL_ID = "my_channel_01";
@@ -118,6 +122,7 @@ public class TrackLoggerService extends Service {
                     setPressureAlt(lp);
                     application.addTrackLogPoint(lp);
                     Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);
+                    turningInstructionService.handleNewPoint(lp);
                 }
             };
             locationListener.activate(4000,20);

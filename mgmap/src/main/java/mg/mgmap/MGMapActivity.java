@@ -60,7 +60,6 @@ import mg.mgmap.features.beeline.FSBeeline;
 import mg.mgmap.features.position.FSPosition;
 import mg.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.features.routing.FSRouting;
-import mg.mgmap.features.routing.FSRoutingHints;
 import mg.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.features.search.FSSearch;
 import mg.mgmap.features.time.FSTime;
@@ -166,7 +165,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.featureServices.add(new FSAvailableTrackLogs(this));
         application.featureServices.add(new FSMarker(this));
         application.featureServices.add(new FSRouting(this));
-        application.featureServices.add(new FSRoutingHints(this));
         application.featureServices.add(new FSRemainings(this));
         application.featureServices.add(new FSBB(this, application.getFS(FSAvailableTrackLogs.class)));
         application.featureServices.add(new FSGraphDetails(this));
@@ -177,7 +175,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         try{
             Thread.sleep(100);
-        }catch (Exception e){}
+        }catch(Exception e){
+            Log.w(MGMapApplication.LABEL, NameUtil.context());
+        }
         coView.init(application, this);
         onNewIntent(getIntent());
         prefCache.get(R.string.FSPosition_prev_GpsOn, false).addObserver((o, arg) -> triggerTrackLoggerService());
@@ -275,10 +275,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         sharedPreferences.edit().putString(getResources().getString(R.string.preferences_language_key), prefLang).apply();
         MGMapLayerFactory.setXmlRenderTheme(getRenderTheme());
 
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + Float.toString(DisplayModel.getDeviceScaleFactor()));
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + DisplayModel.getDeviceScaleFactor());
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device screen size " + getResources().getDisplayMetrics().widthPixels + "x" + getResources().getDisplayMetrics().heightPixels);
-        float fs = Float.valueOf(sharedPreferences.getString(getResources().getString(R.string.preferences_scale_key), Float.toString(DisplayModel.getDefaultUserScaleFactor())));
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " User ScaleFactor " + Float.toString(fs));
+        float fs = Float.parseFloat(sharedPreferences.getString(getResources().getString(R.string.preferences_scale_key), Float.toString(DisplayModel.getDefaultUserScaleFactor())));
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " User ScaleFactor " + fs);
         if (fs != DisplayModel.getDefaultUserScaleFactor()) {
             DisplayModel.setDefaultUserScaleFactor(fs);
         }
@@ -326,7 +326,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     }
                     for (String aatl : atls){
                         TrackLog aTrackLog = application.metaTrackLogs.get(aatl);
-                        if (aatl != null){
+                        if (aTrackLog != null){
                             application.availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
                             bBox2show.extend(aTrackLog.getBBox());
 
@@ -412,12 +412,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         if (requestCode == READ_EXTERNAL_STORAGE_CODE ){
             if (Permissions.check(this, Manifest.permission.READ_EXTERNAL_STORAGE) ){ //ok, got the read permission -> restart
                 Log.w(MGMapApplication.LABEL, NameUtil.context()+ " Restart NOW");
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MGMapActivity.this.recreate(); // restart activity
-                    }
-                },200);
+                // restart activity
+                new Handler().postDelayed(MGMapActivity.this::recreate,200);
             }
         }
     }
@@ -431,7 +427,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
      * 2.) else take the first Mapsforge Map (in the sequece of map layers) and take the startPosition+startZoom from this
      * 3.) else take a hardcoded fix position in Heidelberg :-)
      */
-    protected IMapViewPosition initializePosition(IMapViewPosition mvp) {
+    protected void initializePosition(IMapViewPosition mvp) {
         LatLong center = mvp.getCenter();
         if (getMapDataStore(new BBox().extend(new PointModelImpl(center))) == null){
             MapDataStore mds = getMapDataStore(null);
@@ -440,10 +436,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             } else {
                 mvp.setMapPosition(new MapPosition(new LatLong(49.4057, 8.6789), (byte)15));
             }
-        };
+        }
         mvp.setZoomLevelMax(ZOOM_LEVEL_MAX);
         mvp.setZoomLevelMin(ZOOM_LEVEL_MIN);
-        return mvp;
     }
 
 
@@ -539,8 +534,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Layers layers = mapView.getLayerManager().getLayers();
         for (String prefKey : getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
-            Layer layer = null;
-            layer = MGMapLayerFactory.getMapLayer(key);
+            Layer layer = MGMapLayerFactory.getMapLayer(key);
             if (layer != null){
                 if (!layers.contains(layer)){
                     layers.add(layer);

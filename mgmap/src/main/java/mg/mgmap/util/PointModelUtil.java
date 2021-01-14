@@ -14,13 +14,8 @@
  */
 package mg.mgmap.util;
 
-import android.util.Log;
-
-import org.mapsforge.core.util.LatLongUtils;
-
 import java.util.ArrayList;
 
-import mg.mgmap.MGMapApplication;
 import mg.mgmap.model.MultiPointModel;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.PointModelImpl;
@@ -62,7 +57,6 @@ public class PointModelUtil {
         double a = Math.sin(dLat / 2.0D) * Math.sin(dLat / 2.0D) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2.0D) * Math.sin(dLon / 2.0D);
         double c = 2.0D * Math.atan2(Math.sqrt(a), Math.sqrt(1.0D - a));
         return c * EQUATORIAL_RADIUS;
-//        return c * 6378137.0D;
     }
 
     public static double distance(MultiPointModel mpm){
@@ -82,50 +76,7 @@ public class PointModelUtil {
     }
     /** Check, whether pm has an approach to the segment segmentEnd1-segmentEnd2. Return the closest point in pmResult.
      * Be careful with passing references to pmResult !!*/
-    public static boolean findApproachOld(PointModel pm, PointModel segmentEnd1, PointModel segmentEnd2, WriteablePointModel pmResult, int threshold){
-
-        double f = Math.cos(Math.toRadians(pm.getLat()));
-
-        double minLat = Math.min(segmentEnd1.getLat(), segmentEnd2.getLat());
-        double maxLat = Math.max(segmentEnd1.getLat(), segmentEnd2.getLat());
-        double minLong = Math.min(segmentEnd1.getLon(), segmentEnd2.getLon());
-        double maxLong = Math.max(segmentEnd1.getLon(), segmentEnd2.getLon());
-
-        double closeDeltaLat = LatLongUtils.latitudeDistance(threshold);
-        double closeDeltaLong = LatLongUtils.longitudeDistance(threshold,pm.getLat());
-
-        if ((pm.getLat() > (maxLat + closeDeltaLat)) || (pm.getLat() < (minLat - closeDeltaLat))) return false;
-        if ((pm.getLon() > (maxLong + closeDeltaLong)) || (pm.getLon() < (minLong - closeDeltaLong))) return false;
-
-        double resLong;
-        double resLat;
-        if (segmentEnd1.getLon() == segmentEnd2.getLon()){
-            resLong = segmentEnd1.getLon();
-            resLat = pm.getLat();
-        } else if (segmentEnd1.getLat() == segmentEnd2.getLat()){
-            resLong = pm.getLon();
-            resLat = segmentEnd1.getLat();
-        } else {
-            double deltaLong = segmentEnd2.getLon() - segmentEnd1.getLon();
-            double deltaLat = segmentEnd2.getLat() - segmentEnd1.getLat();
-            double anstieg = deltaLat / deltaLong;
-            double anstiegOrtho = (-1/anstieg) * f*f;
-            double nulldurchgangSegment = segmentEnd1.getLat() - anstieg * segmentEnd1.getLon();
-            double nulldurchgangOrtho = pm.getLat() - anstiegOrtho * pm.getLon();
-
-            resLong = (nulldurchgangOrtho -nulldurchgangSegment) / (anstieg - anstiegOrtho);
-            resLat = anstieg * resLong + nulldurchgangSegment;
-
-        }
-        pmResult.setLon( Math.min(maxLong, Math.max(minLong, resLong)) );
-        pmResult.setLat( Math.min(maxLat, Math.max(minLat, resLat)) );
-        return true;
-    }
-
-
-    public static boolean findApproach(PointModel pm, PointModel segmentEnd1, PointModel segmentEnd2,
-                                        WriteablePointModel pmResult, int threshold) {
-
+    public static boolean findApproach(PointModel pm, PointModel segmentEnd1, PointModel segmentEnd2, WriteablePointModel pmResult, int threshold) {
         double f = Math.cos(Math.toRadians(pm.getLat()));
 
         double minLat = Math.min(segmentEnd1.getLat(), segmentEnd2.getLat());
@@ -225,10 +176,7 @@ public class PointModelUtil {
     public static int compareTo(double lat1, double long1, double lat2, double long2){
         if (lat1 < lat2) return -1;
         if (lat1 > lat2) return  1;
-        if (long1 < long2) return -1;
-        if (long1 > long2) return  1;
-        return 0;
-
+        return Double.compare(long1, long2);
     }
 
     /** ensure that comparison of points doesn't fail due to rounding effects */
@@ -241,9 +189,7 @@ public class PointModelUtil {
         double distance = distance(pm1,pm2);
         double lat = interpolate(0, distance, pm1.getLat(), pm2.getLat(), distFromPm1);
         double lon = interpolate(0, distance, pm1.getLon(), pm2.getLon(), distFromPm1);
-        PointModel pm = new PointModelImpl(lat,lon);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+String.format(" distCheck: %1.1fm",distance(pm1,pm)));
-        return pm;
+        return new PointModelImpl(lat,lon);
     }
 
     private static double interpolate(double refMin, double refMax, double valMin, double valMax, double ref){

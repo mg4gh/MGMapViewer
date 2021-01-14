@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
 
@@ -103,6 +104,8 @@ public class FSRouting extends FeatureService {
     private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_prev_ZoomLevel, 15);
     private final Pref<Boolean> prefMapMatching = new Pref<>(false);
     private final Pref<Boolean> prefMapMatchingEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
+    private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
 
     private ViewGroup dashboardRoute = null;
 
@@ -136,6 +139,18 @@ public class FSRouting extends FeatureService {
         prefGps.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
 
+        if (getPref(R.string.MGMapApplication_pref_Restart, false).getValue()){
+            prefRoutingHints.setValue(false);
+        }
+        Observer routingHintsEnabledObserver = (o, arg) -> {
+            prefRoutingHintsEnabled.setValue( prefGps.getValue() && prefMtlVisibility.getValue());
+            if (!prefRoutingHintsEnabled.getValue()){
+                prefRoutingHints.setValue(false);
+            }
+        };
+        prefGps.addObserver(routingHintsEnabledObserver);
+        prefMtlVisibility.addObserver(routingHintsEnabledObserver);
+
         register(new RoutingControlLayer(), false);
     }
 
@@ -163,6 +178,11 @@ public class FSRouting extends FeatureService {
             etv.setData(R.drawable.matching);
             etv.setDisabledData(prefMapMatchingEnabled,R.drawable.matching_dis);
             etv.setHelp(r(R.string.FSRouting_qcMapMatching_Help));
+        } else if ("routingHint".equals(info)){
+            etv.setData(prefRoutingHints,R.drawable.routing_hints2, R.drawable.routing_hints1);
+            etv.setPrAction(prefRoutingHints);
+            etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
+            etv.setHelp(r(R.string.FSRouting_qcRoutingHint_Help)).setHelp(r(R.string.FSRouting_qcRoutingHint_Help1),r(R.string.FSRouting_qcRoutingHint_Help2));
         }
         return etv;
     }

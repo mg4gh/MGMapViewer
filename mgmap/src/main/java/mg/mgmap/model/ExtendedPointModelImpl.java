@@ -1,6 +1,6 @@
 package mg.mgmap.model;
 
-public class ExtendedPointModelImpl<T> extends PointModelImpl implements ExtendedPointModel{
+public class ExtendedPointModelImpl<T> extends PointModelImpl implements ExtendedPointModel<T>{
 
     T extent;
 

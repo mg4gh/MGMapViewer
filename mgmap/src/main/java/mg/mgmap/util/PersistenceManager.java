@@ -328,7 +328,7 @@ public class PersistenceManager {
 
 
     TreeSet<HgtBuf> hgtBufs = new TreeSet<>();
-    long hgtBufTimeout = 30000; // cleanup hgtBufs, if they are not accessed for that time (since buffers are rather large)
+    long hgtBufTimeout = 60000; // cleanup hgtBufs, if they are not accessed for that time (since buffers are rather large)
     Handler timer = new Handler();
     Runnable ttCheckHgts = new Runnable() {
         @Override

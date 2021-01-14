@@ -14,16 +14,13 @@
  */
 package mg.mgmap.features.routing;
 
+import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import java.util.Locale;
-import java.util.Observable;
-import java.util.Observer;
 
-import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
-import mg.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.model.ExtendedPointModel;
 import mg.mgmap.model.PointModel;
@@ -33,20 +30,17 @@ import mg.mgmap.model.TrackLogSegment;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
 import mg.mgmap.util.Pref;
-import mg.mgmap.view.ExtendedTextView;
+import mg.mgmap.util.PrefCache;
 
-public class FSRoutingHints extends FeatureService {
+public class TurningInstructionService {
 
     private static final int THRESHOLD_FAR = 200;
     private static final int THRESHOLD_NEAR = 40;
     private static final int THRESHOLD_KURS = 100; // distance for kurs calculation
-    private static final int TT_REFRESH_TIME = 150;
 
-    private enum ServiceState { OFF , INIT, ON };
-    private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
-    private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
-    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
-    private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
+    private enum ServiceState { OFF , INIT, ON }
+    private final Pref<Boolean> prefRoutingHints;
+    private final Pref<Boolean> prefGps;
 
     private int  mediumAwayCnt = 0;
     private PointModel lastHintPoint = null;
@@ -55,76 +49,45 @@ public class FSRoutingHints extends FeatureService {
     private ServiceState serviceState = ServiceState.OFF;
     private TextToSpeech tts = null;
 
-    public FSRoutingHints(MGMapActivity mmActivity){
-        super(mmActivity);
+    Context context;
+    PrefCache prefCache;
+    MGMapApplication application;
 
-        if (getPref(R.string.MGMapApplication_pref_Restart, false).getValue()){
-            prefRoutingHints.setValue(false);
-        }
-        prefRoutingHints.addObserver(new RoutingHintObserver());
-        prefRoutingHints.onChange();
-        Observer routingHintsEnabledObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                prefRoutingHintsEnabled.setValue( prefGps.getValue() && prefMtlVisibility.getValue());
-                if (!prefRoutingHintsEnabled.getValue()){
-                    prefRoutingHints.setValue(false);
-                }
-            }
-        };
-        prefGps.addObserver(routingHintsEnabledObserver);
-        prefMtlVisibility.addObserver(routingHintsEnabledObserver);
+    public TurningInstructionService(MGMapApplication application, Context context, PrefCache prefCache){
+        this.context = context;
+        this.prefCache = prefCache;
+        this.application = application;
 
-    }
-
-    public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
-        super.initQuickControl(etv,info);
-        etv.setData(prefRoutingHints,R.drawable.routing_hints2, R.drawable.routing_hints1);
-        etv.setPrAction(prefRoutingHints);
-        etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
-        etv.setHelp(r(R.string.FSRouting_qcRoutingHint_Help)).setHelp(r(R.string.FSRouting_qcRoutingHint_Help1),r(R.string.FSRouting_qcRoutingHint_Help2));
-        return etv;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        tryStopTTSService();
-    }
-
-    public class RoutingHintObserver implements Observer {
-        @Override
-        public void update(Observable o, Object arg) {
+        prefRoutingHints = prefCache.get(R.string.FSRouting_qc_RoutingHint, false);
+        prefRoutingHints.addObserver((o, arg) -> {
             if (prefRoutingHints.getValue()){
                 tryStartTTSService();
             } else {
                 tryStopTTSService();
             }
-        }
+        });
+        prefGps = prefCache.get(R.string.FSPosition_prev_GpsOn, false);
     }
 
     private void tryStartTTSService(){
         if (serviceState == ServiceState.OFF){
             serviceState = ServiceState.INIT;
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech start");
-            tts = new TextToSpeech(getApplication().getApplicationContext(), new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech started status="+status);
-                    if(status != TextToSpeech.ERROR) {
-                        tts.setLanguage(Locale.GERMAN);
-                        serviceState = ServiceState.ON;
-                    }
+            tts = new TextToSpeech(context, status -> {
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech started status="+status);
+                if(status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.GERMAN);
+                    serviceState = ServiceState.ON;
                 }
             });
-            getApplication().lastPositionsObservable.addObserver(refreshObserver);
+//            application.lastPositionsObservable.addObserver(refreshObserver);
         }
     }
 
     private void tryStopTTSService(){
         if (serviceState != ServiceState.OFF){
             serviceState  = ServiceState.OFF;
-            getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
+//            getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
             if (tts != null) {
                 tts.stop();
                 tts.shutdown();
@@ -135,40 +98,32 @@ public class FSRoutingHints extends FeatureService {
     }
 
 
-    @Override
-    protected void doRefresh() {
-        handleNewPoint();
-    }
-
-
-    protected void handleNewPoint() {
+    public void handleNewPoint(PointModel pm) {
         try {
-            FSRouting fsRouting = getApplication().getFS(FSRouting.class);
-            if (fsRouting == null) return;
-            TrackLog routeTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
+            TrackLog routeTrackLog = application.routeTrackLogObservable.getTrackLog();
             if (routeTrackLog == null) return;
 
             if ((tts != null) && (serviceState == ServiceState.ON) && prefGps.getValue()){
-                PointModel last1Gps = getApplication().lastPositionsObservable.lastGpsPoint;
+//                PointModel pm = getApplication().lastPositionsObservable.lastGpsPoint;
 
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" lastGps="+last1Gps);
-                if (last1Gps != null) { // have a new position to handle
-                    TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(last1Gps, THRESHOLD_FAR);
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" lastGps="+pm);
+                if (pm != null) { // have a new position to handle
+                    TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(pm, THRESHOLD_FAR);
                     if ((bestMatch != null)){
                         if (bestMatch.getDistance() < THRESHOLD_NEAR){
-                            checkHints(fsRouting, bestMatch);
+                            checkHints(bestMatch);
                             mediumAwayCnt = 0;
                         } else {
                             // not really close
                             mediumAwayCnt++;
                             Log.i(MGMapApplication.LABEL, NameUtil.context()+" away="+mediumAwayCnt);
                             if (mediumAwayCnt <=3){ // don't repeat all the time
-                                String text = "";
-                                for (int i=0;i<mediumAwayCnt;i++) text += "Achtung! ";
+                                StringBuilder text = new StringBuilder();
+                                for (int i=0;i<mediumAwayCnt;i++) text.append("Achtung! ");
                                 int abstand = (int)bestMatch.getDistance();
-                                text += "Abstand "+ (abstand)+" Meter";
+                                text.append("Abstand ").append(abstand).append(" Meter");
                                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" away="+mediumAwayCnt+" text="+text);
-                                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
+                                tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
                             }
                         }
                     } else {
@@ -189,10 +144,10 @@ public class FSRoutingHints extends FeatureService {
     }
 
 
-    private void checkHints(FSRouting fsRouting, TrackLogRefApproach bestMatch){
+    private void checkHints(TrackLogRefApproach bestMatch){
         int abstand = (int)bestMatch.getDistance();
-        String text = "";
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+"SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
+        StringBuilder text = new StringBuilder();
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+"SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
 
         PointModel lastPm = bestMatch.getApproachPoint();
         double routeDistance = 0;
@@ -206,10 +161,10 @@ public class FSRoutingHints extends FeatureService {
 
                 double courseDegree = PointModelUtil.calcDegree( segment.get(bestMatch.getEndPointIndex()-1), bestMatch.getApproachPoint() , pmx );
                 int courseClock = PointModelUtil.clock4degree( courseDegree );
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
                 if (((0 < courseDegree) && (courseDegree < 150)) || ((210 < courseDegree) && (courseDegree < 360))) {
                     if (text.length() > 0 ){ // add Kurs only, if there is a hint
-                        text += " Kurs "+courseClock+" Uhr";
+                        text.append(" Kurs ").append(courseClock).append(" Uhr");
                     }
                 }
                 break;
@@ -217,14 +172,14 @@ public class FSRoutingHints extends FeatureService {
 
             routeDistance += newDistance;
 
-//            RoutingHint hint = fsRouting.routePointMap2.get(pm).routingHints.get(pm);
             RoutingHint hint = null;
             if (pm instanceof ExtendedPointModel<?>) {
-                ExtendedPointModel<RoutingHint> pmr = (ExtendedPointModel<RoutingHint>) pm;
-                hint = pmr.getExtent();
+                @SuppressWarnings("unchecked")
+                ExtendedPointModel<RoutingHint> epm = (ExtendedPointModel<RoutingHint>) pm;
+                hint = epm.getExtent();
             }
             if (hint != null){
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
                         +" l="+PointModelUtil.clock4degree(hint.nextLeftDegree)+" r="+PointModelUtil.clock4degree(hint.nextRightDegree));
                 int clock = PointModelUtil.clock4degree(hint.directionDegree);
                 if ((hint.numberOfPathes > 2) && (clock >= 0)){
@@ -242,12 +197,12 @@ public class FSRoutingHints extends FeatureService {
                                 lastHintClose = bClose;
                             }
                         }
-                        text += (bClose?(numHints==0?"Gleich ":"Danach "):(" In "+(int)routeDistance+" Meter "))+clock+ "Uhr ";
+                        text.append(bClose ? (numHints == 0 ? "Gleich " : "Danach ") : (" In " + (int) routeDistance + " Meter ")).append(clock).append("Uhr ");
                         if (cond2){ // next path left is less than 45degree beside direction degree
-                            text += "Nicht links "+PointModelUtil.clock4degree(hint.nextLeftDegree)+ " Uhr ";
+                            text.append("Nicht links ").append(PointModelUtil.clock4degree(hint.nextLeftDegree)).append(" Uhr ");
                         }
                         if (cond3){ // next path right is less than 45degree beside direction degree
-                            text += "Nicht rechts "+PointModelUtil.clock4degree(hint.nextRightDegree)+ " Uhr ";
+                            text.append("Nicht rechts ").append(PointModelUtil.clock4degree(hint.nextRightDegree)).append(" Uhr ");
                         }
                         
                         numHints++;
@@ -255,14 +210,14 @@ public class FSRoutingHints extends FeatureService {
                     }
                 }
             } else {
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance);
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance);
             }
             lastPm = pm;
         }
 
         if (text.length() > 0){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+text);
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" TTS: "+text);
+            tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
         }
     }
 
