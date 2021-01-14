@@ -53,7 +53,7 @@ import mg.mgmap.features.atl.FSAvailableTrackLogs;
 import mg.mgmap.features.bb.FSBB;
 import mg.mgmap.features.control.FSControl;
 import mg.mgmap.features.alpha.FSAlpha;
-import mg.mgmap.features.gdrive.FSGDrive;
+import mg.mgmap.features.gdrive.FGDrive;
 import mg.mgmap.features.grad.FSGraphDetails;
 import mg.mgmap.features.marker.FSMarker;
 import mg.mgmap.features.beeline.FSBeeline;
@@ -78,6 +78,7 @@ import mg.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.util.Permissions;
 import mg.mgmap.util.PersistenceManager;
 import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.util.Pref;
 import mg.mgmap.util.PrefCache;
 import mg.mgmap.util.TopExceptionHandler;
 import mg.mgmap.model.TrackLog;
@@ -169,7 +170,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.featureServices.add(new FSBB(this, application.getFS(FSAvailableTrackLogs.class)));
         application.featureServices.add(new FSGraphDetails(this));
         application.featureServices.add(new FSSearch(this));
-        application.featureServices.add(new FSGDrive(this));
+//        application.featureServices.add(new FSGDrive(this));
         application.featureServices.add(new FSAlpha(this));
         application.featureServices.add(new FSControl(this));
 
@@ -212,6 +213,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.availableTrackLogsObservable.changed();
         application.lastPositionsObservable.changed();
         application.markerTrackLogObservable.changed();
+
+        Pref<Boolean> triggerGDriveSync = prefCache.get(R.string.preferences_gdrive_trigger, false);
+        if (triggerGDriveSync.getValue()){
+            new FGDrive(this).trySynchronisation();
+            triggerGDriveSync.setValue(false);
+        }
     }
 
     @Override
