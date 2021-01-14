@@ -62,8 +62,6 @@ public class MGMapApplication extends Application {
 
 
     boolean initFinished = false;
-    private MGMapActivity mgMapActivity = null;
-    ArrayList<FeatureService> featureServices = new ArrayList<>();
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
 
     PrefCache prefCache = null;
@@ -99,7 +97,7 @@ public class MGMapApplication extends Application {
         prefCache = new PrefCache(this);
 
         prefAppRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
-        prefGps = prefCache.get(R.string.FSPosition_prev_GpsOn, false);
+        prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
         prefAppRestart.setValue(true);
         prefGps.setValue(false);
         prefCache.get(R.string.FSSearch_qc_showSearchResult, false).setValue(false);
@@ -222,7 +220,7 @@ public class MGMapApplication extends Application {
 
 
 
-    public class LastPositionsObservable extends Observable{
+    public static class LastPositionsObservable extends Observable{
         public PointModel lastGpsPoint = null;
         public PointModel secondLastGpsPoint = null;
 
@@ -244,9 +242,9 @@ public class MGMapApplication extends Application {
 
     // TODO: Probably it makes sense to split this in a TrackLogObservable for the selected TrackLog and an AvailableTrackLogsObeservable without selected TrackLog information.
     @SuppressWarnings("WeakerAccess")
-    public class AvailableTrackLogsObservable extends Observable{
+    public static class AvailableTrackLogsObservable extends Observable{
         TrackLogRef noRef = new TrackLogRef(null,-1);
-        public TreeSet<TrackLog> availableTrackLogs = new TreeSet<>(Collections.<TrackLog>reverseOrder());
+        public TreeSet<TrackLog> availableTrackLogs = new TreeSet<>(Collections.reverseOrder());
         public TrackLogRef selectedTrackLogRef = noRef;
 
         public TreeSet<TrackLog> getAvailableTrackLogs(){
@@ -326,32 +324,6 @@ public class MGMapApplication extends Application {
     /** queue for new (unhandled) TrackLogPoint objects */
     private final ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
 
-    public MGMapActivity getMgMapActivity() {
-        return mgMapActivity;
-    }
-
-    public void setMgMapActivity(MGMapActivity mgMapActivity) {
-        this.mgMapActivity = mgMapActivity;
-        if (mgMapActivity == null){
-            //cleanup according to termination of MGMapActivity
-            featureServices.clear();
-            availableTrackLogsObservable.deleteObservers();
-            recordingTrackLogObservable.deleteObservers();
-            markerTrackLogObservable.deleteObservers();
-            routeTrackLogObservable.deleteObservers();
-            lastPositionsObservable.deleteObservers();
-        }
-    }
-
-    /** Return the feature service by type  */
-    public <T> T getFS(Class<T> tClass){
-        for (FeatureService service : featureServices){
-            if (tClass.isInstance(service)) return (T)service;
-        }
-        return null;
-    }
-
-
     public void addTrackLogPoint(final PointModel pointModel){
         if (pointModel != null){
             try {
@@ -363,9 +335,6 @@ public class MGMapApplication extends Application {
             }
         }
     }
-
-    public float pressure = 0;
-
 
     public synchronized void addBgJobs(List<BgJob> jobs){
         if (jobs == null) return;
@@ -396,11 +365,6 @@ public class MGMapApplication extends Application {
     }
 
     public void refresh(){
-        if (!featureServices.isEmpty()){
-            FeatureService fs = featureServices.get(0);
-            MapView mapView = fs.getMapView();
-            IMapViewPosition mvp = mapView.getModel().mapViewPosition;
-            mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));
-        }
+        prefCache.get(R.string.FSPosition_pref_RefreshMapView, false).toggle(); //after TileDownloads this helps to make downloaded tiles visible
     }
 }

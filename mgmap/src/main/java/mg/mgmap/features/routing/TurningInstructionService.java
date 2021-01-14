@@ -66,7 +66,7 @@ public class TurningInstructionService {
                 tryStopTTSService();
             }
         });
-        prefGps = prefCache.get(R.string.FSPosition_prev_GpsOn, false);
+        prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
     }
 
     private void tryStartTTSService(){

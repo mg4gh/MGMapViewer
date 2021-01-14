@@ -37,7 +37,7 @@ public class FSRemainings extends FeatureService {
         prefGps.addObserver(refreshObserver);
     }
 
-    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Boolean> prefReverse = getPref(R.string.FSRemaining_pref_Reverse, false);
     private final Pref<Boolean> prefInterval = getPref(R.string.FSRemaining_pref_Interval, false);
 

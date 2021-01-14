@@ -21,7 +21,7 @@ public class TrackStopControl extends Control {
     @Override
     public void setControlView(ControlView controlView) {
         super.setControlView(controlView);
-        prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+        prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     }
 
     public TrackStopControl(){

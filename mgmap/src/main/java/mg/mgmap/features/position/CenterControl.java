@@ -33,7 +33,7 @@ public class CenterControl extends Control {
     @Override
     public void setControlView(ControlView controlView) {
         super.setControlView(controlView);
-        prefCenter = getPref(R.string.FSPosition_prev_Center, true);;
+        prefCenter = getPref(R.string.FSPosition_pref_Center, true);;
     }
 
     public void onClick(View v) {

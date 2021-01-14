@@ -41,8 +41,8 @@ public class FSBeeline extends FeatureService {
 
     public static final Paint PAINT_BLACK_STROKE = CC.getStrokePaint(R.color.BLACK, 2);
 
-    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
-    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_prev_ZoomLevel, 15);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
+    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_pref_ZoomLevel, 15);
     private ExtendedTextView etvCenter = null;
     private ExtendedTextView etvZoom = null;
 

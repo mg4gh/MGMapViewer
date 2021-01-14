@@ -17,7 +17,11 @@ package mg.mgmap.features.position;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
+import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.IMapViewPosition;
+
+import java.util.Observable;
+import java.util.Observer;
 
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.FeatureService;
@@ -39,9 +43,10 @@ public class FSPosition extends FeatureService {
     private static final Paint PAINT_ACC_STROKE = CC.getStrokePaint(R.color.BLUE_A150, 5);
 
     private final Pref<Boolean> prefAppRestart = getPref(R.string.MGMapApplication_pref_Restart, false);
-    private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_prev_Center, true);
-    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_pref_Center, true);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Boolean> prefGpsEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefRefreshMapView = getPref(R.string.FSPosition_pref_RefreshMapView, false);
 
     private ExtendedTextView etvHeight = null;
 
@@ -57,6 +62,7 @@ public class FSPosition extends FeatureService {
         prefGps.addObserver(refreshObserver);
         prefCenter.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
+        prefRefreshMapView.addObserver((o, arg) -> refreshMapView());
     }
 
     @Override
@@ -139,5 +145,11 @@ public class FSPosition extends FeatureService {
             mvp.setMapPosition(new MapPosition(pos, mvp.getZoomLevel()));
         }
     }
+
+    public void refreshMapView(){
+        IMapViewPosition mvp = getMapView().getModel().mapViewPosition;
+        mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));
+    }
+
 
 }

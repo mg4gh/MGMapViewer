@@ -63,7 +63,7 @@ public class TrackLoggerService extends Service {
         super.onCreate();
         application = (MGMapApplication)getApplication();
         prefCache = new PrefCache(this);
-        prefGps = prefCache.get(R.string.FSPosition_prev_GpsOn, false);
+        prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
 
         turningInstructionService = new TurningInstructionService(application, application, prefCache);
 

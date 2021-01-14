@@ -85,7 +85,6 @@ class BarometerListener implements SensorEventListener {
     public void onSensorChanged(SensorEvent sensorEvent) {
         cnt++;
         lastPressure = sensorEvent.values[0];
-        application.pressure = lastPressure;
     }
 
     @Override
@@ -103,7 +102,6 @@ class BarometerListener implements SensorEventListener {
         if (pressureSensor != null){
             sensorManager.unregisterListener(this);
             Log.i(TAG, "deactivate: "+"stop sensorEventListener");
-            application.pressure = PointModel.NO_PRES;
         }
     }
 

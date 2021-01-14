@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
 
@@ -93,7 +92,7 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefWayDetails = getPref(R.string.FSGrad_pref_WayDetails_key, false);
     private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSMarker_pref_snap2way_key, true);
     private final Pref<Boolean> prefEditMarkerTrack = getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
-    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_prev_GpsOn, false);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Boolean> prefRouteGL = getPref(R.string.FSMarker_qc_RouteGL, false);
 
     private final Pref<Boolean> prefAutoSwitcher = getPref(R.string.FSMarker_pref_auto_switcher, true);
@@ -101,7 +100,7 @@ public class FSRouting extends FeatureService {
     private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
     private final Pref<Float> prefAlphaRotl = getPref(R.string.FSRouting_pref_alphaRoTL, 1.0f);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
-    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_prev_ZoomLevel, 15);
+    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_pref_ZoomLevel, 15);
     private final Pref<Boolean> prefMapMatching = new Pref<>(false);
     private final Pref<Boolean> prefMapMatchingEnabled = new Pref<>(false);
     private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
@@ -109,11 +108,11 @@ public class FSRouting extends FeatureService {
 
     private ViewGroup dashboardRoute = null;
 
-    public FSRouting(MGMapActivity mmActivity) {
+    public FSRouting(MGMapActivity mmActivity, FSMarker fsMarker) {
         super(mmActivity);
         ttRefreshTime = 50;
         routingLineRefProvider = new RoutingLineRefProvider();
-        getApplication().getFS(FSMarker.class).lineRefProvider = routingLineRefProvider;
+        fsMarker.lineRefProvider = routingLineRefProvider;
         prefMapMatching.addObserver((o, arg) -> optimize());
         Observer matchingEnabledObserver = (o, arg) -> prefMapMatchingEnabled.setValue( prefMtlVisibility.getValue() && (prefAlphaRotl.getValue() > 0.25f) );
         prefMtlVisibility.addObserver(matchingEnabledObserver);
