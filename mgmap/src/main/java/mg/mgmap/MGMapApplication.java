@@ -2,18 +2,14 @@ package mg.mgmap;
 
 import android.app.Application;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
 
 import android.util.Log;
 
-import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.model.IMapViewPosition;
 
 import mg.mgmap.model.WriteableTrackLog;
 import mg.mgmap.model.PointModel;
@@ -105,9 +101,10 @@ public class MGMapApplication extends Application {
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
 
         // Recover state of RecordingTrackLog
-        new AsyncTask<Object, Integer, RecordingTrackLog>() {
+        new Thread(){
             @Override
-            protected RecordingTrackLog doInBackground(Object... objects) {
+            public void run() {
+
                 RecordingTrackLog rtl = RecordingTrackLog.initFromRaw();
                 if ((rtl != null) && !rtl.isTrackRecording()){ // either finished or not yet started
                     if (rtl.getNumberOfSegments() > 0){  // is finished
@@ -116,34 +113,24 @@ public class MGMapApplication extends Application {
                     PersistenceManager.getInstance(null).clearRaw();
                     rtl = null;
                 }
-                return rtl;
-            }
-
-            @Override
-            protected void onProgressUpdate(Integer... values) {
-            }
-
-            @Override
-            protected void onPostExecute(RecordingTrackLog recordingTrackLog) {
-                recordingTrackLogObservable.setTrackLog(recordingTrackLog);
+                recordingTrackLogObservable.setTrackLog(rtl);
                 initFinished();
             }
-        }.execute();
+        }.start();
 
 
         // initialize hgt data handling
         new Geoid(this);
 
         // initialize MetaData (as used from AvailableTrackLogs service
-        new AsyncTask<Object, Object, Object>(){
+        new Thread(){
             @Override
-            protected Object doInBackground(Object... objects) {
+            public void run() {
                 for (TrackLog trackLog : MetaDataUtil.loadMetaData()){
                     metaTrackLogs.put(trackLog.getNameKey(),trackLog);
                 }
-                return null;
             }
-        }.execute();
+        }.start();
 
         // initialize handling of new points from TrackLoggerService
         new Thread(){
@@ -201,6 +188,7 @@ public class MGMapApplication extends Application {
     }
 
     protected void initFinished(){
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" init finished!");
         initFinished = true;
         if (recordingTrackLogObservable.getTrackLog() != null){
             recordingTrackLogObservable.getTrackLog().setRecordRaw(true); // from now on record new entries in the tracklog
