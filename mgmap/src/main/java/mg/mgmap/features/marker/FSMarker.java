@@ -153,9 +153,10 @@ public class FSMarker extends FeatureService {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             if (mtl == null){
                 initMarkerTrackLog();
+            } else {
+                markerTrackLogObservable.changed();
             }
             register(new MarkerControlLayer(), false);
-            markerTrackLogObservable.changed();
         } else {
             unregisterClass(MarkerControlLayer.class);
         }

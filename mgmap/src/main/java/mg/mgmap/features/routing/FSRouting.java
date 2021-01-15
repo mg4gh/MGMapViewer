@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
+import java.util.jar.Attributes;
 
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
@@ -107,6 +109,8 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
 
     private ViewGroup dashboardRoute = null;
+    private volatile boolean refreshRequired = false;
+    private Thread routeCalcThread = null;
 
     public FSRouting(MGMapActivity mmActivity, FSMarker fsMarker) {
         super(mmActivity);
@@ -125,12 +129,43 @@ public class FSRouting extends FeatureService {
             }
         });
 
-        getApplication().markerTrackLogObservable.addObserver((o, arg) -> new Thread(){
-            @Override
-            public void run() {
-                updateRouting();
+        getApplication().markerTrackLogObservable.addObserver((o, arg) -> {
+            refreshRequired = true;
+//            NameUtil.logContext(6);
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
+            synchronized (prefEditMarkerTrack){
+                prefEditMarkerTrack.notifyAll();
             }
-        }.start());
+        });
+
+        prefEditMarkerTrack.addObserver((o, arg) -> {
+            if (prefEditMarkerTrack.getValue()){
+                if ((routeCalcThread == null) || (!routeCalcThread.isAlive())){
+                    routeCalcThread = new Thread(){
+                        @Override
+                        public void run() {
+                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
+                            while (prefEditMarkerTrack.getValue()){
+                                try {
+                                    synchronized (prefEditMarkerTrack){
+                                        prefEditMarkerTrack.wait(1000);
+                                    }
+                                    if (refreshRequired){
+                                        refreshRequired = false;
+                                        updateRouting();
+                                    }
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            routeCalcThread = null;
+                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
+                        }
+                    };
+                    routeCalcThread.start();
+                }
+            }
+        });
 
         prefZoomLevel.addObserver(refreshObserver);
         prefAlphaRotl.addObserver(refreshObserver);
