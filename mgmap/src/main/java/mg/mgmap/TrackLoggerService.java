@@ -120,7 +120,7 @@ public class TrackLoggerService extends Service {
                 protected void onNewTrackLogPoint(TrackLogPoint lp) {
                     lp.setPressure( barometerListener.getPressure() );
                     setPressureAlt(lp);
-                    application.addTrackLogPoint(lp);
+                    application.logPoints2process.add(lp);
                     Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);
                     turningInstructionService.handleNewPoint(lp);
                 }
