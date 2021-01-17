@@ -28,10 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
-import java.util.jar.Attributes;
 
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
@@ -292,7 +290,6 @@ public class FSRouting extends FeatureService {
                         wpm.setLon(rpm.selectedApproach.getApproachNode().getLon());
                         rpm.resetApproaches();
                         calcApproaches(mapFile, rpm);
-//                        getApplication().markerTrackLogObservable.changed();
                     }
                 }
             }
@@ -360,13 +357,10 @@ public class FSRouting extends FeatureService {
                     TrackLogSegment rotlSegment = rotl.getTrackLogSegment(i);
                     if ((mtlSegment.size() > 0) && (rotlSegment.size() > 0)){
                         if (PointModelUtil.compareTo( getRoutePointModel(mtlSegment.get(0)).getApproachNode(), rotlSegment.get(0) ) != 0){
-//                        if (routePointMap2.get(rotlSegment.get(0)).mtlp != mtlSegment.get(0) ){
                             routeModified = true;
                             break;
                         }
-                        int l = mtlSegment.size()-1;
                         if (PointModelUtil.compareTo( getRoutePointModel(mtlSegment.get(mtlSegment.size()-1)).getApproachNode(), rotlSegment.get(rotlSegment.size()-1) ) != 0){
-//                        if (routePointMap2.get(rotlSegment.get(l)).mtlp != mtlSegment.get(l) ){
                             routeModified = true;
                             break;
                         }
@@ -389,13 +383,8 @@ public class FSRouting extends FeatureService {
             name = name.replaceAll("MarkerTrack$","MarkerRoute");
             routeTrackLog.setName(name);
             routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
-//            WriteableTrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
-//            if (oldRouteTrackLog != null){
-//                routeTrackLog.setPrefModified(oldRouteTrackLog.getPrefModified());
-//            }
             routeTrackLog.setModified(true);
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Route modified: "+name);
-//        routeTrackLog.getPrefModified().onChange();
 
             for (TrackLogSegment segment : mtl.getTrackLogSegments()){
                 routeTrackLog.startSegment(0);
@@ -411,7 +400,6 @@ public class FSRouting extends FeatureService {
                                 if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
                                     ExtendedPointModelImpl<RoutingHint> pmr = new ExtendedPointModelImpl<>(pm,rpm.routingHints.get(pm));
                                     routeTrackLog.addPoint(pmr);
-//                                    routeTrackLog.addPoint(pm);
                                     routePointMap2.put(pmr,rpm);
                                 }
                                 lastPM = pm;
@@ -648,8 +636,6 @@ public class FSRouting extends FeatureService {
     }
 
     private void checkApproachViews(TrackLog mtl){
-//        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
-
         boolean visibility = ((getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_APPROACHES_VISIBILITY) && (prefWayDetails.getValue()));
 
         for (MultiPointView approachView : approachViewMap.values()){
