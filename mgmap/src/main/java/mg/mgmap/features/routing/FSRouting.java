@@ -155,55 +155,19 @@ public class FSRouting extends FeatureService {
 
 
         application.markerTrackLogObservable.addObserver((o, arg) -> {
-//            if (application.markerTrackLogObservable.getTrackLog() == null){
-//                if (application.routeTrackLogObservable.getTrackLog() != null){
-//                    application.routeTrackLogObservable.setTrackLog(null);
-//                    refreshObserver.onChange();
-//                }
-//            } else {
-                refreshRequired = true; // refresh route calculation is required
-//            NameUtil.logContext(6); // to see where the update was triggered
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
-                synchronized (FSRouting.this){
-                    FSRouting.this.notifyAll();
-                }
-//            }
+            refreshRequired = true; // refresh route calculation is required
+//          NameUtil.logContext(6); // to see where the update was triggered
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
+            synchronized (FSRouting.this){
+                FSRouting.this.notifyAll();
+            }
         });
-
-//        prefEditMarkerTrack.addObserver((o, arg) -> {
-//            if (prefEditMarkerTrack.getValue()){
-//                if ((routeCalcThread == null) || (!routeCalcThread.isAlive())){
-//                    routeCalcThread = new Thread(){
-//                        @Override
-//                        public void run() {
-//                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
-//                            while (prefEditMarkerTrack.getValue()){
-//                                try {
-//                                    synchronized (prefEditMarkerTrack){
-//                                        prefEditMarkerTrack.wait(1000);
-//                                    }
-//                                    if (refreshRequired){
-//                                        refreshRequired = false;
-//                                        updateRouting();
-//                                    }
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                            routeCalcThread = null;
-//                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
-//                        }
-//                    };
-//                    routeCalcThread.start();
-//                }
-//            }
-//        });
 
         prefZoomLevel.addObserver(refreshObserver);
         prefAlphaRotl.addObserver(refreshObserver);
         prefRouteGL.addObserver(refreshObserver);
         prefGps.addObserver(refreshObserver);
-        getApplication().lastPositionsObservable.addObserver(refreshObserver);
+        application.lastPositionsObservable.addObserver(refreshObserver);
 
         if (getPref(R.string.MGMapApplication_pref_Restart, false).getValue()){
             prefRoutingHints.setValue(false);
@@ -274,8 +238,8 @@ public class FSRouting extends FeatureService {
     @Override
     protected void doRefreshResumedUI() {
         unregisterAll();
-        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
-        WriteableTrackLog rotl = getApplication().routeTrackLogObservable.getTrackLog();
+        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+        WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
         if (rotl != null){
             if (prefRouteGL.getValue()){
@@ -337,7 +301,7 @@ public class FSRouting extends FeatureService {
     }
 
     private void updateRouting(){
-        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
             MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
@@ -345,11 +309,11 @@ public class FSRouting extends FeatureService {
                 Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
             } else {
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
-                rotl = updateRouting2(mapFile, mtl, getApplication().routeTrackLogObservable.getTrackLog());
+                rotl = updateRouting2(mapFile, mtl, application.routeTrackLogObservable.getTrackLog());
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
             }
         }
-        getApplication().routeTrackLogObservable.setTrackLog(rotl);
+        application.routeTrackLogObservable.setTrackLog(rotl);
         refreshObserver.onChange(); // trigger visualization
     }
 
@@ -468,7 +432,7 @@ public class FSRouting extends FeatureService {
         if (routeTrackLog != null){
             dashboardStatistic = routeTrackLog.getTrackStatistic();
             if (prefGps.getValue()){
-                PointModel lastPos = getApplication().lastPositionsObservable.lastGpsPoint;
+                PointModel lastPos = application.lastPositionsObservable.lastGpsPoint;
                 if (lastPos != null){
                     TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(lastPos);
                     if ((bestMatch != null) && (bestMatch.getApproachPoint() != null)){
@@ -717,11 +681,11 @@ public class FSRouting extends FeatureService {
 
 
     void optimize(){
-        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
         RouteOptimizer ro = new RouteOptimizer(this, mapFile);
         ro.optimize(mtl);
-        getApplication().markerTrackLogObservable.changed();
+        application.markerTrackLogObservable.changed();
     }
 
 
@@ -732,7 +696,7 @@ public class FSRouting extends FeatureService {
             if (!prefEditMarkerTrack.getValue()) return false;
             if (prefAlphaRotl.getValue() < 0.25f) return false;
 
-            WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+            WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
             if (mtl != null){
                 PointModel pmTap = new PointModelImpl(tapLatLong.latitude, tapLatLong.longitude);
                 TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
@@ -746,7 +710,7 @@ public class FSRouting extends FeatureService {
                     if (rpm != null){
                         rpm.direct = !rpm.direct;
                         rpm.directChanged = true;
-                        getApplication().markerTrackLogObservable.changed();
+                        application.markerTrackLogObservable.changed();
                         return true;
                     }
                 }
@@ -764,7 +728,7 @@ public class FSRouting extends FeatureService {
     }
 
     public TrackLogRefApproach getRoutingLineApproach(PointModel pm, double threshold){
-        TrackLog routeTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
+        TrackLog routeTrackLog = application.routeTrackLogObservable.getTrackLog();
         if (routeTrackLog != null){
             TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(pm, threshold);
             if (bestMatch != null){
@@ -772,7 +736,7 @@ public class FSRouting extends FeatureService {
                 PointModel rtlpm = segment.get(bestMatch.getEndPointIndex());
                 RoutePointModel rpm = routePointMap2.get(rtlpm);
                 PointModel mtlp = rpm.getMtlp();
-                WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+                WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
                 return mtl.getBestPoint(mtlp, 1);
             }
         }
