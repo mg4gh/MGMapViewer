@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -109,7 +109,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
      * form XmlRenderThemeMenuCallback after reading the themes xml file */
     protected XmlRenderThemeStyleMenu renderThemeStyleMenu;
 
-    /** Reference to the MapViewUtility - provides so servoices around the MapView object */
+    /** Reference to the MapViewUtility - provides so services around the MapView object */
     MapViewUtility mapViewUtility = null;
 
 //    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
@@ -225,8 +225,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @Override
     protected void onPause() {
         Log.i(MGMapApplication.LABEL, NameUtil.context());
-
-//        if (microServices == null) return;
         for (int i = featureServices.size() - 1; i >= 0; i--) { // reverse order
             FeatureService microService = featureServices.get(i);
             try {
@@ -241,12 +239,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 tileDownloadLayer.onPause();
             }
         }
-
-//        application.recordingTrackLogObservable.changed();
-//        application.availableTrackLogsObservable.changed();
-//        application.lastPositionsObservable.changed();
-//        application.markerTrackLogObservable.changed();
-
         super.onPause();
     }
 
@@ -564,7 +556,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             @Override
             protected boolean onTap(WriteablePointModel point) {
                 TrackLogRef ref = selectCloseTrack( point );
-//                if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
                 if (ref.getTrackLog() != null){
                     application.availableTrackLogsObservable.setSelectedTrackLogRef(ref);
                 } else {

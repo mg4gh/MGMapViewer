@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -96,7 +96,7 @@ public class TrackLoggerService extends Service {
         application = (MGMapApplication)getApplication();
 
         boolean shouldBeActive = prefGps.getValue();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" acitve="+active+" shouldBeActive="+shouldBeActive);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" active="+active+" shouldBeActive="+shouldBeActive);
         if (!active && shouldBeActive){
             active = true;
             activateService();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.util.BgJob;
 import mg.mgmap.util.NameUtil;
@@ -45,18 +45,18 @@ public class BgJobService extends Service {
 
     private boolean active = false;
     private Notification notification = null;
-    private volatile int numWorkers = 0;
+    private final AtomicInteger numWorkers = new AtomicInteger(0);
     private String CHANNEL_ID;
-    private int max = 0; // max jobs at activation - used for progress handling
+    private int maxJobs = 0; // max jobs at activation - used for progress handling
     private int lastNumBgJobs = 0;
 
     private Handler timer;
-    private TimerTask ttNotify = new TimerTask() {
+    private final Runnable ttNotify = new Runnable() {
         @Override
         public void run() {
             int currentNumBgJobs = application.numBgJobs();
             if (lastNumBgJobs != currentNumBgJobs){
-                notifyUser(1,"BgJobService: running", max, max-currentNumBgJobs, false);
+                notifyUser(1,"BgJobService: running", maxJobs, maxJobs -currentNumBgJobs, false);
                 lastNumBgJobs = currentNumBgJobs;
             }
             timer.postDelayed(ttNotify, 1000);
@@ -113,23 +113,11 @@ public class BgJobService extends Service {
         }
     }
 
-//    protected void updateNotification(){
-//        notifyUser(1,"BgJobService is running. "+numWorkers+" running, "+application.numBgJobs()+" waiting");
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-//                    .setSmallIcon(R.drawable.mg2)
-//                    .setContentTitle("MGMapViewer")
-//                    .setContentText("BgJobService is running. "+application.numBgJobs())
-//                    .setSound(null)
-//                    .build();
-//            NotificationManagerCompat.from(application).notify(1,notification);
-//        }
-//    }
 
     protected void activateService(){
         try {
-            max = application.numBgJobs() + getNumWorkers();
-            lastNumBgJobs = max;
+            maxJobs = application.numBgJobs() + getNumWorkers();
+            lastNumBgJobs = maxJobs;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForeground(1, notification);
             }
@@ -141,17 +129,16 @@ public class BgJobService extends Service {
                 new Thread(){
                     @Override
                     public void run() {
-                        numWorkers++;
-                        BgJob job = null;
+                        numWorkers.incrementAndGet();
+                        BgJob job;
                         while ((job = application.getBgJob()) != null){
                             job.service = BgJobService.this;
                             job.start();
                             NotificationManagerCompat.from(application).cancel(job.notification_id);
- //                           updateNotification();
                         }
-                        numWorkers--;
+                        numWorkers.decrementAndGet();
                         synchronized (this){
-                            if (numWorkers == 0){
+                            if (numWorkers.get() == 0){
                                 checkActive();
                             }
                         }
@@ -177,7 +164,7 @@ public class BgJobService extends Service {
     }
 
     public int getNumWorkers(){
-        return numWorkers;
+        return numWorkers.get();
     }
 
     public void notifyUser(int notificationId, String notificationText, int max, int progress, boolean indeterminate) {

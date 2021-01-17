@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -31,7 +31,7 @@ import mg.mgmap.util.NameUtil;
 abstract class LocationListener implements android.location.LocationListener {
 
     private static final float ACCURACY_LIMIT = 30.0f; // accuracy limit in meter
-    private LocationManager locationManager;
+    private final LocationManager locationManager;
 
     LocationListener(Application application){
         locationManager = (LocationManager) application.getSystemService(Context.LOCATION_SERVICE);
@@ -48,19 +48,13 @@ abstract class LocationListener implements android.location.LocationListener {
     }
 
     @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
+    public void onStatusChanged(String s, int i, Bundle bundle) {}
 
     @Override
-    public void onProviderEnabled(String s) {
-
-    }
+    public void onProviderEnabled(String s) {}
 
     @Override
-    public void onProviderDisabled(String s) {
-
-    }
+    public void onProviderDisabled(String s) {}
 
     void activate(int minMillis,int minDistance) throws SecurityException{
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" start locationListener");

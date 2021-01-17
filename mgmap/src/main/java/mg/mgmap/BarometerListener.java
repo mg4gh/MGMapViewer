@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -39,7 +39,6 @@ class BarometerListener implements SensorEventListener {
 
     private SensorManager sensorManager;
     private Sensor pressureSensor;
-    private MGMapApplication application;
 
     private static final String TAG = NameUtil.getTag();
 
@@ -54,7 +53,6 @@ class BarometerListener implements SensorEventListener {
 
 
     BarometerListener(MGMapApplication application, final int speed){
-        this.application = application;
         this.speed = speed;
         sensorManager = (SensorManager) application.getSystemService(Application.SENSOR_SERVICE);
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
@@ -75,7 +73,6 @@ class BarometerListener implements SensorEventListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " HighestDirectReportRateLevel="+pressureSensor.getHighestDirectReportRateLevel());
             }
-
         } else {
             Log.e(TAG, "BarometerListener: "+"pressureSensor not found");
         }
