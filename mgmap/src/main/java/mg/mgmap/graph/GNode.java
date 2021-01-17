@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -14,19 +14,18 @@
  */
 package mg.mgmap.graph;
 
-import mg.mgmap.model.PointModel;
 import mg.mgmap.model.PointModelImpl;
 
 /**
  * This class is the basis for a node in a graph.
  */
 
-public class GNode extends PointModelImpl implements PointModel {
+public class GNode extends PointModelImpl {
 
     /**
      * This is the entry of a queue of neighbours. The first link refers to the node itself.
      */
-    private GNeighbour neighbour = null;
+    private final GNeighbour neighbour;
 
     // for Routing algorithms
     private boolean connected = false;

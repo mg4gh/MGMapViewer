@@ -110,10 +110,12 @@ public class FSRouting extends FeatureService {
 
     private ViewGroup dashboardRoute = null;
     private volatile boolean refreshRequired = false;
-    private Thread routeCalcThread = null;
+    private boolean runRouteCalcThread = true;
+    private final MGMapApplication application;
 
     public FSRouting(MGMapActivity mmActivity, FSMarker fsMarker) {
         super(mmActivity);
+        application = getApplication();
         ttRefreshTime = 50;
         routingLineRefProvider = new RoutingLineRefProvider();
         fsMarker.lineRefProvider = routingLineRefProvider;
@@ -129,43 +131,73 @@ public class FSRouting extends FeatureService {
             }
         });
 
-        getApplication().markerTrackLogObservable.addObserver((o, arg) -> {
-            refreshRequired = true;
-//            NameUtil.logContext(6);
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
-            synchronized (prefEditMarkerTrack){
-                prefEditMarkerTrack.notifyAll();
+        new Thread(){
+            @Override
+            public void run() {
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
+                while (runRouteCalcThread){
+                    try {
+                        synchronized (FSRouting.this){
+                            FSRouting.this.wait(1000);
+                        }
+                        if (refreshRequired){
+                            refreshRequired = false;
+                            updateRouting();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
             }
+        }.start();
+
+
+
+        application.markerTrackLogObservable.addObserver((o, arg) -> {
+//            if (application.markerTrackLogObservable.getTrackLog() == null){
+//                if (application.routeTrackLogObservable.getTrackLog() != null){
+//                    application.routeTrackLogObservable.setTrackLog(null);
+//                    refreshObserver.onChange();
+//                }
+//            } else {
+                refreshRequired = true; // refresh route calculation is required
+//            NameUtil.logContext(6); // to see where the update was triggered
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
+                synchronized (FSRouting.this){
+                    FSRouting.this.notifyAll();
+                }
+//            }
         });
 
-        prefEditMarkerTrack.addObserver((o, arg) -> {
-            if (prefEditMarkerTrack.getValue()){
-                if ((routeCalcThread == null) || (!routeCalcThread.isAlive())){
-                    routeCalcThread = new Thread(){
-                        @Override
-                        public void run() {
-                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
-                            while (prefEditMarkerTrack.getValue()){
-                                try {
-                                    synchronized (prefEditMarkerTrack){
-                                        prefEditMarkerTrack.wait(1000);
-                                    }
-                                    if (refreshRequired){
-                                        refreshRequired = false;
-                                        updateRouting();
-                                    }
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            routeCalcThread = null;
-                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
-                        }
-                    };
-                    routeCalcThread.start();
-                }
-            }
-        });
+//        prefEditMarkerTrack.addObserver((o, arg) -> {
+//            if (prefEditMarkerTrack.getValue()){
+//                if ((routeCalcThread == null) || (!routeCalcThread.isAlive())){
+//                    routeCalcThread = new Thread(){
+//                        @Override
+//                        public void run() {
+//                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
+//                            while (prefEditMarkerTrack.getValue()){
+//                                try {
+//                                    synchronized (prefEditMarkerTrack){
+//                                        prefEditMarkerTrack.wait(1000);
+//                                    }
+//                                    if (refreshRequired){
+//                                        refreshRequired = false;
+//                                        updateRouting();
+//                                    }
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                            routeCalcThread = null;
+//                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
+//                        }
+//                    };
+//                    routeCalcThread.start();
+//                }
+//            }
+//        });
 
         prefZoomLevel.addObserver(refreshObserver);
         prefAlphaRotl.addObserver(refreshObserver);
@@ -229,6 +261,14 @@ public class FSRouting extends FeatureService {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        runRouteCalcThread = false;
+        synchronized (FSRouting.this){
+            FSRouting.this.notifyAll();
+        }
     }
 
     @Override
@@ -296,7 +336,7 @@ public class FSRouting extends FeatureService {
         return rpm;
     }
 
-    synchronized private void updateRouting(){
+    private void updateRouting(){
         WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
