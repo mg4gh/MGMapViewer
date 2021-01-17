@@ -1,3 +1,17 @@
+/*
+ * Copyright 2017 - 2021 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package mg.mgmap.view;
 
 import android.content.Context;
@@ -13,14 +27,14 @@ import java.util.Observer;
 
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.util.Formatter;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.util.NameUtil;
 
 public class ExtendedTextView extends AppCompatTextView {
 
-    private MGPref<Boolean> prState1=null, prState2=null;
-    private MGPref<Boolean> prAction1=null, prAction2=null;
-    private MGPref<Boolean> prEnabled=null;
+    private Pref<Boolean> prState1=null, prState2=null;
+    private Pref<Boolean> prAction1=null, prAction2=null;
+    private Pref<Boolean> prEnabled=null;
 
     private int drId1=0,drId2=0,drId3=0,drId4=0;
     private int drIdDis=0;
@@ -47,18 +61,18 @@ public class ExtendedTextView extends AppCompatTextView {
     }
     public ExtendedTextView setData(int drId){
         drId1 = drId;
-        onChange("setData0");
+        onChange(null);
         return this;
     }
-    public ExtendedTextView setData(MGPref<Boolean> prState1, int drId1, int drId2){
+    public ExtendedTextView setData(Pref<Boolean> prState1, int drId1, int drId2){
         this.prState1 = prState1;
         prState1.addObserver(prefObserver);
         this.drId1 = drId1;
         this.drId2 = drId2;
-        onChange("setData1");
+        onChange(null);
         return this;
     }
-    public ExtendedTextView setData(MGPref<Boolean> prState1, MGPref<Boolean> prState2, int drId1, int drId2, int drId3, int drId4){
+    public ExtendedTextView setData(Pref<Boolean> prState1, Pref<Boolean> prState2, int drId1, int drId2, int drId3, int drId4){
         this.prState1 = prState1;
         prState1.addObserver(prefObserver);
         this.prState2 = prState2;
@@ -67,22 +81,22 @@ public class ExtendedTextView extends AppCompatTextView {
         this.drId2 = drId2;
         this.drId3 = drId3;
         this.drId4 = drId4;
-        onChange("setData2");
+        onChange(null);
         return this;
     }
-    public ExtendedTextView setPrAction(MGPref<Boolean> prAction){
+    public ExtendedTextView setPrAction(Pref<Boolean> prAction){
         this.prAction1 = prAction;
         this.setOnClickListener(prAction);
         return this;
     }
-    public ExtendedTextView setPrAction(MGPref<Boolean> prAction1,MGPref<Boolean> prAction2){
+    public ExtendedTextView setPrAction(Pref<Boolean> prAction1, Pref<Boolean> prAction2){
         this.prAction1 = prAction1;
         this.setOnClickListener(prAction1);
         this.prAction2 = prAction2;
         this.setOnLongClickListener(prAction2);
         return this;
     }
-    public ExtendedTextView setDisabledData(MGPref<Boolean> prEnabled, int drIdDis){
+    public ExtendedTextView setDisabledData(Pref<Boolean> prEnabled, int drIdDis){
         this.prEnabled = prEnabled;
         prEnabled.addObserver(prefObserver);
         this.drIdDis = drIdDis;
@@ -107,7 +121,7 @@ public class ExtendedTextView extends AppCompatTextView {
         return this;
     }
     public String getHelp(){
-        String line2 = null;
+        String line2;
         if ((prEnabled!=null) && (!prEnabled.getValue())){
             line2 = "disabled";
         } else {
@@ -148,9 +162,9 @@ public class ExtendedTextView extends AppCompatTextView {
             @Override
             public void update(Observable o, Object arg) {
                 String info;
-                if (o instanceof MGPref<?>) {
-                    MGPref<?> mgPref = (MGPref<?>) o;
-                    info = "update on "+mgPref.getKey();
+                if (o instanceof Pref<?>) {
+                    Pref<?> pref = (Pref<?>) o;
+                    info = "update on "+ pref.getKey();
                 } else {
                     info = "update on "+o.toString();
                 }
@@ -189,8 +203,10 @@ public class ExtendedTextView extends AppCompatTextView {
     }
 
     private void onChange(String reason){
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" "+reason);
-        int drId = 0;
+        if (reason != null){
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" "+reason);
+        }
+        int drId;
         if ((prEnabled != null) && (!prEnabled.getValue())){
             drId = drIdDis;
         } else { // not disabled
@@ -217,10 +233,4 @@ public class ExtendedTextView extends AppCompatTextView {
         }
     }
 
-
-    public void onDestroy(){
-        if (prState1 != null) prState1.deleteObserver(prefObserver);
-        if (prState2 != null) prState2.deleteObserver(prefObserver);
-        if (prEnabled != null) prEnabled.deleteObserver(prefObserver);
-    }
 }

@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeSet;
+import java.util.jar.Attributes;
 
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
@@ -45,6 +47,7 @@ import mg.mgmap.graph.GNode;
 import mg.mgmap.graph.GNodeRef;
 import mg.mgmap.graph.ApproachModel;
 import mg.mgmap.model.BBox;
+import mg.mgmap.model.ExtendedPointModelImpl;
 import mg.mgmap.model.PointModelImpl;
 import mg.mgmap.model.TrackLogRefApproach;
 import mg.mgmap.model.TrackLogStatistic;
@@ -60,7 +63,7 @@ import mg.mgmap.util.CC;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.LabeledSlider;
 import mg.mgmap.view.MVLayer;
@@ -88,28 +91,34 @@ public class FSRouting extends FeatureService {
 
     private final RoutingLineRefProvider routingLineRefProvider;
 
-    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.FSGrad_pref_WayDetails_key, false);
-    private final MGPref<Boolean> prefSnap2Way = MGPref.get(R.string.FSMarker_pref_snap2way_key, true);
-    private final MGPref<Boolean> prefEditMarkerTrack = MGPref.get(R.string.FSMarker_qc_EditMarkerTrack, false);
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-    private final MGPref<Boolean> prefRouteGL = MGPref.get(R.string.FSMarker_qc_RouteGL, false);
+    private final Pref<Boolean> prefWayDetails = getPref(R.string.FSGrad_pref_WayDetails_key, false);
+    private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSMarker_pref_snap2way_key, true);
+    private final Pref<Boolean> prefEditMarkerTrack = getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
+    private final Pref<Boolean> prefRouteGL = getPref(R.string.FSMarker_qc_RouteGL, false);
 
-    private final MGPref<Boolean> prefAutoSwitcher = MGPref.get(R.string.FSMarker_pref_auto_switcher, true);
-    private final MGPref<Boolean> prefAutoMarkerSetting = MGPref.get(R.string.FSMarker_pref_auto_key, true);
-    private final MGPref<Float> prefAlphaMtl = MGPref.get(R.string.FSMarker_pref_alphaMTL, 1.0f);
-    private final MGPref<Float> prefAlphaRotl = MGPref.get(R.string.FSRouting_pref_alphaRoTL, 1.0f);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
-    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.FSPosition_prev_ZoomLevel, 15);
-    private final MGPref<Boolean> prefMapMatching = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefMapMatchingEnabled = MGPref.anonymous(false);
+    private final Pref<Boolean> prefAutoSwitcher = getPref(R.string.FSMarker_pref_auto_switcher, true);
+    private final Pref<Boolean> prefAutoMarkerSetting = getPref(R.string.FSMarker_pref_auto_key, true);
+    private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
+    private final Pref<Float> prefAlphaRotl = getPref(R.string.FSRouting_pref_alphaRoTL, 1.0f);
+    private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
+    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_pref_ZoomLevel, 15);
+    private final Pref<Boolean> prefMapMatching = new Pref<>(false);
+    private final Pref<Boolean> prefMapMatchingEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
+    private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
 
     private ViewGroup dashboardRoute = null;
+    private volatile boolean refreshRequired = false;
+    private boolean runRouteCalcThread = true;
+    private final MGMapApplication application;
 
-    public FSRouting(MGMapActivity mmActivity) {
+    public FSRouting(MGMapActivity mmActivity, FSMarker fsMarker) {
         super(mmActivity);
+        application = getApplication();
         ttRefreshTime = 50;
         routingLineRefProvider = new RoutingLineRefProvider();
-        getApplication().getFS(FSMarker.class).lineRefProvider = routingLineRefProvider;
+        fsMarker.lineRefProvider = routingLineRefProvider;
         prefMapMatching.addObserver((o, arg) -> optimize());
         Observer matchingEnabledObserver = (o, arg) -> prefMapMatchingEnabled.setValue( prefMtlVisibility.getValue() && (prefAlphaRotl.getValue() > 0.25f) );
         prefMtlVisibility.addObserver(matchingEnabledObserver);
@@ -122,18 +131,91 @@ public class FSRouting extends FeatureService {
             }
         });
 
-        getApplication().markerTrackLogObservable.addObserver((o, arg) -> new Thread(){
+        new Thread(){
             @Override
             public void run() {
-                updateRouting( getApplication().markerTrackLogObservable.getTrackLog() );
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
+                while (runRouteCalcThread){
+                    try {
+                        synchronized (FSRouting.this){
+                            FSRouting.this.wait(1000);
+                        }
+                        if (refreshRequired){
+                            refreshRequired = false;
+                            updateRouting();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
             }
-        }.start());
+        }.start();
+
+
+
+        application.markerTrackLogObservable.addObserver((o, arg) -> {
+//            if (application.markerTrackLogObservable.getTrackLog() == null){
+//                if (application.routeTrackLogObservable.getTrackLog() != null){
+//                    application.routeTrackLogObservable.setTrackLog(null);
+//                    refreshObserver.onChange();
+//                }
+//            } else {
+                refreshRequired = true; // refresh route calculation is required
+//            NameUtil.logContext(6); // to see where the update was triggered
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
+                synchronized (FSRouting.this){
+                    FSRouting.this.notifyAll();
+                }
+//            }
+        });
+
+//        prefEditMarkerTrack.addObserver((o, arg) -> {
+//            if (prefEditMarkerTrack.getValue()){
+//                if ((routeCalcThread == null) || (!routeCalcThread.isAlive())){
+//                    routeCalcThread = new Thread(){
+//                        @Override
+//                        public void run() {
+//                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
+//                            while (prefEditMarkerTrack.getValue()){
+//                                try {
+//                                    synchronized (prefEditMarkerTrack){
+//                                        prefEditMarkerTrack.wait(1000);
+//                                    }
+//                                    if (refreshRequired){
+//                                        refreshRequired = false;
+//                                        updateRouting();
+//                                    }
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                            routeCalcThread = null;
+//                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
+//                        }
+//                    };
+//                    routeCalcThread.start();
+//                }
+//            }
+//        });
 
         prefZoomLevel.addObserver(refreshObserver);
         prefAlphaRotl.addObserver(refreshObserver);
         prefRouteGL.addObserver(refreshObserver);
         prefGps.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
+
+        if (getPref(R.string.MGMapApplication_pref_Restart, false).getValue()){
+            prefRoutingHints.setValue(false);
+        }
+        Observer routingHintsEnabledObserver = (o, arg) -> {
+            prefRoutingHintsEnabled.setValue( prefGps.getValue() && prefMtlVisibility.getValue());
+            if (!prefRoutingHintsEnabled.getValue()){
+                prefRoutingHints.setValue(false);
+            }
+        };
+        prefGps.addObserver(routingHintsEnabledObserver);
+        prefMtlVisibility.addObserver(routingHintsEnabledObserver);
 
         register(new RoutingControlLayer(), false);
     }
@@ -162,6 +244,11 @@ public class FSRouting extends FeatureService {
             etv.setData(R.drawable.matching);
             etv.setDisabledData(prefMapMatchingEnabled,R.drawable.matching_dis);
             etv.setHelp(r(R.string.FSRouting_qcMapMatching_Help));
+        } else if ("routingHint".equals(info)){
+            etv.setData(prefRoutingHints,R.drawable.routing_hints2, R.drawable.routing_hints1);
+            etv.setPrAction(prefRoutingHints);
+            etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
+            etv.setHelp(r(R.string.FSRouting_qcRoutingHint_Help)).setHelp(r(R.string.FSRouting_qcRoutingHint_Help1),r(R.string.FSRouting_qcRoutingHint_Help2));
         }
         return etv;
     }
@@ -174,6 +261,14 @@ public class FSRouting extends FeatureService {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        runRouteCalcThread = false;
+        synchronized (FSRouting.this){
+            FSRouting.this.notifyAll();
+        }
     }
 
     @Override
@@ -233,7 +328,7 @@ public class FSRouting extends FeatureService {
                         wpm.setLon(rpm.selectedApproach.getApproachNode().getLon());
                         rpm.resetApproaches();
                         calcApproaches(mapFile, rpm);
-                        getApplication().markerTrackLogObservable.changed();
+//                        getApplication().markerTrackLogObservable.changed();
                     }
                 }
             }
@@ -241,24 +336,26 @@ public class FSRouting extends FeatureService {
         return rpm;
     }
 
-    synchronized private void updateRouting(WriteableTrackLog mtl){
-        WriteableTrackLog routeTrackLog = null;
+    private void updateRouting(){
+        WriteableTrackLog mtl = getApplication().markerTrackLogObservable.getTrackLog();
+        WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
             MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
             if (mapFile == null){
                 Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
             } else {
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
-                routeTrackLog = updateRouting2(mapFile, mtl);
+                rotl = updateRouting2(mapFile, mtl, getApplication().routeTrackLogObservable.getTrackLog());
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
             }
         }
-        getApplication().routeTrackLogObservable.setTrackLog(routeTrackLog);
+        getApplication().routeTrackLogObservable.setTrackLog(rotl);
         refreshObserver.onChange(); // trigger visualization
     }
 
-    private WriteableTrackLog updateRouting2(MapDataStore mapFile, TrackLog mtl){
+    private WriteableTrackLog updateRouting2(MapDataStore mapFile, TrackLog mtl, WriteableTrackLog rotl){
         boolean routeModified = false;
+
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             if (segment.size() < 1) continue;
             Iterator<PointModel> iter = segment.iterator();
@@ -292,46 +389,77 @@ public class FSRouting extends FeatureService {
             }
         }
 
-        // do three things:
-        // 1.) move newMPM to currentMPM information
-        // 2.) recalc route statistic
-        // 3.) setup routingMPMs
-        routePointMap2.clear();
-        WriteableTrackLog routeTrackLog = new WriteableTrackLog();
-        String name = mtl.getName();
-        name = name.replaceAll("MarkerTrack$","MarkerRoute");
-        routeTrackLog.setName(name);
-        routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
-        WriteableTrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
-        if (oldRouteTrackLog != null){
-            routeTrackLog.setPrefModified(oldRouteTrackLog.getPrefModified());
-        }
-        routeTrackLog.setModified(routeTrackLog.isModified() || routeModified); // was already in state modified  or  route is now modified
-//        routeTrackLog.getPrefModified().onChange();
-
-        for (TrackLogSegment segment : mtl.getTrackLogSegments()){
-            routeTrackLog.startSegment(0);
-            PointModel lastPM = null;
-            for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
-                RoutePointModel rpm = routePointMap.get(segment.get(idx));
-                if (rpm != null){
-                    rpm.currentMPM = rpm.newMPM;
-                    rpm.directChanged = false;
-                    rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
-                    if (rpm.newMPM != null){
-                        for (PointModel pm : rpm.newMPM){
-                            if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
-                                routeTrackLog.addPoint(pm);
-                                routePointMap2.put(pm,rpm);
-                            }
-                            lastPM = pm;
+        if (!routeModified){
+            if ((rotl != null) && (mtl.getNumberOfSegments() == rotl.getNumberOfSegments())) {
+                for (int i=0; i<mtl.getNumberOfSegments(); i++) {
+                    TrackLogSegment mtlSegment = mtl.getTrackLogSegment(i);
+                    TrackLogSegment rotlSegment = rotl.getTrackLogSegment(i);
+                    if ((mtlSegment.size() > 0) && (rotlSegment.size() > 0)){
+                        if (PointModelUtil.compareTo( getRoutePointModel(mtlSegment.get(0)).getApproachNode(), rotlSegment.get(0) ) != 0){
+//                        if (routePointMap2.get(rotlSegment.get(0)).mtlp != mtlSegment.get(0) ){
+                            routeModified = true;
+                            break;
+                        }
+                        int l = mtlSegment.size()-1;
+                        if (PointModelUtil.compareTo( getRoutePointModel(mtlSegment.get(mtlSegment.size()-1)).getApproachNode(), rotlSegment.get(rotlSegment.size()-1) ) != 0){
+//                        if (routePointMap2.get(rotlSegment.get(l)).mtlp != mtlSegment.get(l) ){
+                            routeModified = true;
+                            break;
                         }
                     }
                 }
+            } else {
+                routeModified = true;
             }
-            routeTrackLog.stopSegment(0);
         }
-        routeTrackLog.stopTrack(0);
+
+        WriteableTrackLog routeTrackLog = rotl;  // default is: route not modified, return the old one.
+        if (routeModified){
+            // do three things:
+            // 1.) move newMPM to currentMPM information
+            // 2.) recalc route statistic
+            // 3.) setup routingMPMs
+            routePointMap2.clear();
+            routeTrackLog = new WriteableTrackLog();
+            String name = mtl.getName();
+            name = name.replaceAll("MarkerTrack$","MarkerRoute");
+            routeTrackLog.setName(name);
+            routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
+//            WriteableTrackLog oldRouteTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
+//            if (oldRouteTrackLog != null){
+//                routeTrackLog.setPrefModified(oldRouteTrackLog.getPrefModified());
+//            }
+            routeTrackLog.setModified(true);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Route modified: "+name);
+//        routeTrackLog.getPrefModified().onChange();
+
+            for (TrackLogSegment segment : mtl.getTrackLogSegments()){
+                routeTrackLog.startSegment(0);
+                PointModel lastPM = null;
+                for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
+                    RoutePointModel rpm = routePointMap.get(segment.get(idx));
+                    if (rpm != null){
+                        rpm.currentMPM = rpm.newMPM;
+                        rpm.directChanged = false;
+                        rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
+                        if (rpm.newMPM != null){
+                            for (PointModel pm : rpm.newMPM){
+                                if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
+                                    ExtendedPointModelImpl<RoutingHint> pmr = new ExtendedPointModelImpl<>(pm,rpm.routingHints.get(pm));
+                                    routeTrackLog.addPoint(pmr);
+//                                    routeTrackLog.addPoint(pm);
+                                    routePointMap2.put(pmr,rpm);
+                                }
+                                lastPM = pm;
+                            }
+                        }
+                    }
+                }
+                routeTrackLog.stopSegment(0);
+            }
+            routeTrackLog.stopTrack(0);
+
+        }
         return routeTrackLog;
     }
 

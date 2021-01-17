@@ -35,7 +35,7 @@ import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.BoxView;
 import mg.mgmap.view.MVLayer;
 import mg.mgmap.view.MultiMultiPointView;
@@ -57,7 +57,7 @@ public class FSGraphDetails extends FeatureService {
 
     private GradControlLayer controlLayer = null;
 
-    private final MGPref<Boolean> prefWayDetails = MGPref.get(R.string.FSGrad_pref_WayDetails_key, false);
+    private final Pref<Boolean> prefWayDetails = getPref(R.string.FSGrad_pref_WayDetails_key, false);
 
     public FSGraphDetails(MGMapActivity mmActivity) {
         super(mmActivity);

@@ -5,4 +5,7 @@
     <string name="preferences_gdrive_sync_key">GDriveSyncKey</string>
     <string name="preferences_gdrive_sync_title">Synchronize with GDrive</string>
     <string name="preferences_gdrive_sync_desc">Trigger (one time) synchronisation of files in the \n ./MGMapViewer/tracks/gpx folder with users GDrive account.</string>
+
+    <string name="preferences_gdrive_trigger">GDrive.Trigger</string>
+
 </resources>

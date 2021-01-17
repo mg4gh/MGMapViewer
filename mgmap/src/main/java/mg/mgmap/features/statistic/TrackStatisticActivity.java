@@ -15,7 +15,6 @@
 package mg.mgmap.features.statistic;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -37,7 +36,7 @@ import mg.mgmap.ControlView;
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.R;
-import mg.mgmap.util.FullscreenObserver;
+import mg.mgmap.util.FullscreenUtil;
 import mg.mgmap.util.HomeObserver;
 import mg.mgmap.model.TrackLogRef;
 import mg.mgmap.util.GpxExporter;
@@ -45,7 +44,8 @@ import mg.mgmap.util.NameUtil;
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.TrackLogStatistic;
 import mg.mgmap.util.PersistenceManager;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
+import mg.mgmap.util.PrefCache;
 import mg.mgmap.view.TrackStatisticEntry;
 
 import java.lang.reflect.Method;
@@ -55,25 +55,24 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 
 public class TrackStatisticActivity extends AppCompatActivity {
 
     private Context context = null;
     private MGMapApplication application = null;
 
-    LinearLayout parent = null;
-    private final MGPref<Boolean> prefFullscreen = MGPref.get(R.string.FSFullscreen_qc_On, true);
-    private final MGPref<Boolean> prefHome = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
-    private final MGPref<Boolean> prefNoneSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
-    private final MGPref<Boolean> prefAllSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
-    private final MGPref<Boolean> prefMarkerAllowed = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
-    private final MGPref<Boolean> prefDeleteAllowed = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
-    private final MGPref<Boolean> prefShareAllowed = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
-    private final MGPref<Boolean> prefNoneModified = new MGPref<Boolean>(UUID.randomUUID().toString(), true, false);
+    private LinearLayout parent = null;
 
-    FullscreenObserver fullscreenObserver = new FullscreenObserver(this);
-    HomeObserver homeObserver = new HomeObserver(this);
+    private PrefCache prefCache = null;
+
+    private Pref<Boolean> prefFullscreen;
+    private final Pref<Boolean> prefNoneSelected = new Pref<>(true);
+    private final Pref<Boolean> prefAllSelected = new Pref<>(true);
+    private final Pref<Boolean> prefMarkerAllowed = new Pref<>(true);
+    private final Pref<Boolean> prefDeleteAllowed = new Pref<>(true);
+    private final Pref<Boolean> prefShareAllowed = new Pref<>(true);
+    private final Pref<Boolean> prefNoneModified = new Pref<>(true);
+
     Observer reworkObserver = new Observer() {
         @Override
         public void update(Observable o, Object arg) {
@@ -83,17 +82,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     };
 
     Handler timer = new Handler();
-    Runnable ttReworkState = new Runnable() {
-        @Override
-        public void run() {
-            TrackStatisticActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    reworkState();
-                }
-            });
-        }
-    };
+    Runnable ttReworkState = () -> TrackStatisticActivity.this.runOnUiThread(this::reworkState);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,12 +93,19 @@ public class TrackStatisticActivity extends AppCompatActivity {
         setContentView(R.layout.track_statistic_activity);
         application = (MGMapApplication)getApplication();
         context = this;
+
+        prefCache = new PrefCache(context);
+        prefFullscreen = prefCache.get(R.string.FSFullscreen_qc_On, true);
+        prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(TrackStatisticActivity.this, prefFullscreen.getValue()));
+        Pref<Boolean> triggerHome = new Pref<>(true);
+        triggerHome.addObserver( new HomeObserver(this) );
+
         parent = findViewById(R.id.trackStatisticEntries);
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
         ControlView.createQuickControlETV(qcs)
                 .setData(R.drawable.fullscreen)
-                .setPrAction(prefFullscreen,prefHome);
+                .setPrAction(prefFullscreen,triggerHome);
         ControlView.createQuickControlETV(qcs)
                 .setData(prefAllSelected,R.drawable.select_all, R.drawable.select_all2)
                 .setOnClickListener(new SelectOCL(parent, true));
@@ -170,17 +166,14 @@ public class TrackStatisticActivity extends AppCompatActivity {
                         Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainA working="+working+" size="+trackLogsRemain.size());
                         if (!working){
                             working = true;
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainB working="+working+" size="+trackLogsRemain.size());
-                                    for (int i=0; (i<30)&&(!trackLogsRemain.isEmpty()) ; i++){
-                                        TrackLog trackLog = trackLogsRemain.remove(0);
-                                        addTrackLog(nameKeys, parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
-                                    }
-                                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainC working="+working+" size="+trackLogsRemain.size());
-                                    working = false;
+                            runOnUiThread(() -> {
+                                Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainB working="+working+" size="+trackLogsRemain.size());
+                                for (int i=0; (i<30)&&(!trackLogsRemain.isEmpty()) ; i++){
+                                    TrackLog trackLog = trackLogsRemain.remove(0);
+                                    addTrackLog(nameKeys, parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
                                 }
+                                Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainC working="+working+" size="+trackLogsRemain.size());
+                                working = false;
                             });
 
                         }
@@ -192,9 +185,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
             }
         }.start();
 
-        prefFullscreen.addObserver(fullscreenObserver);
-        prefHome.addObserver(homeObserver);
-
         prefFullscreen.onChange();
         reworkObserver.update(null,null);
     }
@@ -203,9 +193,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.d(MGMapApplication.LABEL, NameUtil.context());
-
-        prefFullscreen.deleteObserver(fullscreenObserver);
-        prefHome.deleteObserver(homeObserver);
 
         LinearLayout parent = findViewById(R.id.trackStatisticEntries);
         for (int idx=0; idx<parent.getChildCount(); idx++){
@@ -217,7 +204,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
             }
         }
         parent.removeAllViews();
-
     }
 
     @Override
@@ -226,7 +212,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
         qcs.removeAllViews();
-
+        prefCache.cleanup();
     }
 
     private ArrayList<TrackStatisticEntry> getSelectedEntries(){
@@ -306,98 +292,80 @@ public class TrackStatisticActivity extends AppCompatActivity {
         prefNoneModified.setValue(getModifiedEntries().size() == 0);
     }
 
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
     private View.OnClickListener createShowOCL(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!prefNoneSelected.getValue()){
-                    ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
-                    if (entries.size() > 0){
-                        TrackStatisticEntry sel = entries.remove(0);
-                        Intent intent = new Intent(TrackStatisticActivity.this, MGMapActivity.class);
-                        intent.putExtra("stl",sel.getTrackLog().getNameKey());
-                        List<String> list = getNames(entries,true);
-                        if (list.size() > 0){
-                            intent.putExtra("atl",list.toString());
-                        }
-                        intent.setType("mgmap/showTrack");
-                        startActivity(intent);
+        return v -> {
+            if (!prefNoneSelected.getValue()){
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                if (entries.size() > 0){
+                    TrackStatisticEntry sel = entries.remove(0);
+                    Intent intent = new Intent(TrackStatisticActivity.this, MGMapActivity.class);
+                    intent.putExtra("stl",sel.getTrackLog().getNameKey());
+                    List<String> list = getNames(entries,true);
+                    if (list.size() > 0){
+                        intent.putExtra("atl",list.toString());
                     }
+                    intent.setType("mgmap/showTrack");
+                    startActivity(intent);
                 }
             }
         };
     }
 
     private View.OnClickListener createMarkerOCL(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (prefMarkerAllowed.getValue()){
-                    ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+        return v -> {
+            if (prefMarkerAllowed.getValue()){
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
 
-                    if (entries.size() == 1){
-                        TrackLog trackLog = entries.get(0).getTrackLog();
-                        Intent intent = new Intent(TrackStatisticActivity.this, MGMapActivity.class);
-                        intent.putExtra("stl",trackLog.getNameKey());
-                        intent.setType("mgmap/markTrack");
-                        startActivity(intent);
-                    }
+                if (entries.size() == 1){
+                    TrackLog trackLog = entries.get(0).getTrackLog();
+                    Intent intent = new Intent(TrackStatisticActivity.this, MGMapActivity.class);
+                    intent.putExtra("stl",trackLog.getNameKey());
+                    intent.setType("mgmap/markTrack");
+                    startActivity(intent);
                 }
             }
         };
     }
 
     private View.OnClickListener createShareOCL(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (prefShareAllowed.getValue()){
-                    ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
-                    if (entries.size() > 0){
-                        Intent sendIntent = null;
-                        String title = "Share ...";
-                        if (entries.size() == 1){
-                            TrackLog trackLog = entries.get(0).getTrackLog();
-                            sendIntent = new Intent(Intent.ACTION_SEND);
-                            sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
-                            title = "Share "+trackLog.getName()+".gpx to ...";
-                        } else if (entries.size() >= 2){
-                            ArrayList<Uri> uris = new ArrayList<>();
+        return v -> {
+            if (prefShareAllowed.getValue()){
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                if (entries.size() > 0){
+                    Intent sendIntent;
+                    String title = "Share ...";
+                    if (entries.size() == 1){
+                        TrackLog trackLog = entries.get(0).getTrackLog();
+                        sendIntent = new Intent(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
+                        title = "Share "+trackLog.getName()+".gpx to ...";
+                    } else {
+                        ArrayList<Uri> uris = new ArrayList<>();
 
-                            for(TrackStatisticEntry entry : entries){
-                                TrackLog aTrackLog = entry.getTrackLog();
-                                uris.add( PersistenceManager.getInstance().getGpxUri( aTrackLog.getName() ) );
-                            }
-                            sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                            sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-
+                        for(TrackStatisticEntry entry : entries){
+                            TrackLog aTrackLog = entry.getTrackLog();
+                            uris.add( PersistenceManager.getInstance().getGpxUri( aTrackLog.getName() ) );
                         }
-                        sendIntent.setType("*/*");
-                        sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        startActivity(Intent.createChooser(sendIntent, title));
+                        sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                        sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
                     }
+                    sendIntent.setType("*/*");
+                    sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(sendIntent, title));
                 }
             }
         };
     }
 
     private View.OnClickListener createSaveOCL(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!prefNoneModified.getValue()){
-                    ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
-                    for (TrackStatisticEntry entry : entries){
-                        if (entry.isModified()){
-                            TrackLog aTrackLog = entry.getTrackLog();
-                            GpxExporter.export(aTrackLog);
-                        }
+        return v -> {
+            if (!prefNoneModified.getValue()){
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                for (TrackStatisticEntry entry : entries){
+                    if (entry.isModified()){
+                        TrackLog aTrackLog = entry.getTrackLog();
+                        GpxExporter.export(aTrackLog);
                     }
                 }
             }
@@ -405,58 +373,45 @@ public class TrackStatisticActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener createDeleteOCL(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (prefDeleteAllowed.getValue()){
-                    ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+        return v -> {
+            if (prefDeleteAllowed.getValue()){
+                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(TrackStatisticActivity.this);
-                    builder.setTitle(getResources().getString(R.string.ctx_stat_del_track));
-                    String msg = getNames(entries, false).toString();
-                    builder.setMessage(msg.substring(1,msg.length()-1));
+                AlertDialog.Builder builder = new AlertDialog.Builder(TrackStatisticActivity.this);
+                builder.setTitle(getResources().getString(R.string.ctx_stat_del_track));
+                String msg = getNames(entries, false).toString();
+                builder.setMessage(msg.substring(1,msg.length()-1));
 
 
-                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            Log.i(MGMapApplication.LABEL, NameUtil.context() +" confirm delete for list \""+msg+"\"");
-                            for(TrackStatisticEntry entry : entries){
-                                TrackLog aTrackLog = entry.getTrackLog();
-                                application.metaTrackLogs.remove(aTrackLog.getNameKey());
-                                application.availableTrackLogsObservable.availableTrackLogs.remove(aTrackLog);
-                                if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == aTrackLog) {
-                                    application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
-                                }
-                                PersistenceManager.getInstance().deleteTrack(aTrackLog.getName()); // no problem, if no persistent file exists
-                            }
-                            TrackStatisticActivity.this.recreate();
+                builder.setPositiveButton("YES", (dialog, which) -> {
+                    dialog.dismiss();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() +" confirm delete for list \""+msg+"\"");
+                    for(TrackStatisticEntry entry : entries){
+                        TrackLog aTrackLog = entry.getTrackLog();
+                        application.metaTrackLogs.remove(aTrackLog.getNameKey());
+                        application.availableTrackLogsObservable.availableTrackLogs.remove(aTrackLog);
+                        if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == aTrackLog) {
+                            application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
                         }
-                    });
+                        PersistenceManager.getInstance().deleteTrack(aTrackLog.getName()); // no problem, if no persistent file exists
+                    }
+                    TrackStatisticActivity.this.recreate();
+                });
 
-                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Do nothing
-                            dialog.dismiss();
-                            Log.i(MGMapApplication.LABEL, NameUtil.context() +" abort delete for list \""+msg+"\"");
-                        }
-                    });
+                builder.setNegativeButton("NO", (dialog, which) -> {
+                    // Do nothing
+                    dialog.dismiss();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() +" abort delete for list \""+msg+"\"");
+                });
 
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                }
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         };
     }
 
     private View.OnClickListener createBackOCL(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TrackStatisticActivity.this.finish();
-            }
-        };
+        return v -> TrackStatisticActivity.this.finish();
     }
 }
 

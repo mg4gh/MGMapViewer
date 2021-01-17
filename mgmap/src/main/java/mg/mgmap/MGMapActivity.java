@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -53,14 +53,13 @@ import mg.mgmap.features.atl.FSAvailableTrackLogs;
 import mg.mgmap.features.bb.FSBB;
 import mg.mgmap.features.control.FSControl;
 import mg.mgmap.features.alpha.FSAlpha;
-import mg.mgmap.features.gdrive.FSGDrive;
+import mg.mgmap.features.gdrive.FGDrive;
 import mg.mgmap.features.grad.FSGraphDetails;
 import mg.mgmap.features.marker.FSMarker;
 import mg.mgmap.features.beeline.FSBeeline;
 import mg.mgmap.features.position.FSPosition;
 import mg.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.features.routing.FSRouting;
-import mg.mgmap.features.routing.FSRoutingHints;
 import mg.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.features.search.FSSearch;
 import mg.mgmap.features.time.FSTime;
@@ -79,9 +78,10 @@ import mg.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.util.Permissions;
 import mg.mgmap.util.PersistenceManager;
 import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.util.Pref;
+import mg.mgmap.util.PrefCache;
 import mg.mgmap.util.TopExceptionHandler;
 import mg.mgmap.model.TrackLog;
-import mg.mgmap.util.MGPref;
 import mg.mgmap.view.MVLayer;
 
 import java.io.File;
@@ -89,8 +89,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 /**
@@ -105,15 +103,17 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
      *  @see <a href="../../../images/MGMapViewer_ViewModel.PNG">MGMapActivity_ViewModel</a> */
     ControlView coView = null;
 
+    ArrayList<FeatureService> featureServices = new ArrayList<>();
+
     /** Reference to the renderThemeStyleMenu - will be set due to the callback getCategories
      * form XmlRenderThemeMenuCallback after reading the themes xml file */
     protected XmlRenderThemeStyleMenu renderThemeStyleMenu;
 
-    /** Reference to the MapViewUtility - provides so servoices around the MapView object */
+    /** Reference to the MapViewUtility - provides so services around the MapView object */
     MapViewUtility mapViewUtility = null;
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-
+//    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private PrefCache prefCache;
 
     public ControlView getControlView(){
         return (ControlView) findViewById(R.id.controlView);
@@ -121,6 +121,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     SharedPreferences getSharedPreferences(){
         return sharedPreferences;
+    }
+    public PrefCache getPrefCache(){
+        return prefCache;
     }
 
     @Override
@@ -137,9 +140,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         MGMapLayerFactory.mapLayers.clear();
 
         application = (MGMapApplication) getApplication();
-        application.setMgMapActivity(this);
         createSharedPreferences();
         setContentView(R.layout.mgmapactivity);
+
+        prefCache = new PrefCache(this);
 
         initMapView();
         createLayers();
@@ -156,36 +160,32 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         coView = getControlView();
         mapViewUtility = new MapViewUtility(this, mapView);
 
-        application.featureServices.add(new FSTime(this));
-        application.featureServices.add(new FSBeeline(this));
-        application.featureServices.add(new FSPosition(this));
-        application.featureServices.add(new FSRecordingTrackLog(this));
-        application.featureServices.add(new FSAvailableTrackLogs(this));
-        application.featureServices.add(new FSMarker(this));
-        application.featureServices.add(new FSRouting(this));
-        application.featureServices.add(new FSRoutingHints(this));
-        application.featureServices.add(new FSRemainings(this));
-        application.featureServices.add(new FSBB(this, application.getFS(FSAvailableTrackLogs.class)));
-        application.featureServices.add(new FSGraphDetails(this));
-        application.featureServices.add(new FSSearch(this));
-        application.featureServices.add(new FSGDrive(this));
-        application.featureServices.add(new FSAlpha(this));
-        application.featureServices.add(new FSControl(this));
+        featureServices.add(new FSTime(this));
+        featureServices.add(new FSBeeline(this));
+        featureServices.add(new FSPosition(this));
+        featureServices.add(new FSRecordingTrackLog(this));
+        featureServices.add(new FSAvailableTrackLogs(this));
+        featureServices.add(new FSMarker(this));
+        featureServices.add(new FSRouting(this, getFS(FSMarker.class)));
+
+        featureServices.add(new FSRemainings(this));
+        featureServices.add(new FSBB(this, getFS(FSAvailableTrackLogs.class)));
+        featureServices.add(new FSGraphDetails(this));
+        featureServices.add(new FSSearch(this));
+        featureServices.add(new FSAlpha(this));
+        featureServices.add(new FSControl(this));
 
         try{
             Thread.sleep(100);
-        }catch (Exception e){}
+        }catch(Exception e){
+            Log.w(MGMapApplication.LABEL, NameUtil.context());
+        }
         coView.init(application, this);
         onNewIntent(getIntent());
-        prefGps.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                triggerTrackLoggerService();
-            }
-        });
+        prefCache.get(R.string.FSPosition_pref_GpsOn, false).addObserver((o, arg) -> triggerTrackLoggerService());
 
         application.prefAppRestart.setValue(false);
-        MGPref.dumpPrefs();
+        prefCache.dumpPrefs();
     }
 
 
@@ -195,7 +195,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         application = (MGMapApplication) getApplication();
 
-        for (FeatureService microService : application.featureServices) {
+        for (FeatureService microService : featureServices) {
             try {
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" onResume " + microService + " beginning ");
                 microService.onResume();
@@ -214,15 +214,19 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.availableTrackLogsObservable.changed();
         application.lastPositionsObservable.changed();
         application.markerTrackLogObservable.changed();
+
+        Pref<Boolean> triggerGDriveSync = prefCache.get(R.string.preferences_gdrive_trigger, false);
+        if (triggerGDriveSync.getValue()){
+            new FGDrive(this).trySynchronisation();
+            triggerGDriveSync.setValue(false);
+        }
     }
 
     @Override
     protected void onPause() {
         Log.i(MGMapApplication.LABEL, NameUtil.context());
-
-//        if (microServices == null) return;
-        for (int i = application.featureServices.size() - 1; i >= 0; i--) { // reverse order
-            FeatureService microService = application.featureServices.get(i);
+        for (int i = featureServices.size() - 1; i >= 0; i--) { // reverse order
+            FeatureService microService = featureServices.get(i);
             try {
                 microService.onPause();
             } catch (Exception e) {
@@ -235,37 +239,41 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 tileDownloadLayer.onPause();
             }
         }
-
-        application.recordingTrackLogObservable.changed();
-        application.availableTrackLogsObservable.changed();
-        application.lastPositionsObservable.changed();
-        application.markerTrackLogObservable.changed();
-
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
-        for (int i = application.featureServices.size() - 1; i >= 0; i--) { // reverse order
-            FeatureService microService = application.featureServices.get(i);
+        Log.w(MGMapApplication.LABEL, NameUtil.context() + " Destroy started");
+        for (int i = featureServices.size() - 1; i >= 0; i--) { // reverse order
+            FeatureService microService = featureServices.get(i);
             try {
                 microService.onDestroy();
             } catch (Exception e) {
                 Log.w(MGMapApplication.LABEL, NameUtil.context()+" stop " + microService + " failed: " + e.getMessage());
             }
         }
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
-        MGPref.clear(); // Clear cached Prefs (to free observers registered on these Prefs
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
-        application.setMgMapActivity(null);
+        application.availableTrackLogsObservable.deleteObservers();
+        application.recordingTrackLogObservable.deleteObservers();
+        application.markerTrackLogObservable.deleteObservers();
+        application.routeTrackLogObservable.deleteObservers();
+        application.lastPositionsObservable.deleteObservers();
+
         AndroidGraphicFactory.clearResourceMemoryCache();
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
         mapView.destroyAll();
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
+        prefCache.cleanup();
+        Log.w(MGMapApplication.LABEL, NameUtil.context() + " Destroy finished");
         super.onDestroy();
     }
 
+    /** Return the feature service by type  */
+    @SuppressWarnings("unchecked")
+    public <T> T getFS(Class<T> tClass){
+        for (FeatureService service : featureServices){
+            if (tClass.isInstance(service)) return (T)service;
+        }
+        return null;
+    }
 
 
     @Override
@@ -276,10 +284,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         sharedPreferences.edit().putString(getResources().getString(R.string.preferences_language_key), prefLang).apply();
         MGMapLayerFactory.setXmlRenderTheme(getRenderTheme());
 
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + Float.toString(DisplayModel.getDeviceScaleFactor()));
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + DisplayModel.getDeviceScaleFactor());
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device screen size " + getResources().getDisplayMetrics().widthPixels + "x" + getResources().getDisplayMetrics().heightPixels);
-        float fs = Float.valueOf(sharedPreferences.getString(getResources().getString(R.string.preferences_scale_key), Float.toString(DisplayModel.getDefaultUserScaleFactor())));
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " User ScaleFactor " + Float.toString(fs));
+        float fs = Float.parseFloat(sharedPreferences.getString(getResources().getString(R.string.preferences_scale_key), Float.toString(DisplayModel.getDefaultUserScaleFactor())));
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " User ScaleFactor " + fs);
         if (fs != DisplayModel.getDefaultUserScaleFactor()) {
             DisplayModel.setDefaultUserScaleFactor(fs);
         }
@@ -327,7 +335,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     }
                     for (String aatl : atls){
                         TrackLog aTrackLog = application.metaTrackLogs.get(aatl);
-                        if (aatl != null){
+                        if (aTrackLog != null){
                             application.availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
                             bBox2show.extend(aTrackLog.getBBox());
 
@@ -346,7 +354,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     BBox bBox2show = new BBox();
                     TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
                     if (selectedTrackLog != null){
-                        application.getFS(FSMarker.class).createMarkerTrackLog(selectedTrackLog);
+                        getFS(FSMarker.class).createMarkerTrackLog(selectedTrackLog);
                         bBox2show.extend(selectedTrackLog.getBBox());
                     }
 
@@ -413,12 +421,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         if (requestCode == READ_EXTERNAL_STORAGE_CODE ){
             if (Permissions.check(this, Manifest.permission.READ_EXTERNAL_STORAGE) ){ //ok, got the read permission -> restart
                 Log.w(MGMapApplication.LABEL, NameUtil.context()+ " Restart NOW");
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MGMapActivity.this.recreate(); // restart activity
-                    }
-                },200);
+                // restart activity
+                new Handler().postDelayed(MGMapActivity.this::recreate,200);
             }
         }
     }
@@ -432,7 +436,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
      * 2.) else take the first Mapsforge Map (in the sequece of map layers) and take the startPosition+startZoom from this
      * 3.) else take a hardcoded fix position in Heidelberg :-)
      */
-    protected IMapViewPosition initializePosition(IMapViewPosition mvp) {
+    protected void initializePosition(IMapViewPosition mvp) {
         LatLong center = mvp.getCenter();
         if (getMapDataStore(new BBox().extend(new PointModelImpl(center))) == null){
             MapDataStore mds = getMapDataStore(null);
@@ -441,10 +445,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             } else {
                 mvp.setMapPosition(new MapPosition(new LatLong(49.4057, 8.6789), (byte)15));
             }
-        };
+        }
         mvp.setZoomLevelMax(ZOOM_LEVEL_MAX);
         mvp.setZoomLevelMin(ZOOM_LEVEL_MIN);
-        return mvp;
     }
 
 
@@ -499,9 +502,23 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
 
+    public ArrayList<String> getMapLayerKeys(){
+        ArrayList<String> mapLayerKeys = new ArrayList<>();
+        int[] prefIds = new int[]{
+                R.string.Layers_pref_chooseMap1_key,
+                R.string.Layers_pref_chooseMap2_key,
+                R.string.Layers_pref_chooseMap3_key,
+                R.string.Layers_pref_chooseMap4_key,
+                R.string.Layers_pref_chooseMap5_key};
+        for (int id : prefIds){
+            mapLayerKeys.add( getResources().getString( id ));
+        }
+        return mapLayerKeys;
+    }
+
     /** Return a MapDataStore if it contains a given BBox. This is used e.g. to find the MapDataStore for route calculation. */
     public MapDataStore getMapDataStore(BBox bBox) {
-        for (String prefKey : application.getMapLayerKeys()){
+        for (String prefKey : getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "none");
 
             Layer layer = MGMapLayerFactory.getMapLayer(key);
@@ -524,10 +541,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void createLayers() {
         MGMapLayerFactory.setMapView(mapView);
         Layers layers = mapView.getLayerManager().getLayers();
-        for (String prefKey : application.getMapLayerKeys()){
+        for (String prefKey : getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
-            Layer layer = null;
-            layer = MGMapLayerFactory.getMapLayer(key);
+            Layer layer = MGMapLayerFactory.getMapLayer(key);
             if (layer != null){
                 if (!layers.contains(layer)){
                     layers.add(layer);
@@ -540,7 +556,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             @Override
             protected boolean onTap(WriteablePointModel point) {
                 TrackLogRef ref = selectCloseTrack( point );
-//                if ((ref.getTrackLog() != null) && (ref.getTrackLog() != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog())){
                 if (ref.getTrackLog() != null){
                     application.availableTrackLogsObservable.setSelectedTrackLogRef(ref);
                 } else {
@@ -569,15 +584,15 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     }
                 }
                 if (bestMatch.getTrackLog() == application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) {
-                    MGPref.get(R.string.FSATL_pref_stlGl_key, false).toggle();
+                    prefCache.get(R.string.FSATL_pref_stlGl_key, false).toggle();
                     return true;
                 }
                 if (bestMatch.getTrackLog() == application.recordingTrackLogObservable.getTrackLog()) {
-                    MGPref.get(R.string.FSRecording_pref_rtlGl_key, false).toggle();
+                    prefCache.get(R.string.FSRecording_pref_rtlGl_key, false).toggle();
                     return true;
                 }
                 if (bestMatch.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) {
-                    MGPref.get(R.string.FSMarker_qc_RouteGL, false).toggle();
+                    prefCache.get(R.string.FSMarker_qc_RouteGL, false).toggle();
                     return true;
                 }
                 return super.onLongPress(point);

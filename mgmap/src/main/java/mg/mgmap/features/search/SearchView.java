@@ -96,12 +96,9 @@ public class SearchView extends LinearLayout {
                 };
                 ocl.setToMillis(2500);
                 tv.setOnClickListener(ocl);
-                tv.setOnLongClickListener(new OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        fsSearch.setSearchResult(sr.pos);
-                        return true;
-                    }
+                tv.setOnLongClickListener(v -> {
+                    fsSearch.setSearchResult(sr.pos);
+                    return true;
                 });
             } else {
                 resetSearchResult(tv);

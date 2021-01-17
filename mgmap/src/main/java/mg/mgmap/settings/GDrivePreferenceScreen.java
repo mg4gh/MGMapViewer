@@ -1,14 +1,13 @@
 package mg.mgmap.settings;
 
-import android.content.Intent;
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 
-import mg.mgmap.MGMapActivity;
-import mg.mgmap.MGMapApplication;
 import mg.mgmap.R;
-import mg.mgmap.features.gdrive.FSGDrive;
 
 public class GDrivePreferenceScreen extends MGPreferenceScreen {
     @Override
@@ -24,21 +23,18 @@ public class GDrivePreferenceScreen extends MGPreferenceScreen {
 
     private void setGDriveOCL() {
         Preference pref = findPreference(getResources().getString(R.string.preferences_gdrive_sync_key));
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                MGMapApplication application = (MGMapApplication)getActivity().getApplication(); // getActivity() returns Settings Activity, not MGMapActivity
-                MGMapActivity mgMapActivity = application.getMgMapActivity();
-
-                FSGDrive msGDrive = application.getFS(FSGDrive.class);
-                msGDrive.trySynchronisation();
-
-                Intent intent = new Intent(mgMapActivity, MGMapActivity.class);
-                mgMapActivity.startActivity(intent);
-
+        if (pref != null){
+            pref.setOnPreferenceClickListener(preference -> {
+                Activity activity = getActivity();
+                if (activity != null){
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+                    sharedPreferences.edit().putBoolean(getResources().getString(R.string.preferences_gdrive_trigger), true).apply();
+//                    new FSGDrive(getActivity()).trySynchronisation();
+                    getActivity().finish();
+                }
                 return true;
-            }
-        });
+            });
+        }
     }
 
 }

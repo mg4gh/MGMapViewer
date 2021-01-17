@@ -14,6 +14,9 @@
  */
 package mg.mgmap.features.gdrive;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -43,15 +46,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
-import mg.mgmap.FeatureService;
 import mg.mgmap.util.BgJob;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PersistenceManager;
 import mg.mgmap.util.Zipper;
 
-public class FSGDrive extends FeatureService {
+public class FGDrive {
 
     /** Directory to store authorization tokens for this application. */
     private static final String GDRIVE_CONFIG = "gdrive.cfg";
@@ -72,27 +73,39 @@ public class FSGDrive extends FeatureService {
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
 
+    Activity activity;
+    MGMapApplication application;
+    boolean abortSync = false;
 
-    public FSGDrive(MGMapActivity mmActivity) {
-        super(mmActivity);
+    public FGDrive(Activity activity) {
+        this.activity = activity;
+        application = (MGMapApplication)activity.getApplication();
     }
 
-    @Override
-    protected void onResume() { }
-
-    @Override
-    protected void onPause() { }
-
     public void trySynchronisation() {
+        abortSync = false;
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle("GDrive synchronisation service");
+        builder.setMessage("Trying to identify necessary upload and download jobs.");
+
+        builder.setNegativeButton("Abort", (dialog, which) -> {
+            abortSync = true;
+            dialog.dismiss();
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it - abort." );
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+
         new Thread(){
             @Override
             public void run() {
-                trySynchronisationAsync();
+                trySynchronisationAsync(alert);
             }
         }.start();
     }
 
-    private void trySynchronisationAsync(){
+    private void trySynchronisationAsync(AlertDialog alert){
 
         try {
             Properties props = PersistenceManager.getInstance().getConfigProperties(null,GDRIVE_CONFIG);
@@ -148,9 +161,35 @@ public class FSGDrive extends FeatureService {
                     jobs.add( new DownloadJob(dservice,zip,remoteMap.get(name),gpxFolder,name) );
                 }
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" GDrive Sync Overview: uploadJob="+numUploadJobs+" downloadJob="+(jobs.size()-numUploadJobs));
+            int numDownloadJobs = jobs.size()-numUploadJobs;
+            String message = "GDrive Sync Overview: \ntracks in sync: "+commonSet.size()+" \ntracks to upload: "+numUploadJobs+" \ntracks to download: "+numDownloadJobs;
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+message);
             // ok, now do the real work!!!
-            getApplication().addBgJobs( jobs );
+            activity.runOnUiThread(() -> {
+                alert.hide();
+                if (abortSync) return;
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                builder.setTitle("GDrive synchronisation service");
+                builder.setMessage(message);
+
+
+                builder.setPositiveButton("Sync now", (dialog, which) -> {
+                    dialog.dismiss();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
+                    application.addBgJobs( jobs );
+                });
+
+                builder.setNegativeButton("Abort", (dialog, which) -> {
+                    // Do nothing
+                    dialog.dismiss();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
+                });
+                AlertDialog alert2 = builder.create();
+                alert2.show();
+                alert2.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(numDownloadJobs+numUploadJobs>0);
+            });
 
         } catch (Throwable t) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), t);
@@ -163,7 +202,7 @@ public class FSGDrive extends FeatureService {
      */
     private Credential authorize() throws IOException {
         // Load client secrets.
-        InputStream in = FSGDrive.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        InputStream in = FGDrive.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         if (in == null) {
             throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
         }
@@ -179,7 +218,7 @@ public class FSGDrive extends FeatureService {
         AuthorizationCodeInstalledApp.Browser browser = url -> {
             try {
                 Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse( url ));
-                getActivity().startActivity(myIntent);
+                activity.startActivity(myIntent);
             } catch (Exception e) {
                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
             }

@@ -1,6 +1,6 @@
 package mg.mgmap.model;
 
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 
 /**
  * Creates new TrackLog objects based on existing GPX data, requires special handling with the timestamps.
@@ -103,7 +103,7 @@ public class WriteableTrackLog extends TrackLog {
         }
     }
 
-    public void setPrefModified(MGPref<Boolean> prefModified){
+    public void setPrefModified(Pref<Boolean> prefModified){
         this.prefModified = prefModified;
     }
 }

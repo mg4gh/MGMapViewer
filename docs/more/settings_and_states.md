@@ -1,16 +1,19 @@
 ## Preferences and states
 
 
-| preference key | application property name | type | init | usage | use observer | require recreate |
-|---|---|---|---|---|---|---|
-| SelectMap\[1..5] | - | String |  | MGMapActivity; ControlView | - | yes |
-| "no_recreate_alpha_"+\<layer_key> | - | float | none | ControlView | - | no |
-| SelectTheme | - | String | MGMapActivity.getRenderTheme Elevate.xml | MGMapActivity | - | yes |
-| SelectSearchProvider | - | String | MSSerach.changeVisibility Nominatim | MSSearch | - | no |
-| - | gpsOn | boolean | MGMapApplication.\<create> false | GpsControl; MSPosotion;  MSMotion; ... | - | no |
-| - | centerCurrentPosition | boolean | MGMapApplication.\<create> true; <br/> on resume TrackRecording true  | CenterControl; MSPosotion; | + | no |
-| way_details | wayDetails | boolean | MGMapApplication.\<create> false; MGMapApplication.onCreate false; MGMapActivity.onCreate from preference  | MSGraphDetails; MSRouting; | - | ? |
-| - | showAlphaSliders | boolean | MGMapApplication.\<create> false; | ControlView | + |  no |
+| preference key string | pref key id name | variable name | type | default | usage | observer | require recreate |
+|---|---|---|---|---|---|---|---|
+| SelectMap\[1..5] | Layers_pref_chooseMap\[1..5]_key | mapLayerKeys | String | "" | MGMapActivity; ControlComposer; search.provider.POI | - | yes |
+| "alpha_"+\<layer_key> | - | prefAlpha | float | 1.0f | MGMapLayerFactory | - | no |
+| PrefThemeChanged | preference_theme_changed | baseLayer | String | MGMapActivity.getRenderTheme Elevate.xml | ThemeSettings; MapViewerBase | - | yes |
+| SelectTheme | preference_choose_theme_key | -  | String | "Elevate.xml" | MGMapActivity; MapViewerBase | - | yes |
+| SelectSearchProvider | preference_choose_search_key | - | String | Nominatim | FSSearch | - | no |
+| FSPosition.GpsOn | FSPosition_prev_GpsOn | prefGps | boolean | false | MGMapActivity; MGMapApplication; TrackLoggerService; FSBeeline; FSPosition; FSRemainings; FSRouting; FS RoutingHints; FSRecordingTrackLog | MGMapActivity; FSBeeline; FSPosition; FSRemainings; FSRouting; FSRoutingHints | no |
+| FSPosition.Center | FSPosition_prev_Center | prefCenter | boolean | true | FSPosition | FSPosition | no |
+| FSGrad.wayDetails | FSGrad_pref_WayDetails_key | prefWayDetails | boolean | false  | FSGraphDetails; FSRouting | - | no |
+| Layers.showAlphaLayers | Layers_qc_showAlphaLayers | prefAlphaLayers | boolean | false | FSAlpha | FSAlpha |  no |
+| Layers.showAlphaTracks | Layers_qc_showAlphaTracks | prefAlphaTracks | boolean | false | FSAlpha | FSAlpha |  no |
+
 | - | editMarkerTrack | boolean | MGMapApplication.\<create> false; | ControlView; MSMarker; MSRouting | + | no |
 | - | routingHints | boolean | MGMapApplication.\<create> false; | ControlView; MSRoutingHint; RoutingHintService | + | no |
 | - | showRouting | boolean | MGMapApplication.\<create> true; | MSRouting; \<RoutingControls> | - | no |

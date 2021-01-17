@@ -37,21 +37,21 @@ import mg.mgmap.model.WriteablePointModelImpl;
 import mg.mgmap.util.Control;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.MVLayer;
 
 public class FSBB extends FeatureService {
 
-    private final MGPref<Boolean> prefBboxOnAction = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefBboxOn = MGPref.get(R.string.FSBB_qc_bboxOn, false);
+    private final Pref<Boolean> triggerBboxOn = new Pref<>(false);
+    private final Pref<Boolean> prefBboxOn = getPref(R.string.FSBB_qc_bboxOn, false);
 
-    private final MGPref<Boolean> prefLoadFromBB = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefLoadFromBBEnabled = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefTSLoadRemain = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefTSActionsEnabled = MGPref.anonymous(true);
-    private final MGPref<Boolean> prefTSLoadAll = MGPref.anonymous(false);
-    private final MGPref<Boolean> prefTSDeleteAll = MGPref.anonymous(false);
+    private final Pref<Boolean> triggerLoadFromBB = new Pref<>(false);
+    private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(false);
+    private final Pref<Boolean> triggerTSLoadRemain = new Pref<>(false);
+    private final Pref<Boolean> prefTSActionsEnabled = new Pref<>(false);
+    private final Pref<Boolean> triggerTSLoadAll = new Pref<>(false);
+    private final Pref<Boolean> triggerTSDeleteAll = new Pref<>(false);
 
     private final ArrayList<MGTileStore> tss = identifyTS();
     private boolean initSquare = false;
@@ -62,11 +62,11 @@ public class FSBB extends FeatureService {
         super(mmActivity);
         this.fsAvailableTrackLogs = fsAvailableTrackLogs;
 
-        prefBboxOnAction.addObserver( (o,args) -> prefBboxOn.toggle());
-        prefLoadFromBB.addObserver( (o,args) -> loadFromBB());
-        prefTSLoadRemain.addObserver( (o, args) -> tsAction(false, false));
-        prefTSLoadAll.addObserver( (o, args) -> tsAction(false, true));
-        prefTSDeleteAll.addObserver( (o,args) -> tsAction(true, true));
+        triggerBboxOn.addObserver( (o, args) -> prefBboxOn.toggle());
+        triggerLoadFromBB.addObserver( (o, args) -> loadFromBB());
+        triggerTSLoadRemain.addObserver( (o, args) -> tsAction(false, false));
+        triggerTSLoadAll.addObserver( (o, args) -> tsAction(false, true));
+        triggerTSDeleteAll.addObserver( (o, args) -> tsAction(true, true));
         prefBboxOn.addObserver(refreshObserver);
     }
 
@@ -86,29 +86,29 @@ public class FSBB extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         super.initQuickControl(etv,info);
         if ("group_bbox".equals(info)){
-            etv.setPrAction(MGPref.anonymous(false));
+            etv.setPrAction(new Pref<>(false));
             etv.setData(prefBboxOn,R.drawable.group_bbox1,R.drawable.group_bbox2);
         } else if ("loadFromBB".equals(info)){
-            etv.setPrAction(prefLoadFromBB);
+            etv.setPrAction(triggerLoadFromBB);
             etv.setData(R.drawable.load_from_bb);
             etv.setDisabledData(prefLoadFromBBEnabled, R.drawable.load_from_bb_dis);
             etv.setHelp(r(R.string.FSBB_qcLoadFromBB_Help));
         } else if ("bbox_on".equals(info)){
-            etv.setPrAction(prefBboxOnAction);
+            etv.setPrAction(triggerBboxOn);
             etv.setData(prefBboxOn,R.drawable.bbox2,R.drawable.bbox);
             etv.setHelp(r(R.string.FSBB_qcBBox_Help)).setHelp(r(R.string.FSBB_qcBBox_Help1),r(R.string.FSBB_qcBBox_Help2));
         } else if ("TSLoadRemain".equals(info)){
-            etv.setPrAction(prefTSLoadRemain);
+            etv.setPrAction(triggerTSLoadRemain);
             etv.setData(R.drawable.bb_ts_load_remain);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_remain_dis);
             etv.setHelp(r(R.string.FSBB_qcTSLoadRemainFromBB_Help));
         }else if ("TSLoadAll".equals(info)){
-            etv.setPrAction(prefTSLoadAll);
+            etv.setPrAction(triggerTSLoadAll);
             etv.setData(R.drawable.bb_ts_load_all);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_load_all_dis);
             etv.setHelp(r(R.string.FSBB_qcTSLoadAllFromBB_Help));
         }else if ("TSDeleteAll".equals(info)){
-            etv.setPrAction(prefTSDeleteAll);
+            etv.setPrAction(triggerTSDeleteAll);
             etv.setData(R.drawable.bb_ts_delete_all);
             etv.setDisabledData(prefTSActionsEnabled, R.drawable.bb_ts_delete_all_dis);
             etv.setHelp(r(R.string.FSBB_qcTSDeleteAllFromBB_Help));

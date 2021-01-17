@@ -19,7 +19,7 @@ import java.util.Observer;
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.FeatureService;
 import mg.mgmap.R;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 
 import static android.view.View.INVISIBLE;
@@ -27,14 +27,14 @@ import static android.view.View.VISIBLE;
 
 public class FSAlpha extends FeatureService {
 
-    private final MGPref<Boolean> prefAlpha = MGPref.get(R.string.Layers_qc_showAlphaSlider, false);
-    private final MGPref<Boolean> prefAlpha2 = MGPref.get(R.string.Layers_qc_showAlphaSlider2, false);
+    private final Pref<Boolean> prefAlphaLayers = getPref(R.string.Layers_qc_showAlphaLayers, false);
+    private final Pref<Boolean> prefAlphaTracks = getPref(R.string.Layers_qc_showAlphaTracks, false);
 
-    private final MGPref<Boolean> prefStlVisibility = MGPref.get(R.string.FSATL_pref_STL_visibility, false);
-    private final MGPref<Boolean> prefAtlVisibility = MGPref.get(R.string.FSATL_pref_ATL_visibility, false);
-    private final MGPref<Boolean> prefMtlVisibility = MGPref.get(R.string.FSMarker_pref_MTL_visibility, false);
-    private final MGPref<Boolean> prefRtlVisibility = MGPref.get(R.string.FSRecording_pref_RTL_visibility, false);
-    private final MGPref<Boolean> prefSliderTracksEnabled = MGPref.anonymous(false);
+    private final Pref<Boolean> prefStlVisibility = getPref(R.string.FSATL_pref_STL_visibility, false);
+    private final Pref<Boolean> prefAtlVisibility = getPref(R.string.FSATL_pref_ATL_visibility, false);
+    private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
+    private final Pref<Boolean> prefRtlVisibility = getPref(R.string.FSRecording_pref_RTL_visibility, false);
+    private final Pref<Boolean> prefSliderTracksEnabled = new Pref<>(false);
 
     public FSAlpha(MGMapActivity activity){
         super(activity);
@@ -47,20 +47,20 @@ public class FSAlpha extends FeatureService {
         prefRtlVisibility.addObserver(prefSliderTracksObserver);
         prefSliderTracksObserver.update(null, null);
 
-        prefAlpha.addObserver(refreshObserver);
-        prefAlpha2.addObserver(refreshObserver);
+        prefAlphaLayers.addObserver(refreshObserver);
+        prefAlphaTracks.addObserver(refreshObserver);
     }
 
     @Override
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         super.initQuickControl(etv,info);
         if ("alpha_layers".equals(info)){
-            etv.setPrAction(prefAlpha);
-            etv.setData(prefAlpha,R.drawable.slider_layer2,R.drawable.slider_layer1);
+            etv.setPrAction(prefAlphaLayers);
+            etv.setData(prefAlphaLayers,R.drawable.slider_layer2,R.drawable.slider_layer1);
             etv.setHelp(r(R.string.FSAlpha_qcAlphaLayers_Help)).setHelp(r(R.string.FSAlpha_qcAlphaLayers_Help1),r(R.string.FSAlpha_qcAlphaLayers_Help2));
         } else if ("alpha_tracks".equals(info)){
-            etv.setPrAction(prefAlpha2);
-            etv.setData(prefAlpha2,R.drawable.slider_track2,R.drawable.slider_track1);
+            etv.setPrAction(prefAlphaTracks);
+            etv.setData(prefAlphaTracks,R.drawable.slider_track2,R.drawable.slider_track1);
             etv.setDisabledData(prefSliderTracksEnabled, R.drawable.slider_track_dis);
             etv.setHelp(r(R.string.FSAlpha_qcAlphaTracks_Help)).setHelp(r(R.string.FSAlpha_qcAlphaTracks_Help1),r(R.string.FSAlpha_qcAlphaTracks_Help2));
         }
@@ -71,8 +71,8 @@ public class FSAlpha extends FeatureService {
     @Override
     protected void onResume() {
         super.onResume();
-        prefAlpha.setValue(false);
-        prefAlpha2.setValue(false);
+        prefAlphaLayers.setValue(false);
+        prefAlphaTracks.setValue(false);
     }
 
     @Override
@@ -86,13 +86,13 @@ public class FSAlpha extends FeatureService {
     }
 
     private void setSliderVisibility(){
-        int visibility = prefAlpha.getValue()?VISIBLE:INVISIBLE;
-        int visibility2 = prefAlpha2.getValue()?VISIBLE:INVISIBLE;
+        int visibility = prefAlphaLayers.getValue()?VISIBLE:INVISIBLE;
+        int visibility2 = prefAlphaTracks.getValue()?VISIBLE:INVISIBLE;
         if ((visibility == VISIBLE) && (visibility2 == VISIBLE)){
-            if (refreshObserver.last == prefAlpha2){
-                prefAlpha.setValue(false);
+            if (refreshObserver.last == prefAlphaTracks){
+                prefAlphaLayers.setValue(false);
             } else {
-                prefAlpha2.setValue(false);
+                prefAlphaTracks.setValue(false);
             }
         } else {
             getActivity().findViewById(R.id.bars).setVisibility(visibility);

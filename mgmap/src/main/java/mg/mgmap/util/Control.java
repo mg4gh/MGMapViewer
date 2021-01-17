@@ -66,4 +66,8 @@ public class Control implements View.OnClickListener {
     public UUID getUuid(){
         return uuid;
     }
+
+    protected <T> Pref<T> getPref(int id, T defaultValue){
+        return controlView.getActivity().getPrefCache().get(id,defaultValue);
+    }
 }

@@ -2,19 +2,14 @@ package mg.mgmap;
 
 import android.app.Application;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
-import androidx.preference.PreferenceManager;
+
 import android.util.Log;
 
-import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.model.IMapViewPosition;
 
 import mg.mgmap.model.WriteableTrackLog;
 import mg.mgmap.model.PointModel;
@@ -29,7 +24,8 @@ import mg.mgmap.util.PersistenceManager;
 import mg.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.util.ExtrasUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
+import mg.mgmap.util.PrefCache;
 
 
 import java.io.IOException;
@@ -46,8 +42,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * The application of the MgMapActivity.
  * Mainly it provides some Observable objects that represent the application state.
- * These state objects ensure that the applications state survive a restart of the activity.
- * Second this decouples the sensors, which change the model objects from the services, which act depending on these changes.
  */
 public class MGMapApplication extends Application {
 
@@ -62,14 +56,14 @@ public class MGMapApplication extends Application {
     public final TrackLogObservable<WriteableTrackLog> routeTrackLogObservable = new TrackLogObservable<>();
     public final TreeMap<String, TrackLog> metaTrackLogs = new TreeMap<>(Collections.reverseOrder());
 
+    /** queue for new (unhandled) TrackLogPoint objects */
+    public final ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
 
-    boolean initFinished = false;
-    private MGMapActivity mgMapActivity = null;
-    ArrayList<FeatureService> featureServices = new ArrayList<>();
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
 
-    MGPref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
-    MGPref<Boolean> prefGpsOn = null; // property to distinguish ApplicationStart from ActivityRecreate
+    PrefCache prefCache = null;
+    Pref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
+    Pref<Boolean> prefGps = null; // property to distinguish ApplicationStart from ActivityRecreate
 
     public void startLogging(){
         try {
@@ -95,34 +89,20 @@ public class MGMapApplication extends Application {
 
         startLogging();
         AndroidGraphicFactory.createInstance(this);
-        ExtrasUtil.checkCreateMeta();
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        MGPref.init(this);
-        prefAppRestart = MGPref.get(R.string.MGMapApplication_pref_Restart, true);
-        prefGpsOn = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+        prefCache = new PrefCache(this);
+
+        prefAppRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
+        prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
         prefAppRestart.setValue(true);
-        prefGpsOn.setValue(false);
-        MGPref.get(R.string.FSSearch_qc_showSearchResult, false).setValue(false);
+        prefGps.setValue(false);
 
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
 
-        int[] prefIds = new int[]{
-                R.string.Layers_pref_chooseMap1_key,
-                R.string.Layers_pref_chooseMap2_key,
-                R.string.Layers_pref_chooseMap3_key,
-                R.string.Layers_pref_chooseMap4_key,
-                R.string.Layers_pref_chooseMap5_key};
-        for (int id : prefIds){
-            mapLayerKeys.add( getResources().getString( id ));
-        }
-
-
-
         // Recover state of RecordingTrackLog
-        new AsyncTask<Object, Integer, RecordingTrackLog>() {
+        new Thread(){
             @Override
-            protected RecordingTrackLog doInBackground(Object... objects) {
+            public void run() {
                 RecordingTrackLog rtl = RecordingTrackLog.initFromRaw();
                 if ((rtl != null) && !rtl.isTrackRecording()){ // either finished or not yet started
                     if (rtl.getNumberOfSegments() > 0){  // is finished
@@ -131,34 +111,39 @@ public class MGMapApplication extends Application {
                     PersistenceManager.getInstance(null).clearRaw();
                     rtl = null;
                 }
-                return rtl;
-            }
+                recordingTrackLogObservable.setTrackLog(rtl);
 
-            @Override
-            protected void onProgressUpdate(Integer... values) {
-            }
+                if (rtl != null){
+                    rtl.setRecordRaw(true); // from now on record new entries in the tracklog
+                    if (rtl.isSegmentRecording()){
+                        prefGps.setValue(true);
+                        Intent intent = new Intent(MGMapApplication.this, TrackLoggerService.class);
+                        startService(intent);
 
-            @Override
-            protected void onPostExecute(RecordingTrackLog recordingTrackLog) {
-                recordingTrackLogObservable.setTrackLog(recordingTrackLog);
-                initFinished();
+                        PointModel lastTlp = rtl.getCurrentSegment().getLastPoint();
+                        if (lastTlp != null){
+                            lastPositionsObservable.handlePoint(lastTlp);
+                        }
+                    }
+                }
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" init finished!");
             }
-        }.execute();
+        }.start();
 
 
         // initialize hgt data handling
         new Geoid(this);
 
         // initialize MetaData (as used from AvailableTrackLogs service
-        new AsyncTask<Object, Object, Object>(){
+        new Thread(){
             @Override
-            protected Object doInBackground(Object... objects) {
+            public void run() {
+                ExtrasUtil.checkCreateMeta();
                 for (TrackLog trackLog : MetaDataUtil.loadMetaData()){
                     metaTrackLogs.put(trackLog.getNameKey(),trackLog);
                 }
-                return null;
             }
-        }.execute();
+        }.start();
 
         // initialize handling of new points from TrackLoggerService
         new Thread(){
@@ -168,9 +153,15 @@ public class MGMapApplication extends Application {
                 while (true){
                     try {
                         PointModel pointModel = logPoints2process.take();
-                        if (recordingTrackLogObservable.getTrackLog() != null){
-                            recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
-                            Log.v(LABEL, NameUtil.context()+ "handle TrackLogPoints: Processed "+pointModel);
+                        Log.i(LABEL, NameUtil.context() +" handle tlp="+pointModel);
+                        if (pointModel != null){
+                            if (recordingTrackLogObservable.getTrackLog() != null){
+                                recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
+                                Log.v(LABEL, NameUtil.context()+ "handle TrackLogPoints: Processed "+pointModel);
+                            }
+                            if (logPoints2process.size() == 0){ // trigger lastPositionsObservable only for the latest point in the queue
+                                lastPositionsObservable.handlePoint(pointModel);
+                            }
                         }
                     } catch (Exception e) {
                         Log.e(LABEL, NameUtil.context()+"handle TrackLogPoints: "+e.getMessage(),e);
@@ -183,19 +174,21 @@ public class MGMapApplication extends Application {
             @Override
             public void run() {
                 Log.i(LABEL, NameUtil.context()+"logcat supervision: start ");
+                int cnt = 0;
                 while (true){
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            pLogcat.waitFor(30, TimeUnit.SECONDS );
+                            pLogcat.waitFor(10, TimeUnit.SECONDS );
                         } else {
-                            Thread.sleep(30000);
+                            Thread.sleep(10000);
                         }
-
                         int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
                         Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
                         startLogging();
                     } catch (Exception e) {
-                        Log.v(LABEL, NameUtil.context()+"logcat supervision: "+e.getMessage());
+                        if (++cnt % 6 == 0){
+                            Log.i(LABEL, NameUtil.context()+"logcat supervision: OK. (running "+(cnt/6)+" min)");
+                        }
                     }
                 }
             }
@@ -208,33 +201,14 @@ public class MGMapApplication extends Application {
         Log.w(LABEL, NameUtil.context()+" MGMapViewer Application stop");
         try {
             NotificationManagerCompat.from(this).cancelAll();
+            prefCache.cleanup();
         } catch (Exception e) {
             Log.e(LABEL, NameUtil.context(),e);
         }
         super.onTerminate();
     }
 
-    protected void initFinished(){
-        initFinished = true;
-        if (recordingTrackLogObservable.getTrackLog() != null){
-            recordingTrackLogObservable.getTrackLog().setRecordRaw(true); // from now on record new entries in the tracklog
-            if (recordingTrackLogObservable.getTrackLog().isSegmentRecording()){
-                prefGpsOn.setValue(true);
-                Intent intent = new Intent(this, TrackLoggerService.class);
-                startService(intent);
-
-                TrackLogSegment currentSegment = recordingTrackLogObservable.getTrackLog().getCurrentSegment();
-                PointModel lastTlp = currentSegment.getLastPoint();
-                if (/* centerCurrentPosition.getValue() && */ (lastTlp != null)){
-                    lastPositionsObservable.handlePoint(lastTlp);
-                }
-            }
-        }
-    }
-
-
-
-    public class LastPositionsObservable extends Observable{
+    public static class LastPositionsObservable extends Observable{
         public PointModel lastGpsPoint = null;
         public PointModel secondLastGpsPoint = null;
 
@@ -256,9 +230,9 @@ public class MGMapApplication extends Application {
 
     // TODO: Probably it makes sense to split this in a TrackLogObservable for the selected TrackLog and an AvailableTrackLogsObeservable without selected TrackLog information.
     @SuppressWarnings("WeakerAccess")
-    public class AvailableTrackLogsObservable extends Observable{
+    public static class AvailableTrackLogsObservable extends Observable{
         TrackLogRef noRef = new TrackLogRef(null,-1);
-        public TreeSet<TrackLog> availableTrackLogs = new TreeSet<>(Collections.<TrackLog>reverseOrder());
+        public TreeSet<TrackLog> availableTrackLogs = new TreeSet<>(Collections.reverseOrder());
         public TrackLogRef selectedTrackLogRef = noRef;
 
         public TreeSet<TrackLog> getAvailableTrackLogs(){
@@ -307,25 +281,24 @@ public class MGMapApplication extends Application {
             return trackLog;
         }
 
-        Observer proxyObserver = new Observer() {
-            @Override
-            public void update(Observable observable, Object o) {
-                setChanged();
-                notifyObservers(o);
-            }
+        Observer proxyObserver = (observable, o) -> {
+            setChanged();
+            notifyObservers(o);
         };
 
         public void setTrackLog(T trackLog){
-            if (this.trackLog != null){
-                this.trackLog.deleteObserver(proxyObserver);
+            if (this.trackLog != trackLog){ // if the trackLog object is not changed, do nothing.
+                if (this.trackLog != null){
+                    this.trackLog.deleteObserver(proxyObserver);
+                }
+                this.trackLog = trackLog;
+                if (this.trackLog != null){
+                    this.trackLog.addObserver(proxyObserver);
+                    metaTrackLogs.put(trackLog.getNameKey(), trackLog);
+                }
+                setChanged();
+                notifyObservers();
             }
-            this.trackLog = trackLog;
-            if (this.trackLog != null){
-                this.trackLog.addObserver(proxyObserver);
-                metaTrackLogs.put(trackLog.getNameKey(), trackLog);
-            }
-            setChanged();
-            notifyObservers();
         }
 
         public void changed(){
@@ -334,83 +307,6 @@ public class MGMapApplication extends Application {
         }
     }
 
-//    public class BooleanObservable extends Observable{
-//        private boolean value;
-//
-//        public BooleanObservable(boolean initValue){
-//            this.value = initValue;
-//        }
-//
-//        public void toggle(){
-//            setValue(!getValue());
-//        }
-//
-//        public void setValue(boolean value) {
-//            this.value = value;
-//            changed();
-//        }
-//
-//        public boolean getValue() {
-//            return value;
-//        }
-//
-//        public void changed(){
-//            setChanged();
-//            notifyObservers();
-//        }
-//    }
-//
-
-
-
-    /** queue for new (unhandled) TrackLogPoint objects */
-    private final ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
-
-    private final ArrayList<String> mapLayerKeys = new ArrayList<>();
-
-    public ArrayList<String> getMapLayerKeys() {
-        return mapLayerKeys;
-    }
-
-    public MGMapActivity getMgMapActivity() {
-        return mgMapActivity;
-    }
-
-    public void setMgMapActivity(MGMapActivity mgMapActivity) {
-        this.mgMapActivity = mgMapActivity;
-        if (mgMapActivity == null){
-            //cleanup according to termination of MGMapActivity
-            featureServices.clear();
-            availableTrackLogsObservable.deleteObservers();
-            recordingTrackLogObservable.deleteObservers();
-            markerTrackLogObservable.deleteObservers();
-            routeTrackLogObservable.deleteObservers();
-            lastPositionsObservable.deleteObservers();
-        }
-    }
-
-    /** Return the feature service by type  */
-    public <T> T getFS(Class<T> tClass){
-        for (FeatureService service : featureServices){
-            if (tClass.isInstance(service)) return (T)service;
-        }
-        return null;
-    }
-
-
-    public void addTrackLogPoint(final PointModel pointModel){
-        if (pointModel != null){
-            try {
-                Log.i(LABEL, NameUtil.context() +" tlp="+pointModel);
-                logPoints2process.add(pointModel);
-                lastPositionsObservable.handlePoint(pointModel);
-            } catch (Exception e) {
-                Log.e(LABEL, NameUtil.context()+" addPoint: "+e.getMessage(),e);
-            }
-        }
-    }
-
-    public float pressure = 0;
 
 
     public synchronized void addBgJobs(List<BgJob> jobs){
@@ -442,12 +338,6 @@ public class MGMapApplication extends Application {
     }
 
     public void refresh(){
-        if (!featureServices.isEmpty()){
-            FeatureService fs = featureServices.get(0);
-            MapView mapView = fs.getMapView();
-
-            IMapViewPosition mvp = mapView.getModel().mapViewPosition;
-            mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));
-        }
+        prefCache.get(R.string.FSPosition_pref_RefreshMapView, false).toggle(); //after TileDownloads this helps to make downloaded tiles visible
     }
 }

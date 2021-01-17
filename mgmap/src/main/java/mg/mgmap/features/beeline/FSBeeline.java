@@ -33,7 +33,7 @@ import mg.mgmap.util.CC;
 import mg.mgmap.util.Formatter;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.MultiPointView;
 
@@ -41,8 +41,8 @@ public class FSBeeline extends FeatureService {
 
     public static final Paint PAINT_BLACK_STROKE = CC.getStrokePaint(R.color.BLACK, 2);
 
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
-    private final MGPref<Integer> prefZoomLevel = MGPref.get(R.string.FSPosition_prev_ZoomLevel, 15);
+    private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
+    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_pref_ZoomLevel, 15);
     private ExtendedTextView etvCenter = null;
     private ExtendedTextView etvZoom = null;
 

@@ -5,10 +5,10 @@ import mg.mgmap.util.PointModelUtil;
 
 public class SearchResult implements Comparable<SearchResult>{
     public SearchRequest searchRequest;
-    public String resultText = null;
+    public String resultText;
     public String longResultText = null;
-    public PointModel pos = null;
-    private double distance;
+    public PointModel pos;
+    private final double distance;
 
     public SearchResult(SearchRequest searchRequest, String resultText, PointModel pos) {
         this.searchRequest = searchRequest;

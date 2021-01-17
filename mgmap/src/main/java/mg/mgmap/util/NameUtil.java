@@ -14,6 +14,10 @@
  */
 package mg.mgmap.util;
 
+import android.util.Log;
+
+import mg.mgmap.MGMapApplication;
+
 /**
  * Utility to determine the class name dynamically.
  * This is usually used fog logging purposes.
@@ -36,6 +40,21 @@ public class NameUtil {
 	public static String context(){
 		StackTraceElement ste = new Throwable().getStackTrace()[1];
 		return ste.getClassName()+"."+ste.getMethodName()+"("+ste.getFileName()+":"+ste.getLineNumber()+") ";
+	}
+
+	public static String[] context(int num){
+		String[] steArray = new String[num];
+		for (int i=0; i<num; i++){
+			StackTraceElement ste = new Throwable().getStackTrace()[1+i];
+			steArray[i] = ste.getClassName()+"."+ste.getMethodName()+"("+ste.getFileName()+":"+ste.getLineNumber()+") ";
+		}
+		return steArray;
+	}
+	public static void logContext(int num){
+		for (int i=0; i<num; i++){
+			StackTraceElement ste = new Throwable().getStackTrace()[1+i];
+			Log.d(MGMapApplication.LABEL, "     Context: "+ste.getClassName()+"."+ste.getMethodName()+"("+ste.getFileName()+":"+ste.getLineNumber()+") ");
+		}
 	}
 
 	public static String getTag(){

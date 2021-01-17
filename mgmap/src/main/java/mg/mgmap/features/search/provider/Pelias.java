@@ -17,6 +17,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
+import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.features.search.FSSearch;
 import mg.mgmap.features.search.SearchProvider;
@@ -38,8 +39,8 @@ public class Pelias extends SearchProvider {
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     @Override
-    protected void init(MGMapApplication application, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences) {
-        super.init(application, fsSearch, searchView, preferences);
+    protected void init(MGMapActivity activity, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences) {
+        super.init(activity, fsSearch, searchView, preferences);
         Properties props = PersistenceManager.getInstance().getConfigProperties("search",this.getClass().getSimpleName()+".cfg");
         apiKey = props.getProperty("API_KEY");
     }

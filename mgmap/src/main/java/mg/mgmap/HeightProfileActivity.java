@@ -14,7 +14,6 @@
  */
 package mg.mgmap;
 
-import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,23 +66,21 @@ public class HeightProfileActivity extends AppCompatActivity {
     public static boolean check4trackLogRef(MGMapApplication application){
         if (null != application.recordingTrackLogObservable.getTrackLog()) return true;
         if (null != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) return true;
-        if (null != application.routeTrackLogObservable.getTrackLog()) return true;
-        return false;
+        return (null != application.routeTrackLogObservable.getTrackLog());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.i(MGMapApplication.LABEL, NameUtil.context() +" started");
-        GraphView graph = (GraphView) findViewById(R.id.graph);
+        GraphView graph = findViewById(R.id.graph);
         graph.getSeries().clear();
         Log.i(MGMapApplication.LABEL, NameUtil.context() +" finished");
     }
 
 
     private void showGraph(boolean showAscentGraph) {
-
-        GraphView graph = (GraphView) findViewById(R.id.graph);
+        GraphView graph = findViewById(R.id.graph);
         graph.setBackgroundColor(0xFFAAAAAA);
         graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
             @Override
@@ -136,7 +133,6 @@ public class HeightProfileActivity extends AppCompatActivity {
 
 
     private void createSeries(GraphView graph, ArrayList<SparseIntArray> arrays, int color, boolean secondScale){
-
         for (SparseIntArray array : arrays){
             if (array.size() < 2) continue;
 
@@ -147,7 +143,6 @@ public class HeightProfileActivity extends AppCompatActivity {
             if (secondScale){
                 graph.getSecondScale().addSeries(series);
                 paint.setStrokeWidth(2);
-//                paint.setPathEffect(new android.graphics.DashPathEffect(new float[]{8 ,5}, 0));
             } else {
                 graph.addSeries(series);
                 paint.setStrokeWidth(8);
@@ -184,26 +179,12 @@ public class HeightProfileActivity extends AppCompatActivity {
             if ((tls.get(0).getEleA() != PointModel.NO_ELE) && (tls.get(1).getEleA() != PointModel.NO_ELE)){
                 // ok Tracklog seems to have ele values
                 fillHeightProfiles(trackLog.asMPMList(), segmentHeightProfiles, segmentAscentProfiles);
-            } else {
-                // the reason for no ele values is probably, that the track is loaded via lalo meta data - thus it doesn't contain ele values - try to load corresponding gpx
-
-//                try {
-//                    InputStream fis =  PersistenceManager.getInstance().openGpxInput(trackLog.getName());
-//                    if (fis != null){
-//                        TrackLog trackLogGpx = new GpxImporter().parseTrackLog(trackLog.getName(), fis);
-//                        fillHeightProfiles(trackLogGpx.asMPMList(), segmentHeightProfiles, segmentAscentProfiles);
-//                    }
-//                } catch (Exception e) {
-//                    Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-//                }
             }
         }
     }
 
     private void fillHeightProfiles(ArrayList<MultiPointModel> mpms, ArrayList<SparseIntArray> segmentHeightProfiles, ArrayList<SparseIntArray> segmentAscentProfiles){
-//        ArrayList<SparseIntArray> arrays = new ArrayList<>();
         double distance = 0d;
-
         for (int i = 0; i< mpms.size(); i++){
             SparseIntArray segmentHeightProfile = new SparseIntArray();
             SparseIntArray segmentAscentProfile = new SparseIntArray();
@@ -215,7 +196,6 @@ public class HeightProfileActivity extends AppCompatActivity {
 
 
     private double addSegmentHeightProfiles(double distance, MultiPointModel segment, SparseIntArray segmentHeightProfile, SparseIntArray segmentAscentProfile){
-
         if (segment.size() > 0){
             PointModel lastTlp = segment.get(0);
             PointModel lastPM = segment.get(0);
@@ -241,13 +221,14 @@ public class HeightProfileActivity extends AppCompatActivity {
                 }
                 lastTlp = pm;
             }
+            segmentHeightProfile.put( (int)(distance+deltaDistance), (int)(lastPM.getEleA()*1000));
 
             for (int i=1; i< segmentAscentProfileRaw.size()-1; i++){
                 int gl0 = segmentAscentProfileRaw.valueAt(i-1);
-                int gl1 = segmentAscentProfileRaw.valueAt(i+0);
+                int gl1 = segmentAscentProfileRaw.valueAt(i);
                 int gl2 = segmentAscentProfileRaw.valueAt(i+1);
                 int p0 = segmentHeightProfile.keyAt(i-1);
-                int p1 = segmentHeightProfile.keyAt(i+0);
+                int p1 = segmentHeightProfile.keyAt(i);
                 int p2 = segmentHeightProfile.keyAt(i+1);
                 int p3 = segmentHeightProfile.keyAt(i+2);
                 int d0 = p1-p0;
@@ -258,7 +239,7 @@ public class HeightProfileActivity extends AppCompatActivity {
                 double  we0=d0*f0/d, we1=d1*f1/d, we2=d2*f2/d;
                 int glValue= (int)(gl0*we0+ gl1*we1 + gl2*we2 );
 
-                segmentAscentProfile.put(segmentAscentProfileRaw.keyAt(i+0), glValue);
+                segmentAscentProfile.put(segmentAscentProfileRaw.keyAt(i), glValue);
             }
 
         }

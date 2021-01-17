@@ -17,16 +17,23 @@ package mg.mgmap.features.position;
 import android.view.View;
 
 
+import mg.mgmap.ControlView;
 import mg.mgmap.R;
 import mg.mgmap.util.Control;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 
 public class CenterControl extends Control {
 
-    private final MGPref<Boolean> prefCenter = MGPref.get(R.string.FSPosition_prev_Center, true);
+    private Pref<Boolean> prefCenter;
 
     public CenterControl(){
         super(true);
+    }
+
+    @Override
+    public void setControlView(ControlView controlView) {
+        super.setControlView(controlView);
+        prefCenter = getPref(R.string.FSPosition_pref_Center, true);;
     }
 
     public void onClick(View v) {

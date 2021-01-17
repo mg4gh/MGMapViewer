@@ -13,7 +13,6 @@ import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Observable;
 import java.util.Observer;
-import java.util.UUID;
 
 import mg.mgmap.ControlView;
 import mg.mgmap.R;
@@ -22,17 +21,17 @@ import mg.mgmap.model.TrackLogStatistic;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.ExtendedClickListener;
 import mg.mgmap.util.Formatter;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
 
 public class TrackStatisticEntry extends TableLayout {
 
-    private MGPref<Boolean> prefSelected = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    private final Pref<Boolean> prefSelected = new Pref<>(false);
 
-    private TrackLog trackLog;
-    private final MGPref<Boolean> prefShowNameKey = new MGPref<Boolean>(UUID.randomUUID().toString(), false, false);
+    private final TrackLog trackLog;
+    private final Pref<Boolean> prefShowNameKey = new Pref<>(false);
 
 
-    private Observer modifiedObserver;
+    private final Observer modifiedObserver;
 
 
     private int dp2px(float dp){
@@ -165,7 +164,7 @@ public class TrackStatisticEntry extends TableLayout {
     public boolean isPrefSelected() {
         return prefSelected.getValue();
     }
-    public MGPref<Boolean> getPrefSelected() {
+    public Pref<Boolean> getPrefSelected() {
         return prefSelected;
     }
 

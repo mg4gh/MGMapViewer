@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -29,10 +29,12 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import mg.mgmap.features.routing.TurningInstructionService;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLogPoint;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.MGPref;
+import mg.mgmap.util.Pref;
+import mg.mgmap.util.PrefCache;
 
 /**
  * Android Service that coordinates gps and barometer access
@@ -44,9 +46,11 @@ public class TrackLoggerService extends Service {
 
     private LocationListener locationListener = null;
     private BarometerListener barometerListener = null;
+    private TurningInstructionService turningInstructionService = null;
     private boolean active = false;
     private Notification notification = null;
-    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
+    private PrefCache prefCache = null;
+    private Pref<Boolean> prefGps;
 
     public static void setPressureAlt(TrackLogPoint lp){
         if (lp.getPressure() != PointModel.NO_PRES){
@@ -58,6 +62,10 @@ public class TrackLoggerService extends Service {
     public void onCreate() {
         super.onCreate();
         application = (MGMapApplication)getApplication();
+        prefCache = new PrefCache(this);
+        prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
+
+        turningInstructionService = new TurningInstructionService(application, application, prefCache);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String CHANNEL_ID = "my_channel_01";
@@ -88,7 +96,7 @@ public class TrackLoggerService extends Service {
         application = (MGMapApplication)getApplication();
 
         boolean shouldBeActive = prefGps.getValue();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" acitve="+active+" shouldBeActive="+shouldBeActive);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" active="+active+" shouldBeActive="+shouldBeActive);
         if (!active && shouldBeActive){
             active = true;
             activateService();
@@ -112,8 +120,9 @@ public class TrackLoggerService extends Service {
                 protected void onNewTrackLogPoint(TrackLogPoint lp) {
                     lp.setPressure( barometerListener.getPressure() );
                     setPressureAlt(lp);
-                    application.addTrackLogPoint(lp);
+                    application.logPoints2process.add(lp);
                     Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);
+                    turningInstructionService.handleNewPoint(lp);
                 }
             };
             locationListener.activate(4000,20);
@@ -142,4 +151,10 @@ public class TrackLoggerService extends Service {
         return null;
     }
 
+
+    @Override
+    public void onDestroy() {
+        prefCache.cleanup();
+        super.onDestroy();
+    }
 }
