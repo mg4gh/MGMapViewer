@@ -28,6 +28,7 @@ import mg.mgmap.MGMapActivity;
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.model.BBox;
 import mg.mgmap.util.BgJob;
+import mg.mgmap.util.BgJobUtil;
 import mg.mgmap.util.NameUtil;
 
 public class TileStoreLoader {
@@ -144,31 +145,9 @@ public class TileStoreLoader {
             }
         }
 
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setTitle("Load Tiles for \""+storeDir.getName()+"\"");
-        builder.setMessage("Load "+jobs.size()+" tiles?");
-
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
-                application.addBgJobs(jobs);
-            }
-        });
-
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Do nothing
-                dialog.dismiss();
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
+        String title = "Load Tiles for \""+storeDir.getName()+"\"";
+        String message = "Load "+jobs.size()+" tiles?";
+        new BgJobUtil(activity, application).processConfirmDialog(title, message, jobs);
     }
 
     public void dropFromBB(BBox bBox){
@@ -188,35 +167,9 @@ public class TileStoreLoader {
             }
         }
 
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setTitle("Drop Tiles for \""+storeDir.getName()+"\"");
-        builder.setMessage("Drop "+numDrops+" tiles?");
-
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
-
-                if (jobs.size() > 0){
-                    application.addBgJobs(jobs);
-                }
-
-            }
-        });
-
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Do nothing
-                dialog.dismiss();
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
+        String title = "Drop Tiles for \""+storeDir.getName()+"\"";
+        String message = "Drop "+numDrops+" tiles?";
+        new BgJobUtil(activity, application).processConfirmDialog(title, message, jobs);
     }
 
 }

@@ -95,7 +95,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         context = this;
 
         prefCache = new PrefCache(context);
-        prefFullscreen = prefCache.get(R.string.FSFullscreen_qc_On, true);
+        prefFullscreen = prefCache.get(R.string.FSControl_qcFullscreenOn, true);
         prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(TrackStatisticActivity.this, prefFullscreen.getValue()));
         Pref<Boolean> triggerHome = new Pref<>(true);
         triggerHome.addObserver( new HomeObserver(this) );

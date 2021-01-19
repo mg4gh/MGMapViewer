@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -48,6 +50,7 @@ import java.util.TreeSet;
 
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.util.BgJob;
+import mg.mgmap.util.BgJobUtil;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PersistenceManager;
 import mg.mgmap.util.Zipper;
@@ -73,11 +76,11 @@ public class FGDrive {
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
 
-    Activity activity;
+    AppCompatActivity activity;
     MGMapApplication application;
     boolean abortSync = false;
 
-    public FGDrive(Activity activity) {
+    public FGDrive(AppCompatActivity activity) {
         this.activity = activity;
         application = (MGMapApplication)activity.getApplication();
     }
@@ -162,33 +165,14 @@ public class FGDrive {
                 }
             }
             int numDownloadJobs = jobs.size()-numUploadJobs;
+            String title = "GDrive synchronisation service";
             String message = "GDrive Sync Overview: \ntracks in sync: "+commonSet.size()+" \ntracks to upload: "+numUploadJobs+" \ntracks to download: "+numDownloadJobs;
             Log.i(MGMapApplication.LABEL, NameUtil.context()+message);
             // ok, now do the real work!!!
             activity.runOnUiThread(() -> {
                 alert.hide();
                 if (abortSync) return;
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-                builder.setTitle("GDrive synchronisation service");
-                builder.setMessage(message);
-
-
-                builder.setPositiveButton("Sync now", (dialog, which) -> {
-                    dialog.dismiss();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
-                    application.addBgJobs( jobs );
-                });
-
-                builder.setNegativeButton("Abort", (dialog, which) -> {
-                    // Do nothing
-                    dialog.dismiss();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
-                });
-                AlertDialog alert2 = builder.create();
-                alert2.show();
-                alert2.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(numDownloadJobs+numUploadJobs>0);
+                new BgJobUtil(activity, application).processConfirmDialog(title, message, jobs);
             });
 
         } catch (Throwable t) {

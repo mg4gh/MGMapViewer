@@ -578,11 +578,14 @@ public class ControlView extends RelativeLayout {
     }
 
     public TextView createHelpText1(ViewGroup parent){
+        Point displaySize = new Point();
+        getActivity().getWindowManager().getDefaultDisplay().getSize(displaySize);
+        int size = (displaySize.x / 7)-dp(1.8f);
+
         TextView tv = new TextView(parent.getContext());
-        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(size, size);
         lp_tv.setMargins(dp(1),dp(1),dp(1),dp(2));
         tv.setLayoutParams(lp_tv);
-        tv.setPadding(dp(12),dp(12),dp(12),dp(12));
         tv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
         parent.addView(tv);
         Drawable drawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.exit, context.getTheme());
@@ -590,6 +593,13 @@ public class ControlView extends RelativeLayout {
             drawable.setBounds(0,0,dp(36),dp(36));
             tv.setCompoundDrawables(drawable,null,null,null);
         }
+        tv.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
+                int paddingHorizontal = Math.max((right-left - dp(36)) / 2, 0);
+                int paddingVertical = Math.max((bottom-top - dp(36)) / 2, 0);
+                tv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
+            }
+        });
         return tv;
     }
 
@@ -598,7 +608,10 @@ public class ControlView extends RelativeLayout {
         getActivity().getWindowManager().getDefaultDisplay().getSize(displaySize);
 
         TextView tv = new TextView(parent.getContext());
-        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (displaySize.x / 7)-dp(2));
+        int helpLength = (int)(displaySize.y * 0.7);
+        parent.getLayoutParams().width = helpLength;
+        parent.getLayoutParams().height = helpLength;
+        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , (displaySize.x / 7)-dp(1.8f));
         lp_tv.setMargins(dp(1),dp(1),dp(1),dp(1));
         tv.setLayoutParams(lp_tv);
         tv.setGravity(Gravity.CENTER_VERTICAL);

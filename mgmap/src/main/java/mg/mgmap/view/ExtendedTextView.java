@@ -121,15 +121,15 @@ public class ExtendedTextView extends AppCompatTextView {
         return this;
     }
     public String getHelp(){
-        String line2;
+        String line2 = "";
         if ((prEnabled!=null) && (!prEnabled.getValue())){
-            line2 = "disabled";
+            line2 = System.lineSeparator()+"disabled";
         } else {
-            if (prEnabled==null){
-                line2 = "";
-            } else {
-                line2 = "enabled";
-            }
+//            if (prEnabled==null){
+//                line2 = "";
+//            } else {
+//                line2 = "enabled";
+//            }
             String res = null;
             if ((prState1 != null) && (prState2 == null)){
                 res = prState1.getValue()?help2:help1;
@@ -142,10 +142,12 @@ public class ExtendedTextView extends AppCompatTextView {
                 }
             }
             if ((res!=null) && (res.length() > 0)){
-                line2 += ((line2.length() > 0)?"; ":"")  + res;
+//                line2 = ((line2.length() > 0)?"; ":"")  + res;
+                line2 = System.lineSeparator()+res;
             }
         }
-        return (help.length()>0)?(help + ((line2.length()>0)?(System.lineSeparator()+line2):"")):"";
+//        return (help.length()>0)?(help + ((line2.length()>0)?(System.lineSeparator()+line2):"")):"";
+        return help + line2;
     }
     public ExtendedTextView addActionObserver(Observer action1Observer){
         if ((prAction1!=null) && (action1Observer!=null)) prAction1.addObserver(action1Observer);

@@ -56,7 +56,7 @@ public class FSSearch extends FeatureService {
     private final Pref<Boolean> prefShowSearchResult = getPref(R.string.FSSearch_qc_showSearchResult, false);
     private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
     private final Pref<Long> prefShowPos = getPref(R.string.FSSearch_pref_SearchPos, NO_POS);
-    private final Pref<Boolean> prefFullscreen = getPref(R.string.FSFullscreen_qc_On, true);
+    private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
 
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);

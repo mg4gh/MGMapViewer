@@ -1,10 +1,12 @@
 package mg.mgmap.util;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
+import androidx.preference.PreferenceManager;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -12,6 +14,12 @@ import java.util.Observer;
 import mg.mgmap.R;
 
 public class FullscreenUtil {
+
+    public static void enforceState(AppCompatActivity activity) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        boolean fullscreenOn = sharedPreferences.getBoolean(activity.getResources().getString(R.string.FSControl_qcFullscreenOn), true);
+        enforceState(activity, fullscreenOn);
+    }
 
     public static void enforceState(AppCompatActivity activity, boolean fullscreenOn) {
 

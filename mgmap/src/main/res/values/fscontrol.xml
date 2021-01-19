@@ -3,6 +3,7 @@
     <string name="FSControl_qc2_on">FSControl.qc2_on</string>
     <string name="FSControl_qc_selector">FSControl.qc_selector</string>
 
+    <string name="FSControl_qcFullscreenOn">FSFullscreen.On</string>
     <string name="FSControl_qcFullscreen_help">Toggle fullscreen mode</string>
     <string name="FSControl_qcSettings_help">Settings screen</string>
     <string name="FSControl_qcFuSettings_help">Further settings screen</string>

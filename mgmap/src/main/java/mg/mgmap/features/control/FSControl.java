@@ -43,7 +43,7 @@ import mg.mgmap.view.ExtendedTextView;
 public class FSControl extends FeatureService {
 
     Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
-    private final Pref<Boolean> prefFullscreen = getPref(R.string.FSFullscreen_qc_On, true);
+    private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
 
     private final Pref<Boolean> triggerSettings = new Pref<>(false);
     private final Pref<Boolean> triggerFuSettings = new Pref<>(false);
@@ -98,7 +98,6 @@ public class FSControl extends FeatureService {
     public FSControl(MGMapActivity activity){
         super(activity);
 
-//        prefFullscreen.addObserver(fullscreenObserver);
         prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue()));
         triggerHome.addObserver(homeObserver);
         prefQcs.addObserver(refreshObserver);
