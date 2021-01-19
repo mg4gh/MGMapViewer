@@ -4,16 +4,14 @@
 
 This feature supports development of the
 [routing](../../MainTrackFeatures/Routing/routing.md) feature. The basis of the routing algorithm is a graph. 
-But if routing fails, is this related to a bug in the data or does the 
-routing process cause the problem? To answer this question it is necessary to investigate the relevant
+But if routing fails, this is related to a bug in the data or the
+routing process caused the problem. To distinguish these cases it is necessary to investigate the relevant
 graph data. So how to investigate a special situation, where routing doesn't provide the desired result.
 For this purpose it is possible to visualize the way raw data from the tiles.
 
-This is done with <span style="color:gray">*Menu | Setting and more | Further Settings*</span>, an then check the switch "way details".
+Use  <img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/settings_fu.svg" width="24"/> and switch on <span style="color:gray">*Way details*</span>.
 
-<img src="./wd1.png" width="200" />&nbsp;<img src="./wd2.png" width="200" />&nbsp;<img src="./wd3.png" width="200" />&nbsp;
-
-When you go back to the map there is the *way details* mode enabled: If you tap to the marked position, you get following result:
+When you go back to the map, then the *way details* mode is enabled: If you tap to the marked position, you get following result:
 
 <img src="./wd4.png" width="400" />&nbsp;
 <img src="./wd5.png" width="400" />&nbsp;
