@@ -197,24 +197,4 @@ public class FSAvailableTrackLogs extends FeatureService {
                 new MarkerTrackHideControl2()};
     }
 
-
-
-    public boolean loadFromBB(BBox bBox2Load){
-        boolean changed = false;
-        BBox bBox2show = new BBox();
-        if (bBox2Load != null){
-            for (TrackLog aTrackLog : getApplication().metaTrackLogs.values()){
-                if (MetaDataUtil.checkLaLoRecords(aTrackLog, bBox2Load)){
-                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
-                    bBox2show.extend(aTrackLog.getBBox());
-                    changed = true;
-                }
-            }
-            if (changed){
-                getApplication().availableTrackLogsObservable.changed();
-//                getMapViewUtility().zoomForBoundingBox(bBox2show);
-            }
-        }
-        return changed;
-    }
 }

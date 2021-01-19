@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="Layers_qc_showAlphaLayers">Layers.showAlphaLayers</string>
-    <string name="Layers_qc_showAlphaTracks">Layers.showAlphaTracks</string>
+    <string name="FSAlpha_qc_showAlphaLayers">FSAlpha.showAlphaLayers</string>
+    <string name="FSAlpha_qc_showAlphaTracks">FSAlpha.showAlphaTracks</string>
 
     <string name="FSAlpha_qcAlphaLayers_Help">Provide seek bars for layer transparency</string>
     <string name="FSAlpha_qcAlphaLayers_Help1">on tap: controls become visible</string>

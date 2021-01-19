@@ -100,7 +100,7 @@ public class FSRouting extends FeatureService {
     private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
     private final Pref<Float> prefAlphaRotl = getPref(R.string.FSRouting_pref_alphaRoTL, 1.0f);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
-    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_pref_ZoomLevel, 15);
+    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSBeeline_pref_ZoomLevel, 15);
     private final Pref<Boolean> prefMapMatching = new Pref<>(false);
     private final Pref<Boolean> prefMapMatchingEnabled = new Pref<>(false);
     private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);

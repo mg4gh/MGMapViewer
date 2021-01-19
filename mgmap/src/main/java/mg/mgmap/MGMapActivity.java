@@ -169,7 +169,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSRouting(this, getFS(FSMarker.class)));
 
         featureServices.add(new FSRemainings(this));
-        featureServices.add(new FSBB(this, getFS(FSAvailableTrackLogs.class)));
+        featureServices.add(new FSBB(this));
         featureServices.add(new FSGraphDetails(this));
         featureServices.add(new FSSearch(this));
         featureServices.add(new FSAlpha(this));

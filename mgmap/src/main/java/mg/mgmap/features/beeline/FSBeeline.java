@@ -42,7 +42,7 @@ public class FSBeeline extends FeatureService {
     public static final Paint PAINT_BLACK_STROKE = CC.getStrokePaint(R.color.BLACK, 2);
 
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
-    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSPosition_pref_ZoomLevel, 15);
+    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSBeeline_pref_ZoomLevel, 15);
     private ExtendedTextView etvCenter = null;
     private ExtendedTextView etvZoom = null;
 
@@ -101,22 +101,16 @@ public class FSBeeline extends FeatureService {
     private void showHidePositionToCenter(PointModel pm){
         if (fsLayers.isEmpty() && (pm == null)) return; // default is fast
         unregisterAll();
-        LatLong center = getMapView().getModel().mapViewPosition.getCenter();
-        PointModel pmCenter = new PointModelImpl(center);
-        boolean showNewValue = (pm != null);
-        double distance = 0;
-        if (showNewValue){
-            distance = PointModelUtil.distance(pm, pmCenter);
-            showNewValue = (distance > 10.0); //m
-        }
-        if (showNewValue){
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" pm="+pm+" pmCenter="+pmCenter);
-            MultiPointModelImpl mpm = new MultiPointModelImpl();
-            mpm.addPoint(pmCenter);
-            mpm.addPoint(pm);
-            register( new MultiPointView(mpm, PAINT_BLACK_STROKE));
-        } else {
-            distance = -1;
+        PointModel pmCenter = new PointModelImpl( getMapView().getModel().mapViewPosition.getCenter() );
+        double distance = -1;
+        if (pm != null){
+            double beelineDistance = PointModelUtil.distance(pm, pmCenter);
+            if (beelineDistance > 10.0){ //m
+                distance = beelineDistance;
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+" pm="+pm+" pmCenter="+pmCenter);
+                MultiPointModelImpl mpm = new MultiPointModelImpl().addPoint(pmCenter).addPoint(pm);
+                register( new MultiPointView(mpm, PAINT_BLACK_STROKE));
+            }
         }
         getControlView().setStatusLineValue(etvCenter, distance);
     }

@@ -32,9 +32,11 @@ import mg.mgmap.features.tilestore.MGTileStoreLayer;
 import mg.mgmap.features.tilestore.TileStoreLoader;
 import mg.mgmap.model.BBox;
 import mg.mgmap.model.PointModel;
+import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.model.WriteablePointModelImpl;
 import mg.mgmap.util.Control;
+import mg.mgmap.util.MetaDataUtil;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
 import mg.mgmap.util.Pref;
@@ -56,11 +58,8 @@ public class FSBB extends FeatureService {
     private final ArrayList<MGTileStore> tss = identifyTS();
     private boolean initSquare = false;
 
-    private final FSAvailableTrackLogs fsAvailableTrackLogs;
-
-    public FSBB(MGMapActivity mmActivity, FSAvailableTrackLogs fsAvailableTrackLogs) {
+    public FSBB(MGMapActivity mmActivity) {
         super(mmActivity);
-        this.fsAvailableTrackLogs = fsAvailableTrackLogs;
 
         triggerBboxOn.addObserver( (o, args) -> prefBboxOn.toggle());
         triggerLoadFromBB.addObserver( (o, args) -> loadFromBB());
@@ -231,7 +230,7 @@ public class FSBB extends FeatureService {
                 BBox bBox = new BBox().extend(p1).extend(p2);
                 Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
                 if (bBox.contains(pm)){
-                    if (fsAvailableTrackLogs.loadFromBB(bBox)){
+                    if (loadFromBB(bBox)){
                         prefBboxOn.setValue(false);
                     }
                     return true;
@@ -266,7 +265,7 @@ public class FSBB extends FeatureService {
         if ((p1!= null) && (p2!= null)){
             BBox bBox = new BBox().extend(p1).extend(p2);
             Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
-            fsAvailableTrackLogs.loadFromBB(bBox);
+            loadFromBB(bBox);
         }
     }
 
@@ -324,4 +323,24 @@ public class FSBB extends FeatureService {
             }
         }
     }
+
+    public boolean loadFromBB(BBox bBox2Load){
+        boolean changed = false;
+        BBox bBox2show = new BBox();
+        if (bBox2Load != null){
+            for (TrackLog aTrackLog : getApplication().metaTrackLogs.values()){
+                if (MetaDataUtil.checkLaLoRecords(aTrackLog, bBox2Load)){
+                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
+                    bBox2show.extend(aTrackLog.getBBox());
+                    changed = true;
+                }
+            }
+            if (changed){
+                getApplication().availableTrackLogsObservable.changed();
+//                getMapViewUtility().zoomForBoundingBox(bBox2show);
+            }
+        }
+        return changed;
+    }
+
 }

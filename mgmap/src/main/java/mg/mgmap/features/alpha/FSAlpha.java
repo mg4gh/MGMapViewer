@@ -27,8 +27,8 @@ import static android.view.View.VISIBLE;
 
 public class FSAlpha extends FeatureService {
 
-    private final Pref<Boolean> prefAlphaLayers = getPref(R.string.Layers_qc_showAlphaLayers, false);
-    private final Pref<Boolean> prefAlphaTracks = getPref(R.string.Layers_qc_showAlphaTracks, false);
+    private final Pref<Boolean> prefAlphaLayers = getPref(R.string.FSAlpha_qc_showAlphaLayers, false);
+    private final Pref<Boolean> prefAlphaTracks = getPref(R.string.FSAlpha_qc_showAlphaTracks, false);
 
     private final Pref<Boolean> prefStlVisibility = getPref(R.string.FSATL_pref_STL_visibility, false);
     private final Pref<Boolean> prefAtlVisibility = getPref(R.string.FSATL_pref_ATL_visibility, false);
