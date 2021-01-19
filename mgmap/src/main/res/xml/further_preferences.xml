@@ -44,7 +44,7 @@
         >
         <SwitchPreference
             app:defaultValue="true"
-            app:key="@string/FSATL_pref_stlGl_key"
+            app:key="@string/FSATL_pref_stlGl"
             app:summary="@string/FSATL_pref_stlGl_desc"
             app:title="@string/FSATL_pref_stlGl_title"
             app:iconSpaceReserved="false"
@@ -82,7 +82,7 @@
 <!--            />-->
         <SwitchPreference
             app:defaultValue="true"
-            app:key="@string/FSMarker_pref_snap2way_key"
+            app:key="@string/FSRouting_pref_snap2way_key"
             app:summary="@string/FSMarker_pref_snap2way_summary"
             app:title="@string/FSMarker_pref_snap2way_title"
             app:iconSpaceReserved="false"

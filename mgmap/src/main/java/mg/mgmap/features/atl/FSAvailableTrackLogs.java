@@ -25,14 +25,12 @@ import mg.mgmap.R;
 
 import java.util.Observer;
 
-import mg.mgmap.model.BBox;
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.TrackLogRef;
 import mg.mgmap.model.TrackLogRefZoom;
 import mg.mgmap.util.Assert;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.Control;
-import mg.mgmap.util.MetaDataUtil;
 import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.LabeledSlider;
@@ -43,7 +41,7 @@ public class FSAvailableTrackLogs extends FeatureService {
     private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.BLUE, getMapViewUtility().getTrackWidth());
     private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
-    private final Pref<Boolean> prefStlGl = getPref(R.string.FSATL_pref_stlGl_key, true);
+    private final Pref<Boolean> prefStlGl = getPref(R.string.FSATL_pref_stlGl, true);
     private final Pref<Float> prefAlphaStl = getPref(R.string.FSATL_pref_alphaSTL, 1.0f);
     private final Pref<Float> prefAlphaAtl = getPref(R.string.FSATL_pref_alphaATL, 1.0f);
     private final Pref<Boolean> prefStlVisibility = getPref(R.string.FSATL_pref_STL_visibility, false);

@@ -8,6 +8,8 @@
 
     <string name="FSRouting_qc_RoutingHint">FSRouting.RoutingHint</string>
     <string name="FSRouting_bt_ShowRouting">FSRouting.ShowRouting</string>
+    <string name="FSRouting_pref_RouteGL">FSRouting.RouteGL</string>
+    <string name="FSRouting_pref_snap2way_key">FSRouting.snap2way</string>
 
     <string name="FSRouting_pref_alphaRoTL">FSRouting.alphaRoTL</string>
     <string name="FSRouting_pref_RoTL_visibility">FSRouting.RoTL_visibility</string>

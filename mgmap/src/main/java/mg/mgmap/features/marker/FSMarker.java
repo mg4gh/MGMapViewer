@@ -56,7 +56,6 @@ public class FSMarker extends FeatureService {
     private final Pref<Boolean> toggleEditMarkerTrack =  new Pref<>(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     private final Pref<Boolean> prefAutoMarkerSetting = getPref(R.string.FSMarker_pref_auto_key, true);
-    private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSMarker_pref_snap2way_key, true);
 
     private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
@@ -72,10 +71,9 @@ public class FSMarker extends FeatureService {
         prefEditMarkerTrack.addObserver((o, arg) -> checkStartStopMCL());
 
         prefAutoSwitcher.addObserver((o, arg) -> {
-            boolean smallMtl = prefAutoSwitcher.getValue();
             if (prefAutoMarkerSetting.getValue()) {
+                boolean smallMtl = prefAutoSwitcher.getValue();
                 prefAlphaMtl.setValue(smallMtl ? 0.0f : 1.0f);
-                prefSnap2Way.setValue(smallMtl);
             }
         });
 

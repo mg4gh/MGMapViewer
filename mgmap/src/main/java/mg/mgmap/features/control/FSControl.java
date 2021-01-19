@@ -268,7 +268,6 @@ public class FSControl extends FeatureService {
     }
 
     void setQCVisibility(){
-//        cancelTTHideQCS();
         prefHelp.setValue(false);
         for (int idx=0; idx<8; idx++){
             ViewGroup qcs = qcss[idx];

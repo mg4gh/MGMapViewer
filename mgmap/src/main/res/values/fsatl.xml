@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="FSATL_pref_stlGl_key">FSATL.stlGl</string>
+    <string name="FSATL_pref_stlGl">FSATL.stlGl</string>
     <string name="FSATL_pref_stlGl_title">Selected track with gain/loss</string>
     <string name="FSATL_pref_stlGl_desc">Visualize the selected track with colors based on gain/loss."</string>
 

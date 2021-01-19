@@ -584,15 +584,15 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     }
                 }
                 if (bestMatch.getTrackLog() == application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) {
-                    prefCache.get(R.string.FSATL_pref_stlGl_key, false).toggle();
+                    prefCache.get(R.string.FSATL_pref_stlGl, false).toggle();
                     return true;
                 }
                 if (bestMatch.getTrackLog() == application.recordingTrackLogObservable.getTrackLog()) {
-                    prefCache.get(R.string.FSRecording_pref_rtlGl_key, false).toggle();
+                    prefCache.get(R.string.FSRecording_pref_rtlGl, false).toggle();
                     return true;
                 }
                 if (bestMatch.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) {
-                    prefCache.get(R.string.FSMarker_qc_RouteGL, false).toggle();
+                    prefCache.get(R.string.FSRouting_pref_RouteGL, false).toggle();
                     return true;
                 }
                 return super.onLongPress(point);

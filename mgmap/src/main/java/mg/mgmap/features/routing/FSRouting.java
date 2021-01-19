@@ -90,10 +90,10 @@ public class FSRouting extends FeatureService {
     private final RoutingLineRefProvider routingLineRefProvider;
 
     private final Pref<Boolean> prefWayDetails = getPref(R.string.FSGrad_pref_WayDetails_key, false);
-    private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSMarker_pref_snap2way_key, true);
+    private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSRouting_pref_snap2way_key, true);
     private final Pref<Boolean> prefEditMarkerTrack = getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
-    private final Pref<Boolean> prefRouteGL = getPref(R.string.FSMarker_qc_RouteGL, false);
+    private final Pref<Boolean> prefRouteGL = getPref(R.string.FSRouting_pref_RouteGL, false);
 
     private final Pref<Boolean> prefAutoSwitcher = getPref(R.string.FSMarker_pref_auto_switcher, true);
     private final Pref<Boolean> prefAutoMarkerSetting = getPref(R.string.FSMarker_pref_auto_key, true);
@@ -123,6 +123,7 @@ public class FSRouting extends FeatureService {
         prefAlphaRotl.addObserver(matchingEnabledObserver);
         prefAutoSwitcher.addObserver((o, arg) -> {
             if (prefAutoMarkerSetting.getValue()){
+                prefSnap2Way.setValue(prefAutoSwitcher.getValue()); // smallMTL
                 if (prefAlphaRotl.getValue() < 0.75f){
                     prefAlphaRotl.setValue(1.0f);
                 }

@@ -7,7 +7,7 @@
 
     <string name="FSRecording_pref_alphaRTL">FSRecording.alphaRTL</string>
     <string name="FSRecording_pref_RTL_visibility">FSRecording.RTL_visibility</string>
-    <string name="FSRecording_pref_rtlGl_key">FSRecording.rtlGl</string>
+    <string name="FSRecording_pref_rtlGl">FSRecording.rtlGl</string>
 
     <string name="FSRecording_qcRec_help">Record a track</string>
     <string name="FSRecording_qcRec_help1">Start recording</string>

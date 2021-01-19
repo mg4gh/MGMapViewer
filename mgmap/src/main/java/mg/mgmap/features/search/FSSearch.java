@@ -37,6 +37,7 @@ import mg.mgmap.features.search.provider.Nominatim;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.PointModelImpl;
 import mg.mgmap.model.WriteablePointModel;
+import mg.mgmap.util.FullscreenUtil;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.Pref;
 import mg.mgmap.util.PointModelUtil;
@@ -56,7 +57,6 @@ public class FSSearch extends FeatureService {
     private final Pref<Boolean> prefShowSearchResult = getPref(R.string.FSSearch_qc_showSearchResult, false);
     private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
     private final Pref<Long> prefShowPos = getPref(R.string.FSSearch_pref_SearchPos, NO_POS);
-    private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
 
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -71,7 +71,7 @@ public class FSSearch extends FeatureService {
         searchText.setSelectAllOnFocus(true);
         searchText.setOnEditorActionListener((tv, actionId, event) -> {
             doSearch(tv.getText().toString().trim(), actionId);
-            checkFullscreen();
+            FullscreenUtil.enforceState(getActivity());
             return true;
         });
         searchText.addTextChangedListener(new TextWatcher() {
@@ -231,13 +231,12 @@ public class FSSearch extends FeatureService {
         }
     }
 
-
     private void hideKeyboard(){
         InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         View focus = getActivity().getCurrentFocus();
         if((inputMethodManager != null) && (focus != null)){
             inputMethodManager.hideSoftInputFromWindow(focus.getWindowToken(), 0);
-            checkFullscreen();
+            FullscreenUtil.enforceState(getActivity());
         }
     }
 
@@ -247,10 +246,6 @@ public class FSSearch extends FeatureService {
         if((inputMethodManager != null) && (focus != null)){
             inputMethodManager.showSoftInput(focus, 0);
         }
-    }
-
-    private void checkFullscreen(){
-        prefFullscreen.onChange();
     }
 
     public void setSearchResult(PointModel pmSearchResult) {

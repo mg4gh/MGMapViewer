@@ -49,7 +49,7 @@ public class FSRecordingTrackLog extends FeatureService {
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Float> prefAlphaRtl = getPref(R.string.FSRecording_pref_alphaRTL, 1.0f);
     private final Pref<Boolean> prefRtlVisibility = getPref(R.string.FSRecording_pref_RTL_visibility, false);
-    private final Pref<Boolean> prefRtlGL = getPref(R.string.FSRecording_pref_rtlGl_key, false);
+    private final Pref<Boolean> prefRtlGL = getPref(R.string.FSRecording_pref_rtlGl, false);
     private final Pref<Boolean> toggleRecordTrack = new Pref<>(false);
     private final Pref<Boolean> prefRecordTrack = new Pref<>(false);
     private final Pref<Boolean> toggleRecordSegment = new Pref<>(false);
