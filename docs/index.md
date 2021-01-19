@@ -47,6 +47,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Turning instructions](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output based on the route calculation
 
 ### Developer features
+There [application design document](./more/add.pdf) provides an extensive description documentation. Additionally these pages are available:
 - [Way details](./Features/DeveloperFeatures/WayDetails/waydetails.md) shows the ways of a tile 
   - based on a mapsforge map 
   - includes the tile border
