@@ -82,4 +82,6 @@
     <string name="preferences_version_title">App Version</string>
     <string name="preferences_version_desc">-</string>
 
+    <string name="activity_param_key">mg.mgmap.args</string>
+
 </resources>

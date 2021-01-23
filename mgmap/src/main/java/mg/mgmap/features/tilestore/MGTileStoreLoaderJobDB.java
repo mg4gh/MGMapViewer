@@ -13,12 +13,11 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
     }
 
     @Override
-    protected void doJob() throws Exception {
+    protected void doJobNow() throws Exception {
         MGTileStoreDB mgTileStoreDB = (MGTileStoreDB)tileStoreLoader.mgTileStore;
 
-
-
-        URLConnection conn = tileStoreLoader.xmlTileSource.getURLConnection(tile.zoomLevel, tile.tileX, tile.tileY);
+        conn = tileStoreLoader.xmlTileSource.getURLConnection(tile.zoomLevel, tile.tileX, tile.tileY);
+        debug = conn.getURL() + " "+conn.getRequestProperties();
         InputStream is = conn.getInputStream();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 

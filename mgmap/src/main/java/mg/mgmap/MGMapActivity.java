@@ -308,6 +308,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             super.onNewIntent(intent);
             Log.w(MGMapApplication.LABEL, NameUtil.context()+"  " + intent);
             if (intent != null) {
+                String paramKey = getResources().getString(R.string.activity_param_key);
+                if (intent.hasExtra(paramKey)){
+                    String value = intent.getStringExtra(paramKey);
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+paramKey+" "+value );
+                    prefCache.get(R.string.activity_param_key, "").setValue(value);
+                }
+
                 if (intent.getType() == null){
                     Uri uri = intent.getData();
                     if (uri != null) {

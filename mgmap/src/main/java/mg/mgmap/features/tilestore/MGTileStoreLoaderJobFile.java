@@ -17,13 +17,14 @@ public class MGTileStoreLoaderJobFile extends MGTileStoreLoaderJob{
     }
 
     @Override
-    protected void doJob() throws Exception {
+    protected void doJobNow() throws Exception {
         PersistenceManager pm = PersistenceManager.getInstance();
         File zoomDir = pm.createIfNotExists(tileStoreLoader.storeDir,Byte.toString(tile.zoomLevel));
         File xDir = pm.createIfNotExists(zoomDir,Integer.toString(tile.tileX));
         File yFile = new File(xDir,Integer.toString(tile.tileY)+".png");
 
-        URLConnection conn = tileStoreLoader.xmlTileSource.getURLConnection(tile.zoomLevel, tile.tileX, tile.tileY);
+        conn = tileStoreLoader.xmlTileSource.getURLConnection(tile.zoomLevel, tile.tileX, tile.tileY);
+        debug = conn.getURL() + " "+conn.getRequestProperties();
         InputStream is = conn.getInputStream();
         OutputStream os = new FileOutputStream(yFile);
 
