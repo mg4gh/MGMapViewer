@@ -14,7 +14,10 @@
  */
 package mg.mgmap.util;
 
+import android.app.Notification;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 import mg.mgmap.BgJobService;
 import mg.mgmap.MGMapApplication;
@@ -23,6 +26,7 @@ public class BgJob {
 
     public BgJobService service = null;
     public int notification_id = 0;
+    private NotificationCompat.Builder notiBuilder = null;
     long lastNotification = 0;
     int max = 0;
     int progress = 0;
@@ -40,20 +44,11 @@ public class BgJob {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         } finally {
             finished = true;
+            service.notifyUserFinish(notification_id);
         }
     }
 
     protected void doJob() throws Exception{
-
-    }
-
-    protected void notifyUser(){
-        long now = System.currentTimeMillis();
-        if (now - lastNotification > 1000){
-            lastNotification = now;
-            service.notifyUser(notification_id, text, max, progress, (max==0)||(progress==0));
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+text+" "+max+" "+progress);
-        }
     }
 
     public int getMax() {
@@ -70,6 +65,15 @@ public class BgJob {
 
     public void setProgress(int progress) {
         this.progress = progress;
+        if (notiBuilder == null){
+            notiBuilder = service.createNotificationBuilder(text);
+        }
+        long now = System.currentTimeMillis();
+        if (now - lastNotification > 1000){
+            lastNotification = now;
+            service.notifyUserProgress(notiBuilder, notification_id, max, progress, (max==0)||(progress==0));
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+text+" "+max+" "+progress);
+        }
     }
 
     public String getText() {

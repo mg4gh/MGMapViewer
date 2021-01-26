@@ -14,10 +14,8 @@
  */
 package mg.mgmap;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -41,22 +39,23 @@ import mg.mgmap.util.NameUtil;
 
 public class BgJobService extends Service {
 
+    private static final int MAX_WORKER = 8;
     private MGMapApplication application = null;
 
     private boolean active = false;
-    private Notification notification = null;
+    private NotificationCompat.Builder baseNotiBuilder = null;
     private final AtomicInteger numWorkers = new AtomicInteger(0);
     private String CHANNEL_ID;
     private int maxJobs = 0; // max jobs at activation - used for progress handling
     private int lastNumBgJobs = 0;
 
     private Handler timer;
-    private final Runnable ttNotify = new Runnable() {
+    private final Runnable ttNotify = new Runnable() { //check for progress update each second
         @Override
         public void run() {
             int currentNumBgJobs = application.numBgJobs();
             if (lastNumBgJobs != currentNumBgJobs){
-                notifyUser(1,"BgJobService: running", maxJobs, maxJobs -currentNumBgJobs, false);
+                notifyUserProgress(baseNotiBuilder, 1, maxJobs, maxJobs -currentNumBgJobs, false);
                 lastNumBgJobs = currentNumBgJobs;
             }
             timer.postDelayed(ttNotify, 1000);
@@ -78,16 +77,8 @@ public class BgJobService extends Service {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
 
             Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
-            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.mg2)
-                    .setContentTitle("MGMapViewer")
-                    .setContentText("BgJobService is running.")
-                    .setContentIntent(    PendingIntent.getActivity(this.getApplicationContext(), 0, intent , PendingIntent.FLAG_UPDATE_CURRENT))
-                    .setSound(null)
-                    .build();
+            baseNotiBuilder = createNotificationBuilder("BgJobService: running");
         }
-
-
     }
 
 
@@ -95,55 +86,47 @@ public class BgJobService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         application = (MGMapApplication)getApplication();
-        checkActive();
-
+        checkActivateService();
+        if (active){
+            checkActivateWorker();
+        }
         return START_STICKY;
     }
 
-    private void checkActive(){
-        boolean shouldBeActive = (application.numBgJobs() > 0);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" acitve="+active+" shouldBeActive="+shouldBeActive);
-        if (!active && shouldBeActive){
-            active = true;
-            activateService();
-        }
-        if (active && !shouldBeActive){
-            active = false;
-            deactivateService();
+    synchronized protected void checkActivateService() {
+        try {
+            if ((!active) && (application.numBgJobs() > 0)) {
+                active = true;
+                maxJobs = application.numBgJobs() + numWorkers.get();
+                lastNumBgJobs = maxJobs;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForeground(1, baseNotiBuilder.build());
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() +" startForeground() for BgJobService triggered.  ");
+                }
+
+                timer = new Handler();
+                timer.postDelayed(ttNotify, 1000);
+            }
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
     }
 
-
-    protected void activateService(){
+    synchronized protected void checkActivateWorker(){
         try {
-            maxJobs = application.numBgJobs() + getNumWorkers();
-            lastNumBgJobs = maxJobs;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForeground(1, notification);
-            }
-
-            timer = new Handler();
-            timer.postDelayed(ttNotify, 1000);
-
-            for (int i=0; i<8; i++){
+            while ((numWorkers.get() < MAX_WORKER) && (application.numBgJobs() > 0)){
+                numWorkers.incrementAndGet();
                 new Thread(){
                     @Override
                     public void run() {
-                        numWorkers.incrementAndGet();
                         BgJob job;
                         while ((job = application.getBgJob()) != null){
                             job.service = BgJobService.this;
                             job.start();
-                            NotificationManagerCompat.from(application).cancel(job.notification_id);
                         }
                         numWorkers.decrementAndGet();
-                        synchronized (this){
-                            if (numWorkers.get() == 0){
-                                checkActive();
-                            }
-                        }
+                        checkDeactivateService();
                     }
-
                 }.start();
             }
         } catch (Exception e) {
@@ -151,34 +134,43 @@ public class BgJobService extends Service {
         }
 
     }
-    protected void deactivateService(){
+    synchronized protected void checkDeactivateService(){
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                stopForeground(true);
+            if (active && (application.numBgJobs() == 0)) {
+                active = false;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    stopForeground(true);
+                }
+                application.refresh();
+                timer.removeCallbacks(ttNotify);
             }
-            application.refresh();
-            timer.removeCallbacks(ttNotify);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
     }
 
-    public int getNumWorkers(){
-        return numWorkers.get();
+    public NotificationCompat.Builder createNotificationBuilder(String notificationText){
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.mg2)
+                .setContentTitle("MGMap")
+                .setContentText(notificationText)
+                .setSound(null)
+                .setProgress(0, 0, true)
+                .setOngoing(true)
+                .setOnlyAlertOnce(true);
     }
 
-    public void notifyUser(int notificationId, String notificationText, int max, int progress, boolean indeterminate) {
+    public void notifyUserProgress(NotificationCompat.Builder builder, int notificationId, int max, int progress, boolean indeterminate) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.mg2)
-                    .setContentTitle("MGMapViewer")
-                    .setContentText(notificationText)
-                    .setSound(null)
-                    .setProgress(max, progress, indeterminate)
-                    .setOngoing(true)
-                    .setOnlyAlertOnce(true)
-                    .build();
-            NotificationManagerCompat.from(application).notify(notificationId, notification);
+            builder.setProgress(max, progress, indeterminate);
+            NotificationManagerCompat.from(application).notify(notificationId, builder.build());
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+ " NOTI: id="+notificationId+" "+" max="+max+" progress="+progress);
+        }
+    }
+    public void notifyUserFinish(int notificationId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManagerCompat.from(application).cancel(notificationId);
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+ " NOTI: id="+notificationId+" "+" cancel");
         }
     }
 
