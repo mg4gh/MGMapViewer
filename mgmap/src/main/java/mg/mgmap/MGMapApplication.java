@@ -336,8 +336,4 @@ public class MGMapApplication extends Application {
     public synchronized int numBgJobs(){
         return bgJobs.size();
     }
-
-    public void refresh(){
-        prefCache.get(R.string.FSPosition_pref_RefreshMapView, false).toggle(); //after TileDownloads this helps to make downloaded tiles visible
-    }
 }
