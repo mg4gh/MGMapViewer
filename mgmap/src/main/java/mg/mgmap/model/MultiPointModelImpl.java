@@ -35,25 +35,25 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
     }
 
     @Override
-    public synchronized MultiPointModelImpl addPoint(PointModel pointModel){
+    public MultiPointModelImpl addPoint(PointModel pointModel){
         return addPoint(size(), pointModel);
     }
     @Override
-    public synchronized MultiPointModelImpl addPoint(int idx, PointModel pointModel) {
+    public MultiPointModelImpl addPoint(int idx, PointModel pointModel) {
         points.add(idx, pointModel);
         bBox.extend(pointModel);
         return this;
     }
 
     @Override
-    public synchronized boolean removePoint(PointModel pm){
+    public boolean removePoint(PointModel pm){
         int idx = points.indexOf(pm);
         if (idx == -1) return false;
         removePoint(idx);
         return true;
     }
     @Override
-    public synchronized PointModel removePoint(int idx) {
+    public PointModel removePoint(int idx) {
         PointModel res = points.remove(idx);
         recalcBBox();
         return res;
