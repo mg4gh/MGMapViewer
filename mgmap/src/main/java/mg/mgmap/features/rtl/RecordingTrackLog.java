@@ -38,12 +38,11 @@ public class RecordingTrackLog extends WriteableTrackLog {
 
     private static final String TAG = NameUtil.getTag();
 
-    private static PersistenceManager persistenceManager = PersistenceManager.getInstance();
+    private final PersistenceManager persistenceManager = PersistenceManager.getInstance();
 
     private boolean isTrackRecording = false;
     private boolean isSegmentRecording = false;
     private boolean recordRaw;
-    private boolean reworkData = true;
 
     private enum RawType { E_START_TRACK, E_START_SEGMENT, E_POINT, E_END_SEGMENT, E_END_TRACK }
     private static RawType fromOrdinal(byte ordinal){
@@ -63,11 +62,8 @@ public class RecordingTrackLog extends WriteableTrackLog {
     public void setRecordRaw(boolean recordRaw){
         this.recordRaw = recordRaw;
     }
-    public void setReworkData(boolean reworkData){
-        this.reworkData = reworkData;
-    }
 
-    private static void createRawEntry(RawType type, long time, PointModel pointModel){
+    private void createRawEntry(RawType type, long time, PointModel pointModel){
         ByteBuffer buf = ByteBuffer.allocate(256);
         buf.order(ByteOrder.LITTLE_ENDIAN);
         buf.put((byte) 0); // put length later at offset 0
@@ -87,6 +83,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
     }
 
     public static RecordingTrackLog initFromRaw(){
+        PersistenceManager persistenceManager = PersistenceManager.getInstance();
         byte[] b = persistenceManager.getRawData();
         if (b == null){
             persistenceManager.clearRaw();
@@ -187,75 +184,73 @@ public class RecordingTrackLog extends WriteableTrackLog {
 
 
     private void reworkData(TrackLogSegment segment) {
-        if (reworkData){
-            ArrayList<TrackLogPoint> listAll = new ArrayList<>();
-            for (PointModel pm : segment){
-                if (pm instanceof TrackLogPoint) {
-                    TrackLogPoint tlp = (TrackLogPoint) pm;
-                    if (tlp.getWgs84alt() != 0){
-                        listAll.add(tlp);
-                    }
+        ArrayList<TrackLogPoint> listAll = new ArrayList<>();
+        for (PointModel pm : segment){
+            if (pm instanceof TrackLogPoint) {
+                TrackLogPoint tlp = (TrackLogPoint) pm;
+                if (tlp.getWgs84alt() != 0){
+                    listAll.add(tlp);
                 }
             }
-            if (listAll.isEmpty()) return; // no rework possible
-            ArrayList<TrackLogPoint> listAll2 = new ArrayList<>(listAll);
-            ArrayList<TrackLogPoint> listWithoutPressure = new ArrayList<>();
+        }
+        if (listAll.isEmpty()) return; // no rework possible
+        ArrayList<TrackLogPoint> listAll2 = new ArrayList<>(listAll);
+        ArrayList<TrackLogPoint> listWithoutPressure = new ArrayList<>();
 
-            for (int i=0; (i<listAll.size()) && (i<2); i++){ // don't trust frist two pressure values
-                listAll.get(i).setPressure(PointModel.NO_PRES);
+        for (int i=0; (i<listAll.size()) && (i<2); i++){ // don't trust frist two pressure values
+            listAll.get(i).setPressure(PointModel.NO_PRES);
+        }
+
+        TrackLogPoint firstPressurePoint = null;
+        for (TrackLogPoint tlp : listAll) {
+            if (tlp.getPressure() == PointModel.NO_PRES) {
+                listWithoutPressure.add(tlp);
+            } else {
+                firstPressurePoint = tlp;
+                break;
+            }
+        }
+        listAll.removeAll(listWithoutPressure); // don't use these points for calibration data
+
+
+        if (firstPressurePoint != null) {
+            for (TrackLogPoint tlp : listWithoutPressure) {
+                tlp.setPressure( firstPressurePoint.getPressure() );
+                tlp.setPressureAlt( firstPressurePoint.getPressureAlt() );
             }
 
-            TrackLogPoint firstPressurePoint = null;
-            for (TrackLogPoint tlp : listAll) {
-                if (tlp.getPressure() == PointModel.NO_PRES) {
-                    listWithoutPressure.add(tlp);
-                } else {
-                    firstPressurePoint = tlp;
-                    break;
+            TrackLogPoint refLp = listAll.get(0);
+            float refAlt = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, refLp.getPressure());
+
+            int cntAlt = 0;
+            float sumAlt = 0;
+
+            for (TrackLogPoint lp : listAll) {
+                float curAlt = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, lp.getPressure());
+                float curNmea = lp.getNmeaAlt() - (curAlt - refAlt);
+
+                cntAlt++;
+                sumAlt += curNmea;
+
+                if (cntAlt > 30) break; // take only the first 30 points for calibration
+            }
+
+            float calAlt = sumAlt / cntAlt;
+            Log.i(TAG, "reworkData: "+ String.format(Locale.ENGLISH, "Calibration data: pressure=%.3f refAlt=%.1f calAlt=%.1f", refLp.getPressure() , refAlt, calAlt));
+
+            float maxEle = PointModel.NO_ELE;
+            float minEle = -PointModel.NO_ELE;
+            for (TrackLogPoint lp : listAll2) { // now take all points from segment
+                if (lp.getPressure() != PointModel.NO_PRES) {
+                    float lpEle = calAlt + (lp.getPressureAlt() - refAlt) ;
+                    lp.setEle( lpEle ); // set calibratedAlt
+                    maxEle = Math.max(maxEle, lpEle);
+                    minEle = Math.min(minEle, lpEle);
                 }
             }
-            listAll.removeAll(listWithoutPressure); // don't use these points for calibration data
-
-
-            if (firstPressurePoint != null) {
-                for (TrackLogPoint tlp : listWithoutPressure) {
-                    tlp.setPressure( firstPressurePoint.getPressure() );
-                    tlp.setPressureAlt( firstPressurePoint.getPressureAlt() );
-                }
-
-                TrackLogPoint refLp = listAll.get(0);
-                float refAlt = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, refLp.getPressure());
-
-                int cntAlt = 0;
-                float sumAlt = 0;
-
-                for (TrackLogPoint lp : listAll) {
-                    float curAlt = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, lp.getPressure());
-                    float curNmea = lp.getNmeaAlt() - (curAlt - refAlt);
-
-                    cntAlt++;
-                    sumAlt += curNmea;
-
-                    if (cntAlt > 30) break; // take only the first 30 points for calibration
-                }
-
-                float calAlt = sumAlt / cntAlt;
-                Log.i(TAG, "reworkData: "+ String.format(Locale.ENGLISH, "Calibration data: pressure=%.3f refAlt=%.1f calAlt=%.1f", refLp.getPressure() , refAlt, calAlt));
-
-                float maxEle = PointModel.NO_ELE;
-                float minEle = -PointModel.NO_ELE;
-                for (TrackLogPoint lp : listAll2) { // now take all points from segment
-                    if (lp.getPressure() != PointModel.NO_PRES) {
-                        float lpEle = calAlt + (lp.getPressureAlt() - refAlt) ;
-                        lp.setEle( lpEle ); // set calibratedAlt
-                        maxEle = Math.max(maxEle, lpEle);
-                        minEle = Math.min(minEle, lpEle);
-                    }
-                }
-                if (maxEle != PointModel.NO_ELE){
-                    segment.getStatistic().setMaxEle(maxEle);
-                    segment.getStatistic().setMinEle(minEle);
-                }
+            if (maxEle != PointModel.NO_ELE){
+                segment.getStatistic().setMaxEle(maxEle);
+                segment.getStatistic().setMinEle(minEle);
             }
         }
     }
