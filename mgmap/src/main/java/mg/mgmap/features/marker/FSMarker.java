@@ -224,7 +224,7 @@ public class FSMarker extends FeatureService {
             if (pointRef != null){
                 deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
             } else {
-                pmTap.setEle(AltitudeProvider.getAltitude(pmTap.getLat(), pmTap.getLon()));
+                pmTap.setEle(AltitudeProvider.getAlt(pmTap));
                 if (lineRef != null){
                     insertPoint(mtl, pmTap, lineRef);
                 } else {

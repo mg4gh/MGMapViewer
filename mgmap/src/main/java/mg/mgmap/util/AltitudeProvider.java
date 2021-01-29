@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -14,17 +14,13 @@
  */
 package mg.mgmap.util;
 
-import org.mapsforge.core.model.LatLong;
-
 import mg.mgmap.model.PointModel;
-import mg.mgmap.model.TrackLogPoint;
 
 /** Provide an elevation value for a given position on the .hgt file basis. */
 public class AltitudeProvider {
 
-    public static float getAlt(TrackLogPoint tlp) {
-        LatLong latLong = tlp.getLatLong();
-        return getAltitude(latLong.getLatitude(), latLong.getLongitude());
+    public static float getAlt(PointModel pm) {
+        return getAltitude(pm.getLat(), pm.getLon());
     }
 
     public static float getAltitude(double latitude, double longitude) {
@@ -41,22 +37,19 @@ public class AltitudeProvider {
             double dlon = longitude - iLon;
             int oLon = (int) (dlon * 3600);
 
-            double nwLat = iLat + (1 - oLat / 3600.0);
+            double nwLat = iLat + (1 - oLat / 3600.0);  // nw - northWest
             double nwLon = iLon + (oLon / 3600.0);
             double nwEle = getEle(hgtBuf, oLat, oLon);
             oLon++;
-            double neLat = iLat + (1 - oLat / 3600.0);
-            double neLon = iLon + (oLon / 3600.0);
+            double neLon = iLon + (oLon / 3600.0);     // ne - northEast
             double neEle = getEle(hgtBuf, oLat, oLon);
             oLat++;
-            double seLat = iLat + (1 - oLat / 3600.0);
-            double seLon = iLon + (oLon / 3600.0);
+            double seLon = iLon + (oLon / 3600.0);     // se - southEast
             double seEle = getEle(hgtBuf, oLat, oLon);
             oLon--;
-            double swLat = iLat + (1 - oLat / 3600.0);
+            double swLat = iLat + (1 - oLat / 3600.0); // sw - southWest
             double swLon = iLon + (oLon / 3600.0);
             double swEle = getEle(hgtBuf, oLat, oLon);
-
 
             double nhi = interpolate(nwLon, neLon, nwEle, neEle, longitude);
             double shi = interpolate(swLon, seLon, swEle, seEle, longitude);
@@ -79,10 +72,8 @@ public class AltitudeProvider {
         return res;
     }
 
-
     private static double interpolate(double refMin, double refMax, double valMin, double valMax, double ref){
         double scale = (ref - refMin) / (refMax - refMin);
         return scale * (valMax - valMin) + valMin ;
     }
-
 }

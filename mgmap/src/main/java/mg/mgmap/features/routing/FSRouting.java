@@ -576,7 +576,7 @@ public class FSRouting extends FeatureService {
                             if (PointModelUtil.findApproach(pointModel, node, neighbourNode, pmApproach)) {
                                 double distance = PointModelUtil.distance(pointModel, pmApproach);
                                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
-                                    float hgtAlt = AltitudeProvider.getAltitude(pmApproach.getLat(), pmApproach.getLon());
+                                    float hgtAlt = AltitudeProvider.getAlt(pmApproach);
                                     GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), hgtAlt, distance); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
                                     ApproachModel approach = new ApproachModel(pointModel, node, neighbour.getNeighbourNode(), approachNode);
                                     approaches.add(approach);
