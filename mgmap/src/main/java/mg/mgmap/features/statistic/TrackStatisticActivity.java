@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -200,7 +200,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                 TrackStatisticEntry entry = (TrackStatisticEntry) parent.getChildAt(idx);
                 entry.onCleanup();
                 entry.getPrefSelected().deleteObserver(reworkObserver);
-                entry.getTrackLog().getPrefModified().deleteObserver(reworkObserver);
+                entry.getTrackLog().deleteObserver(reworkObserver);
             }
         }
         parent.removeAllViews();
@@ -249,7 +249,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
         TrackStatisticEntry entry = new TrackStatisticEntry(context, trackLog, parent, colorId, colorIdSelected);
         entry.getPrefSelected().addObserver(reworkObserver);
-        entry.getTrackLog().getPrefModified().addObserver(reworkObserver);
+        entry.getTrackLog().addObserver(reworkObserver);
     }
 
     private List<String> getNames(List<TrackStatisticEntry> entries, boolean useNameKeys){
@@ -361,12 +361,10 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private View.OnClickListener createSaveOCL(){
         return v -> {
             if (!prefNoneModified.getValue()){
-                ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                ArrayList<TrackStatisticEntry> entries = getModifiedEntries();
                 for (TrackStatisticEntry entry : entries){
-                    if (entry.isModified()){
-                        TrackLog aTrackLog = entry.getTrackLog();
-                        GpxExporter.export(aTrackLog);
-                    }
+                    TrackLog aTrackLog = entry.getTrackLog();
+                    GpxExporter.export(aTrackLog);
                 }
             }
         };

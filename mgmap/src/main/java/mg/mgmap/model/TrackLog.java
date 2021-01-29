@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 
 import mg.mgmap.util.Formatter;
 import mg.mgmap.util.PointModelUtil;
-import mg.mgmap.util.Pref;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -31,8 +30,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected TrackLogStatistic trackStatistic = new TrackLogStatistic(-1);
     protected String name = "";
     protected boolean available = true;
-    protected Pref<Boolean> prefModified = new Pref<>(null, false, null);
-
+    protected boolean modified = false;
 
     public void clear(){
         trackStatistic = null;
@@ -67,15 +65,14 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
         this.available = available;
     }
 
-    public Pref<Boolean> getPrefModified() {
-        return prefModified;
-    }
-
     public boolean isModified(){
-        return this.prefModified.getValue();
+        return modified;
     }
     public void setModified(boolean modified) {
-        this.prefModified.setValue(modified);
+        if (this.modified != modified){
+            this.modified = modified;
+            changed(null);
+        }
     }
 
     public ArrayList<TrackLogSegment> getTrackLogSegments(){

@@ -1,5 +1,20 @@
+/*
+ * Copyright 2017 - 2021 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package mg.mgmap.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -11,7 +26,6 @@ import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import java.util.Observable;
 import java.util.Observer;
 
 import mg.mgmap.ControlView;
@@ -23,6 +37,7 @@ import mg.mgmap.util.ExtendedClickListener;
 import mg.mgmap.util.Formatter;
 import mg.mgmap.util.Pref;
 
+@SuppressLint("ViewConstructor")
 public class TrackStatisticEntry extends TableLayout {
 
     private final Pref<Boolean> prefSelected = new Pref<>(false);
@@ -34,7 +49,7 @@ public class TrackStatisticEntry extends TableLayout {
     private final Observer modifiedObserver;
 
 
-    private int dp2px(float dp){
+    private int dp(float dp){
         return ControlView.dp(dp);
     }
 
@@ -46,7 +61,7 @@ public class TrackStatisticEntry extends TableLayout {
 
         parent.addView(this);
         this.setId(View.generateViewId());
-        this.setPadding(0, dp2px(2),0,0);
+        this.setPadding(0, dp(2),0,0);
 
         TableRow tableRow0 = new TableRow(context);
         this.addView(tableRow0);
@@ -76,34 +91,21 @@ public class TrackStatisticEntry extends TableLayout {
 
         setViewtreeColor(this, colorId);
         setOnClickListener(new StatisticClickListener());
-        prefSelected.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                if (isPrefSelected()){
-                    setViewtreeColor(TrackStatisticEntry.this, colorIdSelected);
-                } else {
-                    setViewtreeColor(TrackStatisticEntry.this, colorId);
-                }
-            }
-        });
-        modifiedObserver = new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                nameETV.setValue( ((prefShowNameKey.getValue())?trackLog.getNameKey():trackLog.getName()) + (trackLog.isModified()?"*":""));
-                durationETV.setValue(statistic.getDuration());
-                lengthETV.setValue(statistic.getTotalLength());
-                numPointsETV.setValue(statistic.getNumPoints());
-                gainETV.setValue(statistic.getGain());
-                lossETV.setValue(statistic.getLoss());
-                maxeleETV.setValue(statistic.getMaxEle());
-                mineleETV.setValue(statistic.getMinEle());
-            }
+        prefSelected.addObserver((o, arg) -> setViewtreeColor(TrackStatisticEntry.this, isPrefSelected()?colorIdSelected:colorId));
+        modifiedObserver = (o, arg) -> {
+            nameETV.setValue( ((prefShowNameKey.getValue())?trackLog.getNameKey():trackLog.getName()) + (trackLog.isModified()?"*":""));
+            durationETV.setValue(statistic.getDuration());
+            lengthETV.setValue(statistic.getTotalLength());
+            numPointsETV.setValue(statistic.getNumPoints());
+            gainETV.setValue(statistic.getGain());
+            lossETV.setValue(statistic.getLoss());
+            maxeleETV.setValue(statistic.getMaxEle());
+            mineleETV.setValue(statistic.getMinEle());
         };
-        trackLog.getPrefModified().addObserver(modifiedObserver);
+        trackLog.addObserver(modifiedObserver);
         prefShowNameKey.addObserver(modifiedObserver);
 
         modifiedObserver.update(null,null);
-
     }
 
 
@@ -124,22 +126,21 @@ public class TrackStatisticEntry extends TableLayout {
 
 
     public ExtendedTextView createETV(ViewGroup viewGroup, float weight) {
-        ExtendedTextView etv = new ExtendedTextView(getContext()).setDrawableSize(dp2px(16)); // Need activity context for Theme.AppCompat (Otherwise we get error messages)
+        ExtendedTextView etv = new ExtendedTextView(getContext()).setDrawableSize(dp(16)); // Need activity context for Theme.AppCompat (Otherwise we get error messages)
         viewGroup.addView(etv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT);
-        int margin = dp2px(0.8f);
+        int margin = dp(0.8f);
         params.setMargins(margin,margin,margin,margin);
         params.weight = weight;
         etv.setLayoutParams(params);
 
-        int padding = dp2px(2.0f);
+        int padding = dp(2.0f);
         etv.setPadding(padding, padding, padding, padding);
-        int drawablePadding = dp2px(3.0f);
+        int drawablePadding = dp(3.0f);
         etv.setCompoundDrawablePadding(drawablePadding);
         Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
-
-        drawable.setBounds(0, 0, etv.getDrawableSize(), etv.getDrawableSize());
+        if (drawable != null) drawable.setBounds(0, 0, etv.getDrawableSize(), etv.getDrawableSize());
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setTextColor(CC.getColor(R.color.WHITE));
@@ -179,13 +180,10 @@ public class TrackStatisticEntry extends TableLayout {
     public boolean isModified(){
         return trackLog.isModified();
     }
-    public void setModified(boolean modified){
-        trackLog.setModified(modified);
-    }
 
 
     public void onCleanup(){
-        trackLog.getPrefModified().deleteObserver(modifiedObserver);
+        trackLog.deleteObserver(modifiedObserver);
         prefShowNameKey.deleteObserver(modifiedObserver);
     }
 
