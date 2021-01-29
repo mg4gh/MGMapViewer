@@ -250,7 +250,7 @@ public class ControlView extends RelativeLayout {
             ((ExtendedTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
             ((ExtendedTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
             ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
-            ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.duration);
+            ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.getDuration());
         }
     }
 

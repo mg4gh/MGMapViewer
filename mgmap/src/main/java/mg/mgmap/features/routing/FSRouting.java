@@ -426,7 +426,7 @@ public class FSRouting extends FeatureService {
                     if ((bestMatch != null) && (bestMatch.getApproachPoint() != null)){
                         dashboardStatistic = new TrackLogStatistic();
                         routeTrackLog.remainStatistic(dashboardStatistic, bestMatch.getApproachPoint(), bestMatch.getSegmentIdx(), bestMatch.getEndPointIndex());
-                        dashboardStatistic.segmentIdx = -2; // indicates Remainings statistic
+                        dashboardStatistic.setSegmentIdx(-2); // indicates Remainings statistic
                     }
                 }
             }

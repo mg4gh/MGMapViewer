@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -16,7 +16,6 @@ package mg.mgmap.model;
 
 import android.location.Location;
 
-import org.mapsforge.core.model.LatLong;
 import mg.mgmap.util.LaLo;
 
 import mg.mgmap.util.AltitudeProvider;
@@ -29,8 +28,39 @@ import java.nio.ByteBuffer;
  */
 public class TrackLogPoint extends WriteablePointModelImpl implements WriteablePointModel{
 
+    public static TrackLogPoint createGpsLogPoint(Location location){
+        TrackLogPoint lp = new TrackLogPoint();
+        lp.timestamp = System.currentTimeMillis();
+        lp.la = LaLo.d2md(location.getLatitude());
+        lp.lo = LaLo.d2md(location.getLongitude());
+        lp.hgtAlt = AltitudeProvider.getAlt(lp);
+        lp.accuracy = Math.round(location.getAccuracy());
+        if ((location.hasAltitude() && (location.getAltitude() != 0))){
+            lp.wgs84alt = (float)location.getAltitude();
+            float geoidOffset = Geoid.getInstance().getGeoidOffset(lp.getLat(),lp.getLon());
+            lp.nmeaAlt = lp.wgs84alt - geoidOffset;
+            lp.ele = lp.nmeaAlt;
+        } else { // no gps altitude
+            lp.ele = lp.hgtAlt;
+        }
+        return lp;
+    }
 
-//    public static final int NO_ELE = Integer.MIN_VALUE;
+    public static TrackLogPoint createLogPoint(double latitude, double longitude){
+        TrackLogPoint lp = new TrackLogPoint();
+        lp.la = LaLo.d2md(latitude);
+        lp.lo = LaLo.d2md(longitude);
+        return lp;
+    }
+
+
+    private long timestamp = 0;
+    private float accuracy = 0; // m rounded
+    private float pressure = NO_PRES; // hpa
+    private float wgs84alt = NO_ELE; // m
+    private float nmeaAlt = NO_ELE; // m
+    private float pressureAlt = NO_ELE; // m
+    private float hgtAlt = NO_ELE; // m
 
     public TrackLogPoint(){}
 
@@ -46,46 +76,6 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         this.ele = tlp.ele;
         this.hgtAlt = tlp.hgtAlt;
     }
-
-
-    public static TrackLogPoint createGpsLogPoint(Location location){
-        TrackLogPoint lp = new TrackLogPoint();
-        lp.timestamp = System.currentTimeMillis();
-        lp.la = LaLo.d2md(location.getLatitude());
-        lp.lo = LaLo.d2md(location.getLongitude());
-        lp.accuracy = Math.round(location.getAccuracy());
-        if (location.hasAltitude()){
-            lp.wgs84alt = (float)location.getAltitude();
-            float geoidOffset = Geoid.getInstance().getGeoidOffset(lp.getLat(),lp.getLon());
-            lp.nmeaAlt = lp.wgs84alt - geoidOffset;
-        }
-        lp.hgtAlt = AltitudeProvider.getAlt(lp);
-        if (lp.wgs84alt != 0){
-            lp.ele = lp.nmeaAlt;
-        } else { // don't trust an exact 0 value for wgs84alt
-            lp.ele = lp.hgtAlt;
-        }
-        return lp;
-    }
-
-
-    public static TrackLogPoint createLogPoint(double latitude, double longitude){
-        TrackLogPoint lp = new TrackLogPoint();
-        lp.la = LaLo.d2md(latitude);
-        lp.lo = LaLo.d2md(longitude);
-        return lp;
-    }
-
-
-    protected long timestamp = 0;
-
-    float accuracy = 0; // m rounded
-    float pressure = NO_PRES; // hpa
-    float wgs84alt = NO_ELE; // m
-    float nmeaAlt = NO_ELE; // m
-    float pressureAlt = NO_ELE; // m
-//    float calibratedAlt = NO_ELE; // m
-    float hgtAlt = NO_ELE; // m
 
 
     public void toByteBuffer(ByteBuffer buf){
@@ -138,20 +128,12 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         return PointModel.NO_ELE;
     }
 
-    public LatLong getLatLong(){
-        return new LatLong(LaLo.md2d(la),LaLo.md2d(lo));
-    }
-
-
     public long getTimestamp(){
         return timestamp;
     }
     public float getNmeaAlt(){
         return nmeaAlt;
     }
-//    public float getCalibratedAlt(){
-//        return ele;
-//    }
     public float getAccuracy() {
         return accuracy;
     }
@@ -188,8 +170,5 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
     public void setHgtAlt(float hgtAlt) {
         this.hgtAlt = hgtAlt;
     }
-//    public void setCalibratedAlt(float calibratedAlt) {
-//        this.ele = calibratedAlt;
-//    }
 
 }

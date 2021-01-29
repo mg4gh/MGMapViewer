@@ -20,7 +20,7 @@ public class WriteableTrackLog extends TrackLog {
 
     public void startTrack(long timestamp){
         if (timestamp != PointModel.NO_TIME){
-            trackStatistic.tStart = timestamp;
+            trackStatistic.setTStart(timestamp);
         }
     }
 
@@ -38,14 +38,14 @@ public class WriteableTrackLog extends TrackLog {
     }
 
     public void stopTrack(long timestamp){
-        if ((trackStatistic.tStart == PointModel.NO_TIME) && (getNumberOfSegments() > 0)){
-            trackStatistic.tStart = getTrackLogSegment(0).getStatistic().tStart;
+        if ((trackStatistic.getTStart() == PointModel.NO_TIME) && (getNumberOfSegments() > 0)){
+            trackStatistic.setTStart( getTrackLogSegment(0).getStatistic().getTStart() );
         }
         long duration = 0;
         for (TrackLogSegment segment : getTrackLogSegments()){
-            duration += segment.getStatistic().duration;
+            duration += segment.getStatistic().getDuration();
         }
-        trackStatistic.duration = duration;
+        trackStatistic.setDuration(duration);
     }
 
     public void addPoint(PointModel lp){

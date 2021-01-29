@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -28,20 +28,19 @@ import mg.mgmap.util.PointModelUtil;
 
 public class TrackLogStatistic {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
+    private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
     private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
 
-    public int segmentIdx; // -1 means all segments
-    long tStart;
-    public long duration;
+    private int segmentIdx; // -1 means all segments; // -2 remainings statistic
+    private long tStart;
+    private long duration;
 
-
-    double totalLength = 0;
-    float gain = 0;
-    float loss = 0;
-    float minEle = -PointModel.NO_ELE;
-    float maxEle = PointModel.NO_ELE;
-    int numPoints = 0;
+    private double totalLength = 0;
+    private float gain = 0;
+    private float loss = 0;
+    private float minEle = -PointModel.NO_ELE;
+    private float maxEle = PointModel.NO_ELE;
+    private int numPoints = 0;
 
     public int getSegmentIdx() {
         return segmentIdx;
@@ -51,6 +50,9 @@ public class TrackLogStatistic {
     }
     public long getTEnd() {
         return tStart+duration;
+    }
+    public long getDuration() {
+        return duration;
     }
     public double getTotalLength() {
         return totalLength;
@@ -71,8 +73,14 @@ public class TrackLogStatistic {
         return numPoints;
     }
 
+    public void setSegmentIdx(int segmentIdx) {
+        this.segmentIdx = segmentIdx;
+    }
     public void setTStart(long tStart) {
         this.tStart = tStart;
+    }
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
     public void setTotalLength(double totalLength) {
         this.totalLength = totalLength;
@@ -106,7 +114,7 @@ public class TrackLogStatistic {
         numPoints = 0;
         segmentIdx = -1;
         duration = 0;
-//        tStart = 0;
+//        tStart = 0; // tStart shall survive
         lastPoint4Distance = null;
         lastPoint4GainLoss = null;
     }
@@ -191,7 +199,7 @@ public class TrackLogStatistic {
     }
 
     private void process2GL(PointModel point){
-        if (( lastPoint4GainLoss == null) /* || ((totalLength == 0))*/){  // no reference point or first one (ignore first point height value)
+        if ( lastPoint4GainLoss == null){  // no reference point or first one (ignore first point height value)
             lastPoint4GainLoss = point;
         } else{
             float diff = point.getEleD() - lastPoint4GainLoss.getEleD();
@@ -210,19 +218,13 @@ public class TrackLogStatistic {
 
         if (point instanceof TrackLogPoint) {
             TrackLogPoint tlp = (TrackLogPoint) point;
-            if (tlp.pressureAlt != PointModel.NO_ELE) return ELE_THRESHOLD;
+            if (tlp.getPressureAlt() != PointModel.NO_ELE) return ELE_THRESHOLD;
         }
         return ELE_THRESHOLD*5;
     }
 
     public String durationToString(){
         return Formatter.format(Formatter.FormatType.FORMAT_DURATION, duration);
-//        long seconds = duration/1000;
-//        long minutes = seconds / 60;
-//        long hours = minutes /60;
-//        seconds -= minutes * 60;
-//        minutes -= hours * 60;
-//        return String.format(Locale.ENGLISH,"%d:%02d:%02d",hours,minutes,seconds);
     }
 
     @Override

@@ -90,7 +90,7 @@ public class TrackStatisticEntry extends TableLayout {
             @Override
             public void update(Observable o, Object arg) {
                 nameETV.setValue( ((prefShowNameKey.getValue())?trackLog.getNameKey():trackLog.getName()) + (trackLog.isModified()?"*":""));
-                durationETV.setValue(statistic.duration);
+                durationETV.setValue(statistic.getDuration());
                 lengthETV.setValue(statistic.getTotalLength());
                 numPointsETV.setValue(statistic.getNumPoints());
                 gainETV.setValue(statistic.getGain());
