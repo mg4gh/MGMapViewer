@@ -24,13 +24,8 @@ import java.util.Observer;
 import mg.mgmap.MGMapActivity;
 import mg.mgmap.FeatureService;
 import mg.mgmap.R;
-import mg.mgmap.features.rtl.control.TrackStartControl;
-import mg.mgmap.features.rtl.control.TrackStartSegmentControl;
-import mg.mgmap.features.rtl.control.TrackStopControl;
-import mg.mgmap.features.rtl.control.TrackStopSegmentControl;
 import mg.mgmap.model.TrackLogRef;
 import mg.mgmap.util.CC;
-import mg.mgmap.util.Control;
 import mg.mgmap.util.GpxExporter;
 import mg.mgmap.util.Pref;
 import mg.mgmap.util.MetaDataUtil;
@@ -202,14 +197,5 @@ public class FSRecordingTrackLog extends FeatureService {
         unregisterAll();
         getControlView().setDashboardValue(false,dashboardRtl,null);
         getControlView().setDashboardValue(false,dashboardRtls,null);
-    }
-
-    public Control[] getMenuTrackControls(){
-
-        return new Control[]{
-                new TrackStartControl(),
-                new TrackStartSegmentControl(),
-                new TrackStopSegmentControl(),
-                new TrackStopControl() };
     }
 }

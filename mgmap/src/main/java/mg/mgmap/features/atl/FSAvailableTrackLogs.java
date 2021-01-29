@@ -30,7 +30,6 @@ import mg.mgmap.model.TrackLogRef;
 import mg.mgmap.model.TrackLogRefZoom;
 import mg.mgmap.util.Assert;
 import mg.mgmap.util.CC;
-import mg.mgmap.util.Control;
 import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.LabeledSlider;
@@ -180,19 +179,4 @@ public class FSAvailableTrackLogs extends FeatureService {
         getControlView().setDashboardValue(false,dashboardStl,null);
         getControlView().setDashboardValue(false,dashboardStls,null);
     }
-
-    public Control[] getMenuLoadControls(){
-        return new Control[]{
-                new LoadPrevControl(),
-                new LoadNextControl()};
-    }
-
-    public Control[] getMenuHideControls(){
-        return new Control[]{
-                new HideAllControl(),
-                new HideSelectedControl(),
-                new HideUnselectedControl(),
-                new MarkerTrackHideControl2()};
-    }
-
 }

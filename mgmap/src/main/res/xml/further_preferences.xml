@@ -102,20 +102,6 @@
             app:title="@string/FSGrad_pref_WayDetails_title"
             app:iconSpaceReserved="false"
             />
-        <SwitchPreference
-            app:defaultValue="false"
-            app:key="main_menu"
-            app:summary="Show additionally to the quick controls also the old Menu Control"
-            app:title="Show old Menu Control"
-            app:iconSpaceReserved="false"
-            />
-        <!--SwitchPreference
-            app:defaultValue="false"
-            app:key="@string/preferences_mtr_key"
-            app:summary="@string/preferences_mtr_desc"
-            app:title="@string/preferences_mapsforge_title"
-            app:iconSpaceReserved="false"
-            /-->
 
     </PreferenceCategory>
 

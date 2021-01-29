@@ -41,7 +41,6 @@ import mg.mgmap.model.WriteablePointModelImpl;
 import mg.mgmap.util.AltitudeProvider;
 import mg.mgmap.util.Assert;
 import mg.mgmap.util.CC;
-import mg.mgmap.util.Control;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
 import mg.mgmap.util.Pref;
@@ -315,19 +314,11 @@ public class FSMarker extends FeatureService {
         mtl.addPoint( pmTap );
     }
 
-
     private void insertPoint(WriteableTrackLog mtl, PointModel pmTap, TrackLogRefApproach lineRef) {
         Assert.check(lineRef.getTrackLog() == mtl);
         TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
         int tlpIdx = lineRef.getEndPointIndex();
         segment.addPoint(tlpIdx, pmTap);
-    }
-
-    public Control[] getMenuMarkerControls(){
-        return new Control[]{
-                new MarkerTrackHideControl(),
-                new MarkerLoadSelectedControl(this),
-                new MarkerTrackSaveControl()};
     }
 
     public interface LineRefProvider{

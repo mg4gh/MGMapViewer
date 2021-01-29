@@ -5,8 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import java.util.ArrayList;
 import java.util.Observer;
 
@@ -14,13 +12,7 @@ import mg.mgmap.features.atl.FSAvailableTrackLogs;
 import mg.mgmap.features.control.FSControl;
 import mg.mgmap.features.beeline.FSBeeline;
 import mg.mgmap.features.marker.FSMarker;
-import mg.mgmap.features.position.CenterControl;
-import mg.mgmap.features.position.GpsControl;
-import mg.mgmap.features.control.HeightProfileControl;
-import mg.mgmap.features.control.SettingsControl;
-import mg.mgmap.features.control.ThemeSettingsControl;
 import mg.mgmap.features.routing.FSRouting;
-import mg.mgmap.features.statistic.TrackStatisticControl;
 import mg.mgmap.features.alpha.FSAlpha;
 import mg.mgmap.features.bb.FSBB;
 import mg.mgmap.features.position.FSPosition;
@@ -28,7 +20,6 @@ import mg.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.features.search.FSSearch;
 import mg.mgmap.features.time.FSTime;
-import mg.mgmap.util.Control;
 import mg.mgmap.util.Formatter;
 import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
@@ -53,37 +44,12 @@ public class ControlComposer {
         return dashboardEntry;
     }
 
-    void composeMenu(MGMapApplication application, MGMapActivity activity, ControlView coView){
-        View alignHelper = null;
-        ConstraintLayout parent = activity.findViewById(R.id.menuBase);
-        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent, false, 0), new SettingsControl());
-        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent, false, 0), new ThemeSettingsControl());
-        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent,false, 0), new TrackStatisticControl());
-        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent,false, 0), new HeightProfileControl());
-        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent,false, 0), new CenterControl());
-        alignHelper = coView.registerMenuControl(coView.createMenuButton(parent, alignHelper, parent,false, 0), new GpsControl());
-
-        alignHelper = null;
-        Control[] controls = activity.getFS(FSRecordingTrackLog.class).getMenuTrackControls();
-        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length) , coView.rstring(R.string.btRecordTrack),controls);
-        controls = activity.getFS(FSBB.class).getMenuBBControls();
-        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btBB), controls);
-        controls = activity.getFS(FSAvailableTrackLogs.class).getMenuLoadControls();
-        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btLoadTrack), controls);
-        controls = activity.getFS(FSAvailableTrackLogs.class).getMenuHideControls();
-        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btHideTrack), controls);
-        controls = activity.getFS(FSMarker.class).getMenuMarkerControls();
-        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btMarkerTrack), controls);
-        controls = activity.getFS(FSRouting.class).getMenuRouteControls();
-        alignHelper = coView.registerMenuControls(coView.createMenuButton(parent, alignHelper, parent,true, controls.length), coView.rstring(R.string.btRoute), controls);
-    }
-
     void composeAlphaSlider(MGMapApplication application, MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.bars);
         for (String prefKey : activity.getMapLayerKeys()) {
             final String key = activity.sharedPreferences.getString(prefKey, "");
             if (MGMapLayerFactory.hasAlpha(key)){
-                Pref<Boolean> visibility = new Pref<Boolean>("alpha_" + key+"_visibility", true, null);
+                Pref<Boolean> visibility = new Pref<>("alpha_" + key+"_visibility", true, null);
                 coView.createLabeledSlider(parent).initPrefData(visibility, activity.getPrefCache().get("alpha_" + key, 1.0f), null, key);
             }
         }
@@ -127,7 +93,6 @@ public class ControlComposer {
         createQC(activity, FSControl.class,qcss[0],"group_task",gos.get(1));
         createQC(activity, FSSearch.class,qcss[0],"group_search",gos.get(2));
         ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false))
-//                .setData(MGPref.bool(R.string.FSMarker_qc_EditMarkerTrack),MGPref.bool(R.string.FSRouting_qc_RoutingHint),
                 .setData(prefEditMarkerTrack,prefRoutingHints,R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4)
                 .setName("group_marker").addActionObserver(gos.get(3));
         createQC(activity, FSBB.class,qcss[0],"group_bbox",gos.get(4));

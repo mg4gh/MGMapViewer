@@ -58,7 +58,6 @@ import mg.mgmap.model.TrackLogSegment;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.util.AltitudeProvider;
 import mg.mgmap.util.CC;
-import mg.mgmap.util.Control;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
 import mg.mgmap.util.Pref;
@@ -615,15 +614,6 @@ public class FSRouting extends FeatureService {
             res = Math.min (3 * PointModelUtil.distance(pmStart,pmEnd) + 2 * PointModelUtil.getCloseThreshold(), MAX_ROUTE_DISTANCE);
         }
         return res;
-    }
-
-    public Control[] getMenuRouteControls(){
-        return new Control[]{
-                new RouteOnOffControl(this),
-                new RouteOptimizeControl(this),
-                new RouteExportControl(this)};
-
-
     }
 
     private void checkRelaxedViews(TrackLog mtl){
