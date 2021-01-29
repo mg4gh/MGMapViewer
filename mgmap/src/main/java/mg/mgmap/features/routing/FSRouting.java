@@ -449,7 +449,7 @@ public class FSRouting extends FeatureService {
         Log.i(MGMapApplication.LABEL, NameUtil.context()+ " start "+gStart+" end "+gEnd);
 
         double distLimit = acceptedRouteDistance(source.mtlp, target.mtlp);
-        GGraph multi = null;
+        GGraphMulti multi = null;
 
         try {
             if ((gStart != null) && (gEnd != null) && (distLimit > 0) && !direct){

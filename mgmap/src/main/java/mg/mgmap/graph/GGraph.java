@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -27,41 +27,21 @@ public class GGraph extends Observable {
 
     public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
 
-    ArrayList<GNode> nodes = new ArrayList<>();
-
-    ArrayList<GOverlayNeighbour> overlayNeighbours = new ArrayList<>();
+    private final ArrayList<GNode> nodes = new ArrayList<>();
 
     public ArrayList<GNode> getNodes(){
         return nodes;
     }
 
     /**
-     * Determine neighbour via graph to allow redefinition for specific GGraph implementations
-     * @param node
-     * @param neighbour
+     * Determine neighbour via graph - allows redefinition for specific GGraph implementations
+     * @param node node for that the neighbours can be iterated with this method
+     * @param neighbour last neighbour of node in the iteration of neighbours
      * @return next neighbour in the graph
      */
     public GNeighbour getNextNeighbour(GNode node, GNeighbour neighbour){
-        GNeighbour res = neighbour.getNextNeighbour();
-        if (res == null){
-            for (GOverlayNeighbour overlayNeighbour : overlayNeighbours){
-                if ((overlayNeighbour.node == node) && (overlayNeighbour.neighbour == neighbour)){
-                    res = overlayNeighbour.nextNeighbour;
-                }
-            }
-        }
-        return res;
+        return neighbour.getNextNeighbour();
     }
-
-    public void addNextNeighbour(GNode node, GNeighbour neighbour, GNeighbour nextNeighbour){
-        overlayNeighbours.add(new GOverlayNeighbour(node, neighbour, nextNeighbour));
-    }
-
-//    void resetNodeRefs(){
-//        for (GNode node : getNodes()){
-//            node.setNodeRef(null);
-//        }
-//    }
 
     public GNeighbour getLastNeighbour(GNode node) {
         GNeighbour neighbour = node.getNeighbour();
@@ -120,17 +100,6 @@ public class GGraph extends Observable {
             if (distance >= closeThreshold) break;
         }
         return segmentNodes;
-    }
-    
-    public void createOverlaysForApproach(ApproachModel approach){
-        nodes.add(approach.getApproachNode());
-        createOverlaysForApproach(approach.getNode1(), approach.getApproachNode());
-        createOverlaysForApproach(approach.getNode2(), approach.getApproachNode());
-    }
-    private void createOverlaysForApproach(GNode node1, GNode node2){
-        double cost = PointModelUtil.distance(node1,node2)*1.000001+0.000001;
-        addNextNeighbour(node1, getLastNeighbour(node1), new GNeighbour(node2,cost));
-        addNextNeighbour(node2, getLastNeighbour(node2), new GNeighbour(node1,cost));
     }
 
 }

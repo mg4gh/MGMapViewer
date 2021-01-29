@@ -100,11 +100,12 @@ public class GGraphTile extends GGraph {
             int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(GGraph.CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
 //            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
             //all highwas are in the map ... try to correct data ...
-            for (int iIdx=0; iIdx<graph.nodes.size(); iIdx++){
-                GNode iNode = graph.nodes.get(iIdx);
+            ArrayList<GNode> nodes = graph.getNodes();
+            for (int iIdx=0; iIdx<nodes.size(); iIdx++){
+                GNode iNode = nodes.get(iIdx);
                 int iNeighbours = iNode.countNeighbours();
-                for (int nIdx=iIdx+1; nIdx<graph.nodes.size(); nIdx++ ) {
-                    GNode nNode = graph.nodes.get(nIdx);
+                for (int nIdx=iIdx+1; nIdx<nodes.size(); nIdx++ ) {
+                    GNode nNode = nodes.get(nIdx);
                     if (iNode.laMdDiff(nNode) >= latThreshold) break; // go to next iIdx
                     if (iNode.loMdDiff(nNode) >= lonThreshold)
                         continue; // goto next mIdx
@@ -175,7 +176,7 @@ public class GGraphTile extends GGraph {
             nextNeighbour.getNeighbourNode().removeNeighbourNode(nNode);
             graph.addSegment(iNode, nextNeighbour.getNeighbourNode());
         }
-        graph.nodes.remove(nNode);
+        graph.getNodes().remove(nNode);
     }
 
     // be careful with this operation, it might crash a routing action
@@ -273,7 +274,7 @@ public class GGraphTile extends GGraph {
     }
 
     private GNode getAddNode(double latitude, double longitude){
-        return getAddNode(PointModelUtil.roundMD(latitude), PointModelUtil.roundMD(longitude), -1, nodes.size());
+        return getAddNode(PointModelUtil.roundMD(latitude), PointModelUtil.roundMD(longitude), -1, getNodes().size());
     }
 
     /**
@@ -289,12 +290,12 @@ public class GGraphTile extends GGraph {
         if (high - low == 1){
             float hgtAlt = AltitudeProvider.getAltitude(latitude, longitude);
             GNode node = new GNode(latitude, longitude, hgtAlt, 0);
-            nodes.add(high, node);
+            getNodes().add(high, node);
             return node;
             // nothing more to compare, insert a new GNode at high
         } else {
             int mid = (high + low) /2;
-            GNode gMid = nodes.get(mid);
+            GNode gMid = getNodes().get(mid);
             int cmp = PointModelUtil.compareTo(latitude, longitude, gMid.getLat(), gMid.getLon() );
             if (cmp == 0) return gMid;
             if (cmp < 0){
@@ -305,10 +306,10 @@ public class GGraphTile extends GGraph {
         }
     }
 
-    @Override
-    public ArrayList<GNode> getNodes() {
-        return new ArrayList<>(nodes);
-    }
+//    @Override
+//    public ArrayList<GNode> getNodes() {
+//        return new ArrayList<>(nodes);
+//    }
 
     public BBox getTileBBox(){
         return tbBox;
