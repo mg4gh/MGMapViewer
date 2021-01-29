@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -31,7 +31,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected TrackLogStatistic trackStatistic = new TrackLogStatistic(-1);
     protected String name = "";
     protected boolean available = true;
-    protected Pref<Boolean> prefModified = new Pref<Boolean>(null, false, null);
+    protected Pref<Boolean> prefModified = new Pref<>(null, false, null);
 
 
     public void clear(){
@@ -160,13 +160,5 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     public void changed(Object o){
         setChanged();
         notifyObservers(o);
-    }
-
-    public ArrayList<MultiPointModel> asMPMList(){
-        ArrayList<MultiPointModel> mpms = new ArrayList<>();
-        for (int idx=0; idx<getNumberOfSegments(); idx++){
-            mpms.add(getTrackLogSegment(idx));
-        }
-        return mpms;
     }
 }

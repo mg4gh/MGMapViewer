@@ -28,6 +28,7 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import mg.mgmap.model.MultiPointModel;
+import mg.mgmap.model.MultiPointModelImpl;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.TrackLogSegment;
@@ -178,12 +179,12 @@ public class HeightProfileActivity extends AppCompatActivity {
         if (tls != null){
             if ((tls.get(0).getEleA() != PointModel.NO_ELE) && (tls.get(1).getEleA() != PointModel.NO_ELE)){
                 // ok Tracklog seems to have ele values
-                fillHeightProfiles(trackLog.asMPMList(), segmentHeightProfiles, segmentAscentProfiles);
+                fillHeightProfiles(trackLog.getTrackLogSegments(), segmentHeightProfiles, segmentAscentProfiles);
             }
         }
     }
 
-    private void fillHeightProfiles(ArrayList<MultiPointModel> mpms, ArrayList<SparseIntArray> segmentHeightProfiles, ArrayList<SparseIntArray> segmentAscentProfiles){
+    private void fillHeightProfiles(ArrayList<? extends MultiPointModel> mpms, ArrayList<SparseIntArray> segmentHeightProfiles, ArrayList<SparseIntArray> segmentAscentProfiles){
         double distance = 0d;
         for (int i = 0; i< mpms.size(); i++){
             SparseIntArray segmentHeightProfile = new SparseIntArray();

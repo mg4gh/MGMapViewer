@@ -101,6 +101,7 @@ public class FSSearch extends FeatureService {
         prefShowPos.addObserver((o, arg) -> prefShowSearchResultEnabled.setValue(prefShowPos.getValue() != NO_POS));
 
         if (getPref(R.string.MGMapApplication_pref_Restart, true).getValue()){
+            prefShowSearchResult.setValue(false);
             prefShowPos.setValue(NO_POS);
         }
         prefSearchOn.addObserver(refreshObserver);
@@ -222,7 +223,7 @@ public class FSSearch extends FeatureService {
 
     void showSearchPos(){
         long lalo = prefShowPos.getValue();
-        if (lalo != 0){
+        if ((lalo != 0) && (lalo != NO_POS)){
             PointModel pos = PointModelImpl.createFromLaLo(lalo);
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pos);
             getMapViewUtility().setMapViewPosition(pos);
