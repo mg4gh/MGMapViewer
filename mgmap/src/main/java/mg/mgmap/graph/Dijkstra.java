@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -24,25 +24,19 @@ import mg.mgmap.model.PointModel;
 /**
  * Implementation of the Dijkstra algorithm.
  */
-
 public class Dijkstra {
 
-
-    private static final int CHECK_CONNECTED_ATTEMPTS = 20;
-
-    private List<GNode> nodes;
-    GGraph graph;
+    private final List<GNode> nodes;
+    protected final GGraph graph;
 
     private TreeSet<GNodeRef> prioQueue = null;
-    GNode target = null;
-
+    protected GNode target = null;
 
     private long duration = 0;
     private int cntTotal = 0;
     private int cntRelaxed = 0;
     private int cntSettled = 0;
     private int resultPathLength = 0;
-//    private ArrayList<GNode> relaxedList = new ArrayList<>();
 
 
     public Dijkstra(GGraph graph) {
@@ -128,21 +122,6 @@ public class Dijkstra {
 
     double heuristic(GNode node){
         return 0;
-    }
-
-    public boolean markConnected(){
-        for (int i=0; i< CHECK_CONNECTED_ATTEMPTS; i++) {
-            int sIdx = (int) (Math.random() * (nodes.size() - 0.1));
-            GNode source = nodes.get(sIdx); // check random index
-            perform(source, null, Double.MAX_VALUE, null);
-            if ((double) (cntRelaxed) / cntTotal > 0.6) {
-                for (GNode node : nodes) {
-                    if (node.getNodeRef() != null) node.setConnected(true);
-                }
-                return true;
-            }
-        }
-        return false;
     }
 
     private void resetNodeRefs(){
