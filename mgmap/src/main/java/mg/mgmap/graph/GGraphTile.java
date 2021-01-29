@@ -47,7 +47,7 @@ public class GGraphTile extends GGraph {
 
     public static final int CACHE_LIMIT = 1000;
 
-    private static LinkedHashMap<Long, GGraphTile> cache = new LinkedHashMap <Long, GGraphTile>(100, 0.6f, true) {
+    private static final LinkedHashMap<Long, GGraphTile> cache = new LinkedHashMap <Long, GGraphTile>(100, 0.6f, true) {
         @Override
         protected boolean removeEldestEntry(Entry<Long, GGraphTile> eldest) {
             boolean bRes = (size() > CACHE_LIMIT);
@@ -65,8 +65,7 @@ public class GGraphTile extends GGraph {
     private static final int TILE_SIZE = 256;
 
     private static long getKey(int tileX,int tileY){
-        long key = tileX;
-        return (key<<32) + tileY;
+        return ((long) tileX <<32) + tileY;
     }
 
     private static GGraphTile getGGraphTile(MapDataStore mapFile, int tileX, int tileY){
@@ -161,13 +160,13 @@ public class GGraphTile extends GGraph {
         return graph;
     }
 
-    static boolean isBorderPoint(BBox bBox, GNode node){
+    private static boolean isBorderPoint(BBox bBox, GNode node){
         return ((node.getLat() == bBox.maxLatitude) || (node.getLat() == bBox.minLatitude) ||
                 (node.getLon() == bBox.maxLongitude) || (node.getLon() == bBox.minLongitude));
     }
 
     // reduce Graph by dropping nNode, all Neighbours form nNode will get iNode as a Neighbour
-    static void reduceGraph(GGraphTile graph, GNode iNode, GNode nNode){
+    private static void reduceGraph(GGraphTile graph, GNode iNode, GNode nNode){
         // iterate over al neighbours from nNode
         GNeighbour nextNeighbour = nNode.getNeighbour();
         while (nextNeighbour.getNextNeighbour() != null) {
@@ -228,10 +227,10 @@ public class GGraphTile extends GGraph {
 
 
 
-    private ArrayList<MultiPointModel> rawWays = new ArrayList<>();
+    private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
     Tile tile;
     BBox tbBox;
-    private WriteablePointModel clipRes = new WriteablePointModelImpl();
+    private final WriteablePointModel clipRes = new WriteablePointModelImpl();
 
     private GGraphTile(Tile t){
         this.tile = t;
@@ -239,25 +238,21 @@ public class GGraphTile extends GGraph {
     }
 
     private void addLatLongs(LatLong[] latLongs){
-
-
         for (int i=1; i<latLongs.length; i++){
             double lat1 = PointModelUtil.roundMD(latLongs[i-1].latitude);
             double lon1 = PointModelUtil.roundMD(latLongs[i-1].longitude);
             double lat2 = PointModelUtil.roundMD(latLongs[i].latitude);
             double lon2 = PointModelUtil.roundMD(latLongs[i].longitude);
 
-            tbBox.clip(lat1, lon1, lat2, lon2, clipRes);
+            tbBox.clip(lat1, lon1, lat2, lon2, clipRes); // clipRes contains the clip result
             lat2 = clipRes.getLat();
             lon2 = clipRes.getLon();
-            tbBox.clip(lat2, lon2, lat1, lon1, clipRes);
+            tbBox.clip(lat2, lon2, lat1, lon1, clipRes); // clipRes contains the clip result
             lat1 = clipRes.getLat();
             lon1 = clipRes.getLon();
             if (tbBox.contains(lat1, lon1) && tbBox.contains(lat2, lon2)){
                 addSegment(lat1, lon1 ,lat2, lon2);
             }
-
-
         }
     }
 
@@ -280,19 +275,18 @@ public class GGraphTile extends GGraph {
     /**
      * !!! GNode object in ArrayList nodes are stored sorted to retrieve already existing points fast !!!
      * This is only done in GGraphTile during setup of the graph.
-     * @param latitude
-     * @param longitude
+     * @param latitude latitude of the point to be stored
+     * @param longitude longitude of the point to be stored
      * @param low nodes.get(low) is strict less (or low is -1)
      * @param high nodes.get(high) is strict greater than (or high is nodes.size() )
-     * @return
+     * @return GNode with latitude an longitude, either already existing point or newly created one
      */
     private GNode getAddNode(double latitude, double longitude, int low, int high){
-        if (high - low == 1){
+        if (high - low == 1){ // nothing more to compare, insert a new GNode at high index
             float hgtAlt = AltitudeProvider.getAltitude(latitude, longitude);
             GNode node = new GNode(latitude, longitude, hgtAlt, 0);
             getNodes().add(high, node);
             return node;
-            // nothing more to compare, insert a new GNode at high
         } else {
             int mid = (high + low) /2;
             GNode gMid = getNodes().get(mid);
@@ -306,11 +300,6 @@ public class GGraphTile extends GGraph {
         }
     }
 
-//    @Override
-//    public ArrayList<GNode> getNodes() {
-//        return new ArrayList<>(nodes);
-//    }
-
     public BBox getTileBBox(){
         return tbBox;
     }
@@ -323,5 +312,4 @@ public class GGraphTile extends GGraph {
     public String toString() {
         return tbBox.toString();
     }
-
 }
