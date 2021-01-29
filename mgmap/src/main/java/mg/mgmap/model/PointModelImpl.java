@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -33,9 +33,7 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     float ele = NO_ELE;
 
     public static PointModelImpl createFromLaLo(long lalo){
-        int la = (int)(lalo>>32);
-        int lo = (int)(lalo);
-        return createFromLaLo(la, lo);
+        return createFromLaLo(LaLo.getLa(lalo), LaLo.getLo(lalo));
     }
 
     public static PointModelImpl createFromLaLo(int la, int lo){
@@ -56,7 +54,7 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
 
     public PointModelImpl(double latitude, double longitude){
         this.la = LaLo.d2md(latitude);
-        this.lo = LaLo.d2md(longitude);;
+        this.lo = LaLo.d2md(longitude);
     }
 
     public PointModelImpl(LatLong latLong){
@@ -135,6 +133,6 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
 
     @Override
     public long getLaLo() {
-        return (((long)la)<<32) +lo;
+        return LaLo.getLaLo(la,lo);
     }
 }

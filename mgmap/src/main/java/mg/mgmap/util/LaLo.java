@@ -24,10 +24,16 @@ public class LaLo {
         return (int)Math.round(degrees*1000000);
     }
     public static double md2d(int md){
-        return microdegrees2degrees(md);
-    }
-    private static double microdegrees2degrees(int microdegrees){
-        return (microdegrees/1000000.0);
+        return (md/1000000.0);
     }
 
+    public static long getLaLo(int la, int lo){
+        return (((long)la)<<32) +lo;
+    }
+    public static int getLa(long lalo){
+        return (int)(lalo>>32);
+    }
+    public static int getLo(long lalo){
+        return (int)(lalo);
+    }
 }

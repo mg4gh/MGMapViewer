@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -34,7 +34,7 @@ import mg.mgmap.model.WriteablePointModelImpl;
  */
 public class PointModelUtil {
 
-    public static final long NO_POS = new PointModelImpl(PointModel.NO_LAT_LONG, PointModel.NO_LAT_LONG).getLaLo();
+    public static final long NO_POS = LaLo.getLaLo(LaLo.d2md(PointModel.NO_LAT_LONG), LaLo.d2md(PointModel.NO_LAT_LONG));
 
     /**
      * The equatorial radius as defined by the <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84
