@@ -167,7 +167,6 @@ public class TrackLogStatistic {
                 duration = point.getTimestamp() - tStart;
             }
 
-
             if (point.getEleA() != PointModel.NO_ELE) {
                 float lastEle = point.getEleA();
                 maxEle = Math.max(maxEle, lastEle);

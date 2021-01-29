@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -18,7 +18,7 @@ package mg.mgmap.model;
  * Additionally it stores the information, whether a zoom shall take place to see the full track. */
 public class TrackLogRefZoom extends TrackLogRef{
 
-    boolean zoomForBB = true;
+    boolean zoomForBB;
 
     public TrackLogRefZoom(TrackLog trackLog, int segmentIdx, boolean zoomForBB) {
         super(trackLog, segmentIdx);

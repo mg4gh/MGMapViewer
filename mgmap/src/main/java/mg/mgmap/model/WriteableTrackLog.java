@@ -1,14 +1,24 @@
+/*
+ * Copyright 2017 - 2021 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package mg.mgmap.model;
 
-import mg.mgmap.util.Pref;
-
 /**
- * Creates new TrackLog objects based on existing GPX data, requires special handling with the timestamps.
+ * Creates new TrackLog object, requires special handling with the timestamps.
  * Created by Martin on 16.10.2017.
  */
-
 public class WriteableTrackLog extends TrackLog {
-
 
     protected TrackLogSegment currentSegment = null;
 
@@ -56,22 +66,6 @@ public class WriteableTrackLog extends TrackLog {
         trackStatistic.updateWithPoint(lp);
     }
 
-//    public void recalcStatistic(PointModel approachPoint, int idxSegmentStart, int idxPointStart) { // calculate remainings statistic from given approach point - continue with given segment and point index
-//        for (int idxSegment = 0; idxSegment < getNumberOfSegments() ; idxSegment++){
-//            if (idxSegment < idxSegmentStart) continue;
-//            TrackLogSegment segment = getTrackLogSegment(idxSegment);
-//            TrackLogStatistic segmentStatistic = segment.getStatistic();
-//            segmentStatistic.reset();
-//            if (idxSegment == idxSegmentStart) segmentStatistic.updateWithPoint(approachPoint);
-//            for (int idxPoint=0; idxPoint < segment.size(); idxPoint++){
-//                if ((idxSegment == idxSegmentStart) && (idxPoint<idxPointStart)) continue;
-//                segmentStatistic.updateWithPoint(segment.get(idxPoint));
-//            }
-//        }
-//        recalcTrackStatistic();
-//    }
-
-
     // calculate remainings statistic from given approach point - continue with given segment and point index
     // but don't change the TrackLog statistic itself, rather calculate on a separate TrackLogStatistic Object
     public void remainStatistic(TrackLogStatistic rStat, PointModel approachPoint, int idxSegmentStart, int idxPointStart) {
@@ -101,9 +95,5 @@ public class WriteableTrackLog extends TrackLog {
         for (TrackLogSegment segment : getTrackLogSegments()){
             trackStatistic.updateWithStatistics(segment.getStatistic());
         }
-    }
-
-    public void setPrefModified(Pref<Boolean> prefModified){
-        this.prefModified = prefModified;
     }
 }

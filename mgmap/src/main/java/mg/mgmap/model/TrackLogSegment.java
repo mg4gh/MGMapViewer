@@ -31,9 +31,9 @@ import mg.mgmap.util.MetaDataUtil;
  * */
 public class TrackLogSegment extends MultiPointModelImpl{
 
-    private TrackLog trackLog;
+    private final TrackLog trackLog;
     private final int segmentIdx;
-    private ArrayList<MetaData> metaDatas = new ArrayList<>(); //needed for loadFromBB ?? yes, but also for vizualization of loaded tracks
+    private final ArrayList<MetaData> metaDatas = new ArrayList<>(); //needed for loadFromBB ?? yes, but also for visualization of loaded tracks
     private TrackLogStatistic statistic;
 
     public TrackLogSegment(TrackLog trackLog, int idx){
