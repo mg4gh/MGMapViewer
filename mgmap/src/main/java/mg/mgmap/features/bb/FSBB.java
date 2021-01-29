@@ -26,7 +26,6 @@ import mg.mgmap.MGMapApplication;
 import mg.mgmap.MGMapLayerFactory;
 import mg.mgmap.FeatureService;
 import mg.mgmap.R;
-import mg.mgmap.features.atl.FSAvailableTrackLogs;
 import mg.mgmap.features.tilestore.MGTileStore;
 import mg.mgmap.features.tilestore.MGTileStoreLayer;
 import mg.mgmap.features.tilestore.TileStoreLoader;
@@ -35,7 +34,6 @@ import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.model.WriteablePointModelImpl;
-import mg.mgmap.util.Control;
 import mg.mgmap.util.MetaDataUtil;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
@@ -282,16 +280,6 @@ public class FSBB extends FeatureService {
 
     boolean isLoadAllowed(){
         return ((p1 != null) && (p2 != null) && (bbcl!= null));
-    }
-
-    public Control[] getMenuBBControls(){
-        return new Control[]{
-                new LoadBBControl(this),
-                new LoadTSFromBBControl(getActivity(), getApplication(), this, false, false),
-                new LoadTSFromBBControl(getActivity(), getApplication(), this, true, false),
-                new LoadTSFromBBControl(getActivity(), getApplication(), this, true, true)
-        };
-
     }
 
     private ArrayList<MGTileStore> identifyTS(){

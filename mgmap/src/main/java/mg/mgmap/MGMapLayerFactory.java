@@ -198,7 +198,7 @@ public class MGMapLayerFactory {
                     MGTileStore tileStore = MGTileStore.createTileStore(entryFile);
                     InMemoryTileCache memoryTileCache = new InMemoryTileCache(AndroidUtil.getMinimumCacheSize(context,
                             mapView.getModel().displayModel.getTileSize(),
-                            mapView.getModel().frameBufferModel.getOverdrawFactor(), 1.0f));
+                            mapView.getModel().frameBufferModel.getOverdrawFactor()*1.5, 1.0f));
                     tileCache = new TwoLevelTileCache(memoryTileCache, tileStore);
                     activity.addTileCache(tileCache);
 
@@ -217,7 +217,7 @@ public class MGMapLayerFactory {
 
                     TileCache onlTileCache = AndroidUtil.createTileCache(context, key,
                             mapView.getModel().displayModel.getTileSize(), 1.0f,
-                            mapView.getModel().frameBufferModel.getOverdrawFactor(), false);
+                            mapView.getModel().frameBufferModel.getOverdrawFactor()*1.5, false);
                     activity.addTileCache(onlTileCache);
 
                     layer = new TileDownloadLayer(onlTileCache,

@@ -49,7 +49,6 @@ import mg.mgmap.model.TrackLogStatistic;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.EnlargeControl;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.Control;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.LabeledSlider;
 
@@ -88,8 +87,8 @@ public class ControlView extends RelativeLayout {
     TextView tv_enlarge = null;
     EnlargeControl enlargeControl = null;
 
-    private final Map<View, ArrayList<View>> submenuMap = new HashMap<>();
-    private final Map<View, Control> menuControlMap = new HashMap<>();
+//    private final Map<View, ArrayList<View>> submenuMap = new HashMap<>();
+//    private final Map<View, Control> menuControlMap = new HashMap<>();
 
     public ControlView(Context context) {
         super(context);
@@ -134,9 +133,6 @@ public class ControlView extends RelativeLayout {
             dashboard = findViewById(R.id.dashboard);
 
             controlComposer.composeDashboard(application, activity, this);
-
-            controlComposer.composeMenu(application, activity, this);
-            setMenuVisibility(false);
 
             controlComposer.composeAlphaSlider(application,activity,this);
             controlComposer.composeAlphaSlider2(application,activity,this);
@@ -257,162 +253,6 @@ public class ControlView extends RelativeLayout {
             ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.duration);
         }
     }
-
-// *************************************************************************************************
-// ********* Menu Button creation  ---  related stuff                                     **********
-// *************************************************************************************************
-
-    Button createMenuButton(ConstraintLayout parent, View alignViewTop, View alignViewSide, boolean alignEnd, int submenuEntries) {
-        boolean isSubmenuButton = (parent != alignViewSide);
-        Button button = new AppCompatButton(context) {
-            @Override
-            public void setEnabled(boolean enabled) {
-                super.setEnabled(enabled);
-                this.setTextColor(enabled ? CC.getColor(R.color.WHITE) : CC.getColor(R.color.WHITE_A100));
-            }
-        };
-        parent.addView(button);
-        button.setVisibility(VISIBLE);
-        button.setId(View.generateViewId());
-        button.setBackgroundResource(R.drawable.shape);
-        button.setPadding(0, 0, 0, 0);
-        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int margin = dp(2.5f);
-        layoutParams.setMargins(margin, margin, margin, margin);
-        button.setLayoutParams(layoutParams);
-
-        ConstraintSet set = new ConstraintSet();
-        set.clone(parent);
-        if (alignViewTop == null) {
-            if (isSubmenuButton){ // then it's a main menu button
-                set.connect(button.getId(), ConstraintSet.TOP, alignViewSide.getId(), ConstraintSet.TOP, dp(0));
-            } else {
-                set.connect(button.getId(), ConstraintSet.TOP, parent.getId(), ConstraintSet.TOP, dp(150));
-            }
-        } else {
-            set.connect(button.getId(), ConstraintSet.TOP, alignViewTop.getId(), ConstraintSet.BOTTOM, dp(2.5f));
-        }
-        int startSide = (alignEnd)?ConstraintSet.RIGHT:ConstraintSet.LEFT;
-        int endSide =  (alignEnd == isSubmenuButton)?ConstraintSet.LEFT:ConstraintSet.RIGHT;
-        set.connect(button.getId(), startSide, alignViewSide.getId(), endSide, dp(2.5f));
-        set.applyTo(parent);
-
-        if (submenuEntries > 0){
-            submenuMap.put(button, new ArrayList<>()); // int List for submenu buttons
-            View alignSubMenuTop = null;
-            for (int i=0; i<submenuEntries; i++){
-                alignSubMenuTop = createMenuButton(parent, alignSubMenuTop, button, alignEnd, 0);
-            }
-        } else {
-            if (!isSubmenuButton){
-                submenuMap.put(button, null); // need this entry to detect all main menu entries
-            }
-        }
-        if (isSubmenuButton){
-            submenuMap.get(alignViewSide).add(button);
-        }
-        return button;
-    }
-
-// *************************************************************************************************
-// ********* Menu Button and Control registration stuff                                   **********
-// *************************************************************************************************
-
-    View registerMenuControl(View view, Control control){
-        if (control != null){
-            control.setControlView(this);
-            view.setOnClickListener(control);
-            menuControlMap.put(view, control);
-        }
-        return view;
-    }
-
-    void registerSubmenuControls(ArrayList<View> submenu, Control[] controls){
-        if (submenu.size() < controls.length){
-            Log.e(MGMapApplication.LABEL, NameUtil.context() + " too much controls("+controls.length+") for menu("+submenu.size()+")");
-        }
-        for (View submenuView : submenu){
-            registerMenuControl(submenuView, controls[submenu.indexOf(submenuView)]);
-        }
-    }
-
-    View registerMenuControls(View button, final String name, Control[] controls){
-        registerSubmenuControls(submenuMap.get(button), controls);
-        Control control = new Control(false){
-            @Override
-            public void onClick(View v) {
-                super.onClick(v);
-                disableMainMenuButtons();
-                if (submenuMap.get(button).get(0).getVisibility()==VISIBLE){
-                    setMenuVisibility(false);
-                } else {
-                    for (View subButton : submenuMap.get(button)){
-                        showMenuButton(subButton);
-                    }
-                    button.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void onPrepare(View v) {
-                setText(v, name);
-            }
-        };
-        return registerMenuControl(button, control);
-    }
-
-    void disableMainMenuButtons(){
-        for (View chview : submenuMap.keySet()){
-            if (chview instanceof Button) {
-                chview.setEnabled(false); // disable main menu entries by default
-            }
-        }
-    }
-
-    void showMenuButton(View view){
-        view.setEnabled(true);
-        menuControlMap.get(view).onPrepare(view);
-        view.setVisibility( VISIBLE );
-    }
-
-    void setMenuVisibility(boolean visibility){
-        View menu = findViewById(R.id.menuBase);
-        menu.setVisibility(visibility?VISIBLE:INVISIBLE);
-        if (visibility) {
-            for (View button : submenuMap.keySet()){ // the keyset contains the main menu buttons
-                showMenuButton(button);
-            }
-            startTTHideButtons(7000);
-        } else {
-            for (View view : submenuMap.keySet()){
-                view.setVisibility(INVISIBLE);
-                ArrayList<View> submenu = submenuMap.get(view);
-                if (submenu != null){
-                    for (View subview : submenu){
-                        subview.setVisibility(INVISIBLE);
-                    }
-                }
-            }
-        }
-    }
-
-    void toggleMenuVisibility(){
-        setMenuVisibility(findViewById(R.id.menuBase).getVisibility() != VISIBLE);
-    }
-
-    private final Handler timer = new Handler();
-    final Runnable ttHideButtons = new Runnable() { // define timerTask to hide menu buttons
-        @Override
-        public void run() {
-            setMenuVisibility(false);
-            timer.removeCallbacks(ttHideButtons);
-        }
-    };
-    public void startTTHideButtons(long millis){
-        timer.removeCallbacks(ttHideButtons);
-        timer.postDelayed(ttHideButtons, millis);
-    }
-
 
     // *************************************************************************************************
     // ********* Alpha Slider related stuff                                                   **********
