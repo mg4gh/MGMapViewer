@@ -117,8 +117,7 @@ public class MGMapApplication extends Application {
                     rtl.setRecordRaw(true); // from now on record new entries in the tracklog
                     if (rtl.isSegmentRecording()){
                         prefGps.setValue(true);
-                        Intent intent = new Intent(MGMapApplication.this, TrackLoggerService.class);
-                        startService(intent);
+                        startTrackLoggerService();
 
                         PointModel lastTlp = rtl.getCurrentSegment().getLastPoint();
                         if (lastTlp != null){
@@ -307,6 +306,14 @@ public class MGMapApplication extends Application {
         }
     }
 
+    void startTrackLoggerService(){
+        Intent intent = new Intent(this, TrackLoggerService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(intent);
+        } else {
+            this.startService(intent);
+        }
+    }
 
 
     public synchronized void addBgJobs(List<BgJob> jobs){

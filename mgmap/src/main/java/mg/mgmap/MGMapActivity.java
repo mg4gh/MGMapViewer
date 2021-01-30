@@ -417,12 +417,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
             Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, ACCESS_FINE_LOCATION_CODE);
         } else {
-            Intent intent = new Intent(this, TrackLoggerService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                this.startForegroundService(intent);
-            } else {
-                this.startService(intent);
-            }
+            application.startTrackLoggerService();
         }
     }
 
