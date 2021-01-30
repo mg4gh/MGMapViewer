@@ -27,15 +27,13 @@ public abstract class MGTileStoreLoaderJob extends BgJob {
     protected void doJob() throws Exception {
         try {
             boolean success = false;
-            if ( (tileStoreLoader.errorCounter - tileStoreLoader.successCounter) < 3){
+            if ( (tileStoreLoader.errorCounter - tileStoreLoader.successCounter*3) < 8){
                 doJobNow();
-//                Log.i(MGMapApplication.LABEL, NameUtil.context()+" MGTileStoreLoaderJob succcess: "+ debug);
                 success = true;
             }
             tileStoreLoader.jobFinished(success, null);
         } catch (Exception e) {
             tileStoreLoader.jobFinished(false, e);
-            Log.w(MGMapApplication.LABEL, NameUtil.context()+" MGTileStoreLoaderJob failed: "+ debug);
             throw e;
         }
     }

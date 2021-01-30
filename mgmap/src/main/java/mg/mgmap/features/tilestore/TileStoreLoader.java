@@ -199,7 +199,7 @@ public class TileStoreLoader {
         } else {
             errorCounter++;
         }
-        String message = "Number of jobs: "+jobCounter+"Successful finished: "+successCounter+"Unsuccessful finished:"+errorCounter;
+        String message = "successCounter="+successCounter+"  errorCounter="+errorCounter+"  jobCounter="+jobCounter;
         Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+message);
         if (successCounter + errorCounter == jobCounter){
             new Thread(){

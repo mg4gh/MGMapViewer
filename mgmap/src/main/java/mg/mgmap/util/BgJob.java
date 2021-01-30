@@ -19,6 +19,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import java.io.FileNotFoundException;
+
 import mg.mgmap.BgJobService;
 import mg.mgmap.MGMapApplication;
 
@@ -41,7 +43,9 @@ public class BgJob {
             started = true;
             doJob();
         } catch (Exception e){
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            if (!(e instanceof FileNotFoundException)){
+                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            }
         } finally {
             finished = true;
             service.notifyUserFinish(notification_id);
