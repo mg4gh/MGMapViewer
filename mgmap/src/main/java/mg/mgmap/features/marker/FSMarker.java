@@ -82,7 +82,7 @@ public class FSMarker extends FeatureService {
 
         Observer hideMarkerTrackObserver = (o, arg) -> {
             getApplication().markerTrackLogObservable.setTrackLog(null);
-            GGraphTile.clearCache();
+//            GGraphTile.clearCache();
             prefEditMarkerTrack.setValue(false);
         };
         triggerHideMtl.addObserver(hideMarkerTrackObserver);

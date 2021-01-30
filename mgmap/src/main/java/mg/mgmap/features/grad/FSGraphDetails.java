@@ -106,7 +106,8 @@ public class FSGraphDetails extends FeatureService {
         GGraphTile bestTile = null;
         WriteablePointModel pmApproach = new TrackLogPoint();
         double bestDistance = closeThreshold;
-        ArrayList<GGraphTile> tiles = GGraphTile.getGGraphTileList(getActivity().getMapDataStore(bBoxTap), bBoxTap);
+//        ArrayList<GGraphTile> tiles = GGraphTile.getGGraphTileList(getActivity().getMapDataStore(bBoxTap), bBoxTap);
+        ArrayList<GGraphTile> tiles = getActivity().getGGraphTileFactory().getGGraphTileList(bBoxTap);
 
         for (GGraphTile gGraphTile : tiles){
             if (gGraphTile.getTileBBox().contains(pmTap)){

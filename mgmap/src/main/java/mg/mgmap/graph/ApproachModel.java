@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2020 mg4gh
+ * Copyright 2017 - 2021 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -32,13 +32,17 @@ import java.util.Iterator;
  */
 public class ApproachModel implements MultiPointModel, Comparable<ApproachModel> {
 
-    private PointModel pmPos;
+    private final int tileX;
+    private final int tileY;
+    private final PointModel pmPos;
     private GNode node1;
     private GNode node2;
-    private GNode approachNode;
-    private ArrayList<PointModel> visiblePoints = new ArrayList<>();
+    private final GNode approachNode;
+    private final ArrayList<PointModel> visiblePoints = new ArrayList<>();
 
-    public ApproachModel(PointModel pmPos, GNode node1, GNode node2, GNode approachNode) {
+    public ApproachModel(int tileX, int tileY, PointModel pmPos, GNode node1, GNode node2, GNode approachNode) {
+        this.tileX = tileX;
+        this.tileY = tileY;
         this.pmPos = new PointModelImpl(pmPos.getLat(), pmPos.getLon());
         this.node1 = node1;
         this.node2 = node2;
@@ -47,12 +51,25 @@ public class ApproachModel implements MultiPointModel, Comparable<ApproachModel>
         visiblePoints.add(approachNode);
     }
 
+    public int getTileX() {
+        return tileX;
+    }
+    public int getTileY() {
+        return tileY;
+    }
+
     public GNode getNode1() {
         return node1;
+    }
+    public void setNode1(GNode node1) {
+        this.node1 = node1;
     }
 
     public GNode getNode2() {
         return node2;
+    }
+    public void setNode2(GNode node2) {
+        this.node2 = node2;
     }
 
     public GNode getApproachNode() {
@@ -74,28 +91,6 @@ public class ApproachModel implements MultiPointModel, Comparable<ApproachModel>
         if (res == 0) res = (PointModelUtil.compareTo(node2, approach.node2));
         return res;
     }
-
-    public boolean approachedLineMatch(PointModel pm1, PointModel pm2){
-        boolean b1 = (PointModelUtil.compareTo(node1, pm1) == 0);
-        b1 &=  (PointModelUtil.compareTo(node2, pm2) == 0);
-        boolean b2 = (PointModelUtil.compareTo(node2, pm1) == 0);
-        b2 &=  (PointModelUtil.compareTo(node1, pm2) == 0);
-        return b1 || b2;
-    }
-    public boolean approachedLineMatch(ApproachModel otherApproach){ // optimization, since node1.lalo < node2.lalo for each approach
-        Boolean bRes =  ( (PointModelUtil.compareTo(node1, otherApproach.getNode1())) == 0);
-        bRes &= ( (PointModelUtil.compareTo(node2, otherApproach.getNode2())) == 0);
-        return bRes;
-    }
-
-    public static boolean approachedSequenceMatch(PointModel pmStart, ApproachModel approach1, ApproachModel approach2, PointModel pmEnd){
-        double distTotal = PointModelUtil.distance(pmStart, pmEnd);
-        double distParts = PointModelUtil.distance(pmStart, approach1.getApproachNode())+
-                PointModelUtil.distance(approach1.getApproachNode(),approach2.getApproachNode())+
-                PointModelUtil.distance(approach2.getApproachNode(),pmEnd);
-        return Math.abs(distParts - distTotal) < 0.1;
-    }
-
 
     @Override
     public int size() {

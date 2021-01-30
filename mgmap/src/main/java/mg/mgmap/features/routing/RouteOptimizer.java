@@ -2,13 +2,12 @@ package mg.mgmap.features.routing;
 
 import android.util.Log;
 
-import org.mapsforge.map.datastore.MapDataStore;
-
 import java.util.HashMap;
 import java.util.Locale;
 
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.graph.ApproachModel;
+import mg.mgmap.graph.GGraphTileFactory;
 import mg.mgmap.model.MultiPointModelImpl;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLog;
@@ -20,15 +19,15 @@ import mg.mgmap.util.PointModelUtil;
 public class RouteOptimizer {
 
     FSRouting fsRouting;
-    MapDataStore mapFile;
+    GGraphTileFactory gFactory;
 
-    public RouteOptimizer(FSRouting fsRouting, MapDataStore mapFile){
+    public RouteOptimizer(GGraphTileFactory gFactory, FSRouting fsRouting){
+        this.gFactory = gFactory;
         this.fsRouting = fsRouting;
-        this.mapFile = mapFile;
     }
 
     private RoutePointModel getRoutePointModel(PointModel pm){
-        return fsRouting.getRoutePointModel( mapFile, pm );
+        return fsRouting.getVerifyRoutePointModel( pm );
     }
 
     private void replaceNode(MultiPointModelImpl mpmi, int idx, PointModel pm){
@@ -44,7 +43,7 @@ public class RouteOptimizer {
         RoutePointModel rpmSource =  getRoutePointModel(segment.get(startIdx) );
         RoutePointModel rpmTarget =  getRoutePointModel(segment.get(endIdx) );
 
-        MultiPointModelImpl route = fsRouting.calcRouting(mapFile, rpmSource, rpmTarget);
+        MultiPointModelImpl route = fsRouting.calcRouting(rpmSource, rpmTarget);
         if (!route.isRoute()) return false;
 
         Assert.check(rpmSource.getApproachNode() == route.get(0));
@@ -62,7 +61,7 @@ public class RouteOptimizer {
 
 
         for (int idx=startIdx+1; idx < endIdx; idx++){
-            RoutePointModel rpm = fsRouting.getRoutePointModel( mapFile, segment.get(idx) );
+            RoutePointModel rpm = fsRouting.getVerifyRoutePointModel( segment.get(idx) );
 
             ApproachModel match = null;
 
@@ -70,6 +69,7 @@ public class RouteOptimizer {
                 if (rpm.approachBBox.contains(route.get(rIdx))){ // ok, it might give a route match
                     for (ApproachModel approachModel : rpm.getApproaches()){
                         if (approachModel == match) break; // can't improve
+                        gFactory.validateApproachModel(approachModel); // renew node1 and node2, if GGraphTile was newly setup due to cache effect
                         if (((approachModel.getNode1() == route.get(rIdx)) && (approachModel.getNode2() == route.get(rIdx-1))) ||
                             ((approachModel.getNode2() == route.get(rIdx)) && (approachModel.getNode1() == route.get(rIdx-1))))   {
                             match = approachModel;

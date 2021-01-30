@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
-import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.model.DisplayModel;
 
 import java.util.ArrayList;
@@ -37,9 +36,9 @@ import mg.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.features.marker.FSMarker;
 import mg.mgmap.graph.AStar;
-import mg.mgmap.graph.GGraph;
 import mg.mgmap.graph.GGraphMulti;
 import mg.mgmap.graph.GGraphTile;
+import mg.mgmap.graph.GGraphTileFactory;
 import mg.mgmap.graph.GNeighbour;
 import mg.mgmap.graph.GNode;
 import mg.mgmap.graph.GNodeRef;
@@ -277,9 +276,9 @@ public class FSRouting extends FeatureService {
         return rpm;
     }
 
-    RoutePointModel getRoutePointModel(MapDataStore mapFile, PointModel pm){
+    RoutePointModel getVerifyRoutePointModel(PointModel pm){
         RoutePointModel rpm = getRoutePointModel(pm);
-        calcApproaches(mapFile, rpm);
+        calcApproaches(rpm);
         if (prefSnap2Way.getValue()){
             if (rpm.selectedApproach != null){
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
@@ -289,7 +288,7 @@ public class FSRouting extends FeatureService {
                         wpm.setLat(rpm.selectedApproach.getApproachNode().getLat());
                         wpm.setLon(rpm.selectedApproach.getApproachNode().getLon());
                         rpm.resetApproaches();
-                        calcApproaches(mapFile, rpm);
+                        calcApproaches(rpm);
                     }
                 }
             }
@@ -301,30 +300,30 @@ public class FSRouting extends FeatureService {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
-            MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
-            if (mapFile == null){
-                Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
-            } else {
+//            MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
+//            if (mapFile == null){
+//                Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
+//            } else {
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
-                rotl = updateRouting2(mapFile, mtl, application.routeTrackLogObservable.getTrackLog());
+                rotl = updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
-            }
+//            }
         }
         application.routeTrackLogObservable.setTrackLog(rotl);
         refreshObserver.onChange(); // trigger visualization
     }
 
-    private WriteableTrackLog updateRouting2(MapDataStore mapFile, TrackLog mtl, WriteableTrackLog rotl){
+    private WriteableTrackLog updateRouting2(TrackLog mtl, WriteableTrackLog rotl){
         boolean routeModified = false;
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             if (segment.size() < 1) continue;
             Iterator<PointModel> iter = segment.iterator();
-            RoutePointModel current = getRoutePointModel( mapFile, iter.next() );
+            RoutePointModel current = getVerifyRoutePointModel( iter.next() );
             current.newMPM = null;
             while (iter.hasNext()){
                 RoutePointModel prev = current;
-                current = getRoutePointModel( mapFile, iter.next() );
+                current = getVerifyRoutePointModel( iter.next() );
 
                 boolean bRecalcRoute = true;
                 try {
@@ -345,7 +344,7 @@ public class FSRouting extends FeatureService {
 
                 if (bRecalcRoute){
                     routeModified = true;
-                    current.newMPM = calcRouting(mapFile, prev, current, current.direct, current.routingHints, currentRelaxedNodes);
+                    current.newMPM = calcRouting(prev, current, current.direct, current.routingHints, currentRelaxedNodes);
                 }
             }
         }
@@ -435,11 +434,11 @@ public class FSRouting extends FeatureService {
 
 
 
-    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target) {
-        return calcRouting(mapFile,source,target,false,null,null);
+    MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target) {
+        return calcRouting(source,target,false,null,null);
     }
 
-    MultiPointModelImpl calcRouting(MapDataStore mapFile, RoutePointModel source, RoutePointModel target, boolean direct, Map<PointModel, RoutingHint> hints, ArrayList<PointModel> relaxedNodes){
+    MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target, boolean direct, Map<PointModel, RoutingHint> hints, ArrayList<PointModel> relaxedNodes){
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
         Log.d(MGMapApplication.LABEL, NameUtil.context()+" Start");
@@ -455,11 +454,11 @@ public class FSRouting extends FeatureService {
             if ((gStart != null) && (gEnd != null) && (distLimit > 0) && !direct){
                 BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
                 bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
-                ArrayList<GGraphTile> gGraphTileList = GGraphTile.getGGraphTileList(mapFile,bBox);
-                if (gGraphTileList.size() > GGraphTile.CACHE_LIMIT) throw new RuntimeException("Request for GGraphMulti exceeds cache size.");
+                GGraphTileFactory gFactory = getActivity().getGGraphTileFactory();
+                ArrayList<GGraphTile> gGraphTileList = gFactory.getGGraphTileList(bBox);
                 multi = new GGraphMulti(gGraphTileList);
-                multi.createOverlaysForApproach(source.selectedApproach);
-                multi.createOverlaysForApproach(target.selectedApproach);
+                multi.createOverlaysForApproach( gFactory.validateApproachModel(source.selectedApproach) );
+                multi.createOverlaysForApproach( gFactory.validateApproachModel(target.selectedApproach) );
 
                 // perform an AStar on this graph
                 AStar aStar = new AStar(multi);
@@ -545,7 +544,7 @@ public class FSRouting extends FeatureService {
     }
 
 
-    void calcApproaches(MapDataStore mapFile, RoutePointModel rpm){
+    void calcApproaches(RoutePointModel rpm){
 
         if (rpm.getApproach() != null){
             return; // approach calculation is already done
@@ -561,7 +560,7 @@ public class FSRouting extends FeatureService {
         TreeSet<ApproachModel> approaches = new TreeSet<>();
         WriteablePointModel pmApproach = new TrackLogPoint();
 
-        ArrayList<GGraphTile> tiles = GGraphTile.getGGraphTileList(mapFile, mtlpBBox);
+        ArrayList<GGraphTile> tiles = getActivity().getGGraphTileFactory().getGGraphTileList(mtlpBBox);
         GGraphMulti multi = new GGraphMulti(tiles);
         for (GGraphTile gGraphTile : tiles){
             for (GNode node : gGraphTile.getNodes()) {
@@ -578,9 +577,9 @@ public class FSRouting extends FeatureService {
                                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
                                     float hgtAlt = AltitudeProvider.getAlt(pmApproach);
                                     GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), hgtAlt, distance); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
-                                    ApproachModel approach = new ApproachModel(pointModel, node, neighbour.getNeighbourNode(), approachNode);
+                                    ApproachModel approach = new ApproachModel(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbour.getNeighbourNode(), approachNode);
                                     approaches.add(approach);
-                                    gGraphTile.addObserver(rpm);
+//                                    gGraphTile.addObserver(rpm);
                                 }
                             }
                         }
@@ -659,8 +658,8 @@ public class FSRouting extends FeatureService {
 
     void optimize(){
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-        MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
-        RouteOptimizer ro = new RouteOptimizer(this, mapFile);
+//        MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
+        RouteOptimizer ro = new RouteOptimizer(getActivity().getGGraphTileFactory(), this);
         ro.optimize(mtl);
         application.markerTrackLogObservable.changed();
     }

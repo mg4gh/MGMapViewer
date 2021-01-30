@@ -99,6 +99,12 @@ public class BBox {
     public boolean contains(PointModel pm) {
         return contains(pm.getLat(), pm.getLon());
     }
+    public boolean contains(BBox bBox) {
+        return contains(bBox.maxLatitude, bBox.maxLongitude) && contains(bBox.minLatitude, bBox.minLongitude);
+    }
+    public boolean contains(BoundingBox boundingBox) {
+        return contains(boundingBox.maxLatitude, boundingBox.maxLongitude) && contains(boundingBox.minLatitude, boundingBox.minLongitude);
+    }
     public boolean contains(double latitude, double longitude) {
         return this.minLatitude <= latitude && this.maxLatitude >= latitude && this.minLongitude <= longitude && this.maxLongitude >= longitude;
     }
@@ -108,6 +114,9 @@ public class BBox {
 
     public boolean isPartOf(BoundingBox boundingBox) {
         return isPartOf(boundingBox.minLatitude, boundingBox.minLongitude, boundingBox.maxLatitude, boundingBox.maxLongitude);
+    }
+    public boolean isPartOf(BBox bBox) {
+        return isPartOf(bBox.minLatitude, bBox.minLongitude, bBox.maxLatitude, bBox.maxLongitude);
     }
     public boolean isPartOf(double minLat, double minLong, double maxLat, double maxLong) {
         return (this.maxLatitude <= maxLat) && (this.maxLongitude <= maxLong) && (this.minLatitude >= minLat) && (this.minLongitude >= minLong);

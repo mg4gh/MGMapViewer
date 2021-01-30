@@ -15,7 +15,6 @@
 package mg.mgmap.graph;
 
 import java.util.ArrayList;
-import java.util.Observable;
 
 import mg.mgmap.util.PointModelUtil;
 
@@ -23,7 +22,7 @@ import mg.mgmap.util.PointModelUtil;
  * A basic graph implementation based on GNode and GNeighbour.
  */
 
-public class GGraph extends Observable {
+public class GGraph{
 
     public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
 

@@ -15,8 +15,6 @@
 package mg.mgmap.features.routing;
 
 import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.TreeSet;
 
 import mg.mgmap.graph.GNode;
@@ -30,7 +28,7 @@ import mg.mgmap.model.PointModel;
  * that represents the route between the previous MarkerTrackLogPoint and this one.
  * Finally it contains references to the approaches of this MarkerTrackLogPoint.
  * */
-public class RoutePointModel implements Observer {
+public class RoutePointModel {
 
     HashMap<PointModel, RoutingHint> routingHints = new HashMap<>();
     MultiPointModelImpl currentMPM = null;
@@ -63,12 +61,6 @@ public class RoutePointModel implements Observer {
 
     public TreeSet<ApproachModel> getApproaches() {
         return approaches;
-    }
-
-    // called if GGraphTile is removed from the cache - so approaches are no longer valid
-    @Override
-    public void update(Observable o, Object arg) {
-        resetApproaches();
     }
 
     public void resetApproaches(){

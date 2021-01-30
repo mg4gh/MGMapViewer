@@ -63,6 +63,7 @@ import mg.mgmap.features.routing.FSRouting;
 import mg.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.features.search.FSSearch;
 import mg.mgmap.features.time.FSTime;
+import mg.mgmap.graph.GGraphTileFactory;
 import mg.mgmap.model.BBox;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.PointModelImpl;
@@ -72,6 +73,7 @@ import mg.mgmap.model.TrackLogRefZoom;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.GpxImporter;
+import mg.mgmap.util.MapDataStoreUtil;
 import mg.mgmap.util.MapViewUtility;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.OpenAndroMapsUtil;
@@ -89,6 +91,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -115,6 +118,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 //    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
     private PrefCache prefCache;
 
+    private MapDataStoreUtil mapDataStoreUtil = null;
+    private GGraphTileFactory gGraphTileFactory = null;
+
     public ControlView getControlView(){
         return (ControlView) findViewById(R.id.controlView);
     }
@@ -124,6 +130,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
     public PrefCache getPrefCache(){
         return prefCache;
+    }
+    public MapDataStoreUtil getMapDataStoreUtil(){
+        return mapDataStoreUtil;
+    }
+    public GGraphTileFactory getGGraphTileFactory() {
+        return gGraphTileFactory;
     }
 
     @Override
@@ -148,6 +160,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         initMapView();
         createLayers();
 
+        mapDataStoreUtil = new MapDataStoreUtil().onCreate(sharedPreferences, getMapLayerKeys());
         initializePosition(mapView.getModel().mapViewPosition);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
@@ -159,6 +172,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         coView = getControlView();
         mapViewUtility = new MapViewUtility(this, mapView);
+        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil);
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSBeeline(this));
@@ -261,6 +275,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         AndroidGraphicFactory.clearResourceMemoryCache();
         mapView.destroyAll();
+        mapDataStoreUtil.onDestroy();
+        gGraphTileFactory.onDestroy();
         prefCache.cleanup();
         Log.w(MGMapApplication.LABEL, NameUtil.context() + " Destroy finished");
         super.onDestroy();
@@ -445,8 +461,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
      */
     protected void initializePosition(IMapViewPosition mvp) {
         LatLong center = mvp.getCenter();
-        if (getMapDataStore(new BBox().extend(new PointModelImpl(center))) == null){
-            MapDataStore mds = getMapDataStore(null);
+        if (mapDataStoreUtil.getMapDataStore(new BBox().extend(new PointModelImpl(center))) == null){
+            MapDataStore mds = mapDataStoreUtil.getMapDataStore();
             if (mds != null){
                 mvp.setMapPosition(new MapPosition(mds.startPosition(), mds.startZoomLevel()));
             } else {
@@ -521,27 +537,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             mapLayerKeys.add( getResources().getString( id ));
         }
         return mapLayerKeys;
-    }
-
-    /** Return a MapDataStore if it contains a given BBox. This is used e.g. to find the MapDataStore for route calculation. */
-    public MapDataStore getMapDataStore(BBox bBox) {
-        for (String prefKey : getMapLayerKeys()){
-            String key = sharedPreferences.getString(prefKey, "none");
-
-            Layer layer = MGMapLayerFactory.getMapLayer(key);
-            if (layer instanceof TileRendererLayer) {
-                MapDataStore mds = ((TileRendererLayer)layer).getMapDataStore();
-                if (mds != null){
-                    if (bBox == null){
-                        return mds;
-                    }
-                    if (bBox.isPartOf(mds.boundingBox())){
-                        return mds;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     /** Depending on the preferences for the five map layers the corresponding layer object are created. */
