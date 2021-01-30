@@ -658,7 +658,6 @@ public class FSRouting extends FeatureService {
 
     void optimize(){
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-//        MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
         RouteOptimizer ro = new RouteOptimizer(getActivity().getGGraphTileFactory(), this);
         ro.optimize(mtl);
         application.markerTrackLogObservable.changed();
