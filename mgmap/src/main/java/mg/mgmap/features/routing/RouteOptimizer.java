@@ -137,7 +137,8 @@ public class RouteOptimizer {
                     double avgApproachDistance = 0;
                     if (checkRoute(segment, idx, end, checkResults)){
                         for (PointModel pm : checkResults.keySet()){
-                            avgApproachDistance += checkResults.get(pm).getApproachNode().getNeighbour().getCost();
+                            ApproachModel am = checkResults.get(pm);
+                            if (am != null) avgApproachDistance += am.getApproachNode().getNeighbour().getCost();
                         }
                         avgApproachDistance /= checkResults.keySet().size();
 

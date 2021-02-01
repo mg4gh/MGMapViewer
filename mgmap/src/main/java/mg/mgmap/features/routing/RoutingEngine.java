@@ -267,7 +267,7 @@ public class RoutingEngine {
             }
         }
 
-        if (hints != null){
+        if ((multi != null) && (hints != null)){
             hints.clear();
             for (int idx=1; idx < mpm.size()-1; idx++){
                 RoutingHint hint = new RoutingHint();
