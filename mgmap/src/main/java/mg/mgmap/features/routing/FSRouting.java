@@ -83,7 +83,6 @@ public class FSRouting extends FeatureService {
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private final HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
     private final ArrayList<PointModel> currentRelaxedNodes = new ArrayList<>();
-    private TrackLogStatistic dashboardStatistic = null;
 
     private final RoutingLineRefProvider routingLineRefProvider;
 
@@ -251,8 +250,7 @@ public class FSRouting extends FeatureService {
                 showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
             }
         }
-        calcRemainingStatistic(rotl);
-        getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, dashboardStatistic);
+        getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, calcRemainingStatistic(rotl));
 
         checkRelaxedViews(mtl);
         checkApproachViews(mtl);
@@ -414,8 +412,8 @@ public class FSRouting extends FeatureService {
         return routeTrackLog;
     }
 
-    private void calcRemainingStatistic(WriteableTrackLog routeTrackLog){
-        dashboardStatistic = null;
+    private TrackLogStatistic calcRemainingStatistic(WriteableTrackLog routeTrackLog){
+        TrackLogStatistic dashboardStatistic = null;
         if (routeTrackLog != null){
             dashboardStatistic = routeTrackLog.getTrackStatistic();
             if (prefGps.getValue()){
@@ -430,6 +428,7 @@ public class FSRouting extends FeatureService {
                 }
             }
         }
+        return dashboardStatistic;
     }
 
 
