@@ -41,7 +41,7 @@ public class RouteOptimizer {
     }
 
     private RoutePointModel getRoutePointModel(PointModel pm){
-        return fsRouting.getVerifyRoutePointModel( pm );
+        return fsRouting.routingEngine.getVerifyRoutePointModel( pm );
     }
 
     private void replaceNode(MultiPointModelImpl mpmi, int idx, PointModel pm){
@@ -57,7 +57,7 @@ public class RouteOptimizer {
         RoutePointModel rpmSource =  getRoutePointModel(segment.get(startIdx) );
         RoutePointModel rpmTarget =  getRoutePointModel(segment.get(endIdx) );
 
-        MultiPointModelImpl route = fsRouting.calcRouting(rpmSource, rpmTarget);
+        MultiPointModelImpl route = fsRouting.routingEngine.calcRouting(rpmSource, rpmTarget);
         if (!route.isRoute()) return false;
 
         Assert.check(rpmSource.getApproachNode() == route.get(0));
@@ -75,7 +75,7 @@ public class RouteOptimizer {
 
 
         for (int idx=startIdx+1; idx < endIdx; idx++){
-            RoutePointModel rpm = fsRouting.getVerifyRoutePointModel( segment.get(idx) );
+            RoutePointModel rpm = fsRouting.routingEngine.getVerifyRoutePointModel( segment.get(idx) );
 
             ApproachModel match = null;
 
