@@ -32,16 +32,16 @@ import mg.mgmap.util.PointModelUtil;
 
 public class RouteOptimizer {
 
-    FSRouting fsRouting;
     GGraphTileFactory gFactory;
+    RoutingEngine routingEngine;
 
-    public RouteOptimizer(GGraphTileFactory gFactory, FSRouting fsRouting){
+    public RouteOptimizer(GGraphTileFactory gFactory, RoutingEngine routingEngine){
         this.gFactory = gFactory;
-        this.fsRouting = fsRouting;
+        this.routingEngine = routingEngine;
     }
 
     private RoutePointModel getRoutePointModel(PointModel pm){
-        return fsRouting.routingEngine.getVerifyRoutePointModel( pm );
+        return routingEngine.getVerifyRoutePointModel( pm );
     }
 
     private void replaceNode(MultiPointModelImpl mpmi, int idx, PointModel pm){
@@ -57,7 +57,7 @@ public class RouteOptimizer {
         RoutePointModel rpmSource =  getRoutePointModel(segment.get(startIdx) );
         RoutePointModel rpmTarget =  getRoutePointModel(segment.get(endIdx) );
 
-        MultiPointModelImpl route = fsRouting.routingEngine.calcRouting(rpmSource, rpmTarget);
+        MultiPointModelImpl route = routingEngine.calcRouting(rpmSource, rpmTarget);
         if (!route.isRoute()) return false;
 
         Assert.check(rpmSource.getApproachNode() == route.get(0));
@@ -75,7 +75,7 @@ public class RouteOptimizer {
 
 
         for (int idx=startIdx+1; idx < endIdx; idx++){
-            RoutePointModel rpm = fsRouting.routingEngine.getVerifyRoutePointModel( segment.get(idx) );
+            RoutePointModel rpm = routingEngine.getVerifyRoutePointModel( segment.get(idx) );
 
             ApproachModel match = null;
 
