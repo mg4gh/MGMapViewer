@@ -298,14 +298,9 @@ public class FSRouting extends FeatureService {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
-//            MapDataStore mapFile = getActivity().getMapDataStore(mtl.getBBox());
-//            if (mapFile == null){
-//                Log.w(MGMapApplication.LABEL, NameUtil.context() + "mapFile is null, updateRouting is impossible!");
-//            } else {
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
-                rotl = updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
-//            }
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
+            rotl = updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
         }
         application.routeTrackLogObservable.setTrackLog(rotl);
         refreshObserver.onChange(); // trigger visualization
