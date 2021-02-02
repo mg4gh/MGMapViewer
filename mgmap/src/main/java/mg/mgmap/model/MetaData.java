@@ -23,6 +23,6 @@ public class MetaData {
 
     public BBox bBox = new BBox();
     public int numPoints = 0;
-    public ByteBuffer buf;
+    public ByteBuffer buf = null;
 
 }
