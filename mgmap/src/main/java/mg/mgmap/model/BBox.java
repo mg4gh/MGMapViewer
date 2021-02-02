@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.util.LatLongUtils;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -41,10 +40,10 @@ public class BBox {
     }
 
     public BBox clear(){
-        minLatitude = LatLongUtils.LATITUDE_MAX ; //Double.MAX_VALUE;
-        minLongitude = LatLongUtils.LONGITUDE_MAX; //Double.MAX_VALUE;
-        maxLatitude = LatLongUtils.LATITUDE_MIN; // Double.MIN_VALUE;
-        maxLongitude = LatLongUtils.LONGITUDE_MIN; //Double.MIN_VALUE;
+        minLatitude = PointModel.NO_LAT_LONG ;
+        minLongitude = PointModel.NO_LAT_LONG;
+        maxLatitude = -PointModel.NO_LAT_LONG;
+        maxLongitude = -PointModel.NO_LAT_LONG;
         return this;
     }
 
@@ -59,8 +58,8 @@ public class BBox {
     }
 
     public boolean isInitial(){
-        return ((minLatitude == LatLongUtils.LATITUDE_MAX) && (minLongitude == LatLongUtils.LONGITUDE_MAX) &&
-                (maxLatitude == LatLongUtils.LATITUDE_MIN) && (maxLongitude == LatLongUtils.LONGITUDE_MIN));
+        return ((minLatitude == PointModel.NO_LAT_LONG) && (minLongitude == PointModel.NO_LAT_LONG) &&
+                (maxLatitude == -PointModel.NO_LAT_LONG) && (maxLongitude == -PointModel.NO_LAT_LONG));
     }
 
     public BBox extend(double meters){
@@ -108,29 +107,11 @@ public class BBox {
     public boolean contains(double latitude, double longitude) {
         return this.minLatitude <= latitude && this.maxLatitude >= latitude && this.minLongitude <= longitude && this.maxLongitude >= longitude;
     }
-    public boolean containsStrictly(double latitude, double longitude) {
-        return this.minLatitude < latitude && this.maxLatitude > latitude && this.minLongitude < longitude && this.maxLongitude > longitude;
-    }
-
-    public boolean isPartOf(BoundingBox boundingBox) {
-        return isPartOf(boundingBox.minLatitude, boundingBox.minLongitude, boundingBox.maxLatitude, boundingBox.maxLongitude);
-    }
-    public boolean isPartOf(BBox bBox) {
-        return isPartOf(bBox.minLatitude, bBox.minLongitude, bBox.maxLatitude, bBox.maxLongitude);
-    }
-    public boolean isPartOf(double minLat, double minLong, double maxLat, double maxLong) {
-        return (this.maxLatitude <= maxLat) && (this.maxLongitude <= maxLong) && (this.minLatitude >= minLat) && (this.minLongitude >= minLong);
-    }
-
 
     public static BBox fromBoundingBox(BoundingBox boundingBox){
         return new BBox().
                 extend(boundingBox.minLatitude, boundingBox.minLongitude).
                 extend(boundingBox.maxLatitude, boundingBox.maxLongitude);
-    }
-
-    public BoundingBox toBoundingBox(BBox bBox){
-        return new BoundingBox(bBox.minLatitude, bBox.minLongitude, bBox.maxLatitude, bBox.maxLongitude);
     }
 
     public LatLong getCenter(){
@@ -185,7 +166,7 @@ public class BBox {
     @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.GERMAN, "minLat=%2.6f, minLon=%2.6f, maxLat=%2.6f, maxLon=%2.6f",minLatitude,minLongitude,maxLatitude,maxLongitude);
+        return String.format(Locale.ENGLISH, "minLat=%2.6f, minLon=%2.6f, maxLat=%2.6f, maxLon=%2.6f",minLatitude,minLongitude,maxLatitude,maxLongitude);
     }
 
 }
