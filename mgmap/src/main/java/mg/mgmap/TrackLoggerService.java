@@ -115,7 +115,7 @@ public class TrackLoggerService extends Service {
                 startForeground(1, notification);
             }
             barometerListener = new BarometerListener(application,  SensorManager.SENSOR_DELAY_FASTEST);
-            locationListener = new LocationListener(getApplication()){
+            locationListener = new LocationListener(application){
                 @Override
                 protected void onNewTrackLogPoint(TrackLogPoint lp) {
                     lp.setPressure( barometerListener.getPressure() );

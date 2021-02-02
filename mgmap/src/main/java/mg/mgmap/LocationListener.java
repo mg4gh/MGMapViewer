@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import mg.mgmap.model.TrackLogPoint;
+import mg.mgmap.util.AltitudeProvider;
+import mg.mgmap.util.GeoidProvider;
 import mg.mgmap.util.NameUtil;
 
 /**
@@ -32,15 +34,23 @@ abstract class LocationListener implements android.location.LocationListener {
 
     private static final float ACCURACY_LIMIT = 30.0f; // accuracy limit in meter
     private final LocationManager locationManager;
+    private final AltitudeProvider altitudeProvider;
+    private final GeoidProvider geoidProvider;
 
-    LocationListener(Application application){
+    LocationListener(MGMapApplication application){
         locationManager = (LocationManager) application.getSystemService(Context.LOCATION_SERVICE);
+        altitudeProvider = application.getAltitudeProvider();
+        geoidProvider = application.getGeoidProvider();
     }
 
     @Override
     public void onLocationChanged(Location location) {
         if ((location.hasAccuracy()) && (location.getAccuracy() < ACCURACY_LIMIT)){
-            TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(location);
+            double alt = location.hasAltitude()?location.getAltitude():0;
+            float hgtAlt = altitudeProvider.getAltitude(location.getLatitude(), location.getLongitude());
+            float geoidOffset = (alt==0)?0:geoidProvider.getGeoidOffset(location.getLatitude(), location.getLongitude());
+            TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
+                    location.getAccuracy(), alt, geoidOffset, hgtAlt);
             onNewTrackLogPoint(lp);
         } else {
             Log.w(MGMapApplication.LABEL, NameUtil.context() + " location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());

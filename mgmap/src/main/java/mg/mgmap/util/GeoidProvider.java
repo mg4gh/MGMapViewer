@@ -27,7 +27,7 @@ import java.io.InputStream;
  * For performance issues the results are cached.
  */
 
-public class Geoid {
+public class GeoidProvider {
 
     private static final int START_DATA = 408;
 
@@ -35,15 +35,8 @@ public class Geoid {
     private SparseArray<Float> ccache = new SparseArray<>();
     private AssetManager am;
 
-    private static Geoid theGeoid = null;
-
-    public static Geoid getInstance(){
-        return theGeoid;
-    }
-
-    public Geoid(Application application){
+    public GeoidProvider(Application application){
         am = application.getAssets();
-        theGeoid = this;
     }
 
 
@@ -71,7 +64,7 @@ public class Geoid {
                 }
             }
         } catch (IOException e) {
-            Log.e(Geoid.class.getSimpleName(),e.getMessage(),e);
+            Log.e(GeoidProvider.class.getSimpleName(),e.getMessage(),e);
         }
         return 0;
     }

@@ -19,18 +19,24 @@ import mg.mgmap.model.PointModel;
 /** Provide an elevation value for a given position on the .hgt file basis. */
 public class AltitudeProvider {
 
-    public static float getAlt(PointModel pm) {
+    PersistenceManager persistenceManager;
+
+    public AltitudeProvider(PersistenceManager persistenceManager){
+        this.persistenceManager = persistenceManager;
+    }
+
+    public float getAlt(PointModel pm) {
         return getAltitude(pm.getLat(), pm.getLon());
     }
 
-    public static float getAltitude(double latitude, double longitude) {
+    public float getAltitude(double latitude, double longitude) {
         int iLat = (int)latitude;
         int iLon = (int)longitude;
         if (latitude - iLat == 0){
             iLat--;
         }
 
-        byte[] hgtBuf = PersistenceManager.getInstance().getHgtBuf(iLat, iLon);
+        byte[] hgtBuf = persistenceManager.getHgtBuf(iLat, iLon);
         if (hgtBuf != null) {
             double dlat = 1 - (latitude - iLat);
             int oLat = (int) (dlat * 3600);

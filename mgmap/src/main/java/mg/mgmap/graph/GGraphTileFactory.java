@@ -29,6 +29,7 @@ import mg.mgmap.MGMapApplication;
 import mg.mgmap.model.BBox;
 import mg.mgmap.model.MultiPointModelImpl;
 import mg.mgmap.model.PointModelImpl;
+import mg.mgmap.util.AltitudeProvider;
 import mg.mgmap.util.LaLo;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.PointModelUtil;
@@ -45,12 +46,15 @@ public class GGraphTileFactory {
     }
 
     private WayProvider wayProvider = null;
+    private AltitudeProvider altitudeProvider = null;
     private LinkedHashMap<Long, GGraphTile> cache = null;
 
     public GGraphTileFactory(){}
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider){
+    public GGraphTileFactory onCreate(WayProvider wayProvider, AltitudeProvider altitudeProvider){
         this.wayProvider = wayProvider;
+        this.altitudeProvider = altitudeProvider;
+
         cache = new LinkedHashMap <Long, GGraphTile>(100, 0.6f, true) {
             @Override
             protected boolean removeEldestEntry(Entry<Long, GGraphTile> eldest) {
@@ -108,6 +112,9 @@ public class GGraphTileFactory {
         return am;
     }
 
+    public AltitudeProvider getAltitudeProvider() {
+        return altitudeProvider;
+    }
 
     private GGraphTile getGGraphTile(int tileX, int tileY){
         long key = getKey(tileX,tileY);
@@ -116,7 +123,7 @@ public class GGraphTileFactory {
         if (gGraphTile == null){
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+cache.size()+")");
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
-            gGraphTile = new GGraphTile(tile);
+            gGraphTile = new GGraphTile(altitudeProvider, tile);
             for (Way way : wayProvider.getWays(tile)) {
                 if (wayProvider.isHighway(way)){
 

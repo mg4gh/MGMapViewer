@@ -45,14 +45,17 @@ import java.util.LinkedHashMap;
 
 public class GGraphTile extends GGraph {
 
+    AltitudeProvider altitudeProvider;
+
     private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
     final Tile tile;
     final BBox tbBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
 
-    GGraphTile(Tile t){
-        this.tile = t;
-        tbBox = BBox.fromBoundingBox(tile.getBoundingBox());
+    GGraphTile(AltitudeProvider altitudeProvider, Tile tile){
+        this.altitudeProvider = altitudeProvider;
+        this.tile = tile;
+        tbBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
     }
 
     void addLatLongs(LatLong[] latLongs){
@@ -109,7 +112,7 @@ public class GGraphTile extends GGraph {
     private GNode getAddNode(double latitude, double longitude, int low, int high, boolean allowAdd){
         if (high - low == 1){ // nothing more to compare, insert a new GNode at high index
             if (allowAdd){
-                float hgtAlt = AltitudeProvider.getAltitude(latitude, longitude);
+                float hgtAlt = altitudeProvider.getAltitude(latitude, longitude);
                 GNode node = new GNode(latitude, longitude, hgtAlt, 0);
                 getNodes().add(high, node);
                 return node;

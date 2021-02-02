@@ -169,7 +169,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         coView = getControlView();
         mapViewUtility = new MapViewUtility(this, mapView);
-        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil);
+        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getAltitudeProvider());
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSBeeline(this));
@@ -270,11 +270,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.routeTrackLogObservable.deleteObservers();
         application.lastPositionsObservable.deleteObservers();
 
-        AndroidGraphicFactory.clearResourceMemoryCache();
         mapView.destroyAll();
         mapDataStoreUtil.onDestroy();
         gGraphTileFactory.onDestroy();
         prefCache.cleanup();
+        AndroidGraphicFactory.clearResourceMemoryCache(); // do this as very last action - otherwise some crash might occur
         Log.w(MGMapApplication.LABEL, NameUtil.context() + " Destroy finished");
         super.onDestroy();
     }

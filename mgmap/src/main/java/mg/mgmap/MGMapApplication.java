@@ -28,9 +28,9 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import mg.mgmap.model.WriteableTrackLog;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLogRef;
-import mg.mgmap.model.TrackLogSegment;
+import mg.mgmap.util.AltitudeProvider;
 import mg.mgmap.util.BgJob;
-import mg.mgmap.util.Geoid;
+import mg.mgmap.util.GeoidProvider;
 import mg.mgmap.util.GpxExporter;
 import mg.mgmap.util.MetaDataUtil;
 import mg.mgmap.util.NameUtil;
@@ -62,6 +62,10 @@ public class MGMapApplication extends Application {
     // Label for Logging.
     public static final String LABEL = "MGMap";
     private Process pLogcat = null;
+
+    private AltitudeProvider altitudeProvider;
+    private GeoidProvider geoidProvider;
+    private PersistenceManager persistenceManager;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
@@ -101,8 +105,12 @@ public class MGMapApplication extends Application {
         System.out.println("MGMapViewer Application start!!!!");
         super.onCreate();
 
+        persistenceManager = PersistenceManager.getInstance(this);
         startLogging();
         AndroidGraphicFactory.createInstance(this);
+
+        altitudeProvider = new AltitudeProvider(persistenceManager); // for hgt data handling
+        geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea altitude
 
         prefCache = new PrefCache(this);
 
@@ -144,14 +152,12 @@ public class MGMapApplication extends Application {
         }.start();
 
 
-        // initialize hgt data handling
-        new Geoid(this);
 
         // initialize MetaData (as used from AvailableTrackLogs service
         new Thread(){
             @Override
             public void run() {
-                ExtrasUtil.checkCreateMeta();
+                ExtrasUtil.checkCreateMeta(persistenceManager, altitudeProvider);
                 for (TrackLog trackLog : MetaDataUtil.loadMetaData()){
                     metaTrackLogs.put(trackLog.getNameKey(),trackLog);
                 }
@@ -329,6 +335,17 @@ public class MGMapApplication extends Application {
         }
     }
 
+    public AltitudeProvider getAltitudeProvider() {
+        return altitudeProvider;
+    }
+
+    public GeoidProvider getGeoidProvider() {
+        return geoidProvider;
+    }
+
+    public PersistenceManager getPersistenceManager() {
+        return persistenceManager;
+    }
 
     public synchronized void addBgJobs(List<BgJob> jobs){
         if (jobs == null) return;

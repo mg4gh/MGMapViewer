@@ -39,7 +39,7 @@ import java.util.Locale;
 
 public class GpxImporter {
 
-    private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
+    private static final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
     public static TrackLog checkLoadGpx(MGMapApplication application, Uri uri) {
         try {
@@ -52,7 +52,7 @@ public class GpxImporter {
                 if (filePath == null) return null;
                 is = new FileInputStream(filePath);
             }
-            return new GpxImporter().parseTrackLog("GPX" + System.currentTimeMillis(), is);
+            return new GpxImporter(application.getAltitudeProvider()).parseTrackLog("GPX" + System.currentTimeMillis(), is);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
@@ -60,9 +60,12 @@ public class GpxImporter {
         return null;
     }
 
+    private final AltitudeProvider altitudeProvider;
+    private final XmlPullParser pullParser = new KXmlParser();
 
-
-    private XmlPullParser pullParser = new KXmlParser();
+    public GpxImporter(AltitudeProvider altitudeProvider){
+        this.altitudeProvider = altitudeProvider;
+    }
 
 
     private String getStringAttribute(String name) {
@@ -110,7 +113,7 @@ public class GpxImporter {
             } else if (eventType == XmlPullParser.END_TAG) {
                 if ("trkpt".equals(qName)) {
                     if (tlp.getEleD() == PointModel.NO_ELE){
-                        tlp.setEle(AltitudeProvider.getAlt(tlp)); // try to enrich data with hgt height information
+                        tlp.setEle(altitudeProvider.getAlt(tlp)); // try to enrich data with hgt height information
                     }
                     trackLog.addPoint( tlp );
                 }

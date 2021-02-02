@@ -14,12 +14,9 @@
  */
 package mg.mgmap.model;
 
-import android.location.Location;
-
 import mg.mgmap.util.LaLo;
 
-import mg.mgmap.util.AltitudeProvider;
-import mg.mgmap.util.Geoid;
+import mg.mgmap.util.GeoidProvider;
 
 import java.nio.ByteBuffer;
 
@@ -28,16 +25,15 @@ import java.nio.ByteBuffer;
  */
 public class TrackLogPoint extends WriteablePointModelImpl implements WriteablePointModel{
 
-    public static TrackLogPoint createGpsLogPoint(Location location){
+    public static TrackLogPoint createGpsLogPoint(long timestamp, double latitude, double longitude, float accuracy, double altitude, float geoidOffset, float hgtAlt){
         TrackLogPoint lp = new TrackLogPoint();
-        lp.timestamp = System.currentTimeMillis();
-        lp.la = LaLo.d2md(location.getLatitude());
-        lp.lo = LaLo.d2md(location.getLongitude());
-        lp.hgtAlt = AltitudeProvider.getAlt(lp);
-        lp.accuracy = Math.round(location.getAccuracy());
-        if ((location.hasAltitude() && (location.getAltitude() != 0))){
-            lp.wgs84alt = (float)location.getAltitude();
-            float geoidOffset = Geoid.getInstance().getGeoidOffset(lp.getLat(),lp.getLon());
+        lp.timestamp = timestamp;
+        lp.la = LaLo.d2md(latitude);
+        lp.lo = LaLo.d2md(longitude);
+        lp.hgtAlt = hgtAlt;
+        lp.accuracy = Math.round(accuracy);
+        if (altitude != 0){
+            lp.wgs84alt = (float)altitude;
             lp.nmeaAlt = lp.wgs84alt - geoidOffset;
             lp.ele = lp.nmeaAlt;
         } else { // no gps altitude
@@ -153,7 +149,7 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         this.timestamp = timestamp;
     }
     public void setAccuracy(float accuracy) {
-        this.accuracy = accuracy;
+        this.accuracy = Math.round(accuracy);
     }
     public void setPressure(float pressure) {
         this.pressure = pressure;
