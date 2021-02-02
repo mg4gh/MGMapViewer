@@ -28,8 +28,8 @@ import mg.mgmap.util.PointModelUtil;
 /** A simple implementation for a single point */
 public class PointModelImpl implements PointModel, Comparable<PointModel>{
 
-    int la;
-    int lo;
+    int la = LaLo.d2md(NO_LAT_LONG);
+    int lo = LaLo.d2md(NO_LAT_LONG);
     float ele = NO_ELE;
 
     public static PointModelImpl createFromLaLo(long lalo){
@@ -91,10 +91,9 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     @Override
     public String toString() {
         if (ele == NO_ELE){
-            return String.format(Locale.GERMAN, "Lat=%2.6f, Lon=%2.6f",getLat(), getLon());
+            return String.format(Locale.ENGLISH, "Lat=%2.6f, Lon=%2.6f",getLat(), getLon());
         } else{
-            return String.format(Locale.GERMAN, "Lat=%2.6f, Lon=%2.6f, ELe=%2.1fm",getLat(), getLon(), ele);
-
+            return String.format(Locale.ENGLISH, "Lat=%2.6f, Lon=%2.6f, Ele=%2.1fm",getLat(), getLon(), ele);
         }
     }
 
