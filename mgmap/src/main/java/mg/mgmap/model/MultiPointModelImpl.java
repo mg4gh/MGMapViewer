@@ -22,17 +22,11 @@ import java.util.Iterator;
 /** An implementation of a writeable model for multiple points. */
 public class MultiPointModelImpl implements WriteableMultiPointModel{
 
-    ArrayList<PointModel> points = new ArrayList<>();
-    BBox bBox = new BBox();
+    protected ArrayList<PointModel> points = new ArrayList<>();
+    protected BBox bBox = new BBox();
     boolean route = false;
 
     public MultiPointModelImpl(){}
-
-    public MultiPointModelImpl(MultiPointModel multiPointModel){
-        for (int i = 0; i<multiPointModel.size(); i++){
-            addPoint( multiPointModel.get(i) );
-        }
-    }
 
     @Override
     public MultiPointModelImpl addPoint(PointModel pointModel){
