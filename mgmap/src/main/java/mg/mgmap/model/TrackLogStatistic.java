@@ -31,9 +31,9 @@ public class TrackLogStatistic {
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
     private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
 
-    private int segmentIdx; // -1 means all segments; // -2 remainings statistic
-    private long tStart;
-    private long duration;
+    private int segmentIdx = -1; // -1 means all segments; // -2 remainings statistic
+    private long tStart = 0;
+    private long duration = 0;
 
     private double totalLength = 0;
     private float gain = 0;
@@ -232,6 +232,9 @@ public class TrackLogStatistic {
                 sdf.format(tStart),durationToString(),totalLength,gain,loss,minEle,maxEle, numPoints);
     }
 
+    boolean isFrozen(){
+        return frozen;
+    }
     public TrackLogStatistic setFrozen(boolean frozen) {
         this.frozen = frozen;
         return this;

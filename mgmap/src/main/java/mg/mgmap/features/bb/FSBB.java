@@ -317,7 +317,7 @@ public class FSBB extends FeatureService {
         BBox bBox2show = new BBox();
         if (bBox2Load != null){
             for (TrackLog aTrackLog : getApplication().metaTrackLogs.values()){
-                if (MetaDataUtil.checkLaLoRecords(aTrackLog, bBox2Load)){
+                if (getApplication().getMetaDataUtil().checkLaLoRecords(aTrackLog, bBox2Load)){
                     getApplication().availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
                     bBox2show.extend(aTrackLog.getBBox());
                     changed = true;

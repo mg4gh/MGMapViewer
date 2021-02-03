@@ -128,9 +128,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     public PrefCache getPrefCache(){
         return prefCache;
     }
-    public MapDataStoreUtil getMapDataStoreUtil(){
-        return mapDataStoreUtil;
-    }
+//    public MapDataStoreUtil getMapDataStoreUtil(){
+//        return mapDataStoreUtil;
+//    }
     public GGraphTileFactory getGGraphTileFactory() {
         return gGraphTileFactory;
     }
@@ -349,6 +349,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     BBox bBox2show = new BBox();
                     TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
                     if (selectedTrackLog != null){
+                        application.getMetaDataUtil().checkAvailability(selectedTrackLog);
                         TrackLogRef selectedRef = new TrackLogRef(selectedTrackLog, -1);
                         application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
                         bBox2show.extend(selectedTrackLog.getBBox());
@@ -356,9 +357,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     for (String aatl : atls){
                         TrackLog aTrackLog = application.metaTrackLogs.get(aatl);
                         if (aTrackLog != null){
+                            application.getMetaDataUtil().checkAvailability(aTrackLog);
                             application.availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
                             bBox2show.extend(aTrackLog.getBBox());
-
                         }
                     }
 
@@ -374,6 +375,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     BBox bBox2show = new BBox();
                     TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
                     if (selectedTrackLog != null){
+                        application.getMetaDataUtil().checkAvailability(selectedTrackLog);
                         getFS(FSMarker.class).createMarkerTrackLog(selectedTrackLog);
                         bBox2show.extend(selectedTrackLog.getBBox());
                     }

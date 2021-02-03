@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import mg.mgmap.util.MetaDataUtil;
 
 /** A TrackLogSegment contains additionally to the points in the MultiPointModel a few  more data.
  * These are
@@ -31,13 +30,11 @@ import mg.mgmap.util.MetaDataUtil;
  * */
 public class TrackLogSegment extends MultiPointModelImpl{
 
-    private final TrackLog trackLog;
     private final int segmentIdx;
     private final ArrayList<MetaData> metaDatas = new ArrayList<>(); //needed for loadFromBB ?? yes, but also for visualization of loaded tracks
     private TrackLogStatistic statistic;
 
-    public TrackLogSegment(TrackLog trackLog, int idx){
-        this.trackLog = trackLog;
+    public TrackLogSegment(int idx){
         this.segmentIdx = idx;
         statistic = new TrackLogStatistic(idx);
     }
@@ -58,13 +55,11 @@ public class TrackLogSegment extends MultiPointModelImpl{
 
     @Override
     public int size() {
-        verifyAvailability();
         return points.size();
     }
 
     @Override
     public PointModel get(int i) {
-        verifyAvailability();
         return points.get(i);
     }
 
@@ -72,7 +67,6 @@ public class TrackLogSegment extends MultiPointModelImpl{
     @NonNull
     @Override
     public Iterator<PointModel> iterator() {
-        verifyAvailability();
         return points.iterator();
     }
 
@@ -101,12 +95,6 @@ public class TrackLogSegment extends MultiPointModelImpl{
         statistic.reset();
         for (PointModel pm : this){
             statistic.updateWithPoint(pm);
-        }
-    }
-
-    public void verifyAvailability(){
-        if (!trackLog.isAvailable()){
-            MetaDataUtil.loadLaLoBufs(trackLog);
         }
     }
 }

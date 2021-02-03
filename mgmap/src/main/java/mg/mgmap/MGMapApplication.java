@@ -66,6 +66,7 @@ public class MGMapApplication extends Application {
     private AltitudeProvider altitudeProvider;
     private GeoidProvider geoidProvider;
     private PersistenceManager persistenceManager;
+    private MetaDataUtil metaDataUtil;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
@@ -111,6 +112,7 @@ public class MGMapApplication extends Application {
 
         altitudeProvider = new AltitudeProvider(persistenceManager); // for hgt data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea altitude
+        metaDataUtil = new MetaDataUtil(persistenceManager);
 
         prefCache = new PrefCache(this);
 
@@ -157,8 +159,8 @@ public class MGMapApplication extends Application {
         new Thread(){
             @Override
             public void run() {
-                ExtrasUtil.checkCreateMeta(persistenceManager, altitudeProvider);
-                for (TrackLog trackLog : MetaDataUtil.loadMetaData()){
+                ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, altitudeProvider);
+                for (TrackLog trackLog : metaDataUtil.loadMetaData()){
                     metaTrackLogs.put(trackLog.getNameKey(),trackLog);
                 }
             }
@@ -345,6 +347,10 @@ public class MGMapApplication extends Application {
 
     public PersistenceManager getPersistenceManager() {
         return persistenceManager;
+    }
+
+    public MetaDataUtil getMetaDataUtil() {
+        return metaDataUtil;
     }
 
     public synchronized void addBgJobs(List<BgJob> jobs){

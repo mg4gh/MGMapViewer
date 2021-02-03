@@ -26,7 +26,7 @@ import mg.mgmap.model.TrackLog;
 public class ExtrasUtil {
 
 
-    public static void checkCreateMeta(PersistenceManager persistenceManager, AltitudeProvider altitudeProvider){
+    public static void checkCreateMeta(PersistenceManager persistenceManager, MetaDataUtil metaDataUtil, AltitudeProvider altitudeProvider){
         Log.i(MGMapApplication.LABEL, NameUtil.context() );
         try {
             List<String> gpxNames = persistenceManager.getGpxNames();
@@ -39,8 +39,8 @@ public class ExtrasUtil {
             for (String name : newGpxNames){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Create meta file for "+name );
                 TrackLog trackLog = new GpxImporter(altitudeProvider).parseTrackLog(name, persistenceManager.openGpxInput(name));
-                MetaDataUtil.createMetaData(trackLog);
-                MetaDataUtil.writeMetaData(PersistenceManager.getInstance().openMetaOutput(name), trackLog);
+                metaDataUtil.createMetaData(trackLog);
+                metaDataUtil.writeMetaData(PersistenceManager.getInstance().openMetaOutput(name), trackLog);
             }
             for (String name : metaNames){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Delete meta file for "+name);

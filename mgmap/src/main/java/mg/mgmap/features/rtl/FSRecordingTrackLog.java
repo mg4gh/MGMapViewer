@@ -85,8 +85,8 @@ public class FSRecordingTrackLog extends FeatureService {
                     getApplication().metaTrackLogs.put(rtl.getNameKey(), rtl);
                     getApplication().recordingTrackLogObservable.setTrackLog(null);
 
-                    MetaDataUtil.createMetaData(rtl);
-                    MetaDataUtil.writeMetaData(PersistenceManager.getInstance().openMetaOutput(rtl.getName()), rtl);
+                    application.getMetaDataUtil().createMetaData(rtl);
+                    application.getMetaDataUtil().writeMetaData(application.getPersistenceManager().openMetaOutput(rtl.getName()), rtl);
                     getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
 
                     TrackLogRef selected = new TrackLogRef(rtl,rtl.getNumberOfSegments()-1);

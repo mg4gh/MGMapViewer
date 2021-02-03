@@ -57,12 +57,14 @@ public class FeatureService {
     /** A timer object. */
     private static final Handler timer = new Handler();
 
-    private final MGMapActivity mmActivity;
+    protected final MGMapActivity activity;
+    protected final MGMapApplication application;
     protected ArrayList<Layer> fsLayers = new ArrayList<>();
     protected String logName;
 
-    public FeatureService(MGMapActivity mmActivity){
-        this.mmActivity = mmActivity;
+    public FeatureService(MGMapActivity activity){
+        this.activity = activity;
+        this.application = activity.application;
         logName = this.getClass().getSimpleName();
     }
 
@@ -204,29 +206,29 @@ public class FeatureService {
     }
 
     protected MGMapActivity getActivity(){
-        return mmActivity;
+        return activity;
     }
     protected MGMapApplication getApplication(){
-        return (MGMapApplication)mmActivity.getApplication();
+        return (MGMapApplication) activity.getApplication();
     }
 
     protected MapView getMapView(){
-        return mmActivity.getMapsforgeMapView();
+        return activity.getMapsforgeMapView();
     }
     protected Handler getTimer(){
         return timer;
     }
     protected MapViewUtility getMapViewUtility(){
-        return mmActivity.getMapViewUtility();
+        return activity.getMapViewUtility();
     }
     protected ControlView getControlView(){
-        return mmActivity.getControlView();
+        return activity.getControlView();
     }
     protected SharedPreferences getSharedPreferences(){
-        return mmActivity.getSharedPreferences();
+        return activity.getSharedPreferences();
     }
     protected Resources getResources(){
-        return mmActivity.getApplicationContext().getResources();
+        return activity.getApplicationContext().getResources();
     }
     protected String r(int id){return getResources().getString(id); }
 
@@ -235,7 +237,7 @@ public class FeatureService {
     protected void onDestroy(){ }
 
     protected <T> Pref<T> getPref(int id, T defaultValue){
-        return mmActivity.getPrefCache().get(id,defaultValue);
+        return activity.getPrefCache().get(id,defaultValue);
     }
 
 }

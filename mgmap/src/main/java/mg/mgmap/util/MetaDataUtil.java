@@ -39,8 +39,13 @@ public class MetaDataUtil {
     public static final long MAGIC = 0xAFFEAFFED00FD00Fl;
     public static final int VERSION = 0x0200;
 
+    PersistenceManager persistenceManager;
 
-    public static void createMetaData(TrackLog trackLog){
+    public MetaDataUtil(PersistenceManager persistenceManager){
+        this.persistenceManager = persistenceManager;
+    }
+
+    public void createMetaData(TrackLog trackLog){
         for (int idx=0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
             ArrayList<MetaData> metaDatas = segment.getMetaDatas();
@@ -69,7 +74,7 @@ public class MetaDataUtil {
         }
     }
 
-    public static void writeMetaData(FileOutputStream fos, TrackLog trackLog){
+    public void writeMetaData(FileOutputStream fos, TrackLog trackLog){
         try {
             ByteBuffer buf = ByteBuffer.allocate(MetaData.BUF_SIZE);
             buf.order(ByteOrder.LITTLE_ENDIAN);
@@ -130,7 +135,7 @@ public class MetaDataUtil {
         }
     }
 
-    public static void readMetaData(FileInputStream in, TrackLog trackLog) {
+    public void readMetaData(FileInputStream in, TrackLog trackLog) {
         try {
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+trackLog.getName());
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -153,7 +158,7 @@ public class MetaDataUtil {
             trackLog.setAvailable(false); // next access to getTrackLogSegment will cause loading of lalos
 
             for (int idx=0; idx<numSegments; idx++){
-                TrackLogSegment segment = new TrackLogSegment(trackLog, idx);
+                TrackLogSegment segment = new TrackLogSegment(idx);
                 TrackLogStatistic statistic = new TrackLogStatistic().fromByteBuffer(buf).setFrozen(true);
                 segment.setStatistic(statistic);
                 trackLog.getTrackLogSegments().add(segment);
@@ -180,14 +185,14 @@ public class MetaDataUtil {
         }
     }
 
-    public static ArrayList<TrackLog> loadMetaData(){
+    public ArrayList<TrackLog> loadMetaData(){
         ArrayList<TrackLog> trackLogs = new ArrayList<>();
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" loading meta files started");
 
-        for (String name : PersistenceManager.getInstance().getMetaNames()){
+        for (String name : persistenceManager.getMetaNames()){
             final TrackLog trackLog = new TrackLog();
             trackLog.setName(name);
-            MetaDataUtil.readMetaData(PersistenceManager.getInstance().openMetaInput(name), trackLog);
+            readMetaData(persistenceManager.openMetaInput(name), trackLog);
             trackLogs.add(trackLog);
         }
 
@@ -196,9 +201,9 @@ public class MetaDataUtil {
     }
 
 
-    public static void loadLaLoBufs(TrackLog trackLog){
+    public void loadLaLoBufs(TrackLog trackLog){
         try {
-            InputStream in = PersistenceManager.getInstance().openMetaInput(trackLog.getName());
+            InputStream in = persistenceManager.openMetaInput(trackLog.getName());
             trackLog.setAvailable(true);
             for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
                 for (int mIdx = 0; mIdx<segment.getMetaDatas().size(); mIdx++) {
@@ -222,7 +227,7 @@ public class MetaDataUtil {
 
     }
 
-    private static ByteBuffer getNextLaloBuf(InputStream in){
+    private ByteBuffer getNextLaloBuf(InputStream in){
         try {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " "+in.available());
             while (in.available() >= MetaData.BUF_SIZE){
@@ -239,14 +244,15 @@ public class MetaDataUtil {
         return null;
     }
 
-    public static boolean checkLaLoRecords(TrackLog trackLog, BBox checkBBox){
+    public boolean checkLaLoRecords(TrackLog trackLog, BBox checkBBox){
         for (int idx=0; idx < trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
 
             int metaStartPoint = 0;
             for (MetaData metaData : segment.getMetaDatas()){
                 if (metaData.bBox.intersects(checkBBox)){
-                    // at least rough match
+                    // at least rough match is given
+                    checkAvailability(trackLog); // before we check the points, ensure that they are available
                     for (int pIdx=metaStartPoint; pIdx<metaStartPoint+metaData.numPoints; pIdx++) {
                         if (checkBBox.contains(segment.get(pIdx))) return true;
                     }
@@ -255,6 +261,12 @@ public class MetaDataUtil {
             }
         }
         return false;
+    }
+
+    public void checkAvailability(TrackLog trackLog){
+        if (!trackLog.isAvailable()){
+            loadLaLoBufs(trackLog);
+        }
     }
 
 }

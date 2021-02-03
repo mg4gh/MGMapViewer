@@ -35,7 +35,7 @@ public class WriteableTrackLog extends TrackLog {
     }
 
     public void startSegment(long timestamp){
-        currentSegment = new TrackLogSegment(this, getNumberOfSegments());
+        currentSegment = new TrackLogSegment(getNumberOfSegments());
         trackLogSegments.add(currentSegment);
         if (timestamp != PointModel.NO_TIME){
             currentSegment.getStatistic().setTStart(timestamp);
