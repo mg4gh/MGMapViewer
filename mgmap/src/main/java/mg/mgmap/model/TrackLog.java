@@ -32,12 +32,6 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected boolean available = true;
     protected boolean modified = false;
 
-    public void clear(){
-        trackStatistic = null;
-        name = "";
-        trackLogSegments.clear();
-    }
-
     public TrackLogStatistic getTrackStatistic() {
         return trackStatistic;
     }

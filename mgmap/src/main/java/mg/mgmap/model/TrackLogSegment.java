@@ -87,7 +87,7 @@ public class TrackLogSegment extends MultiPointModelImpl{
     }
 
     @Override
-    public synchronized BBox getBBox() {
+    public BBox getBBox() {
         return bBox;
     }
 
