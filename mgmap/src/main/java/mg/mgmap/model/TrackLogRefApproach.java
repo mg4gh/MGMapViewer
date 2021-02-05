@@ -14,6 +14,8 @@
  */
 package mg.mgmap.model;
 
+import java.util.Locale;
+
 /** A specific kind of {@link mg.mgmap.model.TrackLogRef} to reference an approach to a TrackLog.
  * Additionally it references the ApproachPoint, the distance to the approachPoint and
  * the index of the endpoint in the segment. */
@@ -56,7 +58,7 @@ public class TrackLogRefApproach extends TrackLogRef {
     public String toString() {
         return super.toString() +
                 ", approachPoint=" + approachPoint +
-                ", distance=" + distance +
+                String.format(Locale.ENGLISH,", distance=%.2f", distance )+
                 ", endPointIndex=" + endPointIndex ;
     }
 }

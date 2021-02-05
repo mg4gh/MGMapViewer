@@ -129,6 +129,7 @@ class TrackLogTest {
         TrackLogRefApproach refApproach = trackLog.getBestDistance(new PointModelImpl(49.4001, 8.6001));
         assertNotNull(refApproach);
         assertEquals(49.4001, refApproach.approachPoint.getLat());
+        assertEquals("trackLog.name=, segmentIdx=0, approachPoint=Lat=49.400100, Lon=8.600000, distance=7.24, endPointIndex=1", refApproach.toString());
 
         refApproach = trackLog.getBestDistance(new PointModelImpl(49.4001, 8.6001),2);
         assertNull(refApproach);
