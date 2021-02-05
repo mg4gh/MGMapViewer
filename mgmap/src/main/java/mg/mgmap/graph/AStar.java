@@ -14,7 +14,7 @@
  */
 package mg.mgmap.graph;
 
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 /**
  * Implementation of the AStar routing algorithm. This is basically identical to the Dijkstra algorithm, except that the heuristic function is based on the linear distance to the target.

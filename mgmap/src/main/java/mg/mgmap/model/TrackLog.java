@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 
 
 import mg.mgmap.util.Formatter;
-import mg.mgmap.util.PointModelUtil;
 
 import java.util.ArrayList;
 import java.util.Observable;

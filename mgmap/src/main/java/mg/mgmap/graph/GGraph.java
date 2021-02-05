@@ -16,7 +16,7 @@ package mg.mgmap.graph;
 
 import java.util.ArrayList;
 
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 /**
  * A basic graph implementation based on GNode and GNeighbour.

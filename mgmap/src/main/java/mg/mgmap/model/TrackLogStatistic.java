@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import mg.mgmap.util.Formatter;
-import mg.mgmap.util.PointModelUtil;
 
 
 /**

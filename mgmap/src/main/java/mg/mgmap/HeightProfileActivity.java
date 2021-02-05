@@ -28,12 +28,11 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import mg.mgmap.model.MultiPointModel;
-import mg.mgmap.model.MultiPointModelImpl;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.TrackLogSegment;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 import java.util.ArrayList;
 import java.util.Locale;

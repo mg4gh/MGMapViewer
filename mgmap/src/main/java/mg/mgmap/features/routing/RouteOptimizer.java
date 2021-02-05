@@ -28,7 +28,7 @@ import mg.mgmap.model.TrackLog;
 import mg.mgmap.model.TrackLogSegment;
 import mg.mgmap.util.Assert;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 public class RouteOptimizer {
 

@@ -25,7 +25,7 @@ import java.util.Iterator;
 import mg.mgmap.model.MultiPointModel;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.util.CC;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 /** This view draws a track (segment) via its MultiPointModel. The special thing here is, that the
  * color depends on the gain/loss of the segment.

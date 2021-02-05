@@ -34,7 +34,7 @@ import mg.mgmap.model.TrackLogPoint;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 import mg.mgmap.util.Pref;
 import mg.mgmap.view.BoxView;
 import mg.mgmap.view.MVLayer;

@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Observable;
 import java.util.Observer;
 
-import mg.mgmap.util.PointModelUtil;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class TrackLogTest {

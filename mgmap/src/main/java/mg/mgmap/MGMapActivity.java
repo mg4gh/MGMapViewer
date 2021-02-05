@@ -77,7 +77,7 @@ import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.util.Permissions;
 import mg.mgmap.util.PersistenceManager;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 import mg.mgmap.util.Pref;
 import mg.mgmap.util.PrefCache;
 import mg.mgmap.util.TopExceptionHandler;

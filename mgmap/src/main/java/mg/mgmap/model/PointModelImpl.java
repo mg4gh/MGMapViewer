@@ -23,7 +23,6 @@ import java.nio.ByteBuffer;
 import java.util.Locale;
 
 import mg.mgmap.util.LaLo;
-import mg.mgmap.util.PointModelUtil;
 
 /** A simple implementation for a single point */
 public class PointModelImpl implements PointModel, Comparable<PointModel>{

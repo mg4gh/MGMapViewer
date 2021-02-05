@@ -32,7 +32,7 @@ import mg.mgmap.model.PointModelImpl;
 import mg.mgmap.util.AltitudeProvider;
 import mg.mgmap.util.LaLo;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 import mg.mgmap.util.WayProvider;
 
 public class GGraphTileFactory {

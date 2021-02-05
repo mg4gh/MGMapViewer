@@ -16,7 +16,7 @@ package mg.mgmap.graph;
 
 import androidx.annotation.NonNull;
 
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 /**
  * Keeps references on nodes and node relationships including meta data. Only used für routing algorithm processing.

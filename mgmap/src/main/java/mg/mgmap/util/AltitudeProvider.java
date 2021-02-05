@@ -15,6 +15,7 @@
 package mg.mgmap.util;
 
 import mg.mgmap.model.PointModel;
+import mg.mgmap.model.PointModelUtil;
 
 /** Provide an elevation value for a given position on the .hgt file basis. */
 public class AltitudeProvider {
@@ -79,7 +80,8 @@ public class AltitudeProvider {
     }
 
     private static double interpolate(double refMin, double refMax, double valMin, double valMax, double ref){
-        double scale = (ref - refMin) / (refMax - refMin);
-        return scale * (valMax - valMin) + valMin ;
+        return PointModelUtil.interpolate(refMin,refMax, valMin, valMax, ref);
+//        double scale = (ref - refMin) / (refMax - refMin);
+//        return scale * (valMax - valMin) + valMin ;
     }
 }

@@ -27,6 +27,7 @@ import org.mapsforge.map.model.IMapViewPosition;
 import mg.mgmap.model.BBox;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.PointModelImpl;
+import mg.mgmap.model.PointModelUtil;
 
 /**
  * Utility for functionality related to the mapsforge MapView.

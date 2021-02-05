@@ -20,7 +20,7 @@ import mg.mgmap.MGMapApplication;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.model.WriteablePointModelImpl;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 import java.util.ArrayList;
 

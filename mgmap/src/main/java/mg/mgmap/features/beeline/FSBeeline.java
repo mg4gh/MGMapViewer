@@ -17,7 +17,6 @@ package mg.mgmap.features.beeline;
 import android.util.Log;
 
 import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.model.LatLong;
 
 
 import java.util.Observable;
@@ -32,7 +31,7 @@ import mg.mgmap.model.PointModelImpl;
 import mg.mgmap.util.CC;
 import mg.mgmap.util.Formatter;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 import mg.mgmap.util.Pref;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.MultiPointView;

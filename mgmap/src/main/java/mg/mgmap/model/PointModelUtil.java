@@ -12,22 +12,17 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.util;
+package mg.mgmap.model;
 
 import java.util.ArrayList;
 
-import mg.mgmap.model.MultiPointModel;
-import mg.mgmap.model.PointModel;
-import mg.mgmap.model.PointModelImpl;
-import mg.mgmap.model.TrackLogRefApproach;
-import mg.mgmap.model.WriteablePointModel;
-import mg.mgmap.model.WriteablePointModelImpl;
+import mg.mgmap.util.LaLo;
 
 /** Utilities for PointModel.
  * Especially
  * <ul>
  *     <li>provide a "close" threshold</li>
- *     <li>calculate distence between two PointModel objects</li>
+ *     <li>calculate distance between two PointModel objects</li>
  *     <li>find an approach of a point towards a line</li>
  *     <li>compare point models</li>
  * </ul>
@@ -192,7 +187,7 @@ public class PointModelUtil {
         return new PointModelImpl(lat,lon);
     }
 
-    private static double interpolate(double refMin, double refMax, double valMin, double valMax, double ref){
+    public static double interpolate(double refMin, double refMax, double valMin, double valMax, double ref){
         double scale = (ref - refMin) / (refMax - refMin);
         return scale * (valMax - valMin) + valMin ;
     }

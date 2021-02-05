@@ -41,9 +41,8 @@ import mg.mgmap.model.TrackLogPoint;
 import mg.mgmap.model.TrackLogSegment;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.model.WriteableTrackLog;
-import mg.mgmap.util.AltitudeProvider;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 import mg.mgmap.util.Pref;
 
 public class RoutingEngine {

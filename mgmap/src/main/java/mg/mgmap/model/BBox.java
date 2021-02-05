@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import mg.mgmap.util.LaLo;
-import mg.mgmap.util.PointModelUtil;
 
 /** A bounding box implementation */
 public class BBox {

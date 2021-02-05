@@ -14,30 +14,17 @@
  */
 package mg.mgmap.graph;
 
-import android.util.Log;
-
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
-import org.mapsforge.core.util.MercatorProjection;
-import org.mapsforge.map.datastore.MapDataStore;
-import org.mapsforge.map.datastore.MapReadResult;
-import org.mapsforge.map.datastore.Way;
 
-import mg.mgmap.MGMapApplication;
 import mg.mgmap.model.BBox;
 import mg.mgmap.model.MultiPointModel;
-import mg.mgmap.model.MultiPointModelImpl;
-import mg.mgmap.model.PointModelImpl;
 import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.model.WriteablePointModelImpl;
 import mg.mgmap.util.AltitudeProvider;
-import mg.mgmap.util.LaLo;
-import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
  * Represents the GGraph object for a particular tile.

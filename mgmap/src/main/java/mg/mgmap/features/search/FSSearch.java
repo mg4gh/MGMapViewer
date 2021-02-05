@@ -40,7 +40,7 @@ import mg.mgmap.model.WriteablePointModel;
 import mg.mgmap.util.FullscreenUtil;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.Pref;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 import mg.mgmap.view.ExtendedTextView;
 import mg.mgmap.view.MVLayer;
 

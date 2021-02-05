@@ -37,7 +37,7 @@ import mg.mgmap.model.BBox;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.PointModelImpl;
 import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 public class Nominatim extends SearchProvider {
 

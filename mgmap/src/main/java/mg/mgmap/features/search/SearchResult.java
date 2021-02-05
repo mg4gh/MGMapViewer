@@ -15,7 +15,7 @@
 package mg.mgmap.features.search;
 
 import mg.mgmap.model.PointModel;
-import mg.mgmap.util.PointModelUtil;
+import mg.mgmap.model.PointModelUtil;
 
 public class SearchResult implements Comparable<SearchResult>{
     public SearchRequest searchRequest;

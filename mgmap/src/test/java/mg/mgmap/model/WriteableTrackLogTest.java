@@ -2,8 +2,6 @@ package mg.mgmap.model;
 
 import org.junit.jupiter.api.Test;
 
-import mg.mgmap.util.PointModelUtil;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class WriteableTrackLogTest {
