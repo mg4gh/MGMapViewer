@@ -43,7 +43,6 @@ public class GDrivePreferenceScreen extends MGPreferenceScreen {
                 if (activity != null){
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
                     sharedPreferences.edit().putBoolean(getResources().getString(R.string.preferences_gdrive_trigger), true).apply();
-//                    new FSGDrive(getActivity()).trySynchronisation();
                     getActivity().finish();
                 }
                 return true;

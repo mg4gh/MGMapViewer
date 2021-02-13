@@ -539,6 +539,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Layers layers = mapView.getLayerManager().getLayers();
         for (String prefKey : getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" prefKey="+prefKey+" key="+key);
             Layer layer = MGMapLayerFactory.getMapLayer(key);
             if (layer != null){
                 if (!layers.contains(layer)){

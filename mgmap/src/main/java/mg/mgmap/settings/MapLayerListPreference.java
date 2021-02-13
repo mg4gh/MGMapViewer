@@ -16,10 +16,14 @@ package mg.mgmap.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import androidx.preference.ListPreference;
+import androidx.preference.PreferenceManager;
 
+import mg.mgmap.MGMapApplication;
 import mg.mgmap.MGMapLayerFactory;
+import mg.mgmap.util.NameUtil;
 
 public class MapLayerListPreference extends ListPreference {
 
@@ -30,5 +34,11 @@ public class MapLayerListPreference extends ListPreference {
         setEntries(maps);
         setEntryValues(maps);
         setDefaultValue(maps[0]);
+    }
+
+    @Override
+    protected void onClick() {
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" key="+getKey()+" value="+getValue());
+        super.onClick();
     }
 }

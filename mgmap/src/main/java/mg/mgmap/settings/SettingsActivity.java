@@ -15,27 +15,44 @@
 package mg.mgmap.settings;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
+import mg.mgmap.ControlView;
+import mg.mgmap.MGMapApplication;
 import mg.mgmap.R;
+import mg.mgmap.util.FullscreenUtil;
+import mg.mgmap.util.HomeObserver;
+import mg.mgmap.util.NameUtil;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements
+        PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         PreferenceFragmentCompat pfc = new MainPreferenceScreen();
         Intent intent = getIntent();
         if (intent != null){
             String clazzname = intent.getStringExtra("FSControl.info");
             if (clazzname != null){
                 try {
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" open PreferenceFragment "+clazzname);
                     Class<?> clazz = Class.forName(clazzname);
                     Object obj = clazz.newInstance();
                     if (obj instanceof PreferenceFragmentCompat) {
@@ -52,10 +69,47 @@ public class SettingsActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.settings, pfc )
                 .commit();
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        ViewGroup qcs = findViewById(R.id.sa_qc);
+        ControlView.createQuickControlETV(qcs)
+                .setData(R.drawable.back)
+                .setOnClickListener(createBackOCL());
+        ControlView.createQuickControlETV(qcs)
+                .setData(R.drawable.home)
+                .setOnClickListener(createHomeOCL());
+    }
+    private View.OnClickListener createBackOCL(){
+        return v -> SettingsActivity.this.onBackPressed();
+    }
+    private View.OnClickListener createHomeOCL() {
+        return v -> HomeObserver.launchHomeScreen(this);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        boolean fullscreen = prefs.getBoolean(getResources().getString(R.string.FSControl_qcFullscreenOn), false);
+        FullscreenUtil.enforceState(this, fullscreen);
+    }
+
+
+    // copied from:
+    // https://developer.android.com/guide/topics/ui/settings/organize-your-settings#java
+    @Override
+    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
+        // Instantiate the new Fragment
+        final Bundle args = pref.getExtras();
+        final Fragment fragment = getSupportFragmentManager().getFragmentFactory().instantiate(
+                getClassLoader(),
+                pref.getFragment());
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" set fragment "+pref.getFragment());
+        fragment.setArguments(args);
+        fragment.setTargetFragment(caller, 0);
+        // Replace the existing Fragment with the new Fragment
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.settings, fragment)
+                .addToBackStack(null)
+                .commit();
+        return true;
     }
 
 }

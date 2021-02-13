@@ -102,6 +102,29 @@
             app:title="@string/FSGrad_pref_WayDetails_title"
             app:iconSpaceReserved="false"
             />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preference_testMode_key"
+            app:summary="@string/preference_testMode_desc"
+            app:title="@string/preference_testMode_title"
+            app:iconSpaceReserved="false"
+            />
+        <EditTextPreference
+            app:defaultValue="-"
+            app:key="@string/preference_testSet_key"
+            app:summary="@string/preference_testSet_desc"
+            app:title="@string/preference_testSet_title"
+            app:iconSpaceReserved="false"
+            app:dependency="@string/preference_testMode_key"
+            />
+        <Preference
+            app:key="@string/preference_testTrigger_key"
+            app:summary="@string/preference_testTrigger_desc"
+            app:title="@string/preference_testTrigger_title"
+            app:iconSpaceReserved="false"
+            app:dependency="@string/preference_testMode_key"
+            />
+        <Preference />
 
     </PreferenceCategory>
 

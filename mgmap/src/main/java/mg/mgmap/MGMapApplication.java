@@ -28,6 +28,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import mg.mgmap.model.WriteableTrackLog;
 import mg.mgmap.model.PointModel;
 import mg.mgmap.model.TrackLogRef;
+import mg.mgmap.test.TestControl;
 import mg.mgmap.util.AltitudeProvider;
 import mg.mgmap.util.BgJob;
 import mg.mgmap.util.GeoidProvider;
@@ -61,12 +62,14 @@ public class MGMapApplication extends Application {
 
     // Label for Logging.
     public static final String LABEL = "MGMap";
+    public static final boolean TEST_MODE = true;
     private Process pLogcat = null;
 
     private AltitudeProvider altitudeProvider;
     private GeoidProvider geoidProvider;
     private PersistenceManager persistenceManager;
     private MetaDataUtil metaDataUtil;
+    private TestControl testControl;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
@@ -110,11 +113,12 @@ public class MGMapApplication extends Application {
         startLogging();
         AndroidGraphicFactory.createInstance(this);
 
+        prefCache = new PrefCache(this);
+
         altitudeProvider = new AltitudeProvider(persistenceManager); // for hgt data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea altitude
         metaDataUtil = new MetaDataUtil(persistenceManager);
-
-        prefCache = new PrefCache(this);
+        testControl = new TestControl(this, prefCache);
 
         prefAppRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
         prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
@@ -351,6 +355,10 @@ public class MGMapApplication extends Application {
 
     public MetaDataUtil getMetaDataUtil() {
         return metaDataUtil;
+    }
+
+    public TestControl getTestControl() {
+        return testControl;
     }
 
     public synchronized void addBgJobs(List<BgJob> jobs){

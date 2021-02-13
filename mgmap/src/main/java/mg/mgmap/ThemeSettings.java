@@ -22,11 +22,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -41,6 +43,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import mg.mgmap.util.FullscreenUtil;
+import mg.mgmap.util.HomeObserver;
 import mg.mgmap.util.NameUtil;
 import mg.mgmap.util.TopExceptionHandler;
 
@@ -55,21 +59,6 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     ArrayList<String> themePreferenceKeys = new ArrayList<>(); // store in this list all preference keys used by the renderThemeMenu
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return false;
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences,
                                           String key) {
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key).toString());
@@ -81,7 +70,6 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +86,20 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
 
         // if the render theme has a style menu, its data is delivered via the intent
         renderthemeOptions = (XmlRenderThemeStyleMenu) getIntent().getSerializableExtra(getResources().getString(R.string.my_rendertheme_menu_key));
+
+        ViewGroup qcs = findViewById(R.id.tsa_qc);
+        ControlView.createQuickControlETV(qcs)
+                .setData(R.drawable.back)
+                .setOnClickListener(createBackOCL());
+        ControlView.createQuickControlETV(qcs)
+                .setData(R.drawable.home)
+                .setOnClickListener(createHomeOCL());
+    }
+    private View.OnClickListener createBackOCL(){
+        return v -> ThemeSettings.this.onBackPressed();
+    }
+    private View.OnClickListener createHomeOCL() {
+        return v -> HomeObserver.launchHomeScreen(this);
     }
 
     public static class ThemeSettingsFragment extends PreferenceFragmentCompat {
@@ -124,15 +126,14 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     protected void onResume() {
         super.onResume();
         this.prefs.registerOnSharedPreferenceChangeListener(this);
-
+        boolean fullscreen = this.prefs.getBoolean(getResources().getString(R.string.FSControl_qcFullscreenOn), false);
+        FullscreenUtil.enforceState(this, fullscreen);
         if (renderthemeOptions != null) {
-
             // the preference category is hard-wired into this app and serves as
             // the hook to add a list preference to allow users to select a style
             renderthemeMenu = (PreferenceCategory) themeSettingsFragment.findPreference(getResources().getString(R.string.my_rendertheme_menu_key));
             createRenderthemeMenu();
         }
-
     }
 
 
@@ -211,5 +212,6 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
             this.renderthemeMenu.addPreference(checkbox);
             themePreferenceKeys.add(overlay.getId());
         }
+        this.renderthemeMenu.addPreference(new Preference(this));
     }
 }

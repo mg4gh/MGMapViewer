@@ -46,6 +46,7 @@ public class PersistenceManager {
 
     private static PersistenceManager persistenceManager = null;
     private static File baseDir = null;
+    private static File appDir = null;
     private static Context context = null;
 
 
@@ -85,20 +86,14 @@ public class PersistenceManager {
 
     synchronized private static void init(Context context){
         if (baseDir == null){
-//            boolean bPrefStorage = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getResources().getString(R.string.preferences_storage_key), false);
-//            baseDir = Environment.getExternalStorageDirectory();
-//            if (baseDir.canWrite() && bPrefStorage){
-//            } else {
             PersistenceManager.context = context;
             baseDir = context.getExternalFilesDir(null);
-
-//            }
             Log.i(MGMapApplication.LABEL, NameUtil.context() + " Storage: "+baseDir.getAbsolutePath());
         }
     }
 
     private PersistenceManager() {
-        File appDir = createIfNotExists(baseDir, "MGMapViewer");
+        appDir = createIfNotExists(baseDir, "MGMapViewer");
         File trackDir = createIfNotExists(appDir, "track");
         trackMetaDir = createIfNotExists(trackDir, "meta");
         trackGpxDir = createIfNotExists(trackDir, "gpx");
@@ -120,6 +115,12 @@ public class PersistenceManager {
         apkDir = createIfNotExists(appDir, "apk");
     }
 
+    public File getBaseDir(){
+        return baseDir;
+    }
+    public File getAppDir(){
+        return appDir;
+    }
     public File getLogDir(){
         return logDir;
     }
@@ -428,7 +429,7 @@ public class PersistenceManager {
     }
 
     @SuppressWarnings("all")
-    private void deleteFile(File file) {
+    public void deleteFile(File file) {
         if (file.exists()) {
             file.delete();
         }

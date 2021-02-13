@@ -16,13 +16,28 @@ package mg.mgmap.settings;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
+import mg.mgmap.MGMapApplication;
+import mg.mgmap.util.NameUtil;
 
 public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
 
     protected void setIntent(int resId, Intent intent){
-        findPreference( getResources().getString(resId) ).setIntent( intent );
+        Preference preference = findPreference( getResources().getString(resId) );
+        if (preference != null){
+            preference.setIntent( intent );
+            preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+intent.getDataString());
+                    return false;
+                }
+            });
+        }
     }
 
     protected void setBrowseIntent(int resId, int uriId){

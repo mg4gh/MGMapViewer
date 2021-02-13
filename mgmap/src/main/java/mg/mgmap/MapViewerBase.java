@@ -18,6 +18,8 @@ import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
+
+import android.os.Handler;
 import android.util.Log;
 
 import org.mapsforge.map.android.util.AndroidPreferences;
@@ -121,11 +123,16 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         // Some preference changes take effect due to activity restart - those need to be listed in recreatePreferences
         if (recreatePreferences.contains(key)){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key).toString());
-            for (TileCache tileCache : tileCaches) {
-                tileCache.purge();
-            }
-            this.recreate(); // restart activity
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key).toString());
+                    for (TileCache tileCache : tileCaches) {
+                        tileCache.purge();
+                    }
+                    MapViewerBase.this.recreate(); // restart activity
+                }
+            }, 100);
         }
     }
 

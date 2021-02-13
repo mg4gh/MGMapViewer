@@ -409,7 +409,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener createBackOCL(){
-        return v -> TrackStatisticActivity.this.finish();
+        return v -> TrackStatisticActivity.this.onBackPressed();
     }
 }
 

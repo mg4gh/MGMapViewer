@@ -1,0 +1,9 @@
+mg.mgmap.test.tc.extra.TestMapUtil
+mg.mgmap.test.tc.extra.TestSwipeMap
+mg.mgmap.test.tc.features.bb.TestBB
+mg.mgmap.test.tc.features.control.TestHelpGroup1
+mg.mgmap.test.tc.features.control.TestSettingsSelectLayer1Grid
+mg.mgmap.test.tc.features.control.TestSettingsStart
+mg.mgmap.test.tc.features.control.TestThemeSettings
+mg.mgmap.test.tc.features.control.TestTriggerDownload
+mg.mgmap.test.tc.features.control.TestTriggerStatistic

@@ -14,7 +14,13 @@
  */
 package mg.mgmap.settings;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+
+import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 
 import mg.mgmap.R;
 
@@ -22,6 +28,33 @@ public class FurtherPreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.further_preferences, rootKey);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setTestTriggerOCL();
+    }
+
+    private void setTestTriggerOCL() {
+        Preference prefSet =  findPreference(getResources().getString(R.string.preference_testSet_key));
+        if (prefSet != null){
+            prefSet.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+        }
+
+        Preference pref = findPreference(getResources().getString(R.string.preference_testTrigger_key));
+        if (pref != null){
+            pref.setOnPreferenceClickListener(preference -> {
+                Activity activity = getActivity();
+                if (activity != null){
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+                    boolean triggerValue = sharedPreferences.getBoolean(getResources().getString(R.string.preference_testTrigger_key), true);
+                    sharedPreferences.edit().putBoolean(getResources().getString(R.string.preference_testTrigger_key), !triggerValue).apply();
+                    getActivity().finish();
+                }
+                return true;
+            });
+        }
     }
 
 }
