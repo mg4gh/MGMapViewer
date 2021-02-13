@@ -146,6 +146,9 @@ public class TestControl {
                 prefCache.get(R.string.Layers_pref_chooseMap3_key, "").setValue("none");
                 prefCache.get(R.string.Layers_pref_chooseMap4_key, "").setValue("none");
                 prefCache.get(R.string.Layers_pref_chooseMap5_key, "").setValue("none");
+                prefCache.get(R.string.preference_choose_theme_key, "").setValue("Elevate.xml");
+                prefCache.get(R.string.preference_choose_search_key, "").setValue("Graphhopper");
+
             }
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);

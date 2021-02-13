@@ -19,6 +19,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 
 import mg.mgmap.MGMapApplication;
 import mg.mgmap.util.NameUtil;
@@ -42,6 +43,14 @@ public class SearchProviderListPreference extends ListPreference {
         setEntryValues(searchProviders);
 
         setDefaultValue("Nominatim");
+
+        setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" key="+preference.getKey()+" value="+newValue);
+                return true;
+            }
+        });
     }
 
     @Override
