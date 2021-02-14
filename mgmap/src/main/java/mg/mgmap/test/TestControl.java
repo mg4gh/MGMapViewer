@@ -148,6 +148,7 @@ public class TestControl {
                 prefCache.get(R.string.Layers_pref_chooseMap5_key, "").setValue("none");
                 prefCache.get(R.string.preference_choose_theme_key, "").setValue("Elevate.xml");
                 prefCache.get(R.string.preference_choose_search_key, "").setValue("Graphhopper");
+                prefCache.get(R.string.FSATL_pref_stlGl, false).setValue(false);
 
             }
         } catch (Exception e) {
