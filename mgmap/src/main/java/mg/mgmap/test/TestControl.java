@@ -149,7 +149,7 @@ public class TestControl {
                 prefCache.get(R.string.preference_choose_theme_key, "").setValue("Elevate.xml");
                 prefCache.get(R.string.preference_choose_search_key, "").setValue("Graphhopper");
                 prefCache.get(R.string.FSATL_pref_stlGl, false).setValue(false);
-
+                prefCache.get(R.string.FSRouting_pref_RouteGL, false).setValue(false);
             }
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);

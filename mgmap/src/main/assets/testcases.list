@@ -1,4 +1,5 @@
 mg.mgmap.test.tc.extra.TestMapUtil
+mg.mgmap.test.tc.extra.TestMarker1
 mg.mgmap.test.tc.extra.TestSwipeMap
 mg.mgmap.test.tc.features.bb.TestBB
 mg.mgmap.test.tc.features.control.TestFuSettingsGL
