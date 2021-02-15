@@ -43,6 +43,9 @@ public class Pref<T> extends Observable implements View.OnClickListener, View.On
     }
 
     private T getSharedPreference(){
+        if (!sharedPreferences.contains(key)){
+            setSharedPreference(value);
+        }
         if (value instanceof Boolean){
             Boolean res = sharedPreferences.getBoolean(key, (Boolean) value);
             return (T)res;

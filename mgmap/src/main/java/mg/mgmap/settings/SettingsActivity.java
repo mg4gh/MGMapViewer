@@ -87,7 +87,7 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        boolean fullscreen = prefs.getBoolean(getResources().getString(R.string.FSControl_qcFullscreenOn), false);
+        boolean fullscreen = prefs.getBoolean(getResources().getString(R.string.FSControl_qcFullscreenOn), true);
         FullscreenUtil.enforceState(this, fullscreen);
     }
 

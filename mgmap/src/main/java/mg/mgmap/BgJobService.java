@@ -42,7 +42,7 @@ public class BgJobService extends Service {
     private static final int MAX_WORKER = 8;
     private MGMapApplication application = null;
 
-    private boolean active = false;
+    private static boolean active = false;
     private NotificationCompat.Builder baseNotiBuilder = null;
     private final AtomicInteger numWorkers = new AtomicInteger(0);
     private String CHANNEL_ID;
@@ -136,7 +136,7 @@ public class BgJobService extends Service {
     }
     synchronized protected void checkDeactivateService(){
         try {
-            if (active && (application.numBgJobs() == 0)) {
+            if (active && (application.numBgJobs() == 0) && (numWorkers.get() == 0)){
                 active = false;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     stopForeground(true);
@@ -179,4 +179,7 @@ public class BgJobService extends Service {
         return null;
     }
 
+    public static boolean isActive(){
+        return active;
+    }
 }

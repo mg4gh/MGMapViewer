@@ -82,11 +82,11 @@ public class TestControl {
             PersistenceManager pm = PersistenceManager.getInstance();
             File base = pm.getBaseDir();
             File filelist = new File(base, "filelist.txt");
-            if (filelist.exists()){
+            if (filelist.exists()) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filelist)));
                 String line;
                 ArrayList<String> refEntries = new ArrayList<>();
-                while ((line=in.readLine())!=null){
+                while ((line = in.readLine()) != null) {
                     refEntries.add(line);
                 }
 
@@ -95,62 +95,63 @@ public class TestControl {
                         Files.find(pm.getAppDir().toPath(), 100,
                                 (path, basicFileAttributes) -> {
                                     File file = path.toFile();
-                                    return !file.isDirectory() ;
+                                    return !file.isDirectory();
                                 });
                 actEntries = stream.collect(Collectors.toList());
 
                 ArrayList<File> deleteCandidates = new ArrayList<>();
                 ArrayList<TrackLog> deleteTLCandidates = new ArrayList<>();
-                for (Path path : actEntries){
-                    String absolute = path.toString().replaceFirst(".*files/MGMapViewer/","");
+                for (Path path : actEntries) {
+                    String absolute = path.toString().replaceFirst(".*files/MGMapViewer/", "");
                     boolean found = refEntries.remove(absolute);
-                    if (!found){
-                        deleteCandidates.add( new File(pm.getAppDir(),absolute) );
-                        if (absolute.endsWith(".gpx")){
-                            for (String nameKey : application.metaTrackLogs.keySet()){
+                    if (!found) {
+                        deleteCandidates.add(new File(pm.getAppDir(), absolute));
+                        if (absolute.endsWith(".gpx")) {
+                            for (String nameKey : application.metaTrackLogs.keySet()) {
                                 TrackLog trackLog = application.metaTrackLogs.get(nameKey);
                                 String name1 = trackLog.getName();
-                                String name2 = absolute.replaceFirst("\\.gpx","").replaceFirst(".*\\/","");
+                                String name2 = absolute.replaceFirst("\\.gpx", "").replaceFirst(".*\\/", "");
 //                                Log.i(MGMapApplication.LABEL, NameUtil.context()+"AAAAA1 name: "+name1);
 //                                Log.i(MGMapApplication.LABEL, NameUtil.context()+"AAAAA2 name: "+absolute.replaceFirst("\\.gpx","").replaceFirst(".*\\/",""));
-                                if (name1.equals( name2 )){
+                                if (name1.equals(name2)) {
                                     deleteTLCandidates.add(trackLog);
                                 }
                             }
                         }
                     }
                 }
-                Log.w(MGMapApplication.LABEL, NameUtil.context()+" Create defined starting position for tests: missing files: "+refEntries.size() +" unexpected files "+deleteCandidates.size());
-                if (refEntries.size() > 0){
-                    for (String s : refEntries){
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" missing file: "+s);
+                Log.w(MGMapApplication.LABEL, NameUtil.context() + " Create defined starting position for tests: missing files: " + refEntries.size() + " unexpected files " + deleteCandidates.size());
+                if (refEntries.size() > 0) {
+                    for (String s : refEntries) {
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " missing file: " + s);
                     }
                 }
-                if (deleteCandidates.size() > 0){
-                    for (File file : deleteCandidates){
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Unexpected file "+file.getAbsolutePath()+" ("+ file.exists()+")");
+                if (deleteCandidates.size() > 0) {
+                    for (File file : deleteCandidates) {
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Unexpected file " + file.getAbsolutePath() + " (" + file.exists() + ")");
                         pm.deleteFile(file);
                     }
                 }
-                if (deleteTLCandidates.size() > 0){
-                    for (TrackLog trackLog : deleteTLCandidates){
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Unexpected trackLog: nameKey="+trackLog.getNameKey());
+                if (deleteTLCandidates.size() > 0) {
+                    for (TrackLog trackLog : deleteTLCandidates) {
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Unexpected trackLog: nameKey=" + trackLog.getNameKey());
                         application.metaTrackLogs.remove(trackLog.getNameKey());
                         application.availableTrackLogsObservable.availableTrackLogs.remove(trackLog);
                     }
                 }
-                prefCache.get(R.string.FSATL_pref_hideAll, false).toggle();
-                // (eventuell auch andere Properties auf sinnvollen Stand setzen)
-                prefCache.get(R.string.Layers_pref_chooseMap1_key, "").setValue("none");
-                prefCache.get(R.string.Layers_pref_chooseMap2_key, "").setValue("MAPSFORGE: baden-wuerttemberg_oam.osm.map");
-                prefCache.get(R.string.Layers_pref_chooseMap3_key, "").setValue("none");
-                prefCache.get(R.string.Layers_pref_chooseMap4_key, "").setValue("none");
-                prefCache.get(R.string.Layers_pref_chooseMap5_key, "").setValue("none");
-                prefCache.get(R.string.preference_choose_theme_key, "").setValue("Elevate.xml");
-                prefCache.get(R.string.preference_choose_search_key, "").setValue("Graphhopper");
-                prefCache.get(R.string.FSATL_pref_stlGl, false).setValue(false);
-                prefCache.get(R.string.FSRouting_pref_RouteGL, false).setValue(false);
             }
+            prefCache.get(R.string.FSATL_pref_hideAll, false).toggle();
+            // (eventuell auch andere Properties auf sinnvollen Stand setzen)
+            prefCache.get(R.string.Layers_pref_chooseMap1_key, "").setValue("none");
+            prefCache.get(R.string.Layers_pref_chooseMap2_key, "").setValue("MAPSFORGE: baden-wuerttemberg_oam.osm.map");
+            prefCache.get(R.string.Layers_pref_chooseMap3_key, "").setValue("none");
+            prefCache.get(R.string.Layers_pref_chooseMap4_key, "").setValue("none");
+            prefCache.get(R.string.Layers_pref_chooseMap5_key, "").setValue("none");
+            prefCache.get(R.string.preference_choose_theme_key, "").setValue("Elevate.xml");
+            prefCache.get(R.string.preference_choose_search_key, "").setValue("Graphhopper");
+            prefCache.get(R.string.FSATL_pref_stlGl, false).setValue(false);
+            prefCache.get(R.string.FSRouting_pref_RouteGL, false).setValue(false);
+
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         }
@@ -181,7 +182,7 @@ public class TestControl {
                         finished = true;                                    // ==> finished work
                     }
                 } else {                                                    // currently testcase is running
-//                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+testCase.name+" "+testCase.isRunning()+" ");
+//                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+currentTestcase.name+" "+currentTestcase.isRunning()+" ");
                     if (!currentTestcase.isRunning()){                             // but yet is finished
                         Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+ currentTestcase.name+" finished ");
                         currentTestcase.logResult(sb);                             // log the result immediately, add summary info to given StringBuffer sb

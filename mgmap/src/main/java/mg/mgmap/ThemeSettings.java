@@ -126,7 +126,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     protected void onResume() {
         super.onResume();
         this.prefs.registerOnSharedPreferenceChangeListener(this);
-        boolean fullscreen = this.prefs.getBoolean(getResources().getString(R.string.FSControl_qcFullscreenOn), false);
+        boolean fullscreen = this.prefs.getBoolean(getResources().getString(R.string.FSControl_qcFullscreenOn), true);
         FullscreenUtil.enforceState(this, fullscreen);
         if (renderthemeOptions != null) {
             // the preference category is hard-wired into this app and serves as

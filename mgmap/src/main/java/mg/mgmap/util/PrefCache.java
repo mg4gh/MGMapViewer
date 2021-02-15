@@ -42,7 +42,7 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Pref<?> pref = prefMap.get(key);
         if (pref != null){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ sharedPreferences.getAll().get(key).toString());
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " context="+context.getClass().getSimpleName() + " key="+key+" value="+ sharedPreferences.getAll().get(key).toString());
             pref.onSharedPreferenceChanged();
         }
     }
