@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.util.CC;
-import mg.mgmap.generic.util.ZoomOCL;
+import mg.mgmap.activity.mgmap.util.ZoomOCL;
 
 public class SearchView extends LinearLayout {
 
