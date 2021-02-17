@@ -28,7 +28,7 @@ import mg.mgmap.generic.util.Zipper;
 
 public class OpenAndroMapsUtil {
 
-    public static ArrayList<BgJob> createBgJobsFromIntentUriMap(Uri uri) throws Exception {
+    public static ArrayList<BgJob> createBgJobsFromIntentUriMap(PersistenceManager persistenceManager, Uri uri) throws Exception {
         ArrayList<BgJob> jobs = new ArrayList();
         BgJob job = new BgJob(){
             @Override
@@ -45,7 +45,7 @@ public class OpenAndroMapsUtil {
                         return false;
                     }
                 };
-                zipper.unpack(url, PersistenceManager.getInstance().getMapsforgeDir(), filter, this);
+                zipper.unpack(url, persistenceManager.getMapsforgeDir(), filter, this);
 
             }
         };
@@ -53,7 +53,7 @@ public class OpenAndroMapsUtil {
         return jobs;
     }
 
-    public static ArrayList<BgJob> createBgJobsFromIntentUriTheme(Uri uri) throws Exception {
+    public static ArrayList<BgJob> createBgJobsFromIntentUriTheme(PersistenceManager persistenceManager, Uri uri) throws Exception {
         ArrayList<BgJob> jobs = new ArrayList();
         BgJob job = new BgJob() {
             @Override
@@ -65,7 +65,7 @@ public class OpenAndroMapsUtil {
 //                  URL url = new URL(s2);  //unfortunately this doesn't work
 //                URL url = new URL(((Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)?"https":"http")+"://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
                 URL url = new URL("https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
-                zipper.unpack(url, PersistenceManager.getInstance().getThemesDir(), null, this);
+                zipper.unpack(url, persistenceManager.getThemesDir(), null, this);
             }
         };
         jobs.add(job);

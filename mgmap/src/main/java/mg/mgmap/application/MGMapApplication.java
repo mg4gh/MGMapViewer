@@ -46,6 +46,7 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +66,6 @@ public class MGMapApplication extends Application {
 
     // Label for Logging.
     public static final String LABEL = "MGMap";
-    public static final boolean TEST_MODE = true;
     private Process pLogcat = null;
 
     private AltitudeProvider altitudeProvider;
@@ -90,9 +90,9 @@ public class MGMapApplication extends Application {
     Pref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
     Pref<Boolean> prefGps = null; // property to distinguish ApplicationStart from ActivityRecreate
 
-    public void startLogging(){
+    public void startLogging(File logDir){
         try {
-            String cmd = "logcat "+ LABEL+":i *:W -f "+PersistenceManager.getInstance(this).getLogDir().getAbsolutePath()+"/log.txt -r 10000 -n10";
+            String cmd = "logcat "+ LABEL+":i *:W -f "+logDir.getAbsolutePath()+"/log.txt -r 10000 -n10";
             Log.i(LABEL, NameUtil.context()+" Start Logging: "+cmd);
             pLogcat = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
@@ -112,8 +112,8 @@ public class MGMapApplication extends Application {
         System.out.println("MGMapViewer Application start!!!!");
         super.onCreate();
 
-        persistenceManager = PersistenceManager.getInstance(this);
-        startLogging();
+        persistenceManager = new PersistenceManager(this);
+        startLogging(persistenceManager.getLogDir());
         AndroidGraphicFactory.createInstance(this);
 
         prefCache = new PrefCache(this);
@@ -134,12 +134,12 @@ public class MGMapApplication extends Application {
         new Thread(){
             @Override
             public void run() {
-                RecordingTrackLog rtl = RecordingTrackLog.initFromRaw();
+                RecordingTrackLog rtl = RecordingTrackLog.initFromRaw(persistenceManager);
                 if ((rtl != null) && !rtl.isTrackRecording()){ // either finished or not yet started
                     if (rtl.getNumberOfSegments() > 0){  // is finished
-                        GpxExporter.export(rtl);
+                        GpxExporter.export(persistenceManager, rtl);
                     }
-                    PersistenceManager.getInstance(null).clearRaw();
+                    persistenceManager.clearRaw();
                     rtl = null;
                 }
                 recordingTrackLogObservable.setTrackLog(rtl);
@@ -162,7 +162,7 @@ public class MGMapApplication extends Application {
 
 
 
-        // initialize MetaData (as used from AvailableTrackLogs service
+        // initialize MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(){
             @Override
             public void run() {
@@ -212,7 +212,7 @@ public class MGMapApplication extends Application {
                         }
                         int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
                         Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
-                        startLogging();
+                        startLogging(persistenceManager.getLogDir());
                     } catch (Exception e) {
                         if (++cnt % 6 == 0){
                             Log.i(LABEL, NameUtil.context()+"logcat supervision: OK. (running "+(cnt/6)+" min)");

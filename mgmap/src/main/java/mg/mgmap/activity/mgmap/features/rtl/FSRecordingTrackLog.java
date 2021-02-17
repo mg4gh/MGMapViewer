@@ -65,7 +65,7 @@ public class FSRecordingTrackLog extends FeatureService {
                 RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
                 long timestamp = System.currentTimeMillis();
                 if (rtl == null){
-                    rtl = new RecordingTrackLog(true);
+                    rtl = new RecordingTrackLog( getPersistenceManager(), true);
                     getApplication().recordingTrackLogObservable.setTrackLog(rtl);
                     rtl.startTrack(timestamp);
                     rtl.startSegment(timestamp);
@@ -77,8 +77,8 @@ public class FSRecordingTrackLog extends FeatureService {
                         getApplication().lastPositionsObservable.handlePoint(null);
                     }
                     rtl.stopTrack(timestamp);
-                    GpxExporter.export(rtl);
-                    PersistenceManager.getInstance().clearRaw();
+                    GpxExporter.export(getPersistenceManager(), rtl);
+                    getPersistenceManager().clearRaw();
 
                     getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
                     getApplication().metaTrackLogs.put(rtl.getNameKey(), rtl);

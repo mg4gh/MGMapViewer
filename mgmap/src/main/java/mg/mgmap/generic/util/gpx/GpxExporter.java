@@ -35,13 +35,13 @@ import java.util.Locale;
 
 public class GpxExporter {
 
-    private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
+    private static final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
-    public static void export(TrackLog trackLog) {
+    public static void export(PersistenceManager persistenceManager, TrackLog trackLog) {
         PrintWriter pw = null;
         try {
             if (trackLog.getNumberOfSegments() > 0) {
-                pw = PersistenceManager.getInstance().openGpxOutput(trackLog.getName());
+                pw = persistenceManager.openGpxOutput(trackLog.getName());
                 if (pw != null){
                     pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     pw.println("<gpx version=\"1.1\" creator=\"MGMap\">");

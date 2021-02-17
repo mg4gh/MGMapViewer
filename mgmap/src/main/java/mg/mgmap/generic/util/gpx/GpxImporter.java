@@ -80,7 +80,6 @@ public class GpxImporter {
         return null;
     }
 
-    @SuppressWarnings({"ConstantConditions"})
     public TrackLog parseTrackLog(String filename, InputStream inputStream) throws Exception{
         WriteableTrackLog trackLog = null;
         TrackLogPoint tlp = null;

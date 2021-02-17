@@ -56,7 +56,6 @@ public class MGTileStoreFiles extends MGTileStore {
         return new BgJob(){
             @Override
             protected void doJob() throws Exception {
-                PersistenceManager pm = PersistenceManager.getInstance();
                 File zoomDir = new File(tileStoreLoader.storeDir,Byte.toString(zoomLevel));
                 for (int tileX = tileXMin+1; tileX< tileXMax; tileX++){
                     File xDir = new File(zoomDir,Integer.toString(tileX));

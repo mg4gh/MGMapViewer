@@ -16,7 +16,10 @@ package mg.mgmap.activity.mgmap.features.search;
 
 import android.content.SharedPreferences;
 
+import java.util.Properties;
+
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.application.util.PersistenceManager;
 
 public abstract class SearchProvider {
 
@@ -33,4 +36,9 @@ public abstract class SearchProvider {
     }
 
     public abstract void doSearch(SearchRequest searchRequest);
+
+    protected Properties getSearchConfig(){
+        PersistenceManager persistenceManager = fsSearch.getApplication().getPersistenceManager();
+        return  persistenceManager.getConfigProperties("search",this.getClass().getSimpleName()+".cfg");
+    }
 }

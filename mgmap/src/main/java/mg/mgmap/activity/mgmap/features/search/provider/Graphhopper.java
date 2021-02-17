@@ -55,8 +55,7 @@ public class Graphhopper extends SearchProvider {
     @Override
     protected void init(MGMapActivity activity, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences) {
         super.init(activity, fsSearch, searchView, preferences);
-        Properties props = PersistenceManager.getInstance().getConfigProperties("search",this.getClass().getSimpleName()+".cfg");
-        apiKey = props.getProperty("API_KEY");
+        apiKey = getSearchConfig().getProperty("API_KEY");
     }
 
     @Override

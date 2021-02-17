@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.mgmap.features.search.provider;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -25,6 +26,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeSet;
 
+import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.search.FSSearch;
+import mg.mgmap.activity.mgmap.features.search.SearchView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.features.search.SearchProvider;
 import mg.mgmap.activity.mgmap.features.search.SearchRequest;
@@ -53,6 +57,14 @@ public class POI extends SearchProvider {
 
     private SearchRequest lastSearchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
     private ArrayList<SearchResult> lastSearchResults = new ArrayList<>();
+    private PersistenceManager persistenceManager = null;
+
+    @Override
+    protected void init(MGMapActivity activity, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences) {
+        super.init(activity, fsSearch, searchView, preferences);
+        persistenceManager = fsSearch.getApplication().getPersistenceManager();
+    }
+
 
     @Override
     public void doSearch(SearchRequest request) {
@@ -79,7 +91,7 @@ public class POI extends SearchProvider {
 
 
 
-        File mapsDir = PersistenceManager.getInstance().getMapsDir();
+        File mapsDir = persistenceManager.getMapsDir();
         File mapsforgeDir = new File (mapsDir, "mapsforge");
         poiFile = null;
         for (String prefKey : activity.getMapLayerKeys()){

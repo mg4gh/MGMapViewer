@@ -31,7 +31,7 @@ public class MGTileStoreLoaderJobFile extends MGTileStoreLoaderJob{
 
     @Override
     protected void doJobNow() throws Exception {
-        PersistenceManager pm = PersistenceManager.getInstance();
+        PersistenceManager pm = tileStoreLoader.application.getPersistenceManager();
         File zoomDir = pm.createIfNotExists(tileStoreLoader.storeDir,Byte.toString(tile.zoomLevel));
         File xDir = pm.createIfNotExists(zoomDir,Integer.toString(tile.tileX));
         File yFile = new File(xDir,Integer.toString(tile.tileY)+".png");

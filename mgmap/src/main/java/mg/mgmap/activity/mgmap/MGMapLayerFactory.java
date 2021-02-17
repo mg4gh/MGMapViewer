@@ -14,7 +14,6 @@
  */
 package mg.mgmap.activity.mgmap;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -42,10 +41,9 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Properties;
 
 import mg.mgmap.application.MGMapApplication;
@@ -72,88 +70,74 @@ import mg.mgmap.generic.util.Pref;
 public class MGMapLayerFactory {
 
     public static final String XML_CONFIG_NAME = "config.xml";
+
     public enum Types { MAPSFORGE, MAPSTORES, MAPONLINE, MAPGRID }
-    public static HashMap<Types, FilenameFilter> filters = new HashMap<>();
-    public static HashMap<String, Layer> mapLayers = new HashMap<>();
+    private final HashMap<Types, FilenameFilter> filters = new HashMap<>();
+    private final HashMap<String, Layer> mapLayers = new HashMap<>();
 
-    static {
-        filters.put(Types.MAPSFORGE, new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                boolean res = !(new File(dir,name).isDirectory());
-                res &= name.endsWith(".map") || name.endsWith(".ref");
-                return res;
-            }
-        });
-        filters.put(Types.MAPSTORES, new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return (new File(dir,name).isDirectory());
-            }
-        });
-        filters.put(Types.MAPONLINE, new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                File fStore = new File(dir,name);
-                File fConfig = new File(fStore,XML_CONFIG_NAME);
-                return (fStore.isDirectory() && fConfig.exists());
-            }
-        });
-//        FilenameFilter xml = new FilenameFilter() {
-//            @Override
-//            public boolean accept(File dir, String name) {
-//                boolean res = !(new File(dir,name).isDirectory());
-//                res &= name.endsWith(".xml");
-//                return res;
-//            }
+    private final MGMapActivity activity;
+    private final PersistenceManager persistenceManager;
+    private final XmlRenderTheme xmlRenderTheme;
+
+    public MGMapLayerFactory(MGMapActivity activity){
+        this.activity = activity;
+        persistenceManager = activity.getMGMapApplication().getPersistenceManager();
+        xmlRenderTheme = activity.getRenderTheme();
+//        initFilters();
+    }
+
+//    private void initFilters(){
+//        filters.put(Types.MAPSFORGE, (dir, name) -> {
+//            boolean res = !(new File(dir,name).isDirectory());
+//            res &= name.endsWith(".map") || name.endsWith(".ref");
+//            return res;
+//        });
+//        filters.put(Types.MAPSTORES, (dir, name) -> (new File(dir,name).isDirectory()));
+//        filters.put(Types.MAPONLINE, (dir, name) -> {
+//            File fStore = new File(dir,name);
+//            File fConfig = new File(fStore,XML_CONFIG_NAME);
+//            return (fStore.isDirectory() && fConfig.exists());
+//        });
+//        FilenameFilter prop = (dir, name) -> {
+//            boolean res = !(new File(dir,name).isDirectory());
+//            res &= name.endsWith(".properties");
+//            return res;
 //        };
-//        filters.put(Types.MAPONLINE,xml);
-        FilenameFilter prop = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                boolean res = !(new File(dir,name).isDirectory());
-                res &= name.endsWith(".properties");
-                return res;
-            }
-        };
-        filters.put(Types.MAPGRID,prop);
-    }
-
-    private static Context context = null;
-    private static MGMapActivity activity = null;
-    private static MapView mapView = null;
-    private static SharedPreferences sharedPreferences = null;
-    private static XmlRenderTheme xmlRenderTheme = null;
+//        filters.put(Types.MAPGRID,prop);
+//    }
+//
 
 
-    /** Returns a list of available map layers */
-    public static String[] getAvailableMapLayers(){
-        String[] resa = new String[]{"none"};
-        File mapsDir = PersistenceManager.getInstance().getMapsDir();
-        ArrayList<String> res = new ArrayList<>();
-        res.add(resa[0]);
-        for (Types type: Types.values()){
-            File typeDir = new File(mapsDir, type.name().toLowerCase());
-            String[] entries = typeDir.list(filters.get(type));
-            Arrays.sort(entries);
-            for (String entry : entries){
-                res.add(type+": "+entry);
-            }
-        }
-        return res.toArray(resa);
-    }
+//    /** Returns a list of available map layers */
+//    public String[] getAvailableMapLayers(){
+//        String[] resa = new String[]{"none"};
+//        File mapsDir = persistenceManager.getMapsDir();
+//        ArrayList<String> res = new ArrayList<>();
+//        res.add(resa[0]);
+//        for (Types type: Types.values()){
+//            File typeDir = new File(mapsDir, type.name().toLowerCase());
+//            String[] entries = typeDir.list(filters.get(type));
+//            Arrays.sort(entries);
+//            for (String entry : entries){
+//                res.add(type+": "+entry);
+//            }
+//        }
+//        return res.toArray(resa);
+//    }
 
     /** create a Layer object from corresponding key */
-    public static Layer getMapLayer(String key){
+    public Layer getMapLayer(String key){
         Layer layer = null;
+        MapView mapView = activity.getMapsforgeMapView();
+        SharedPreferences sharedPreferences = activity.getSharedPreferences();
         try {
-            if (mapLayers.keySet().contains(key)){
+            if (mapLayers.containsKey(key)){
                 return mapLayers.get(key);
             }
 
             String[] keypart = key.split(": ");
-            Types type = null;
-            String entry = null;
+            Types type;
+            String entry;
             if (keypart.length != 2) return null;
             try {
                 type = Types.valueOf(keypart[0]);
@@ -164,14 +148,14 @@ public class MGMapLayerFactory {
             }
 
             layer = null;
-            File mapsDir = PersistenceManager.getInstance().getMapsDir();
+            File mapsDir = persistenceManager.getMapsDir();
             File typeDir = new File(mapsDir, type.name().toLowerCase());
             File entryFile = new File(typeDir, entry);
             switch (type){
                 case MAPSFORGE:
-                    String language = sharedPreferences.getString(context.getResources().getString(R.string.preferences_language_key), "");
+                    String language = sharedPreferences.getString(activity.getResources().getString(R.string.preferences_language_key), "");
 
-                    TileCache tileCache = AndroidUtil.createTileCache(context, "trl_"+key,
+                    TileCache tileCache = AndroidUtil.createTileCache(activity, "trl_"+key,
                             mapView.getModel().displayModel.getTileSize(), 1.0f,
                             mapView.getModel().frameBufferModel.getOverdrawFactor() *1.5, false);
                     activity.addTileCache(tileCache);
@@ -198,7 +182,7 @@ public class MGMapLayerFactory {
                     break;
                 case MAPSTORES:
                     MGTileStore tileStore = MGTileStore.createTileStore(entryFile);
-                    InMemoryTileCache memoryTileCache = new InMemoryTileCache(AndroidUtil.getMinimumCacheSize(context,
+                    InMemoryTileCache memoryTileCache = new InMemoryTileCache(AndroidUtil.getMinimumCacheSize(activity,
                             mapView.getModel().displayModel.getTileSize(),
                             mapView.getModel().frameBufferModel.getOverdrawFactor()*1.5, 1.0f));
                     tileCache = new TwoLevelTileCache(memoryTileCache, tileStore);
@@ -217,7 +201,7 @@ public class MGMapLayerFactory {
                     XmlTileSource xmlTileSource = new XmlTileSource(config);
                     xmlTileSource.setUserAgent("mapsforge-samples-android");
 
-                    TileCache onlTileCache = AndroidUtil.createTileCache(context, key,
+                    TileCache onlTileCache = AndroidUtil.createTileCache(activity, key,
                             mapView.getModel().displayModel.getTileSize(), 1.0f,
                             mapView.getModel().frameBufferModel.getOverdrawFactor()*1.5, false);
                     activity.addTileCache(onlTileCache);
@@ -243,8 +227,7 @@ public class MGMapLayerFactory {
                                 }
                             }
                         }
-                        Grid gridLayer = new Grid(AndroidGraphicFactory.INSTANCE, mapView.getModel().displayModel, spacingConfig);
-                        layer = gridLayer;
+                        layer = new Grid(AndroidGraphicFactory.INSTANCE, mapView.getModel().displayModel, spacingConfig);
                     } catch (Exception e){
                         Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                     }
@@ -257,12 +240,9 @@ public class MGMapLayerFactory {
             if (layer instanceof TileLayer<?>) {
                 TileLayer<?> tileLayer = (TileLayer<?>) layer;
                 Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,1.0f);
-                prefAlpha.addObserver(new Observer() {
-                    @Override
-                    public void update(Observable o, Object arg) {
-                        tileLayer.setAlpha(prefAlpha.getValue());
-                        tileLayer.requestRedraw();
-                    }
+                prefAlpha.addObserver((o, arg) -> {
+                    tileLayer.setAlpha(prefAlpha.getValue());
+                    tileLayer.requestRedraw();
                 });
             }
         } catch (Exception e) {
@@ -271,67 +251,11 @@ public class MGMapLayerFactory {
         return layer;
     }
 
-
-
-
-
-    public static Context getContext() {
-        return context;
-    }
-
-    public static void setContext(Context context) {
-        MGMapLayerFactory.context = context;
-    }
-
-    public static MGMapActivity getActivity() {
-        return activity;
-    }
-
-    public static void setActivity(MGMapActivity activity) {
-        MGMapLayerFactory.activity = activity;
-    }
-
-    public static MapView getMapView() {
-        return mapView;
-    }
-
-    public static void setMapView(MapView mapView) {
-        MGMapLayerFactory.mapView = mapView;
-    }
-
-    public static SharedPreferences getSharedPreferences() {
-        return sharedPreferences;
-    }
-
-    public static void setSharedPreferences(SharedPreferences sharedPreferences) {
-        MGMapLayerFactory.sharedPreferences = sharedPreferences;
-    }
-
-    public static XmlRenderTheme getXmlRenderTheme() {
-        return xmlRenderTheme;
-    }
-
-    public static void setXmlRenderTheme(XmlRenderTheme xmlRenderTheme) {
-        MGMapLayerFactory.xmlRenderTheme = xmlRenderTheme;
-    }
-
-    public static boolean hasAlpha(String key){
+    public boolean hasAlpha(String key){
         return (getMapLayer(key) instanceof TileLayer);
     }
-    public static float getMapLayerAlpha(String key){
-        Layer layer = getMapLayer(key);
-        if (layer instanceof TileLayer) {
-            TileLayer<?> tileLayer = (TileLayer<?>) layer;
-            return tileLayer.getAlpha();
-        }
-        return -1;
-    }
-    public static void setMapLayerAlpha(String key, float alpha){
-        Layer layer = getMapLayer(key);
-        if (layer instanceof TileLayer) {
-            TileLayer<?> tileLayer = (TileLayer<?>) layer;
-            tileLayer.setAlpha(alpha);
-            tileLayer.setVisible(alpha != 0);
-        }
+
+    public Collection<Layer> getMapLayers(){
+        return mapLayers.values();
     }
 }

@@ -66,7 +66,7 @@ public class AltitudeProvider {
         return PointModel.NO_ELE;
     }
 
-    private static float getEle(byte[] hgtBuf, int oLat, int oLon) {
+    private float getEle(byte[] hgtBuf, int oLat, int oLon) {
         int latOffset = oLat * 3601 * 2;
         int lonOffset = oLon * 2;
         int off = (latOffset+lonOffset);
@@ -79,9 +79,7 @@ public class AltitudeProvider {
         return res;
     }
 
-    private static double interpolate(double refMin, double refMax, double valMin, double valMax, double ref){
+    private double interpolate(double refMin, double refMax, double valMin, double valMax, double ref){
         return PointModelUtil.interpolate(refMin,refMax, valMin, valMax, ref);
-//        double scale = (ref - refMin) / (refMax - refMin);
-//        return scale * (valMax - valMin) + valMin ;
     }
 }

@@ -42,11 +42,11 @@ public class ExtrasUtil {
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Create meta file for "+name );
                 TrackLog trackLog = new GpxImporter(altitudeProvider).parseTrackLog(name, persistenceManager.openGpxInput(name));
                 metaDataUtil.createMetaData(trackLog);
-                metaDataUtil.writeMetaData(PersistenceManager.getInstance().openMetaOutput(name), trackLog);
+                metaDataUtil.writeMetaData(persistenceManager.openMetaOutput(name), trackLog);
             }
             for (String name : metaNames){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Delete meta file for "+name);
-                PersistenceManager.getInstance().deleteTrack(name);
+                persistenceManager.deleteTrack(name);
             }
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);

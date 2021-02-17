@@ -283,7 +283,7 @@ public class FSBB extends FeatureService {
 
     private ArrayList<MGTileStore> identifyTS(){
         ArrayList<MGTileStore> tss = new ArrayList<>();
-        for (Layer layer : MGMapLayerFactory.mapLayers.values()){
+        for (Layer layer : getMapLayerFactory().getMapLayers()){
             if (layer instanceof MGTileStoreLayer) {
                 MGTileStoreLayer mgTileStoreLayer = (MGTileStoreLayer) layer;
                 MGTileStore mgTileStore = mgTileStoreLayer.getMGTileStore();

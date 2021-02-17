@@ -34,14 +34,16 @@ import mg.mgmap.generic.util.WayProvider;
 
 public class MapDataStoreUtil implements WayProvider {
 
+    private MGMapLayerFactory mapLayerFactory;
     private boolean active = false;
     private ArrayList<BBox> mapBBoxList = null;
     private ArrayList<MapDataStore> mapDataStoreList = null;
     private HashMap<Tile, MapDataStore> tile2MapDataStore = null;
 
-    public MapDataStoreUtil(){}
 
-    public MapDataStoreUtil onCreate(SharedPreferences sharedPreferences, ArrayList<String> mapLayerKeys){
+
+    public MapDataStoreUtil onCreate(MGMapLayerFactory mapLayerFactory, SharedPreferences sharedPreferences, ArrayList<String> mapLayerKeys){
+        this.mapLayerFactory = mapLayerFactory;
         mapBBoxList = new ArrayList<>();
         mapDataStoreList = new ArrayList<>();
         tile2MapDataStore = new HashMap<>();
@@ -49,7 +51,7 @@ public class MapDataStoreUtil implements WayProvider {
         for (String prefKey : mapLayerKeys){
             String key = sharedPreferences.getString(prefKey, "none");
 
-            Layer layer = MGMapLayerFactory.getMapLayer(key);
+            Layer layer = mapLayerFactory.getMapLayer(key);
             if (layer instanceof TileRendererLayer) {
                 MapDataStore mds = ((TileRendererLayer)layer).getMapDataStore();
                 if (mds != null){

@@ -41,6 +41,6 @@ public class TestBB extends Testcase {
 
     @Override
     protected void addRegexs() {
-        regexs.add(".*TestCase.start.*  TestMapUtil");
+        regexs.add(".*Testcase.start.* TestBB");
     }
 }

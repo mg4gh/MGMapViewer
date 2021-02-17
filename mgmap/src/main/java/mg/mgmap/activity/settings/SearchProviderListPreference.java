@@ -31,26 +31,26 @@ public class SearchProviderListPreference extends ListPreference {
         super(context, attrs);
         this.setSummaryProvider(SimpleSummaryProvider.getInstance());
 
-        String[] searchCfgs = PersistenceManager.getInstance().getSearchConfigNames();
-        String[] searchProviders = new String[searchCfgs.length];
-        for (int i=0; i<searchCfgs.length; i++){
-            searchProviders[i] = searchCfgs[i].replaceAll(".cfg$", "");
-        }
-        if (searchProviders.length == 0) {
-            searchProviders = new String[]{ "Nominatim" };
-        }
-        setEntries(searchProviders);
-        setEntryValues(searchProviders);
+        if (context.getApplicationContext() instanceof MGMapApplication) {
+            MGMapApplication application = (MGMapApplication) context.getApplicationContext();
+            String[] searchCfgs = application.getPersistenceManager().getSearchConfigNames();
+            String[] searchProviders = new String[searchCfgs.length];
+            for (int i=0; i<searchCfgs.length; i++){
+                searchProviders[i] = searchCfgs[i].replaceAll(".cfg$", "");
+            }
+            if (searchProviders.length == 0) {
+                searchProviders = new String[]{ "Nominatim" };
+            }
+            setEntries(searchProviders);
+            setEntryValues(searchProviders);
 
-        setDefaultValue("Nominatim");
+            setDefaultValue("Nominatim");
 
-        setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
+            setOnPreferenceChangeListener((preference, newValue) -> {
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" key="+preference.getKey()+" value="+newValue);
                 return true;
-            }
-        });
+            });
+        }
     }
 
     @Override

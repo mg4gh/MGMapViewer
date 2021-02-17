@@ -38,7 +38,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
 
     private static final String TAG = NameUtil.getTag();
 
-    private final PersistenceManager persistenceManager = PersistenceManager.getInstance();
+    private final PersistenceManager persistenceManager;
 
     private boolean isTrackRecording = false;
     private boolean isSegmentRecording = false;
@@ -82,8 +82,8 @@ public class RecordingTrackLog extends WriteableTrackLog {
         persistenceManager.recordRaw(buf.array(),0,length);
     }
 
-    public static RecordingTrackLog initFromRaw(){
-        PersistenceManager persistenceManager = PersistenceManager.getInstance();
+    public static RecordingTrackLog initFromRaw(PersistenceManager persistenceManager){
+//        PersistenceManager persistenceManager = PersistenceManager.getInstance();
         byte[] b = persistenceManager.getRawData();
         if (b == null){
             persistenceManager.clearRaw();
@@ -91,7 +91,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
             try {
                 ByteBuffer buf = ByteBuffer.wrap(b);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
-                RecordingTrackLog rtl = new RecordingTrackLog(false);
+                RecordingTrackLog rtl = new RecordingTrackLog(persistenceManager, false);
                 while (buf.remaining() > 0){
                     byte length = buf.get(); // read length
                     if ((length >= 0) && (length < 10)){
@@ -133,7 +133,8 @@ public class RecordingTrackLog extends WriteableTrackLog {
 
 
 
-    public RecordingTrackLog(boolean recordRaw){
+    public RecordingTrackLog(PersistenceManager persistenceManager, boolean recordRaw){
+        this.persistenceManager = persistenceManager;
         this.recordRaw = recordRaw;
     }
 

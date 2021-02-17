@@ -30,10 +30,13 @@ import mg.mgmap.generic.util.basic.NameUtil;
  * Try to write the stacktrace to the log folder, otherwise to the download path.
  */
 public class TopExceptionHandler implements Thread.UncaughtExceptionHandler {
-    private Thread.UncaughtExceptionHandler defaultUEH;
 
-    public TopExceptionHandler() {
+    private final Thread.UncaughtExceptionHandler defaultUEH;
+    private final PersistenceManager persistenceManager;
+
+    public TopExceptionHandler(PersistenceManager persistenceManager) {
         this.defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+        this.persistenceManager = persistenceManager;
     }
 
     public void uncaughtException(Thread t, Throwable e) {
@@ -63,8 +66,8 @@ public class TopExceptionHandler implements Thread.UncaughtExceptionHandler {
         try {
             File dir = null;
             try {
-                if (PersistenceManager.getInstance().getLogDir().canWrite()){
-                    dir = PersistenceManager.getInstance().getLogDir();
+                if (persistenceManager.getLogDir().canWrite()){
+                    dir = persistenceManager.getLogDir();
                 } else {
                     dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                 }

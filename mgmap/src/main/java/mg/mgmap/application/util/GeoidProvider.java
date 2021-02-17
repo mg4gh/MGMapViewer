@@ -31,15 +31,12 @@ public class GeoidProvider {
 
     private static final int START_DATA = 408;
 
-    private InputStream is = null;
-    private SparseArray<Float> ccache = new SparseArray<>();
-    private AssetManager am;
+    private final SparseArray<Float> ccache = new SparseArray<>();
+    private final AssetManager am;
 
     public GeoidProvider(Application application){
         am = application.getAssets();
     }
-
-
 
     public float getGeoidOffset(double latitude, double longitude){
         try {
@@ -68,6 +65,5 @@ public class GeoidProvider {
         }
         return 0;
     }
-
 
 }

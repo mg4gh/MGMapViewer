@@ -51,6 +51,7 @@ import mg.mgmap.generic.util.basic.TopExceptionHandler;
 
 public class ThemeSettings extends AppCompatActivity implements OnSharedPreferenceChangeListener {
 
+    MGMapApplication application = null;
     ListPreference baseLayerPreference;
     SharedPreferences prefs;
     XmlRenderThemeStyleMenu renderthemeOptions;
@@ -73,8 +74,11 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.w(MGMapApplication.LABEL, NameUtil.context());
+        application = (MGMapApplication) getApplication();
+        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(application.getPersistenceManager()));
         super.onCreate(savedInstanceState);
-        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler());
+//        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler());
 
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 

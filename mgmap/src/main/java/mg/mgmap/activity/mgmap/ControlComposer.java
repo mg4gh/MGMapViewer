@@ -64,7 +64,7 @@ public class ControlComposer {
         ViewGroup parent = activity.findViewById(R.id.bars);
         for (String prefKey : activity.getMapLayerKeys()) {
             final String key = activity.sharedPreferences.getString(prefKey, "");
-            if (MGMapLayerFactory.hasAlpha(key)){
+            if (activity.getMapLayerFactory().hasAlpha(key)){
                 Pref<Boolean> visibility = new Pref<>("alpha_" + key+"_visibility", true, null);
                 coView.createLabeledSlider(parent).initPrefData(visibility, activity.getPrefCache().get("alpha_" + key, 1.0f), null, key);
             }

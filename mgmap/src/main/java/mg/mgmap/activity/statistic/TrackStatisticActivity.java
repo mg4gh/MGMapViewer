@@ -59,6 +59,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
     private Context context = null;
     private MGMapApplication application = null;
+    private PersistenceManager persistenceManager = null;
 
     private LinearLayout parent = null;
 
@@ -92,6 +93,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         setContentView(R.layout.track_statistic_activity);
         application = (MGMapApplication)getApplication();
         context = this;
+        persistenceManager = application.getPersistenceManager();
 
         prefCache = new PrefCache(context);
         prefFullscreen = prefCache.get(R.string.FSControl_qcFullscreenOn, true);
@@ -284,7 +286,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         if (bShare){
             for (TrackStatisticEntry entry : entries){
                 TrackLog aTrackLog = entry.getTrackLog();
-                if (!PersistenceManager.getInstance().existsGpx(aTrackLog.getName())) bShare = false;
+                if (!persistenceManager.existsGpx(aTrackLog.getName())) bShare = false;
             }
         }
         prefShareAllowed.setValue((bShare));
@@ -336,14 +338,14 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     if (entries.size() == 1){
                         TrackLog trackLog = entries.get(0).getTrackLog();
                         sendIntent = new Intent(Intent.ACTION_SEND);
-                        sendIntent.putExtra(Intent.EXTRA_STREAM, PersistenceManager.getInstance().getGpxUri(trackLog.getName()));
+                        sendIntent.putExtra(Intent.EXTRA_STREAM, persistenceManager.getGpxUri(trackLog.getName()));
                         title = "Share "+trackLog.getName()+".gpx to ...";
                     } else {
                         ArrayList<Uri> uris = new ArrayList<>();
 
                         for(TrackStatisticEntry entry : entries){
                             TrackLog aTrackLog = entry.getTrackLog();
-                            uris.add( PersistenceManager.getInstance().getGpxUri( aTrackLog.getName() ) );
+                            uris.add( persistenceManager.getGpxUri( aTrackLog.getName() ) );
                         }
                         sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                         sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
@@ -363,7 +365,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                 ArrayList<TrackStatisticEntry> entries = getModifiedEntries();
                 for (TrackStatisticEntry entry : entries){
                     TrackLog aTrackLog = entry.getTrackLog();
-                    GpxExporter.export(aTrackLog);
+                    GpxExporter.export(persistenceManager, aTrackLog);
                 }
             }
         };
@@ -390,7 +392,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                         if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == aTrackLog) {
                             application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
                         }
-                        PersistenceManager.getInstance().deleteTrack(aTrackLog.getName()); // no problem, if no persistent file exists
+                        persistenceManager.deleteTrack(aTrackLog.getName()); // no problem, if no persistent file exists
                     }
                     TrackStatisticActivity.this.recreate();
                 });

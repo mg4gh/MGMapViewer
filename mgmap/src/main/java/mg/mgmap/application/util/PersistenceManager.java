@@ -46,55 +46,60 @@ import mg.mgmap.generic.util.basic.NameUtil;
  */
 public class PersistenceManager {
 
-    private static PersistenceManager persistenceManager = null;
-    private static File baseDir = null;
-    private static File appDir = null;
-    private static Context context = null;
+//    private static PersistenceManager persistenceManager = null;
+    private Context context = null;
 
 
-    public static PersistenceManager getInstance(Context context) {
-        init(context);
-        synchronized (PersistenceManager.class) {
-            if (persistenceManager == null) {
-                if (baseDir == null) throw new InvalidParameterException();
-                persistenceManager = new PersistenceManager();
-            }
-        }
-        return persistenceManager;
-    }
+//    public static PersistenceManager getInstance(Context context) {
+//        init(context);
+//        synchronized (PersistenceManager.class) {
+//            if (persistenceManager == null) {
+//                if (baseDir == null) throw new InvalidParameterException();
+//                persistenceManager = new PersistenceManager();
+//            }
+//        }
+//        return persistenceManager;
+//    }
+//
+//    public static PersistenceManager getInstance() {
+//        Assert.check (persistenceManager != null);
+//        Assert.check (baseDir != null);
+//        return persistenceManager;
+//    }
 
-    public static PersistenceManager getInstance() {
-        Assert.check (persistenceManager != null);
-        Assert.check (baseDir != null);
-        return persistenceManager;
-    }
+    private final File baseDir;
+    private final File appDir;
 
+    private final File trackMetaDir;
+    private final File trackGpxDir;
+    private final File mapsDir;
+    private final File mapsMapsforgeDir;
 
-    private File trackMetaDir;
-    private File trackGpxDir;
-    private File mapsDir;
-    private File mapsMapsforgeDir;
+    private final File themesDir;
+    private final File hgtDir;
+    private final File logDir;
+    private final File configDir;
+    private final File searchConfigDir;
+    private final File apkDir;
 
-    private File themesDir;
-    private File hgtDir;
-    private File logDir;
-    private File configDir;
-    private File searchConfigDir;
-    private File apkDir;
-
-    private File fRaw;
+    private final File fRaw;
     private FileOutputStream fosRaw = null;
 
 
-    synchronized private static void init(Context context){
-        if (baseDir == null){
-            PersistenceManager.context = context;
-            baseDir = context.getExternalFilesDir(null);
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " Storage: "+baseDir.getAbsolutePath());
-        }
-    }
+//    synchronized private static void init(Context context){
+//        if (baseDir == null){
+//            PersistenceManager.context = context;
+//            baseDir = context.getExternalFilesDir(null);
+//            Log.i(MGMapApplication.LABEL, NameUtil.context() + " Storage: "+baseDir.getAbsolutePath());
+//        }
+//    }
 
-    private PersistenceManager() {
+    public PersistenceManager(Context context) {
+        this.context = context;
+
+        baseDir = context.getExternalFilesDir(null);
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Storage: "+baseDir.getAbsolutePath());
+
         appDir = createIfNotExists(baseDir, "MGMapViewer");
         File trackDir = createIfNotExists(appDir, "track");
         trackMetaDir = createIfNotExists(trackDir, "meta");

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.Pref;
@@ -209,12 +210,18 @@ public class FeatureService {
     protected MGMapActivity getActivity(){
         return activity;
     }
-    protected MGMapApplication getApplication(){
+    public MGMapApplication getApplication(){
         return (MGMapApplication) activity.getApplication();
     }
 
+    protected PersistenceManager getPersistenceManager() {
+        return getApplication().getPersistenceManager();
+    }
     protected MapView getMapView(){
         return activity.getMapsforgeMapView();
+    }
+    protected MGMapLayerFactory getMapLayerFactory(){
+        return activity.mapLayerFactory;
     }
     protected Handler getTimer(){
         return timer;

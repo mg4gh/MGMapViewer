@@ -63,6 +63,7 @@ import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
+import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
@@ -78,7 +79,6 @@ import mg.mgmap.activity.mgmap.util.MapViewUtility;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.mgmap.util.Permissions;
-import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
@@ -111,6 +111,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
      * form XmlRenderThemeMenuCallback after reading the themes xml file */
     protected XmlRenderThemeStyleMenu renderThemeStyleMenu;
 
+    MGMapLayerFactory mapLayerFactory = null;
     /** Reference to the MapViewUtility - provides so services around the MapView object */
     MapViewUtility mapViewUtility = null;
 
@@ -120,6 +121,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private MapDataStoreUtil mapDataStoreUtil = null;
     private GGraphTileFactory gGraphTileFactory = null;
 
+    public MGMapApplication getMGMapApplication(){
+        return application;
+    }
+    public MGMapLayerFactory getMapLayerFactory(){
+        return mapLayerFactory;
+    }
     public ControlView getControlView(){
         return (ControlView) findViewById(R.id.controlView);
     }
@@ -139,27 +146,30 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler());
         Log.w(MGMapApplication.LABEL, NameUtil.context());
+        application = (MGMapApplication) getApplication();
+        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(application.getPersistenceManager()));
         //for fullscreen mode
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
-        PersistenceManager.getInstance(this); // initialize the PersistenceService
-        MGMapLayerFactory.setContext(getApplicationContext());
-        MGMapLayerFactory.setActivity(this);
-        MGMapLayerFactory.mapLayers.clear();
-
-        application = (MGMapApplication) getApplication();
         createSharedPreferences();
         setContentView(R.layout.mgmapactivity);
+
+//        PersistenceManager.getInstance(this); // initialize the PersistenceService
+        mapLayerFactory = new MGMapLayerFactory(this);
+
+//        MGMapLayerFactory.setContext(getApplicationContext());
+//        MGMapLayerFactory.setActivity(this);
+//        MGMapLayerFactory.mapLayers.clear();
+
 
         prefCache = new PrefCache(this);
 
         initMapView();
         createLayers();
 
-        mapDataStoreUtil = new MapDataStoreUtil().onCreate(sharedPreferences, getMapLayerKeys());
+        mapDataStoreUtil = new MapDataStoreUtil().onCreate(mapLayerFactory, sharedPreferences, getMapLayerKeys());
         initializePosition(mapView.getModel().mapViewPosition);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
@@ -294,10 +304,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @Override
     protected void createSharedPreferences() {
         super.createSharedPreferences();
-        MGMapLayerFactory.setSharedPreferences(sharedPreferences);
+//        MGMapLayerFactory.setSharedPreferences(sharedPreferences);
         String prefLang = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "de");
         sharedPreferences.edit().putString(getResources().getString(R.string.preferences_language_key), prefLang).apply();
-        MGMapLayerFactory.setXmlRenderTheme(getRenderTheme());
+//        MGMapLayerFactory.setXmlRenderTheme(getRenderTheme());
 
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + DisplayModel.getDeviceScaleFactor());
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device screen size " + getResources().getDisplayMetrics().widthPixels + "x" + getResources().getDisplayMetrics().heightPixels);
@@ -334,11 +344,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     Uri uri = intent.getData();
                     if (uri != null) {
                         Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
+                        PersistenceManager pm = application.getPersistenceManager();
                         if (uri.getScheme().equals("mf-v4-map")){
-                            application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUriMap(uri));
+                            application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUriMap(pm, uri));
                         } else
                         if (uri.getScheme().equals("mf-theme")){
-                            application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(uri));
+                            application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(pm, uri));
                         }
                     }
 
@@ -474,7 +485,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     protected XmlRenderTheme getRenderTheme() {
         try {
-            File theme = new File(PersistenceManager.getInstance().getThemesDir(), sharedPreferences.getString(getResources().getString(R.string.preference_choose_theme_key), "Elevate.xml"));
+            File theme = new File(application.getPersistenceManager().getThemesDir(), sharedPreferences.getString(getResources().getString(R.string.preference_choose_theme_key), "Elevate.xml"));
             ExternalRenderTheme renderTheme = new ExternalRenderTheme( theme.getAbsolutePath() );
             renderTheme.setMenuCallback(this);
             return renderTheme;
@@ -537,12 +548,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     /** Depending on the preferences for the five map layers the corresponding layer object are created. */
     protected void createLayers() {
-        MGMapLayerFactory.setMapView(mapView);
+//        MGMapLayerFactory.setMapView(mapView);
         Layers layers = mapView.getLayerManager().getLayers();
         for (String prefKey : getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" prefKey="+prefKey+" key="+key);
-            Layer layer = MGMapLayerFactory.getMapLayer(key);
+            Layer layer = mapLayerFactory.getMapLayer(key);
             if (layer != null){
                 if (!layers.contains(layer)){
                     layers.add(layer);

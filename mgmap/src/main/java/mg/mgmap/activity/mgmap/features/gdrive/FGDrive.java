@@ -109,10 +109,11 @@ public class FGDrive {
     private void trySynchronisationAsync(AlertDialog alert){
 
         try {
-            Properties props = PersistenceManager.getInstance().getConfigProperties(null,GDRIVE_CONFIG);
+            PersistenceManager persistenceManager = application.getPersistenceManager();
+            Properties props = persistenceManager.getConfigProperties(null,GDRIVE_CONFIG);
 
             HTTP_TRANSPORT = new com.google.api.client.http.javanet.NetHttpTransport();
-            DATA_STORE_FACTORY = new FileDataStoreFactory(new File(PersistenceManager.getInstance().getConfigDir(),DATA_STORE_SUB_DIR));
+            DATA_STORE_FACTORY = new FileDataStoreFactory(new File(persistenceManager.getConfigDir(),DATA_STORE_SUB_DIR));
 
             Credential credential = authorize();
 
@@ -121,7 +122,7 @@ public class FGDrive {
                     .build();
 
             String idMgmFolder = GDriveUtil.getOrCreateTopFolder(dservice, props.getProperty(GDRIVE_CONFIG_TOP_DIR_KEY,MGMapApplication.LABEL) );
-            File gpxFolder = PersistenceManager.getInstance().getTrackGpxDir();
+            File gpxFolder = persistenceManager.getTrackGpxDir();
 
             Zipper zip = new Zipper(props.getProperty(GDRIVE_CONFIG_ZIP_PW_KEY,"geheimXgeheim!"));
 

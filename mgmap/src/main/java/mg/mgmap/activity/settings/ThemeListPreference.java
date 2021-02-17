@@ -29,13 +29,17 @@ public class ThemeListPreference extends ListPreference {
     public ThemeListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.setSummaryProvider(SimpleSummaryProvider.getInstance());
-        String[] themes = PersistenceManager.getInstance().getThemeNames();
-        if (themes.length == 0) {
-            themes = new String[]{ "Elevate.xml"};
+
+        if (context.getApplicationContext() instanceof MGMapApplication) {
+            MGMapApplication application = (MGMapApplication) context.getApplicationContext();
+            String[] themes = application.getPersistenceManager().getThemeNames();
+            if (themes.length == 0) {
+                themes = new String[]{ "Elevate.xml"};
+            }
+            setEntries(themes);
+            setEntryValues(themes);
+            setDefaultValue("Elevate.xml");
         }
-        setEntries(themes);
-        setEntryValues(themes);
-        setDefaultValue("Elevate.xml");
     }
 
     @Override
