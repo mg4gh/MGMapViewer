@@ -110,7 +110,7 @@ var activeTableTab = "activeTableTab";
 <li>android.app.Activity</li>
 <li>
 <ul class="inheritance">
-<li>mg.mgmap.HeightProfileActivity</li>
+<li>mg.mgmap.activity.height_profile.HeightProfileActivity</li>
 </ul>
 </li>
 </ul>
@@ -133,7 +133,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">HeightProfileActivity</span>
 extends android.app.Activity</pre>
-<div class="block">An Activity to show the height profile of a given <a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.model"><code>TrackLog</code></a></div>
+<div class="block">An Activity to show the height profile of a given <a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.generic.model"><code>TrackLog</code></a></div>
 </li>
 </ul>
 </div>
@@ -200,14 +200,14 @@ extends android.app.Activity</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>private double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#addSegmentHeightProfiles-double-mg.mgmap.model.MultiPointModel-android.util.SparseIntArray-android.util.SparseIntArray-">addSegmentHeightProfiles</a></span>(double&nbsp;distance,
-                        <a href="../../mg/mgmap/model/MultiPointModel.html" title="interface in mg.mgmap.model">MultiPointModel</a>&nbsp;segment,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#addSegmentHeightProfiles-double-mg.mgmap.generic.model.MultiPointModel-android.util.SparseIntArray-android.util.SparseIntArray-">addSegmentHeightProfiles</a></span>(double&nbsp;distance,
+                        <a href="../../mg/mgmap/model/MultiPointModel.html" title="interface in mg.mgmap.generic.model">MultiPointModel</a>&nbsp;segment,
                         android.util.SparseIntArray&nbsp;segmentHeightProfile,
                         android.util.SparseIntArray&nbsp;segmentAscentProfile)</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>static boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#check4trackLogRef-mg.mgmap.MGMapApplication-">check4trackLogRef</a></span>(<a href="../../mg/mgmap/MGMapApplication.html" title="class in mg.mgmap">MGMapApplication</a>&nbsp;application)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#check4trackLogRef-mg.mgmap.application.MGMapApplication-">check4trackLogRef</a></span>(<a href="../../mg/mgmap/MGMapApplication.html" title="class in mg.mgmap">MGMapApplication</a>&nbsp;application)</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>private void</code></td>
@@ -218,20 +218,20 @@ extends android.app.Activity</pre>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>private void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#createSeries-com.jjoe64.graphview.GraphView-mg.mgmap.model.TrackLog-int-boolean-">createSeries</a></span>(<a href="../../com/jjoe64/graphview/GraphView.html" title="class in com.jjoe64.graphview">GraphView</a>&nbsp;graph,
-            <a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.model">TrackLog</a>&nbsp;trackLog,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#createSeries-com.jjoe64.graphview.GraphView-mg.mgmap.generic.model.TrackLog-int-boolean-">createSeries</a></span>(<a href="../../com/jjoe64/graphview/GraphView.html" title="class in com.jjoe64.graphview">GraphView</a>&nbsp;graph,
+            <a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.generic.model">TrackLog</a>&nbsp;trackLog,
             int&nbsp;colorId,
             boolean&nbsp;showAscentGraph)</code>&nbsp;</td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>private void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#fillHeightProfiles-java.util.ArrayList-java.util.ArrayList-java.util.ArrayList-">fillHeightProfiles</a></span>(java.util.ArrayList&lt;<a href="../../mg/mgmap/model/MultiPointModel.html" title="interface in mg.mgmap.model">MultiPointModel</a>&gt;&nbsp;mpms,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#fillHeightProfiles-java.util.ArrayList-java.util.ArrayList-java.util.ArrayList-">fillHeightProfiles</a></span>(java.util.ArrayList&lt;<a href="../../mg/mgmap/model/MultiPointModel.html" title="interface in mg.mgmap.generic.model">MultiPointModel</a>&gt;&nbsp;mpms,
                   java.util.ArrayList&lt;android.util.SparseIntArray&gt;&nbsp;segmentHeightProfiles,
                   java.util.ArrayList&lt;android.util.SparseIntArray&gt;&nbsp;segmentAscentProfiles)</code>&nbsp;</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>private void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#fillHeightProfiles-mg.mgmap.model.TrackLog-java.util.ArrayList-java.util.ArrayList-">fillHeightProfiles</a></span>(<a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.model">TrackLog</a>&nbsp;trackLog,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/HeightProfileActivity.html#fillHeightProfiles-mg.mgmap.generic.model.TrackLog-java.util.ArrayList-java.util.ArrayList-">fillHeightProfiles</a></span>(<a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.generic.model">TrackLog</a>&nbsp;trackLog,
                   java.util.ArrayList&lt;android.util.SparseIntArray&gt;&nbsp;segmentHeightProfiles,
                   java.util.ArrayList&lt;android.util.SparseIntArray&gt;&nbsp;segmentAscentProfiles)</code>&nbsp;</td>
 </tr>
@@ -325,14 +325,14 @@ extends android.app.Activity</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="addSegmentHeightProfiles-double-mg.mgmap.model.MultiPointModel-android.util.SparseIntArray-android.util.SparseIntArray-">
+<a name="addSegmentHeightProfiles-double-mg.mgmap.generic.model.MultiPointModel-android.util.SparseIntArray-android.util.SparseIntArray-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>addSegmentHeightProfiles</h4>
 <pre>private&nbsp;double&nbsp;addSegmentHeightProfiles(double&nbsp;distance,
-                                        <a href="../../mg/mgmap/model/MultiPointModel.html" title="interface in mg.mgmap.model">MultiPointModel</a>&nbsp;segment,
+                                        <a href="../../mg/mgmap/model/MultiPointModel.html" title="interface in mg.mgmap.generic.model">MultiPointModel</a>&nbsp;segment,
                                         android.util.SparseIntArray&nbsp;segmentHeightProfile,
                                         android.util.SparseIntArray&nbsp;segmentAscentProfile)</pre>
 </li>
@@ -358,14 +358,14 @@ extends android.app.Activity</pre>
                           boolean&nbsp;secondScale)</pre>
 </li>
 </ul>
-<a name="createSeries-com.jjoe64.graphview.GraphView-mg.mgmap.model.TrackLog-int-boolean-">
+<a name="createSeries-com.jjoe64.graphview.GraphView-mg.mgmap.generic.model.TrackLog-int-boolean-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>createSeries</h4>
 <pre>private&nbsp;void&nbsp;createSeries(<a href="../../com/jjoe64/graphview/GraphView.html" title="class in com.jjoe64.graphview">GraphView</a>&nbsp;graph,
-                          <a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.model">TrackLog</a>&nbsp;trackLog,
+                          <a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.generic.model">TrackLog</a>&nbsp;trackLog,
                           int&nbsp;colorId,
                           boolean&nbsp;showAscentGraph)</pre>
 </li>
@@ -376,18 +376,18 @@ extends android.app.Activity</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>fillHeightProfiles</h4>
-<pre>private&nbsp;void&nbsp;fillHeightProfiles(java.util.ArrayList&lt;<a href="../../mg/mgmap/model/MultiPointModel.html" title="interface in mg.mgmap.model">MultiPointModel</a>&gt;&nbsp;mpms,
+<pre>private&nbsp;void&nbsp;fillHeightProfiles(java.util.ArrayList&lt;<a href="../../mg/mgmap/model/MultiPointModel.html" title="interface in mg.mgmap.generic.model">MultiPointModel</a>&gt;&nbsp;mpms,
                                 java.util.ArrayList&lt;android.util.SparseIntArray&gt;&nbsp;segmentHeightProfiles,
                                 java.util.ArrayList&lt;android.util.SparseIntArray&gt;&nbsp;segmentAscentProfiles)</pre>
 </li>
 </ul>
-<a name="fillHeightProfiles-mg.mgmap.model.TrackLog-java.util.ArrayList-java.util.ArrayList-">
+<a name="fillHeightProfiles-mg.mgmap.generic.model.TrackLog-java.util.ArrayList-java.util.ArrayList-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>fillHeightProfiles</h4>
-<pre>private&nbsp;void&nbsp;fillHeightProfiles(<a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.model">TrackLog</a>&nbsp;trackLog,
+<pre>private&nbsp;void&nbsp;fillHeightProfiles(<a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.generic.model">TrackLog</a>&nbsp;trackLog,
                                 java.util.ArrayList&lt;android.util.SparseIntArray&gt;&nbsp;segmentHeightProfiles,
                                 java.util.ArrayList&lt;android.util.SparseIntArray&gt;&nbsp;segmentAscentProfiles)</pre>
 </li>

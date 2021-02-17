@@ -1,7 +1,6 @@
 package mg.mgmap.test;
 
 import android.animation.ObjectAnimator;
-import android.app.Application;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Build;
@@ -20,13 +19,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import mg.mgmap.MGMapApplication;
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
-import mg.mgmap.model.TrackLog;
-import mg.mgmap.util.NameUtil;
-import mg.mgmap.util.PersistenceManager;
-import mg.mgmap.util.Pref;
-import mg.mgmap.util.PrefCache;
+import mg.mgmap.generic.model.TrackLog;
+import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.application.util.PersistenceManager;
+import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.PrefCache;
 
 public class TestControl {
 

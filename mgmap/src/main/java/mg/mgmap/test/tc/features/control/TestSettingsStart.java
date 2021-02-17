@@ -27,7 +27,7 @@ public class TestSettingsStart extends Testcase {
     protected void addRegexs() {
         addRegex("Testcase.start.*  TestSettingsStart");
         addRegex("key=FSControl.qc_selector value=1");
-        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.settings.MainPreferenceScreen");
+        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.activity.settings.MainPreferenceScreen");
         addRegex("mg.mgmap.test.TestControl.onResume.* set TestView MGMapActivity");
     }
 }

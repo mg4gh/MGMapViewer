@@ -5,7 +5,8 @@ import android.graphics.PointF;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.model.IMapViewPosition;
 
-import mg.mgmap.MGMapActivity;
+import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.test.TestControl;
 import mg.mgmap.test.Testcase;
 
@@ -39,11 +40,7 @@ public class TestMarker1 extends Testcase {
         tc.timer.postDelayed(() -> tc.animateTo(this, new PointF(26,19),600), 8500);
         tc.timer.postDelayed(() -> tc.doClick(this), 9500);
         tc.timer.postDelayed(() -> tc.swipeTo(this, new PointF(26,19),2000), 11000);
-
-//        tc.timer.postDelayed(() -> tc.swipeTo(this, new PointF(50,30),3000), 3500);
-//        tc.timer.postDelayed(() -> tc.animateTo(this, new PointF(50,70),2000), 7100);
-//        tc.timer.postDelayed(() -> tc.swipeTo(this, new PointF(50,30),200), 8500);
-
+        tc.timer.postDelayed(() -> tc.getPref(R.string.FSATL_pref_hideAll, false).toggle(), 14000);
         tc.timer.postDelayed(rFinal, 14500);
     }
 

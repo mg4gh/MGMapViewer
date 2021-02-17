@@ -36,8 +36,8 @@ public class TestSettingsSelectLayer1Grid extends Testcase {
     protected void addRegexs() {
         addRegex("Testcase.start.*  TestSettingsSelectLayer1Grid");
         addRegex("key=FSControl.qc_selector value=1");
-        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.settings.MainPreferenceScreen");
-        addRegex("SettingsActivity.* set fragment mg.mgmap.settings.MapLayersPreferenceScreen");
+        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.activity.settings.MainPreferenceScreen");
+        addRegex("SettingsActivity.* set fragment mg.mgmap.activity.settings.MapLayersPreferenceScreen");
         addRegex("MapLayerListPreference.onClick.* key=SelectMap1 value=none");
         addRegex("MapViewerBase.*  recreate MGMapActivity due to key=SelectMap1 value=MAPGRID: grid.properties");
         addRegex("mg.mgmap.test.TestControl.onResume.* set TestView MGMapActivity");

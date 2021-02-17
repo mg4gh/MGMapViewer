@@ -14,9 +14,9 @@ import android.widget.RelativeLayout;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import mg.mgmap.MGMapApplication;
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
-import mg.mgmap.util.NameUtil;
+import mg.mgmap.generic.util.basic.NameUtil;
 
 public class TestView extends RelativeLayout  {
 

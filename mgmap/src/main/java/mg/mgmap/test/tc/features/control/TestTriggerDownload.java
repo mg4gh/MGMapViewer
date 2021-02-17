@@ -5,11 +5,11 @@ import android.graphics.PointF;
 import android.net.Uri;
 import android.util.Log;
 
-import mg.mgmap.MGMapActivity;
-import mg.mgmap.MGMapApplication;
+import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.test.Testcase;
 import mg.mgmap.test.TestControl;
-import mg.mgmap.util.NameUtil;
+import mg.mgmap.generic.util.basic.NameUtil;
 
 public class TestTriggerDownload extends Testcase {
 

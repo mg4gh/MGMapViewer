@@ -47,8 +47,8 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../mg/mgmap/graph/AStar.html" title="class in mg.mgmap.graph"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../mg/mgmap/graph/AStar.html" title="class in mg.mgmap.generic.graph"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?mg/mgmap/graph/Dijkstra.html" target="_top">Frames</a></li>
@@ -90,7 +90,7 @@ var activeTableTab = "activeTableTab";
 <!-- ========= END OF TOP NAVBAR ========= -->
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<div class="subTitle">mg.mgmap.graph</div>
+<div class="subTitle">mg.mgmap.generic.graph</div>
 <h2 title="Class Dijkstra" class="title">Class Dijkstra</h2>
 </div>
 <div class="contentContainer">
@@ -98,7 +98,7 @@ var activeTableTab = "activeTableTab";
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li>mg.mgmap.graph.Dijkstra</li>
+<li>mg.mgmap.generic.graph.Dijkstra</li>
 </ul>
 </li>
 </ul>
@@ -107,7 +107,7 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><a href="../../../mg/mgmap/graph/AStar.html" title="class in mg.mgmap.graph">AStar</a></dd>
+<dd><a href="../../../mg/mgmap/graph/AStar.html" title="class in mg.mgmap.generic.graph">AStar</a></dd>
 </dl>
 <hr>
 <br>
@@ -153,15 +153,15 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#duration">duration</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">GGraph</a></code></td>
+<td class="colFirst"><code>(package private) <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">GGraph</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#graph">graph</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>private java.util.List&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&gt;</code></td>
+<td class="colFirst"><code>private java.util.List&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#nodes">nodes</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>private java.util.TreeSet&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.graph">GNodeRef</a>&gt;</code></td>
+<td class="colFirst"><code>private java.util.TreeSet&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.generic.graph">GNodeRef</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#prioQueue">prioQueue</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
@@ -169,7 +169,7 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#resultPathLength">resultPathLength</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a></code></td>
+<td class="colFirst"><code>(package private) <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#target">target</a></span></code>&nbsp;</td>
 </tr>
 </table>
@@ -187,7 +187,7 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#Dijkstra-mg.mgmap.graph.GGraph-">Dijkstra</a></span>(<a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">GGraph</a>&nbsp;graph)</code>&nbsp;</td>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#Dijkstra-mg.mgmap.generic.graph.GGraph-">Dijkstra</a></span>(<a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">GGraph</a>&nbsp;graph)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -210,25 +210,25 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>(package private) double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#heuristic-mg.mgmap.graph.GNode-">heuristic</a></span>(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;node)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#heuristic-mg.mgmap.generic.graph.GNode-">heuristic</a></span>(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;node)</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#markConnected--">markConnected</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>java.util.List&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.graph">GNodeRef</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#perform-mg.mgmap.graph.GNode-mg.mgmap.graph.GNode-double-java.util.ArrayList-">perform</a></span>(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;source,
-       <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;target,
+<td class="colFirst"><code>java.util.List&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.generic.graph">GNodeRef</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#perform-mg.mgmap.generic.graph.GNode-mg.mgmap.generic.graph.GNode-double-java.util.ArrayList-">perform</a></span>(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;source,
+       <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;target,
        double&nbsp;costLimit,
-       java.util.ArrayList&lt;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&gt;&nbsp;relaxedList)</code>&nbsp;</td>
+       java.util.ArrayList&lt;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&gt;&nbsp;relaxedList)</code>&nbsp;</td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code>java.util.List&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.graph">GNodeRef</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#perform-java.util.List-mg.mgmap.graph.GNode-double-java.util.ArrayList-">perform</a></span>(java.util.List&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&gt;&nbsp;sources,
-       <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;target,
+<td class="colFirst"><code>java.util.List&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.generic.graph">GNodeRef</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/Dijkstra.html#perform-java.util.List-mg.mgmap.generic.graph.GNode-double-java.util.ArrayList-">perform</a></span>(java.util.List&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&gt;&nbsp;sources,
+       <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;target,
        double&nbsp;costLimit,
-       java.util.ArrayList&lt;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&gt;&nbsp;relaxedList)</code>&nbsp;</td>
+       java.util.ArrayList&lt;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&gt;&nbsp;relaxedList)</code>&nbsp;</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>private void</code></td>
@@ -265,7 +265,7 @@ extends java.lang.Object</pre>
 <pre>private static final&nbsp;int CHECK_CONNECTED_ATTEMPTS</pre>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#mg.mgmap.graph.Dijkstra.CHECK_CONNECTED_ATTEMPTS">Constant Field Values</a></dd>
+<dd><a href="../../../constant-values.html#mg.mgmap.generic.graph.Dijkstra.CHECK_CONNECTED_ATTEMPTS">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -311,7 +311,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>graph</h4>
-<pre><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">GGraph</a> graph</pre>
+<pre><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">GGraph</a> graph</pre>
 </li>
 </ul>
 <a name="nodes">
@@ -320,7 +320,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>nodes</h4>
-<pre>private&nbsp;java.util.List&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&gt; nodes</pre>
+<pre>private&nbsp;java.util.List&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&gt; nodes</pre>
 </li>
 </ul>
 <a name="prioQueue">
@@ -329,7 +329,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>prioQueue</h4>
-<pre>private&nbsp;java.util.TreeSet&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.graph">GNodeRef</a>&gt; prioQueue</pre>
+<pre>private&nbsp;java.util.TreeSet&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.generic.graph">GNodeRef</a>&gt; prioQueue</pre>
 </li>
 </ul>
 <a name="resultPathLength">
@@ -347,7 +347,7 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>target</h4>
-<pre><a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a> target</pre>
+<pre><a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a> target</pre>
 </li>
 </ul>
 </li>
@@ -358,13 +358,13 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="Dijkstra-mg.mgmap.graph.GGraph-">
+<a name="Dijkstra-mg.mgmap.generic.graph.GGraph-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Dijkstra</h4>
-<pre>public&nbsp;Dijkstra(<a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">GGraph</a>&nbsp;graph)</pre>
+<pre>public&nbsp;Dijkstra(<a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">GGraph</a>&nbsp;graph)</pre>
 </li>
 </ul>
 </li>
@@ -384,13 +384,13 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;java.lang.String&nbsp;getResult()</pre>
 </li>
 </ul>
-<a name="heuristic-mg.mgmap.graph.GNode-">
+<a name="heuristic-mg.mgmap.generic.graph.GNode-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>heuristic</h4>
-<pre>double&nbsp;heuristic(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;node)</pre>
+<pre>double&nbsp;heuristic(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;node)</pre>
 </li>
 </ul>
 <a name="markConnected--">
@@ -402,28 +402,28 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;boolean&nbsp;markConnected()</pre>
 </li>
 </ul>
-<a name="perform-mg.mgmap.graph.GNode-mg.mgmap.graph.GNode-double-java.util.ArrayList-">
+<a name="perform-mg.mgmap.generic.graph.GNode-mg.mgmap.generic.graph.GNode-double-java.util.ArrayList-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>perform</h4>
-<pre>public&nbsp;java.util.List&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.graph">GNodeRef</a>&gt;&nbsp;perform(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;source,
-                                        <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;target,
+<pre>public&nbsp;java.util.List&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.generic.graph">GNodeRef</a>&gt;&nbsp;perform(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;source,
+                                        <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;target,
                                         double&nbsp;costLimit,
-                                        java.util.ArrayList&lt;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&gt;&nbsp;relaxedList)</pre>
+                                        java.util.ArrayList&lt;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&gt;&nbsp;relaxedList)</pre>
 </li>
 </ul>
-<a name="perform-java.util.List-mg.mgmap.graph.GNode-double-java.util.ArrayList-">
+<a name="perform-java.util.List-mg.mgmap.generic.graph.GNode-double-java.util.ArrayList-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>perform</h4>
-<pre>public&nbsp;java.util.List&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.graph">GNodeRef</a>&gt;&nbsp;perform(java.util.List&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&gt;&nbsp;sources,
-                                        <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;target,
+<pre>public&nbsp;java.util.List&lt;<a href="../../../mg/mgmap/graph/GNodeRef.html" title="class in mg.mgmap.generic.graph">GNodeRef</a>&gt;&nbsp;perform(java.util.List&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&gt;&nbsp;sources,
+                                        <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;target,
                                         double&nbsp;costLimit,
-                                        java.util.ArrayList&lt;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&gt;&nbsp;relaxedList)</pre>
+                                        java.util.ArrayList&lt;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&gt;&nbsp;relaxedList)</pre>
 </li>
 </ul>
 <a name="resetNodeRefs--">
@@ -461,8 +461,8 @@ extends java.lang.Object</pre>
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../mg/mgmap/graph/AStar.html" title="class in mg.mgmap.graph"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../mg/mgmap/graph/AStar.html" title="class in mg.mgmap.generic.graph"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?mg/mgmap/graph/Dijkstra.html" target="_top">Frames</a></li>

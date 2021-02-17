@@ -22,7 +22,7 @@
     <!-- uses-sdk android:targetSdkVersion="26" / -->
 
     <application
-        android:name="mg.mgmap.MGMapApplication"
+        android:name="mg.mgmap.application.MGMapApplication"
         android:allowBackup="true"
         android:icon="@drawable/mg_map"
         android:label="MGMapViewer"
@@ -30,7 +30,7 @@
         android:theme="@style/AppFullScreenTheme">
 
         <activity
-            android:name="mg.mgmap.MGMapActivity"
+            android:name="mg.mgmap.activity.mgmap.MGMapActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask">
             <intent-filter>
@@ -77,36 +77,36 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="mg.mgmap.settings.SettingsActivity"
+            android:name="mg.mgmap.activity.settings.SettingsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Settings"
-            android:parentActivityName="mg.mgmap.MGMapActivity"
+            android:parentActivityName="mg.mgmap.activity.mgmap.MGMapActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name="mg.mgmap.features.statistic.TrackStatisticActivity"
+            android:name=".activity.statistic.TrackStatisticActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Track Selection"
-            android:parentActivityName="mg.mgmap.MGMapActivity"
+            android:parentActivityName="mg.mgmap.activity.mgmap.MGMapActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name="mg.mgmap.ThemeSettings"
+            android:name="mg.mgmap.activity.theme.ThemeSettings"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Theme_Settings"
-            android:parentActivityName="mg.mgmap.MGMapActivity"
+            android:parentActivityName="mg.mgmap.activity.mgmap.MGMapActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name="mg.mgmap.HeightProfileActivity"
+            android:name="mg.mgmap.activity.height_profile.HeightProfileActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Height Profile"
-            android:parentActivityName="mg.mgmap.MGMapActivity"
+            android:parentActivityName="mg.mgmap.activity.mgmap.MGMapActivity"
             android:launchMode="singleTask"/>
 
         <service
-            android:name="mg.mgmap.TrackLoggerService"
+            android:name="mg.mgmap.service.location.TrackLoggerService"
             android:exported="false"
             android:foregroundServiceType="location" />
         <service
-            android:name="mg.mgmap.BgJobService"
+            android:name="mg.mgmap.service.bgjob.BgJobService"
             android:exported="false"/>
 
         <provider

@@ -33,6 +33,6 @@ public class TestStatisticView extends Testcase {
         addRegex("ActivityLifecycleCallbackAdapter.onActivityResumed.*  TrackStatisticActivity");
         addRegex("TrackStatisticActivity.reworkState.*  .20201028_103630_GPS");
         addRegex("mg.mgmap.test.TestControl.onResume.* set TestView MGMapActivity");
-        addRegex("PrefCache.onSharedPreferenceChanged.*  key=FSATL.STL_visibility value=true");
+        addRegex("PrefCache.onSharedPreferenceChanged.* context=MGMapActivity key=FSATL.STL_visibility value=true");
     }
 }

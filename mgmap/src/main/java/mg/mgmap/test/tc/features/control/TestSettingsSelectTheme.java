@@ -34,7 +34,7 @@ public class TestSettingsSelectTheme extends Testcase {
     protected void addRegexs() {
         addRegex("Testcase.start.*  TestSettingsSelectTheme");
         addRegex("key=FSControl.qc_selector value=1");
-        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.settings.MainPreferenceScreen");
+        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.activity.settings.MainPreferenceScreen");
         addRegex("ThemeListPreference.onClick.* key=SelectTheme value=Elevate.xml");
         addRegex("MapViewerBase.*  recreate MGMapActivity due to key=SelectTheme value=Elements.xml");
         addRegex("mg.mgmap.test.TestControl.onResume.* set TestView MGMapActivity");

@@ -9,8 +9,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
-import mg.mgmap.MGMapApplication;
-import mg.mgmap.util.NameUtil;
+import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.NameUtil;
 
 public class TestControlComposer {
 

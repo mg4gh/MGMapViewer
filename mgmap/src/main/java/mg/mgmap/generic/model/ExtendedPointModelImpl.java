@@ -1,0 +1,34 @@
+/*
+ * Copyright 2017 - 2021 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package mg.mgmap.generic.model;
+
+public class ExtendedPointModelImpl<T> extends PointModelImpl implements ExtendedPointModel<T>{
+
+    private final T extent;
+
+    public ExtendedPointModelImpl(PointModel pm, T extent){
+        this(pm.getLat(), pm.getLon(), pm.getEleA(), extent);
+    }
+
+    public ExtendedPointModelImpl(double latitude, double longitude, float ele, T extent){
+        super(latitude, longitude,ele);
+        this.extent = extent;
+    }
+
+    @Override
+    public T getExtent() {
+        return extent;
+    }
+}

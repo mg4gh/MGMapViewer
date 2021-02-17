@@ -4,8 +4,6 @@ mg.mgmap.test.tc.extra.TestSwipeMap
 mg.mgmap.test.tc.features.bb.TestBB
 mg.mgmap.test.tc.features.control.TestFuSettingsGL
 mg.mgmap.test.tc.features.control.TestHelpGroup1
-mg.mgmap.test.tc.features.control.TestInitBW
-mg.mgmap.test.tc.features.control.TestInitD
 mg.mgmap.test.tc.features.control.TestSettingsSelectLayer1Grid
 mg.mgmap.test.tc.features.control.TestSettingsSelectSearchProvider
 mg.mgmap.test.tc.features.control.TestSettingsSelectTheme
@@ -14,3 +12,5 @@ mg.mgmap.test.tc.features.control.TestThemeSettings
 mg.mgmap.test.tc.features.control.TestTriggerDownload
 mg.mgmap.test.tc.features.control.TestTriggerStatistic
 mg.mgmap.test.tc.features.statistic.TestStatisticView
+mg.mgmap.test.tc.init.TestInitBW
+mg.mgmap.test.tc.init.TestInitD

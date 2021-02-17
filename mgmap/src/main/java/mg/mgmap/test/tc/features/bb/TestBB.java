@@ -5,7 +5,7 @@ import android.graphics.PointF;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.model.IMapViewPosition;
 
-import mg.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.test.TestControl;
 import mg.mgmap.test.Testcase;
 

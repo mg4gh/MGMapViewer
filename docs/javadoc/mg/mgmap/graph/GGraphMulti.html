@@ -47,8 +47,8 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?mg/mgmap/graph/GGraphMulti.html" target="_top">Frames</a></li>
@@ -90,7 +90,7 @@ var activeTableTab = "activeTableTab";
 <!-- ========= END OF TOP NAVBAR ========= -->
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<div class="subTitle">mg.mgmap.graph</div>
+<div class="subTitle">mg.mgmap.generic.graph</div>
 <h2 title="Class GGraphMulti" class="title">Class GGraphMulti</h2>
 </div>
 <div class="contentContainer">
@@ -101,10 +101,10 @@ var activeTableTab = "activeTableTab";
 <li>java.util.Observable</li>
 <li>
 <ul class="inheritance">
-<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">mg.mgmap.graph.GGraph</a></li>
+<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">mg.mgmap.generic.graph.GGraph</a></li>
 <li>
 <ul class="inheritance">
-<li>mg.mgmap.graph.GGraphMulti</li>
+<li>mg.mgmap.generic.graph.GGraphMulti</li>
 </ul>
 </li>
 </ul>
@@ -118,7 +118,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">GGraphMulti</span>
-extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">GGraph</a></pre>
+extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">GGraph</a></pre>
 <div class="block">Realisation of a graph based on multiple tiles (GGraphTile) objects.</div>
 </li>
 </ul>
@@ -139,15 +139,15 @@ extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.g
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>private java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&gt;</code></td>
+<td class="colFirst"><code>private java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#gGraphTiles">gGraphTiles</a></span></code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="fields.inherited.from.class.mg.mgmap.graph.GGraph">
+<li class="blockList"><a name="fields.inherited.from.class.mg.mgmap.generic.graph.GGraph">
 <!--   -->
 </a>
-<h3>Fields inherited from class&nbsp;mg.mgmap.graph.<a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">GGraph</a></h3>
+<h3>Fields inherited from class&nbsp;mg.mgmap.generic.graph.<a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">GGraph</a></h3>
 <code><a href="../../../mg/mgmap/graph/GGraph.html#CONNECT_THRESHOLD_METER">CONNECT_THRESHOLD_METER</a>, <a href="../../../mg/mgmap/graph/GGraph.html#nodes">nodes</a>, <a href="../../../mg/mgmap/graph/GGraph.html#overlayNeighbours">overlayNeighbours</a></code></li>
 </ul>
 </li>
@@ -164,7 +164,7 @@ extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.g
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#GGraphMulti-java.util.ArrayList-">GGraphMulti</a></span>(java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&gt;&nbsp;gGraphTiles)</code>&nbsp;</td>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#GGraphMulti-java.util.ArrayList-">GGraphMulti</a></span>(java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&gt;&nbsp;gGraphTiles)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -183,30 +183,30 @@ extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.g
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>private void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#connect-mg.mgmap.graph.GNode-mg.mgmap.graph.GNode-">connect</a></span>(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;node1,
-       <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;node2)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#connect-mg.mgmap.generic.graph.GNode-mg.mgmap.generic.graph.GNode-">connect</a></span>(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;node1,
+       <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;node2)</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>private void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#connectGGraphTile-mg.mgmap.graph.GGraphTile-">connectGGraphTile</a></span>(<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&nbsp;newGGraphTile)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#connectGGraphTile-mg.mgmap.generic.graph.GGraphTile-">connectGGraphTile</a></span>(<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&nbsp;newGGraphTile)</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>private void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#connectTiles-mg.mgmap.graph.GGraphTile-mg.mgmap.graph.GGraphTile-boolean-">connectTiles</a></span>(<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&nbsp;gGraphTile1,
-            <a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&nbsp;gGraphTile2,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#connectTiles-mg.mgmap.generic.graph.GGraphTile-mg.mgmap.generic.graph.GGraphTile-boolean-">connectTiles</a></span>(<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&nbsp;gGraphTile1,
+            <a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&nbsp;gGraphTile2,
             boolean&nbsp;horizontal)</code>&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&gt;</code></td>
+<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/graph/GGraphMulti.html#getNodes--">getNodes</a></span>()</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.mg.mgmap.graph.GGraph">
+<li class="blockList"><a name="methods.inherited.from.class.mg.mgmap.generic.graph.GGraph">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;mg.mgmap.graph.<a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">GGraph</a></h3>
-<code><a href="../../../mg/mgmap/graph/GGraph.html#addNextNeighbour-mg.mgmap.graph.GNode-mg.mgmap.graph.GNeighbour-mg.mgmap.graph.GNeighbour-">addNextNeighbour</a>, <a href="../../../mg/mgmap/graph/GGraph.html#createOverlaysForApproach-mg.mgmap.graph.ApproachModel-">createOverlaysForApproach</a>, <a href="../../../mg/mgmap/graph/GGraph.html#getLastNeighbour-mg.mgmap.graph.GNode-">getLastNeighbour</a>, <a href="../../../mg/mgmap/graph/GGraph.html#getNextNeighbour-mg.mgmap.graph.GNode-mg.mgmap.graph.GNeighbour-">getNextNeighbour</a>, <a href="../../../mg/mgmap/graph/GGraph.html#oppositeNode-mg.mgmap.graph.GNode-mg.mgmap.graph.GNode-">oppositeNode</a>, <a href="../../../mg/mgmap/graph/GGraph.html#segmentNodes-mg.mgmap.graph.GNode-mg.mgmap.graph.GNode-int-">segmentNodes</a></code></li>
+<h3>Methods inherited from class&nbsp;mg.mgmap.generic.graph.<a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">GGraph</a></h3>
+<code><a href="../../../mg/mgmap/graph/GGraph.html#addNextNeighbour-mg.mgmap.generic.graph.GNode-mg.mgmap.generic.graph.GNeighbour-mg.mgmap.generic.graph.GNeighbour-">addNextNeighbour</a>, <a href="../../../mg/mgmap/graph/GGraph.html#createOverlaysForApproach-mg.mgmap.generic.graph.ApproachModel-">createOverlaysForApproach</a>, <a href="../../../mg/mgmap/graph/GGraph.html#getLastNeighbour-mg.mgmap.generic.graph.GNode-">getLastNeighbour</a>, <a href="../../../mg/mgmap/graph/GGraph.html#getNextNeighbour-mg.mgmap.generic.graph.GNode-mg.mgmap.generic.graph.GNeighbour-">getNextNeighbour</a>, <a href="../../../mg/mgmap/graph/GGraph.html#oppositeNode-mg.mgmap.generic.graph.GNode-mg.mgmap.generic.graph.GNode-">oppositeNode</a>, <a href="../../../mg/mgmap/graph/GGraph.html#segmentNodes-mg.mgmap.generic.graph.GNode-mg.mgmap.generic.graph.GNode-int-">segmentNodes</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.util.Observable">
@@ -242,7 +242,7 @@ extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.g
 <ul class="blockListLast">
 <li class="blockList">
 <h4>gGraphTiles</h4>
-<pre>private&nbsp;java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&gt; gGraphTiles</pre>
+<pre>private&nbsp;java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&gt; gGraphTiles</pre>
 </li>
 </ul>
 </li>
@@ -259,7 +259,7 @@ extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.g
 <ul class="blockListLast">
 <li class="blockList">
 <h4>GGraphMulti</h4>
-<pre>public&nbsp;GGraphMulti(java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&gt;&nbsp;gGraphTiles)</pre>
+<pre>public&nbsp;GGraphMulti(java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&gt;&nbsp;gGraphTiles)</pre>
 </li>
 </ul>
 </li>
@@ -270,33 +270,33 @@ extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.g
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="connect-mg.mgmap.graph.GNode-mg.mgmap.graph.GNode-">
+<a name="connect-mg.mgmap.generic.graph.GNode-mg.mgmap.generic.graph.GNode-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>connect</h4>
-<pre>private&nbsp;void&nbsp;connect(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;node1,
-                     <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&nbsp;node2)</pre>
+<pre>private&nbsp;void&nbsp;connect(<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;node1,
+                     <a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&nbsp;node2)</pre>
 </li>
 </ul>
-<a name="connectGGraphTile-mg.mgmap.graph.GGraphTile-">
+<a name="connectGGraphTile-mg.mgmap.generic.graph.GGraphTile-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>connectGGraphTile</h4>
-<pre>private&nbsp;void&nbsp;connectGGraphTile(<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&nbsp;newGGraphTile)</pre>
+<pre>private&nbsp;void&nbsp;connectGGraphTile(<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&nbsp;newGGraphTile)</pre>
 </li>
 </ul>
-<a name="connectTiles-mg.mgmap.graph.GGraphTile-mg.mgmap.graph.GGraphTile-boolean-">
+<a name="connectTiles-mg.mgmap.generic.graph.GGraphTile-mg.mgmap.generic.graph.GGraphTile-boolean-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>connectTiles</h4>
-<pre>private&nbsp;void&nbsp;connectTiles(<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&nbsp;gGraphTile1,
-                          <a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph">GGraphTile</a>&nbsp;gGraphTile2,
+<pre>private&nbsp;void&nbsp;connectTiles(<a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&nbsp;gGraphTile1,
+                          <a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph">GGraphTile</a>&nbsp;gGraphTile2,
                           boolean&nbsp;horizontal)</pre>
 </li>
 </ul>
@@ -306,10 +306,10 @@ extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.g
 <ul class="blockListLast">
 <li class="blockList">
 <h4>getNodes</h4>
-<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.graph">GNode</a>&gt;&nbsp;getNodes()</pre>
+<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../../mg/mgmap/graph/GNode.html" title="class in mg.mgmap.generic.graph">GNode</a>&gt;&nbsp;getNodes()</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../mg/mgmap/graph/GGraph.html#getNodes--">getNodes</a></code>&nbsp;in class&nbsp;<code><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph">GGraph</a></code></dd>
+<dd><code><a href="../../../mg/mgmap/graph/GGraph.html#getNodes--">getNodes</a></code>&nbsp;in class&nbsp;<code><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph">GGraph</a></code></dd>
 </dl>
 </li>
 </ul>
@@ -339,8 +339,8 @@ extends <a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.g
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.graph"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.graph"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../mg/mgmap/graph/GGraph.html" title="class in mg.mgmap.generic.graph"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../mg/mgmap/graph/GGraphTile.html" title="class in mg.mgmap.generic.graph"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?mg/mgmap/graph/GGraphMulti.html" target="_top">Frames</a></li>

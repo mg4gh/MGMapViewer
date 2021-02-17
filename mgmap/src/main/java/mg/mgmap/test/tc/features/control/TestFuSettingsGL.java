@@ -31,7 +31,7 @@ public class TestFuSettingsGL extends Testcase {
     protected void addRegexs() {
         addRegex("Testcase.start.*  TestFuSettingsGL");
         addRegex("key=FSControl.qc_selector value=1");
-        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.settings.FurtherPreferenceScreen");
+        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.activity.settings.FurtherPreferenceScreen");
         addRegex("PrefCache.onSharedPreferenceChanged.* key=FSATL.stlGl value=true");
         addRegex("mg.mgmap.test.TestControl.onResume.* set TestView MGMapActivity");
     }

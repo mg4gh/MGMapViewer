@@ -107,7 +107,7 @@ var activeTableTab = "activeTableTab";
 <li>android.app.Application</li>
 <li>
 <ul class="inheritance">
-<li>mg.mgmap.MGMapApplication</li>
+<li>mg.mgmap.application.MGMapApplication</li>
 </ul>
 </li>
 </ul>
@@ -164,7 +164,7 @@ extends android.app.Application</pre>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="type parameter in MGMapApplication.TrackLogObservable">T</a> extends <a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.model">TrackLog</a>&gt;</span></code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="type parameter in MGMapApplication.TrackLogObservable">T</a> extends <a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.generic.model">TrackLog</a>&gt;</span></code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -213,7 +213,7 @@ extends android.app.Application</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#lastPositionsObservable">lastPositionsObservable</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>private java.util.concurrent.ArrayBlockingQueue&lt;<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&gt;</code></td>
+<td class="colFirst"><code>private java.util.concurrent.ArrayBlockingQueue&lt;<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#logPoints2process">logPoints2process</a></span></code>
 <div class="block">queue for new (unhandled) TrackLogPoint objects</div>
 </td>
@@ -223,11 +223,11 @@ extends android.app.Application</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#mapLayerKeys">mapLayerKeys</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/model/WriteableTrackLog.html" title="class in mg.mgmap.model">WriteableTrackLog</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/model/WriteableTrackLog.html" title="class in mg.mgmap.generic.model">WriteableTrackLog</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#markerTrackLogObservable">markerTrackLogObservable</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>java.util.TreeMap&lt;java.lang.String,<a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.model">TrackLog</a>&gt;</code></td>
+<td class="colFirst"><code>java.util.TreeMap&lt;java.lang.String,<a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.generic.model">TrackLog</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#metaTrackLogs">metaTrackLogs</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
@@ -251,11 +251,11 @@ extends android.app.Application</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#pressure">pressure</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/features/rtl/RecordingTrackLog.html" title="class in mg.mgmap.features.rtl">RecordingTrackLog</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/features/rtl/RecordingTrackLog.html" title="class in mg.mgmap.activity.mgmap.features.rtl">RecordingTrackLog</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#recordingTrackLogObservable">recordingTrackLogObservable</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/model/WriteableTrackLog.html" title="class in mg.mgmap.model">WriteableTrackLog</a>&gt;</code></td>
+<td class="colFirst"><code><a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/model/WriteableTrackLog.html" title="class in mg.mgmap.generic.model">WriteableTrackLog</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#routeTrackLogObservable">routeTrackLogObservable</a></span></code>&nbsp;</td>
 </tr>
 </table>
@@ -310,7 +310,7 @@ extends android.app.Application</pre>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#addTrackLogPoint-mg.mgmap.model.PointModel-">addTrackLogPoint</a></span>(<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&nbsp;pointModel)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#addTrackLogPoint-mg.mgmap.generic.model.PointModel-">addTrackLogPoint</a></span>(<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&nbsp;pointModel)</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../mg/mgmap/util/BgJob.html" title="class in mg.mgmap.util">BgJob</a></code></td>
@@ -352,7 +352,7 @@ extends android.app.Application</pre>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#setMgMapActivity-mg.mgmap.MGMapActivity-">setMgMapActivity</a></span>(<a href="../../mg/mgmap/MGMapActivity.html" title="class in mg.mgmap">MGMapActivity</a>&nbsp;mgMapActivity)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapApplication.html#setMgMapActivity-mg.mgmap.activity.mgmap.MGMapActivity-">setMgMapActivity</a></span>(<a href="../../mg/mgmap/MGMapActivity.html" title="class in mg.mgmap">MGMapActivity</a>&nbsp;mgMapActivity)</code>&nbsp;</td>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code>void</code></td>
@@ -446,7 +446,7 @@ extends android.app.Application</pre>
 <pre>public static final&nbsp;java.lang.String LABEL</pre>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../constant-values.html#mg.mgmap.MGMapApplication.LABEL">Constant Field Values</a></dd>
+<dd><a href="../../constant-values.html#mg.mgmap.application.MGMapApplication.LABEL">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -465,7 +465,7 @@ extends android.app.Application</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>logPoints2process</h4>
-<pre>private&nbsp;java.util.concurrent.ArrayBlockingQueue&lt;<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&gt; logPoints2process</pre>
+<pre>private&nbsp;java.util.concurrent.ArrayBlockingQueue&lt;<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&gt; logPoints2process</pre>
 <div class="block">queue for new (unhandled) TrackLogPoint objects</div>
 </li>
 </ul>
@@ -484,7 +484,7 @@ extends android.app.Application</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>markerTrackLogObservable</h4>
-<pre>public final&nbsp;<a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/model/WriteableTrackLog.html" title="class in mg.mgmap.model">WriteableTrackLog</a>&gt; markerTrackLogObservable</pre>
+<pre>public final&nbsp;<a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/model/WriteableTrackLog.html" title="class in mg.mgmap.generic.model">WriteableTrackLog</a>&gt; markerTrackLogObservable</pre>
 </li>
 </ul>
 <a name="metaTrackLogs">
@@ -493,7 +493,7 @@ extends android.app.Application</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>metaTrackLogs</h4>
-<pre>public final&nbsp;java.util.TreeMap&lt;java.lang.String,<a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.model">TrackLog</a>&gt; metaTrackLogs</pre>
+<pre>public final&nbsp;java.util.TreeMap&lt;java.lang.String,<a href="../../mg/mgmap/model/TrackLog.html" title="class in mg.mgmap.generic.model">TrackLog</a>&gt; metaTrackLogs</pre>
 </li>
 </ul>
 <a name="mgMapActivity">
@@ -547,7 +547,7 @@ extends android.app.Application</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>recordingTrackLogObservable</h4>
-<pre>public final&nbsp;<a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/features/rtl/RecordingTrackLog.html" title="class in mg.mgmap.features.rtl">RecordingTrackLog</a>&gt; recordingTrackLogObservable</pre>
+<pre>public final&nbsp;<a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/features/rtl/RecordingTrackLog.html" title="class in mg.mgmap.activity.mgmap.features.rtl">RecordingTrackLog</a>&gt; recordingTrackLogObservable</pre>
 </li>
 </ul>
 <a name="routeTrackLogObservable">
@@ -556,7 +556,7 @@ extends android.app.Application</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>routeTrackLogObservable</h4>
-<pre>public final&nbsp;<a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/model/WriteableTrackLog.html" title="class in mg.mgmap.model">WriteableTrackLog</a>&gt; routeTrackLogObservable</pre>
+<pre>public final&nbsp;<a href="../../mg/mgmap/MGMapApplication.TrackLogObservable.html" title="class in mg.mgmap">MGMapApplication.TrackLogObservable</a>&lt;<a href="../../mg/mgmap/model/WriteableTrackLog.html" title="class in mg.mgmap.generic.model">WriteableTrackLog</a>&gt; routeTrackLogObservable</pre>
 </li>
 </ul>
 </li>
@@ -593,13 +593,13 @@ extends android.app.Application</pre>
 <pre>public&nbsp;void&nbsp;addBgJobs(java.util.List&lt;<a href="../../mg/mgmap/util/BgJob.html" title="class in mg.mgmap.util">BgJob</a>&gt;&nbsp;jobs)</pre>
 </li>
 </ul>
-<a name="addTrackLogPoint-mg.mgmap.model.PointModel-">
+<a name="addTrackLogPoint-mg.mgmap.generic.model.PointModel-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>addTrackLogPoint</h4>
-<pre>public&nbsp;void&nbsp;addTrackLogPoint(<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&nbsp;pointModel)</pre>
+<pre>public&nbsp;void&nbsp;addTrackLogPoint(<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&nbsp;pointModel)</pre>
 </li>
 </ul>
 <a name="getBgJob--">

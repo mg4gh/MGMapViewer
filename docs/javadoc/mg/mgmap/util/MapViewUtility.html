@@ -98,7 +98,7 @@ var activeTableTab = "activeTableTab";
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li>mg.mgmap.util.MapViewUtility</li>
+<li>mg.mgmap.activity.mgmap.util.MapViewUtility</li>
 </ul>
 </li>
 </ul>
@@ -174,7 +174,7 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code><a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a></code></td>
+<td class="colFirst"><code><a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/util/MapViewUtility.html#getCenter--">getCenter</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -182,7 +182,7 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/util/MapViewUtility.html#getCloseThreshouldForZoomLevel--">getCloseThreshouldForZoomLevel</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code><a href="../../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.model">BBox</a></code></td>
+<td class="colFirst"><code><a href="../../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.generic.model">BBox</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/util/MapViewUtility.html#getMapViewBBox--">getMapViewBBox</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
@@ -203,11 +203,11 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/util/MapViewUtility.html#setMapViewPosition-mg.mgmap.model.PointModel-">setMapViewPosition</a></span>(<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&nbsp;pm)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/util/MapViewUtility.html#setMapViewPosition-mg.mgmap.generic.model.PointModel-">setMapViewPosition</a></span>(<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&nbsp;pm)</code>&nbsp;</td>
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/util/MapViewUtility.html#zoomForBoundingBox-mg.mgmap.model.BBox-">zoomForBoundingBox</a></span>(<a href="../../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.model">BBox</a>&nbsp;bBox)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../mg/mgmap/util/MapViewUtility.html#zoomForBoundingBox-mg.mgmap.generic.model.BBox-">zoomForBoundingBox</a></span>(<a href="../../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.generic.model">BBox</a>&nbsp;bBox)</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -249,7 +249,7 @@ extends java.lang.Object</pre>
 <pre>public static final&nbsp;float DEFAULT_TRACK_WIDTH</pre>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#mg.mgmap.util.MapViewUtility.DEFAULT_TRACK_WIDTH">Constant Field Values</a></dd>
+<dd><a href="../../../constant-values.html#mg.mgmap.activity.mgmap.util.MapViewUtility.DEFAULT_TRACK_WIDTH">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -294,7 +294,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getCenter</h4>
-<pre>public&nbsp;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&nbsp;getCenter()</pre>
+<pre>public&nbsp;<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&nbsp;getCenter()</pre>
 </li>
 </ul>
 <a name="getCloseThreshouldForZoomLevel--">
@@ -312,7 +312,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getMapViewBBox</h4>
-<pre>public&nbsp;<a href="../../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.model">BBox</a>&nbsp;getMapViewBBox()</pre>
+<pre>public&nbsp;<a href="../../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.generic.model">BBox</a>&nbsp;getMapViewBBox()</pre>
 </li>
 </ul>
 <a name="getMapViewDimension--">
@@ -351,22 +351,22 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;boolean&nbsp;isClose(double&nbsp;distance)</pre>
 </li>
 </ul>
-<a name="setMapViewPosition-mg.mgmap.model.PointModel-">
+<a name="setMapViewPosition-mg.mgmap.generic.model.PointModel-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setMapViewPosition</h4>
-<pre>public&nbsp;void&nbsp;setMapViewPosition(<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&nbsp;pm)</pre>
+<pre>public&nbsp;void&nbsp;setMapViewPosition(<a href="../../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&nbsp;pm)</pre>
 </li>
 </ul>
-<a name="zoomForBoundingBox-mg.mgmap.model.BBox-">
+<a name="zoomForBoundingBox-mg.mgmap.generic.model.BBox-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>zoomForBoundingBox</h4>
-<pre>public&nbsp;void&nbsp;zoomForBoundingBox(<a href="../../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.model">BBox</a>&nbsp;bBox)</pre>
+<pre>public&nbsp;void&nbsp;zoomForBoundingBox(<a href="../../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.generic.model">BBox</a>&nbsp;bBox)</pre>
 </li>
 </ul>
 </li>

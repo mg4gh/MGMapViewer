@@ -122,10 +122,10 @@ var activeTableTab = "activeTableTab";
 <li>androidx.appcompat.app.AppCompatActivity</li>
 <li>
 <ul class="inheritance">
-<li><a href="../../mg/mgmap/MapViewerBase.html" title="class in mg.mgmap">mg.mgmap.MapViewerBase</a></li>
+<li><a href="../../mg/mgmap/MapViewerBase.html" title="class in mg.mgmap">mg.mgmap.activity.mgmap.MapViewerBase</a></li>
 <li>
 <ul class="inheritance">
-<li>mg.mgmap.MGMapActivity</li>
+<li>mg.mgmap.activity.mgmap.MGMapActivity</li>
 </ul>
 </li>
 </ul>
@@ -233,7 +233,7 @@ implements org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback</pre>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="fields.inherited.from.class.mg.mgmap.MapViewerBase">
+<li class="blockList"><a name="fields.inherited.from.class.mg.mgmap.activity.mgmap.MapViewerBase">
 <!--   -->
 </a>
 <h3>Fields inherited from class&nbsp;mg.mgmap.<a href="../../mg/mgmap/MapViewerBase.html" title="class in mg.mgmap">MapViewerBase</a></h3>
@@ -313,7 +313,7 @@ implements org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback</pre>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>org.mapsforge.map.datastore.MapDataStore</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapActivity.html#getMapDataStore-mg.mgmap.model.BBox-">getMapDataStore</a></span>(<a href="../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.model">BBox</a>&nbsp;bBox)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapActivity.html#getMapDataStore-mg.mgmap.generic.model.BBox-">getMapDataStore</a></span>(<a href="../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.generic.model">BBox</a>&nbsp;bBox)</code>
 <div class="block">Return a MapDataStore if it contains a given BBox.</div>
 </td>
 </tr>
@@ -386,8 +386,8 @@ implements org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapActivity.html#requestReadPermissions--">requestReadPermissions</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i18" class="altColor">
-<td class="colFirst"><code><a href="../../mg/mgmap/model/TrackLogRefApproach.html" title="class in mg.mgmap.model">TrackLogRefApproach</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapActivity.html#selectCloseTrack-mg.mgmap.model.PointModel-">selectCloseTrack</a></span>(<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&nbsp;pmTap)</code>&nbsp;</td>
+<td class="colFirst"><code><a href="../../mg/mgmap/model/TrackLogRefApproach.html" title="class in mg.mgmap.generic.model">TrackLogRefApproach</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../mg/mgmap/MGMapActivity.html#selectCloseTrack-mg.mgmap.generic.model.PointModel-">selectCloseTrack</a></span>(<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&nbsp;pmTap)</code>&nbsp;</td>
 </tr>
 <tr id="i19" class="rowColor">
 <td class="colFirst"><code>void</code></td>
@@ -397,7 +397,7 @@ implements org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback</pre>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.mg.mgmap.MapViewerBase">
+<li class="blockList"><a name="methods.inherited.from.class.mg.mgmap.activity.mgmap.MapViewerBase">
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;mg.mgmap.<a href="../../mg/mgmap/MapViewerBase.html" title="class in mg.mgmap">MapViewerBase</a></h3>
@@ -496,7 +496,7 @@ implements org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback</pre>
 <pre>private static final&nbsp;int ACCESS_FINE_LOCATION_CODE</pre>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../constant-values.html#mg.mgmap.MGMapActivity.ACCESS_FINE_LOCATION_CODE">Constant Field Values</a></dd>
+<dd><a href="../../constant-values.html#mg.mgmap.activity.mgmap.MGMapActivity.ACCESS_FINE_LOCATION_CODE">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -552,7 +552,7 @@ implements org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback</pre>
 <pre>private static final&nbsp;int READ_EXTERNAL_STORAGE_CODE</pre>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../constant-values.html#mg.mgmap.MGMapActivity.READ_EXTERNAL_STORAGE_CODE">Constant Field Values</a></dd>
+<dd><a href="../../constant-values.html#mg.mgmap.activity.mgmap.MGMapActivity.READ_EXTERNAL_STORAGE_CODE">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -638,13 +638,13 @@ implements org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback</pre>
 <pre>public&nbsp;<a href="../../mg/mgmap/ControlView.html" title="class in mg.mgmap">ControlView</a>&nbsp;getControlView()</pre>
 </li>
 </ul>
-<a name="getMapDataStore-mg.mgmap.model.BBox-">
+<a name="getMapDataStore-mg.mgmap.generic.model.BBox-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getMapDataStore</h4>
-<pre>public&nbsp;org.mapsforge.map.datastore.MapDataStore&nbsp;getMapDataStore(<a href="../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.model">BBox</a>&nbsp;bBox)</pre>
+<pre>public&nbsp;org.mapsforge.map.datastore.MapDataStore&nbsp;getMapDataStore(<a href="../../mg/mgmap/model/BBox.html" title="class in mg.mgmap.generic.model">BBox</a>&nbsp;bBox)</pre>
 <div class="block">Return a MapDataStore if it contains a given BBox. This is used e.g. to find the MapDataStore for route calculation.</div>
 </li>
 </ul>
@@ -807,13 +807,13 @@ implements org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback</pre>
 <pre>public&nbsp;boolean&nbsp;requestReadPermissions()</pre>
 </li>
 </ul>
-<a name="selectCloseTrack-mg.mgmap.model.PointModel-">
+<a name="selectCloseTrack-mg.mgmap.generic.model.PointModel-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>selectCloseTrack</h4>
-<pre>public&nbsp;<a href="../../mg/mgmap/model/TrackLogRefApproach.html" title="class in mg.mgmap.model">TrackLogRefApproach</a>&nbsp;selectCloseTrack(<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.model">PointModel</a>&nbsp;pmTap)</pre>
+<pre>public&nbsp;<a href="../../mg/mgmap/model/TrackLogRefApproach.html" title="class in mg.mgmap.generic.model">TrackLogRefApproach</a>&nbsp;selectCloseTrack(<a href="../../mg/mgmap/model/PointModel.html" title="interface in mg.mgmap.generic.model">PointModel</a>&nbsp;pmTap)</pre>
 </li>
 </ul>
 <a name="triggerTrackLoggerService--">

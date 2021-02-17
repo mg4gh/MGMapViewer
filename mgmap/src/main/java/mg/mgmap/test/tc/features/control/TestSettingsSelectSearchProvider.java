@@ -33,7 +33,7 @@ public class TestSettingsSelectSearchProvider extends Testcase {
     protected void addRegexs() {
         addRegex("Testcase.start.*  TestSettingsSelectSearchProvider");
         addRegex("key=FSControl.qc_selector value=1");
-        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.settings.MainPreferenceScreen");
+        addRegex("SettingsActivity.onCreate.* open PreferenceFragment mg.mgmap.activity.settings.MainPreferenceScreen");
         addRegex("SearchProviderListPreference.onClick.*  key=SelectSearchProvider value=Graphhopper");
         addRegex("SearchProviderListPreference.*  key=SelectSearchProvider value=Pelias");
         addRegex("mg.mgmap.test.TestControl.onResume.* set TestView MGMapActivity");

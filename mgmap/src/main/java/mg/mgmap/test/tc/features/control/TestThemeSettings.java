@@ -3,10 +3,10 @@ package mg.mgmap.test.tc.features.control;
 import android.graphics.PointF;
 import android.util.Log;
 
-import mg.mgmap.MGMapApplication;
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.test.Testcase;
 import mg.mgmap.test.TestControl;
-import mg.mgmap.util.NameUtil;
+import mg.mgmap.generic.util.basic.NameUtil;
 
 public class TestThemeSettings extends Testcase {
 
@@ -35,7 +35,7 @@ public class TestThemeSettings extends Testcase {
         addRegex("Testcase.start.*  TestThemeSettings");
         addRegex("key=FSControl.qc_selector value=1");
         addRegex("onActivityResumed.*  ThemeSettings");
-        addRegex("mg.mgmap.MapViewerBase.onSharedPreferenceChanged.*  recreate MGMapActivity due to key=PrefThemeChanged");
+        addRegex("MapViewerBase.*  recreate MGMapActivity due to key=PrefThemeChanged");
         addRegex("mg.mgmap.test.TestControl.onResume.* set TestView MGMapActivity");
     }
 }
