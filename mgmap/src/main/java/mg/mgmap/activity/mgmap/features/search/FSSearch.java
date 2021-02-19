@@ -252,6 +252,10 @@ public class FSSearch extends FeatureService {
     public void setSearchResult(PointModel pmSearchResult) {
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmSearchResult);
         prefShowPos.setValue(pmSearchResult.getLaLo());
-        prefShowSearchResult.setValue(true);
+        if (prefShowSearchResult.getValue()){
+            prefShowSearchResult.onChange(); // even if result is already shown, this triggers to center the result
+        } else {
+            prefShowSearchResult.setValue(true);
+        }
     }
 }
