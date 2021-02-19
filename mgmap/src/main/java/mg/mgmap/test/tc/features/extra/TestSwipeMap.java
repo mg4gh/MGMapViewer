@@ -1,4 +1,4 @@
-package mg.mgmap.test.tc.extra;
+package mg.mgmap.test.tc.features.extra;
 
 import android.graphics.PointF;
 

@@ -365,7 +365,9 @@ public class TrackStatisticActivity extends AppCompatActivity {
                 ArrayList<TrackStatisticEntry> entries = getModifiedEntries();
                 for (TrackStatisticEntry entry : entries){
                     TrackLog aTrackLog = entry.getTrackLog();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" save "+aTrackLog.getName());
                     GpxExporter.export(persistenceManager, aTrackLog);
+                    application.getMetaDataUtil().createMetaData(aTrackLog);
                 }
             }
         };

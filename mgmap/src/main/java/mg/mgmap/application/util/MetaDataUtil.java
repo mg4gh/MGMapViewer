@@ -38,7 +38,7 @@ import mg.mgmap.generic.util.basic.NameUtil;
 
 public class MetaDataUtil {
 
-    public static final long MAGIC = 0xAFFEAFFED00FD00Fl;
+    public static final long MAGIC = 0xAFFEAFFED00FD00FL;
     public static final int VERSION = 0x0200;
 
     PersistenceManager persistenceManager;
@@ -51,10 +51,11 @@ public class MetaDataUtil {
         for (int idx=0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
             ArrayList<MetaData> metaDatas = segment.getMetaDatas();
+            metaDatas.clear();                                            // just in case there are already some meta data
 
             for (int pIdx=0; pIdx<segment.size(); pIdx++){
                 int mIdx = pIdx / MetaData.POINTS_PER_BUF;
-                if (mIdx >= metaDatas.size()){                             // if we need next metaData entry
+                if (mIdx >= metaDatas.size()){                            // if we need next metaData entry
                     metaDatas.add(new MetaData());                        // then create it
                     MetaData metaData = metaDatas.get(mIdx);
                     metaData.buf = ByteBuffer.allocate(MetaData.BUF_SIZE);// allocate the byte buffer

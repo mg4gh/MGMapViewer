@@ -65,11 +65,11 @@ public class HeightProfileActivity extends AppCompatActivity {
         Log.i(MGMapApplication.LABEL, NameUtil.context() +" finished");
     }
 
-    public static boolean check4trackLogRef(MGMapApplication application){
-        if (null != application.recordingTrackLogObservable.getTrackLog()) return true;
-        if (null != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) return true;
-        return (null != application.routeTrackLogObservable.getTrackLog());
-    }
+//    public static boolean check4trackLogRef(MGMapApplication application){
+//        if (null != application.recordingTrackLogObservable.getTrackLog()) return true;
+//        if (null != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) return true;
+//        return (null != application.routeTrackLogObservable.getTrackLog());
+//    }
 
     @Override
     protected void onPause() {

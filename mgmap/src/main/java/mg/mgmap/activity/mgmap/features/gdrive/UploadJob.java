@@ -27,11 +27,11 @@ import mg.mgmap.generic.util.Zipper;
 
 public class UploadJob extends BgJob {
 
-    private Drive dservice; // drive service
-    private Zipper zip; // zip file creator to use
-    private String idMgmFolder; // id of target folder on gdrive
-    private File gpxFolder; // local folder for gpx files
-    private String name; // filename to upload
+    private final Drive dservice; // drive service
+    private final Zipper zip; // zip file creator to use
+    private final String idMgmFolder; // id of target folder on gdrive
+    private final File gpxFolder; // local folder for gpx files
+    private final String name; // filename to upload
 
     UploadJob(Drive dservice, Zipper zip, String idMgmFolder, File gpxFolder, String name) {
         this.dservice = dservice;

@@ -55,7 +55,11 @@ public class Testcase {
         return running;
     }
 
-    protected void setup(){}
+    protected void setup(){
+        setup(0);
+    }
+
+    protected void setup(int startDelay){}
 
     protected void addRegexs(){}
 

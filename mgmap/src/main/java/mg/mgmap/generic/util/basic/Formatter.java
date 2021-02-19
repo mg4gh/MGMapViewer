@@ -25,9 +25,9 @@ public class Formatter {
     public static final SimpleDateFormat SDF1 = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
     public static final SimpleDateFormat SDF2 = new SimpleDateFormat("HH:mm", Locale.GERMANY);
 
-    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DATE, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING};
+    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DATE, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING}
 
-    private FormatType formatType;
+    private final FormatType formatType;
 
     public Formatter(FormatType formatType){
         this.formatType = formatType;

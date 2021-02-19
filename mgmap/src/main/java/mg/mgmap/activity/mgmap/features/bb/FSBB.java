@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.activity.mgmap.MGMapLayerFactory;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.tilestore.MGTileStore;
