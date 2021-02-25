@@ -9,12 +9,33 @@ def getDate() {
 
 afterEvaluate {
 
-     task mylist {
+
+
+//    task runWithExec(type: Exec) {
+//        dependsOn build
+//        group = "Execution"
+//        description = "Run the main class with ExecTask"
+//        commandLine "java", "-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mg.mgmap.generic.uti.SHA256
+//    }
+    task generateSHA(type: JavaExec, dependsOn: assembleDebug) {
+        group = "Execution"
+        description = "Run the main class with JavaExecTask"
+        classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
+        main = "mg.mgmap.generic.util.SHA256"
+        args files("${buildDir}/outputs/apk/debug")
+
+
+
+//        classpath = sourceSets.main.runtimeClasspath
+//        classpath = files( "$buildDir/intermediates/app_classes/debug/classes.jar");
+    }
+//    build.finalizedBy(runWithJavaExec)
+
+     task mylist ()  {
          assembleRelease.dependsOn( mylist )
          assembleDebug.dependsOn( mylist )
          System.out.println("mylist is executed")
          PrintWriter out = new PrintWriter( new File("${rootDir}/mgmap/src/main/assets/testcases.list"))
-         def strs = new TreeSet<String>()
          def files =  fileTree("${rootDir}").matching {include "**/src/main/java/**/test/tc*/**"}.files
          for (File file : files){
              out.println(file.absolutePath
@@ -64,6 +85,13 @@ afterEvaluate {
             System.out.println( "_mgmapPublish finished" )
         }
     }
+
+    task _mgmapDebugApk (dependsOn: generateSHA){
+        doLast {
+            System.out.println( "_mgmapDebugApk finished" )
+        }
+    }
+
 
 }
 
@@ -146,6 +174,7 @@ dependencies {
     api 'net.sf.kxml:kxml2:2.3.0'
 
     implementation 'com.android.support:preference-v7:29.0.0'
+    implementation files('libs/commons-net-3.8.0.jar')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

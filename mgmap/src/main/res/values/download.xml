@@ -43,6 +43,10 @@
     <string name="preferences_dl_sw_latest_title">Download and Install latest apk</string>
     <string name="preferences_dl_sw_latest_desc">Download and Install the latest apk from https://github.com/mg4gh/MGMapViewer</string>
 
+    <string name="preferences_dl_sw_local_key">DldSWLocalKey</string>
+    <string name="preferences_dl_sw_local_title">Download apk from local FTP Server</string>
+    <string name="preferences_dl_sw_local_desc">Download the local apk (needs FTP server configuration)</string>
+
     <string name="preferences_dl_sw_other_key">DldSWOtherKey</string>
     <string name="preferences_dl_sw_other_title">Download other apk</string>
     <string name="preferences_dl_sw_other_desc">Download the other apk from https://github.com/mg4gh/MGMapViewer</string>

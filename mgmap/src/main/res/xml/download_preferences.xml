@@ -50,6 +50,11 @@
             app:summary="@string/preferences_dl_sw_latest_desc"
             />
         <Preference
+            app:key="@string/preferences_dl_sw_local_key"
+            app:title="@string/preferences_dl_sw_local_title"
+            app:summary="@string/preferences_dl_sw_local_desc"
+            />
+        <Preference
             app:key="@string/preferences_dl_sw_other_key"
             app:title="@string/preferences_dl_sw_other_title"
             app:summary="@string/preferences_dl_sw_other_desc"
