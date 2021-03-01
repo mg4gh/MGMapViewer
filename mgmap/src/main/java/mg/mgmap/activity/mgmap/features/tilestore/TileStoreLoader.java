@@ -25,6 +25,8 @@ import org.mapsforge.map.layer.queue.Job;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -34,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Properties;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -243,27 +246,27 @@ public class TileStoreLoader {
             Log.i(MGMapApplication.LABEL, NameUtil.context() + " ok" );
         });
 
-        if ((errorCounter == jobCounter) && (new File(storeDir, "cookies.json").exists()) ){
+        if ((errorCounter == jobCounter) && (new File(storeDir, "retry.json").exists()) ){
             if ((jobs.size()>0) && (jobs.get(0) instanceof MGTileStoreLoaderJob)){
                 builder.setNegativeButton("Retry", (dialog, which) -> {
                     Log.i(MGMapApplication.LABEL, NameUtil.context() + " Retry" );
-                    new TermuxUtil(activity).runCommand("cookies.sh");
-                    Pref<String> ps = activity.getPrefCache().get(R.string.activity_param_key, "");
-                    ps.deleteObservers();
-                    ps.addObserver(new Observer() {
+                    new Thread(){
                         @Override
-                        public void update(Observable o, Object arg) {
+                        public void run() {
                             try {
-                                Log.i(MGMapApplication.LABEL, NameUtil.context() + " process termux callback" );
-                                handleTermuxCallback(ps.getValue());
-                                init();
-                                application.addBgJobs(jobs);
+                                FileInputStream is = new FileInputStream(new File(storeDir, "retry.json"));
+                                FileOutputStream os = new FileOutputStream(new File(storeDir, "cookies.json"));
+                                Properties props = new Properties();
+                                props.load( new FileInputStream(new File(storeDir, "param.properties")) );
+                                if (new DynamicHandler(is, os, props).run()){
+                                    init();
+                                    application.addBgJobs(jobs);
+                                }
                             } catch (Exception e) {
                                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                             }
                         }
-                    });
-
+                    }.start();
                     dialog.dismiss();
                 });
             }
@@ -273,36 +276,4 @@ public class TileStoreLoader {
         alert.show();
     }
 
-    void handleTermuxCallback(String argss) throws Exception{
-        if ((argss != null) && (argss.length() > 10)){
-            String[] args = argss.split(":");
-            String nl = System.lineSeparator();
-            boolean checkOk = true;
-            StringBuilder sb = new StringBuilder("[").append(nl);
-            for (String arg : args){
-                String[] argt = arg.split("=");
-                if (argt.length == 2){
-                    if ((argt[0].length() > 0)  && (argt[1].length() > 0)){
-                        sb.append("{").append(nl);
-                        sb.append("    \"Name raw\": \"").append(argt[0]).append("\",").append(nl);
-                        sb.append("    \"Content raw\": \"").append(argt[1]).append("\"").append(nl);
-                        sb.append("}");
-                        if (!(args[args.length-1].equals(arg))) sb.append(","); // if not the last
-                        sb.append(nl);
-                    } else{
-                        checkOk = false;
-                    }
-                } else {
-                    checkOk = false;
-                }
-            }
-            sb.append("]").append(nl);
-
-            if (checkOk){
-                PrintWriter pw = new PrintWriter(new File(storeDir, "cookies.json"));
-                pw.println(sb.toString());
-                pw.close();
-            }
-        }
-    }
 }

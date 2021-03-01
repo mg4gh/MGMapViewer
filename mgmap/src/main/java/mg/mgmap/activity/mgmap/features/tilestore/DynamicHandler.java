@@ -1,11 +1,8 @@
-package com.example.myxxx;
+package mg.mgmap.activity.mgmap.features.tilestore;
 
 import android.util.Log;
 
-import org.json.JSONArray;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,11 +22,12 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
+import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.NameUtil;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class DynamicHandler {
@@ -36,19 +35,20 @@ public class DynamicHandler {
     Map<String, String> map = new HashMap<>();
     InputStream is;
     OutputStream os;
-    public DynamicHandler(InputStream is, OutputStream os) {
+    Properties props;
+
+    public DynamicHandler(InputStream is, OutputStream os, Properties props) {
         this.is = is;
         this.os = os;
+        this.props = props;
     }
 
-    public void run() throws  Exception{
+    public boolean run() throws Exception {
         JsonReader jsonReader = Json.createReader(is);
         JsonArray cAll = jsonReader.readArray();
 
-        Log.i("XXXX", "Hello");
-
         int cnt = 1;
-
+        boolean res = false;
         for (JsonValue cOneV : cAll) {
             OkHttpClient client = new OkHttpClient().newBuilder()
                     .followRedirects(false)
@@ -56,11 +56,11 @@ public class DynamicHandler {
                     .build();
 
             JsonObject cOne = cOneV.asJsonObject();
-            Log.i("XXXX", " cOne=" +cOne);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" cOne=" +cOne);
 
             JsonObject init = cOne.getJsonObject("Init");
             if (init != null){
-                for (Map.Entry<String,JsonValue> entry : init.entrySet()){
+                for (Map.Entry<String, JsonValue> entry : init.entrySet()){
                     String k = entry.getKey();
                     if (entry.getValue().getValueType() == JsonValue.ValueType.STRING){
                         map.put(k, subst(init.getString(k)) );
@@ -76,27 +76,27 @@ public class DynamicHandler {
                 }
             }
 
-            Log.v("XXXX", "Map after init");
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+ " Map after init");
             for (String key : map.keySet()){
-                Log.v("XXXX", "k="+key+" v="+map.get(key));
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+" k="+key+" v="+map.get(key));
             }
 
 
             String type = cOne.getString("Type");
-            Log.i("XXXX", "Type="+type);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Type="+type);
 
 
             String url = cOne.getString("URL");
-            Log.i("XXXX", "1 URL="+url);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" 1 URL="+url);
 
             JsonObject params = cOne.getJsonObject("Params");
             if (params != null){
-                for (Map.Entry<String,JsonValue> entry : params.entrySet()){
+                for (Map.Entry<String, JsonValue> entry : params.entrySet()){
                     String k = entry.getKey();
                     url += "&"+ kv(k, params.getString(k));
                 }
             }
-            Log.i("XXXX", "2 URL="+url);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" 2 URL="+url);
 
             Request.Builder requestBuilder = new Request.Builder()
                     .header("Content-Encoding", "gzip")
@@ -106,10 +106,10 @@ public class DynamicHandler {
                 JsonObject bodyParams = cOne.getJsonObject("BodyReq");
                 if (bodyParams != null){
                     FormBody.Builder fbb = new FormBody.Builder();
-                    for (Map.Entry<String,JsonValue> entry : bodyParams.entrySet()){
+                    for (Map.Entry<String, JsonValue> entry : bodyParams.entrySet()){
                         String k = entry.getKey();
                         String v = subst( bodyParams.getString(k) );
-                        Log.v("XXXX"," body params: "+k+": "+v);
+                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" body params: "+k+": "+v);
                         fbb.add(k, v);
                     }
                     FormBody fb = fbb.build();
@@ -119,10 +119,10 @@ public class DynamicHandler {
 
             JsonObject header = cOne.getJsonObject("Header");
             if (header != null){
-                for (Map.Entry<String,JsonValue> entry : header.entrySet()){
+                for (Map.Entry<String, JsonValue> entry : header.entrySet()){
                     String k = entry.getKey();
                     String v = subst(header.getString(k));
-                    Log.v("XXXX"," request header: "+k+": "+v);
+                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" request header: "+k+": "+v);
                     requestBuilder.addHeader(k,v);
                 }
             }
@@ -132,16 +132,16 @@ public class DynamicHandler {
             Call call = client.newCall(request);
             Response response = call.execute();
 
-            Log.i("XXXX", " rc="+response.code());
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" rc="+response.code());
             for (String s : response.headers().names()){
                 for (String v : response.headers(s)){
-                    Log.v("XXXX"," response header: "+s+": "+v);
+                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" response header: "+s+": "+v);
                 }
             }
 
             JsonObject headerResp = cOne.getJsonObject("HeaderResp");
             if (headerResp != null){
-                for (Map.Entry<String,JsonValue> entry : headerResp.entrySet()){
+                for (Map.Entry<String, JsonValue> entry : headerResp.entrySet()){
                     String k = entry.getKey();
                     JsonArray ja = entry.getValue().asJsonArray();
                     for (int i=0; i<ja.size(); i++){
@@ -153,14 +153,14 @@ public class DynamicHandler {
 
             JsonObject bodyResp = cOne.getJsonObject("BodyResp");
             if (bodyResp != null){
-                for (Map.Entry<String,JsonValue> entry : bodyResp.entrySet()){
+                for (Map.Entry<String, JsonValue> entry : bodyResp.entrySet()){
                     String k = entry.getKey();
                     getFromResponse(response, k, bodyResp.getString(k));
                 }
             }
-            Log.v("XXXX", "Map after resp");
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Map after resp");
             for (String key : map.keySet()){
-                Log.i("XXXX", "k="+key+" v="+map.get(key));
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " k="+key+" v="+map.get(key));
             }
 
             JsonString number = cOne.getJsonString("Number");
@@ -196,14 +196,14 @@ public class DynamicHandler {
                     PrintWriter pw = new PrintWriter(os);
                     pw.println(sb.toString());
                     pw.close();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" checkOk");
+                    res = true;
                 }
             }
 
-            Log.i("XXXX", "************************* "+(cnt++)+" finished *****************************");
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+"************************* "+(cnt++)+" finished *****************************");
         }
-        Log.i("XXXX", "Goodbye");
-
-
+        return res;
     }
 
     public String subst(String value){
@@ -223,13 +223,15 @@ public class DynamicHandler {
         }
         if (value.startsWith("$KV{") && value.endsWith("}")){
             String varName = value.substring(4,value.length()-1);
-//            Log.i("XXXX", " varName="+varName);
             value = varName+"="+map.get(varName);
         }
         if (value.startsWith("${") && value.endsWith("}")){
             String varName = value.substring(2,value.length()-1);
-//            Log.i("XXXX", " varName="+varName);
             value = map.get(varName);
+        }
+        if (value.startsWith("$P{") && value.endsWith("}")){
+            String varName = value.substring(3,value.length()-1);
+            value = props.getProperty(varName);
         }
         return value;
     }
@@ -242,19 +244,11 @@ public class DynamicHandler {
     }
 
 
-
-
-
-
-
-
-    private boolean getHeader(Response response, String group, String name) {
+    private void getHeader(Response response, String group, String name) {
         String value = getFromHeader(response, group, name);
         if (value != null){
             map.put(name, value);
-            return true;
         }
-        return false;
     }
 
     private String getFromHeader(Response response, String group, String name){
@@ -273,13 +267,11 @@ public class DynamicHandler {
         return null;
     }
 
-    private boolean getFromResponse(Response response, String name, String pattern) {
+    private void getFromResponse(Response response, String name, String pattern) {
         String value = getFromResponseBody(response, pattern, 1);
         if (value != null){
             map.put(name, value);
-            return true;
         }
-        return false;
     }
 
 
@@ -308,7 +300,7 @@ public class DynamicHandler {
             String line = "";
             int cnt = 0;
             while ((line = in.readLine()) != null){
-                Log.i("XXXX", String.format("lc=%04d %s", cnt++,line));
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+ String.format("lc=%04d %s", cnt++,line));
                 if (cnt > numLines) return;
             }
 
