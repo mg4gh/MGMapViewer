@@ -90,15 +90,16 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                             persistenceManager.cleanApkDir();
                             zipper.unpack(url, persistenceManager.getApkDir(), null, this);
 
-                            File file = persistenceManager.getApkFile();
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-
-                            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
-                            intent.setDataAndType(uri, "application/vnd.android.package-archive");
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            startActivity(intent);
+                            verifyAndInstall(context, persistenceManager);
+//                            File file = persistenceManager.getApkFile();
+//                            Intent intent = new Intent(Intent.ACTION_VIEW);
+//                            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+//
+//                            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+//                            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+//                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                            startActivity(intent);
                         }
                     };
                     jobs.add(job);
@@ -197,32 +198,33 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                                     mFTPClient.disconnect();
 
                                     if (success){
-                                        File file = persistenceManager.getApkFile();
-                                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Install file="+file.getAbsolutePath());
-                                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Install size="+file.length());
-                                        if (SHA256.verify(file)){
-                                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" checksum verification successful");
-                                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                                            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-
-                                            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
-                                            intent.setDataAndType(uri, "application/vnd.android.package-archive");
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                            startActivity(intent);
-                                        } else {
-                                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-                                            builder.setTitle("APK Installation");
-                                            builder.setMessage("FTP transfer failed, bad SHA256 checksum.");
-
-                                            builder.setNegativeButton("Abort", (dialog, which) -> {
-                                                dialog.dismiss();
-                                                Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it - abort." );
-                                            });
-                                            AlertDialog alert = builder.create();
-                                            alert.show();
-                                        }
+                                        verifyAndInstall(context, persistenceManager);
+//                                        File file = persistenceManager.getApkFile();
+//                                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Install file="+file.getAbsolutePath());
+//                                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Install size="+file.length());
+//                                        if (SHA256.verify(file)){
+//                                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" checksum verification successful");
+//                                            Intent intent = new Intent(Intent.ACTION_VIEW);
+//                                            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+//
+//                                            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+//                                            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+//                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                                            startActivity(intent);
+//                                        } else {
+//                                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//
+//                                            builder.setTitle("APK Installation");
+//                                            builder.setMessage("FTP transfer failed, file missed or bad SHA256 checksum.");
+//
+//                                            builder.setNegativeButton("Abort", (dialog, which) -> {
+//                                                dialog.dismiss();
+//                                                Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it - abort." );
+//                                            });
+//                                            AlertDialog alert = builder.create();
+//                                            alert.show();
+//                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -239,6 +241,41 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 return true;
             }
         });
+    }
+
+    private void verifyAndInstall(Context context, PersistenceManager persistenceManager){
+        File file = persistenceManager.getApkFile();
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Install file="+file.getAbsolutePath());
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Install size="+file.length());
+        if (SHA256.verify(file)){
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" checksum verification successful");
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+
+            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        } else {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                    builder.setTitle("APK Installation");
+                    builder.setMessage("FTP transfer failed, file missed or bad SHA256 checksum.");
+
+                    builder.setNegativeButton("Abort", (dialog, which) -> {
+                        dialog.dismiss();
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it - abort." );
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            });
+        }
+
     }
 
 }

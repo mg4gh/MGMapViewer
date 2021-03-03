@@ -52,12 +52,12 @@ public class SHA256 {
                 if (f2.exists()) {
                     String line = new BufferedReader(new FileReader(f2)).readLine();
                     String hash = getFileChecksum(md, apkFile);
-
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+"\n calcSHA="+hash+"\ntransSHA="+line.replaceFirst(".*=",""));
-                    if (hash.equals(line.replaceFirst(".*=", ""))) {
-                        res = true;
+                    if (line != null){
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+"\n calcSHA="+hash+"\ntransSHA="+line.replaceFirst(".*=",""));
+                        if (hash.equals(line.replaceFirst(".*=", ""))) {
+                            res = true;
+                        }
                     }
-
                 }
             }
         } catch (Exception e) {
