@@ -83,7 +83,16 @@ afterEvaluate {
         }
     }
 
+    task startFTP2(type: JavaExec, dependsOn: assembleDebug) {
+        workingDir = "C:/data/dev/Java/FTP"
+        classpath = files("C:/data/dev/Java/FTP/prepJar.jar")
+    }
+
     task _mgmapDebugApk (dependsOn: generateDebugSHA){
+        File ftpDir = new File("C:/data/dev/Java/FTP");
+        if (ftpDir.exists()){
+            dependsOn(startFTP2);
+        }
         doLast {
             System.out.println( "_mgmapDebugApk finished" )
         }
