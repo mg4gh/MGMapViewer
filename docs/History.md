@@ -34,7 +34,7 @@ structure of the code I decided, that I will try to make my own app - just for m
 
 Since this time the app was working quite well for me, but I made some shortcuts (I knew the device it was for), so some aspects were
 realized rather dirty. From time to time I added a few features, so the code become a little bit confusing at some points ... <br/>
-Now in 2020 I decided to spend some time for a renewal of the code. With all the experiences from the last 
+In 2020 I decided to spend some time for a renewal of the code. With all the experiences from the last 
 few years I refactored the app. After spending quite a lot of time it's too pitty to use it only for myself. So the next step is to 
 provide the code via github to everybody (who is able to find it there).
 

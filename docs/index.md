@@ -1,11 +1,13 @@
-The [**MGMapViewer**](./README.md) app is first of all a viewer on maps. But it provides also several options
-to deal with tracks. 
-This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) library available via github. 
-This library provides an excellent base for vector map visualisation. There were a few contributions to the mapsforge 
-project to enable straight forward implementation in this app.
+### Plan - Record - View - Share
+Based on the excellent [mapsforge](https://github.com/mapsforge/mapsforge) library the **MGMapViewer** app can handle multiple map types. 
+Using offline vector maps from (e.g. from [openandromaps](https://www.openandromaps.org/)) you can plan, record, view and share
+your tracks ... and much more.
 
-This is the [Getting Started](./GettingStarted/GettingStarted.md).
-For the usage please check the [quick control sections](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of the MGMapActivity.
+<img src="./Features/MainTrackFeatures/Routing/RouteA.png" width="190" />&nbsp;<img src="./Features/MainTrackFeatures/TrackRecord/RecordA.png" width="190" />&nbsp;<img src="./Features/MainTrackFeatures/TrackVisualization/gainLoss1.png" width="190" />&nbsp;<img src="./Features/FurtherFeatures/Statistic/StatisticA.png" width="190" />
+
+
+Here you can find the [Getting Started](./GettingStarted/GettingStarted.md).
+For the usage please check also the [quick control sections](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of the MGMapActivity.
 
 # Feature overview
 
