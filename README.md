@@ -1,9 +1,15 @@
 # MGMapViewer
-This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) library available via github. 
+This app is mainly intended for biking and hiking. It is based on the [mapsforge](https://github.com/mapsforge/mapsforge) library available via github.
 
-## Examples
-<img src="./docs/Features/MainMapFeatures/Mapsforge/mapsforge_map.png" width="400" />&nbsp; 
-<img src="./docs/Features/MainMapFeatures/MapMulti/multi_map1.png" width="400" />
+## Plan - Record - View - Share
+Based on the great offline maps from (e.g. from [openandromaps](https://www.openandromaps.org/)) you can plan, record, view and share
+your tracks ... and much more.
+
+<img src="./docs/Features/MainTrackFeatures/Routing/RouteA.png" width="400" />&nbsp;
+<img src="./docs/Features/MainTrackFeatures/TrackRecord/RecordA.png" width="400" />&nbsp;
+
+<img src="./docs/Features/MainTrackFeatures/TrackVisualization/gainLoss1.png" width="400" />
+<img src="./docs/Features/FurtherFeatures/Statistic/StatisticA.png" width="400" />
 
 
 ## License 
