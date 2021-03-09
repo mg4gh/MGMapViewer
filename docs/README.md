@@ -5,9 +5,9 @@ This app is mainly intended for biking and hiking. It is based on the [mapsforge
 Based on the great offline maps from (e.g. from [openandromaps](https://www.openandromaps.org/)) you can plan, record, view and share
 your tracks ... and much more.
 
-<img src="./docs/Features/MainTrackFeatures/Routing/RouteA.png" width="400" />&nbsp;<img src="./docs/Features/MainTrackFeatures/TrackRecord/RecordA.png" width="400" />&nbsp;
+<img src="./Features/MainTrackFeatures/Routing/RouteA.png" width="400" />&nbsp;<img src="./Features/MainTrackFeatures/TrackRecord/RecordA.png" width="400" />&nbsp;
 
-<img src="./docs/Features/MainTrackFeatures/TrackVisualization/gainLoss1.png" width="400" />&nbsp;<img src="./docs/Features/FurtherFeatures/Statistic/StatisticA.png" width="400" />
+<img src="./Features/MainTrackFeatures/TrackVisualization/gainLoss1.png" width="400" />&nbsp;<img src="./Features/FurtherFeatures/Statistic/StatisticA.png" width="400" />
 
 
 ## License 
@@ -16,7 +16,7 @@ the license of these maps!
 
 
 ## User documentation
-You will find the documentation on [GitHub Pages](https://mg4gh.github.io/MGMapViewer/) or directly on [GitHub](./docs/index.md).
+You will find the documentation on [GitHub Pages](https://mg4gh.github.io/MGMapViewer/) or directly on [GitHub](./index.md).
 
 
 

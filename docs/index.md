@@ -1,4 +1,4 @@
-The **MGMapViewer** app is first of all a viewer on maps. But it provides also several options
+The [**MGMapViewer**](./README.md) app is first of all a viewer on maps. But it provides also several options
 to deal with tracks. 
 This app is based on the [mapsforge](https://github.com/mapsforge/mapsforge) library available via github. 
 This library provides an excellent base for vector map visualisation. There were a few contributions to the mapsforge 
