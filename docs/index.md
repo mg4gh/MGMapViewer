@@ -1,13 +1,13 @@
 ### Plan - Record - View - Share
 Based on the excellent [mapsforge](https://github.com/mapsforge/mapsforge) library the **MGMapViewer** app can handle multiple map types. 
-Using offline vector maps from (e.g. from [openandromaps](https://www.openandromaps.org/)) you can plan, record, view and share
+Using offline vector maps (e.g. from [openandromaps](https://www.openandromaps.org/)) you can plan, record, view and share
 your tracks ... and much more.
 
 <img src="./Features/MainTrackFeatures/Routing/RouteA.png" width="190" />&nbsp;<img src="./Features/MainTrackFeatures/TrackRecord/RecordA.png" width="190" />&nbsp;<img src="./Features/MainTrackFeatures/TrackVisualization/gainLoss1.png" width="190" />&nbsp;<img src="./Features/FurtherFeatures/Statistic/StatisticA.png" width="190" />
 
 
 Here you can find the [Getting Started](./GettingStarted/GettingStarted.md).
-For the usage please check also the [quick control sections](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of the MGMapActivity.
+For the usage please check also the [quick control sections](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md).
 
 # Feature overview
 
