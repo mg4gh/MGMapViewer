@@ -67,7 +67,7 @@ public class PersistenceManager {
 //        return persistenceManager;
 //    }
 
-    private final File baseDir;
+    private File baseDir;
     private final File appDir;
 
     private final File trackMetaDir;
@@ -98,6 +98,20 @@ public class PersistenceManager {
         this.context = context;
 
         baseDir = context.getExternalFilesDir(null);
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Default Storage: "+baseDir.getAbsolutePath());
+
+        if (! new File(baseDir, "MGMapViewer").exists()){
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " Default Storage not found - check alternatives");
+            for (File f : context.getExternalFilesDirs(null)){
+                boolean exists = new File(f, "MGMapViewer").exists();
+                Log.i(MGMapApplication.LABEL, NameUtil.context() + "check Storage: "+baseDir.getAbsolutePath()+" ->exists: "+exists);
+                if (exists){
+                    baseDir = f;
+                }
+                Log.i(MGMapApplication.LABEL, NameUtil.context() + " f= "+f.getAbsolutePath());
+            }
+        }
+
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Storage: "+baseDir.getAbsolutePath());
 
         appDir = createIfNotExists(baseDir, "MGMapViewer");
