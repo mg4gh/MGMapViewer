@@ -27,7 +27,7 @@
         <Preference
             app:title="@string/preferences_screen_further_title"
             app:summary="@string/preferences_screen_further_desc"
-            app:fragment="mg.mgmap.settings.FurtherPreferenceScreen"
+            app:fragment="mg.mgmap.activity.settings.FurtherPreferenceScreen"
             app:iconSpaceReserved="false"
             />
 
