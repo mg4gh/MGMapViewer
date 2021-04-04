@@ -19,11 +19,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
 import android.util.Log;
 import android.view.Window;
+import android.view.WindowManager;
 
 
 import androidx.annotation.NonNull;
@@ -154,15 +156,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.onCreate(savedInstanceState);
 
         createSharedPreferences();
+        if (Build.VERSION.SDK_INT >= 27) setShowWhenLocked(true);
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         setContentView(R.layout.mgmapactivity);
 
-//        PersistenceManager.getInstance(this); // initialize the PersistenceService
         mapLayerFactory = new MGMapLayerFactory(this);
-
-//        MGMapLayerFactory.setContext(getApplicationContext());
-//        MGMapLayerFactory.setActivity(this);
-//        MGMapLayerFactory.mapLayers.clear();
-
 
         prefCache = new PrefCache(this);
 
