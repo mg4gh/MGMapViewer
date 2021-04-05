@@ -59,6 +59,11 @@
             app:title="@string/preferences_dl_sw_other_title"
             app:summary="@string/preferences_dl_sw_other_desc"
             />
+        <Preference
+            app:summary=""
+            app:title=""
+            app:iconSpaceReserved="false"
+            />
 
     </mg.mgmap.activity.settings.PreferenceCategoryEx>
 

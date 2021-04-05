@@ -74,6 +74,11 @@
             app:title="@string/preferences_version_title"
             app:iconSpaceReserved="false"
             />
+        <Preference
+            app:summary=""
+            app:title=""
+            app:iconSpaceReserved="false"
+            />
 
     </PreferenceCategory>
 
