@@ -49,6 +49,7 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.atl.FSAvailableTrackLogs;
@@ -156,8 +157,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.onCreate(savedInstanceState);
 
         createSharedPreferences();
-        if (Build.VERSION.SDK_INT >= 27) setShowWhenLocked(true);
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        if (Build.VERSION.SDK_INT >= 27){
+            setShowWhenLocked(true);
+        }
         setContentView(R.layout.mgmapactivity);
 
         mapLayerFactory = new MGMapLayerFactory(this);
@@ -209,6 +211,22 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         prefCache.dumpPrefs();
     }
 
+    private int stoppedCounter = 1;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // This code is a workaround: If for Android 9 the feature setShowWhenLocked(true); is used, then it hangs after twice switching off/on,
+        // except another activity is call in between. So MGMapActivity is calling the SettingsActivity activity passing the String "back" as clazzname.
+        // In this case SettingsActivity jump back directly - the user will (hopefully) not recognize this ...
+        if ((Build.VERSION.SDK_INT >= 27) && (Build.VERSION.SDK_INT <= 28)){
+            if (stoppedCounter <= 0){
+                stoppedCounter = 2;
+                Intent intent = new Intent(this, SettingsActivity.class);
+                intent.putExtra("FSControl.info", "back");
+                startActivity(intent);
+            }
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -261,6 +279,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         }
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // see onStart()
+        stoppedCounter--;
     }
 
     @Override

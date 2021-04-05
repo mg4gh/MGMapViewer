@@ -16,6 +16,7 @@ package mg.mgmap.activity.settings;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -47,21 +48,29 @@ public class SettingsActivity extends AppCompatActivity implements
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         PreferenceFragmentCompat pfc = new MainPreferenceScreen();
         Intent intent = getIntent();
-        if (intent != null){
+        if (intent != null) {
             String clazzname = intent.getStringExtra("FSControl.info");
-            if (clazzname != null){
-                try {
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" open PreferenceFragment "+clazzname);
-                    Class<?> clazz = Class.forName(clazzname);
-                    Object obj = clazz.newInstance();
-                    if (obj instanceof PreferenceFragmentCompat) {
-                        pfc = (PreferenceFragmentCompat) obj;
+            if ("back".equals(clazzname)) {
+                // This code supports a workaround: If for Android 9 the feature setShowWhenLocked(true); is used, then it hangs after twice switching off/on,
+                // except another activity is call in between. So MGMapActivity is calling this activity passing the String "back" as clazzname. In this case
+                // we jump back directly - the user will (hopefully) not recognize this ...
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" GO BACK!!!");
+                onBackPressed();
+            } else {
+                if (clazzname != null) {
+                    try {
+                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " open PreferenceFragment " + clazzname);
+                        Class<?> clazz = Class.forName(clazzname);
+                        Object obj = clazz.newInstance();
+                        if (obj instanceof PreferenceFragmentCompat) {
+                            pfc = (PreferenceFragmentCompat) obj;
+                        }
+                    } catch (Exception e) {
+                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+                super.onNewIntent(intent);
             }
-            super.onNewIntent(intent);
         }
 
         getSupportFragmentManager()
