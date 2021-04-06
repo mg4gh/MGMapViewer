@@ -14,20 +14,30 @@
  */
 package mg.mgmap.activity.mgmap.features.position;
 
+import android.util.Log;
+
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.view.InputListener;
+
+import java.util.Observable;
+import java.util.Observer;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
+import mg.mgmap.activity.mgmap.util.MapViewUtility;
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.PointView;
 
@@ -43,6 +53,8 @@ public class FSPosition extends FeatureService {
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Boolean> prefGpsEnabled = new Pref<>(false);
     private final Pref<Boolean> prefRefreshMapView = getPref(R.string.FSPosition_pref_RefreshMapView, false);
+    private final Pref<Boolean> prefMapMoving = getPref(R.string.FSPosition_pref_MapMoving, false);
+//    private final Pref<Boolean> prefMapMovingTrigger = getPref(R.string.FSPosition_pref_MapMovingTrigger, false);
 
     private ExtendedTextView etvHeight = null;
 
@@ -59,6 +71,22 @@ public class FSPosition extends FeatureService {
         prefCenter.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
         prefRefreshMapView.addObserver((o, arg) -> refreshMapView());
+
+        prefMapMoving.addObserver((o, arg) -> {
+            if ( ! prefMapMoving.getValue() ){
+                refreshObserver.onChange();
+                cancelTTMapMovingOff();
+            }
+        });
+        getMapView().addInputListener(new InputListener() {
+            @Override
+            public void onMoveEvent() {
+                prefMapMoving.setValue(true);
+                setupTTMapMovingOff();
+            }
+            @Override
+            public void onZoomEvent() { }
+        });
     }
 
     @Override
@@ -135,7 +163,7 @@ public class FSPosition extends FeatureService {
     }
 
     private void centerCurrentPosition(PointModel pm){
-        if ((pm != null) && prefCenter.getValue()) {
+        if ((pm != null) && prefCenter.getValue() && !prefMapMoving.getValue()) {
             IMapViewPosition mvp = getMapView().getModel().mapViewPosition;
             LatLong pos = new LatLong(pm.getLat(), pm.getLon());
             mvp.setMapPosition(new MapPosition(pos, mvp.getZoomLevel()));
@@ -147,5 +175,27 @@ public class FSPosition extends FeatureService {
         mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));
     }
 
+    private final Runnable ttMapMovingOff = () -> {
+        prefMapMoving.setValue(false);
+    };
+    private void setupTTMapMovingOff(){
+        getTimer().removeCallbacks(ttMapMovingOff);
+        getTimer().postDelayed(ttMapMovingOff, 7000);
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" setup MapMoving 7000 ");
+    }
+    private void cancelTTMapMovingOff(){
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" cancel MapMoving Timer ");
+        getTimer().removeCallbacks(ttMapMovingOff);
+    }
 
+    public boolean check4MapMovingOff(PointModel pointModel){
+        if (prefMapMoving.getValue()){
+            double dist = PointModelUtil.distance(pointModel, getMapViewUtility().getCenter());
+            if (getMapViewUtility().isClose(dist)){
+                prefMapMoving.setValue(false);
+                return true;
+            }
+        }
+        return false;
+    }
 }

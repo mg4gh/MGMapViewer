@@ -589,6 +589,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         layers.add(new MVLayer() {
             @Override
             protected boolean onTap(WriteablePointModel point) {
+                if (getFS(FSPosition.class).check4MapMovingOff(point)) return true;
                 TrackLogRef ref = selectCloseTrack( point );
                 if (ref.getTrackLog() != null){
                     application.availableTrackLogsObservable.setSelectedTrackLogRef(ref);

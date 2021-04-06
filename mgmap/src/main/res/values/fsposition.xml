@@ -3,6 +3,8 @@
     <string name="FSPosition_pref_Center">FSPosition.Center</string>
     <string name="FSPosition_pref_GpsOn">FSPosition.GpsOn</string>
     <string name="FSPosition_pref_RefreshMapView">FSPosition.RefreshMapView</string>
+    <string name="FSPosition_pref_MapMoving">FSPosition.MapMoving</string>
+    <string name="FSPosition_pref_MapMovingTrigger">FSPosition.MapMovingTrigger</string>
 
     <string name="FSPosition_qcGps_Help">GPS state</string>
     <string name="FSPosition_qcGps_Help1">on tap: switch GPS on</string>
