@@ -15,9 +15,12 @@
 package mg.mgmap.activity.mgmap;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,7 +28,6 @@ import android.os.Handler;
 
 import android.util.Log;
 import android.view.Window;
-import android.view.WindowManager;
 
 
 import androidx.annotation.NonNull;
@@ -49,7 +51,6 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
-import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.atl.FSAvailableTrackLogs;
@@ -76,6 +77,7 @@ import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogRefZoom;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.gpx.GpxImporter;
 import mg.mgmap.activity.mgmap.util.MapDataStoreUtil;
 import mg.mgmap.activity.mgmap.util.MapViewUtility;
@@ -140,9 +142,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     public PrefCache getPrefCache(){
         return prefCache;
     }
-//    public MapDataStoreUtil getMapDataStoreUtil(){
-//        return mapDataStoreUtil;
-//    }
     public GGraphTileFactory getGGraphTileFactory() {
         return gGraphTileFactory;
     }
@@ -207,25 +206,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         onNewIntent(getIntent());
         prefCache.get(R.string.FSPosition_pref_GpsOn, false).addObserver((o, arg) -> triggerTrackLoggerService());
         prefCache.get(R.string.MGMapApplication_pref_Restart, true).setValue(false);
-//        application.prefAppRestart.setValue(false);
         prefCache.dumpPrefs();
-    }
-
-    private int stoppedCounter = 1;
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // This code is a workaround: If for Android 9 the feature setShowWhenLocked(true); is used, then it hangs after twice switching off/on,
-        // except another activity is call in between. So MGMapActivity is calling the SettingsActivity activity passing the String "back" as clazzname.
-        // In this case SettingsActivity jump back directly - the user will (hopefully) not recognize this ...
-        if ((Build.VERSION.SDK_INT >= 27) && (Build.VERSION.SDK_INT <= 28)){
-            if (stoppedCounter <= 0){
-                stoppedCounter = 2;
-                Intent intent = new Intent(this, SettingsActivity.class);
-                intent.putExtra("FSControl.info", "back");
-                startActivity(intent);
-            }
-        }
     }
 
     @Override
@@ -233,6 +214,27 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.onResume();
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         application = (MGMapApplication) getApplication();
+
+        // This is a workaround for frozen Screen after 2 times switch off/on with setShowWhenLocked(true);
+        // Hint found at: https://stackoverflow.com/questions/55462980/android-9-frozen-ui-after-unlocking-screen
+        if ((Build.VERSION.SDK_INT >= 27) && (Build.VERSION.SDK_INT <= 28)){
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("");
+            alertDialog.create();
+            ColorDrawable dialogColor = new ColorDrawable(Color.GRAY);
+            dialogColor.setAlpha(0);
+            alertDialog.getWindow().setBackgroundDrawable(dialogColor);
+            alertDialog.show();
+            new Thread(){
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(3);
+                    } catch (Exception e){ Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage()); }
+                    alertDialog.dismiss();
+                }
+            }.start();
+        }
 
         for (FeatureService microService : featureServices) {
             try {
@@ -262,6 +264,15 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus){
+            FullscreenUtil.enforceState(this);
+            Log.i(MGMapApplication.LABEL, NameUtil.context());
+        }
+    }
+
+    @Override
     protected void onPause() {
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         for (int i = featureServices.size() - 1; i >= 0; i--) { // reverse order
@@ -279,13 +290,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         }
         super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // see onStart()
-        stoppedCounter--;
     }
 
     @Override
@@ -327,10 +331,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @Override
     protected void createSharedPreferences() {
         super.createSharedPreferences();
-//        MGMapLayerFactory.setSharedPreferences(sharedPreferences);
         String prefLang = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "de");
         sharedPreferences.edit().putString(getResources().getString(R.string.preferences_language_key), prefLang).apply();
-//        MGMapLayerFactory.setXmlRenderTheme(getRenderTheme());
 
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + DisplayModel.getDeviceScaleFactor());
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device screen size " + getResources().getDisplayMetrics().widthPixels + "x" + getResources().getDisplayMetrics().heightPixels);
@@ -571,7 +573,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     /** Depending on the preferences for the five map layers the corresponding layer object are created. */
     protected void createLayers() {
-//        MGMapLayerFactory.setMapView(mapView);
         Layers layers = mapView.getLayerManager().getLayers();
         for (String prefKey : getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
