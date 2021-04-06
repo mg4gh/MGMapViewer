@@ -22,9 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import mg.mgmap.R;
 
 public class FullscreenUtil {
