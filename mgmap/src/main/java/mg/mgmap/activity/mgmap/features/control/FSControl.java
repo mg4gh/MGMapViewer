@@ -286,8 +286,6 @@ public class FSControl extends FeatureService {
         }
         if ((prefQcs.getValue() > 0) && (!prefHelp.getValue())){
             setupTTHideQCS();
-//        } else {
-//            cancelTTHideQCS();
         }
     }
 
