@@ -26,7 +26,8 @@
         android:icon="@drawable/mg_map"
         android:label="MGMapViewer"
         android:requestLegacyExternalStorage="true"
-        android:theme="@style/AppFullScreenTheme">
+        android:theme="@style/AppFullScreenTheme"
+        tools:ignore="AllowBackup">
 
         <activity
             android:name="mg.mgmap.activity.mgmap.MGMapActivity"
