@@ -268,7 +268,6 @@ public class FSControl extends FeatureService {
     }
 
     void setQCVisibility(){
-        prefHelp.setValue(false);
         for (int idx=0; idx<8; idx++){
             ViewGroup qcs = qcss[idx];
             if (prefQcs.getValue() == idx){ // should be visible
@@ -278,13 +277,17 @@ public class FSControl extends FeatureService {
             } else { // should not be visible
                 if (qcs.getParent() != null){ // ... but is visible
                     qcsParent.removeView(qcs);
+                    if (idx > 0){
+                        prefHelp.setValue(false);
+                        cancelTTHideQCS();
+                    }
                 }
             }
         }
         if ((prefQcs.getValue() > 0) && (!prefHelp.getValue())){
             setupTTHideQCS();
-        } else {
-            cancelTTHideQCS();
+//        } else {
+//            cancelTTHideQCS();
         }
     }
 
