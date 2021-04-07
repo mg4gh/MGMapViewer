@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Window;
 
 
@@ -643,4 +644,29 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         return bestMatch;
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Pref<Boolean> prefRoutingHints = prefCache.get(R.string.FSRouting_qc_RoutingHint, false);
+        int action = event.getAction();
+        int keyCode = event.getKeyCode();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (action == KeyEvent.ACTION_DOWN) {
+                    if (!prefRoutingHints.getValue()){
+                        getMapsforgeMapView().getModel().mapViewPosition.zoomIn();
+                        return true;
+                    }
+                }
+                break;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (action == KeyEvent.ACTION_DOWN) {
+                    if (!prefRoutingHints.getValue()){
+                        getMapsforgeMapView().getModel().mapViewPosition.zoomOut();
+                        return true;
+                    }
+                }
+                break;
+        }
+        return super.dispatchKeyEvent(event);
+    }
 }
