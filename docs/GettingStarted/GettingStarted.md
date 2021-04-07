@@ -14,19 +14,6 @@ except the menu quick controls and the status line with very few information.
 
    <img src="./background.png" width="200" />&nbsp;
 
-4. Before downloading a map, it is strongly recommended to download from [openandromaps](https://www.openandromaps.org/)
-   the [elevate theme](https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip). Either download it manually, unzip it and
-   put it into the ./MGMapViewer/themes/ directory (see also [file system structure](./FileSystem.md)).  
-   The easier way is to open via <img src="../icons/group_task.svg" width="24"/> + <img src="../icons/download.svg" width="24"/> and
-   <span style="color:gray">*Download Elevate Theme*</span>
-   the theme download webpage of openandromaps. Scroll to the Elevate 4 section and select the entry
-   <span style="color:gray">*Standard Karten App*</span> entry.
-
-   <img src="./download3.png" width="200" />&nbsp;
-
-   The "elevate.xml" is already registered as the standard theme file. If you want to select another theme,
-    you can do it via <img src="../icons/group_task.svg" width="24"/> + <img src="../icons/settings.svg" width="24"/> and <span style="color:gray">*Select theme*</span>.
-
 5. Now download a map from [openandromaps](https://www.openandromaps.org/).
    Either do it manually and put it (unzipped) in the ./MGMapViewer/maps/mapsforge directory (see also [file system structure](./FileSystem.md)).  
    The easier way is again via <img src="../icons/group_task.svg" width="24"/> and <img src="../icons/download.svg" width="24"/>
