@@ -79,7 +79,7 @@
     <string name="preferences_doc_main_desc">Go to the github.io main documentation page.</string>
 
     <string name="preferences_version_key">versionKey</string>
-    <string name="preferences_version_title">App Version</string>
+    <string name="preferences_version_title">App Info</string>
     <string name="preferences_version_desc">-</string>
 
     <string name="activity_param_key">mg.mgmap.args</string>

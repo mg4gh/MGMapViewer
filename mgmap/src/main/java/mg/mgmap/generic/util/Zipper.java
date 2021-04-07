@@ -86,9 +86,11 @@ public class Zipper
         bgJob.setMax((int)(connection.getContentLengthLong()/1000));
         bgJob.setText("Download "+ url.toString().replaceFirst(".*/",""));
         bgJob.setProgress(0);
-//        bgJob.notifyUser();
-
         InputStream inputStream = url.openStream();
+        unpack(inputStream, extractedZipFilePath, filter, bgJob);
+    }
+
+    public void unpack(InputStream inputStream, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
         ZipInputStream zipInputStream = new ZipInputStream(inputStream, (password==null)?null:password.toCharArray());
         LocalFileHeader localFileHeader;
         int readLen;
@@ -143,4 +145,5 @@ public class Zipper
             }
         }
     }
+
 }

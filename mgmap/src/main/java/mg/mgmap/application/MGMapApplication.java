@@ -25,6 +25,7 @@ import android.util.Log;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
+import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -162,10 +163,13 @@ public class MGMapApplication extends Application {
 
 
 
-        // initialize MetaData (as used from AvailableTrackLogs service and statistic)
+        // initialize Theme and MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(){
             @Override
             public void run() {
+                if (persistenceManager.getThemeNames().length == 0){
+                    addBgJobs( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets()) );
+                }
                 ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, altitudeProvider);
                 for (TrackLog trackLog : metaDataUtil.loadMetaData()){
                     metaTrackLogs.put(trackLog.getNameKey(),trackLog);

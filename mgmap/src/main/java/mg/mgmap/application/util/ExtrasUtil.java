@@ -14,6 +14,8 @@
  */
 package mg.mgmap.application.util;
 
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -27,6 +29,15 @@ import mg.mgmap.generic.util.gpx.GpxImporter;
 /** Utility for extra tasks */
 public class ExtrasUtil {
 
+
+    public static void checkCreateElevateTheme(PersistenceManager persistenceManager, AssetManager assetManager){
+        try {
+            AssetFileDescriptor fd = assetManager.openFd("Elevate.zip");
+
+        } catch (Exception e){
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        }
+    }
 
     public static void checkCreateMeta(PersistenceManager persistenceManager, MetaDataUtil metaDataUtil, AltitudeProvider altitudeProvider){
         Log.i(MGMapApplication.LABEL, NameUtil.context() );

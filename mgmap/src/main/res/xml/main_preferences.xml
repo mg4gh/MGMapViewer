@@ -72,6 +72,7 @@
             app:key="@string/preferences_version_key"
             app:summary="@string/preferences_version_desc"
             app:title="@string/preferences_version_title"
+            app:fragment="mg.mgmap.activity.settings.InfoPreferenceScreen"
             app:iconSpaceReserved="false"
             />
         <Preference

@@ -1,0 +1,41 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:title="MGMapViewer Info"
+        app:iconSpaceReserved="false"
+        >
+        <Preference
+            app:title="MGMapViewer"
+            app:summary="The main application software package.\nSee  https://mg4gh.github.io/MGMapViewer/"
+            app:iconSpaceReserved="false"
+            />
+        <Preference
+            app:title="Mapsforge"
+            app:summary="The base library for map viewing.\nSee https://github.com/mapsforge/mapsforge\nCurrently used version is 0.14."
+            app:iconSpaceReserved="false"
+            />
+        <Preference
+            app:title="OpenStreetMaps"
+            app:summary="©OpenStreetMap contributors\nSee https://www.openstreetmap.org"
+            app:iconSpaceReserved="false"
+            />
+        <Preference
+            app:title="OpenAndroMaps"
+            app:summary="Map provider based on OpenStreetMaps.\nSee https://www.openandromaps.org/"
+            app:iconSpaceReserved="false"
+            />
+        <Preference
+            app:title="Elevate Themes"
+            app:summary="by Tobias Kühn\nSee https://www.openandromaps.org/"
+            app:iconSpaceReserved="false"
+            />
+        <Preference
+            app:title="Height profile"
+            app:summary="Height profile activity is based on\nhttps://github.com/jjoe64/GraphView"
+            app:iconSpaceReserved="false"
+            />
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

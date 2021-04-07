@@ -14,6 +14,8 @@
  */
 package mg.mgmap.activity.mgmap.util;
 
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 
@@ -66,6 +68,24 @@ public class OpenAndroMapsUtil {
 //                URL url = new URL(((Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)?"https":"http")+"://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
                 URL url = new URL("https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
                 zipper.unpack(url, persistenceManager.getThemesDir(), null, this);
+            }
+        };
+        jobs.add(job);
+        return jobs;
+    }
+
+    public static ArrayList<BgJob> createBgJobsFromAssetTheme(PersistenceManager persistenceManager, AssetManager assetManager) {
+        ArrayList<BgJob> jobs = new ArrayList();
+        BgJob job = new BgJob() {
+            @Override
+            protected void doJob() throws Exception {
+                super.doJob();
+                Zipper zipper = new Zipper(null);
+//                AssetFileDescriptor fd = assetManager.openFd("Elevate.zip");
+                this.setMax(1500);
+                this.setText("Unzip theme Elevate.zip");
+                this.setProgress(0);
+                zipper.unpack(assetManager.open("Elevate.zip"), persistenceManager.getThemesDir(), null, this);
             }
         };
         jobs.add(job);
