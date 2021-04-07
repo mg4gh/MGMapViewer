@@ -149,7 +149,7 @@ public class FSControl extends FeatureService {
         super.initQuickControl(etv,info);
         if ("group_multi".equals(info)) {
             etv.setPrAction(new Pref<>(false), triggerHome);
-            etv.setData(R.drawable.multi);
+            etv.setData(R.drawable.group_multi);
         } else if ("group_task".equals(info)) {
             etv.setPrAction(new Pref<>(false));
             etv.setData(R.drawable.group_task);

@@ -43,7 +43,7 @@ the length along the given selected track is 1.40km (along the blue line).
 <img src="./remain5.png" width="400" />&nbsp;
 
 In this situation the automatic routing might be confusing. So you can use
-<img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/slider_track1.svg" width="24"/>
+<img src="../../../icons/group_hide.svg" width="24"/> + <img src="../../../icons/slider_track1.svg" width="24"/>
 and to set marker track visible and route track to invisible:
 
 

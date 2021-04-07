@@ -8,17 +8,15 @@
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="1"
         android:pathData="
-            M2,12   a12,12,0  0 0 20,0  M2,12   a12,12,0  0 1 20,0
-            M7,12   a5,5,0 1 1 0,0.0001
-            M10,24  a12,12,0  0 0 20,0  M10,24  a12,12,0  0 1 20,0
-            M15,24  a5,5,0 1 1 0,0.0001
+            M6,16  a12,12,0  0 0 20,0  M6,16  a12,12,0  0 1 20,0
+            M11,16  a5,5,0 1 1 0,0.0001
         "
         />
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="2"
         android:pathData="
-            M10,30 l20,-12
+            M6,22 l20,-12
         "
         />
 
@@ -27,9 +25,18 @@
         android:strokeWidth="1"
         android:fillColor="#FFFFFFFF"
         android:pathData="
-            M10,12  a2,2,0 1 1 0,0.0001
-            M18,24  a2,2,0 1 1 0,0.0001
+
+            M14,16  a2,2,0 1 1 0,0.0001
            "
+        />
+
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2"
+        android:pathData="
+            M20,28 a1,1,0 1 0 0,0.001
+            M25,28 a1,1,0 1 0 0,0.001
+            M30,28 a1,1,0 1 0 0,0.001 "
         />
 
 </vector>

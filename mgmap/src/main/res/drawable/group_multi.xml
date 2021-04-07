@@ -1,12 +1,12 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportHeight="48.0"
-    android:viewportWidth="48.0">
+    android:viewportHeight="56.0"
+    android:viewportWidth="56.0">
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="1"
-        android:pathData="M10,15 l0,6 l-5,0 a0.5,0.5,0 0 1 -0.5,-0.5 l0,-8 l-1,1
+        android:pathData="M14,15 l0,6 l-5,0 a0.5,0.5,0 0 1 -0.5,-0.5 l0,-8 l-1,1
                 a0.75,0.75,0 0 1 -1,-1 l9,-9 a0.5,0.5,0 0 1 0.6,0 l3,3 l0,-2
                 a0.75,0.75,0 0 1 1.4,0 l0,3.4 l4.6,4.6
                 a0.75,0.75,0 0 1 -1,1 l-1,-1 l0,8 a0.5,0.5,0 0 1 -0.5,0.5 l-5,0
@@ -16,29 +16,36 @@
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="2"
-        android:pathData="M26,7 L26,2 L31,2   M26,17 L26,22 L31,22  M46,17 L46,22 L41,22  M46,7 L46,2 L41,2 " />
+        android:pathData="M30,7 l0,-5 l5,0  m0,20 l-5,0 l0,-5  m20,0 l0,5 l-5,0 m0,-20 l5,0 l0,5 " />
 
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="2"
-        android:pathData="M12,26 m0,0 a10,10,0 1 0 0.001,0 "
+        android:pathData="M16,26 m0,0 a10,10,0 1 0 0.001,0 "
         />
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="2"
-        android:pathData="M12,31 L12,41 M7,36 L17,36  " />
+        android:pathData="M16,31 l0,10 m-5,-5 l10,0 " />
 
 
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="2"
-        android:pathData="M36,26 m0,0 a10,10,0 1 0 0.001,0"
+        android:pathData="M40,26 m0,0 a10,10,0 1 0 0.001,0"
         />
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="2"
-        android:pathData="M31,36 L41,36  " />
+        android:pathData="M35,36 l10,0  " />
 
-
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:pathData="
+            M30,52 a1.5,1.5,0 1 0 0,0.001
+            M38,52 a1.5,1.5,0 1 0 0,0.001
+            M46,52 a1.5,1.5,0 1 0 0,0.001 "
+        />
 
 </vector>

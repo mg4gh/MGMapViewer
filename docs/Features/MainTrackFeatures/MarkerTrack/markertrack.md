@@ -16,7 +16,7 @@ like this:
 <img src="./MT1.png" width="400" />&nbsp;
 
 We see here the two points each with a purple circle and we see already the marker route between these points. The marker track is currently fully transparent, so it is not visible.
-For explanation purposes we change this. Use <img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/slider_track2.svg" width="24"/> to make the track transparency
+For explanation purposes we change this. Use <img src="../../../icons/group_hide.svg" width="24"/> + <img src="../../../icons/slider_track2.svg" width="24"/> to make the track transparency
 control visible. Move the seek bar for the marker track log to the right position (visible) and the seek bar for the route track log to the middle position (semi transparent).
 
 <img src="./MT2.png" width="400" />&nbsp;
@@ -103,7 +103,7 @@ For the example above the result looks like:
 </gpx>
 ```
 
-Now hide current marker track (and resulting route) with <img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/hide_mtl.svg" width="24"/> as
+Now hide current marker track (and resulting route) with <img src="../../../icons/group_hide.svg" width="24"/> + <img src="../../../icons/hide_mtl.svg" width="24"/> as
 we don't need it anymore.
 
 #### Import Marker Track / Load Marker Track

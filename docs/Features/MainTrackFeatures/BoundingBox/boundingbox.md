@@ -35,8 +35,8 @@ it will be provided by typical cookie manager plugins. Then the cookies in the s
 Use <img src="../../../icons/group_bbox2.svg" width="24"/> + <img src="../../../icons/load_from_bb.svg" width="24"/> to load tracks passing through the bounding box.
 
 As the result all tracks passing through the marked area will be loaded. If there are multiple tracks, you can select one of them just by tapping on it.
-With the use of <img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/hide_stl.svg" width="24"/>
-or alternatively <img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/hide_atl.svg" width="24"/>
+With the use of <img src="../../../icons/group_hide.svg" width="24"/> + <img src="../../../icons/hide_stl.svg" width="24"/>
+or alternatively <img src="../../../icons/group_hide.svg" width="24"/> + <img src="../../../icons/hide_atl.svg" width="24"/>
 you can reduce the number of visible tracks to the track(s) you are searching for.
 
 <img src="./bb_a1a.png" width="200" />&nbsp;

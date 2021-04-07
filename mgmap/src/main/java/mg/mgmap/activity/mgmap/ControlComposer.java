@@ -113,7 +113,7 @@ public class ControlComposer {
                 .setName("group_marker").addActionObserver(gos.get(3));
         createQC(activity, FSBB.class,qcss[0],"group_bbox",gos.get(4));
         createQC(activity, FSPosition.class,qcss[0],"group_record",gos.get(5));
-        ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false)).setData(R.drawable.show_hide)
+        ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false)).setData(R.drawable.group_hide)
                 .setName("group_showHide").addActionObserver(gos.get(6));
         createQC(activity, FSControl.class,qcss[0],"group_multi",gos.get(7));
 

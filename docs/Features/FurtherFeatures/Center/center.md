@@ -2,6 +2,8 @@
 
 ## Further Features: center automatically current gps position
 
+### Static behaviour
+
 By default this feature is switched on. This means that for every new GPS 
 position the map will be aligned in a way that the new position is in the center
 of the map.
@@ -32,5 +34,13 @@ to the last GPS position.
 
 <img src="./center7.png" width="200" />&nbsp;
 
+### Dynamic behaviour
+
+If you just want to have a short lookup aside your current position, then you don't have to switch the feature off. If you move
+the map, it will not center a new position within the next 7 seconds. If you move the map within this 7 seconds again, the timer will
+start with another 7 seconds again.
+As soon as the time expires, the last gps position is put to the center again.
+There is also the option to tap in the center of the screen (as marked with the beeline feature). In this case the map is
+moved to the last gps position immediately.
 
 <small><small>[Back to Index](../../../index.md)</small></small>

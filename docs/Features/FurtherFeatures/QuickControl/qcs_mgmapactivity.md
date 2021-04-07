@@ -34,8 +34,8 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/group_marker1.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/group_bbox1.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/group_record1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/show_hide.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/multi.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/group_hide.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/group_multi.svg" width="60px" height="60px"></td>
 </tr>
 <tr>
 	<td style="padding:5px;vertical-align:top">Menu<br/>functions</td>

@@ -10,7 +10,7 @@
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="2"
-        android:pathData="M26,10 26,38 L32,38 L40,46 L40,2 L32,10 L25,10  " />
+        android:pathData="M26,10 l0,24  l6,0 l8,5 l0,-36 l-8,6 l-7,0  " />
     <path
         android:strokeColor="#FFFFFFFF"
         android:strokeWidth="2"
@@ -42,6 +42,14 @@
         android:pathData="M20,1 m0,0 a2,2,0 1 0 0.001,0 "
         />
 
+    <path
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:pathData="
+            M30,45 a1.5,1.5,0 1 0 0,0.001
+            M38,45 a1.5,1.5,0 1 0 0,0.001
+            M46,45 a1.5,1.5,0 1 0 0,0.001 "
+        />
 
 
 </vector>

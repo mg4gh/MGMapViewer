@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="background:#B0B0B0" width="80" height="80" viewBox="0 0 56.00 56.00">
+  <path style="stroke-width:1;stroke:#FFFFFF;fill:none" d="M14,15 l0,6 l-5,0 a0.5,0.5,0 0 1 -0.5,-0.5 l0,-8 l-1,1                 a0.75,0.75,0 0 1 -1,-1 l9,-9 a0.5,0.5,0 0 1 0.6,0 l3,3 l0,-2                 a0.75,0.75,0 0 1 1.4,0 l0,3.4 l4.6,4.6                 a0.75,0.75,0 0 1 -1,1 l-1,-1 l0,8 a0.5,0.5,0 0 1 -0.5,0.5 l-5,0                 l0,-6 l-4,0             " />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M30,7 l0,-5 l5,0  m0,20 l-5,0 l0,-5  m20,0 l0,5 l-5,0 m0,-20 l5,0 l0,5 " />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M16,26 m0,0 a10,10,0 1 0 0.001,0 " />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M16,31 l0,10 m-5,-5 l10,0 " />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M40,26 m0,0 a10,10,0 1 0 0.001,0" />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M35,36 l10,0  " />
+  <path style="stroke-width:3;stroke:#FFFFFF;fill:none" d="             M30,52 a1.5,1.5,0 1 0 0,0.001             M38,52 a1.5,1.5,0 1 0 0,0.001             M46,52 a1.5,1.5,0 1 0 0,0.001 " />
+</svg>

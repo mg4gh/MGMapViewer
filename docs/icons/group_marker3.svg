@@ -1,9 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="background:#B0B0B0" width="80" height="80" viewBox="0 0 48.00 48.00">
   <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="M2,2 6,17 L11,2 L16,17 L20,2  " />
-  <path style="stroke-width:2;stroke:#FF4040;fill:none" d="M26,10 26,38 L32,38 L40,46 L40,2 L32,10 L25,10  " />
+  <path style="stroke-width:2;stroke:#FF4040;fill:none" d="M26,10 l0,24  l6,0 l8,5 l0,-36 l-8,6 l-7,0  " />
   <path style="stroke-width:2;stroke:#FFFFFF;fill:#FFFFFF" d="M6,16 m0,0 a2,2,0 1 0 0.001,0 " />
   <path style="stroke-width:2;stroke:#FFFFFF;fill:#FFFFFF" d="M16,16 m0,0 a2,2,0 1 0 0.001,0" />
   <path style="stroke-width:2;stroke:#FFFFFF;fill:#FFFFFF" d="M3,1 m0,0 a2,2,0 1 0 0.001,0 " />
   <path style="stroke-width:2;stroke:#FFFFFF;fill:#FFFFFF" d="M11,1 m0,0 a2,2,0 1 0 0.001,0 " />
   <path style="stroke-width:2;stroke:#FFFFFF;fill:#FFFFFF" d="M20,1 m0,0 a2,2,0 1 0 0.001,0" />
+  <path style="stroke-width:3;stroke:#FFFFFF;fill:none" d="             M30,45 a1.5,1.5,0 1 0 0,0.001             M38,45 a1.5,1.5,0 1 0 0,0.001             M46,45 a1.5,1.5,0 1 0 0,0.001 " />
 </svg>

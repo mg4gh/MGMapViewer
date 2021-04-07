@@ -44,7 +44,7 @@ Remarks:
 - If there isn't found a route (because there is no close way or there is no connection found, which is short enough), then the connection will also be shown as
 air-line.
 - The visible route has a marker track as its basis, which is not visualized by default. The marker track visibility can be changed via seek bars
-<img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/slider_track1.svg" width="24"/>.
+<img src="../../../icons/group_hide.svg" width="24"/> + <img src="../../../icons/slider_track1.svg" width="24"/>.
 - It you want to save the route and you want to be able to modify the route later after reloading of it, then do not save the route, rather save the marker track.
 If you reload it, the same route will be recalculated from this basis and you are still be able to change it again.
 - In contrast, if you want to pass this route as a .gpx to someone else, then save the route track.

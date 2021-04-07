@@ -64,7 +64,7 @@ Use the [Statistic activity](../../FurtherFeatures/Statistic/statistic.md) to lo
 
 #### Track transparency
 It is possible to control the transparency for all track types. To do this use
-<img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/slider_layer2.svg" width="24"/>.
+<img src="../../../icons/group_hide.svg" width="24"/> + <img src="../../../icons/slider_layer2.svg" width="24"/>.
 The next figures show an example of the usage: First the marker track is invisible, while in the second figure the transparency of the marker track is reduced, so it becomes well visible.
 
 <img src="./alpha1.png" width="400" />&nbsp;
@@ -75,7 +75,7 @@ As a second example we increase transparency of the selected track. So the other
 <img src="./alpha3.png" width="400" />&nbsp;
 
 There is no control for the recording track log visible, since there is currently no recording track. Switch off the track transparency controls again with
-<img src="../../../icons/show_hide.svg" width="24"/> + <img src="../../../icons/slider_layer1.svg" width="24"/>.
+<img src="../../../icons/group_hide.svg" width="24"/> + <img src="../../../icons/slider_layer1.svg" width="24"/>.
 
 
 <small><small>[Back to Index](../../../index.md)</small></small>

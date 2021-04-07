@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="background:#B0B0B0" width="80" height="80" viewBox="0 0 32.00 32.00">
+  <path style="stroke-width:1;stroke:#FFFFFF;fill:none" d="             M6,16  a12,12,0  0 0 20,0  M6,16  a12,12,0  0 1 20,0             M11,16  a5,5,0 1 1 0,0.0001         " />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="             M6,22 l20,-12         " />
+  <path style="stroke-width:1;stroke:#FFFFFF;fill:#FFFFFF" d="              M14,16  a2,2,0 1 1 0,0.0001            " />
+  <path style="stroke-width:2;stroke:#FFFFFF;fill:none" d="             M20,28 a1,1,0 1 0 0,0.001             M25,28 a1,1,0 1 0 0,0.001             M30,28 a1,1,0 1 0 0,0.001 " />
+</svg>
