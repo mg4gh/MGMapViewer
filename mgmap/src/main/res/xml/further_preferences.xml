@@ -58,7 +58,7 @@
             />
 
     </PreferenceCategory>
-    
+
     <PreferenceCategory
         app:title="@string/preferences_cat_dev_title"
         app:iconSpaceReserved="false"
