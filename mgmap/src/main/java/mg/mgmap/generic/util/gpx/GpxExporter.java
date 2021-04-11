@@ -48,7 +48,19 @@ public class GpxExporter {
                     pw.println("\t<metadata>");
                     pw.println("\t\t<name>"+trackLog.getName()+"</name>");
                     pw.println("\t\t<time>"+sdf2.format(new Date(trackLog.getTrackStatistic().getTStart())).replace("_","T")+"</time>");
-                    pw.println("\t</metadata>");
+                    TrackLog refTL = trackLog.getReferencedTrackLog();
+                    if ((refTL != null) && (refTL.getNumberOfSegments() == 1)){ // supposed to be a route - export also the base MarkerTrackPoints
+                        pw.println("\t\t<keywords>MGMarkerRoute</keywords>");
+                        pw.println("\t</metadata>");
+                        TrackLogSegment segment = refTL.getTrackLogSegment(0);
+                        for (PointModel pm : segment){
+                            String sLat = " lat=\"" + String.format(Locale.ENGLISH,"%.6f",pm.getLat()) + "\"";
+                            String sLon = " lon=\"" + String.format(Locale.ENGLISH,"%.6f",pm.getLon()) + "\"";
+                            pw.println("\t<wpt " + sLat + sLon + " />");
+                        }
+                    } else {
+                        pw.println("\t</metadata>");
+                    }
                     pw.println("\t<trk>");
                     pw.println("\t\t<name>"+trackLog.getName()+"</name>");
                     pw.println("\t\t<desc>"+trackLog.getTrackStatistic().toString()+"</desc>");

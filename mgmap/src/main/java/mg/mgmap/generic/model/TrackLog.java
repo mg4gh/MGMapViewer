@@ -30,6 +30,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected String name = "";
     protected boolean available = true;
     protected boolean modified = false;
+    protected TrackLog referencedTrackLog = null;
 
     public TrackLogStatistic getTrackStatistic() {
         return trackStatistic;
@@ -74,6 +75,14 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
 
     public TrackLogSegment getTrackLogSegment(int idx) {
         return trackLogSegments.get(idx);
+    }
+
+    public TrackLog getReferencedTrackLog() {
+        return referencedTrackLog;
+    }
+
+    public void setReferencedTrackLog(TrackLog referencedTrackLog) {
+        this.referencedTrackLog = referencedTrackLog;
     }
 
     @Override

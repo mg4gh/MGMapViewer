@@ -48,17 +48,17 @@ import mg.mgmap.activity.mgmap.view.MVLayer;
 
 public class FSMarker extends FeatureService {
 
+    private static final long TT_HIDE_TIME = 60000;
+
     private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
     private final Pref<Boolean> toggleEditMarkerTrack =  new Pref<>(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
-    private final Pref<Boolean> prefAutoMarkerSetting = getPref(R.string.FSMarker_pref_auto_key, true);
 
     private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
     private final Pref<Boolean> triggerHideMtl = new Pref<>(false);
     private final Pref<Boolean> triggerHideAll = getPref(R.string.FSATL_pref_hideAll, false);
-    private final Pref<Boolean> prefAutoSwitcher = getPref(R.string.FSMarker_pref_auto_switcher, true);
 
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
 
@@ -67,20 +67,12 @@ public class FSMarker extends FeatureService {
         toggleEditMarkerTrack.addObserver((o, arg) -> prefEditMarkerTrack.toggle());
         prefEditMarkerTrack.addObserver((o, arg) -> checkStartStopMCL());
 
-        prefAutoSwitcher.addObserver((o, arg) -> {
-            if (prefAutoMarkerSetting.getValue()) {
-                boolean smallMtl = prefAutoSwitcher.getValue();
-                prefAlphaMtl.setValue(smallMtl ? 0.0f : 1.0f);
-            }
-        });
-
         ttRefreshTime = 20;
         markerTrackLogObservable.addObserver(refreshObserver);
         prefAlphaMtl.addObserver(refreshObserver);
 
         Observer hideMarkerTrackObserver = (o, arg) -> {
             getApplication().markerTrackLogObservable.setTrackLog(null);
-//            GGraphTile.clearCache();
             prefEditMarkerTrack.setValue(false);
         };
         triggerHideMtl.addObserver(hideMarkerTrackObserver);
@@ -90,10 +82,9 @@ public class FSMarker extends FeatureService {
     public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
     private final Runnable ttHide = () -> prefEditMarkerTrack.setValue(false);
-    long ttHideTime = 15000;
     private void refreshTTHide(){
         getTimer().removeCallbacks(ttHide);
-        getTimer().postDelayed(ttHide,ttHideTime);
+        getTimer().postDelayed(ttHide, TT_HIDE_TIME);
     }
 
 
@@ -159,8 +150,9 @@ public class FSMarker extends FeatureService {
 
 
     public void createMarkerTrackLog(TrackLog trackLog){
-        setAutoSwitcher(trackLog.getTrackStatistic().getNumPoints() < 200); // < 200 means rather small MTL with corresponding settings
-        WriteableTrackLog mtl = new WriteableTrackLog(trackLog.getName()+"__MarkerTrack");
+        String name = trackLog.getName();
+        name = name.endsWith("_MarkerTrack")?name:(name+"_MarkerTrack");
+        WriteableTrackLog mtl = new WriteableTrackLog(name);
         mtl.startTrack(trackLog.getTrackStatistic().getTStart());
         for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
             mtl.startSegment(segment.getStatistic().getTStart());
@@ -183,7 +175,6 @@ public class FSMarker extends FeatureService {
     }
 
     private void initMarkerTrackLog(){
-        setAutoSwitcher(true);
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
         long now = System.currentTimeMillis();
         WriteableTrackLog mtl = new WriteableTrackLog(sdf2.format(new Date(now))+"_MarkerTrack");
@@ -326,10 +317,5 @@ public class FSMarker extends FeatureService {
         public TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) {
             return mtl.getBestDistance(pm,threshold);
         }
-    }
-
-    private void setAutoSwitcher(boolean bValue){
-        prefAutoSwitcher.setValue(bValue);
-        prefAutoSwitcher.onChange();
     }
 }

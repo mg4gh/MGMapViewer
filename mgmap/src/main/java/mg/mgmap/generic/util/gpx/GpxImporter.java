@@ -23,6 +23,7 @@ import org.kxml2.io.KXmlParser;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.AltitudeProvider;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogPoint;
@@ -86,6 +87,7 @@ public class GpxImporter {
         String text = null;
         String qName;
         boolean meta = false;
+        WriteableTrackLog referencedTrackLog = null;
 
         pullParser.setInput(inputStream, null);
 
@@ -109,6 +111,14 @@ public class GpxImporter {
                     double lon = Double.parseDouble(getStringAttribute("lon"));
                     tlp = TrackLogPoint.createLogPoint(lat, lon);
                 }
+                if ("wpt".equals(qName)) {
+                    double lat = Double.parseDouble(getStringAttribute("lat"));
+                    double lon = Double.parseDouble(getStringAttribute("lon"));
+                    tlp = TrackLogPoint.createLogPoint(lat, lon);
+                    if (referencedTrackLog != null){
+                        referencedTrackLog.getTrackLogSegment(0).addPoint(tlp);
+                    }
+                }
                 text = null;
 
             } else if (eventType == XmlPullParser.END_TAG) {
@@ -129,6 +139,15 @@ public class GpxImporter {
                 }
                 if ("name".equals(qName)) {
                     trackLog.setName(text);
+                }
+                if ("keywords".equals(qName)) {
+                    if ("MGMarkerRoute".equals(text)){
+                        String name = filename.replaceAll("MarkerRoute$","MarkerTrack");
+                        referencedTrackLog = new WriteableTrackLog(name);
+                        referencedTrackLog.getTrackLogSegments().add(new TrackLogSegment(0));
+                        trackLog.setReferencedTrackLog(referencedTrackLog);
+                        referencedTrackLog.getTrackStatistic().setTStart(trackLog.getTrackStatistic().getTStart());
+                    }
                 }
                 if ("ele".equals(qName)) {
                     try{

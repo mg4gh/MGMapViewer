@@ -144,11 +144,12 @@ public class RouteOptimizer {
 
                         double score = 1 - (0.5 * avgApproachDistance / PointModelUtil.getCloseThreshold()); // 0.5 .. 1 score point depending an avgApproachDistance
 
-                        for (int i=idx+1; i<=end; i++){
-                            if (!getRoutePointModel(segment.get(i)).currentMPM.isRoute()){
-                                score *= 10; // solution for a jumpLine? => set a high score
-                            }
-                        }
+//TODO: Understand this old code ... (... unfortunately produces a null pointer exception)
+//                        for (int i=idx+1; i<=end; i++){
+//                            if (!getRoutePointModel(segment.get(i)).currentMPM.isRoute()){
+//                                score *= 10; // solution for a jumpLine? => set a high score
+//                            }
+//                        }
 
                         for (PointModel pm : checkResults.keySet()){
                             ApproachModel am = checkResults.get(pm);

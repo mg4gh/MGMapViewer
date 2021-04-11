@@ -43,22 +43,20 @@ import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
-import mg.mgmap.generic.util.Pref;
 
 public class RoutingEngine {
 
     private static final int MAX_ROUTE_DISTANCE = 10000; // maximum allowed route length - otherwise AStar is expected be bee too slow
 
     private final GGraphTileFactory gFactory;
-    private final Pref<Boolean> prefSnap2Way;
+    boolean snap2Way = true;
 
     HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private final ArrayList<PointModel> currentRelaxedNodes = new ArrayList<>();
 
-    public RoutingEngine(GGraphTileFactory gFactory, Pref<Boolean> prefSnap2Way){
+    public RoutingEngine(GGraphTileFactory gFactory){
         this.gFactory = gFactory;
-        this.prefSnap2Way = prefSnap2Way;
     }
 
     RoutePointModel getRoutePointModel(PointModel pm){
@@ -80,7 +78,7 @@ public class RoutingEngine {
     RoutePointModel getVerifyRoutePointModel(PointModel pm){
         RoutePointModel rpm = getRoutePointModel(pm);
         calcApproaches(rpm);
-        if (prefSnap2Way.getValue()){
+        if (snap2Way){
             if (rpm.selectedApproach != null){
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
                     if (pm instanceof WriteablePointModel) {
@@ -167,6 +165,7 @@ public class RoutingEngine {
             routeTrackLog.setName(name);
             routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
             routeTrackLog.setModified(true);
+            routeTrackLog.setReferencedTrackLog(mtl);
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Route modified: "+name);
 
             for (TrackLogSegment segment : mtl.getTrackLogSegments()){
@@ -218,7 +217,6 @@ public class RoutingEngine {
             if ((gStart != null) && (gEnd != null) && (distLimit > 0) && !direct){
                 BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
                 bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
-//                GGraphTileFactory gFactory = getActivity().getGGraphTileFactory();
                 ArrayList<GGraphTile> gGraphTileList = gFactory.getGGraphTileList(bBox);
                 multi = new GGraphMulti(gGraphTileList);
                 multi.createOverlaysForApproach( gFactory.validateApproachModel(source.selectedApproach) );

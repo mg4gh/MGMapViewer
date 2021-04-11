@@ -77,9 +77,9 @@ public class MGMapApplication extends Application {
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
-    public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>();
-    public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>();
-    public final TrackLogObservable<WriteableTrackLog> routeTrackLogObservable = new TrackLogObservable<>();
+    public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>(true);
+    public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>(false);
+    public final TrackLogObservable<WriteableTrackLog> routeTrackLogObservable = new TrackLogObservable<>(true);
     public final TreeMap<String, TrackLog> metaTrackLogs = new TreeMap<>(Collections.reverseOrder());
 
     /** queue for new (unhandled) TrackLogPoint objects */
@@ -308,6 +308,11 @@ public class MGMapApplication extends Application {
     @SuppressWarnings("WeakerAccess")
     public class TrackLogObservable<T extends TrackLog> extends Observable{
         T trackLog = null;
+        boolean addToMetaTrackLogs;
+
+        public TrackLogObservable(boolean addToMetaTrackLogs){
+            this.addToMetaTrackLogs = addToMetaTrackLogs;
+        }
 
         public T getTrackLog(){
             return trackLog;
@@ -326,7 +331,9 @@ public class MGMapApplication extends Application {
                 this.trackLog = trackLog;
                 if (this.trackLog != null){
                     this.trackLog.addObserver(proxyObserver);
-                    metaTrackLogs.put(trackLog.getNameKey(), trackLog);
+                    if (addToMetaTrackLogs){
+                        metaTrackLogs.put(trackLog.getNameKey(), trackLog);
+                    }
                 }
                 setChanged();
                 notifyObservers();
@@ -368,6 +375,15 @@ public class MGMapApplication extends Application {
         return testControl;
     }
 
+    public synchronized void addBgJob(BgJob job){
+        if (job == null) return;
+        if (!bgJobs.isEmpty()){
+            bgJobs.add(job);
+        } else { // bgJobs is empty
+            bgJobs.add(job);
+            startBgService();
+        }
+    }
     public synchronized void addBgJobs(List<BgJob> jobs){
         if (jobs == null) return;
         if (!bgJobs.isEmpty()){
@@ -375,16 +391,20 @@ public class MGMapApplication extends Application {
         } else { // bgJobs is empty
             if (jobs.size() > 0){ // and if there are new jobs
                 bgJobs.addAll(jobs);
-
-                Intent intent = new Intent(this, BgJobService.class);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    this.startForegroundService(intent);
-                } else {
-                    this.startService(intent);
-                }
+                startBgService();
             }
         }
     }
+
+    private void startBgService(){
+        Intent intent = new Intent(this, BgJobService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(intent);
+        } else {
+            this.startService(intent);
+        }
+    }
+
     public synchronized BgJob getBgJob(){
         if (bgJobs.size() > 0){
             return bgJobs.remove(0);

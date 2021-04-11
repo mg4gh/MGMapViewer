@@ -47,12 +47,14 @@ public class BBox {
     }
 
     public BBox extend(double latitude, double longitude){
-        double rLat = PointModelUtil.roundMD(latitude);
-        double rLong = PointModelUtil.roundMD(longitude);
-        minLatitude = Math.min(minLatitude, rLat);
-        minLongitude = Math.min(minLongitude, rLong);
-        maxLatitude = Math.max(maxLatitude, rLat);
-        maxLongitude = Math.max(maxLongitude, rLong);
+        if ((Math.abs(latitude) < PointModel.NO_LAT_LONG) && (Math.abs(longitude) < PointModel.NO_LAT_LONG)){
+            double rLat = PointModelUtil.roundMD(latitude);
+            double rLong = PointModelUtil.roundMD(longitude);
+            minLatitude = Math.min(minLatitude, rLat);
+            minLongitude = Math.min(minLongitude, rLong);
+            maxLatitude = Math.max(maxLatitude, rLat);
+            maxLongitude = Math.max(maxLongitude, rLong);
+        }
         return this;
     }
 

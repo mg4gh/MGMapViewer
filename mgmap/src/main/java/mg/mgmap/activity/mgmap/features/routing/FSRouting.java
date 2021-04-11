@@ -65,19 +65,15 @@ public class FSRouting extends FeatureService {
     private final RoutingLineRefProvider routingLineRefProvider;
 
     private final Pref<Boolean> prefWayDetails = getPref(R.string.FSGrad_pref_WayDetails_key, false);
-    private final Pref<Boolean> prefSnap2Way = getPref(R.string.FSRouting_pref_snap2way_key, true);
     private final Pref<Boolean> prefEditMarkerTrack = getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Boolean> prefRouteGL = getPref(R.string.FSRouting_pref_RouteGL, false);
 
-    private final Pref<Boolean> prefAutoSwitcher = getPref(R.string.FSMarker_pref_auto_switcher, true);
-    private final Pref<Boolean> prefAutoMarkerSetting = getPref(R.string.FSMarker_pref_auto_key, true);
-    private final Pref<Float> prefAlphaMtl = getPref(R.string.FSMarker_pref_alphaMTL, 1.0f);
     private final Pref<Float> prefAlphaRotl = getPref(R.string.FSRouting_pref_alphaRoTL, 1.0f);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
+    private final Pref<Boolean> prefStlVisibility = getPref(R.string.FSATL_pref_STL_visibility, false);
     private final Pref<Integer> prefZoomLevel = getPref(R.string.FSBeeline_pref_ZoomLevel, 15);
     private final Pref<Boolean> prefMapMatching = new Pref<>(false);
-    private final Pref<Boolean> prefMapMatchingEnabled = new Pref<>(false);
     private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
     private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
 
@@ -89,23 +85,19 @@ public class FSRouting extends FeatureService {
     public FSRouting(MGMapActivity mmActivity, FSMarker fsMarker) {
         super(mmActivity);
         application = getApplication();
-        routingEngine = new RoutingEngine(mmActivity.getGGraphTileFactory(), prefSnap2Way);
+        routingEngine = new RoutingEngine(mmActivity.getGGraphTileFactory());
         ttRefreshTime = 50;
         routingLineRefProvider = new RoutingLineRefProvider();
         fsMarker.lineRefProvider = routingLineRefProvider;
-        prefMapMatching.addObserver((o, arg) -> optimize());
-        Observer matchingEnabledObserver = (o, arg) -> prefMapMatchingEnabled.setValue( prefMtlVisibility.getValue() && (prefAlphaRotl.getValue() > 0.25f) );
-        prefMtlVisibility.addObserver(matchingEnabledObserver);
-        prefAlphaRotl.addObserver(matchingEnabledObserver);
-        prefAutoSwitcher.addObserver((o, arg) -> {
-            if (prefAutoMarkerSetting.getValue()){
-                prefSnap2Way.setValue(prefAutoSwitcher.getValue()); // smallMTL
-                if (prefAlphaRotl.getValue() < 0.75f){
-                    prefAlphaRotl.setValue(1.0f);
+        prefMapMatching.addObserver((o, arg) -> {
+            TrackLog selectedTrackLog = getApplication().availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
+            if (selectedTrackLog != null){
+                synchronized (FSRouting.this){
+                    fsMarker.createMarkerTrackLog(selectedTrackLog);
+                    optimize();
                 }
             }
         });
-
         new Thread(){
             @Override
             public void run() {
@@ -129,7 +121,6 @@ public class FSRouting extends FeatureService {
 
         application.markerTrackLogObservable.addObserver((o, arg) -> {
             refreshRequired = true; // refresh route calculation is required
-//          NameUtil.logContext(6); // to see where the update was triggered
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
             synchronized (FSRouting.this){
                 FSRouting.this.notifyAll();
@@ -179,7 +170,7 @@ public class FSRouting extends FeatureService {
         if ("matching".equals(info)) {
             etv.setPrAction(prefMapMatching);
             etv.setData(R.drawable.matching);
-            etv.setDisabledData(prefMapMatchingEnabled,R.drawable.matching_dis);
+            etv.setDisabledData(prefStlVisibility,R.drawable.matching_dis);
             etv.setHelp(r(R.string.FSRouting_qcMapMatching_Help));
         } else if ("routingHint".equals(info)){
             etv.setData(prefRoutingHints,R.drawable.routing_hints2, R.drawable.routing_hints1);
@@ -223,9 +214,7 @@ public class FSRouting extends FeatureService {
             }
         }
         if (mtl != null){
-            if (prefAlphaMtl.getValue() < 0.5f){ // is considered as low visibility
-                showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
-            }
+            showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
         }
         getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, calcRemainingStatistic(rotl));
 
@@ -305,12 +294,18 @@ public class FSRouting extends FeatureService {
     }
 
     void optimize(){
+        routingEngine.snap2Way = false;
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         RouteOptimizer ro = new RouteOptimizer(getActivity().getGGraphTileFactory(), routingEngine);
         ro.optimize(mtl);
+        routingEngine.snap2Way = true;
         application.markerTrackLogObservable.changed();
     }
 
+    public void optimize2(TrackLog trackLog){
+        RouteOptimizer2 ro = new RouteOptimizer2(getActivity().getGGraphTileFactory(), routingEngine);
+        ro.optimize(trackLog);
+    }
 
     public class RoutingControlLayer extends MVLayer {
 
