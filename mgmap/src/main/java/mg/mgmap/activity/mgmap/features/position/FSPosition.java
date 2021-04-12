@@ -22,14 +22,10 @@ import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.view.InputListener;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
-import mg.mgmap.activity.mgmap.util.MapViewUtility;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -54,7 +50,6 @@ public class FSPosition extends FeatureService {
     private final Pref<Boolean> prefGpsEnabled = new Pref<>(false);
     private final Pref<Boolean> prefRefreshMapView = getPref(R.string.FSPosition_pref_RefreshMapView, false);
     private final Pref<Boolean> prefMapMoving = getPref(R.string.FSPosition_pref_MapMoving, false);
-//    private final Pref<Boolean> prefMapMovingTrigger = getPref(R.string.FSPosition_pref_MapMovingTrigger, false);
 
     private ExtendedTextView etvHeight = null;
 
@@ -81,8 +76,10 @@ public class FSPosition extends FeatureService {
         getMapView().addInputListener(new InputListener() {
             @Override
             public void onMoveEvent() {
-                prefMapMoving.setValue(true);
-                setupTTMapMovingOff();
+                if (prefGps.getValue()){
+                    prefMapMoving.setValue(true);
+                    setupTTMapMovingOff();
+                }
             }
             @Override
             public void onZoomEvent() { }
@@ -175,9 +172,7 @@ public class FSPosition extends FeatureService {
         mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));
     }
 
-    private final Runnable ttMapMovingOff = () -> {
-        prefMapMoving.setValue(false);
-    };
+    private final Runnable ttMapMovingOff = () -> prefMapMoving.setValue(false);
     private void setupTTMapMovingOff(){
         getTimer().removeCallbacks(ttMapMovingOff);
         getTimer().postDelayed(ttMapMovingOff, 7000);

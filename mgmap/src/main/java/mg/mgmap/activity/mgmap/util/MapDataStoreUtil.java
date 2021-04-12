@@ -34,7 +34,6 @@ import mg.mgmap.generic.util.WayProvider;
 
 public class MapDataStoreUtil implements WayProvider {
 
-    private MGMapLayerFactory mapLayerFactory;
     private boolean active = false;
     private ArrayList<BBox> mapBBoxList = null;
     private ArrayList<MapDataStore> mapDataStoreList = null;
@@ -43,7 +42,6 @@ public class MapDataStoreUtil implements WayProvider {
 
 
     public MapDataStoreUtil onCreate(MGMapLayerFactory mapLayerFactory, SharedPreferences sharedPreferences, ArrayList<String> mapLayerKeys){
-        this.mapLayerFactory = mapLayerFactory;
         mapBBoxList = new ArrayList<>();
         mapDataStoreList = new ArrayList<>();
         tile2MapDataStore = new HashMap<>();

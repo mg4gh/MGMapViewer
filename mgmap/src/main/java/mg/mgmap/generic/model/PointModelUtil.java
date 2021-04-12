@@ -236,6 +236,24 @@ public class PointModelUtil {
         }
     }
 
+    public static void getBestDistance(MultiPointModel segment, PointModel pm, TrackLogRefApproach bestMatch){
+        WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();
+        WriteablePointModel pmApproach = new WriteablePointModelImpl();//new TrackLogPoint();
+        for (int i = 1, j = 0; i < segment.size(); j = i++) {
+            if (PointModelUtil.findApproach(pm, segment.get(i), segment.get(j), pmApproachCandidate, (int)(bestMatch.getDistance()+1) )){
+                double distance = PointModelUtil.distance( pm, pmApproachCandidate);
+                if (distance < bestMatch.getDistance()){
+                    bestMatch.setSegmentIdx( -1 );
+                    if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
+                    pmApproach.setLat(pmApproachCandidate.getLat());
+                    pmApproach.setLon(pmApproachCandidate.getLon());
+                    bestMatch.setDistance( distance );
+                    bestMatch.setEndPointIndex(i);
+                }
+            }
+        }
+    }
+
     public static  void getBestPoint(ArrayList<? extends MultiPointModel> mpms, PointModel pm, TrackLogRefApproach bestMatch){
         for (int segmentIdx = 0; segmentIdx< mpms.size(); segmentIdx++){
             MultiPointModel segment = mpms.get(segmentIdx);
