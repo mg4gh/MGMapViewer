@@ -81,6 +81,35 @@ public class BgJobUtil {
         alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(jobs.size()>0);
     }
 
+    public void processConfirmDialog2(String title, String message, ArrayList<BgJob> jobs){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            dialog.dismiss();
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
+            FullscreenUtil.enforceState(activity);
+
+            if (jobs.size() > 0){
+                application.addBgJobs(jobs);
+            }
+        });
+
+        builder.setNegativeButton("NO", (dialog, which) -> {
+            // Do nothing
+            dialog.dismiss();
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
+            FullscreenUtil.enforceState(activity);
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+        alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(jobs.size()>0);
+    }
+
+
     public static void showToast(Activity activity, CharSequence text){
         activity.runOnUiThread(new Runnable() {
             @Override

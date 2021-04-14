@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import mg.mgmap.application.MGMapApplication;
@@ -163,6 +164,30 @@ public class GDriveUtil {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
         return nameIdSet;
+    }
+
+    /** Returns a map FileNames->File in the directory with idParent, which match the nameRegex for the filename. */
+    public static TreeMap<String, File> getFiles(Drive driveService, String idParent, String nameRegex, String namePart2skip){
+        TreeMap<String, File> treeMap = new TreeMap<>();
+
+        try {
+            String pageToken = null;
+            do {
+                FileList result = driveService.files().list()
+                        .setQ("mimeType != 'application/vnd.google-apps.folder' and trashed=false and '"+idParent+"' in parents")
+                        .setSpaces("drive")
+                        .setFields("nextPageToken, files(id, name)")
+                        .setPageToken(pageToken)
+                        .execute();
+                for (File file : result.getFiles()) {
+                    treeMap.put(file.getName().replaceFirst(namePart2skip, ""),file);
+                }
+                pageToken = result.getNextPageToken();
+            } while (pageToken != null);
+        } catch (IOException e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        }
+        return treeMap;
     }
 
 }

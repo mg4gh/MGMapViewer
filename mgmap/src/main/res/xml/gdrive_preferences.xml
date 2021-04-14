@@ -5,9 +5,15 @@
         app:iconSpaceReserved="false"
         >
         <Preference
-            app:key="@string/preferences_gdrive_sync_key"
-            app:title="@string/preferences_gdrive_sync_title"
-            app:summary="@string/preferences_gdrive_sync_desc"
+            app:key="@string/preferences_gdrive_sync_uploadKey"
+            app:title="@string/preferences_gdrive_sync_uploadTitle"
+            app:summary="@string/preferences_gdrive_sync_uploadDesc"
+            app:iconSpaceReserved="false"
+            />
+        <Preference
+            app:key="@string/preferences_gdrive_sync_downloadKey"
+            app:title="@string/preferences_gdrive_sync_downloadTitle"
+            app:summary="@string/preferences_gdrive_sync_downloadDesc"
             app:iconSpaceReserved="false"
             />
 

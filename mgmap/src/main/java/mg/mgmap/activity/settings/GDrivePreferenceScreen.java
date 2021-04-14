@@ -32,17 +32,33 @@ public class GDrivePreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onResume() {
         super.onResume();
-        setGDriveOCL();
+        setGDriveUploadOCL();
+        setGDriveDownloadOCL();
     }
 
-    private void setGDriveOCL() {
-        Preference pref = findPreference(getResources().getString(R.string.preferences_gdrive_sync_key));
+    private void setGDriveUploadOCL() {
+        Preference pref = findPreference(getResources().getString(R.string.preferences_gdrive_sync_uploadKey));
         if (pref != null){
             pref.setOnPreferenceClickListener(preference -> {
                 Activity activity = getActivity();
                 if (activity != null){
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-                    sharedPreferences.edit().putBoolean(getResources().getString(R.string.preferences_gdrive_trigger), true).apply();
+                    sharedPreferences.edit().putBoolean(getResources().getString(R.string.preferences_gdrive_uploadTrigger), true).apply();
+                    getActivity().finish();
+                }
+                return true;
+            });
+        }
+    }
+
+    private void setGDriveDownloadOCL() {
+        Preference pref = findPreference(getResources().getString(R.string.preferences_gdrive_sync_downloadKey));
+        if (pref != null){
+            pref.setOnPreferenceClickListener(preference -> {
+                Activity activity = getActivity();
+                if (activity != null){
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+                    sharedPreferences.edit().putBoolean(getResources().getString(R.string.preferences_gdrive_downloadTrigger), true).apply();
                     getActivity().finish();
                 }
                 return true;

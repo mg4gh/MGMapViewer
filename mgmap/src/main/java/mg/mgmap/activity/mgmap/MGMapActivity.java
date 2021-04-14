@@ -258,10 +258,15 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.lastPositionsObservable.changed();
         application.markerTrackLogObservable.changed();
 
-        Pref<Boolean> triggerGDriveSync = prefCache.get(R.string.preferences_gdrive_trigger, false);
-        if (triggerGDriveSync.getValue()){
-            new FGDrive(this).trySynchronisation();
-            triggerGDriveSync.setValue(false);
+        Pref<Boolean> uploadTriggerGDriveSync = prefCache.get(R.string.preferences_gdrive_uploadTrigger, false);
+        if (uploadTriggerGDriveSync.getValue()){
+            new FGDrive(this).trySynchronisation(true);
+            uploadTriggerGDriveSync.setValue(false);
+        }
+        Pref<Boolean> downloadTriggerGDriveSync = prefCache.get(R.string.preferences_gdrive_downloadTrigger, false);
+        if (downloadTriggerGDriveSync.getValue()){
+            new FGDrive(this).trySynchronisation(false);
+            downloadTriggerGDriveSync.setValue(false);
         }
     }
 

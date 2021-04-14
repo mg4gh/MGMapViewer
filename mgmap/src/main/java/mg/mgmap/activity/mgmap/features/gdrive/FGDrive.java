@@ -83,7 +83,7 @@ public class FGDrive {
         application = (MGMapApplication)activity.getApplication();
     }
 
-    public void trySynchronisation() {
+    public void trySynchronisation(boolean upload) { // true: upload, false: download
         abortSync = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
@@ -101,12 +101,12 @@ public class FGDrive {
         new Thread(){
             @Override
             public void run() {
-                trySynchronisationAsync(alert);
+                trySynchronisationAsync(alert, upload);
             }
         }.start();
     }
 
-    private void trySynchronisationAsync(AlertDialog alert){
+    private void trySynchronisationAsync(AlertDialog alert, boolean upload){
 
         try {
             PersistenceManager persistenceManager = application.getPersistenceManager();
@@ -126,46 +126,62 @@ public class FGDrive {
 
             Zipper zip = new Zipper(props.getProperty(GDRIVE_CONFIG_ZIP_PW_KEY,"geheimXgeheim!"));
 
-            Set<String> localSet = new TreeSet<>();
+//            Set<String> localSet = new TreeSet<>();
+            TreeMap<String, File> localMap = new TreeMap<>();
             //noinspection ConstantConditions
-            for (String filename : gpxFolder.list()){
-                if (filename.endsWith(".gpx")){
-                    localSet.add(filename);
+            for (File file : gpxFolder.listFiles()){
+                if (file.getName().endsWith(".gpx")){
+//                    localSet.add(filename);
+                    localMap.put(file.getName(), file);
                 }
             }
 
-            TreeMap<String, String> remoteMap = new TreeMap<>();
-            Set<String> rSet = GDriveUtil.listFiles(dservice, idMgmFolder, ".*\\.gpx\\.zip");
-            for (String entry : rSet){
-                String[] parts = entry.split(".zip:");
-                if (parts.length == 2){
-                    remoteMap.put(parts[0], parts[1]);
-                }
-            }
-            Set<String> commonSet = new TreeSet<>(localSet);
+            TreeMap<String, com.google.api.services.drive.model.File> remoteMap =
+                    GDriveUtil.getFiles(dservice, idMgmFolder, ".*\\.gpx\\.zip", "\\.zip$");
+//            for (String entry : rSet){
+//                String[] parts = entry.split(".zip:");
+//                if (parts.length == 2){
+//                    remoteMap.put(parts[0], parts[1]);
+//                }
+//            }
+            Set<String> commonSet = new TreeSet<>(localMap.keySet());
             commonSet.retainAll(remoteMap.keySet());
+            for (String commonName : new TreeSet<>(commonSet)){
+                if (remoteMap.get(commonName).getModifiedTime() != null){
 
-            localSet.removeAll(commonSet);
+                    if (localMap.get(commonName).lastModified() != remoteMap.get(commonName).getModifiedTime().getValue()){
+                        // names are common, bu not timestamp
+                        commonSet.remove(commonName);
+                    }
+                }
+            }
 
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" rSet: "+rSet);
+
+//            localSet.removeAll(commonSet);
+
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" remoteSet: "+remoteMap.keySet());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" commonSet: "+commonSet);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" localSet: "+localSet);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" localSet: "+localMap.keySet());
 
             ArrayList<BgJob> jobs = new ArrayList<>();
 
-            for (String name : localSet){
-                jobs.add( new UploadJob(dservice,zip,idMgmFolder,gpxFolder,name) );
-            }
-            int numUploadJobs = jobs.size();
-
-            for (String name : remoteMap.keySet()){
-                if (!commonSet.contains(name)){
-                    jobs.add( new DownloadJob(dservice,zip,remoteMap.get(name),gpxFolder,name) );
+            if (upload){
+                for (String name : localMap.keySet()){
+                    if (!commonSet.contains(name)) {
+                        jobs.add(new UploadJob(dservice, zip, idMgmFolder, gpxFolder, name));
+                    }
+                }
+            } else {
+                for (String name : remoteMap.keySet()){
+                    if (!commonSet.contains(name)){
+                        jobs.add( new DownloadJob(dservice,zip,remoteMap.get(name).getId(),gpxFolder,name) );
+                    }
                 }
             }
-            int numDownloadJobs = jobs.size()-numUploadJobs;
+
+//            int numDownloadJobs = jobs.size()-numUploadJobs;
             String title = "GDrive synchronisation service";
-            String message = "GDrive Sync Overview: \ntracks in sync: "+commonSet.size()+" \ntracks to upload: "+numUploadJobs+" \ntracks to download: "+numDownloadJobs;
+            String message = "GDrive Sync Overview: \ntracks in sync: "+commonSet.size()+(upload?(" \ntracks to upload: "+jobs.size()):(" \ntracks to download: "+jobs.size()));
             Log.i(MGMapApplication.LABEL, NameUtil.context()+message);
             // ok, now do the real work!!!
             activity.runOnUiThread(() -> {
