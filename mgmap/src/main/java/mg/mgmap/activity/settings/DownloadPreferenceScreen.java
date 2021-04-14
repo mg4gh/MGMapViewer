@@ -19,7 +19,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 import androidx.preference.Preference;
@@ -37,9 +40,11 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import mg.mgmap.BuildConfig;
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.BgJobUtil;
 import mg.mgmap.generic.util.SHA256;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.application.util.PersistenceManager;
@@ -77,24 +82,31 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 Context context = getContext().getApplicationContext();
                 if (context instanceof MGMapApplication) {
                     MGMapApplication application = (MGMapApplication) context;
+                    SettingsActivity activity = (SettingsActivity) getActivity();
 
                     ArrayList<BgJob> jobs = new ArrayList<>();
                     BgJob job = new BgJob() {
                         @Override
                         protected void doJob() throws Exception {
                             super.doJob();
-                            Zipper zipper = new Zipper(null);
-                            String urlString = getResources().getString(R.string.url_github_apk_latest)+((BuildConfig.DEBUG)?"debug":"release")+"/apk.zip";
-                            URL url = new URL(urlString);
-                            PersistenceManager persistenceManager = application.getPersistenceManager();
-                            persistenceManager.cleanApkDir();
-                            zipper.unpack(url, persistenceManager.getApkDir(), null, this);
+                            try {
+                                Zipper zipper = new Zipper(null);
+                                String urlString = getResources().getString(R.string.url_github_apk_latest)+((BuildConfig.DEBUG)?"debug":"release")+"/apk.zip1";
+                                URL url = new URL(urlString);
+                                PersistenceManager persistenceManager = application.getPersistenceManager();
+                                persistenceManager.cleanApkDir();
+                                zipper.unpack(url, persistenceManager.getApkDir(), null, this);
 
-                            verifyAndInstall(context, persistenceManager);
+                                verifyAndInstall(context, persistenceManager);
+                            } catch (Exception e) {
+                                Log.e(MGMapApplication.LABEL, NameUtil.context()+"Download job failed",e);
+                                BgJobUtil.showToast(activity, Html.fromHtml("<font color='#ff0000' ><b>" + prefSwLatest.getTitle().toString()+" failed" + "</b></font>"));
+                            }
                         }
                     };
                     jobs.add(job);
-                    application.addBgJobs(jobs);
+//                    application.addBgJobs(jobs);
+                    new BgJobUtil(activity, application).processConfirmDialog(prefSwLatest.getTitle().toString(), prefSwLatest.getSummary().toString(), jobs);
                 } else {
                     Log.e(MGMapApplication.LABEL, NameUtil.context()+" failed to add job");
                 }
@@ -110,6 +122,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 Context context = getContext().getApplicationContext();
                 if (context instanceof MGMapApplication) {
                     MGMapApplication application = (MGMapApplication) context;
+                    SettingsActivity activity = (SettingsActivity) getActivity();
 
                     ArrayList<BgJob> jobs = new ArrayList<>();
                     BgJob job = new BgJob(){
@@ -194,11 +207,22 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                                 }
                             } catch (Exception e) {
                                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                                BgJobUtil.showToast(activity, Html.fromHtml("<font color='#ff0000' ><b>" + prefSwLocal.getTitle().toString()+" failed" + "</b></font>"));
+//                                activity.runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        Toast toast = Toast.makeText(context,  "", Toast.LENGTH_LONG);
+//                                        toast.setGravity(Gravity.TOP, 0, 0);
+//                                        toast.show();
+//                                    }
+//                                });
                             }
 
                         }
                     };
                     jobs.add(job);
+                    new BgJobUtil(activity, application).processConfirmDialog(prefSwLocal.getTitle().toString(), prefSwLocal.getSummary().toString(), jobs);
+
                     application.addBgJobs(jobs);
                 } else {
                     Log.e(MGMapApplication.LABEL, NameUtil.context()+" failed to add job");

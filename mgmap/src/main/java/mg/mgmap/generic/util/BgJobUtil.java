@@ -14,9 +14,13 @@
  */
 package mg.mgmap.generic.util;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 /*
  * Copyright 2017 - 2021 mg4gh
@@ -75,6 +79,18 @@ public class BgJobUtil {
         AlertDialog alert = builder.create();
         alert.show();
         alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(jobs.size()>0);
+    }
+
+    public static void showToast(Activity activity, CharSequence text){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(activity, text, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.TOP, 0, 0);
+                toast.show();
+            }
+        });
+
     }
 
 
