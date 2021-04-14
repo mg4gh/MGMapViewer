@@ -51,8 +51,6 @@ import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
-import mg.mgmap.generic.util.Pref;
-import mg.mgmap.activity.mgmap.util.TermuxUtil;
 
 public class TileStoreLoader {
 
