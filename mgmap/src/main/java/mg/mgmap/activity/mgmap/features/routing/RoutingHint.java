@@ -17,9 +17,7 @@ package mg.mgmap.activity.mgmap.features.routing;
 import mg.mgmap.generic.model.PointModel;
 
 public class RoutingHint {
-
-    public static final double MIN_DISTANCE = 3.0;
-
+    
     PointModel pmCurrent; // point, on which is Routing hint is relevant
     PointModel pmNext; // next point of Route
     PointModel pmPrev; // prev point of Route
