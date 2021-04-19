@@ -207,7 +207,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                                 }
                             } catch (Exception e) {
                                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                                BgJobUtil.showToast(activity, Html.fromHtml("<font color='#ff0000' ><b>" + prefSwLocal.getTitle().toString()+" failed" + "</b></font>"));
+                                BgJobUtil.showToast(activity, Html.fromHtml("<font color='#000000' ><b>" + prefSwLocal.getTitle().toString()+" failed!" + "</b></font>"));
 //                                activity.runOnUiThread(new Runnable() {
 //                                    @Override
 //                                    public void run() {
@@ -223,7 +223,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                     jobs.add(job);
                     new BgJobUtil(activity, application).processConfirmDialog(prefSwLocal.getTitle().toString(), prefSwLocal.getSummary().toString(), jobs);
 
-                    application.addBgJobs(jobs);
+//                    application.addBgJobs(jobs);
                 } else {
                     Log.e(MGMapApplication.LABEL, NameUtil.context()+" failed to add job");
                 }
