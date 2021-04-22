@@ -7,15 +7,7 @@
 
     <string name="FSMarker_qc_EditMarkerTrack">FSMarker.EditMarkerTrack</string>
 
-    <string name="preferences_cat_marker_title">Marker/Route settings</string>
-
-    <string name="FSMarker_pref_auto_key">FSMarker.autoMarkerSettings</string>
-    <string name="FSMarker_pref_auto_title">Automatic marker settings</string>
-    <string name="FSMarker_pref_auto_summary">Do automatically set marker settings ("Show marker track" and  "Snap to way").</string>
-    <string name="FSMarker_pref_auto_switcher">FSMarker.autoMarkerSwitcher</string>
-
-    <string name="FSMarker_pref_snap2way_title">Snap to way</string>
-    <string name="FSMarker_pref_snap2way_summary">Snap marker points automatically to close ways.</string>
+    <string name="FSMarker_pref_dnd_ongoing">FSMarker.dndOngoing</string>
 
     <string name="FSMarker_pref_alphaMTL">FSMarker.alphaMTL</string>
     <string name="FSMarker_pref_MTL_visibility">FSMarker.MTL_visibility</string>

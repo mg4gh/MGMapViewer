@@ -47,6 +47,7 @@ import mg.mgmap.generic.model.PointModelUtil;
 public class RoutingEngine {
 
     private static final int MAX_ROUTE_DISTANCE = 10000; // maximum allowed route length - otherwise AStar is expected be bee too slow
+    int maxRouteLengthFactor = 10; // maximum allowed route length - as a factor to the air line (plus 2*Close-Distance) // temporary changed during map matching
 
     private final GGraphTileFactory gFactory;
     boolean snap2Way = true;
@@ -103,6 +104,7 @@ public class RoutingEngine {
             Iterator<PointModel> iter = segment.iterator();
             RoutePointModel current = getVerifyRoutePointModel( iter.next() );
             current.newMPM = null;
+            current.currentMPM = new MultiPointModelImpl().addPoint(new PointModelImpl(current.mtlp));
             while (iter.hasNext()){
                 RoutePointModel prev = current;
                 current = getVerifyRoutePointModel( iter.next() );
@@ -372,7 +374,7 @@ public class RoutingEngine {
         double distance = PointModelUtil.distance(pmStart,pmEnd);
         double res = 0;
         if (distance < MAX_ROUTE_DISTANCE){ // otherwise it will take too long
-            res = Math.min (3 * PointModelUtil.distance(pmStart,pmEnd) + 2 * PointModelUtil.getCloseThreshold(), MAX_ROUTE_DISTANCE);
+            res = Math.min (maxRouteLengthFactor * PointModelUtil.distance(pmStart,pmEnd) + 2 * PointModelUtil.getCloseThreshold(), MAX_ROUTE_DISTANCE);
         }
         return res;
     }

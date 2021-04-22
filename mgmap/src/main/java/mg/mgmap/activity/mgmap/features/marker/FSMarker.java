@@ -20,6 +20,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.view.MultiPointView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 
@@ -29,6 +30,7 @@ import java.util.Locale;
 import java.util.Observer;
 
 import mg.mgmap.R;
+import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
@@ -44,7 +46,6 @@ import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
-import mg.mgmap.activity.mgmap.view.MVLayer;
 
 public class FSMarker extends FeatureService {
 
@@ -59,6 +60,8 @@ public class FSMarker extends FeatureService {
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
     private final Pref<Boolean> triggerHideMtl = new Pref<>(false);
     private final Pref<Boolean> triggerHideAll = getPref(R.string.FSATL_pref_hideAll, false);
+
+    private final Pref<Boolean> prefDnDOngoing = getPref(R.string.FSMarker_pref_dnd_ongoing, false);
 
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
 
@@ -198,22 +201,27 @@ public class FSMarker extends FeatureService {
 
 
 
-    public class MarkerControlLayer extends MVLayer {
+    public class MarkerControlLayer extends MultiPointView {
 
         private MarkerControlLayer(){
+            super(new MultiPointModelImpl(), CC.getStrokePaint(R.color.BLACK, 3));
             setDragging();
+            prefDnDOngoing.addObserver((o, arg) -> {
+                if (!prefDnDOngoing.getValue()){
+                    clearModel();
+                }
+            });
         }
 
         @Override
         public boolean onTap(WriteablePointModel pmTap) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
-            TrackLogRefApproach lineRef = lineRefProvider.getBestDistance(mtl,pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
-
             if (pointRef != null){
                 deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
             } else {
                 pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
+                TrackLogRefApproach lineRef = lineRefProvider.getBestDistance(mtl,pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
                 if (lineRef != null){
                     insertPoint(mtl, pmTap, lineRef);
                 } else {
@@ -278,6 +286,16 @@ public class FSMarker extends FeatureService {
             mtl.recalcStatistic();
             mtl.setModified(true);
             markerTrackLogObservable.changed();
+        }
+
+        private void clearModel(){
+            synchronized (model){
+                MultiPointModelImpl writeableModel = (MultiPointModelImpl)model;
+                while (model.size() > 0){
+                    writeableModel.removePoint(0);
+                }
+            }
+            requestRedraw();
         }
 
     }

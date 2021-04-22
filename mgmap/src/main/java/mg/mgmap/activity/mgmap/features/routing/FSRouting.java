@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.model.DisplayModel;
 
 import java.util.HashMap;
@@ -32,9 +33,13 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.BBox;
+import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogStatistic;
+import mg.mgmap.generic.model.WriteablePointModel;
+import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
@@ -76,11 +81,13 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefMapMatching = new Pref<>(false);
     private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
     private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefDnDOngoing = getPref(R.string.FSMarker_pref_dnd_ongoing, false);
 
     private ViewGroup dashboardRoute = null;
-    private volatile boolean refreshRequired = false;
+    private volatile int refreshRequired = 0;
     private boolean runRouteCalcThread = true;
     private final MGMapApplication application;
+    private Layer dndVisualisationLayer = null;
 
     public FSRouting(MGMapActivity mmActivity, FSMarker fsMarker) {
         super(mmActivity);
@@ -101,16 +108,29 @@ public class FSRouting extends FeatureService {
         new Thread(){
             @Override
             public void run() {
+                int lastRefreshRequired = refreshRequired;
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
                 while (runRouteCalcThread){
                     try {
                         synchronized (FSRouting.this){
-                            FSRouting.this.wait(1000);
+                            FSRouting.this.wait(100);
                         }
-                        if (refreshRequired){
-                            refreshRequired = false;
-                            updateRouting();
+                        if (refreshRequired == 0){
+                            prefDnDOngoing.setValue(false);
+                            unregister(dndVisualisationLayer); // does nothing, if dndVisualisationLayer is already null
+                            dndVisualisationLayer = null;
+                        } else {
+                            checkMtlpMovement(application.markerTrackLogObservable.getTrackLog()); // check, if dndVisualisationLayer is necessary
+                            if (lastRefreshRequired == refreshRequired){ // no further refreshRequest within the last 100ms -> start calculation
+                                refreshRequired = 0;
+                                lastRefreshRequired = 0;
+                                updateRouting();
+                            } else {
+                                lastRefreshRequired = refreshRequired; // save current value of refreshRequired -> enable detection of further changes in next loop cycle
+                            }
+
                         }
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -120,7 +140,7 @@ public class FSRouting extends FeatureService {
         }.start();
 
         application.markerTrackLogObservable.addObserver((o, arg) -> {
-            refreshRequired = true; // refresh route calculation is required
+            refreshRequired++; // refresh route calculation is required
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
             synchronized (FSRouting.this){
                 FSRouting.this.notifyAll();
@@ -205,6 +225,9 @@ public class FSRouting extends FeatureService {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
+        if (dndVisualisationLayer != null){
+            register(dndVisualisationLayer);
+        }
         if (rotl != null){
             if (prefRouteGL.getValue()){
                 CC.initGlPaints( prefAlphaRotl.getValue() );
@@ -295,10 +318,13 @@ public class FSRouting extends FeatureService {
 
     void optimize(){
         routingEngine.snap2Way = false;
+        int lengthFactor = routingEngine.maxRouteLengthFactor;
+        routingEngine.maxRouteLengthFactor = 3;
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         RouteOptimizer ro = new RouteOptimizer(getActivity().getGGraphTileFactory(), routingEngine);
         ro.optimize(mtl);
         routingEngine.snap2Way = true;
+        routingEngine.maxRouteLengthFactor = lengthFactor;
         application.markerTrackLogObservable.changed();
     }
 
@@ -349,6 +375,11 @@ public class FSRouting extends FeatureService {
         if (routeTrackLog != null){
             TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(pm, threshold);
             if (bestMatch != null){
+                //create helper rpm entry in routePointMap of routing engine - used for dnd visualization directly after mtlp insert (before first route at this point)
+                RoutePointModel helperRpm = new RoutePointModel(pm);
+                helperRpm.currentMPM = new MultiPointModelImpl().addPoint(new PointModelImpl(pm));
+                routingEngine.getRoutePointMap().put(pm, helperRpm);
+                //now do the real job and create a TrackLogRefApproach for the marker track as return value
                 TrackLogSegment segment = routeTrackLog.getTrackLogSegment(bestMatch.getSegmentIdx());
                 PointModel rtlpm = segment.get(bestMatch.getEndPointIndex());
                 RoutePointModel rpm = routingEngine.getRoutePointMap2().get(rtlpm);
@@ -358,5 +389,40 @@ public class FSRouting extends FeatureService {
             }
         }
         return null;
+    }
+
+    private void checkMtlpMovement(TrackLog mtl){
+        if (mtl != null){
+            for (TrackLogSegment segment : mtl.getTrackLogSegments()){
+                for (PointModel mtlp : segment){
+                    WriteablePointModelImpl wpm = new WriteablePointModelImpl();
+                    if (checkMtlpMovementPoint(mtlp, wpm)){
+                        MultiPointModelImpl mpmi = new MultiPointModelImpl();
+                        mpmi.addPoint(mtlp).addPoint(wpm);
+                        Paint paint = CC.getStrokePaint(R.color.BLACK_A150, 3);
+                        dndVisualisationLayer = new MultiPointView(mpmi, paint);
+                        long saveTTRefreshTime = ttRefreshTime;
+                        ttRefreshTime = 1; // need quick refresh
+                        refreshObserver.onChange();
+                        ttRefreshTime = saveTTRefreshTime;
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean checkMtlpMovementPoint(PointModel mtlp, WriteablePointModel currentRoutingPos){
+        RoutePointModel rpm = routingEngine.getRoutePointMap().get(mtlp);
+        if ((rpm != null) && (rpm.currentMPM != null)){
+            PointModel last = rpm.currentMPM.get(rpm.currentMPM.size() - 1);
+            if ((last != null) && (mtlp != null)){
+                if (PointModelUtil.distance(last, mtlp) > PointModelUtil.getCloseThreshold()*1.5){
+                    currentRoutingPos.setLat(last.getLat());
+                    currentRoutingPos.setLon(last.getLon());
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

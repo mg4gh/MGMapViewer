@@ -45,7 +45,7 @@ public class MultiPointView extends MVLayer {
     protected boolean showIntermediates = false;
     protected int pointRadius = POINT_RADIUS;
 
-    protected volatile MultiPointModel model;
+    protected final MultiPointModel model;
 
     public MultiPointView(MultiPointModel model, Paint paintStroke) {
         this.model = model;
