@@ -91,7 +91,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                             super.doJob();
                             try {
                                 Zipper zipper = new Zipper(null);
-                                String urlString = getResources().getString(R.string.url_github_apk_latest)+((BuildConfig.DEBUG)?"debug":"release")+"/apk.zip1";
+                                String urlString = getResources().getString(R.string.url_github_apk_latest)+((BuildConfig.DEBUG)?"debug":"release")+"/apk.zip";
                                 URL url = new URL(urlString);
                                 PersistenceManager persistenceManager = application.getPersistenceManager();
                                 persistenceManager.cleanApkDir();
@@ -100,7 +100,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                                 verifyAndInstall(context, persistenceManager);
                             } catch (Exception e) {
                                 Log.e(MGMapApplication.LABEL, NameUtil.context()+"Download job failed",e);
-                                BgJobUtil.showToast(activity, Html.fromHtml("<font color='#ff0000' ><b>" + prefSwLatest.getTitle().toString()+" failed" + "</b></font>"));
+                                BgJobUtil.showToast(activity, prefSwLatest.getTitle().toString()+" failed" );
                             }
                         }
                     };
