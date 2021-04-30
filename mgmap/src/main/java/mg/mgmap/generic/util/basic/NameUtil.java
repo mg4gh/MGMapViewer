@@ -51,8 +51,10 @@ public class NameUtil {
 		return steArray;
 	}
 	public static void logContext(int num){
+		StackTraceElement[] stes = new Throwable().getStackTrace();
+		num = Math.min(num, stes.length-1);
 		for (int i=0; i<num; i++){
-			StackTraceElement ste = new Throwable().getStackTrace()[1+i];
+			StackTraceElement ste = stes[1+i];
 			Log.d(MGMapApplication.LABEL, "     Context: "+ste.getClassName()+"."+ste.getMethodName()+"("+ste.getFileName()+":"+ste.getLineNumber()+") ");
 		}
 	}

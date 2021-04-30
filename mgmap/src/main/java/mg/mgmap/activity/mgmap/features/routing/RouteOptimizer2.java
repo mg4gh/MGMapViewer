@@ -54,7 +54,8 @@ public class RouteOptimizer2 {
                 }
             }
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" current="+current+" upto="+upto);
-            for (int currentEnd = upto; currentEnd > current; currentEnd-=3){
+            int minStep = 3;
+            for (int currentEnd = upto; currentEnd > current+minStep-1; currentEnd-=minStep){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" current="+current+" currentEnd="+currentEnd);
 
                 RoutePointModel rpmSource =  getRoutePointModel(segment.get(current) );
@@ -68,7 +69,8 @@ public class RouteOptimizer2 {
 
                 boolean fits = true;
                 for (int idx=current+1; idx<currentEnd; idx++){
-                    double maxDistance = PointModelUtil.getCloseThreshold()*1.2;
+//                    double maxDistance = PointModelUtil.getCloseThreshold()*1.2;
+                    double maxDistance = routingEngine.getRoutingContext().approachLimit*1.2;
                     TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1, maxDistance );
                     PointModelUtil.getBestDistance(route,segment.get(idx),bestMatch);
                     if (bestMatch.getDistance() == maxDistance) {
@@ -83,7 +85,14 @@ public class RouteOptimizer2 {
                     break;
                 }
             }
-            current = Math.max(current+1, idx2keep.get(idx2keep.size()-1));
+            int lastIdx2keep = idx2keep.get(idx2keep.size()-1);
+            if (current == lastIdx2keep){
+                current = current+minStep;
+                idx2keep.add(current);
+            } else {
+                current = lastIdx2keep;
+            }
+//            current = Math.min(Math.max(current+5, lastIdx2keep) , segment.size()-1);
         }
         if (idx2keep.get(idx2keep.size()-1) != (segment.size()-1)){
             idx2keep.add( segment.size()-1 );

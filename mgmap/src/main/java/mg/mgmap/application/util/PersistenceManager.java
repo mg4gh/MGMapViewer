@@ -365,7 +365,7 @@ public class PersistenceManager {
         }
     };
 
-    public byte[] getHgtBuf(int iLat, int iLon){
+    public synchronized byte[] getHgtBuf(int iLat, int iLon){
         byte[] buf = null;
         String file = String.format(Locale.GERMANY, "N%02dE%03d",iLat,iLon);
         HgtBuf hgtBuf = getHgtBuf(file);

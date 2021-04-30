@@ -46,18 +46,30 @@ import mg.mgmap.generic.model.PointModelUtil;
 
 public class RoutingEngine {
 
-    private static final int MAX_ROUTE_DISTANCE = 10000; // maximum allowed route length - otherwise AStar is expected be bee too slow
-    int maxRouteLengthFactor = 10; // maximum allowed route length - as a factor to the air line (plus 2*Close-Distance) // temporary changed during map matching
+//    private static final int MAX_ROUTE_DISTANCE = 10000; // maximum allowed route length - otherwise AStar is expected be bee too slow
+//    int maxRouteLengthFactor = 10; // maximum allowed route length - as a factor to the air line (plus 2*Close-Distance) // temporary changed during map matching
 
     private final GGraphTileFactory gFactory;
-    boolean snap2Way = true;
+//    boolean snap2Way = true;
 
     HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private final ArrayList<PointModel> currentRelaxedNodes = new ArrayList<>();
+    private RoutingContext routingContext;
 
-    public RoutingEngine(GGraphTileFactory gFactory){
+    public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext){
         this.gFactory = gFactory;
+        this.routingContext = routingContext;
+    }
+
+    public RoutingContext getRoutingContext() {
+        return routingContext;
+    }
+    public void setRoutingContext(RoutingContext routingContext){
+        this.routingContext = routingContext;
+        for (RoutePointModel rpm : routePointMap.values()){ // invalidate Approaches
+            rpm.resetApproaches();
+        }
     }
 
     RoutePointModel getRoutePointModel(PointModel pm){
@@ -78,8 +90,8 @@ public class RoutingEngine {
 
     RoutePointModel getVerifyRoutePointModel(PointModel pm){
         RoutePointModel rpm = getRoutePointModel(pm);
-        calcApproaches(rpm);
-        if (snap2Way){
+        calcApproaches(rpm, routingContext.approachLimit);
+        if (routingContext.snap2Way){
             if (rpm.selectedApproach != null){
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
                     if (pm instanceof WriteablePointModel) {
@@ -88,7 +100,7 @@ public class RoutingEngine {
                         wpm.setLat(rpm.selectedApproach.getApproachNode().getLat());
                         wpm.setLon(rpm.selectedApproach.getApproachNode().getLon());
                         rpm.resetApproaches();
-                        calcApproaches(rpm);
+                        calcApproaches(rpm,1);
                     }
                 }
             }
@@ -166,7 +178,7 @@ public class RoutingEngine {
             name = name.replaceAll("MarkerTrack$","MarkerRoute");
             routeTrackLog.setName(name);
             routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
-            routeTrackLog.setModified(true);
+            routeTrackLog.setModified(mtl.isModified());
             routeTrackLog.setReferencedTrackLog(mtl);
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Route modified: "+name);
 
@@ -307,16 +319,15 @@ public class RoutingEngine {
         return mpm;
     }
 
-
-    void calcApproaches(RoutePointModel rpm){
-
+    void calcApproaches(RoutePointModel rpm, int closeThreshold) {
         if (rpm.getApproach() != null){
             return; // approach calculation is already done
         }
-
         PointModel pointModel = rpm.mtlp;
+        rpm.setApproaches(calcApproaches(pointModel, closeThreshold));
+    }
 
-        int closeThreshold = PointModelUtil.getCloseThreshold();
+    TreeSet<ApproachModel> calcApproaches(PointModel pointModel, int closeThreshold){
         BBox mtlpBBox = new BBox()
                 .extend(pointModel)
                 .extend(closeThreshold);
@@ -367,14 +378,14 @@ public class RoutingEngine {
             }
         }
         approaches.removeAll(dropApproaches);
-        rpm.setApproaches(approaches);
+        return approaches;
     }
 
     private double acceptedRouteDistance(PointModel pmStart, PointModel pmEnd){
         double distance = PointModelUtil.distance(pmStart,pmEnd);
         double res = 0;
-        if (distance < MAX_ROUTE_DISTANCE){ // otherwise it will take too long
-            res = Math.min (maxRouteLengthFactor * PointModelUtil.distance(pmStart,pmEnd) + 2 * PointModelUtil.getCloseThreshold(), MAX_ROUTE_DISTANCE);
+        if (distance < routingContext.maxRoutingDistance){ // otherwise it will take too long
+            res = Math.min (routingContext.maxRouteLengthFactor * PointModelUtil.distance(pmStart,pmEnd) + 2 * PointModelUtil.getCloseThreshold(), routingContext.maxRoutingDistance);
         }
         return res;
     }

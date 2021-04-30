@@ -142,7 +142,7 @@ public class RouteOptimizer {
                         }
                         avgApproachDistance /= checkResults.keySet().size();
 
-                        double score = 1 - (0.5 * avgApproachDistance / PointModelUtil.getCloseThreshold()); // 0.5 .. 1 score point depending an avgApproachDistance
+                        double score = 1 - (0.5 * avgApproachDistance / routingEngine.getRoutingContext().approachLimit); // 0.5 .. 1 score point depending an avgApproachDistance
 
 //TODO: Understand this old code ... (... unfortunately produces a null pointer exception)
 //                        for (int i=idx+1; i<=end; i++){

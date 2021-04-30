@@ -20,7 +20,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.activity.mgmap.view.MultiPointView;
+import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 
@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.Observer;
 
 import mg.mgmap.R;
-import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
@@ -61,9 +60,15 @@ public class FSMarker extends FeatureService {
     private final Pref<Boolean> triggerHideMtl = new Pref<>(false);
     private final Pref<Boolean> triggerHideAll = getPref(R.string.FSATL_pref_hideAll, false);
 
-    private final Pref<Boolean> prefDnDOngoing = getPref(R.string.FSMarker_pref_dnd_ongoing, false);
-
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
+
+   /**
+     * MtlSupportProvider allows other implementation to be injected:
+     *  - support to check for close lines
+     *  - for snap2Way after manual operation (zoom level dependent)
+    *   - to allow visualisation of dnd via extra line
+     */
+    public MtlSupportProvider mtlSupportProvider = new SimpleMtlSupportProvider();
 
     public FSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -81,8 +86,6 @@ public class FSMarker extends FeatureService {
         triggerHideMtl.addObserver(hideMarkerTrackObserver);
         triggerHideAll.addObserver(hideMarkerTrackObserver);
     }
-
-    public LineRefProvider lineRefProvider = new MarkerLineRefProvider(); // support to check for close lines - other implementation can be injected
 
     private final Runnable ttHide = () -> prefEditMarkerTrack.setValue(false);
     private void refreshTTHide(){
@@ -201,16 +204,10 @@ public class FSMarker extends FeatureService {
 
 
 
-    public class MarkerControlLayer extends MultiPointView {
+    public class MarkerControlLayer extends MVLayer {
 
         private MarkerControlLayer(){
-            super(new MultiPointModelImpl(), CC.getStrokePaint(R.color.BLACK, 3));
             setDragging();
-            prefDnDOngoing.addObserver((o, arg) -> {
-                if (!prefDnDOngoing.getValue()){
-                    clearModel();
-                }
-            });
         }
 
         @Override
@@ -221,7 +218,7 @@ public class FSMarker extends FeatureService {
                 deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
             } else {
                 pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
-                TrackLogRefApproach lineRef = lineRefProvider.getBestDistance(mtl,pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
+                TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl,pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
                 if (lineRef != null){
                     insertPoint(mtl, pmTap, lineRef);
                 } else {
@@ -238,12 +235,12 @@ public class FSMarker extends FeatureService {
         protected boolean checkDrag(PointModel pmStart, DragData dragData) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
-            TrackLogRefApproach lineRef = lineRefProvider.getBestDistance(mtl, pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
+            TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl, pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmStart);
             try {
                 if (pointRef == null){
                     if (lineRef != null){
-                        insertPoint(mtl, pmStart, lineRef);
+                        insertPoint(mtl, new WriteablePointModelImpl(pmStart), lineRef);
                         pointRef = mtl.getBestPoint(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
                     }
                 }
@@ -288,16 +285,6 @@ public class FSMarker extends FeatureService {
             markerTrackLogObservable.changed();
         }
 
-        private void clearModel(){
-            synchronized (model){
-                MultiPointModelImpl writeableModel = (MultiPointModelImpl)model;
-                while (model.size() > 0){
-                    writeableModel.removePoint(0);
-                }
-            }
-            requestRedraw();
-        }
-
     }
 
 
@@ -309,6 +296,7 @@ public class FSMarker extends FeatureService {
             WriteablePointModel mtlp = (WriteablePointModel) pm;
             mtlp.setLat(pos.getLat());
             mtlp.setLon(pos.getLon());
+            mtlSupportProvider.optimizePosition(mtlp, getMapViewUtility().getCloseThreshouldForZoomLevel()*1.3);
         }
     }
 
@@ -317,23 +305,29 @@ public class FSMarker extends FeatureService {
         segment.removePoint(tlpIdx);
     }
 
-    private void addPoint(WriteableTrackLog mtl, PointModel pmTap){
+    private void addPoint(WriteableTrackLog mtl, WriteablePointModel pmTap){
+        mtlSupportProvider.optimizePosition(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
         mtl.addPoint( pmTap );
     }
 
-    private void insertPoint(WriteableTrackLog mtl, PointModel pmTap, TrackLogRefApproach lineRef) {
+    private void insertPoint(WriteableTrackLog mtl, WriteablePointModel pmTap, TrackLogRefApproach lineRef) {
         Assert.check(lineRef.getTrackLog() == mtl);
         TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
         int tlpIdx = lineRef.getEndPointIndex();
+        mtlSupportProvider.optimizePosition(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
         segment.addPoint(tlpIdx, pmTap);
     }
 
-    public interface LineRefProvider{
+    public interface MtlSupportProvider{
         TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) ;
+        void optimizePosition(WriteablePointModel wpm, double threshold);
     }
-    public static class MarkerLineRefProvider implements LineRefProvider{
+    public static class SimpleMtlSupportProvider implements MtlSupportProvider{
         public TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) {
             return mtl.getBestDistance(pm,threshold);
         }
+
+        @Override
+        public void optimizePosition(WriteablePointModel wpm, double threshold) { } // do nothing
     }
 }
