@@ -24,8 +24,9 @@ public class Formatter {
     public static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
     public static final SimpleDateFormat SDF1 = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
     public static final SimpleDateFormat SDF2 = new SimpleDateFormat("HH:mm", Locale.GERMANY);
+    public static final SimpleDateFormat SDF3 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.GERMANY);
 
-    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DATE, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING}
+    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DATE, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING, FORMAT_TIMESTAMP}
 
     private final FormatType formatType;
 
@@ -48,6 +49,11 @@ public class Formatter {
             long millis = (Long) value;
             if (millis > 0) {
                 text = SDF1.format(millis);
+            }
+        } else if (formatType == FormatType.FORMAT_TIMESTAMP) {
+            long millis = (Long) value;
+            if (millis > 0) {
+                text = SDF3.format(millis);
             }
         } else if (formatType == FormatType.FORMAT_INT) {
             int iValue = (Integer) value;

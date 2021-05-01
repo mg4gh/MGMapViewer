@@ -205,19 +205,29 @@ public class MGMapApplication extends Application {
         new Thread(){
             @Override
             public void run() {
+                long TIMEOUT = 10000;
                 Log.i(LABEL, NameUtil.context()+"logcat supervision: start ");
                 int cnt = 0;
+                long lastCheck = System.currentTimeMillis();
                 while (true){
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            pLogcat.waitFor(10, TimeUnit.SECONDS );
+                            pLogcat.waitFor(TIMEOUT, TimeUnit.MILLISECONDS );
                         } else {
-                            Thread.sleep(10000);
+                            Thread.sleep(TIMEOUT);
                         }
                         int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
                         Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
                         startLogging(persistenceManager.getLogDir());
                     } catch (Exception e) {
+                        long now = System.currentTimeMillis();
+                        if ((now - lastCheck) > (TIMEOUT*1.5)){ // we might have detected an energy saving problem
+                            Log.w(LABEL, NameUtil.context()+"Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
+                            if (prefGps.getValue()){
+                                Log.i(LABEL, NameUtil.context()+" try to trigger gps ...");
+                                startTrackLoggerService();
+                            }
+                        }
                         if (++cnt % 6 == 0){
                             Log.i(LABEL, NameUtil.context()+"logcat supervision: OK. (running "+(cnt/6)+" min)");
                         }
