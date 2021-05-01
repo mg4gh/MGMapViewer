@@ -288,7 +288,9 @@ public class FSMarker extends FeatureService {
     }
 
 
-
+    private double getRadiusForMarkerActions(){
+        return getMapViewUtility().getCloseThreshouldForZoomLevel()*2;
+    }
 
     private void moveMarkerPoint(TrackLog mtl, int segIdx, int tlpIdx, PointModel pos){
         PointModel pm = mtl.getTrackLogSegment(segIdx).get(tlpIdx);
@@ -296,7 +298,7 @@ public class FSMarker extends FeatureService {
             WriteablePointModel mtlp = (WriteablePointModel) pm;
             mtlp.setLat(pos.getLat());
             mtlp.setLon(pos.getLon());
-            mtlSupportProvider.optimizePosition(mtlp, getMapViewUtility().getCloseThreshouldForZoomLevel()*1.3);
+            mtlSupportProvider.optimizePosition(mtlp, getRadiusForMarkerActions());
         }
     }
 
@@ -306,7 +308,7 @@ public class FSMarker extends FeatureService {
     }
 
     private void addPoint(WriteableTrackLog mtl, WriteablePointModel pmTap){
-        mtlSupportProvider.optimizePosition(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
+        mtlSupportProvider.optimizePosition(pmTap, getRadiusForMarkerActions());
         mtl.addPoint( pmTap );
     }
 
@@ -314,7 +316,7 @@ public class FSMarker extends FeatureService {
         Assert.check(lineRef.getTrackLog() == mtl);
         TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
         int tlpIdx = lineRef.getEndPointIndex();
-        mtlSupportProvider.optimizePosition(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
+        mtlSupportProvider.optimizePosition(pmTap, getRadiusForMarkerActions());
         segment.addPoint(tlpIdx, pmTap);
     }
 
