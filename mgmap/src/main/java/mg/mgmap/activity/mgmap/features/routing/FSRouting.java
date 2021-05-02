@@ -375,6 +375,7 @@ public class FSRouting extends FeatureService {
 
         @Override
         public void optimizePosition(WriteablePointModel wpm, double threshold) {
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+" pos="+wpm+" threshold="+threshold);
             RoutePointModel rpm = routingEngine.getRoutePointMap().get(wpm);
             if (rpm == null){ // if rpm not yet exists - create dummy one - needed for MTLP dnd visualisation
                 rpm = new RoutePointModel(wpm);

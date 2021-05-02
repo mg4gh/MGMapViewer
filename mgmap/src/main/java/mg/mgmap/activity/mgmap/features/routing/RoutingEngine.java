@@ -347,7 +347,7 @@ public class RoutingEngine {
                         BBox bBoxPart = new BBox().extend(node).extend(neighbourNode);
                         boolean bIntersects = mtlpBBox.intersects(bBoxPart);
                         if (bIntersects){ // ok, is candidate for close
-                            if (PointModelUtil.findApproach(pointModel, node, neighbourNode, pmApproach)) {
+                            if (PointModelUtil.findApproach(pointModel, node, neighbourNode, pmApproach , closeThreshold)) {
                                 double distance = PointModelUtil.distance(pointModel, pmApproach);
                                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
                                     float hgtAlt = gFactory.getAltitudeProvider().getAlt(pmApproach);
