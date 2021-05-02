@@ -412,7 +412,9 @@ public class FSRouting extends FeatureService {
                 RoutePointModel rpm = routingEngine.getRoutePointMap2().get(rtlpm);
                 PointModel mtlp = (rpm==null)?null:rpm.getMtlp();
                 WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-                return mtl.getBestPoint(mtlp, 1);
+                TrackLogRefApproach mtlApproach = mtl.getBestPoint(mtlp, 1);
+                mtlApproach.setApproachPoint(bestMatch.getApproachPoint()); // take the approach point from the routing line
+                return mtlApproach;
             }
         }
         return null;

@@ -213,16 +213,21 @@ public class FSMarker extends FeatureService {
         @Override
         public boolean onTap(WriteablePointModel pmTap) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
-            TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
+            TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getRadiusForMarkerActions());
             if (pointRef != null){
                 deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
             } else {
-                pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
-                TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl,pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
+//                pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
+                TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl,pmTap, getRadiusForMarkerActions());
                 if (lineRef != null){
-                    insertPoint(mtl, pmTap, lineRef);
+                    if (mtl.getBestPoint(lineRef.getApproachPoint(), getRadiusForMarkerActions()) == null){ // if approachPoint is too close to other point, then don't insert
+                        insertPoint(mtl, lineRef);
+                    }
                 } else {
-                    addPoint(mtl, pmTap);
+                    mtlSupportProvider.optimizePosition(pmTap, getRadiusForMarkerActions());
+                    if (mtl.getBestPoint(pmTap, getRadiusForMarkerActions()) == null){ // if optimized pos is too close to other point, then don't add
+                        addPoint(mtl, pmTap);
+                    }
                 }
             }
             mtl.recalcStatistic();
@@ -234,14 +239,16 @@ public class FSMarker extends FeatureService {
         @Override
         protected boolean checkDrag(PointModel pmStart, DragData dragData) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
-            TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
-            TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl, pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
+            TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, getRadiusForMarkerActions());
+            TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl, pmStart, getRadiusForMarkerActions());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmStart);
             try {
                 if (pointRef == null){
                     if (lineRef != null){
-                        insertPoint(mtl, new WriteablePointModelImpl(pmStart), lineRef);
-                        pointRef = mtl.getBestPoint(pmStart, getMapViewUtility().getCloseThreshouldForZoomLevel());
+                        if (mtl.getBestPoint(lineRef.getApproachPoint(), getRadiusForMarkerActions()) == null){ // if approachPoint is too close to other point, then don't insert
+                            insertPoint(mtl, lineRef);
+                            pointRef = mtl.getBestPoint(pmStart, getRadiusForMarkerActions());
+                        }
                     }
                 }
                 if (pointRef != null){
@@ -289,7 +296,7 @@ public class FSMarker extends FeatureService {
 
 
     private double getRadiusForMarkerActions(){
-        return getMapViewUtility().getCloseThreshouldForZoomLevel()*1.5;
+        return getMapViewUtility().getCloseThreshouldForZoomLevel();
     }
 
     private void moveMarkerPoint(TrackLog mtl, int segIdx, int tlpIdx, WriteablePointModel pos){
@@ -312,21 +319,21 @@ public class FSMarker extends FeatureService {
         mtlSupportProvider.pointAddedCallback( pmTap );
     }
 
-    private void insertPoint(WriteableTrackLog mtl, WriteablePointModel pmTap, TrackLogRefApproach lineRef) {
+    private void insertPoint(WriteableTrackLog mtl, TrackLogRefApproach lineRef) {
         Assert.check(lineRef.getTrackLog() == mtl);
         TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
         int tlpIdx = lineRef.getEndPointIndex();
-        mtlSupportProvider.optimizePosition(pmTap, getRadiusForMarkerActions());
-        pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
-        segment.addPoint(tlpIdx, pmTap);
-        mtlSupportProvider.pointAddedCallback( pmTap );
+        WriteablePointModel wpm = new WriteablePointModelImpl(lineRef.getApproachPoint());
+        wpm.setEle(getApplication().getAltitudeProvider().getAlt(wpm));
+        segment.addPoint(tlpIdx, wpm);
+        mtlSupportProvider.pointAddedCallback( wpm );
     }
 
     public interface MtlSupportProvider{
         TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) ;
-        default void optimizePosition(WriteablePointModel wpm, double threshold) {};
-        default void pointAddedCallback(PointModel pm) {};
-        default void pointMovedCallback(PointModel pm) {};
+        default void optimizePosition(WriteablePointModel wpm, double threshold) {}
+        default void pointAddedCallback(PointModel pm) {}
+        default void pointMovedCallback(PointModel pm) {}
     }
     public static class SimpleMtlSupportProvider implements MtlSupportProvider{
         public TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) {
