@@ -24,4 +24,6 @@ public interface WriteableMultiPointModel extends MultiPointModel {
     boolean removePoint(PointModel pointModel);
 
     PointModel removePoint(int idx);
+
+    void movePoint(int idx, PointModel toPos);
 }

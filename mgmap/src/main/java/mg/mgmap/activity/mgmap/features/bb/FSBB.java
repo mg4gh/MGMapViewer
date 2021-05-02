@@ -199,7 +199,7 @@ public class FSBB extends FeatureService {
         }
 
         @Override
-        protected void handleDrag(PointModel pmCurrent, DragData dragData) {
+        protected void handleDrag(WriteablePointModel pmCurrent, DragData dragData) {
             WriteablePointModel pmDrag = dragData.getDragObject(WriteablePointModel.class);
             pmDrag.setLat(pmCurrent.getLat());
             pmDrag.setLon(pmCurrent.getLon());

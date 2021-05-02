@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
-//import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.model.DisplayModel;
 
 import java.util.HashMap;
@@ -88,7 +87,6 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefMapMatching = new Pref<>(false);
     private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
     private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
-    private final Pref<Boolean> prefDnDOngoing = getPref(R.string.FSMarker_pref_dnd_ongoing, false);
 
     private ViewGroup dashboardRoute = null;
     private volatile int refreshRequired = 0;
@@ -227,9 +225,10 @@ public class FSRouting extends FeatureService {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
-        checkMtlpMovement2();
         if (dndVisualisationLayer != null){
-            register(dndVisualisationLayer);
+            if (checkMtlpMovement( dndVisualisationLayer.getModel().get(0), false )){
+                register(dndVisualisationLayer);
+            }
         }
         if (rotl != null){
             if (prefRouteGL.getValue()){
@@ -376,12 +375,6 @@ public class FSRouting extends FeatureService {
         @Override
         public void optimizePosition(WriteablePointModel wpm, double threshold) {
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" pos="+wpm+" threshold="+threshold);
-            RoutePointModel rpm = routingEngine.getRoutePointMap().get(wpm);
-            if (rpm == null){ // if rpm not yet exists - create dummy one - needed for MTLP dnd visualisation
-                rpm = new RoutePointModel(wpm);
-                rpm.currentMPM = new MultiPointModelImpl().addPoint(new PointModelImpl(wpm));
-                routingEngine.getRoutePointMap().put(wpm, rpm);
-            }
             TreeSet<ApproachModel> approaches = routingEngine.calcApproaches(wpm, (int)threshold);
             if (approaches.size() > 0){
                 PointModel pos = approaches.first().getApproachNode();
@@ -389,7 +382,23 @@ public class FSRouting extends FeatureService {
                 wpm.setLat(pos.getLat());
                 wpm.setLon(pos.getLon());
             }
-            checkMtlpMovement2(wpm, true);
+        }
+
+        // if rpm not yet exists - create dummy one - needed for MTLP dnd visualisation
+        @Override
+        public void pointAddedCallback(PointModel pm) {
+            RoutePointModel rpm = routingEngine.getRoutePointMap().get(pm);
+            if (rpm == null){
+                rpm = new RoutePointModel(pm);
+                rpm.currentMPM = new MultiPointModelImpl().addPoint(new PointModelImpl(pm));
+                routingEngine.getRoutePointMap().put(pm, rpm);
+            }
+        }
+
+        // check for dnd visualisation
+        @Override
+        public void pointMovedCallback(PointModel pm) {
+            checkMtlpMovement(pm, true);
         }
     }
 
@@ -409,34 +418,8 @@ public class FSRouting extends FeatureService {
         return null;
     }
 
-//    private void checkMtlpMovement(TrackLog mtl){
-//        if (mtl != null){
-//            for (TrackLogSegment segment : mtl.getTrackLogSegments()){
-//                for (PointModel mtlp : segment){
-//                    WriteablePointModelImpl wpm = new WriteablePointModelImpl();
-//                    if (checkMtlpMovementPoint(mtlp, wpm)){
-//                        MultiPointModelImpl mpmi = new MultiPointModelImpl();
-//                        mpmi.addPoint(mtlp).addPoint(wpm);
-//                        Paint paint = CC.getStrokePaint(R.color.BLACK_A150, 3);
-//                        dndVisualisationLayer = new MultiPointView(mpmi, paint);
-//                        long saveTTRefreshTime = ttRefreshTime;
-//                        ttRefreshTime = 1; // need quick refresh
-//                        refreshObserver.onChange();
-//                        ttRefreshTime = saveTTRefreshTime;
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-    private void checkMtlpMovement2(){
-        if (dndVisualisationLayer != null){
-            PointModel mtlp = dndVisualisationLayer.getModel().get(0);
-            dndVisualisationLayer = null;
-            checkMtlpMovement2( mtlp, false );
-        }
-    }
-    private void checkMtlpMovement2(PointModel mtlp, boolean triggerRefresh){
+    private boolean checkMtlpMovement(PointModel mtlp, boolean triggerRefresh){
+        dndVisualisationLayer = null;
         WriteablePointModelImpl wpm = new WriteablePointModelImpl();
         if (checkMtlpMovementPoint(mtlp, wpm)){
             MultiPointModelImpl mpmi = new MultiPointModelImpl();
@@ -450,6 +433,7 @@ public class FSRouting extends FeatureService {
                 ttRefreshTime = saveTTRefreshTime;
             }
         }
+        return (dndVisualisationLayer != null);
     }
 
     public boolean checkMtlpMovementPoint(PointModel mtlp, WriteablePointModel currentRoutingPos){

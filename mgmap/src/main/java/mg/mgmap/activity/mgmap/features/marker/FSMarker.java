@@ -275,7 +275,7 @@ public class FSMarker extends FeatureService {
         }
 
         @Override
-        protected void handleDrag(PointModel pmCurrent, DragData dragData) {
+        protected void handleDrag(WriteablePointModel pmCurrent, DragData dragData) {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" pmCurrent="+pmCurrent);
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach dragRef = dragData.getDragObject(TrackLogRefApproach.class);
@@ -292,14 +292,12 @@ public class FSMarker extends FeatureService {
         return getMapViewUtility().getCloseThreshouldForZoomLevel()*1.5;
     }
 
-    private void moveMarkerPoint(TrackLog mtl, int segIdx, int tlpIdx, PointModel pos){
-        PointModel pm = mtl.getTrackLogSegment(segIdx).get(tlpIdx);
-        if (pm instanceof WriteablePointModel) {
-            WriteablePointModel mtlp = (WriteablePointModel) pm;
-            mtlp.setLat(pos.getLat());
-            mtlp.setLon(pos.getLon());
-            mtlSupportProvider.optimizePosition(mtlp, getRadiusForMarkerActions());
-        }
+    private void moveMarkerPoint(TrackLog mtl, int segIdx, int tlpIdx, WriteablePointModel pos){
+        mtlSupportProvider.optimizePosition(pos, getRadiusForMarkerActions());
+        pos.setEle(getApplication().getAltitudeProvider().getAlt(pos));
+        TrackLogSegment segment = mtl.getTrackLogSegment(segIdx);
+        segment.movePoint(tlpIdx, pos);
+        mtlSupportProvider.pointMovedCallback(segment.get(tlpIdx));
     }
 
     private void deleteMarkerPoint(WriteableTrackLog mtl, int segIdx, int tlpIdx){
@@ -309,7 +307,9 @@ public class FSMarker extends FeatureService {
 
     private void addPoint(WriteableTrackLog mtl, WriteablePointModel pmTap){
         mtlSupportProvider.optimizePosition(pmTap, getRadiusForMarkerActions());
+        pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
         mtl.addPoint( pmTap );
+        mtlSupportProvider.pointAddedCallback( pmTap );
     }
 
     private void insertPoint(WriteableTrackLog mtl, WriteablePointModel pmTap, TrackLogRefApproach lineRef) {
@@ -317,19 +317,20 @@ public class FSMarker extends FeatureService {
         TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
         int tlpIdx = lineRef.getEndPointIndex();
         mtlSupportProvider.optimizePosition(pmTap, getRadiusForMarkerActions());
+        pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
         segment.addPoint(tlpIdx, pmTap);
+        mtlSupportProvider.pointAddedCallback( pmTap );
     }
 
     public interface MtlSupportProvider{
         TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) ;
-        void optimizePosition(WriteablePointModel wpm, double threshold);
+        default void optimizePosition(WriteablePointModel wpm, double threshold) {};
+        default void pointAddedCallback(PointModel pm) {};
+        default void pointMovedCallback(PointModel pm) {};
     }
     public static class SimpleMtlSupportProvider implements MtlSupportProvider{
         public TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) {
             return mtl.getBestDistance(pm,threshold);
         }
-
-        @Override
-        public void optimizePosition(WriteablePointModel wpm, double threshold) { } // do nothing
     }
 }

@@ -54,6 +54,17 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
     }
 
     @Override
+    public void movePoint(int idx, PointModel toPos) {
+        if (points.get(idx) instanceof WriteablePointModel) {
+            WriteablePointModel wpm = (WriteablePointModel) points.get(idx);
+            wpm.setLat(toPos.getLat());
+            wpm.setLon(toPos.getLon());
+            wpm.setEle(toPos.getEleA());
+            recalcBBox(); // could be optimized
+        }
+    }
+
+    @Override
     public int size() {
         return points.size();
     }

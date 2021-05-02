@@ -100,7 +100,7 @@ public abstract class MVLayer extends Layer {
             }
 
             if (dragData.dragOrigin != null){
-                PointModel pmCurrent = new PointModelImpl(y2lat(scrollY2), x2lon(scrollX2));
+                WriteablePointModel pmCurrent = new WriteablePointModelImpl(y2lat(scrollY2), x2lon(scrollX2));
                 handleDrag(pmCurrent, dragData);
                 return true;
             }
@@ -150,7 +150,7 @@ public abstract class MVLayer extends Layer {
     protected boolean checkDrag(PointModel pmStart, DragData dragData){
         return false;
     }
-    protected void handleDrag(PointModel pmCurrent, DragData dragData){}
+    protected void handleDrag(WriteablePointModel pmCurrent, DragData dragData){}
 
     protected void setDragging() {
         if (dragData == null) {
