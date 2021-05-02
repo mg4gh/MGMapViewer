@@ -219,6 +219,7 @@ public class MGMapApplication extends Application {
                         int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
                         Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
                         startLogging(persistenceManager.getLogDir());
+                        lastCheck = System.currentTimeMillis();
                     } catch (Exception e) {
                         long now = System.currentTimeMillis();
                         if ((now - lastCheck) > (TIMEOUT*1.5)){ // we might have detected an energy saving problem
@@ -231,6 +232,7 @@ public class MGMapApplication extends Application {
                         if (++cnt % 6 == 0){
                             Log.i(LABEL, NameUtil.context()+"logcat supervision: OK. (running "+(cnt/6)+" min)");
                         }
+                        lastCheck = now;
                     }
                 }
             }
