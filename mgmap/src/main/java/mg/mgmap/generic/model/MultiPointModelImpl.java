@@ -25,6 +25,7 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
     protected ArrayList<PointModel> points = new ArrayList<>();
     protected BBox bBox = new BBox();
     boolean route = false;
+    protected boolean iterateConcurrent = false;
 
     public MultiPointModelImpl(){}
 
@@ -77,7 +78,11 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
     @NonNull
     @Override
     public Iterator<PointModel> iterator() {
-        return new ArrayList<PointModel>(points).iterator();
+        if (iterateConcurrent){
+            return new ArrayList<PointModel>(points).iterator();
+        } else {
+            return points.iterator();
+        }
     }
 
     @Override

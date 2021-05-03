@@ -34,6 +34,11 @@ public class TrackLogSegment extends MultiPointModelImpl{
     private final ArrayList<MetaData> metaDatas = new ArrayList<>(); //needed for loadFromBB ?? yes, but also for visualization of loaded tracks
     private TrackLogStatistic statistic;
 
+    public TrackLogSegment(int idx, boolean iterateConcurrent){
+        this(idx);
+        this.iterateConcurrent = iterateConcurrent;
+    }
+
     public TrackLogSegment(int idx){
         this.segmentIdx = idx;
         statistic = new TrackLogStatistic(idx);
