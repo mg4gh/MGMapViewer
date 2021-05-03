@@ -325,6 +325,7 @@ public class FSMarker extends FeatureService {
         TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
         int tlpIdx = lineRef.getEndPointIndex();
         WriteablePointModel wpm = new WriteablePointModelImpl(lineRef.getApproachPoint());
+        mtlSupportProvider.optimizePosition(wpm, getRadiusForMarkerActions());
         wpm.setEle(getApplication().getAltitudeProvider().getAlt(wpm));
         segment.addPoint(tlpIdx, wpm);
         mtlSupportProvider.pointAddedCallback( wpm );
