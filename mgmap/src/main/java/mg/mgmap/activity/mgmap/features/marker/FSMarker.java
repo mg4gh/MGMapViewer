@@ -309,7 +309,8 @@ public class FSMarker extends FeatureService {
 
     private void deleteMarkerPoint(WriteableTrackLog mtl, int segIdx, int tlpIdx){
         TrackLogSegment segment = mtl.getTrackLogSegment(segIdx);
-        segment.removePoint(tlpIdx);
+        PointModel mtlp = segment.removePoint(tlpIdx);
+        mtlSupportProvider.pointDeletedCallback(mtlp);
     }
 
     private void addPoint(WriteableTrackLog mtl, WriteablePointModel pmTap){
@@ -334,6 +335,7 @@ public class FSMarker extends FeatureService {
         default void optimizePosition(WriteablePointModel wpm, double threshold) {}
         default void pointAddedCallback(PointModel pm) {}
         default void pointMovedCallback(PointModel pm) {}
+        default void pointDeletedCallback(PointModel pm) {}
     }
     public static class SimpleMtlSupportProvider implements MtlSupportProvider{
         public TrackLogRefApproach getBestDistance( WriteableTrackLog mtl, PointModel pm, double threshold) {

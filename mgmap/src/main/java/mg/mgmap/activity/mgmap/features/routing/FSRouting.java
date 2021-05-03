@@ -129,6 +129,11 @@ public class FSRouting extends FeatureService {
                                 lastRefreshRequired = refreshRequired; // save current value of refreshRequired -> enable detection of further changes in next loop cycle
                             }
 
+                        } else { //just to make sure, nothing is left
+                            if (dndVisualisationLayer != null){
+                                dndVisualisationLayer = null;
+                                doRefresh();
+                            }
                         }
 
                     } catch (InterruptedException e) {
@@ -165,7 +170,7 @@ public class FSRouting extends FeatureService {
         prefGps.addObserver(routingHintsEnabledObserver);
         prefMtlVisibility.addObserver(routingHintsEnabledObserver);
 
-        register(new RoutingControlLayer(), false);
+//        register(new RoutingControlLayer(), false);
     }
 
     @Override
@@ -399,6 +404,13 @@ public class FSRouting extends FeatureService {
         @Override
         public void pointMovedCallback(PointModel pm) {
             checkMtlpMovement(pm, true);
+        }
+
+        @Override
+        public void pointDeletedCallback(PointModel pm) {
+            if (dndVisualisationLayer != null){
+                dndVisualisationLayer = null;
+            }
         }
     }
 

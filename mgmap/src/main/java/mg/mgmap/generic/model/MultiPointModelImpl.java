@@ -77,7 +77,7 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
     @NonNull
     @Override
     public Iterator<PointModel> iterator() {
-        return points.iterator();
+        return new ArrayList<PointModel>(points).iterator();
     }
 
     @Override

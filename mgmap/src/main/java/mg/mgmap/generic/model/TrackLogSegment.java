@@ -51,25 +51,7 @@ public class TrackLogSegment extends MultiPointModelImpl{
         return null;
     }
 
-
-
-    @Override
-    public int size() {
-        return points.size();
-    }
-
-    @Override
-    public PointModel get(int i) {
-        return points.get(i);
-    }
-
-
-    @NonNull
-    @Override
-    public Iterator<PointModel> iterator() {
-        return points.iterator();
-    }
-
+    
     public ArrayList<MetaData> getMetaDatas() {
         return metaDatas;
     }

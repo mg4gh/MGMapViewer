@@ -46,11 +46,7 @@ import mg.mgmap.generic.model.PointModelUtil;
 
 public class RoutingEngine {
 
-//    private static final int MAX_ROUTE_DISTANCE = 10000; // maximum allowed route length - otherwise AStar is expected be bee too slow
-//    int maxRouteLengthFactor = 10; // maximum allowed route length - as a factor to the air line (plus 2*Close-Distance) // temporary changed during map matching
-
     private final GGraphTileFactory gFactory;
-//    boolean snap2Way = true;
 
     HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
@@ -190,8 +186,8 @@ public class RoutingEngine {
                     if (rpm != null){
                         rpm.currentMPM = rpm.newMPM;
                         rpm.directChanged = false;
-                        rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
                         if (rpm.newMPM != null){
+                            rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
                             for (PointModel pm : rpm.newMPM){
                                 if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
                                     ExtendedPointModelImpl<RoutingHint> pmr = new ExtendedPointModelImpl<>(pm,rpm.routingHints.get(pm));
