@@ -98,6 +98,7 @@ public class FSControl extends FeatureService {
     public FSControl(MGMapActivity activity){
         super(activity);
 
+        ttRefreshTime = 10;
         prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue()));
         triggerHome.addObserver(homeObserver);
         prefQcs.addObserver(refreshObserver);
