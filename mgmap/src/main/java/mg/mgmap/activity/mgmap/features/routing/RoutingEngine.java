@@ -178,7 +178,9 @@ public class RoutingEngine {
             routeTrackLog.setReferencedTrackLog(mtl);
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Route modified: "+name);
 
+            ArrayList<PointModel> rpmKeys = new ArrayList<>(routePointMap.keySet()); // create a list to detect unused entries in routePointMap
             for (TrackLogSegment segment : mtl.getTrackLogSegments()){
+                segment.removeSegmentPointsFrom(rpmKeys); // remove used entries
                 routeTrackLog.startSegment(0);
                 PointModel lastPM = null;
                 for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
@@ -202,6 +204,11 @@ public class RoutingEngine {
                 routeTrackLog.stopSegment(0);
             }
             routeTrackLog.stopTrack(0);
+
+            // remaining entries are unused - remove them from routePointMap
+            for (PointModel unusedMtlp : rpmKeys){
+                routePointMap.remove(unusedMtlp);
+            }
 
         }
         return routeTrackLog;

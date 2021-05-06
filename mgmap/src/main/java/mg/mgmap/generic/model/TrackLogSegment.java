@@ -17,6 +17,7 @@ package mg.mgmap.generic.model;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 
@@ -83,5 +84,9 @@ public class TrackLogSegment extends MultiPointModelImpl{
         for (PointModel pm : this){
             statistic.updateWithPoint(pm);
         }
+    }
+
+    public void removeSegmentPointsFrom(Collection<PointModel> collection){
+        collection.removeAll(points);
     }
 }
