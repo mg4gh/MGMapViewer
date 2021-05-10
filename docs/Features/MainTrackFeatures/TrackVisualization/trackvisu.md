@@ -16,9 +16,9 @@ The following pictures show:
 <img src="./RecordingTrack1.png" width="400" />&nbsp;
 <img src="./AvailableTracks2.png" width="400" />&nbsp;
 
-Beside these three types of visualized tracks there might be also a [marker track](../MarkerTrack/markertrack.md) ( pink line) and
+Beside these three types of visualized tracks there might be also a
 a [route track](../Routing/routing.md) (purple line) visible.
-Out of these 5 types of tracks there are three of them (recording track, route track and selected track),
+Out of these 4 types of tracks there are three of them (recording track, route track and selected track),
 which allow an alternative gain/loss representation of this track.
 
 The following picture shows an selected track with gain/loss representation switched on.
@@ -55,8 +55,7 @@ Use the [Statistic activity](../../FurtherFeatures/Statistic/statistic.md) to lo
 <tr>
     <td>long tap</td>
     <td>toggle gain/loss mode</td>
-    <td>when <img src="../../../icons/group_marker1.svg" width="24"/><br/>toggle gain/loss mode<br/><br/>
-        when <img src="../../../icons/group_marker2.svg" width="24"/><br/>on point: toggle gain/loss mode<br/>on line: toggle direct route </td>
+    <td>toggle gain/loss mode</td>
     <td>toggle gain/loss mode</td>
     <td> </td>
 </tr>
