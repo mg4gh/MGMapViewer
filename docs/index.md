@@ -3,7 +3,7 @@ Based on the excellent [mapsforge](https://github.com/mapsforge/mapsforge) libra
 Using offline vector maps (e.g. from [openandromaps](https://www.openandromaps.org/)) you can plan, record, view and share
 your tracks ... and much more.
 
-<img src="./Features/MainTrackFeatures/Routing/RouteA.png" width="190" />&nbsp;<img src="./Features/MainTrackFeatures/TrackRecord/RecordA.png" width="190" />&nbsp;<img src="./Features/MainTrackFeatures/TrackVisualization/gainLoss1.png" width="190" />&nbsp;<img src="./Features/FurtherFeatures/Statistic/StatisticA.png" width="190" />
+<img src="./Features/MainTrackFeatures/Routing/RT1.png" width="190" />&nbsp;<img src="./Features/MainTrackFeatures/TrackRecord/RecordA.png" width="190" />&nbsp;<img src="./Features/MainTrackFeatures/TrackVisualization/gainLoss1.png" width="190" />&nbsp;<img src="./Features/FurtherFeatures/Statistic/StatisticA.png" width="190" />
 
 
 Here you can find the [Getting Started](./GettingStarted/GettingStarted.md).
@@ -28,8 +28,6 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Record a track](./Features/MainTrackFeatures/TrackRecord/trackrecord.md): recording of a track allows multiple segments
 - [Track storage](./Features/MainTrackFeatures/TrackStorage/trackstorage.md):  store tracks as gpx files, but additionally store some meta data on the tracks (for faster search)
 - [Bounding Box](./Features/MainTrackFeatures/BoundingBox/boundingbox.md) search tracks by marking an area (bounding box) and load all tracks through this area 
-- [Marker Track](./Features/MainTrackFeatures/MarkerTrack/markertrack.md) create a track (marker track) by tapping some points, including manipulations like moving points, 
-  insert and delete points. Such a marker track can also be imported/exported. 
 - [Basic Routing](./Features/MainTrackFeatures/Routing/routing.md) basic route calculation (shortest path) based on a marker track.
 - [Dashboard](./Features/MainTrackFeatures/Dashboard/dashboard.md) visualization of the most important information of the recording, the selected and the route track log.
 
