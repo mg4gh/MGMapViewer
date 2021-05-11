@@ -5,7 +5,7 @@
 This feature provides a basic route calculation (shortest path) based on a sequence of given points. Although it's not important for the usage of this feature
 it should be mentioned, that route calculation is using a simple [A\*](https://de.wikipedia.org/wiki/A*-Algorithmus) algorithm.
 
-There is a further feature [routing hints](../../FurtherFeatures/RoutingHints/hints.md), which is based on this routing feature.
+There is a further feature [turning instructions](../../FurtherFeatures/RoutingHints/hints.md), which is based on this routing feature.
 
 #### Create a route
 
@@ -56,7 +56,11 @@ With <img src="../../../icons/back.svg" width="24"/> you go back to the main act
 The export of a route track generates a .gpx file in the directory ./MGMapViewer/track/gpx.
 The filename has the structure \<date>_\<time>_MarkerRoute.gpx. This gpx file contains the
 track points from the calculated route. But additionally it contains the points used for route
-calculation as way points. This "dual" storage allows multiple further usage:
+calculation as way points.
+
+#### Reopen saved route track
+
+The "dual" storage of route tracks allows multiple further usage:
 <table>
 <tr><td>open with <img src="../../../icons/show.svg" width="24"/> as selected track</td><td>open with <img src="../../../icons/mtlr.svg" width="24"/> again as a route</td></tr>
 <tr><td><img src="./RO1.png" width="250" /></td><td><img src="./RO2.png" width="250" /></td></tr>

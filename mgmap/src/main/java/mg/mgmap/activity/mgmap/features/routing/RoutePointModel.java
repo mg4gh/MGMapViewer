@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.mgmap.features.routing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
 
@@ -38,7 +39,7 @@ public class RoutePointModel {
     boolean direct = false;
     boolean directChanged = false;
 
-    TreeSet<ApproachModel> approaches;
+    ArrayList<ApproachModel> approaches;
     ApproachModel selectedApproach;
     BBox approachBBox;
 
@@ -59,7 +60,7 @@ public class RoutePointModel {
         return mtlp;
     }
 
-    public TreeSet<ApproachModel> getApproaches() {
+    public ArrayList<ApproachModel> getApproaches() {
         return approaches;
     }
 
@@ -70,7 +71,7 @@ public class RoutePointModel {
     }
 
     void setApproaches(TreeSet<ApproachModel> approaches){
-        this.approaches = approaches; // keep remaining approaches in the RoutePointModel
+        this.approaches = new ArrayList<>( approaches );
         approachBBox = new BBox();
         if (!approaches.isEmpty()){
             for (ApproachModel am : approaches){

@@ -324,7 +324,7 @@ public class FSRouting extends FeatureService {
     }
 
     synchronized void optimize(){ // needs to be reworked
-        routingEngine.setRoutingContext( new RoutingContext(1000, false, 3, PointModelUtil.getCloseThreshold()) );
+        routingEngine.setRoutingContext( new RoutingContext(1000, false, 10, PointModelUtil.getCloseThreshold()) );
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         RouteOptimizer ro = new RouteOptimizer(getActivity().getGGraphTileFactory(), routingEngine);
         ro.optimize(mtl);

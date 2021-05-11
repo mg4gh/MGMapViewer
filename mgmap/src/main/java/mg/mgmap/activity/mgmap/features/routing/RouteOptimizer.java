@@ -22,10 +22,12 @@ import java.util.Locale;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.GGraphTileFactory;
+import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
+import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.basic.Assert;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -63,36 +65,56 @@ public class RouteOptimizer {
         Assert.check(rpmSource.getApproachNode() == route.get(0));
         Assert.check(rpmTarget.getApproachNode() == route.get(route.size()-1));
 
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" startIdx="+startIdx+" endIdx="+endIdx);
 
         if (rpmSource.getApproach().getNode1() == route.get(1)) replaceNode(route, 0, rpmSource.getApproach().getNode2());
         if (rpmSource.getApproach().getNode2() == route.get(1)) replaceNode(route, 0, rpmSource.getApproach().getNode1());
         if (rpmTarget.getApproach().getNode1() == route.get(route.size()-2)) replaceNode(route, route.size()-1, rpmTarget.getApproach().getNode2());
         if (rpmTarget.getApproach().getNode2() == route.get(route.size()-2)) replaceNode(route, route.size()-1, rpmTarget.getApproach().getNode1());
 
+        double[] rdist = new double[route.size()];
+        rdist[0] = 0;
+        for (int rIdx = 1; rIdx<route.size(); rIdx++) {
+            rdist[rIdx] = rdist[rIdx-1] + PointModelUtil.distance(route.get(rIdx-1),route.get(rIdx));
+        }
 
-
-
-
+        BBox rbBox = new BBox();
+        RoutePointModel lastRPM = routingEngine.getVerifyRoutePointModel( segment.get(startIdx) );
+        double lastDist = PointModelUtil.distance(route.get(0), lastRPM.mtlp);
         for (int idx=startIdx+1; idx < endIdx; idx++){
             RoutePointModel rpm = routingEngine.getVerifyRoutePointModel( segment.get(idx) );
+            for (ApproachModel approachModel : rpm.getApproaches()) {
+                gFactory.validateApproachModel(approachModel); // renew node1 and node2, if GGraphTile was newly setup due to cache effect
+            }
 
+            double optimalDist = lastDist + PointModelUtil.distance(lastRPM.mtlp, rpm.mtlp);
             ApproachModel match = null;
+            double matchDist = Double.MAX_VALUE;
 
             for (int rIdx = 1; rIdx<route.size(); rIdx++){ //iterate over route parts - rIdx determines endpoint of part
-                if (rpm.approachBBox.contains(route.get(rIdx))){ // ok, it might give a route match
+                rbBox.clear();
+                double dr = rdist[rIdx] - rdist[rIdx-1];
+                if (rpm.approachBBox.intersects( rbBox.extend(route.get(rIdx)).extend(route.get(rIdx-1))  )){ // ok, it might give a route match
                     for (ApproachModel approachModel : rpm.getApproaches()){
-                        if (approachModel == match) break; // can't improve
                         gFactory.validateApproachModel(approachModel); // renew node1 and node2, if GGraphTile was newly setup due to cache effect
                         if (((approachModel.getNode1() == route.get(rIdx)) && (approachModel.getNode2() == route.get(rIdx-1))) ||
                             ((approachModel.getNode2() == route.get(rIdx)) && (approachModel.getNode1() == route.get(rIdx-1))))   {
-                            match = approachModel;
-                            break;
+                            double currentDist = rdist[rIdx-1]+PointModelUtil.distance(route.get(rIdx-1),approachModel.getApproachNode());
+                            if (currentDist > lastDist){
+                                if (Math.abs(currentDist-optimalDist) < Math.abs(matchDist-optimalDist)){
+                                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" idx="+idx+" lastDist="+lastDist+" optimalDist="+optimalDist+" matchDist="+matchDist+" currentDist="+currentDist+ " cost="+approachModel.getApproachNode().getNeighbour().getCost());
+                                    matchDist = currentDist;
+                                    match = approachModel;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
             }
             if (match == null) return false;
+            lastDist = matchDist;
+            lastRPM = rpm;
             matchingApproachMap.put(rpm.mtlp, match);
         }
         return true;
@@ -144,17 +166,16 @@ public class RouteOptimizer {
 
                         double score = 1 - (0.5 * avgApproachDistance / routingEngine.getRoutingContext().approachLimit); // 0.5 .. 1 score point depending an avgApproachDistance
 
-//TODO: Understand this old code ... (... unfortunately produces a null pointer exception)
-//                        for (int i=idx+1; i<=end; i++){
-//                            if (!getRoutePointModel(segment.get(i)).currentMPM.isRoute()){
-//                                score *= 10; // solution for a jumpLine? => set a high score
-//                            }
-//                        }
-
-                        for (PointModel pm : checkResults.keySet()){
+                        for (int ii=idx+1; ii<end; ii++ ){
+                            int f = Math.min(ii-idx, end-ii);
+                            PointModel pm = segment.get(ii);
                             ApproachModel am = checkResults.get(pm);
-                            double amScore  = getScore(am);
-                            scoreMap.put(am, amScore+score);
+                            if (am != null){
+                                double amScore  = getScore(am);
+                                scoreMap.put(am, amScore + score*f);
+                                RoutePointModel rpm = routingEngine.getRoutePointMap().get(pm);
+                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" ii="+ii+" dist="+am.getApproachNode().getNeighbour().getCost()+" aIdx="+rpm.getApproaches().indexOf(am)+" +"+(score*f));
+                            }
                         }
                     }
                 }
@@ -172,27 +193,37 @@ public class RouteOptimizer {
     }
 
     public void optimize(TrackLogSegment segment){
-        Scorer s1 = new Scorer(3,2,500);
-        Scorer s2 = new Scorer(7,4,1000);
-        Scorer s3 = new Scorer(17,7,2000);
+        Scorer s1 = new Scorer(7,4,1000);
+        Scorer s2 = new Scorer(17,7,2000);
+        Scorer s3 = new Scorer(37,13,2000);
 
         for (int idx=0; idx<segment.size(); idx++){
             s1.score(segment, idx);
             s2.score(segment, idx);
             s3.score(segment, idx);
-            RoutePointModel rpm = getRoutePointModel(segment.get(idx));
-            double highScore = 0;
-            StringBuilder log = new StringBuilder();
-            for (ApproachModel am : rpm.getApproaches()){
-                double amScore  = getScore(am);
-                log.append(String.format(Locale.ENGLISH, " %.2f", amScore));
-                if (amScore > highScore){
-                    highScore = amScore;
-                    rpm.selectedApproach = am;
-                    log.append("+");
+            PointModel pm = segment.get(idx);
+            if (pm instanceof WriteablePointModel) {
+                WriteablePointModel mtlp = (WriteablePointModel) pm;
+                RoutePointModel rpm = getRoutePointModel(pm);
+                double highScore = 0;
+                StringBuilder log = new StringBuilder();
+                for (ApproachModel am : rpm.getApproaches()){
+                    double amScore  = getScore(am);
+                    log.append(String.format(Locale.ENGLISH, " %.2f", amScore));
+                    if (amScore > highScore){
+                        highScore = amScore;
+                        rpm.selectedApproach = am;
+                        log.append("+");
+                    }
+                }
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+"idx="+idx+" "+segment.get(idx)+ log);
+                PointModel optimizedPM = rpm.getApproachNode();
+                if (optimizedPM != null){
+                    mtlp.setLat(optimizedPM.getLat());
+                    mtlp.setLon(optimizedPM.getLon());
+                    routingEngine.routePointMap.remove(mtlp);
                 }
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+"idx="+idx+" "+segment.get(idx)+ log);
         }
     }
 
