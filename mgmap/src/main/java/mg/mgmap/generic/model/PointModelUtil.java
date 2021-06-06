@@ -43,6 +43,13 @@ public class PointModelUtil {
         PointModelUtil.closeThreshold = closeThreshold;
     }
 
+    public static float eleDiff(PointModel pm1, PointModel pm2) {
+        float ele1 = pm1.getEleA();
+        float ele2 = pm2.getEleA();
+        if ( ele1 != PointModel.NO_ELE && ele2 != PointModel.NO_ELE  ) return ele2 - ele1;
+        else return 0;
+    }
+
     public static double distance(PointModel pm1, PointModel pm2) {
         return distance(pm1.getLat(), pm1.getLon(), pm2.getLat(), pm2.getLon() );
     }

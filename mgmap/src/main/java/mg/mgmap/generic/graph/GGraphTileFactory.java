@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.application.util.CostProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -47,13 +48,15 @@ public class GGraphTileFactory {
 
     private WayProvider wayProvider = null;
     private AltitudeProvider altitudeProvider = null;
+    private CostProvider costProvider = null;
     private LinkedHashMap<Long, GGraphTile> cache = null;
 
     public GGraphTileFactory(){}
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider, AltitudeProvider altitudeProvider){
+    public GGraphTileFactory onCreate(WayProvider wayProvider, AltitudeProvider altitudeProvider, CostProvider costProvider){
         this.wayProvider = wayProvider;
         this.altitudeProvider = altitudeProvider;
+        this.costProvider = costProvider;
 
         cache = new LinkedHashMap <Long, GGraphTile>(100, 0.6f, true) {
             @Override
@@ -123,10 +126,10 @@ public class GGraphTileFactory {
         if (gGraphTile == null){
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+cache.size()+")");
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
-            gGraphTile = new GGraphTile(altitudeProvider, tile);
+            gGraphTile = new GGraphTile(altitudeProvider,costProvider, tile);
             for (Way way : wayProvider.getWays(tile)) {
                 if (wayProvider.isHighway(way)){
-
+                    costProvider.setWay(way);
                     gGraphTile.addLatLongs( way.latLongs[0]);
 
                     // now setup rawWays

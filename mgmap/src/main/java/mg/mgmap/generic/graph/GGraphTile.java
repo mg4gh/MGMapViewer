@@ -17,6 +17,7 @@ package mg.mgmap.generic.graph;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 
+import mg.mgmap.application.util.CostProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.WriteablePointModel;
@@ -35,12 +36,14 @@ public class GGraphTile extends GGraph {
     AltitudeProvider altitudeProvider;
 
     private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
+    private CostProvider costProvider;
     final Tile tile;
     final BBox tbBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
 
-    GGraphTile(AltitudeProvider altitudeProvider, Tile tile){
+    GGraphTile(AltitudeProvider altitudeProvider, CostProvider costProvider, Tile tile){
         this.altitudeProvider = altitudeProvider;
+        this.costProvider = costProvider;
         this.tile = tile;
         tbBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
     }
@@ -71,9 +74,9 @@ public class GGraphTile extends GGraph {
     }
 
     void addSegment(GNode node1, GNode node2){
-        double cost = PointModelUtil.distance(node1, node2);
-        node1.addNeighbour(new GNeighbour(node2, cost));
-        node2.addNeighbour(new GNeighbour(node1, cost));
+        costProvider.calcCost(node1,node2);
+        node1.addNeighbour(new GNeighbour(node2, costProvider.getCost12()));
+        node2.addNeighbour(new GNeighbour(node1, costProvider.getCost21()));
     }
 
     public GNode getNode(double latitude, double longitude){

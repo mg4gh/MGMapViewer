@@ -182,7 +182,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         coView = getControlView();
         mapViewUtility = new MapViewUtility(this, mapView);
-        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getAltitudeProvider());
+        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getAltitudeProvider(),application.getCostProvider());
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSBeeline(this));
