@@ -70,6 +70,7 @@ public class MGMapApplication extends Application {
     private Process pLogcat = null;
 
     private AltitudeProvider altitudeProvider;
+    // private cost provider and
     private GeoidProvider geoidProvider;
     private PersistenceManager persistenceManager;
     private MetaDataUtil metaDataUtil;
@@ -116,7 +117,7 @@ public class MGMapApplication extends Application {
         persistenceManager = new PersistenceManager(this);
         startLogging(persistenceManager.getLogDir());
         AndroidGraphicFactory.createInstance(this);
-
+        // create cost provider
         prefCache = new PrefCache(this);
 
         altitudeProvider = new AltitudeProvider(persistenceManager); // for hgt data handling
