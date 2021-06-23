@@ -71,7 +71,7 @@ public class GGraphTile extends GGraph {
     }
 
     void addSegment(GNode node1, GNode node2){
-        double cost = PointModelUtil.distance(node1, node2); //replace cost calculation with cost provider
+        double cost = PointModelUtil.distance(node1, node2); //replace cost calculation with cost provider (Need access to CostProvoder2)
         node1.addNeighbour(new GNeighbour(node2, cost));
         node2.addNeighbour(new GNeighbour(node1, cost));
     }
