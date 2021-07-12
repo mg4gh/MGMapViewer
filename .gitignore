@@ -88,3 +88,6 @@ lint/tmp/
 
 #syncthing
 .stfolder
+.stignore
+.stversions
+
