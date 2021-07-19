@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.graph;
 
+//import org.mapsforge.map.datastore.Way;
+
 /**
  * This class is the basis for the neighbour relationship in a graph.
  */
@@ -23,13 +25,19 @@ public class GNeighbour{
     private GNode neighbourNode;
     private double cost = 0;
     private GNeighbour nextNeighbour = null;
+// debug info
+//    private float elediff;
+//    private double dist;
+//    private Way way;
+
+    public GNeighbour(GNode neighbourNode){
+        this.neighbourNode = neighbourNode;
+    }
 
     public GNeighbour(GNode neighbourNode, double cost){
         this.neighbourNode = neighbourNode;
         this.cost = cost;
     }
-
-
     public GNode getNeighbourNode() {
         return neighbourNode;
     }
@@ -38,6 +46,17 @@ public class GNeighbour{
         return cost;
     }
 
+    public void setCost( double cost ){
+        this.cost = cost;
+    }
+
+    /*
+    public void setDebug(  double dist , float elediff , Way way){
+        this.elediff = elediff;
+        this.dist = dist;
+        this.way = way;
+    }
+     */
     public GNeighbour getNextNeighbour() {
         return nextNeighbour;
     }

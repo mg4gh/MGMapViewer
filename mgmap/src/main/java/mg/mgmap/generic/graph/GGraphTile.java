@@ -74,9 +74,11 @@ public class GGraphTile extends GGraph {
     }
 
     void addSegment(GNode node1, GNode node2){
-        costProvider.calcCost(node1,node2);
-        node1.addNeighbour(new GNeighbour(node2, costProvider.getCost12()));
-        node2.addNeighbour(new GNeighbour(node1, costProvider.getCost21()));
+        GNeighbour neighbour12 = new GNeighbour(node2);
+        GNeighbour neighbour21 = new GNeighbour(node1);
+        costProvider.setNodes(node1,neighbour12,node2,neighbour21);
+        node1.addNeighbour(neighbour12);
+        node2.addNeighbour(neighbour21);
     }
 
     public GNode getNode(double latitude, double longitude){

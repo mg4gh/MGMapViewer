@@ -131,7 +131,7 @@ public class GGraphTileFactory {
                 if (wayProvider.isHighway(way)){
                     costProvider.setWay(way);
                     gGraphTile.addLatLongs( way.latLongs[0]);
-
+                    costProvider.calcCosts( );
                     // now setup rawWays
                     MultiPointModelImpl mpm = new MultiPointModelImpl();
                     for (LatLong latLong : way.latLongs[0] ){

@@ -69,7 +69,7 @@ public class FSRouting extends FeatureService {
     private final RoutingContext interactiveRoutingContext = new RoutingContext(
             10000,
             false, // no extra snap, since FSMarker snaps point zoom level dependent
-            10, // accept long detours in interactive mode
+            100, // accept long detours in interactive mode !CHANGED for test purposes
             1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
 
 
