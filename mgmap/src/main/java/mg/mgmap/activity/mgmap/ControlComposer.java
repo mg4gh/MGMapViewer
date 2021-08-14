@@ -87,6 +87,7 @@ public class ControlComposer {
         activity.getFS(FSBeeline.class).initStatusLine(coView.createStatusLineETV(parent, 20), "center");
         activity.getFS(FSBeeline.class).initStatusLine(coView.createStatusLineETV(parent, 10), "zoom");
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "time");
+        activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 20), "job");
         activity.getFS(FSPosition.class).initStatusLine(coView.createStatusLineETV(parent, 20), "height");
         activity.getFS(FSRemainings.class).initStatusLine(coView.createStatusLineETV(parent, 20), "remain");
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "bat");

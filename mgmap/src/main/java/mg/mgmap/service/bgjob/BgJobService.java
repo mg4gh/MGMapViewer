@@ -125,7 +125,9 @@ public class BgJobService extends Service {
                         BgJob job;
                         while ((job = application.getBgJob()) != null){
                             job.service = BgJobService.this;
+                            application.addActiveJob(job);
                             job.start();
+                            application.removeActiveJob(job);
                         }
                         numWorkers.decrementAndGet();
                         checkDeactivateService();

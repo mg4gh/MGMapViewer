@@ -86,6 +86,7 @@ public class MGMapApplication extends Application {
     public final ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
 
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
+    private final ArrayList<BgJob> activeBgJobs = new ArrayList<>();
 
     PrefCache prefCache = null;
     Pref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
@@ -426,4 +427,25 @@ public class MGMapApplication extends Application {
     public synchronized int numBgJobs(){
         return bgJobs.size();
     }
+    public synchronized int totalBgJobs(){
+        return bgJobs.size()+activeBgJobs.size();
+    }
+    public synchronized String bgJobsStatistic(){
+        String res = "";
+        for (BgJob job : activeBgJobs){
+            if ((job.getProgress() != 0) && (job.getMax() != 0)){
+                res = " ("+(100-(job.getProgress()*100)/job.getMax())+"%)";
+                break;
+            }
+        }
+        return ""+ totalBgJobs()+res;
+    }
+
+    public synchronized void addActiveJob(BgJob job){
+        activeBgJobs.add(job);
+    }
+    public synchronized void removeActiveJob(BgJob job){
+        activeBgJobs.remove(job);
+    }
+
 }

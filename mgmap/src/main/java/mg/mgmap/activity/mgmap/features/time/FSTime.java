@@ -27,6 +27,7 @@ public class FSTime extends FeatureService {
 
     private ExtendedTextView etvTime = null;
     private ExtendedTextView etvBat = null;
+    private ExtendedTextView etvJob = null;
 
     public FSTime(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -45,6 +46,11 @@ public class FSTime extends FeatureService {
             etv.setData(R.drawable.bat);
             etv.setFormat(Formatter.FormatType.FORMAT_INT);
             etvBat = etv;
+        }
+        if (info.equals("job")){
+            etv.setData(R.drawable.jobs);
+            etv.setFormat(Formatter.FormatType.FORMAT_STRING);
+            etvJob = etv;
         }
         return etv;
     }
@@ -70,6 +76,11 @@ public class FSTime extends FeatureService {
         if (--batCnt <= 0){
             batCnt = 60;
             getControlView().setStatusLineValue(etvBat, getBatteryPercent());
+        }
+        if (getApplication().totalBgJobs() == 0){
+            getControlView().setStatusLineValue(etvJob, "");
+        } else {
+            getControlView().setStatusLineValue(etvJob, getApplication().bgJobsStatistic());
         }
     }
 
