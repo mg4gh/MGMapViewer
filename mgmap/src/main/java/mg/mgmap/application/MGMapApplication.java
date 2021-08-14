@@ -72,7 +72,6 @@ public class MGMapApplication extends Application {
 
     private AltitudeProvider altitudeProvider;
     private GeoidProvider geoidProvider;
-    private CostProvider costProvider;
     private PersistenceManager persistenceManager;
     private MetaDataUtil metaDataUtil;
     private TestControl testControl;
@@ -123,7 +122,6 @@ public class MGMapApplication extends Application {
 
         altitudeProvider = new AltitudeProvider(persistenceManager); // for hgt data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea altitude
-        costProvider = new CostProvider(this); // for difference between wgs84 and nmea altitude
         metaDataUtil = new MetaDataUtil(persistenceManager);
         testControl = new TestControl(this, prefCache);
 
@@ -377,8 +375,6 @@ public class MGMapApplication extends Application {
     public GeoidProvider getGeoidProvider() {
         return geoidProvider;
     }
-
-    public CostProvider getCostProvider() { return costProvider; }
 
     public PersistenceManager getPersistenceManager() {
         return persistenceManager;

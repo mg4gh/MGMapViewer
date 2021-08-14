@@ -20,5 +20,25 @@
 
     <string name="FSRouting_qcMapMatching_Help">Route optimization (map matching)</string>
 
+    <string name="preferences_routing_options">Routing Options</string>
+    <string name="preferences_routing_profile_title">Routing Profile</string>
+    <string name="preferences_routing_profile_summary">choose profile for routing, so that routing is optimized accordingly</string>
+
+    <string-array name="pref_routing_profile_entries">
+        <item>shortest distance</item>
+        <item>MTB enduro</item>
+        <item>MTB fun</item>
+        <item>MTB power</item>
+        <item>Cycling tour</item>
+    </string-array>
+    <string-array name="pref_routing_profile_values" >
+        <item>ShortDist</item>
+        <item>MTBenduro</item>
+        <item>MTBfun</item>
+        <item>MTBpower</item>
+        <item>CycTour</item>
+    </string-array>
+
+
 
 </resources>

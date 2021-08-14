@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.CostProvider;
+import mg.mgmap.application.util.CostProviderTagEvalBasic;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -38,6 +39,7 @@ import mg.mgmap.generic.util.WayProvider;
 
 public class GGraphTileFactory {
 
+    static long nanosec = 0;
     private final int CACHE_LIMIT = 1000;
     private final byte ZOOM_LEVEL = 15;
     private final int TILE_SIZE = 256;
@@ -48,15 +50,13 @@ public class GGraphTileFactory {
 
     private WayProvider wayProvider = null;
     private AltitudeProvider altitudeProvider = null;
-    private CostProvider costProvider = null;
     private LinkedHashMap<Long, GGraphTile> cache = null;
 
     public GGraphTileFactory(){}
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider, AltitudeProvider altitudeProvider, CostProvider costProvider){
+    public GGraphTileFactory onCreate(WayProvider wayProvider, AltitudeProvider altitudeProvider){
         this.wayProvider = wayProvider;
         this.altitudeProvider = altitudeProvider;
-        this.costProvider = costProvider;
 
         cache = new LinkedHashMap <Long, GGraphTile>(100, 0.6f, true) {
             @Override
@@ -77,6 +77,9 @@ public class GGraphTileFactory {
         cache = null;
     }
 
+    public void clearCache(){
+       if (cache != null ) cache.clear();
+    }
 
     public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){
         ArrayList<GGraphTile> tileList = new ArrayList<>();
@@ -121,17 +124,21 @@ public class GGraphTileFactory {
 
     private GGraphTile getGGraphTile(int tileX, int tileY){
         long key = getKey(tileX,tileY);
+        long t1;
 
         GGraphTile gGraphTile = cache.get(key);
         if (gGraphTile == null){
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+cache.size()+")");
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
-            gGraphTile = new GGraphTile(altitudeProvider,costProvider, tile);
+            gGraphTile = new GGraphTile(altitudeProvider, tile);
             for (Way way : wayProvider.getWays(tile)) {
-                if (wayProvider.isHighway(way)){
-                    costProvider.setWay(way);
+                t1 = System.nanoTime();
+                CostProvider.getInst().initializeSegment(way);
+                nanosec = nanosec + System.nanoTime() - t1;
+
+                if (CostProvider.getInst().isWay()){ //wayProvider.isHighway(way)&&
                     gGraphTile.addLatLongs( way.latLongs[0]);
-                    costProvider.calcCosts( );
+                    CostProvider.getInst().finalizeSegment( );
                     // now setup rawWays
                     MultiPointModelImpl mpm = new MultiPointModelImpl();
                     for (LatLong latLong : way.latLongs[0] ){
@@ -144,8 +151,12 @@ public class GGraphTileFactory {
                         }
                     }
                     gGraphTile.getRawWays().add(mpm);
-                }
+                } else
+                    CostProvider.getInst().clearSegment();
             }
+
+            Log.d("CostproviderInitialize runtime",String.valueOf(nanosec));
+
             int latThreshold = LaLo.d2md( PointModelUtil.latitudeDistance(GGraph.CONNECT_THRESHOLD_METER) );
             int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(GGraph.CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
 //            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);

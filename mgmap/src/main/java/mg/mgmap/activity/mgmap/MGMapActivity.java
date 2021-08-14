@@ -68,6 +68,7 @@ import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
+import mg.mgmap.application.util.CostProvider;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
@@ -99,6 +100,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
+import static mg.mgmap.application.util.CostProvider.*;
 
 /**
  * The main activity of the MgMapViewer. It is based on the mapsforge MapView and provides track logging
@@ -182,7 +185,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         coView = getControlView();
         mapViewUtility = new MapViewUtility(this, mapView);
-        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getAltitudeProvider(),application.getCostProvider());
+
+        CostProvider.initCostProvider(prefCache.get("routing_prof","none"));
+
+        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getAltitudeProvider());
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSBeeline(this));
@@ -216,6 +222,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.onResume();
         Log.i(MGMapApplication.LABEL, NameUtil.context());
         application = (MGMapApplication) getApplication();
+
+        CostProvider.initCostProvider(prefCache.get("routing_prof","none"));
+        gGraphTileFactory.clearCache();
 
         // This is a workaround for frozen Screen after 2 times switch off/on with setShowWhenLocked(true);
         // Hint found at: https://stackoverflow.com/questions/55462980/android-9-frozen-ui-after-unlocking-screen

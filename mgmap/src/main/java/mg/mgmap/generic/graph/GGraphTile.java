@@ -36,14 +36,12 @@ public class GGraphTile extends GGraph {
     AltitudeProvider altitudeProvider;
 
     private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
-    private CostProvider costProvider;
     final Tile tile;
     final BBox tbBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
 
-    GGraphTile(AltitudeProvider altitudeProvider, CostProvider costProvider, Tile tile){
+    GGraphTile(AltitudeProvider altitudeProvider, Tile tile){
         this.altitudeProvider = altitudeProvider;
-        this.costProvider = costProvider;
         this.tile = tile;
         tbBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
     }
@@ -76,7 +74,7 @@ public class GGraphTile extends GGraph {
     void addSegment(GNode node1, GNode node2){
         GNeighbour neighbour12 = new GNeighbour(node2);
         GNeighbour neighbour21 = new GNeighbour(node1);
-        costProvider.setNodes(node1,neighbour12,node2,neighbour21);
+        CostProvider.getInst().setNodes(node1,neighbour12,node2,neighbour21);
         node1.addNeighbour(neighbour12);
         node2.addNeighbour(neighbour21);
     }

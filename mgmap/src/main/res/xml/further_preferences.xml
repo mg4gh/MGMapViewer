@@ -37,6 +37,21 @@
             />
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:title="@string/preferences_routing_options"
+        app:iconSpaceReserved="false"
+        >
+        <ListPreference
+            app:defaultValue="none"
+            app:entries="@array/pref_routing_profile_entries"
+            app:entryValues="@array/pref_routing_profile_values"
+            app:key="routing_prof"
+            app:negativeButtonText="@string/cancelbutton"
+            app:summary="@string/preferences_routing_profile_summary"
+            app:title="@string/preferences_routing_profile_title"
+            app:iconSpaceReserved="false"
+            />
+    </PreferenceCategory>
 
     <PreferenceCategory
         app:title="@string/preferences_cat_gl_title"
