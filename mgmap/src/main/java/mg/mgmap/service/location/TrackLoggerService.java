@@ -103,8 +103,7 @@ public class TrackLoggerService extends Service {
         if (!active && shouldBeActive){
             active = true;
             activateService();
-        }
-        if (active && !shouldBeActive){
+        } else if (active && !shouldBeActive){
             active = false;
             deactivateService();
         }

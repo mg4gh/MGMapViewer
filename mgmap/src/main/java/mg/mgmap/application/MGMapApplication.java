@@ -26,6 +26,7 @@ import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
+import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -74,6 +75,7 @@ public class MGMapApplication extends Application {
     private PersistenceManager persistenceManager;
     private MetaDataUtil metaDataUtil;
     private TestControl testControl;
+    private NotificationUtil notificationUtil;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
@@ -90,7 +92,7 @@ public class MGMapApplication extends Application {
 
     PrefCache prefCache = null;
     Pref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
-    Pref<Boolean> prefGps = null; // property to distinguish ApplicationStart from ActivityRecreate
+    Pref<Boolean> prefGps = null;
 
     public void startLogging(File logDir){
         try {
@@ -123,6 +125,7 @@ public class MGMapApplication extends Application {
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea altitude
         metaDataUtil = new MetaDataUtil(persistenceManager);
         testControl = new TestControl(this, prefCache);
+        notificationUtil = new NotificationUtil(this);
 
         prefAppRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
         prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
@@ -208,6 +211,7 @@ public class MGMapApplication extends Application {
                 long TIMEOUT = 10000;
                 Log.i(LABEL, NameUtil.context()+"logcat supervision: start ");
                 int cnt = 0;
+                int escalationCnt = 0;
                 long lastCheck = System.currentTimeMillis();
                 while (true){
                     try {
@@ -222,12 +226,15 @@ public class MGMapApplication extends Application {
                         lastCheck = System.currentTimeMillis();
                     } catch (Exception e) {
                         long now = System.currentTimeMillis();
-                        if ((now - lastCheck) > (TIMEOUT*1.5)){ // we might have detected an energy saving problem
-                            Log.w(LABEL, NameUtil.context()+"Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
-                            if (prefGps.getValue()){
-                                Log.i(LABEL, NameUtil.context()+" try to trigger gps ...");
-                                startTrackLoggerService();
-                            }
+                        if (prefGps.getValue() && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
+                                Log.i(LABEL, NameUtil.context()+"Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
+                                escalationCnt++;
+                        } else {
+                            escalationCnt = 0;
+                        }
+                        if (escalationCnt > 3){
+                            Log.w(LABEL, NameUtil.context()+" try to notify user ...");
+                            notificationUtil.notifyAlarm();
                         }
                         if (++cnt % 6 == 0){
                             Log.i(LABEL, NameUtil.context()+"logcat supervision: OK. (running "+(cnt/6)+" min)");
