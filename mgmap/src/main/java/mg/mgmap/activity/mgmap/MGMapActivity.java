@@ -416,35 +416,35 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 } else if (intent.getType().equals("mgmap/markTrack")){
                     String stl = intent.getStringExtra("stl");
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent.getType()+" stl="+stl);
-
-                    BBox bBox2show = new BBox();
-                    TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
-                    if (selectedTrackLog != null){
-                        String name = selectedTrackLog.getName();
-                        TrackLog aTrackLog = new GpxImporter(getMGMapApplication().getAltitudeProvider())
-                                .parseTrackLog(name, getMGMapApplication().getPersistenceManager().openGpxInput(name));
-                        if (aTrackLog.getReferencedTrackLog() != null){
-                            selectedTrackLog = aTrackLog.getReferencedTrackLog();
-                            getFS(FSMarker.class).createMarkerTrackLog(selectedTrackLog);
-                        } else {
-                            selectedTrackLog = aTrackLog;
-                            TrackLogRef selectedRef = new TrackLogRef(selectedTrackLog, -1);
-                            application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
-                            application.addBgJob (new BgJob(){
-                                @Override
-                                protected void doJob() throws Exception {
-                                    synchronized (getFS(FSRouting.class)){ // prevents that the Routing calculation thread is working
-                                        getFS(FSMarker.class).createMarkerTrackLog(aTrackLog);
-                                        getFS(FSRouting.class).optimize2(application.markerTrackLogObservable.getTrackLog());
+                    if (stl != null){
+                        BBox bBox2show = new BBox();
+                        TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
+                        if (selectedTrackLog != null){
+                            String name = selectedTrackLog.getName();
+                            TrackLog aTrackLog = new GpxImporter(getMGMapApplication().getAltitudeProvider())
+                                    .parseTrackLog(name, getMGMapApplication().getPersistenceManager().openGpxInput(name));
+                            if (aTrackLog.getReferencedTrackLog() != null){
+                                selectedTrackLog = aTrackLog.getReferencedTrackLog();
+                                getFS(FSMarker.class).createMarkerTrackLog(selectedTrackLog);
+                            } else {
+                                selectedTrackLog = aTrackLog;
+                                TrackLogRef selectedRef = new TrackLogRef(selectedTrackLog, -1);
+                                application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
+                                application.addBgJob (new BgJob(){
+                                    @Override
+                                    protected void doJob() throws Exception {
+                                        synchronized (getFS(FSRouting.class)){ // prevents that the Routing calculation thread is working
+                                            getFS(FSMarker.class).createMarkerTrackLog(aTrackLog);
+                                            getFS(FSRouting.class).optimize2(application.markerTrackLogObservable.getTrackLog());
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
+                            bBox2show.extend(selectedTrackLog.getBBox());
                         }
-                        bBox2show.extend(selectedTrackLog.getBBox());
-                    }
-
-                    if (!bBox2show.isInitial()){
-                        getMapViewUtility().zoomForBoundingBox(bBox2show);
+                        if (!bBox2show.isInitial()){
+                            getMapViewUtility().zoomForBoundingBox(bBox2show);
+                        }
                     }
 
                 } else {
