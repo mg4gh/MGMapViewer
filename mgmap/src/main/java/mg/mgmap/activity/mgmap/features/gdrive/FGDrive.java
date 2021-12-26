@@ -126,24 +126,16 @@ public class FGDrive {
 
             Zipper zip = new Zipper(props.getProperty(GDRIVE_CONFIG_ZIP_PW_KEY,"geheimXgeheim!"));
 
-//            Set<String> localSet = new TreeSet<>();
             TreeMap<String, File> localMap = new TreeMap<>();
             //noinspection ConstantConditions
             for (File file : gpxFolder.listFiles()){
                 if (file.getName().endsWith(".gpx")){
-//                    localSet.add(filename);
                     localMap.put(file.getName(), file);
                 }
             }
 
             TreeMap<String, com.google.api.services.drive.model.File> remoteMap =
                     GDriveUtil.getFiles(dservice, idMgmFolder, ".*\\.gpx\\.zip", "\\.zip$");
-//            for (String entry : rSet){
-//                String[] parts = entry.split(".zip:");
-//                if (parts.length == 2){
-//                    remoteMap.put(parts[0], parts[1]);
-//                }
-//            }
             Set<String> commonSet = new TreeSet<>(localMap.keySet());
             commonSet.retainAll(remoteMap.keySet());
             for (String commonName : new TreeSet<>(commonSet)){
@@ -155,9 +147,6 @@ public class FGDrive {
                     }
                 }
             }
-
-
-//            localSet.removeAll(commonSet);
 
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" remoteSet: "+remoteMap.keySet());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" commonSet: "+commonSet);
