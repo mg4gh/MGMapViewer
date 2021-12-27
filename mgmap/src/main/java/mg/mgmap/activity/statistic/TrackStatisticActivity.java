@@ -369,6 +369,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     GpxExporter.export(persistenceManager, aTrackLog);
                     application.getMetaDataUtil().createMetaData(aTrackLog);
                 }
+                prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
             }
         };
     }

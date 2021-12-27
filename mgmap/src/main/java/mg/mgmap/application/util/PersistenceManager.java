@@ -487,7 +487,9 @@ public class PersistenceManager {
             }
             File configFile = new File(configDir, name );
             if (configFile.exists()){
-                props.load( new FileInputStream(configFile) );
+                FileInputStream fis = new FileInputStream(configFile);
+                props.load( fis );
+                fis.close();
             } else {
                 Log.w(MGMapApplication.LABEL, NameUtil.context() +" configFile not found: "+configFile.getAbsolutePath());
             }

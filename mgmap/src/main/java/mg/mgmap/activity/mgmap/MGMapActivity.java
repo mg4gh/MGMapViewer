@@ -80,6 +80,7 @@ import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.FullscreenUtil;
+import mg.mgmap.generic.util.SshSyncUtil;
 import mg.mgmap.generic.util.gpx.GpxImporter;
 import mg.mgmap.activity.mgmap.util.MapDataStoreUtil;
 import mg.mgmap.activity.mgmap.util.MapViewUtility;
@@ -208,6 +209,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         onNewIntent(getIntent());
         prefCache.get(R.string.FSPosition_pref_GpsOn, false).addObserver((o, arg) -> triggerTrackLoggerService());
         prefCache.get(R.string.MGMapApplication_pref_Restart, true).setValue(false);
+        prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).addObserver((o, arg) -> new SshSyncUtil().trySynchronisation(application));
         prefCache.dumpPrefs();
     }
 
@@ -268,6 +270,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             new FGDrive(this).trySynchronisation(false);
             downloadTriggerGDriveSync.setValue(false);
         }
+
+        new Handler().postDelayed(() -> prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(), 60*1000);
     }
 
     @Override
@@ -352,8 +356,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     /** Used if
      * <ul>
-     *     <li>Map download is triggered from openandomaps page (via scheme "mf-v4-map")</li>
-     *     <li>Theme download is triggered from openandomaps page (via scheme "mf-theme")</li>
+     *     <li>Map download is triggered from openandromaps page (via scheme "mf-v4-map")</li>
+     *     <li>Theme download is triggered from openandromaps page (via scheme "mf-theme")</li>
      *     <li>one or multiple tracks are shown from statistic view</li>
      *     <li>a new marker tracks is set from statistic view</li>
      *     <li>a .gpx file is opened from mail oder file manager</li>

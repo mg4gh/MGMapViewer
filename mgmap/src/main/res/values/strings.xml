@@ -96,4 +96,6 @@
     <string name="preference_testTrigger_title">Start selected tests</string>
     <string name="preference_testTrigger_desc">Press here to start the test(s)</string>
 
+    <string name="preferences_ssh_uploadGpxTrigger">Ssh.uploadGpxTrigger</string>
+
 </resources>
