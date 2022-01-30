@@ -60,6 +60,20 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:title="@string/preferences_cat_gnss_title"
+        app:iconSpaceReserved="false"
+        >
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/FSPosition_pref_FusedLocationProvider"
+            app:summary="@string/preferences_gnss_fused_desc"
+            app:title="@string/preferences_gnss_fused_title"
+            app:iconSpaceReserved="false"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:title="@string/preferences_cat_dev_title"
         app:iconSpaceReserved="false"
         app:allowDividerAbove="true"

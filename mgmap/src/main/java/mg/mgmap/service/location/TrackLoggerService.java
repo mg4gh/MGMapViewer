@@ -47,7 +47,7 @@ public class TrackLoggerService extends Service {
 
     private MGMapApplication application = null;
 
-    private LocationListener locationListener = null;
+    private AbstractLocationListener locationListener = null;
     private BarometerListener barometerListener = null;
     private TurningInstructionService turningInstructionService = null;
     private boolean active = false;
@@ -117,16 +117,9 @@ public class TrackLoggerService extends Service {
                 startForeground(1, notification);
             }
             barometerListener = new BarometerListener(application,  SensorManager.SENSOR_DELAY_FASTEST);
-            locationListener = new LocationListener(application){
-                @Override
-                protected void onNewTrackLogPoint(TrackLogPoint lp) {
-                    lp.setPressure( barometerListener.getPressure() );
-                    setPressureAlt(lp);
-                    application.logPoints2process.add(lp);
-                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);
-                    turningInstructionService.handleNewPoint(lp);
-                }
-            };
+            boolean prefFused = prefCache.get(R.string.FSPosition_pref_FusedLocationProvider, false).getValue();
+            locationListener = prefFused?new FusedLocationListener(application, this):new GnssLocationListener(application, this);
+
             locationListener.activate(4000,20);
             barometerListener.activate();
         } catch (Exception e) {
@@ -146,6 +139,13 @@ public class TrackLoggerService extends Service {
         }
     }
 
+    protected void onNewTrackLogPoint(TrackLogPoint lp) {
+        lp.setPressure( barometerListener.getPressure() );
+        setPressureAlt(lp);
+        application.logPoints2process.add(lp);
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);
+        turningInstructionService.handleNewPoint(lp);
+    }
 
     @Nullable
     @Override

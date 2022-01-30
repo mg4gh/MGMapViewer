@@ -232,7 +232,7 @@ public class MetaDataUtil {
 
     private ByteBuffer getNextLaloBuf(InputStream in){
         try {
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " "+in.available());
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+ " "+in.available());
             while (in.available() >= MetaData.BUF_SIZE){
                 byte[] b = new byte[MetaData.BUF_SIZE];
                 in.read(b);

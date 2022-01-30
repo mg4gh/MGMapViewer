@@ -72,7 +72,12 @@
 
     <string name="preferences_hprof_gl_key">hprof_gl</string>
     <string name="preferences_hprof_gl_title">Ascent height profile</string>
-    <string name="preferences_hprof_gl_desc">Show ascent profile together with height profile"</string>
+    <string name="preferences_hprof_gl_desc">Show ascent profile together with height profile</string>
+
+    <string name="preferences_cat_gnss_title">GNSS settings</string>
+    <string name="preferences_gnss_fused_gl_key">gnss_fused</string>
+    <string name="preferences_gnss_fused_title">Used google fused location provider</string>
+    <string name="preferences_gnss_fused_desc">Use the google fused location provider instead of the pure GNSS location provider</string>
 
     <string name="preferences_doc_main_key">DocMain</string>
     <string name="preferences_doc_main_title">Documentation</string>
