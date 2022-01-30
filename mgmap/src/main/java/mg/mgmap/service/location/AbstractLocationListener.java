@@ -30,55 +30,41 @@ import mg.mgmap.generic.util.basic.NameUtil;
  * Location Listener for TrackLoggerService
  */
 
-abstract class LocationListener implements android.location.LocationListener {
+public class AbstractLocationListener {
 
-    private static final float ACCURACY_LIMIT = 30.0f; // accuracy limit in meter
-    private final LocationManager locationManager;
-    private final AltitudeProvider altitudeProvider;
-    private final GeoidProvider geoidProvider;
+    protected static final float ACCURACY_LIMIT = 30.0f; // accuracy limit in meter
+    protected final AltitudeProvider altitudeProvider;
+    protected final GeoidProvider geoidProvider;
+    protected final TrackLoggerService trackLoggerService;
 
-    LocationListener(MGMapApplication application){
-        locationManager = (LocationManager) application.getSystemService(Context.LOCATION_SERVICE);
+
+    AbstractLocationListener(MGMapApplication application, TrackLoggerService trackLoggerService){
+        this.trackLoggerService = trackLoggerService;
         altitudeProvider = application.getAltitudeProvider();
         geoidProvider = application.getGeoidProvider();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
+    protected void locationChanged(Location location) {
         if ((location.hasAccuracy()) && (location.getAccuracy() < ACCURACY_LIMIT)){
             double alt = location.hasAltitude()?location.getAltitude():0;
             float hgtAlt = altitudeProvider.getAltitude(location.getLatitude(), location.getLongitude());
             float geoidOffset = (alt==0)?0:geoidProvider.getGeoidOffset(location.getLatitude(), location.getLongitude());
             TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
                     location.getAccuracy(), alt, geoidOffset, hgtAlt);
-            onNewTrackLogPoint(lp);
+            trackLoggerService.onNewTrackLogPoint(lp);
         } else {
             Log.w(MGMapApplication.LABEL, NameUtil.context() + " location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());
         }
     }
 
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {}
 
-    @Override
-    public void onProviderEnabled(String s) {}
-
-    @Override
-    public void onProviderDisabled(String s) {}
-
-    void activate(int minMillis,int minDistance) throws SecurityException{
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" start locationListener");
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minMillis, minDistance, this);
+    protected void activate(int minMillis,int minDistance) throws SecurityException{
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" start locationListener ("+this.getClass().getSimpleName()+")");
     }
 
 
-    void deactivate(){
-        locationManager.removeUpdates(this);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" stop locationListener");
+    protected void deactivate(){
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" stop locationListener ("+this.getClass().getSimpleName()+")");
     }
-
-    /** will be overwritten */
-    protected abstract void onNewTrackLogPoint(TrackLogPoint lp);
 
 }
