@@ -48,14 +48,14 @@ public class MGTileStoreFiles extends MGTileStore {
     }
 
     @Override
-    public BgJob getLoaderJob(TileStoreLoader tileStoreLoader, Tile tile) {
+    public BgJob getLoaderJob(TileStoreLoader tileStoreLoader, Tile tile, boolean bOld) {
         return new MGTileStoreLoaderJobFile(tileStoreLoader, tile);
     }
 
     public BgJob getDropJob(TileStoreLoader tileStoreLoader, int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel){
-        return new BgJob(){
+        return new MGTileStoreLoaderJob(tileStoreLoader, null) {
             @Override
-            protected void doJob() throws Exception {
+            protected void doJobNow() throws Exception {
                 File zoomDir = new File(tileStoreLoader.storeDir,Byte.toString(zoomLevel));
                 for (int tileX = tileXMin+1; tileX< tileXMax; tileX++){
                     File xDir = new File(zoomDir,Integer.toString(tileX));

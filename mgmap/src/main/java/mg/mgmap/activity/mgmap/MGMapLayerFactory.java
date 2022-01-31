@@ -187,7 +187,7 @@ public class MGMapLayerFactory {
                             mapView.getModel().frameBufferModel.getOverdrawFactor()*1.5, 1.0f));
                     tileCache = new TwoLevelTileCache(memoryTileCache, tileStore);
                     activity.addTileCache(tileCache);
-
+                    tileStore.registerCache(tileCache);
 
                     TileStoreLayer tileStoreLayer = new MGTileStoreLayer(tileStore, tileCache,
                             mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE, true);

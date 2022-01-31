@@ -14,19 +14,25 @@
  */
 package mg.mgmap.activity.mgmap.features.tilestore;
 
+import android.util.Log;
+
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TileStore;
 import org.mapsforge.map.layer.queue.Job;
 
 import java.io.File;
 import java.io.FilenameFilter;
 
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.basic.NameUtil;
 
 public abstract class MGTileStore extends TileStore {
 
+    TileCache tileCache = null;
     protected int tileSize = 256;
     File storeDir;
 
@@ -49,6 +55,17 @@ public abstract class MGTileStore extends TileStore {
         }
     }
 
+
+    public void registerCache(TileCache tileCache){
+        this.tileCache = tileCache;
+    }
+    void purgeCache(){
+        if (tileCache != null){
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " purge TileStore cache" );
+            tileCache.purge();
+        }
+    }
+
     @Override
     public synchronized boolean containsKey(Job key) {
         return true;
@@ -68,7 +85,7 @@ public abstract class MGTileStore extends TileStore {
         return tileSize;
     }
 
-    public abstract BgJob getLoaderJob(TileStoreLoader tileStoreLoader, Tile tile);
+    public abstract BgJob getLoaderJob(TileStoreLoader tileStoreLoader, Tile tile, boolean bOld);
 
     public abstract BgJob getDropJob(TileStoreLoader tileStoreLoader, int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel);
 }

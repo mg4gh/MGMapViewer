@@ -45,13 +45,11 @@ public class MGTileStoreDB extends MGTileStore {
         }
     }
 
-    private SQLiteDatabase db;
-    private String dbName;
-    private GraphicFactory graphicFactory;
+    private final SQLiteDatabase db;
+    private final GraphicFactory graphicFactory;
 
     public MGTileStoreDB(File storeDir, String dbName, GraphicFactory graphicFactory){
         super(storeDir, null, graphicFactory);
-        this.dbName = dbName;
         this.graphicFactory = graphicFactory;
 
         db = SQLiteDatabase.openDatabase(storeDir.getAbsolutePath()+File.separator+dbName, null, SQLiteDatabase.OPEN_READWRITE);
@@ -114,15 +112,15 @@ public class MGTileStoreDB extends MGTileStore {
     }
 
     @Override
-    public BgJob getLoaderJob(TileStoreLoader tileStoreLoader, Tile tile) {
-        return new MGTileStoreLoaderJobDB(tileStoreLoader, tile);
+    public BgJob getLoaderJob(TileStoreLoader tileStoreLoader, Tile tile, boolean bOld) {
+        return new MGTileStoreLoaderJobDB(tileStoreLoader, tile, bOld);
     }
 
     @Override
     public BgJob getDropJob(TileStoreLoader tileStoreLoader, int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel) {
-        return new BgJob(){
+        return new MGTileStoreLoaderJob(tileStoreLoader, null) {
             @Override
-            protected void doJob() throws Exception {
+            protected void doJobNow()  {
                 dropTiles(tileXMin,tileXMax, tileYMin, tileYMax, zoomLevel);
             }
         };
@@ -163,14 +161,17 @@ public class MGTileStoreDB extends MGTileStore {
         }
     }
 
-    void saveTileBytes(Tile tile, byte[] tileData){
+    void saveTileBytes(Tile tile, byte[] tileData, boolean bOld){
         final int[] tmsTileXY = googleTile2TmsTile(tile.tileX, tile.tileY, tile.zoomLevel);
-        saveTileBytes(String.valueOf(tmsTileXY[0]), String.valueOf(tmsTileXY[1]), Byte.toString(tile.zoomLevel), tileData);
+        saveTileBytes(String.valueOf(tmsTileXY[0]), String.valueOf(tmsTileXY[1]), Byte.toString(tile.zoomLevel), tileData ,bOld);
     }
 
 
-    private synchronized void saveTileBytes(String x, String y, String z, byte[] bb){
+    private synchronized void saveTileBytes(String x, String y, String z, byte[] bb, boolean bOld){
         try {
+            if (bOld){
+                dropTile(x,y);
+            }
             ContentValues cv = new ContentValues();
             cv.put("zoom_level", z);
             cv.put("tile_column", x);
@@ -190,6 +191,16 @@ public class MGTileStoreDB extends MGTileStore {
         dropTiles(tmsTileXYMin[0],tmsTileXYMax[0],tmsTileXYMax[1],tmsTileXYMin[1]);
     }
 
+
+    private synchronized void dropTile(String tileX, String tileY){
+        try {
+            String sql = String.format(Locale.ENGLISH," ((%s == tile_column) AND (%s == tile_row));",tileX,tileY);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" SQL: "+sql);
+            db.delete("tiles", sql, null);
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+        }
+    }
 
     private synchronized void dropTiles(int tileXMin, int tileXMax, int tileYMin, int tileYMax){
         try {

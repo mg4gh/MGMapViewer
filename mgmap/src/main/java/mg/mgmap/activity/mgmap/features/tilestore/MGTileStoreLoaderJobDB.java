@@ -28,8 +28,11 @@ import mg.mgmap.generic.util.basic.NameUtil;
 
 public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
 
-    public MGTileStoreLoaderJobDB(TileStoreLoader tileStoreLoader, Tile tile){
+    boolean bOld;
+
+    public MGTileStoreLoaderJobDB(TileStoreLoader tileStoreLoader, Tile tile, boolean bOld){
         super(tileStoreLoader,tile);
+        this.bOld = bOld;
     }
 
     @Override
@@ -68,6 +71,6 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
         is.close();
         os.close();
 
-        mgTileStoreDB.saveTileBytes(tile, tileData);
+        mgTileStoreDB.saveTileBytes(tile, tileData, bOld);
     }
 }

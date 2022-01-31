@@ -170,8 +170,9 @@ public class TileStoreLoader {
             for (int tileX = tileXMin; tileX<= tileXMax; tileX++){
                 for (int tileY = tileYMin; tileY<= tileYMax; tileY++) {
                     Tile tile = new Tile(tileX, tileY, zoomLevel, tileSize);
-                    if (all || !mgTileStore.containsKey(new Job(tile, false))){
-                        jobs.add(  mgTileStore.getLoaderJob(this, tile) );
+                    boolean bOld = mgTileStore.containsKey(new Job(tile, false));
+                    if (all || !bOld){
+                        jobs.add(  mgTileStore.getLoaderJob(this, tile, bOld) );
                     }
                 }
             }
@@ -231,6 +232,7 @@ public class TileStoreLoader {
 
     void reportResult(){
         if (successCounter > 0){
+            mgTileStore.purgeCache();
             activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle(); //after TileDownloads this helps to make downloaded tiles visible
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
