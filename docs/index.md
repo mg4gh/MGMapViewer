@@ -44,8 +44,12 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Geocode](./Features/FurtherFeatures/Geocode/geocode.md): Search location by name and search entity by location
 - [Status line](Features/FurtherFeatures/Statusline/status.md): show some state information in the status line
 - [Quick controls](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of MGMapActivity: these quick controls allow to control most frequently used features
-- [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account
 - [Turning instructions](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output (currently only german) based on the route calculation
+
+### Synchronization features
+- [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account
+- [SshSync](Features/FurtherFeatures/SshSync/sshsync.md): synchronize your gpx files with a configured path on a ssh server in your local net.
+
 
 ### Developer features
 There [application design document](./more/add.pdf) provides an extensive description documentation. Additionally these pages are available:

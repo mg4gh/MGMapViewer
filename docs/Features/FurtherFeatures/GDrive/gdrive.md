@@ -1,6 +1,6 @@
 <small><small>[Back to Index](../../../index.md)</small></small>
 
-## Further Features: GDrive Synchronisation
+## Synchronization Features: GDrive Synchronization
 
 This feature allows the synchronisation of gpx TrackLogs with a folder on your Google Drive account.
 Currently this synchronisation has to be triggered manually.
