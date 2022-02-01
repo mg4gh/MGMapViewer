@@ -14,11 +14,12 @@ vary drastically.
 Nevertheless it is possible to use this feature basically in the same way independent on the geocode service 
 provider. So there is an internal API to support easy addition of further geocode service providers.
 
-Currently there are 4 different geocode providers implemented:
+Currently there the following geocode providers implemented:
 - [Nominatim](./nominatim.md): the geocode service of [OpenStreetMap](https://www.openstreetmap.de/) is called [Nominatim](https://nominatim.org/)
 - [Pelias](./pelias.md):  the routing engine [OpenRouteService](https://openrouteservice.org/) provides the geocode service [Pelias](https://github.com/pelias/pelias)
 - [Graphhopper](./graphhopper.md): the service of [graphhopper](https://www.graphhopper.com/) provides a routing engine and a geocode API too.
 - [POI](./poi.md): a geocode service via POI files from [openandromaps](https://www.openandromaps.org/)
+- [GeoLatLong](./geolatlong.md) provider to find paces by the explicit usage of the latitude and longitude values.
 
 For the first three providers you will need internet access! The fourth one works with a local poi database file.
 The abilities and the quality of the results is a wide range, up to now the graphhopper engine is my personal favorite provider.
@@ -33,6 +34,7 @@ So if you want to be able to use all of them, you need the files
                               /Nominatim.cfg
                               /Pelias.cfg
                               /POI.cfg
+                              /GeoLatLong.cfg
 ```
 
 ### General Usage

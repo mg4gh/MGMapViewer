@@ -61,7 +61,6 @@ public class GeoLatLong extends SearchProvider {
                     lat = DegreeUtil.degree2double(true, words[idx]);
                 }
             } catch (NumberFormatException e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                 try {
                     lat = Double.parseDouble(words[idx]);
                 } catch (NumberFormatException e1) { }
