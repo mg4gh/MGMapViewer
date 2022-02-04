@@ -15,7 +15,6 @@
 package mg.mgmap.activity.mgmap.features.search.provider;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -27,19 +26,24 @@ import mg.mgmap.activity.mgmap.features.search.SearchProvider;
 import mg.mgmap.activity.mgmap.features.search.SearchRequest;
 import mg.mgmap.activity.mgmap.features.search.SearchResult;
 import mg.mgmap.activity.mgmap.features.search.SearchView;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 public class GeoLatLong extends SearchProvider {
 
+    private boolean autoCenter = true;
+
     private SearchRequest searchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
-    private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     @Override
     protected void init(MGMapActivity activity, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences) {
         super.init(activity, fsSearch, searchView, preferences);
+        String sAutoCenter = getSearchConfig().getProperty("autoCenter");
+        if (sAutoCenter != null){
+            try {
+                autoCenter = Boolean.parseBoolean(sAutoCenter);
+            } catch (NumberFormatException e) { }
+        }
     }
 
     @Override
@@ -48,9 +52,13 @@ public class GeoLatLong extends SearchProvider {
         ArrayList<SearchResult> resList = new ArrayList<>();
 
         if (request.text.equals("")){ // reverse request
-            setResults(request, request.pos, resList);
+            if (request.actionId == 0){
+                setResults(request, request.pos, resList);
+                setSearchText(String.format(Locale.ENGLISH,"%f, %f", request.pos.getLat(), request.pos.getLon()));
+            }
         } else { // forward request
-            String[] words = request.text.split("[\\s,]");
+            String text = request.text.trim().replaceAll("([EWNS]) ","$1");
+            String[] words = text.split("[\\s,]+");
             int idx = 0;
             if (words[idx].length() == 0){
                 idx++;
@@ -62,7 +70,7 @@ public class GeoLatLong extends SearchProvider {
                 }
             } catch (NumberFormatException e) {
                 try {
-                    lat = Double.parseDouble(words[idx]);
+                    lat = DegreeUtil.doubleDegree2double(true, words[idx]);
                 } catch (NumberFormatException e1) { }
             }
             idx++;
@@ -72,27 +80,31 @@ public class GeoLatLong extends SearchProvider {
                 }
             } catch (NumberFormatException e) {
                 try {
-                    lon = Double.parseDouble(words[idx]);
+                    lon = DegreeUtil.doubleDegree2double(false, words[idx]);
                 } catch (NumberFormatException e1) { }
             }
             PointModel pm = new PointModelImpl(lat,lon);
             setResults(request, pm, resList);
         }
         publishResult(request, resList);
+        if (autoCenter && (!resList.isEmpty())){
+            fsSearch.setSearchResult(resList.get(0).pos);
+        }
     }
 
     private void setResults(SearchRequest request, PointModel pm, ArrayList<SearchResult> results){
-        String res = String.format(Locale.ENGLISH,"Lat=%2.6f, Long=%2.6f", pm.getLat(), pm.getLon());
-        results.add( new SearchResult(request, res, pm));
-        String res2 = String.format(Locale.ENGLISH,"Lat=%s, Long=%s", DegreeUtil.double2Degree(true, pm.getLat()), DegreeUtil.double2Degree(false, pm.getLon()));
+        String res1 = String.format(Locale.ENGLISH,"Lat=%2.6f, Long=%2.6f", pm.getLat(), pm.getLon());
+        results.add( new SearchResult(request, res1, pm));
+        String res2 = String.format(Locale.ENGLISH,"Lat=%s, Long=%s", DegreeUtil.double2Degree(true, pm.getLat(), true), DegreeUtil.double2Degree(false, pm.getLon(), true));
         results.add( new SearchResult(request, res2, pm));
+        String res3 = String.format(Locale.ENGLISH,"Lat=%s, Long=%s", DegreeUtil.double2Degree(true, pm.getLat(), false), DegreeUtil.double2Degree(false, pm.getLon(), false));
+        results.add( new SearchResult(request, res3, pm));
     }
 
 
     private void publishResult(SearchRequest request, ArrayList<SearchResult> results){
         if (request.timestamp > searchRequest.timestamp){
             searchRequest = request;
-            searchResults = results;
             searchView.setResList(results);
         }
     }

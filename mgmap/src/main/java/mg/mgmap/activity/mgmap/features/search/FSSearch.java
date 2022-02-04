@@ -34,6 +34,7 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.search.provider.Nominatim;
+import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.WriteablePointModel;
@@ -250,6 +251,10 @@ public class FSSearch extends FeatureService {
     }
 
     public void setSearchResult(PointModel pmSearchResult) {
+        if (activity.getMapDataStoreUtil().getMapDataStore(new BBox().extend(pmSearchResult)) == null){
+            Log.w(MGMapApplication.LABEL, NameUtil.context()+" outside of map: "+pmSearchResult);
+            return;
+        }
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmSearchResult);
         prefShowPos.setValue(pmSearchResult.getLaLo());
         if (prefShowSearchResult.getValue()){

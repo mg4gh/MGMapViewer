@@ -41,4 +41,8 @@ public abstract class SearchProvider {
         PersistenceManager persistenceManager = fsSearch.getApplication().getPersistenceManager();
         return  persistenceManager.getConfigProperties("search",this.getClass().getSimpleName()+".cfg");
     }
+
+    protected void setSearchText(String text){
+        searchView.searchText.setText(text);
+    }
 }
