@@ -26,16 +26,16 @@ Each statistic entry consists of three lines:
 #### Quick Controls of Statistic Activity
 
 <table style="font-size: x-small">
-<th width="10%" style="text-align:center; min-width:60px; max-width:60px"> </th>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/fullscreen.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/select_all.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/deselect_all.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/show.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/mtlr.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/share.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/save.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/delete.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:75px"><img src="../../../icons/back.svg" width="60px" height="60px"></td>
+<th width="6%" style="text-align:center; min-width:50px; max-width:50px"> </th>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/fullscreen.svg" width="60px" height="60px"></td>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/select_all.svg" width="60px" height="60px"></td>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/deselect_all.svg" width="60px" height="60px"></td>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/show.svg" width="60px" height="60px"></td>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/mtlr.svg" width="60px" height="60px"></td>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/share.svg" width="60px" height="60px"></td>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/save.svg" width="60px" height="60px"></td>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/delete.svg" width="60px" height="60px"></td>
+<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/back.svg" width="60px" height="60px"></td>
 
 
 <tr>
