@@ -27,43 +27,40 @@ Each statistic entry consists of three lines:
 
 <table style="font-size: x-small">
 <th width="6%" style="text-align:center; min-width:50px; max-width:50px"> </th>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/fullscreen.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/select_all.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/deselect_all.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/show.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/mtlr.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/share.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/save.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/delete.svg" width="60px" height="60px"></td>
-<td width="10%" style="text-align:center; min-width:70px"><img src="../../../icons/back.svg" width="60px" height="60px"></td>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/fullscreen.svg" width="60px" height="60px"></th>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/select_all.svg" width="60px" height="60px"></th>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/deselect_all.svg" width="60px" height="60px"></th>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/show.svg" width="60px" height="60px"></th>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/mtlr.svg" width="60px" height="60px"></th>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/share.svg" width="60px" height="60px"></th>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/save.svg" width="60px" height="60px"></th>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/delete.svg" width="60px" height="60px"></th>
+<th width="10%" style="text-align:center; min-width:64px; padding:2px"><img src="../../../icons/back.svg" width="60px" height="60px"></th>
 
 
 <tr>
-    <td>enabled condition</td>
-    <td>always</td>
-    <td>at least one entry is not selected</td>
-    <td>at least one entry is selected</td>
-    <td>at least one entry is selected</td>
-    <td>there is exactly one track selected and this is neither the MarkerTrackLog nor the RouteTrackLog</td>
-    <td>there is at least one track selected and all selected tracks are stored persistent</td>
-    <td>there is at least one modified (not yet saved) track in the selected set</td>
-    <td>there is at least one track selected and none of the RecordingTrackLog, MarkerTrackLog and
-RouteTrackLog is in the set of selected tracks</td>
-    <td>always</td>
+    <td style="text-align:center; min-width:50px; padding:2px">enabled condition</td>
+    <td style="text-align:center; min-width:64px; padding:2px">always</td>
+    <td style="text-align:center; min-width:64px; padding:2px">at least one entry is not selected</td>
+    <td style="text-align:center; min-width:64px; padding:2px">at least one entry is selected</td>
+    <td style="text-align:center; min-width:64px; padding:2px">at least one entry is selected</td>
+    <td style="text-align:center; min-width:64px; padding:2px">there is exactly one track selected and this is neither the MarkerTrackLog nor the RouteTrackLog</td>
+    <td style="text-align:center; min-width:64px; padding:2px">there is at least one track selected and all selected tracks are stored persistent</td>
+    <td style="text-align:center; min-width:64px; padding:2px">there is at least one modified (not yet saved) track in the selected set</td>
+    <td style="text-align:center; min-width:64px; padding:2px">there is at least one track selected and none of the RecordingTrackLog, MarkerTrackLog and RouteTrackLog is in the set of selected tracks</td>
+    <td style="text-align:center; min-width:64px; padding:2px">always</td>
 </tr>
 <tr>
-    <td>action on tap</td>
-    <td>toggle fullscreen mode</td>
-    <td>select all entries</td>
-    <td>deselect all entries</td>
-    <td>view selected tracks</td>
-    <td>open as marker track</td>
-    <td>share tracks (Always
-the persistent gpx will be shared. Not yet saved changes are not included!)</td>
-    <td>save tracks (Modified tracks
-are marked with a "*" at the end of the name. Unmodified tracks are untouched by this operation.)</td>
-    <td>delete tracks</td>
-    <td>back to main activity</td>
+    <td style="text-align:center; min-width:64px; padding:2px">action on tap</td>
+    <td style="text-align:center; min-width:64px; padding:2px">toggle fullscreen mode</td>
+    <td style="text-align:center; min-width:64px; padding:2px">select all entries</td>
+    <td style="text-align:center; min-width:64px; padding:2px">deselect all entries</td>
+    <td style="text-align:center; min-width:64px; padding:2px">view selected tracks</td>
+    <td style="text-align:center; min-width:64px; padding:2px">open as marker track</td>
+    <td style="text-align:center; min-width:64px; padding:2px">share tracks (Always the persistent gpx will be shared. Not yet saved changes are not included!)</td>
+    <td style="text-align:center; min-width:64px; padding:2px">save tracks (Modified tracks are marked with a "*" at the end of the name. Unmodified tracks are untouched by this operation.)</td>
+    <td style="text-align:center; min-width:64px; padding:2px">delete tracks</td>
+    <td style="text-align:center; min-width:64px; padding:2px">back to main activity</td>
 </tr>
 </table>
 
