@@ -14,10 +14,7 @@
  */
 package mg.mgmap.service.location;
 
-import android.content.Context;
 import android.location.Location;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 
 import mg.mgmap.application.MGMapApplication;
