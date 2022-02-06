@@ -262,6 +262,9 @@ public class PersistenceManager {
         File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
         return file.exists();
     }
+    public File getGpx(String filename) {
+        return getAbsoluteFile(trackGpxDir, filename, ".gpx");
+    }
     public PrintWriter openGpxOutput(String filename) {
         try {
             File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");

@@ -32,13 +32,15 @@ public class UploadJob extends BgJob {
     private final String idMgmFolder; // id of target folder on gdrive
     private final File gpxFolder; // local folder for gpx files
     private final String name; // filename to upload
+    private final String id; // google drive file id, if file is modified
 
-    UploadJob(Drive dservice, Zipper zip, String idMgmFolder, File gpxFolder, String name) {
+    UploadJob(Drive dservice, Zipper zip, String idMgmFolder, File gpxFolder, String name, String id) {
         this.dservice = dservice;
         this.zip = zip;
         this.idMgmFolder = idMgmFolder;
         this.gpxFolder = gpxFolder;
         this.name = name;
+        this.id = id;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class UploadJob extends BgJob {
         zipFile.setLastModified(gpxFile.getAbsoluteFile().lastModified());
         if (zipFile.exists()){
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" Upload: "+zipFile.getAbsolutePath());
-            GDriveUtil.createFile(dservice,idMgmFolder, zipFile);
+            GDriveUtil.createFile(dservice,idMgmFolder, zipFile, id);
             zipFile.delete();
         }
     }

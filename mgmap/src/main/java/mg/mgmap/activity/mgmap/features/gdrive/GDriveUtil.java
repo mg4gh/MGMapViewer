@@ -77,16 +77,17 @@ public class GDriveUtil {
     }
 
 
-    public static String createFile(Drive driveService, String parentId, java.io.File iFile){
+    public static String createFile(Drive driveService, String parentId, java.io.File iFile, String id){
         try {
 
+            if (id != null){ // first delete old file
+                driveService.files().delete(id).execute();
+            }
             File fileMetadata = new File();
             fileMetadata.setName(iFile.getName());
             fileMetadata.setParents(Collections.singletonList(parentId));
             Map<String, String> props = new HashMap<>();
             props.put("app","MGMapViewer");
-//            props.put("appVersion","0.1");
-//            props.put("date","16.06.2020");
             fileMetadata.setProperties(props);
             fileMetadata.setModifiedTime(new DateTime(iFile.lastModified()));
             FileContent content = new FileContent("application/zip", iFile);
@@ -180,7 +181,9 @@ public class GDriveUtil {
                         .setPageToken(pageToken)
                         .execute();
                 for (File file : result.getFiles()) {
-                    treeMap.put(file.getName().replaceFirst(namePart2skip, ""),file);
+                    if (file.getName().matches(nameRegex)){
+                        treeMap.put(file.getName().replaceFirst(namePart2skip, ""),file);
+                    }
                 }
                 pageToken = result.getNextPageToken();
             } while (pageToken != null);

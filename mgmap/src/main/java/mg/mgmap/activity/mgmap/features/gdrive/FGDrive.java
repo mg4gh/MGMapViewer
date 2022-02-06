@@ -29,6 +29,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
@@ -139,11 +140,15 @@ public class FGDrive {
             Set<String> commonSet = new TreeSet<>(localMap.keySet());
             commonSet.retainAll(remoteMap.keySet());
             for (String commonName : new TreeSet<>(commonSet)){
-                if (remoteMap.get(commonName).getModifiedTime() != null){
-
-                    if (localMap.get(commonName).lastModified() != remoteMap.get(commonName).getModifiedTime().getValue()){
-                        // names are common, bu not timestamp
-                        commonSet.remove(commonName);
+                com.google.api.services.drive.model.File remoteFile = remoteMap.get(commonName);
+                File localFile = localMap.get(commonName);
+                if ((remoteFile != null) && (localFile != null)){
+                    DateTime dt = remoteFile.getModifiedTime();
+                    if (dt != null){
+                        if (localFile.lastModified() != dt.getValue()){
+                            // names are common, bu not timestamp
+                            commonSet.remove(commonName);
+                        }
                     }
                 }
             }
@@ -157,18 +162,19 @@ public class FGDrive {
             if (upload){
                 for (String name : localMap.keySet()){
                     if (!commonSet.contains(name)) {
-                        jobs.add(new UploadJob(dservice, zip, idMgmFolder, gpxFolder, name));
+                        String id = (remoteMap.get(name)!=null)?remoteMap.get(name).getId():null;
+                        jobs.add(new UploadJob(dservice, zip, idMgmFolder, gpxFolder, name, id));
                     }
                 }
             } else {
                 for (String name : remoteMap.keySet()){
                     if (!commonSet.contains(name)){
-                        jobs.add( new DownloadJob(dservice,zip,remoteMap.get(name).getId(),gpxFolder,name) );
+                        DateTime datetime = (remoteMap.get(name)!=null)?remoteMap.get(name).getModifiedTime():null;
+                        jobs.add( new DownloadJob(application, dservice,zip,remoteMap.get(name).getId(),gpxFolder,name, datetime) );
                     }
                 }
             }
 
-//            int numDownloadJobs = jobs.size()-numUploadJobs;
             String title = "GDrive synchronisation service";
             String message = "GDrive Sync Overview: \ntracks in sync: "+commonSet.size()+(upload?(" \ntracks to upload: "+jobs.size()):(" \ntracks to download: "+jobs.size()));
             Log.i(MGMapApplication.LABEL, NameUtil.context()+message);
