@@ -149,7 +149,7 @@ public class GDriveUtil {
                 FileList result = driveService.files().list()
                         .setQ("mimeType != 'application/vnd.google-apps.folder' and trashed=false and '"+idParent+"' in parents")
                         .setSpaces("drive")
-                        .setFields("nextPageToken, files(id, name)")
+                        .setFields("nextPageToken, files(id, name, size, modifiedTime)")
                         .setPageToken(pageToken)
                         .execute();
                 for (File file : result.getFiles()) {
@@ -176,7 +176,7 @@ public class GDriveUtil {
                 FileList result = driveService.files().list()
                         .setQ("mimeType != 'application/vnd.google-apps.folder' and trashed=false and '"+idParent+"' in parents")
                         .setSpaces("drive")
-                        .setFields("nextPageToken, files(id, name)")
+                        .setFields("nextPageToken, files(id, name, size, modifiedTime)")
                         .setPageToken(pageToken)
                         .execute();
                 for (File file : result.getFiles()) {

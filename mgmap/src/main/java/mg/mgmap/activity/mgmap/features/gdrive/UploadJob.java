@@ -45,6 +45,7 @@ public class UploadJob extends BgJob {
     protected void doJob() throws Exception {
         File gpxFile = new File(gpxFolder, name);
         File zipFile = zip.pack(gpxFile.getAbsolutePath());
+        zipFile.setLastModified(gpxFile.getAbsoluteFile().lastModified());
         if (zipFile.exists()){
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" Upload: "+zipFile.getAbsolutePath());
             GDriveUtil.createFile(dservice,idMgmFolder, zipFile);
