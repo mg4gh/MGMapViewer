@@ -18,15 +18,18 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
 
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.Zipper;
+import mg.mgmap.generic.util.basic.NameUtil;
 
 public class OpenAndroMapsUtil {
 
@@ -37,7 +40,10 @@ public class OpenAndroMapsUtil {
             protected void doJob() throws Exception {
                 Zipper zipper = new Zipper(null);
                 String s1 = uri.toString();
-                String s2 = s1.replaceFirst("mf-v4-map://download.openandromaps.org/", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/");
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+"  s1="+s1);
+                String s2 = s1.replaceFirst("mf-v4-map", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http"));
+//                String s2 = s1.replaceFirst("mf-v4-map://download.openandromaps.org/", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/");
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+"  s2="+s2);
                 URL url = new URL(s2);
                 FilenameFilter filter = new FilenameFilter() {
                     @Override
