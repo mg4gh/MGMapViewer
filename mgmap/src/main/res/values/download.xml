@@ -29,12 +29,12 @@
     <string name="preferences_dl_maps_de_desc">Download map for germany</string>
 
     <string name="preferences_dl_theme_title">Download Theme</string>
-    <string name="preferences_dl_theme_desc">Go to the elevate 4 theme section and
+    <string name="preferences_dl_theme_desc">Go to the elevate theme section and
         select the following button: \"Standard Karten App\"
     </string>
     <string name="preferences_dl_theme_el_key">DldThemeElKey</string>
     <string name="preferences_dl_theme_el_title">Download Elevate Theme</string>
-    <string name="preferences_dl_theme_el_desc">Download Elevate 4 Theme</string>
+    <string name="preferences_dl_theme_el_desc">Download the latest Elevate Theme</string>
 
     <string name="preferences_dl_sw_title">Download Software</string>
     <string name="preferences_dl_sw_desc">Download new apk from https://github.com/mg4gh/MGMapViewer</string>
