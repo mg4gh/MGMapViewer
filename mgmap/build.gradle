@@ -202,4 +202,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-location:19.0.1'
 
+    implementation 'org.mapsforge:mapsforge-map-android:0.17.0'
+    implementation 'org.mapsforge:mapsforge-themes:0.17.0'
+    implementation 'org.mapsforge:sqlite-android:0.17.0'
+    implementation 'com.caverock:androidsvg:1.4'
 }
