@@ -15,14 +15,14 @@ afterEvaluate {
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
         main = "mg.mgmap.generic.util.SHA256"
-        args files("${buildDir}/outputs/apk/debug")
+        args files("${buildDir}/intermediates/apk/debug")
     }
     task generateReleaseSHA(type: JavaExec, dependsOn: assembleRelease) {
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
         main = "mg.mgmap.generic.util.SHA256"
-        args files("${buildDir}/outputs/apk/release")
+        args files("${buildDir}/intermediates/apk/release")
     }
 
 
@@ -44,10 +44,10 @@ afterEvaluate {
     task myclean {
         assembleRelease.dependsOn( myclean )
         assembleDebug.dependsOn( myclean )
-        delete "${buildDir}/outputs/apk"
+        delete "${buildDir}/intermediates/apk"
     }
     task copyReleaseApk(type: Copy, dependsOn: generateReleaseSHA) {
-        from("$buildDir/outputs/apk/release") {
+        from("$buildDir/intermediates/apk/release") {
             include '**/*.apk'
             include '**/*.apk.sha256'
             exclude '**/*unsigned.apk', '**/*unaligned.apk'
@@ -55,7 +55,7 @@ afterEvaluate {
         into '../apk/release'
     }
     task copyDebugApk(type: Copy, dependsOn: generateDebugSHA) {
-        from("$buildDir/outputs/apk/debug") {
+        from("$buildDir/intermediates/apk/debug") {
             include '**/*.apk'
             include '**/*.apk.sha256'
             exclude '**/*unsigned.apk', '**/*unaligned.apk'
@@ -63,14 +63,14 @@ afterEvaluate {
         into '../apk/debug'
     }
     task zipReleaseApk(type: Zip, dependsOn: copyReleaseApk ){
-        from("$buildDir/outputs/apk/release") {
+        from("$buildDir/intermediates/apk/release") {
             exclude '**/*unsigned.apk', '**/*unaligned.apk'
         }
         archiveName( "apk.zip" )
         destinationDirectory = file( "../apk/release")
     }
     task zipDebugApk(type: Zip, dependsOn: copyDebugApk ){
-        from("$buildDir/outputs/apk/debug") {
+        from("$buildDir/intermediates/apk/debug") {
             exclude '**/*unsigned.apk', '**/*unaligned.apk'
         }
         archiveName( "apk.zip" )
