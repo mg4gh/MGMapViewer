@@ -69,10 +69,9 @@ public class OpenAndroMapsUtil {
                 super.doJob();
                 Zipper zipper = new Zipper(null);
                 String s1 = uri.toString();
-                String s2 = s1.replaceFirst("mf-theme", "https");
-//                  URL url = new URL(s2);  //unfortunately this doesn't work
-//                URL url = new URL(((Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)?"https":"http")+"://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
-                URL url = new URL("https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
+                String s2 = s1.replaceFirst("mf-theme", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http"));
+                URL url = new URL(s2);
+//                URL url = new URL("https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
                 zipper.unpack(url, persistenceManager.getThemesDir(), null, this);
             }
         };

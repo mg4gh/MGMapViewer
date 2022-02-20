@@ -34,9 +34,16 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.basic.NameUtil;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class Zipper
 {
@@ -81,13 +88,27 @@ public class Zipper
 
     public void unpack(URL url, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" extract url="+url+" extractedZipFilePath="+extractedZipFilePath);
-        URLConnection connection = url.openConnection();
-        connection.connect();
-        bgJob.setMax((int)(connection.getContentLengthLong()/1000));
-        bgJob.setText("Download "+ url.toString().replaceFirst(".*/",""));
-        bgJob.setProgress(0);
-        InputStream inputStream = url.openStream();
-        unpack(inputStream, extractedZipFilePath, filter, bgJob);
+
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .hostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                })
+                .build();
+        Request request = new Request.Builder().url(url).build();
+        Response response = client.newCall(request).execute();
+        ResponseBody responseBody = response.body();
+        if (responseBody == null) {
+            Log.w (MGMapApplication.LABEL, NameUtil.context()+" empty response body for download!");
+        } else {
+            bgJob.setMax((int)(responseBody.contentLength()/1000));
+            bgJob.setText("Download "+ url.toString().replaceFirst(".*/",""));
+            bgJob.setProgress(0);
+            InputStream inputStream = responseBody.byteStream();
+            unpack(inputStream, extractedZipFilePath, filter, bgJob);
+        }
     }
 
     public void unpack(InputStream inputStream, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
@@ -112,22 +133,22 @@ public class Zipper
             try {
                 File extractedFile = new File(extractedZipFilePath, localFileHeader.getFileName());
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile);
-                if ((filter==null) || ( filter.accept( extractedFile.getParentFile(), extractedFile.getName() ))){
 
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile);
-                    if (localFileHeader.isDirectory()){
-                        boolean res = extractedFile.mkdirs();
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile+" dir created "+res);
-                    } else {
+                if (localFileHeader.isDirectory()){
+                    boolean res = extractedFile.mkdirs();
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile+" dir created "+res);
+                } else {
+                    if ((filter==null) || ( filter.accept( extractedFile.getParentFile(), extractedFile.getName() ))) {
                         outputStream = new FileOutputStream(extractedFile);
-                        while ((readLen = zipInputStream.read(readBuffer)) != -1) {
+                    }
+                    while ((readLen = zipInputStream.read(readBuffer)) != -1) {
+                        if (outputStream != null){
                             outputStream.write(readBuffer, 0, readLen);
-                            fileRead += readLen;
-                            if (bgJob != null){
-                                long value = totalLength-fileLengthC+ (long)(fileRead*compressionFactor);
-                                bgJob.setProgress((int)(value/1000));
-//                                bgJob.notifyUser();
-                            }
+                        }
+                        fileRead += readLen;
+                        if (bgJob != null){
+                            long value = totalLength-fileLengthC+ (long)(fileRead*compressionFactor);
+                            bgJob.setProgress((int)(value/1000));
                         }
                     }
                 }
