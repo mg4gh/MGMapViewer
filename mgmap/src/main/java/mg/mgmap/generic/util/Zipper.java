@@ -32,13 +32,8 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.basic.NameUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -47,7 +42,7 @@ import okhttp3.ResponseBody;
 
 public class Zipper
 {
-    private String password;
+    private final String password;
     private static final String EXTENSION = "zip";
 
     public Zipper(String password)
@@ -90,12 +85,7 @@ public class Zipper
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" extract url="+url+" extractedZipFilePath="+extractedZipFilePath);
 
         OkHttpClient client = new OkHttpClient().newBuilder()
-                .hostnameVerifier(new HostnameVerifier() {
-                    @Override
-                    public boolean verify(String hostname, SSLSession session) {
-                        return true;
-                    }
-                })
+                .hostnameVerifier((hostname, session) -> true)
                 .build();
         Request request = new Request.Builder().url(url).build();
         Response response = client.newCall(request).execute();

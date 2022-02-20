@@ -14,13 +14,11 @@
  */
 package mg.mgmap.activity.mgmap.util;
 
-import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
-import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,8 +31,8 @@ import mg.mgmap.generic.util.basic.NameUtil;
 
 public class OpenAndroMapsUtil {
 
-    public static ArrayList<BgJob> createBgJobsFromIntentUriMap(PersistenceManager persistenceManager, Uri uri) throws Exception {
-        ArrayList<BgJob> jobs = new ArrayList();
+    public static ArrayList<BgJob> createBgJobsFromIntentUriMap(PersistenceManager persistenceManager, Uri uri)  {
+        ArrayList<BgJob> jobs = new ArrayList<>();
         BgJob job = new BgJob(){
             @Override
             protected void doJob() throws Exception {
@@ -45,14 +43,7 @@ public class OpenAndroMapsUtil {
 //                String s2 = s1.replaceFirst("mf-v4-map://download.openandromaps.org/", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/");
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+"  s2="+s2);
                 URL url = new URL(s2);
-                FilenameFilter filter = new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        if (name.endsWith("map")) return true;
-                        if (name.endsWith("poi")) return true;
-                        return false;
-                    }
-                };
+                FilenameFilter filter = (dir, name) -> (name.endsWith("map") || name.endsWith("poi"));
                 zipper.unpack(url, persistenceManager.getMapsforgeDir(), filter, this);
 
             }
@@ -61,8 +52,8 @@ public class OpenAndroMapsUtil {
         return jobs;
     }
 
-    public static ArrayList<BgJob> createBgJobsFromIntentUriTheme(PersistenceManager persistenceManager, Uri uri) throws Exception {
-        ArrayList<BgJob> jobs = new ArrayList();
+    public static ArrayList<BgJob> createBgJobsFromIntentUriTheme(PersistenceManager persistenceManager, Uri uri)  {
+        ArrayList<BgJob> jobs = new ArrayList<>();
         BgJob job = new BgJob() {
             @Override
             protected void doJob() throws Exception {
@@ -80,7 +71,7 @@ public class OpenAndroMapsUtil {
     }
 
     public static ArrayList<BgJob> createBgJobsFromAssetTheme(PersistenceManager persistenceManager, AssetManager assetManager) {
-        ArrayList<BgJob> jobs = new ArrayList();
+        ArrayList<BgJob> jobs = new ArrayList<>();
         BgJob job = new BgJob() {
             @Override
             protected void doJob() throws Exception {
