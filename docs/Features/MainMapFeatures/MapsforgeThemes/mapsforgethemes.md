@@ -11,7 +11,7 @@ put it into the ./MGMapViewer/themes/ directory (see also [file system structure
    
 The easier way is to open via <img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/download.svg" width="24"/> and
    <span style="color:gray">*Download Elevate Theme*</span>
-   the theme download webpage of openandromaps. Scroll to the Elevate 4 section and select the entry
+   the theme download webpage of openandromaps. Scroll to the Elevate 5 section and select the entry
    <span style="color:gray">*Standard Karten App*</span> entry.
 
    <img src="./download3.png" width="200" />&nbsp;
