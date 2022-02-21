@@ -24,7 +24,7 @@ except the menu quick controls and the status line with very few information.
 
    If you want to download e.g. the map of Berlin, then press the "+" button in front
    of "Berlin", now select the  <span style="color:gray">*Install others*</span> entry with the prefix
-   <span style="color:gray">*Android mf-V4-map*</span>. This will trigger the download process. If the download
+   <span style="color:gray">*Android mf-V5-map*</span>. This will trigger the download process. If the download
    takes some time, the progress can be observed via the corresponding notifications.
    
    <img src="./download1.png" width="200" />&nbsp;
