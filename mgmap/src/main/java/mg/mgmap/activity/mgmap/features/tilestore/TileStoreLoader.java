@@ -91,16 +91,7 @@ public class TileStoreLoader {
                     }
                 }
             }
-            File cookiesRef = new File(storeDir, "cookies.ref");
             File cookies = new File(storeDir, "cookies.json");
-            if (cookiesRef.exists()){
-                activity.requestReadPermissions(); // check (and request if necessary the permissions)
-
-                BufferedReader in = new BufferedReader(new FileReader(cookiesRef));
-                String line = in.readLine();
-                cookies = new File(line);
-            }
-
             if (cookies.exists()) {
                 Map<String, String> cookieMap = new HashMap<>();
 

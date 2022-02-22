@@ -160,15 +160,6 @@ public class MGMapLayerFactory {
                             mapView.getModel().frameBufferModel.getOverdrawFactor() *1.5, false);
                     activity.addTileCache(tileCache);
 
-                    if (entry.endsWith(".ref")){
-                        if (activity.requestReadPermissions()){
-                            mapLayers.put(key, null);
-                        }
-
-                        BufferedReader in = new BufferedReader(new FileReader(entryFile));
-                        String line = in.readLine();
-                        entryFile = new File(line);
-                    }
                     MapDataStore mapFile = new MapFile(entryFile, language);
                     TileRendererLayer tileRendererLayer = new TileRendererLayer(
                             tileCache,  mapFile,
