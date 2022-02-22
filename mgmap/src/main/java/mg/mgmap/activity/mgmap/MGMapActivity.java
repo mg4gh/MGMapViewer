@@ -478,38 +478,37 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
 
 
-
-    private static final int READ_EXTERNAL_STORAGE_CODE = 991; // just an id to identify the callback
     private static final int ACCESS_FINE_LOCATION_CODE = 995; // just an id to identify the callback
+    private static final int ACCESS_BACKGROUND_LOCATION = 997; // just an id to identify the callback
     /** trigger TrackLoggerService, request permission on demand. */
     public void triggerTrackLoggerService(){
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+"  ");
         if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
-            Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, ACCESS_FINE_LOCATION_CODE);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+"  ");
+            if (Build.VERSION.SDK_INT < 28){
+                Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_CODE);
+            } else {
+                Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, ACCESS_FINE_LOCATION_CODE);
+            }
+
         } else {
             application.startTrackLoggerService();
         }
     }
 
-    public boolean requestReadPermissions(){
-        if (!Permissions.check(this, Manifest.permission.READ_EXTERNAL_STORAGE) ) {
-            Permissions.request(this, Manifest.permission.READ_EXTERNAL_STORAGE , READ_EXTERNAL_STORAGE_CODE);
-            return true;
-        }
-        return false;
-    }
-
-
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ACCESS_FINE_LOCATION_CODE ){
             if (Permissions.check(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION} )){ //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
-                triggerTrackLoggerService();
+                if (Build.VERSION.SDK_INT < 29){
+                    triggerTrackLoggerService();
+                } else {
+                    Permissions.request(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION }, ACCESS_BACKGROUND_LOCATION);
+                }
             }
         }
-        if (requestCode == READ_EXTERNAL_STORAGE_CODE ){
-            if (Permissions.check(this, Manifest.permission.READ_EXTERNAL_STORAGE) ){ //ok, got the read permission -> restart
-                Log.w(MGMapApplication.LABEL, NameUtil.context()+ " Restart NOW");
-                // restart activity
-                new Handler().postDelayed(MGMapActivity.this::recreate,200);
+        if (requestCode == ACCESS_BACKGROUND_LOCATION ){
+            if (Permissions.check(this, new String[]{ Manifest.permission.ACCESS_BACKGROUND_LOCATION} )){ //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
+                triggerTrackLoggerService();
             }
         }
     }
