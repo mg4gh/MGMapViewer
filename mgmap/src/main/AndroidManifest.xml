@@ -29,7 +29,8 @@
         <activity
             android:name="mg.mgmap.activity.mgmap.MGMapActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

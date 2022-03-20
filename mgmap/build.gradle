@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
-def versionMajor = "0.9.5"
-def versionSuffix = "final"
+def versionMajor = "0.9.6"
+def versionSuffix = "pre"
 
-def getDate() {
+static def getDate() {
     return new Date().format('yyyyMMdd_HHmmss')
 }
 
@@ -14,14 +14,14 @@ afterEvaluate {
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
-        main = "mg.mgmap.generic.util.SHA256"
+        mainClass = "mg.mgmap.generic.util.SHA256"
         args files("${buildDir}/intermediates/apk/debug")
     }
     task generateReleaseSHA(type: JavaExec, dependsOn: assembleRelease) {
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
-        main = "mg.mgmap.generic.util.SHA256"
+        mainClass = "mg.mgmap.generic.util.SHA256"
         args files("${buildDir}/intermediates/apk/release")
     }
 
@@ -89,9 +89,9 @@ afterEvaluate {
     }
 
     task _mgmapDebugApk (dependsOn: generateDebugSHA){
-        File ftpDir = new File("C:/data/dev/Java/FTP");
+        File ftpDir = new File("C:/data/dev/Java/FTP")
         if (ftpDir.exists()){
-            dependsOn(startFTP2);
+            dependsOn(startFTP2)
         }
         doLast {
             System.out.println( "_mgmapDebugApk finished" )
@@ -102,11 +102,11 @@ afterEvaluate {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "mg.mgmap"
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "${versionMajor}-${versionSuffix}-${getDate()}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -151,9 +151,9 @@ android {
         release {
             keyAlias 'mgm'
             storeFile file('../mgm.jks')
-            File propsFile = file('../secure.properties');
+            File propsFile = file('../secure.properties')
             if (propsFile.exists()) {
-                Properties props = new Properties();
+                Properties props = new Properties()
                 props.load(new FileInputStream(propsFile))
                 storePassword props.getProperty('storePassword')
                 keyPassword props.getProperty('keyPassword')
@@ -176,26 +176,24 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.preference:preference:1.2.0'
     api 'net.sf.kxml:kxml2:2.3.0'
 
-    implementation 'com.android.support:preference-v7:30.0.0'
+    implementation 'com.android.support:preference-v7:31.0.0'
     implementation files('libs/commons-net-3.8.0.jar')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation files('libs/javax.json-1.1.2.jar')
     implementation files('libs/javax.json-api-1.1.2.jar')
 
     implementation 'com.google.api-client:google-api-client:1.30.9'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.27.0'
-//    implementation 'com.google.apis:google-api-services-driveactivity:v2-rev20190423-1.27.0'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20200413-1.30.9'
 
     implementation 'net.lingala.zip4j:zip4j:2.6.1'
-//    implementation 'net.lingala.zip4j:zip4j:1.3.2'
-    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
 
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation 'com.jcraft:jsch:0.1.55'
