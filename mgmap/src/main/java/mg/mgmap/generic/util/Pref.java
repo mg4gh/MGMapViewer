@@ -105,12 +105,13 @@ public class Pref<T> extends Observable implements View.OnClickListener, View.On
         if (t == null){
             throw new RuntimeException("null not allowed");
         }
-        if (! value.equals(t)){
-            value = t;
-            onChange();
-        }
         if (changeSharedPrefs){
             setSharedPreference(t);
+        } else {
+            if (! value.equals(t)){
+                value = t;
+                onChange();
+            }
         }
     }
 

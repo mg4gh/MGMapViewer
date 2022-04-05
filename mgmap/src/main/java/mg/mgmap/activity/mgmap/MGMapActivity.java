@@ -497,17 +497,18 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == ACCESS_FINE_LOCATION_CODE ){
-            if (Permissions.check(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION} )){ //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
-                if (Build.VERSION.SDK_INT < 29){
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == ACCESS_FINE_LOCATION_CODE) {
+            if (Permissions.check(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION})) { //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
+                if (Build.VERSION.SDK_INT < 29) {
                     triggerTrackLoggerService();
                 } else {
-                    Permissions.request(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION }, ACCESS_BACKGROUND_LOCATION);
+                    Permissions.request(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, ACCESS_BACKGROUND_LOCATION);
                 }
             }
         }
-        if (requestCode == ACCESS_BACKGROUND_LOCATION ){
-            if (Permissions.check(this, new String[]{ Manifest.permission.ACCESS_BACKGROUND_LOCATION} )){ //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
+        if (requestCode == ACCESS_BACKGROUND_LOCATION) {
+            if (Permissions.check(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION})) { //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
                 triggerTrackLoggerService();
             }
         }

@@ -19,12 +19,16 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import android.util.Log;
 
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
+import mg.mgmap.activity.mgmap.features.rtl.GpsSupervisorWorker;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.service.bgjob.BgJobService;
@@ -371,6 +375,14 @@ public class MGMapApplication extends Application {
             this.startForegroundService(intent);
         } else {
             this.startService(intent);
+        }
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + "prefGps="+prefGps.getValue());
+        if (prefGps.getValue()){
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + "trigger doWork!!!!");
+            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(GpsSupervisorWorker.class)
+                    .setInitialDelay(60, TimeUnit.SECONDS).build();
+            String uniqueWokName = getApplicationContext().getString(R.string.unique_work_name);
+            WorkManager.getInstance().enqueueUniqueWork(uniqueWokName, ExistingWorkPolicy.REPLACE, oneTimeWorkRequest);
         }
     }
 

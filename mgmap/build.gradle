@@ -204,4 +204,6 @@ dependencies {
     implementation 'org.mapsforge:mapsforge-themes:0.17.0'
     implementation 'org.mapsforge:sqlite-android:0.17.0'
     implementation 'com.caverock:androidsvg:1.4'
+
+    implementation "android.arch.work:work-runtime:1.0.1"
 }

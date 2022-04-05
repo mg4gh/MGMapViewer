@@ -103,4 +103,6 @@
 
     <string name="preferences_ssh_uploadGpxTrigger">Ssh.uploadGpxTrigger</string>
 
+    <string name="unique_work_name">MGMapViewerApp.UniqueWorkName</string>
+
 </resources>
