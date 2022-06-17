@@ -57,7 +57,7 @@ public class TrackLoggerService extends Service {
 
     public static void setPressureAlt(TrackLogPoint lp){
         if (lp.getPressure() != PointModel.NO_PRES){
-            lp.setPressureAlt( Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure())  ) );
+            lp.setPressureAlt( Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure()) * 10 ) / 10.0f);
         }
     }
 
@@ -84,7 +84,7 @@ public class TrackLoggerService extends Service {
                     .setSmallIcon(R.drawable.mg2)
                     .setContentTitle("MGMapViewer")
                     .setContentText("Location Listener is running.")
-                    .setContentIntent(    PendingIntent.getActivity(this.getApplicationContext(), 0, intent , PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setContentIntent(    PendingIntent.getActivity(this.getApplicationContext(), 0, intent , PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                     .setSound(null)
                     .build();
         }
@@ -130,7 +130,7 @@ public class TrackLoggerService extends Service {
     protected void deactivateService(){
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                stopForeground(true);
+                stopForeground(STOP_FOREGROUND_REMOVE);
             }
             locationListener.deactivate();
             barometerListener.deactivate();

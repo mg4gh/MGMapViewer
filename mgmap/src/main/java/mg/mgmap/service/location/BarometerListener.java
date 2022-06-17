@@ -21,6 +21,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.util.Log;
+import android.util.LongSparseArray;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
@@ -38,19 +39,15 @@ import mg.mgmap.generic.util.basic.NameUtil;
 class BarometerListener implements SensorEventListener {
 
 
-    private SensorManager sensorManager;
-    private Sensor pressureSensor;
-
-    private static final String TAG = NameUtil.getTag();
+    private final SensorManager sensorManager;
+    private final Sensor pressureSensor;
 
     private int cnt=0;
     private float lastPressure = PointModel.NO_PRES;
 
-    private int speed;
+    private final int speed;
+    private final LongSparseArray<Float> pValues = new LongSparseArray<>();
 
-    float getPressure(){
-        return lastPressure;
-    }
 
 
     BarometerListener(MGMapApplication application, final int speed){
@@ -75,31 +72,98 @@ class BarometerListener implements SensorEventListener {
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " HighestDirectReportRateLevel="+pressureSensor.getHighestDirectReportRateLevel());
             }
         } else {
-            Log.e(TAG, "BarometerListener: "+"pressureSensor not found");
+            Log.e(MGMapApplication.LABEL, NameUtil.context()+"BarometerListener: "+"pressureSensor not found");
         }
     }
 
      @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         cnt++;
-        lastPressure = sensorEvent.values[0];
+        float pressure = sensorEvent.values[0];
+        long now = System.currentTimeMillis();
+        synchronized (pValues){
+            if (pValues.get(now) == null){
+                pValues.append(now, pressure);
+
+                while (true){
+                    long oldestKey = pValues.keyAt(0);
+                    if ((now - oldestKey) > 10000){ // keep pressure values for at most 10s
+                        pValues.delete(oldestKey);
+                    } else {
+                        break;
+                    }
+                }
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+pressure+" "+pValues.size());
+            }
+        }
     }
+
+    float getPressure(){
+        synchronized (pValues){
+            if (pValues.size() > 0){
+                float total = 0;
+                double maxAbsDiff = 0;
+                double totalAbsDiff = 0;
+
+                long tmax = pValues.keyAt(pValues.size()-1);
+                long tmin = 0;
+                for (int idx=pValues.size()-1; idx > 0; idx--){ // iterate backwards over the last pressure values
+                    float pidx = pValues.valueAt(idx);
+                    float plidx = pValues.valueAt(idx-1);
+                    long tidx = pValues.keyAt(idx);
+                    long tlidx = pValues.keyAt(idx-1);
+                    total += pidx;
+                    double tFactor = 1000.0 / (tidx - tlidx);
+                    double pAbsDiff = Math.abs(plidx - pidx) * tFactor; // pressure diff per second
+                    maxAbsDiff = Math.max(maxAbsDiff, pAbsDiff);
+                    totalAbsDiff += pAbsDiff;
+
+                    int cnt = pValues.size() - idx;
+
+                    if ((tmax-tlidx > 500) && (tmax-tidx <= 500) && (cnt > 10)){
+                        if ((maxAbsDiff < 5.0) && ( totalAbsDiff/cnt < 2)){  // if pressure measurements of the last 500ms has low variance, then just take the average
+                            lastPressure = total / cnt;
+                            tmin = tlidx;
+                            break;
+                        }
+                    }
+                    if ((tmax-tlidx > 2000) && (tmax-tidx <= 2000)){
+                        if ((maxAbsDiff < 10.0) && ( totalAbsDiff/cnt < 5)){ // if pressure measurements of the last 2000ms has rather low variance, then take that average
+                            lastPressure = total / cnt;
+                            tmin = tlidx;
+                            break;
+                        }
+                    }
+                    if (idx == 1){ // else take the average of all (at most 10s) pressure data
+                        lastPressure = total / cnt;
+                    }
+                }
+                while (pValues.keyAt(0) < tmin){
+                    pValues.delete(pValues.keyAt(0));
+                }
+            }
+        }
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+lastPressure+" "+pValues.size());
+        return lastPressure;
+    }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-        Log.v(TAG, "onAccuracyChanged: "+sensor.getName()+" "+i+" accChg");
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+ "onAccuracyChanged: "+sensor.getName()+" "+i+" accChg");
     }
 
     void activate(){
         if (pressureSensor != null){
-            Log.i(TAG, "activate: "+"start sensorEventListener");
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+"activate: "+"start sensorEventListener");
             sensorManager.registerListener(this, pressureSensor, speed );
         }
     }
     void deactivate(){
         if (pressureSensor != null){
             sensorManager.unregisterListener(this);
-            Log.i(TAG, "deactivate: "+"stop sensorEventListener");
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+"deactivate: "+"stop sensorEventListener");
+            pValues.clear();
         }
     }
 

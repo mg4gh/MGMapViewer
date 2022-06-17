@@ -123,7 +123,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     /** Reference to the MapViewUtility - provides so services around the MapView object */
     MapViewUtility mapViewUtility = null;
 
-//    private final MGPref<Boolean> prefGps = MGPref.get(R.string.FSPosition_prev_GpsOn, false);
     private PrefCache prefCache;
 
     private MapDataStoreUtil mapDataStoreUtil = null;
@@ -210,8 +209,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         }
         coView.init(application, this);
         onNewIntent(getIntent());
-        prefCache.get(R.string.FSPosition_pref_GpsOn, false).addObserver((o, arg) -> triggerTrackLoggerService());
-        prefCache.get(R.string.MGMapApplication_pref_Restart, true).setValue(false);
+        // use prefGps and prefRestart from applications prefCache to prevent race conditions during startup phase
+        application.prefGps.addObserver((o, arg) -> triggerTrackLoggerService());
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+" prefGps="+application.prefGps.getValue()+" prefRestart="+application.prefRestart.getValue() );
+        if (application.prefGps.getValue() && application.prefRestart.getValue()){
+            triggerTrackLoggerService(); // restart track logger service after app restart while track recording is on
+        }
+        application.prefRestart.setValue(false);
         prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).addObserver((o, arg) -> new SshSyncUtil().trySynchronisation(application));
         prefCache.dumpPrefs();
     }
@@ -492,7 +496,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
 
         } else {
-            application.startTrackLoggerService();
+            application.startTrackLoggerService(this);
         }
     }
 

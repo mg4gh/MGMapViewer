@@ -144,7 +144,7 @@ public class BgJobService extends Service {
             if (active && (application.numBgJobs() == 0) && (numWorkers.get() == 0)){
                 active = false;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    stopForeground(true);
+                    stopForeground(STOP_FOREGROUND_REMOVE);
                 }
                 timer.removeCallbacks(ttNotify);
             }

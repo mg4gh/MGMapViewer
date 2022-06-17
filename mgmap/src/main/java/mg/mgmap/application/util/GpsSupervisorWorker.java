@@ -1,4 +1,4 @@
-package mg.mgmap.activity.mgmap.features.rtl;
+package mg.mgmap.application.util;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,18 +11,17 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class GpsSupervisorWorker extends Worker {
-
     public GpsSupervisorWorker(Context context, WorkerParameters workerParams) {
         super(context, workerParams);
     }
-
     @NonNull
     @Override
     public Result doWork() {
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" doWork!!!!");
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" GpsSupervisorWorker is running.");
         MGMapApplication application = (MGMapApplication) getApplicationContext();
 
-        application.startTrackLoggerService();
+        application.triggerGpsSupervisionWorker();
+        application.checkGpsStatus();
         return Result.success();
     }
 }

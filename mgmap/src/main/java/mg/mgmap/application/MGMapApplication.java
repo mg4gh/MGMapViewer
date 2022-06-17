@@ -15,6 +15,7 @@
 package mg.mgmap.application;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
@@ -28,8 +29,9 @@ import android.util.Log;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
-import mg.mgmap.activity.mgmap.features.rtl.GpsSupervisorWorker;
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
+import mg.mgmap.application.util.GpsSupervisorWorker;
 import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.R;
@@ -95,8 +97,8 @@ public class MGMapApplication extends Application {
     private final ArrayList<BgJob> activeBgJobs = new ArrayList<>();
 
     PrefCache prefCache = null;
-    Pref<Boolean> prefAppRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
-    Pref<Boolean> prefGps = null;
+    public Pref<Boolean> prefRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
+    public Pref<Boolean> prefGps = null;
 
     public void startLogging(File logDir){
         try {
@@ -131,9 +133,9 @@ public class MGMapApplication extends Application {
         testControl = new TestControl(this, prefCache);
         notificationUtil = new NotificationUtil(this);
 
-        prefAppRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
+        prefRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
         prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
-        prefAppRestart.setValue(true);
+        prefRestart.setValue(true);
         prefGps.setValue(false);
 
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
@@ -156,7 +158,6 @@ public class MGMapApplication extends Application {
                     rtl.setRecordRaw(true); // from now on record new entries in the tracklog
                     if (rtl.isSegmentRecording()){
                         prefGps.setValue(true);
-                        startTrackLoggerService();
 
                         PointModel lastTlp = rtl.getCurrentSegment().getLastPoint();
                         if (lastTlp != null){
@@ -369,20 +370,32 @@ public class MGMapApplication extends Application {
         }
     }
 
-    public void startTrackLoggerService(){
-        Intent intent = new Intent(this, TrackLoggerService.class);
+    public void startTrackLoggerService(Context context){
+        Intent intent = new Intent(context, TrackLoggerService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.startForegroundService(intent);
         } else {
             this.startService(intent);
         }
         Log.i(MGMapApplication.LABEL, NameUtil.context() + "prefGps="+prefGps.getValue());
+        triggerGpsSupervisionWorker();
+    }
+
+
+    public void triggerGpsSupervisionWorker(){
         if (prefGps.getValue()){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + "trigger doWork!!!!");
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + "trigger OneTimeWorkRequest in 300s for GpsSupervisorWorker!");
             OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(GpsSupervisorWorker.class)
-                    .setInitialDelay(60, TimeUnit.SECONDS).build();
+                    .setInitialDelay(300, TimeUnit.SECONDS).build();
             String uniqueWokName = getApplicationContext().getString(R.string.unique_work_name);
-            WorkManager.getInstance().enqueueUniqueWork(uniqueWokName, ExistingWorkPolicy.REPLACE, oneTimeWorkRequest);
+            WorkManager.getInstance(this).enqueueUniqueWork(uniqueWokName, ExistingWorkPolicy.REPLACE, oneTimeWorkRequest);
+        }
+    }
+
+    public void checkGpsStatus(){
+        if (prefGps.getValue() && prefRestart.getValue()){ // if GPS is on ans restart flag is still set
+            Intent intent = new Intent(this, MGMapActivity.class);
+            this.startActivity(intent);
         }
     }
 

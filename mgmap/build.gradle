@@ -15,14 +15,14 @@ afterEvaluate {
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
         mainClass = "mg.mgmap.generic.util.SHA256"
-        args files("${buildDir}/intermediates/apk/debug")
+        args files("${buildDir}/outputs/apk/debug")
     }
     task generateReleaseSHA(type: JavaExec, dependsOn: assembleRelease) {
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
         mainClass = "mg.mgmap.generic.util.SHA256"
-        args files("${buildDir}/intermediates/apk/release")
+        args files("${buildDir}/outputs/apk/release")
     }
 
 
@@ -44,10 +44,10 @@ afterEvaluate {
     task myclean {
         assembleRelease.dependsOn( myclean )
         assembleDebug.dependsOn( myclean )
-        delete "${buildDir}/intermediates/apk"
+        delete "${buildDir}/outputs/apk"
     }
     task copyReleaseApk(type: Copy, dependsOn: generateReleaseSHA) {
-        from("$buildDir/intermediates/apk/release") {
+        from("$buildDir/outputs/apk/release") {
             include '**/*.apk'
             include '**/*.apk.sha256'
             exclude '**/*unsigned.apk', '**/*unaligned.apk'
@@ -55,7 +55,7 @@ afterEvaluate {
         into '../apk/release'
     }
     task copyDebugApk(type: Copy, dependsOn: generateDebugSHA) {
-        from("$buildDir/intermediates/apk/debug") {
+        from("$buildDir/outputs/apk/debug") {
             include '**/*.apk'
             include '**/*.apk.sha256'
             exclude '**/*unsigned.apk', '**/*unaligned.apk'
@@ -63,14 +63,14 @@ afterEvaluate {
         into '../apk/debug'
     }
     task zipReleaseApk(type: Zip, dependsOn: copyReleaseApk ){
-        from("$buildDir/intermediates/apk/release") {
+        from("$buildDir/outputs/apk/release") {
             exclude '**/*unsigned.apk', '**/*unaligned.apk'
         }
         archiveName( "apk.zip" )
         destinationDirectory = file( "../apk/release")
     }
     task zipDebugApk(type: Zip, dependsOn: copyDebugApk ){
-        from("$buildDir/intermediates/apk/debug") {
+        from("$buildDir/outputs/apk/debug") {
             exclude '**/*unsigned.apk', '**/*unaligned.apk'
         }
         archiveName( "apk.zip" )
@@ -176,7 +176,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.preference:preference:1.2.0'
     api 'net.sf.kxml:kxml2:2.3.0'
 
@@ -193,17 +193,17 @@ dependencies {
     implementation 'com.google.apis:google-api-services-drive:v3-rev20200413-1.30.9'
 
     implementation 'net.lingala.zip4j:zip4j:2.6.1'
-    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation 'com.jcraft:jsch:0.1.55'
 
-    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
 
     implementation 'org.mapsforge:mapsforge-map-android:0.17.0'
     implementation 'org.mapsforge:mapsforge-themes:0.17.0'
     implementation 'org.mapsforge:sqlite-android:0.17.0'
     implementation 'com.caverock:androidsvg:1.4'
 
-    implementation "android.arch.work:work-runtime:1.0.1"
+    implementation 'androidx.work:work-runtime:2.7.1'
 }

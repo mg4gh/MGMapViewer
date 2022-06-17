@@ -49,7 +49,7 @@ public class NotificationUtil {
                     .setSmallIcon(R.drawable.mg2)
                     .setContentTitle("MGMapViewer")
                     .setContentText("Power saving problem detected")
-                    .setContentIntent(PendingIntent.getActivity(context.getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setContentIntent(PendingIntent.getActivity(context.getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                     .build();
             Log.i(MGMapApplication.LABEL, NameUtil.context() + "send alarm notification");
             notificationManager.notify(77,notification);

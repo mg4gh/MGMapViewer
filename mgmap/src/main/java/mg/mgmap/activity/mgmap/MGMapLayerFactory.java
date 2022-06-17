@@ -237,7 +237,7 @@ public class MGMapLayerFactory {
                 });
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
+            Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage(),e);
         }
         return layer;
     }
