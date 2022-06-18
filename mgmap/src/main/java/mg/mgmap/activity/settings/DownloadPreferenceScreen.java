@@ -207,15 +207,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                                 }
                             } catch (Exception e) {
                                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                                BgJobUtil.showToast(activity, Html.fromHtml("<font color='#000000' ><b>" + prefSwLocal.getTitle().toString()+" failed!" + "</b></font>"));
-//                                activity.runOnUiThread(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        Toast toast = Toast.makeText(context,  "", Toast.LENGTH_LONG);
-//                                        toast.setGravity(Gravity.TOP, 0, 0);
-//                                        toast.show();
-//                                    }
-//                                });
+                                BgJobUtil.showToast(activity, Html.fromHtml("<font color='#000000' ><b>" + prefSwLocal.getTitle().toString()+" failed!" + "</b></font>",Html.FROM_HTML_MODE_LEGACY));
                             }
 
                         }
