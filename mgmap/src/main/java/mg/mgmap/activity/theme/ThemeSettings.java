@@ -86,7 +86,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         themeSettingsFragment = new ThemeSettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.settings, themeSettingsFragment)
+                .replace(R.id.themesettings, themeSettingsFragment)
                 .commit();
 
         // if the render theme has a style menu, its data is delivered via the intent
