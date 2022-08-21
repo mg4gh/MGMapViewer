@@ -102,11 +102,11 @@ afterEvaluate {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         applicationId "mg.mgmap"
         minSdkVersion 24
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "${versionMajor}-${versionSuffix}-${getDate()}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -180,7 +180,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.2.0'
     api 'net.sf.kxml:kxml2:2.3.0'
 
-    implementation 'com.android.support:preference-v7:31.0.0'
+    implementation 'com.android.support:preference-v7:33.0.0'
     implementation files('libs/commons-net-3.8.0.jar')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
