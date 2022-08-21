@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.model;
 
+import androidx.annotation.NonNull;
+
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -100,7 +102,8 @@ public class TrackLogStatistic {
 
     private PointModel lastPoint4Distance = null;
     private PointModel lastPoint4GainLoss = null;
-    private static final float ELE_THRESHOLD = 2.0f; // in meter
+    private static final float ELE_THRESHOLD_BARO = 3.0f; // in meter
+    private static final float ELE_THRESHOLD_ELSE = 12.0f; // in meter
 
     public TrackLogStatistic(){}
 
@@ -201,7 +204,7 @@ public class TrackLogStatistic {
             lastPoint4GainLoss = point;
         } else{
             float diff = point.getEleD() - lastPoint4GainLoss.getEleD();
-            if (Math.abs(diff) > getEleThreshold(point)){
+            if (Math.abs(diff) >= getEleThreshold(point)){
                 lastPoint4GainLoss = point;
                 if (diff > 0){
                     gain += diff;
@@ -216,15 +219,16 @@ public class TrackLogStatistic {
 
         if (point instanceof TrackLogPoint) {
             TrackLogPoint tlp = (TrackLogPoint) point;
-            if (tlp.getPressureAlt() != PointModel.NO_ELE) return ELE_THRESHOLD;
+            if (tlp.getPressureAlt() != PointModel.NO_ELE) return ELE_THRESHOLD_BARO;
         }
-        return ELE_THRESHOLD*5;
+        return ELE_THRESHOLD_ELSE;
     }
 
     public String durationToString(){
         return Formatter.format(Formatter.FormatType.FORMAT_DURATION, duration);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return String.format(Locale.ENGLISH,"start=%s duration=%s totalLength=%.2f gain=%.1f loss=%.1f minEle=%.1f maxEle=%.1f numPoints=%d",

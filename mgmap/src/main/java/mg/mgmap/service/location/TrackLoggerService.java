@@ -140,7 +140,7 @@ public class TrackLoggerService extends Service {
     }
 
     protected void onNewTrackLogPoint(TrackLogPoint lp) {
-        lp.setPressure( barometerListener.getPressure() );
+        lp.setPressure( barometerListener.getPressure(lp.getLat(), lp.getLon()) );
         setPressureAlt(lp);
         application.logPoints2process.add(lp);
         Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);

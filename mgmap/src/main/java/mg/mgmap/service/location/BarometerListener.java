@@ -20,8 +20,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.LongSparseArray;
+
+import java.util.Locale;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
@@ -43,11 +46,12 @@ class BarometerListener implements SensorEventListener {
     private final Sensor pressureSensor;
 
     private int cnt=0;
-    private float lastPressure = PointModel.NO_PRES;
+    private double lastPressure = PointModel.NO_PRES;
+    private long lastEventTimeMillis = 0;
 
     private final int speed;
     private final LongSparseArray<Float> pValues = new LongSparseArray<>();
-
+    private final long uptimeMillis;
 
 
     BarometerListener(MGMapApplication application, final int speed){
@@ -74,6 +78,9 @@ class BarometerListener implements SensorEventListener {
         } else {
             Log.e(MGMapApplication.LABEL, NameUtil.context()+"BarometerListener: "+"pressureSensor not found");
         }
+        long elapsedRealtime = SystemClock.elapsedRealtime();
+        long currentTimeMillis = System.currentTimeMillis();
+        uptimeMillis = (currentTimeMillis - elapsedRealtime);
     }
 
      @Override
@@ -81,72 +88,40 @@ class BarometerListener implements SensorEventListener {
         cnt++;
         float pressure = sensorEvent.values[0];
         long now = System.currentTimeMillis();
+        long eventTimeMillis = ((sensorEvent.timestamp / 1000000) + uptimeMillis);
         synchronized (pValues){
-            if (pValues.get(now) == null){
-                pValues.append(now, pressure);
+            if ( eventTimeMillis/10 != lastEventTimeMillis/10){ // don't use event, if there was already another one in the same 1/100s
+                lastEventTimeMillis = eventTimeMillis;
+                pValues.append(eventTimeMillis, pressure);
 
-                while (true){
+                while (pValues.size() > 0){
                     long oldestKey = pValues.keyAt(0);
-                    if ((now - oldestKey) > 10000){ // keep pressure values for at most 10s
+                    if ((eventTimeMillis - oldestKey) > 6000){ // keep pressure values for at most 6s
                         pValues.delete(oldestKey);
                     } else {
                         break;
                     }
                 }
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+pressure+" "+pValues.size());
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+pressure+" ts="+now+" tse="+eventTimeMillis+" "+pValues.size());
             }
         }
     }
 
-    float getPressure(){
+    float getPressure(double lat, double lon){ // parameters just for logging
+        String logInfo = " ";
         synchronized (pValues){
             if (pValues.size() > 0){
-                float total = 0;
-                double maxAbsDiff = 0;
-                double totalAbsDiff = 0;
-
-                long tmax = pValues.keyAt(pValues.size()-1);
-                long tmin = 0;
-                for (int idx=pValues.size()-1; idx > 0; idx--){ // iterate backwards over the last pressure values
-                    float pidx = pValues.valueAt(idx);
-                    float plidx = pValues.valueAt(idx-1);
-                    long tidx = pValues.keyAt(idx);
-                    long tlidx = pValues.keyAt(idx-1);
-                    total += pidx;
-                    double tFactor = 1000.0 / (tidx - tlidx);
-                    double pAbsDiff = Math.abs(plidx - pidx) * tFactor; // pressure diff per second
-                    maxAbsDiff = Math.max(maxAbsDiff, pAbsDiff);
-                    totalAbsDiff += pAbsDiff;
-
-                    int cnt = pValues.size() - idx;
-
-                    if ((tmax-tlidx > 500) && (tmax-tidx <= 500) && (cnt > 10)){
-                        if ((maxAbsDiff < 5.0) && ( totalAbsDiff/cnt < 2)){  // if pressure measurements of the last 500ms has low variance, then just take the average
-                            lastPressure = total / cnt;
-                            tmin = tlidx;
-                            break;
-                        }
-                    }
-                    if ((tmax-tlidx > 2000) && (tmax-tidx <= 2000)){
-                        if ((maxAbsDiff < 10.0) && ( totalAbsDiff/cnt < 5)){ // if pressure measurements of the last 2000ms has rather low variance, then take that average
-                            lastPressure = total / cnt;
-                            tmin = tlidx;
-                            break;
-                        }
-                    }
-                    if (idx == 1){ // else take the average of all (at most 10s) pressure data
-                        lastPressure = total / cnt;
-                    }
+                double total = 0;
+                for (int idx=0; idx<pValues.size(); idx++){
+                    total += pValues.valueAt(idx);
                 }
-                while (pValues.keyAt(0) < tmin){
-                    pValues.delete(pValues.keyAt(0));
-                }
+                lastPressure = total/pValues.size();
+                logInfo += "lastPressure="+lastPressure+" pValues.size()="+pValues.size();
             }
         }
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+lastPressure+" "+pValues.size());
-        return lastPressure;
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+String.format(Locale.ENGLISH," lat=%2.6f lon=%2.6f ",lat, lon)+ logInfo);
+        return (float)lastPressure;
     }
-
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
