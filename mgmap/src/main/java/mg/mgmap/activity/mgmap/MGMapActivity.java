@@ -58,7 +58,6 @@ import mg.mgmap.activity.mgmap.features.atl.FSAvailableTrackLogs;
 import mg.mgmap.activity.mgmap.features.bb.FSBB;
 import mg.mgmap.activity.mgmap.features.control.FSControl;
 import mg.mgmap.activity.mgmap.features.alpha.FSAlpha;
-import mg.mgmap.activity.mgmap.features.gdrive.FGDrive;
 import mg.mgmap.activity.mgmap.features.grad.FSGraphDetails;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
 import mg.mgmap.activity.mgmap.features.beeline.FSBeeline;
@@ -266,17 +265,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.availableTrackLogsObservable.changed();
         application.lastPositionsObservable.changed();
         application.markerTrackLogObservable.changed();
-
-        Pref<Boolean> uploadTriggerGDriveSync = prefCache.get(R.string.preferences_gdrive_uploadTrigger, false);
-        if (uploadTriggerGDriveSync.getValue()){
-            new FGDrive(this).trySynchronisation(true);
-            uploadTriggerGDriveSync.setValue(false);
-        }
-        Pref<Boolean> downloadTriggerGDriveSync = prefCache.get(R.string.preferences_gdrive_downloadTrigger, false);
-        if (downloadTriggerGDriveSync.getValue()){
-            new FGDrive(this).trySynchronisation(false);
-            downloadTriggerGDriveSync.setValue(false);
-        }
 
         new Handler().postDelayed(() -> prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(), 60*1000);
     }

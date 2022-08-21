@@ -188,10 +188,6 @@ dependencies {
     implementation files('libs/javax.json-1.1.2.jar')
     implementation files('libs/javax.json-api-1.1.2.jar')
 
-    implementation 'com.google.api-client:google-api-client:1.30.9'
-    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.27.0'
-    implementation 'com.google.apis:google-api-services-drive:v3-rev20200413-1.30.9'
-
     implementation 'net.lingala.zip4j:zip4j:2.6.1'
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
