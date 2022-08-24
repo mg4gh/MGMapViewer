@@ -157,11 +157,11 @@ public class ControlView extends RelativeLayout {
 
         View parent = (View) tv_enlarge.getParent();
         RelativeLayout.LayoutParams parentLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        parentLayoutParams.setMargins(dp(90), dp(350), dp(90), dp(0));
+        parentLayoutParams.setMargins(dp(80), dp(350), dp(80), dp(0));
         parent.setLayoutParams(parentLayoutParams);
 
         tv_enlarge.setLines(1);
-        tv_enlarge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
+        tv_enlarge.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 40);
         int padding = dp(5);
         tv_enlarge.setPadding(padding,padding,padding,padding);
         tv_enlarge.setBackgroundResource(R.drawable.shape);
@@ -448,10 +448,10 @@ public class ControlView extends RelativeLayout {
         parent.getLayoutParams().width = helpLength;
         parent.getLayoutParams().height = helpLength;
         LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , (displaySize.x / 7)-dp(1.8f));
-        lp_tv.setMargins(dp(1),dp(1),dp(1),dp(1));
+        lp_tv.setMargins(dp(1),dp(0),dp(1),dp(1));
         tv.setLayoutParams(lp_tv);
         tv.setGravity(Gravity.CENTER_VERTICAL);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
         tv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
         tv.setTextColor(CC.getColor(R.color.WHITE));
         tv.setPadding(dp(16),0,dp(8),0);
