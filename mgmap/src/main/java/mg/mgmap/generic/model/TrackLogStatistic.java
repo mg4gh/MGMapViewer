@@ -102,8 +102,8 @@ public class TrackLogStatistic {
 
     private PointModel lastPoint4Distance = null;
     private PointModel lastPoint4GainLoss = null;
-    private static final float ELE_THRESHOLD_BARO = 3.0f; // in meter
-    private static final float ELE_THRESHOLD_ELSE = 12.0f; // in meter
+    private static final float ELE_THRESHOLD_BARO = 2.3f; // in meter
+    private static final float ELE_THRESHOLD_ELSE = 11.0f; // in meter
 
     public TrackLogStatistic(){}
 
