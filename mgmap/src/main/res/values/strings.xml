@@ -74,6 +74,13 @@
     <string name="preferences_hprof_gl_title">Ascent height profile</string>
     <string name="preferences_hprof_gl_desc">Show ascent profile together with height profile</string>
 
+    <string name="preferences_pressure_smoothing_gl_key">pres_smooth_gl</string>
+    <string name="preferences_pressure_smoothing_gl_title">Pressure Smoothing Period</string>
+    <string name="preferences_pressure_smoothing_gl_desc">Period for smoothing pressure values</string>
+    <string name="preferences_pressure_smoothing_gl_desc2">Period for smoothing pressure values in milliseconds. \nThe proper value may depend on the device,
+        since e.g. LG devices do smoothing already in hardware, while Pixel devices do no smoothing at all.</string>
+
+
     <string name="preferences_cat_gnss_title">GNSS settings</string>
     <string name="preferences_gnss_fused_gl_key">gnss_fused</string>
     <string name="preferences_gnss_fused_title">Used google fused location provider</string>

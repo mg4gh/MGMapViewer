@@ -50,12 +50,14 @@ class BarometerListener implements SensorEventListener {
     private long lastEventTimeMillis = 0;
 
     private final int speed;
+    private final long barometerSmoothingPeriod;
     private final LongSparseArray<Float> pValues = new LongSparseArray<>();
     private final long uptimeMillis;
 
 
-    BarometerListener(MGMapApplication application, final int speed){
+    BarometerListener(MGMapApplication application, final int speed, long barometerSmoothingPeriod){
         this.speed = speed;
+        this.barometerSmoothingPeriod = barometerSmoothingPeriod;
         sensorManager = (SensorManager) application.getSystemService(Application.SENSOR_SERVICE);
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         if (pressureSensor != null){
@@ -96,7 +98,7 @@ class BarometerListener implements SensorEventListener {
 
                 while (pValues.size() > 0){
                     long oldestKey = pValues.keyAt(0);
-                    if ((eventTimeMillis - oldestKey) > 6000){ // keep pressure values for at most 6s
+                    if ((eventTimeMillis - oldestKey) > barometerSmoothingPeriod){
                         pValues.delete(oldestKey);
                     } else {
                         break;

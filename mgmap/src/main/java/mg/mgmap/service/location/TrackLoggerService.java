@@ -116,7 +116,16 @@ public class TrackLoggerService extends Service {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForeground(1, notification);
             }
-            barometerListener = new BarometerListener(application,  SensorManager.SENSOR_DELAY_FASTEST);
+            long barometerSmoothingPeriod = 6000; // default value
+
+            try {
+                String sBarometerSmoothingPeriod = prefCache.get(R.string.preferences_pressure_smoothing_gl_key, "6000").getValue();
+                barometerSmoothingPeriod = Long.parseLong(sBarometerSmoothingPeriod);
+            } catch (NumberFormatException e) {
+                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            }
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+ "smoothingPeriod="+barometerSmoothingPeriod);
+            barometerListener = new BarometerListener(application,  SensorManager.SENSOR_DELAY_FASTEST, barometerSmoothingPeriod);
             boolean prefFused = prefCache.get(R.string.FSPosition_pref_FusedLocationProvider, false).getValue();
             locationListener = prefFused?new FusedLocationListener(application, this):new GnssLocationListener(application, this);
 

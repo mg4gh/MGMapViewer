@@ -1,4 +1,4 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
         app:title="@string/preferences_mapsforge_title"
@@ -54,6 +54,16 @@
             app:key="@string/preferences_hprof_gl_key"
             app:summary="@string/preferences_hprof_gl_desc"
             app:title="@string/preferences_hprof_gl_title"
+            app:iconSpaceReserved="false"
+            />
+        <EditTextPreference
+            app:defaultValue="6000"
+            app:key="@string/preferences_pressure_smoothing_gl_key"
+            app:dialogTitle="@string/preferences_pressure_smoothing_gl_title"
+            app:dialogMessage="@string/preferences_pressure_smoothing_gl_desc2"
+            android:inputType="number"
+            app:summary="@string/preferences_pressure_smoothing_gl_desc"
+            app:title="@string/preferences_pressure_smoothing_gl_title"
             app:iconSpaceReserved="false"
             />
 
