@@ -370,7 +370,7 @@ public class PersistenceManager {
 
     public synchronized byte[] getHgtBuf(int iLat, int iLon){
         byte[] buf = null;
-        String file = String.format(Locale.GERMANY, "N%02dE%03d",iLat,iLon);
+        String file = String.format(Locale.GERMANY, "%s%02d%S%03d",(iLat>0)?"N":"S",iLat,(iLon>0)?"E":"W",iLon);
         HgtBuf hgtBuf = getHgtBuf(file);
 
         if (hgtBuf != null) { // ok, exists already
@@ -383,7 +383,7 @@ public class PersistenceManager {
 
             hgtBuf = new HgtBuf(file);
             File hgtFile = new File(hgtDir, file+".SRTMGL1.hgt.zip");
-            if (hgtFile.exists()){
+            if (hgtFile.exists() && (hgtFile.length() > 1000L)){ // file size less than 1000 indicates no valid height data file
                 try {
                     ZipFile zipFile = new ZipFile(hgtFile);
                     ZipEntry zipEntry = zipFile.getEntry(file+".hgt");
