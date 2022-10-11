@@ -31,6 +31,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
+import mg.mgmap.activity.statistic.TrackStatisticFilter;
 import mg.mgmap.application.util.GpsSupervisorWorker;
 import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.service.bgjob.BgJobService;
@@ -82,6 +83,7 @@ public class MGMapApplication extends Application {
     private MetaDataUtil metaDataUtil;
     private TestControl testControl;
     private NotificationUtil notificationUtil;
+    private TrackStatisticFilter trackStatisticFilter;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
@@ -132,6 +134,7 @@ public class MGMapApplication extends Application {
         metaDataUtil = new MetaDataUtil(persistenceManager);
         testControl = new TestControl(this, prefCache);
         notificationUtil = new NotificationUtil(this);
+        trackStatisticFilter = new TrackStatisticFilter(prefCache);
 
         prefRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
         prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
@@ -180,6 +183,7 @@ public class MGMapApplication extends Application {
                 }
                 ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, altitudeProvider);
                 for (TrackLog trackLog : metaDataUtil.loadMetaData()){
+                    trackStatisticFilter.checkFilter(trackLog);
                     metaTrackLogs.put(trackLog.getNameKey(),trackLog);
                 }
             }
@@ -417,6 +421,10 @@ public class MGMapApplication extends Application {
 
     public TestControl getTestControl() {
         return testControl;
+    }
+
+    public TrackStatisticFilter getTrackStatisticFilter() {
+        return trackStatisticFilter;
     }
 
     public synchronized void addBgJob(BgJob job){

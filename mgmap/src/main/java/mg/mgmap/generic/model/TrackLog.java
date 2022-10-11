@@ -31,6 +31,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected boolean available = true;
     protected boolean modified = false;
     protected TrackLog referencedTrackLog = null;
+    protected boolean filterMatched = true;
 
     public TrackLogStatistic getTrackStatistic() {
         return trackStatistic;
@@ -67,6 +68,13 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
             this.modified = modified;
             changed(null);
         }
+    }
+
+    public boolean isFilterMatched() {
+        return filterMatched;
+    }
+    public void setFilterMatched(boolean filterMatched) {
+        this.filterMatched = filterMatched;
     }
 
     public ArrayList<TrackLogSegment> getTrackLogSegments(){

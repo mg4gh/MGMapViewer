@@ -14,24 +14,19 @@
  */
 package mg.mgmap.activity.statistic;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Handler;
-import android.os.StrictMode;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.util.Log;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -55,7 +50,6 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.view.ExtendedTextView;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -71,20 +65,22 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
     private LinearLayout parent = null;
     PrefCache prefCache = null;
-    private ArrayList<TrackStatisticEntry> tseEntries = new ArrayList<>();
+    private final ArrayList<TrackStatisticEntry> tseEntries = new ArrayList<>();
 
     private Pref<Boolean> prefFullscreen;
-    private final Pref<Boolean> prefNoneSelected = new Pref<>(true);
-    private final Pref<Boolean> prefAllSelected = new Pref<>(true);
-    private final Pref<Boolean> prefEditAllowed = new Pref<>(true);
-    private final Pref<Boolean> prefMarkerAllowed = new Pref<>(true);
-    private final Pref<Boolean> prefDeleteAllowed = new Pref<>(true);
-    private final Pref<Boolean> prefShareAllowed = new Pref<>(true);
-    private final Pref<Boolean> prefNoneModified = new Pref<>(true);
+    private final Pref<Boolean> prefNoneSelected = new Pref<>(Boolean.TRUE);
+    private final Pref<Boolean> prefAllSelected = new Pref<>(Boolean.TRUE);
+    private final Pref<Boolean> prefEditAllowed = new Pref<>(Boolean.TRUE);
+    private final Pref<Boolean> prefMarkerAllowed = new Pref<>(Boolean.TRUE);
+    private final Pref<Boolean> prefDeleteAllowed = new Pref<>(Boolean.TRUE);
+    private final Pref<Boolean> prefShareAllowed = new Pref<>(Boolean.TRUE);
+    private final Pref<Boolean> prefNoneModified = new Pref<>(Boolean.TRUE);
     Pref<Boolean> prefFilterOn;
-    final Pref<Boolean> prefFilterChanged = new Pref<>(true);
+    final Pref<Boolean> prefFilterChanged = new Pref<>(Boolean.TRUE);
 
-    TrackStatisticFilter filter;
+    public MGMapApplication getMGMapApplication() {
+        return application;
+    }
 
     Observer reworkObserver = new Observer() {
         @Override
@@ -97,6 +93,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     Handler timer = new Handler();
     Runnable ttReworkState = () -> TrackStatisticActivity.this.runOnUiThread(this::reworkState);
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,41 +107,32 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
         prefCache = new PrefCache(context);
         prefFilterOn = prefCache.get(R.string.Statistic_pref_FilterOn, false);
-        filter = new TrackStatisticFilter(prefCache);
 
-        prefFilterOn.addObserver(new Observer() {
-            @Override
-            public void update(Observable observable, Object o) {
-                if (prefFilterOn.getValue()){
-                    new TrackStatisticFilterDialog().show(context, TrackStatisticActivity.this);
-                } else {
-                    refreshVisibleEntries();
-                }
-            }
-        });
-        prefFilterChanged.addObserver(new Observer() {
-            @Override
-            public void update(Observable observable, Object o) {
-                if (prefFilterOn.getValue()){
-                for (TrackStatisticEntry entry : tseEntries){
-                    filter.checkFilter(entry);
-                }
-                }
+        prefFilterOn.addObserver((observable, o) -> {
+            if (prefFilterOn.getValue()){
+                new TrackStatisticFilterDialog().show(context, TrackStatisticActivity.this);
+            } else {
                 refreshVisibleEntries();
             }
+        });
+        prefFilterChanged.addObserver((observable, o) -> {
+            TrackStatisticFilter filter = application.getTrackStatisticFilter();
+            if (prefFilterOn.getValue()){
+                for (TrackStatisticEntry entry : tseEntries){
+                    filter.checkFilter(entry.getTrackLog());
+                }
+            }
+            refreshVisibleEntries();
         });
 
         prefFullscreen = prefCache.get(R.string.FSControl_qcFullscreenOn, true);
         prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(TrackStatisticActivity.this, prefFullscreen.getValue()));
-        Pref<Boolean> triggerHome = new Pref<>(true);
+        Pref<Boolean> triggerHome = new Pref<>(Boolean.TRUE);
         triggerHome.addObserver( new HomeObserver(this) );
 
         parent = findViewById(R.id.trackStatisticEntries);
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
-//        ControlView.createQuickControlETV(qcs)
-//                .setData(R.drawable.fullscreen)
-//                .setPrAction(prefFullscreen,triggerHome);
         ControlView.createQuickControlETV(qcs)
                 .setData(prefFilterOn,R.drawable.filter,R.drawable.filter2)
                 .setPrAction(prefFilterOn);
@@ -155,19 +143,16 @@ public class TrackStatisticActivity extends AppCompatActivity {
         etvNone.setData(prefNoneSelected,R.drawable.deselect_all,R.drawable.deselect_all2)
                 .setOnClickListener(new SelectOCL(parent, false));
         qcs.removeView(etvNone);
-        prefAllSelected.addObserver(new Observer() {
-            @Override
-            public void update(Observable observable, Object o) {
-                if (prefAllSelected.getValue()){
-                    if ((etvAll.getParent() != null) && (etvNone.getParent() == null)) {
-                        qcs.addView(etvNone, qcs.indexOfChild(etvAll));
-                        qcs.removeView(etvAll);
-                    }
-                } else {
-                    if ((etvAll.getParent() == null) && (etvNone.getParent() != null)){
-                        qcs.addView(etvAll, qcs.indexOfChild(etvNone));
-                        qcs.removeView(etvNone);
-                    }
+        prefAllSelected.addObserver((observable, o) -> {
+            if (prefAllSelected.getValue()){
+                if ((etvAll.getParent() != null) && (etvNone.getParent() == null)) {
+                    qcs.addView(etvNone, qcs.indexOfChild(etvAll));
+                    qcs.removeView(etvAll);
+                }
+            } else {
+                if ((etvAll.getParent() == null) && (etvNone.getParent() != null)){
+                    qcs.addView(etvAll, qcs.indexOfChild(etvNone));
+                    qcs.removeView(etvNone);
                 }
             }
         });
@@ -192,15 +177,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
         ControlView.createQuickControlETV(qcs)
                 .setData(R.drawable.back)
                 .setOnClickListener(createBackOCL());
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            try {
-                Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
-                m.invoke(null);
-            } catch (Exception e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
-            }
-        }
     }
 
     boolean working = false;
@@ -211,41 +187,16 @@ public class TrackStatisticActivity extends AppCompatActivity {
         Log.d(MGMapApplication.LABEL, NameUtil.context());
 
         Set<String> nameKeys = new TreeSet<>();
-        addTrackLog(nameKeys, parent, application.recordingTrackLogObservable.getTrackLog(), R.color.RED100_A100, R.color.RED100_A150);
-//        addTrackLog(nameKeys, parent, application.markerTrackLogObservable.getTrackLog(), R.color.PINK_A100, R.color.PINK_A150);
-        addTrackLog(nameKeys, parent, application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A100, R.color.PURPLE_A150);
-        addTrackLog(nameKeys, parent, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE100_A100, R.color.BLUE150_A150);
+        addTrackLog(nameKeys, application.recordingTrackLogObservable.getTrackLog(), R.color.RED100_A100, R.color.RED100_A150);
+        addTrackLog(nameKeys, application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A100, R.color.PURPLE_A150);
+        addTrackLog(nameKeys, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE100_A100, R.color.BLUE150_A150);
         for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
-            addTrackLog(nameKeys, parent, trackLog, R.color.GREEN100_A100, R.color.GREEN150_A150);
+            addTrackLog(nameKeys, trackLog, R.color.GREEN100_A100, R.color.GREEN150_A150);
         }
-        ArrayList<TrackLog> trackLogsRemain = new ArrayList<>(application.metaTrackLogs.values());
-
-        new Thread(){
-            @Override
-            public void run() {
-                while (!trackLogsRemain.isEmpty()){
-                    try {
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainA working="+working+" size="+trackLogsRemain.size());
-                        if (!working){
-                            working = true;
-                            runOnUiThread(() -> {
-                                Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainB working="+working+" size="+trackLogsRemain.size());
-                                for (int i=0; (i<30)&&(!trackLogsRemain.isEmpty()) ; i++){
-                                    TrackLog trackLog = trackLogsRemain.remove(0);
-                                    addTrackLog(nameKeys, parent, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
-                                }
-                                Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainC working="+working+" size="+trackLogsRemain.size());
-                                working = false;
-                            });
-
-                        }
-                        Thread.sleep(100);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }.start();
+        for (TrackLog trackLog : application.metaTrackLogs.values()) {
+            addTrackLog(nameKeys, trackLog, R.color.GRAY100_A100, R.color.GRAY100_A150);
+        }
+        refreshVisibleEntries();
 
         prefFullscreen.onChange();
         reworkObserver.update(null,null);
@@ -278,11 +229,49 @@ public class TrackStatisticActivity extends AppCompatActivity {
         prefCache.cleanup();
     }
 
+
     private void refreshVisibleEntries(){
         parent.removeAllViews();
-        for (TrackStatisticEntry entry : getVisibleEntries()){
-            parent.addView(entry);
-        }
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" remain0 working="+working+ " parent="+parent.getChildCount());
+        ArrayList<TrackStatisticEntry> tracksRemain = new ArrayList<>(getVisibleEntries());
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+" remain1 working="+working+ " parent="+parent.getChildCount());
+
+        new Thread(){
+            @Override
+            public void run() {
+                while (!tracksRemain.isEmpty()){
+                    try {
+                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainA working="+working+" size="+tracksRemain.size() + " parent="+parent.getChildCount());
+                        if (!working){
+                            working = true;
+                            runOnUiThread(() -> {
+                                Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainB working="+working+" size="+tracksRemain.size()+ " parent="+parent.getChildCount());
+
+                                try {
+                                    for (int i=0; (i<30)&&(!tracksRemain.isEmpty()) ; i++){
+                                        parent.addView(tracksRemain.remove(0).initialize());
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(MGMapApplication.LABEL, e.getMessage(), e);
+                                } finally {
+                                    working = false;
+                                }
+                                Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainC working="+working+" size="+tracksRemain.size()+ " parent="+parent.getChildCount());
+                                if (tracksRemain.isEmpty()) {
+                                    reworkState();
+                                }
+                            });
+
+                        }
+                        synchronized (this){
+                            this.wait(50);
+                        }
+                    } catch (Exception e) {
+                        Log.e(MGMapApplication.LABEL, e.getMessage(), e);
+                    }
+                }
+            }
+        }.start();
         reworkState();
     }
 
@@ -293,7 +282,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private ArrayList<TrackStatisticEntry> getFilteredEntries(){
         ArrayList<TrackStatisticEntry> list = new ArrayList<>();
         for (TrackStatisticEntry entry : tseEntries){
-            if (entry.isFilterMatched()){
+            if (entry.getTrackLog().isFilterMatched()){
                 list.add(entry);
             }
         }
@@ -307,14 +296,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
                 list.add(entry);
             }
         }
-//        for (int idx=0; idx < parent.getChildCount(); idx++){
-//            if (parent.getChildAt(idx) instanceof TrackStatisticEntry) {
-//                TrackStatisticEntry entry = (TrackStatisticEntry) parent.getChildAt(idx);
-//                if (entry.isPrefSelected()){
-//                    list.add(entry);
-//                }
-//            }
-//        }
         return list;
     }
     private ArrayList<TrackStatisticEntry> getModifiedEntries(){
@@ -330,7 +311,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
 
     // nameKeys contains the nameKey values of all tracks, which are already added
-    public void addTrackLog(Set<String> nameKeys, ViewGroup parent, TrackLog trackLog, int colorId, int colorIdSelected){
+    public void addTrackLog(Set<String> nameKeys, TrackLog trackLog, int colorId, int colorIdSelected){
         if (trackLog == null) return;
         if (nameKeys.contains(trackLog.getNameKey())) return; // this TrackLog is already added
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
@@ -339,10 +320,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
         TrackStatisticEntry entry = new TrackStatisticEntry(context, trackLog, colorId, colorIdSelected);
         tseEntries.add(entry);
-        filter.checkFilter(entry);
-        if (!prefFilterOn.getValue() || entry.isFilterMatched()){
-            parent.addView(entry);
-        }
         entry.getPrefSelected().addObserver(reworkObserver);
         entry.getTrackLog().addObserver(reworkObserver);
     }
@@ -398,16 +375,14 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     final EditText etTrackLogName = new EditText(this);
                     etTrackLogName.setText(aTrackLog.getName());
                     etTrackLogName.setSelectAllOnFocus(true);
-                    InputFilter filter = new InputFilter() {
-                        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                            for (int i = start; i < end; i++) {
-                                if ("/\\?%*:|\"<>.,;=\n".indexOf(source.charAt(i)) >= 0){
-                                    etTrackLogName.setError("Not allowed characters: /\\?%*:|\"<>.,;=<LF>");
-                                    return "";
-                                }
+                    InputFilter filter = (source, start, end, dest, dstart, dend) -> {
+                        for (int i = start; i < end; i++) {
+                            if ("/\\?%*:|\"<>.,;=\n".indexOf(source.charAt(i)) >= 0){
+                                etTrackLogName.setError("Not allowed characters: /\\?%*:|\"<>.,;=<LF>");
+                                return "";
                             }
-                            return null;
                         }
+                        return null;
                     };
                     etTrackLogName.setFilters(new InputFilter[] { filter });
 
@@ -415,29 +390,24 @@ public class TrackStatisticActivity extends AppCompatActivity {
                             .setTitle("Rename Track")
                             .setMessage("Old name: "+aTrackLog.getName())
                             .setView(etTrackLogName)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    String oldName = aTrackLog.getName();
-                                    String oldNameKey = aTrackLog.getNameKey();
-                                    String newName = etTrackLogName.getText().toString();
-                                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" rename \""+oldName+"\" to \""+newName+"\"");
+                            .setPositiveButton("OK", (dialog, whichButton) -> {
+                                String oldName = aTrackLog.getName();
+                                String oldNameKey = aTrackLog.getNameKey();
+                                String newName = etTrackLogName.getText().toString();
+                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" rename \""+oldName+"\" to \""+newName+"\"");
 
-                                    if (persistenceManager.existsTrack(newName)){
-                                        Toast.makeText(context, "Rename failed, name already exists: "+newName, Toast.LENGTH_LONG);
-                                    } else{
-                                        aTrackLog.setName(newName);
-                                        persistenceManager.renameTrack(oldName, newName);
-                                        application.metaTrackLogs.remove(oldNameKey);
-                                        application.metaTrackLogs.put(aTrackLog.getNameKey(), aTrackLog);
-                                        prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
-                                    }
-                                    tsEntry.invalidate();
+                                if (persistenceManager.existsTrack(newName)){
+                                    Toast.makeText(context, "Rename failed, name already exists: "+newName, Toast.LENGTH_LONG).show();
+                                } else{
+                                    aTrackLog.setName(newName);
+                                    persistenceManager.renameTrack(oldName, newName);
+                                    application.metaTrackLogs.remove(oldNameKey);
+                                    application.metaTrackLogs.put(aTrackLog.getNameKey(), aTrackLog);
+                                    prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
                                 }
+                                tsEntry.invalidate();
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                }
-                            })
+                            .setNegativeButton("Cancel", (dialog, whichButton) -> {})
                             .show();
                 }
             }

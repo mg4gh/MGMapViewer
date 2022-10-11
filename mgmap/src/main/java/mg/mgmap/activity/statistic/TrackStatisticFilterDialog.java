@@ -70,7 +70,7 @@ public class TrackStatisticFilterDialog {
     AlertDialog alertDialog;
     public void show(Context context, TrackStatisticActivity trackStatisticActivity){
 
-        TrackStatisticFilter filter = trackStatisticActivity.filter;
+        TrackStatisticFilter filter = trackStatisticActivity.getMGMapApplication().getTrackStatisticFilter();
 
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context );
         Context dialogContext = builder.getContext();

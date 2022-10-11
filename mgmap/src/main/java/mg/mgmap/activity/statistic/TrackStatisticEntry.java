@@ -42,11 +42,15 @@ public class TrackStatisticEntry extends TableLayout {
 
     private final Pref<Boolean> prefSelected = new Pref<>(false);
 
+    private final Context context;
     private final TrackLog trackLog;
-    private final Pref<Boolean> prefShowNameKey = new Pref<>(false);
-    private boolean filterMatched = true;
+    private final int colorId;
+    private final int colorIdSelected;
 
-    private final Observer modifiedObserver;
+    private boolean initialized = false;
+    private final Pref<Boolean> prefShowNameKey = new Pref<>(false);
+
+    private Observer modifiedObserver;
 
 
     private int dp(float dp){
@@ -55,58 +59,66 @@ public class TrackStatisticEntry extends TableLayout {
 
     public TrackStatisticEntry(Context context, TrackLog trackLog, int colorId, int colorIdSelected){
         super(context);
+        this.context = context;
         this.trackLog = trackLog;
-
-        TrackLogStatistic statistic = trackLog.getTrackStatistic();
-
-        this.setId(View.generateViewId());
-        this.setPadding(0, dp(2),0,0);
-
-        TableRow tableRow0 = new TableRow(context);
-        this.addView(tableRow0);
-        createETV(tableRow0,10).setFormat(Formatter.FormatType.FORMAT_STRING).setData(prefSelected,R.drawable.select_off,R.drawable.select_on);
-        ExtendedTextView nameETV = createETV(tableRow0,81).setFormat(Formatter.FormatType.FORMAT_STRING);
-        nameETV.setMaxLines(5);
-
-        TableRow tableRow1 = new TableRow(context);
-        this.addView(tableRow1);
-        String sIdx = "I="+statistic.getSegmentIdx();
-        if (statistic.getSegmentIdx() == -1) sIdx = "All";
-        if (statistic.getSegmentIdx() == -2) sIdx = "R";
-        createETV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setValue( sIdx );
-        createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DATE).setValue( statistic.getTStart() );
-        createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_TIME).setValue( statistic.getTStart() );
-        ExtendedTextView durationETV = createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setData(R.drawable.duration);
-        ExtendedTextView lengthETV = createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setData(R.drawable.length);
-
-        TableRow tableRow2 = new TableRow(context);
-        this.addView(tableRow2);
-        ExtendedTextView numPointsETV = createETV(tableRow2,10).setFormat(Formatter.FormatType.FORMAT_INT);
-        ExtendedTextView gainETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.gain);
-        ExtendedTextView lossETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.loss);
-        ExtendedTextView maxeleETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.maxele);
-        ExtendedTextView mineleETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.minele);
-
-
-        setViewtreeColor(this, colorId);
-        setOnClickListener(new StatisticClickListener());
-        prefSelected.addObserver((o, arg) -> setViewtreeColor(TrackStatisticEntry.this, isPrefSelected()?colorIdSelected:colorId));
-        modifiedObserver = (o, arg) -> {
-            nameETV.setValue( ((prefShowNameKey.getValue())?trackLog.getNameKey():trackLog.getName()) + (trackLog.isModified()?"*":""));
-            durationETV.setValue(statistic.getDuration());
-            lengthETV.setValue(statistic.getTotalLength());
-            numPointsETV.setValue(statistic.getNumPoints());
-            gainETV.setValue(statistic.getGain());
-            lossETV.setValue(statistic.getLoss());
-            maxeleETV.setValue(statistic.getMaxEle());
-            mineleETV.setValue(statistic.getMinEle());
-        };
-        trackLog.addObserver(modifiedObserver);
-        prefShowNameKey.addObserver(modifiedObserver);
-
-        modifiedObserver.update(null,null);
+        this.colorId = colorId;
+        this.colorIdSelected = colorIdSelected;
     }
 
+    TrackStatisticEntry initialize(){
+        if (!initialized){
+            TrackLogStatistic statistic = trackLog.getTrackStatistic();
+
+            this.setId(View.generateViewId());
+            this.setPadding(0, dp(2),0,0);
+
+            TableRow tableRow0 = new TableRow(context);
+            this.addView(tableRow0);
+            createETV(tableRow0,10).setFormat(Formatter.FormatType.FORMAT_STRING).setData(prefSelected,R.drawable.select_off,R.drawable.select_on);
+            ExtendedTextView nameETV = createETV(tableRow0,81).setFormat(Formatter.FormatType.FORMAT_STRING);
+            nameETV.setMaxLines(5);
+
+            TableRow tableRow1 = new TableRow(context);
+            this.addView(tableRow1);
+            String sIdx = "I="+statistic.getSegmentIdx();
+            if (statistic.getSegmentIdx() == -1) sIdx = "All";
+            if (statistic.getSegmentIdx() == -2) sIdx = "R";
+            createETV(tableRow1,10).setFormat(Formatter.FormatType.FORMAT_STRING).setValue( sIdx );
+            createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DATE).setValue( statistic.getTStart() );
+            createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_TIME).setValue( statistic.getTStart() );
+            ExtendedTextView durationETV = createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DURATION).setData(R.drawable.duration);
+            ExtendedTextView lengthETV = createETV(tableRow1,20).setFormat(Formatter.FormatType.FORMAT_DISTANCE).setData(R.drawable.length);
+
+            TableRow tableRow2 = new TableRow(context);
+            this.addView(tableRow2);
+            ExtendedTextView numPointsETV = createETV(tableRow2,10).setFormat(Formatter.FormatType.FORMAT_INT);
+            ExtendedTextView gainETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.gain);
+            ExtendedTextView lossETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.loss);
+            ExtendedTextView maxeleETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.maxele);
+            ExtendedTextView mineleETV = createETV(tableRow2,20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.minele);
+
+
+            setViewtreeColor(this, colorId);
+            setOnClickListener(new StatisticClickListener());
+            prefSelected.addObserver((o, arg) -> setViewtreeColor(TrackStatisticEntry.this, isPrefSelected()?colorIdSelected:colorId));
+            modifiedObserver = (o, arg) -> {
+                nameETV.setValue( ((prefShowNameKey.getValue())?trackLog.getNameKey():trackLog.getName()) + (trackLog.isModified()?"*":""));
+                durationETV.setValue(statistic.getDuration());
+                lengthETV.setValue(statistic.getTotalLength());
+                numPointsETV.setValue(statistic.getNumPoints());
+                gainETV.setValue(statistic.getGain());
+                lossETV.setValue(statistic.getLoss());
+                maxeleETV.setValue(statistic.getMaxEle());
+                mineleETV.setValue(statistic.getMinEle());
+            };
+            trackLog.addObserver(modifiedObserver);
+            prefShowNameKey.addObserver(modifiedObserver);
+
+            modifiedObserver.update(null,null);
+            initialized = true;
+        }
+        return this;
+    }
 
 
     public class StatisticClickListener extends ExtendedClickListener {
@@ -178,14 +190,6 @@ public class TrackStatisticEntry extends TableLayout {
 
     public boolean isModified(){
         return trackLog.isModified();
-    }
-
-    public boolean isFilterMatched() {
-        return filterMatched;
-    }
-
-    public void setFilterMatched(boolean filterMatched) {
-        this.filterMatched = filterMatched;
     }
 
     public void onCleanup(){

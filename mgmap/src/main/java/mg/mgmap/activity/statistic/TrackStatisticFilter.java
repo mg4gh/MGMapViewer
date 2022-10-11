@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.NameUtil;
@@ -54,38 +55,38 @@ public class TrackStatisticFilter {
 
 
 
-    void checkFilter(TrackStatisticEntry entry){
+    public void checkFilter(TrackLog aTrackLog){
         boolean res = true;
         if (prefFilterNamePartOn.getValue()){
             String[] nameParts = prefFilterNamePart.getValue().split("\\s+");
             for (String part : nameParts){
                 if (part.startsWith("!")){
-                    res &= !(entry.getTrackLog().getName().toUpperCase().contains(part.substring(1).toUpperCase()));
+                    res &= !(aTrackLog.getName().toUpperCase().contains(part.substring(1).toUpperCase()));
                 } else {
-                    res &= (entry.getTrackLog().getName().toUpperCase().contains(part.toUpperCase()));
+                    res &= (aTrackLog.getName().toUpperCase().contains(part.toUpperCase()));
                 }
             }
         }
         if (prefFilterTimeMinOn.getValue()){
-            res &= (prefFilterTimeMin.getValue().getTimeInMillis() <= entry.getTrackLog().getTrackStatistic().getTStart());
+            res &= (prefFilterTimeMin.getValue().getTimeInMillis() <= aTrackLog.getTrackStatistic().getTStart());
         }
         if (prefFilterTimeMaxOn.getValue()){
-            res &= (prefFilterTimeMax.getValue().getTimeInMillis() >= entry.getTrackLog().getTrackStatistic().getTStart());
+            res &= (prefFilterTimeMax.getValue().getTimeInMillis() >= aTrackLog.getTrackStatistic().getTStart());
         }
         if (prefFilterLengthMinOn.getValue()){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+prefFilterLengthMin.getValue()+" "+entry.getTrackLog().getTrackStatistic().getTotalLength()/1000);
-            res &= (prefFilterLengthMin.getValue() <= entry.getTrackLog().getTrackStatistic().getTotalLength()/1000); // length in Statistic is in m
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+prefFilterLengthMin.getValue()+" "+aTrackLog.getTrackStatistic().getTotalLength()/1000);
+            res &= (prefFilterLengthMin.getValue() <= aTrackLog.getTrackStatistic().getTotalLength()/1000); // length in Statistic is in m
         }
         if (prefFilterLengthMaxOn.getValue()){
-            res &= (prefFilterLengthMax.getValue() >= entry.getTrackLog().getTrackStatistic().getTotalLength()/1000); // length in Statistic is in m
+            res &= (prefFilterLengthMax.getValue() >= aTrackLog.getTrackStatistic().getTotalLength()/1000); // length in Statistic is in m
         }
         if (prefFilterGainMinOn.getValue()){
-            res &= (prefFilterGainMin.getValue() <= entry.getTrackLog().getTrackStatistic().getGain());
+            res &= (prefFilterGainMin.getValue() <= aTrackLog.getTrackStatistic().getGain());
         }
         if (prefFilterGainMaxOn.getValue()){
-            res &= (prefFilterGainMax.getValue() >= entry.getTrackLog().getTrackStatistic().getGain());
+            res &= (prefFilterGainMax.getValue() >= aTrackLog.getTrackStatistic().getGain());
         }
-        entry.setFilterMatched(res);
+        aTrackLog.setFilterMatched(res);
     }
 
 }

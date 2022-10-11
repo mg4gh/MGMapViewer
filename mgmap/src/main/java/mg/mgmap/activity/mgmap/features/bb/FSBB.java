@@ -16,6 +16,7 @@ package mg.mgmap.activity.mgmap.features.bb;
 
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.mapsforge.map.layer.Layer;
 
@@ -41,15 +42,16 @@ import mg.mgmap.activity.mgmap.view.MVLayer;
 
 public class FSBB extends FeatureService {
 
-    private final Pref<Boolean> triggerBboxOn = new Pref<>(false);
+    private final Pref<Boolean> triggerBboxOn = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefBboxOn = getPref(R.string.FSBB_qc_bboxOn, false);
+    private final Pref<Boolean> prefFilterOn = getPref(R.string.Statistic_pref_FilterOn, false);
 
-    private final Pref<Boolean> triggerLoadFromBB = new Pref<>(false);
-    private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(false);
-    private final Pref<Boolean> triggerTSLoadRemain = new Pref<>(false);
-    private final Pref<Boolean> prefTSActionsEnabled = new Pref<>(false);
-    private final Pref<Boolean> triggerTSLoadAll = new Pref<>(false);
-    private final Pref<Boolean> triggerTSDeleteAll = new Pref<>(false);
+    private final Pref<Boolean> triggerLoadFromBB = new Pref<>(Boolean.FALSE);
+    private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(Boolean.FALSE);
+    private final Pref<Boolean> triggerTSLoadRemain = new Pref<>(Boolean.FALSE);
+    private final Pref<Boolean> prefTSActionsEnabled = new Pref<>(Boolean.FALSE);
+    private final Pref<Boolean> triggerTSLoadAll = new Pref<>(Boolean.FALSE);
+    private final Pref<Boolean> triggerTSDeleteAll = new Pref<>(Boolean.FALSE);
 
     private final ArrayList<MGTileStore> tss = identifyTS();
     private boolean initSquare = false;
@@ -81,7 +83,7 @@ public class FSBB extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         super.initQuickControl(etv,info);
         if ("group_bbox".equals(info)){
-            etv.setPrAction(new Pref<>(false));
+            etv.setPrAction(new Pref<>(Boolean.FALSE));
             etv.setData(prefBboxOn,R.drawable.group_bbox1,R.drawable.group_bbox2);
         } else if ("loadFromBB".equals(info)){
             etv.setPrAction(triggerLoadFromBB);
@@ -312,18 +314,26 @@ public class FSBB extends FeatureService {
 
     public boolean loadFromBB(BBox bBox2Load){
         boolean changed = false;
+        boolean filtered = false;
         BBox bBox2show = new BBox();
         if (bBox2Load != null){
             for (TrackLog aTrackLog : getApplication().metaTrackLogs.values()){
-                if (getApplication().getMetaDataUtil().checkLaLoRecords(aTrackLog, bBox2Load)){
-                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
-                    bBox2show.extend(aTrackLog.getBBox());
-                    changed = true;
+                if (aTrackLog.isFilterMatched() || !prefFilterOn.getValue()){
+                    if (getApplication().getMetaDataUtil().checkLaLoRecords(aTrackLog, bBox2Load)){
+                        getApplication().availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);
+                        bBox2show.extend(aTrackLog.getBBox());
+                        changed = true;
+                    }
+                } else {
+                    filtered = true;
                 }
             }
             if (changed){
                 getApplication().availableTrackLogsObservable.changed();
 //                getMapViewUtility().zoomForBoundingBox(bBox2show);
+            }
+            if (filtered){
+                Toast.makeText(getActivity(), "Warning: Some Tracklogs are filtered!", Toast.LENGTH_SHORT).show();
             }
         }
         return changed;
