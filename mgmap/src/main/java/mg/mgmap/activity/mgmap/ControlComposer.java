@@ -57,6 +57,7 @@ public class ControlComposer {
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.gain);
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.loss);
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_DURATION).setData(R.drawable.duration);
+        coView.dashboardEntries.add(dashboardEntry);
         return dashboardEntry;
     }
 

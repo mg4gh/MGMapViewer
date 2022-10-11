@@ -232,9 +232,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
     private void refreshVisibleEntries(){
         parent.removeAllViews();
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" remain0 working="+working+ " parent="+parent.getChildCount());
         ArrayList<TrackStatisticEntry> tracksRemain = new ArrayList<>(getVisibleEntries());
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" remain1 working="+working+ " parent="+parent.getChildCount());
 
         new Thread(){
             @Override
@@ -282,7 +280,10 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private ArrayList<TrackStatisticEntry> getFilteredEntries(){
         ArrayList<TrackStatisticEntry> list = new ArrayList<>();
         for (TrackStatisticEntry entry : tseEntries){
-            if (entry.getTrackLog().isFilterMatched()){
+            if (entry.getTrackLog().isFilterMatched()
+                    || (entry.getTrackLog()==application.recordingTrackLogObservable.getTrackLog())
+                    || (entry.getTrackLog()==application.routeTrackLogObservable.getTrackLog())
+                    || (application.availableTrackLogsObservable.availableTrackLogs.contains(entry.getTrackLog()))   ){
                 list.add(entry);
             }
         }
