@@ -147,7 +147,7 @@ public class MetaDataUtil {
                 in.read(b);
                 ByteBuffer buf = ByteBuffer.wrap(b);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
-                if (buf.getLong() == MAGIC) break;  //indicates bloack with first lat,lon,ele values
+                if (buf.getLong() == MAGIC) break;  //indicates block with first lat,lon,ele values
                 baos.write(b); // still header data
             }
             ByteBuffer buf = ByteBuffer.wrap(baos.toByteArray());

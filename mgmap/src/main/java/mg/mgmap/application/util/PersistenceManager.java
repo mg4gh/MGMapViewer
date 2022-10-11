@@ -445,6 +445,15 @@ public class PersistenceManager {
         }
     }
 
+    public boolean existsTrack(String filename){
+        return ( getAbsoluteFile(trackGpxDir, filename, ".gpx").exists() );
+    }
+
+    public void renameTrack(String oldFilename, String newFilename) {
+        deleteTrack(newFilename); // should never be the case - but just to be sure
+        getAbsoluteFile(trackGpxDir, oldFilename, ".gpx").renameTo( getAbsoluteFile(trackGpxDir, newFilename, ".gpx") );
+        getAbsoluteFile(trackMetaDir, oldFilename, ".meta").renameTo( getAbsoluteFile(trackMetaDir, newFilename, ".meta") );
+    }
 
 
     public void deleteTrack(String filename) {

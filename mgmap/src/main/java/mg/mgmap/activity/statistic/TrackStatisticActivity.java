@@ -15,6 +15,7 @@
 package mg.mgmap.activity.statistic;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -23,11 +24,17 @@ import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.StrictMode;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,6 +53,7 @@ import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
+import mg.mgmap.generic.view.ExtendedTextView;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -62,16 +70,21 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private PersistenceManager persistenceManager = null;
 
     private LinearLayout parent = null;
-
-    private PrefCache prefCache = null;
+    PrefCache prefCache = null;
+    private ArrayList<TrackStatisticEntry> tseEntries = new ArrayList<>();
 
     private Pref<Boolean> prefFullscreen;
     private final Pref<Boolean> prefNoneSelected = new Pref<>(true);
     private final Pref<Boolean> prefAllSelected = new Pref<>(true);
+    private final Pref<Boolean> prefEditAllowed = new Pref<>(true);
     private final Pref<Boolean> prefMarkerAllowed = new Pref<>(true);
     private final Pref<Boolean> prefDeleteAllowed = new Pref<>(true);
     private final Pref<Boolean> prefShareAllowed = new Pref<>(true);
     private final Pref<Boolean> prefNoneModified = new Pref<>(true);
+    Pref<Boolean> prefFilterOn;
+    final Pref<Boolean> prefFilterChanged = new Pref<>(true);
+
+    TrackStatisticFilter filter;
 
     Observer reworkObserver = new Observer() {
         @Override
@@ -96,6 +109,31 @@ public class TrackStatisticActivity extends AppCompatActivity {
         persistenceManager = application.getPersistenceManager();
 
         prefCache = new PrefCache(context);
+        prefFilterOn = prefCache.get(R.string.Statistic_pref_FilterOn, false);
+        filter = new TrackStatisticFilter(prefCache);
+
+        prefFilterOn.addObserver(new Observer() {
+            @Override
+            public void update(Observable observable, Object o) {
+                if (prefFilterOn.getValue()){
+                    new TrackStatisticFilterDialog().show(context, TrackStatisticActivity.this);
+                } else {
+                    refreshVisibleEntries();
+                }
+            }
+        });
+        prefFilterChanged.addObserver(new Observer() {
+            @Override
+            public void update(Observable observable, Object o) {
+                if (prefFilterOn.getValue()){
+                for (TrackStatisticEntry entry : tseEntries){
+                    filter.checkFilter(entry);
+                }
+                }
+                refreshVisibleEntries();
+            }
+        });
+
         prefFullscreen = prefCache.get(R.string.FSControl_qcFullscreenOn, true);
         prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(TrackStatisticActivity.this, prefFullscreen.getValue()));
         Pref<Boolean> triggerHome = new Pref<>(true);
@@ -104,15 +142,38 @@ public class TrackStatisticActivity extends AppCompatActivity {
         parent = findViewById(R.id.trackStatisticEntries);
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
+//        ControlView.createQuickControlETV(qcs)
+//                .setData(R.drawable.fullscreen)
+//                .setPrAction(prefFullscreen,triggerHome);
         ControlView.createQuickControlETV(qcs)
-                .setData(R.drawable.fullscreen)
-                .setPrAction(prefFullscreen,triggerHome);
-        ControlView.createQuickControlETV(qcs)
-                .setData(prefAllSelected,R.drawable.select_all, R.drawable.select_all2)
+                .setData(prefFilterOn,R.drawable.filter,R.drawable.filter2)
+                .setPrAction(prefFilterOn);
+        ExtendedTextView etvAll = ControlView.createQuickControlETV(qcs);
+        etvAll.setData(prefAllSelected,R.drawable.select_all, R.drawable.select_all2)
                 .setOnClickListener(new SelectOCL(parent, true));
-        ControlView.createQuickControlETV(qcs)
-                .setData(prefNoneSelected,R.drawable.deselect_all,R.drawable.deselect_all2)
+        ExtendedTextView etvNone = ControlView.createQuickControlETV(qcs);
+        etvNone.setData(prefNoneSelected,R.drawable.deselect_all,R.drawable.deselect_all2)
                 .setOnClickListener(new SelectOCL(parent, false));
+        qcs.removeView(etvNone);
+        prefAllSelected.addObserver(new Observer() {
+            @Override
+            public void update(Observable observable, Object o) {
+                if (prefAllSelected.getValue()){
+                    if ((etvAll.getParent() != null) && (etvNone.getParent() == null)) {
+                        qcs.addView(etvNone, qcs.indexOfChild(etvAll));
+                        qcs.removeView(etvAll);
+                    }
+                } else {
+                    if ((etvAll.getParent() == null) && (etvNone.getParent() != null)){
+                        qcs.addView(etvAll, qcs.indexOfChild(etvNone));
+                        qcs.removeView(etvNone);
+                    }
+                }
+            }
+        });
+        ControlView.createQuickControlETV(qcs)
+                .setData(prefEditAllowed,R.drawable.edit,R.drawable.edit2)
+                .setOnClickListener(createEditOCL());
         ControlView.createQuickControlETV(qcs)
                 .setData(prefNoneSelected,R.drawable.show,R.drawable.show2)
                 .setOnClickListener(createShowOCL());
@@ -205,6 +266,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
             }
         }
         parent.removeAllViews();
+        tseEntries.clear();
     }
 
     @Override
@@ -216,16 +278,43 @@ public class TrackStatisticActivity extends AppCompatActivity {
         prefCache.cleanup();
     }
 
-    private ArrayList<TrackStatisticEntry> getSelectedEntries(){
+    private void refreshVisibleEntries(){
+        parent.removeAllViews();
+        for (TrackStatisticEntry entry : getVisibleEntries()){
+            parent.addView(entry);
+        }
+        reworkState();
+    }
+
+    private ArrayList<TrackStatisticEntry> getVisibleEntries(){
+        return prefFilterOn.getValue()?getFilteredEntries():tseEntries;
+    }
+
+    private ArrayList<TrackStatisticEntry> getFilteredEntries(){
         ArrayList<TrackStatisticEntry> list = new ArrayList<>();
-        for (int idx=0; idx < parent.getChildCount(); idx++){
-            if (parent.getChildAt(idx) instanceof TrackStatisticEntry) {
-                TrackStatisticEntry entry = (TrackStatisticEntry) parent.getChildAt(idx);
-                if (entry.isPrefSelected()){
-                    list.add(entry);
-                }
+        for (TrackStatisticEntry entry : tseEntries){
+            if (entry.isFilterMatched()){
+                list.add(entry);
             }
         }
+        return list;
+    }
+
+    private ArrayList<TrackStatisticEntry> getSelectedEntries(){
+        ArrayList<TrackStatisticEntry> list = new ArrayList<>();
+        for (TrackStatisticEntry entry : getVisibleEntries()){
+            if (entry.isPrefSelected()){
+                list.add(entry);
+            }
+        }
+//        for (int idx=0; idx < parent.getChildCount(); idx++){
+//            if (parent.getChildAt(idx) instanceof TrackStatisticEntry) {
+//                TrackStatisticEntry entry = (TrackStatisticEntry) parent.getChildAt(idx);
+//                if (entry.isPrefSelected()){
+//                    list.add(entry);
+//                }
+//            }
+//        }
         return list;
     }
     private ArrayList<TrackStatisticEntry> getModifiedEntries(){
@@ -248,7 +337,12 @@ public class TrackStatisticActivity extends AppCompatActivity {
         if (statistic.getNumPoints() == 0) return; // don't show empty tracks, especially possible for marker Tracks
         nameKeys.add(trackLog.getNameKey());
 
-        TrackStatisticEntry entry = new TrackStatisticEntry(context, trackLog, parent, colorId, colorIdSelected);
+        TrackStatisticEntry entry = new TrackStatisticEntry(context, trackLog, colorId, colorIdSelected);
+        tseEntries.add(entry);
+        filter.checkFilter(entry);
+        if (!prefFilterOn.getValue() || entry.isFilterMatched()){
+            parent.addView(entry);
+        }
         entry.getPrefSelected().addObserver(reworkObserver);
         entry.getTrackLog().addObserver(reworkObserver);
     }
@@ -267,6 +361,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+ getNames(entries, false));
         prefNoneSelected.setValue(entries.size() == 0);
         prefAllSelected.setValue(parent.getChildCount() == entries.size());
+        prefEditAllowed.setValue( entries.size() == 1 );
         boolean bMarker = (entries.size() == 1);
         if (bMarker){
             if (entries.get(0).getTrackLog() == application.routeTrackLogObservable.getTrackLog()) bMarker = false;
@@ -291,6 +386,62 @@ public class TrackStatisticActivity extends AppCompatActivity {
         }
         prefShareAllowed.setValue((bShare));
         prefNoneModified.setValue(getModifiedEntries().size() == 0);
+    }
+
+    private View.OnClickListener createEditOCL(){
+        return v -> {
+            if (prefEditAllowed.getValue()){
+                final ArrayList<TrackStatisticEntry> entries = getSelectedEntries();
+                if (entries.size() == 1){
+                    TrackStatisticEntry tsEntry = entries.get(0);
+                    TrackLog aTrackLog = tsEntry.getTrackLog();
+                    final EditText etTrackLogName = new EditText(this);
+                    etTrackLogName.setText(aTrackLog.getName());
+                    etTrackLogName.setSelectAllOnFocus(true);
+                    InputFilter filter = new InputFilter() {
+                        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                            for (int i = start; i < end; i++) {
+                                if ("/\\?%*:|\"<>.,;=\n".indexOf(source.charAt(i)) >= 0){
+                                    etTrackLogName.setError("Not allowed characters: /\\?%*:|\"<>.,;=<LF>");
+                                    return "";
+                                }
+                            }
+                            return null;
+                        }
+                    };
+                    etTrackLogName.setFilters(new InputFilter[] { filter });
+
+                    new AlertDialog.Builder(this)
+                            .setTitle("Rename Track")
+                            .setMessage("Old name: "+aTrackLog.getName())
+                            .setView(etTrackLogName)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    String oldName = aTrackLog.getName();
+                                    String oldNameKey = aTrackLog.getNameKey();
+                                    String newName = etTrackLogName.getText().toString();
+                                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" rename \""+oldName+"\" to \""+newName+"\"");
+
+                                    if (persistenceManager.existsTrack(newName)){
+                                        Toast.makeText(context, "Rename failed, name already exists: "+newName, Toast.LENGTH_LONG);
+                                    } else{
+                                        aTrackLog.setName(newName);
+                                        persistenceManager.renameTrack(oldName, newName);
+                                        application.metaTrackLogs.remove(oldNameKey);
+                                        application.metaTrackLogs.put(aTrackLog.getNameKey(), aTrackLog);
+                                        prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
+                                    }
+                                    tsEntry.invalidate();
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                }
+                            })
+                            .show();
+                }
+            }
+        };
     }
 
     private View.OnClickListener createShowOCL(){

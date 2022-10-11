@@ -17,11 +17,16 @@ package mg.mgmap.generic.util;
 import android.content.SharedPreferences;
 import android.view.View;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Observable;
 import java.util.UUID;
 
 public class Pref<T> extends Observable implements View.OnClickListener, View.OnLongClickListener {
 
+    public SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
     protected final String key;
     protected T value;
     protected final SharedPreferences sharedPreferences;
@@ -61,6 +66,10 @@ public class Pref<T> extends Observable implements View.OnClickListener, View.On
         } else if (value instanceof Long){
             Long res = sharedPreferences.getLong(key, (Long) value);
             return (T)res;
+        } else if (value instanceof Calendar){
+            Calendar res = Calendar.getInstance();
+            res.setTimeInMillis( sharedPreferences.getLong(key, ((Calendar) value).getTimeInMillis() ));
+            return (T)res;
         } else {
             throw new RuntimeException("type not allowed: "+value.getClass().getName());
         }
@@ -78,6 +87,8 @@ public class Pref<T> extends Observable implements View.OnClickListener, View.On
                 sharedPreferences.edit().putString(key, (String) t).apply();
             } else if (value instanceof Long){
                 sharedPreferences.edit().putLong(key, (Long) t).apply();
+            } else if (value instanceof Calendar){
+                sharedPreferences.edit().putLong(key, ((Calendar) t).getTimeInMillis() ).apply();
             } else {
                 throw new RuntimeException("type not allowed: "+value.getClass().getName());
             }
@@ -138,6 +149,43 @@ public class Pref<T> extends Observable implements View.OnClickListener, View.On
     public void onChange(){
         setChanged();
         notifyObservers();
+    }
+
+    public T verify(String v){
+        try {
+            if (v.contains("\n")) throw new ParseException(v, v.indexOf("\n"));
+            if (value instanceof Boolean){
+                Boolean res = Boolean.parseBoolean(v);
+                return (T)res;
+            } else if (value instanceof Integer){
+                Integer res = ("".equals(v))?0:Integer.parseInt(v);
+                return (T)res;
+            } else if (value instanceof Float){
+                Float res = ("".equals(v))?0:Float.parseFloat(v);
+                return (T)res;
+            } else if (value instanceof String){
+                String res = v;
+                return (T)res;
+            } else if (value instanceof Long){
+                Long res = ("".equals(v))?0:Long.parseLong(v);
+                return (T)res;
+            } else if (value instanceof Calendar){
+                Calendar res = Calendar.getInstance();
+                res.setTime( sdf.parse(v) );
+                return (T)res;
+            } else {
+                throw new RuntimeException("type not allowed: "+value.getClass().getName());
+            }
+        } catch (NumberFormatException | ParseException e) {
+            return null;
+        }
+    }
+
+    public void setStringValue(String v){
+        T t = verify(v);
+        if (t != null){
+            setValue(t);
+        }
     }
 
     @Override

@@ -44,7 +44,7 @@ public class TrackStatisticEntry extends TableLayout {
 
     private final TrackLog trackLog;
     private final Pref<Boolean> prefShowNameKey = new Pref<>(false);
-
+    private boolean filterMatched = true;
 
     private final Observer modifiedObserver;
 
@@ -53,13 +53,12 @@ public class TrackStatisticEntry extends TableLayout {
         return ControlView.dp(dp);
     }
 
-    public TrackStatisticEntry(Context context, TrackLog trackLog, ViewGroup parent, int colorId, int colorIdSelected){
+    public TrackStatisticEntry(Context context, TrackLog trackLog, int colorId, int colorIdSelected){
         super(context);
         this.trackLog = trackLog;
 
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
 
-        parent.addView(this);
         this.setId(View.generateViewId());
         this.setPadding(0, dp(2),0,0);
 
@@ -181,10 +180,22 @@ public class TrackStatisticEntry extends TableLayout {
         return trackLog.isModified();
     }
 
+    public boolean isFilterMatched() {
+        return filterMatched;
+    }
+
+    public void setFilterMatched(boolean filterMatched) {
+        this.filterMatched = filterMatched;
+    }
 
     public void onCleanup(){
         trackLog.deleteObserver(modifiedObserver);
         prefShowNameKey.deleteObserver(modifiedObserver);
     }
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        modifiedObserver.update(null,null);
+    }
 }

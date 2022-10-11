@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Statistic_pref_FilterOn">Statistic1.filterOn</string>
+    <string name="Statistic_pref_FilterNamePart">Statistic1.filterNamePart</string>
+    <string name="Statistic_pref_FilterNamePartOn">Statistic1.filterNamePartOn</string>
+    <string name="Statistic_pref_FilterLengthMin">Statistic1.filterLengthMin</string>
+    <string name="Statistic_pref_FilterLengthMinOn">Statistic1.filterLengthMinOn</string>
+    <string name="Statistic_pref_FilterLengthMax">Statistic1.filterLengthMax</string>
+    <string name="Statistic_pref_FilterLengthMaxOn">Statistic1.filterLengthMaxOn</string>
+    <string name="Statistic_pref_FilterTimeMin">Statistic1.filterTimeMin</string>
+    <string name="Statistic_pref_FilterTimeMinOn">Statistic1.filterTimeMinOn</string>
+    <string name="Statistic_pref_FilterTimeMax">Statistic1.filterTimeMax</string>
+    <string name="Statistic_pref_FilterTimeMaxOn">Statistic1.filterTimeMaxOn</string>
+    <string name="Statistic_pref_FilterGainMin">Statistic1.filterGainMin</string>
+    <string name="Statistic_pref_FilterGainMinOn">Statistic1.filterGainMinOn</string>
+    <string name="Statistic_pref_FilterGainMax">Statistic1.filterGainMax</string>
+    <string name="Statistic_pref_FilterGainMaxOn">Statistic1.filterGainMaxOn</string>
+
+</resources>
