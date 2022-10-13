@@ -49,7 +49,7 @@ public class EnlargeControl extends ExtendedClickListener {
 
         if (v instanceof TextView) {
             TextView tv = (TextView) v;
-            String text = tv.getText().toString();
+            String text = " "+tv.getText().toString();
             tvEnlarge.setText(text);
             if (tv.getBackground() instanceof ColorDrawable) {
                 ColorDrawable cd = (ColorDrawable) tv.getBackground();

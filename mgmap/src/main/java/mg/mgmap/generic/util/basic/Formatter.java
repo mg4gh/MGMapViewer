@@ -63,11 +63,13 @@ public class Formatter {
             if (distance < 0){
                 text = "";
             } else {
-                text = String.format(Locale.ENGLISH, " %.2f" + ((distance < 100000) ? " " : "") + "km", distance / 1000.0);
+                String format = ((distance < 100000) ? "%.2f km" : "%.1f km");
+                text = String.format(Locale.ENGLISH, format, distance / 1000.0);
             }
         } else if (formatType == FormatType.FORMAT_HEIGHT) {
             float height = (Float) value;
-            text = (height == PointModel.NO_ELE) ? "" : String.format(Locale.ENGLISH, " %.1f m", height);
+            String format = ((height < 1000) ? "%.1f m" : "%.0f m");
+            text = (height == PointModel.NO_ELE) ? "" : String.format(Locale.ENGLISH, format, height);
         } else if (formatType == FormatType.FORMAT_STRING) {
             text = value.toString();
         } else if (formatType == FormatType.FORMAT_DURATION) {

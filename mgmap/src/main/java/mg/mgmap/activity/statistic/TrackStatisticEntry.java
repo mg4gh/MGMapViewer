@@ -17,6 +17,7 @@ package mg.mgmap.activity.statistic;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -155,6 +156,7 @@ public class TrackStatisticEntry extends TableLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setTextColor(getContext().getColor(R.color.WHITE));
+        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         etv.setLines(1);
         return etv;
     }

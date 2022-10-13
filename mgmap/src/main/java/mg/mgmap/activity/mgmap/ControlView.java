@@ -157,7 +157,7 @@ public class ControlView extends RelativeLayout {
 
         View parent = (View) tv_enlarge.getParent();
         RelativeLayout.LayoutParams parentLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        parentLayoutParams.setMargins(dp(80), dp(350), dp(80), dp(0));
+        parentLayoutParams.setMargins(dp(60), dp(350), dp(60), dp(0));
         parent.setLayoutParams(parentLayoutParams);
 
         tv_enlarge.setLines(1);
@@ -202,6 +202,7 @@ public class ControlView extends RelativeLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
+        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         etv.setOnClickListener(enlargeControl);
         return etv;
     }
@@ -329,6 +330,7 @@ public class ControlView extends RelativeLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
+        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         etv.setTextColor(CC.getColor(R.color.BLACK));
         etv.setBackgroundColor(CC.getColor(R.color.WHITE_A150));
         return etv;
