@@ -105,7 +105,7 @@ android {
     compileSdkVersion 33
     defaultConfig {
         applicationId "mg.mgmap"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 33
         versionCode 1
         versionName "${versionMajor}-${versionSuffix}-${getDate()}"

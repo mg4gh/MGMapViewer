@@ -36,6 +36,8 @@ public interface PointModel {
      */
     float getEleD();
 
+    float getEleAcc();
+
     long getTimestamp();
 
     long getLaLo();

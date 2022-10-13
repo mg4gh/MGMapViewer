@@ -23,13 +23,13 @@ import java.nio.ByteBuffer;
  */
 public class TrackLogPoint extends WriteablePointModelImpl implements WriteablePointModel{
 
-    public static TrackLogPoint createGpsLogPoint(long timestamp, double latitude, double longitude, float accuracy, double altitude, float geoidOffset, float hgtAlt){
+    public static TrackLogPoint createGpsLogPoint(long timestamp, double latitude, double longitude, float accuracy, double altitude, float geoidOffset, float altAccuracy, float hgtAlt){
         TrackLogPoint lp = new TrackLogPoint();
         lp.timestamp = timestamp;
         lp.la = LaLo.d2md(latitude);
         lp.lo = LaLo.d2md(longitude);
         lp.hgtAlt = hgtAlt;
-        lp.accuracy = Math.round(accuracy);
+        lp.accuracy = (Math.round(accuracy*10))/10.0f;
         if (altitude != 0){
             lp.wgs84alt = (float)altitude;
             lp.nmeaAlt = lp.wgs84alt - geoidOffset;
@@ -37,6 +37,7 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         } else { // no gps altitude
             lp.ele = lp.hgtAlt;
         }
+        lp.altAccuracy = (Math.round(altAccuracy*10))/10.0f;
         return lp;
     }
 
@@ -55,6 +56,10 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
     private float nmeaAlt = NO_ELE; // m
     private float pressureAlt = NO_ELE; // m
     private float hgtAlt = NO_ELE; // m
+    private float altAccuracy = 0; // m
+    private float pressureAccuracy = 0; // delta hpa - only temporary used
+    private float pressureAltAccuracy = 0; // m
+    private float altSmoothing = 0; // m
 
     public TrackLogPoint(){}
 
@@ -69,6 +74,8 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         this.pressureAlt = tlp.pressureAlt;
         this.ele = tlp.ele;
         this.hgtAlt = tlp.hgtAlt;
+        this.altAccuracy = tlp.altAccuracy;
+        this.pressureAltAccuracy = tlp.pressureAltAccuracy;
     }
 
 
@@ -76,25 +83,29 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         buf.putLong(timestamp);
         buf.putInt(la);
         buf.putInt(lo);
-        buf.putInt((int)accuracy);
+        buf.putInt((int)accuracy*1000);
         buf.putInt((int)(pressure*1000));
         buf.putInt((int)(wgs84alt*1000));
         buf.putInt((int)(nmeaAlt*1000));
         buf.putInt((int)(ele*1000));
         buf.putInt((int)(pressureAlt*1000));
         buf.putInt((int)(hgtAlt*1000));
+        buf.putInt((int)(altAccuracy*1000));
+        buf.putInt((int)(pressureAltAccuracy*1000));
     }
     public void fromByteBuffer(ByteBuffer buf){
         timestamp = buf.getLong();
         la = buf.getInt();
         lo = buf.getInt();
-        accuracy = buf.getInt();
+        accuracy = buf.getInt()/1000.0f;
         pressure = buf.getInt()/1000.0f;
         wgs84alt = buf.getInt()/1000.0f;
         nmeaAlt = buf.getInt()/1000.0f;
         ele = buf.getInt()/1000.0f;
         pressureAlt = buf.getInt()/1000.0f;
         hgtAlt = buf.getInt()/1000.0f;
+        altAccuracy = buf.getInt()/1000.0f;
+        pressureAltAccuracy = buf.getInt()/1000.0f;
     }
 
     @Override
@@ -122,6 +133,17 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         return PointModel.NO_ELE;
     }
 
+    @Override
+    public float getEleAcc() {
+        if (pressureAlt != PointModel.NO_ELE){
+            return pressureAltAccuracy;
+        }
+        if (ele != PointModel.NO_ELE){
+            return altAccuracy;
+        }
+        return super.getEleAcc();
+    }
+
     public long getTimestamp(){
         return timestamp;
     }
@@ -143,6 +165,19 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
     public float getHgtAlt() {
         return hgtAlt;
     }
+    public float getAltAccuracy() {
+        return altAccuracy;
+    }
+    public float getPressureAccuracy() {
+        return pressureAccuracy;
+    }
+    public float getPressureAltAccuracy() {
+        return pressureAltAccuracy;
+    }
+    public float getAltSmoothing() {
+        return altSmoothing;
+    }
+
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
@@ -164,5 +199,16 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
     public void setHgtAlt(float hgtAlt) {
         this.hgtAlt = hgtAlt;
     }
-
+    public void setAltAccuracy(float altAccuracy) {
+        this.altAccuracy = altAccuracy;
+    }
+    public void setPressureAccuracy(float pressureAccuracy) {
+        this.pressureAccuracy = pressureAccuracy;
+    }
+    public void setPressureAltAccuracy(float pressureAltAccuracy) {
+        this.pressureAltAccuracy = pressureAltAccuracy;
+    }
+    public void setAltSmoothing(float altSmoothing) {
+        this.altSmoothing = altSmoothing;
+    }
 }

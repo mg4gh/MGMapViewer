@@ -14,13 +14,17 @@
  */
 package mg.mgmap.generic.model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.Formatter;
+import mg.mgmap.generic.util.basic.NameUtil;
 
 
 /**
@@ -102,8 +106,9 @@ public class TrackLogStatistic {
 
     private PointModel lastPoint4Distance = null;
     private PointModel lastPoint4GainLoss = null;
-    private static final float ELE_THRESHOLD_BARO = 2.3f; // in meter
-    private static final float ELE_THRESHOLD_ELSE = 11.0f; // in meter
+    private float lastSmoothing4GainLoss = 0;
+    private static final float ELE_THRESHOLD_BARO = 2.0f; // in meter
+    private static final float ELE_THRESHOLD_ELSE = 10.0f; // in meter
 
     public TrackLogStatistic(){}
 
@@ -119,11 +124,13 @@ public class TrackLogStatistic {
 //        tStart = 0; // tStart shall survive
         lastPoint4Distance = null;
         lastPoint4GainLoss = null;
+        lastSmoothing4GainLoss = 0;
     }
 
     public void resetSegment() {
         lastPoint4Distance = null;
         lastPoint4GainLoss = null;
+        lastSmoothing4GainLoss = 0;
     }
 
     public TrackLogStatistic(int segmentIdx) {
@@ -202,15 +209,22 @@ public class TrackLogStatistic {
     private void process2GL(PointModel point){
         if ( lastPoint4GainLoss == null){  // no reference point or first one (ignore first point height value)
             lastPoint4GainLoss = point;
-        } else{
-            float diff = point.getEleD() - lastPoint4GainLoss.getEleD();
+        } else {
+            float smoothingFactor = Math.min(20, point.getEleAcc()) / 20.0f;
+            float smoothingDiff = (point.getEleD() - lastPoint4GainLoss.getEleD());
+            float smoothing = smoothingDiff * smoothingFactor / 2; // smoothing is maximal half of the difference
+
+            float diff = (point.getEleD()-smoothing) - (lastPoint4GainLoss.getEleD()-lastSmoothing4GainLoss);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" point.getEleAcc()="+point.getEleAcc()+" smoothingFactor="+smoothingFactor+" smoothingDiff="+smoothingDiff+" smoothing="+smoothing+" eleD="+point.getEleD());
             if (Math.abs(diff) >= getEleThreshold(point)){
                 lastPoint4GainLoss = point;
+                lastSmoothing4GainLoss = smoothing;
                 if (diff > 0){
                     gain += diff;
                 } else {
                     loss -= diff;
                 }
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" use it: smoothing="+smoothing+" eleD="+point.getEleD()+" gain="+gain+" loss="+loss);
             }
         }
     }

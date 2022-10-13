@@ -191,6 +191,12 @@ public class GpxImporter {
                                 if (val[0].equals("hgtAltitude")){
                                     tlp.setHgtAlt( Float.parseFloat(val[1]) );
                                 }
+                                if (val[0].equals("altAccuracy")){
+                                    tlp.setAltAccuracy( Float.parseFloat(val[1]) );
+                                }
+                                if (val[0].equals("pressureAltAccuracy")){
+                                    tlp.setPressureAltAccuracy( Float.parseFloat(val[1]) );
+                                }
                             }
                         }
                     } catch (Exception e) {

@@ -92,6 +92,12 @@ public class GpxExporter {
                                     if (lp.getHgtAlt() != TrackLogPoint.NO_ELE){
                                         cmt += "hgtAltitude=" + String.format(Locale.ENGLISH,"%.1f",lp.getHgtAlt() ) + "," ;
                                     }
+                                    if (lp.getAltAccuracy() != 0){
+                                        cmt += "altAccuracy=" + String.format(Locale.ENGLISH,"%.1f",lp.getAltAccuracy() ) + "," ;
+                                    }
+                                    if (lp.getPressureAltAccuracy() != 0){
+                                        cmt += "pressureAltAccuracy=" + String.format(Locale.ENGLISH,"%.1f",lp.getPressureAltAccuracy() ) + "," ;
+                                    }
                                     pw.println("\t\t\t\t<cmt>" + cmt.substring(0,cmt.length()-1) + "</cmt>");
                                 }
                             }

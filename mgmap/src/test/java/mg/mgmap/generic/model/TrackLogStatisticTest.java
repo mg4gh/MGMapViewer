@@ -53,7 +53,7 @@ class TrackLogStatisticTest {
     void updateWithPoint() {
         TrackLogStatistic stat = new TrackLogStatistic(-2);
 
-        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234567654L, 49.4, 8.6, 3.14f, 123.45, 49.49f, 121.21f);
+        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234567654L, 49.4, 8.6, 3.14f, 123.45, 49.49f, 1.23f, 121.21f);
         stat.updateWithPoint(tlp);
 
         assertEquals(-2, stat.getSegmentIdx());
@@ -66,7 +66,7 @@ class TrackLogStatisticTest {
         assertTrue(Math.abs(stat.getMaxEle()-(123.45f-49.49f)) < 0.001);
         assertEquals( 1, stat.getNumPoints());
 
-        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(1234568655L, 49.4001, 8.6001, 3.14f, 126.45, 48.49f, 121.21f);
+        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(1234568655L, 49.4001, 8.6001, 3.14f, 126.45, 48.49f, 1.23f, 121.21f);
         stat.updateWithPoint(tlp2);
 
         assertEquals(-2, stat.getSegmentIdx());
@@ -80,7 +80,7 @@ class TrackLogStatisticTest {
         assertTrue(Math.abs(stat.getMaxEle()-(126.45f-48.49f)) < 0.001);
         assertEquals( 2, stat.getNumPoints());
 
-        TrackLogPoint tlp3 = TrackLogPoint.createGpsLogPoint(1234568665L, 49.4002, 8.6002, 3.14f, 132.45, 47.49f, 121.21f);
+        TrackLogPoint tlp3 = TrackLogPoint.createGpsLogPoint(1234568665L, 49.4002, 8.6002, 3.14f, 132.45, 47.49f, 1.23f, 121.21f);
         stat.updateWithPoint(tlp3);
 
         assertEquals(-2, stat.getSegmentIdx());
@@ -95,7 +95,7 @@ class TrackLogStatisticTest {
         assertTrue(Math.abs(stat.getMaxEle()-(132.45f-47.49f)) < 0.001);
         assertEquals( 3, stat.getNumPoints());
 
-        TrackLogPoint tlp4 = TrackLogPoint.createGpsLogPoint(1234568666L, 49.4003, 8.6003, 3.14f, 112.45, 47.49f, 121.21f);
+        TrackLogPoint tlp4 = TrackLogPoint.createGpsLogPoint(1234568666L, 49.4003, 8.6003, 3.14f, 112.45, 47.49f, 1.23f, 121.21f);
         stat.updateWithPoint(tlp4);
 
         assertEquals(-2, stat.getSegmentIdx());
@@ -112,7 +112,7 @@ class TrackLogStatisticTest {
 
         stat.updateWithPoint(null);
 
-        TrackLogPoint tlp5 = TrackLogPoint.createGpsLogPoint(1234568675L, 49.4004, 8.6004, 3.14f, 152.45, 47.49f, 121.21f);
+        TrackLogPoint tlp5 = TrackLogPoint.createGpsLogPoint(1234568675L, 49.4004, 8.6004, 3.14f, 152.45, 47.49f, 1.23f, 121.21f);
         stat.updateWithPoint(tlp5);
 
         assertEquals(-2, stat.getSegmentIdx());
@@ -127,7 +127,7 @@ class TrackLogStatisticTest {
         assertTrue(Math.abs(stat.getMaxEle()-(152.45f-47.49f)) < 0.001);
         assertEquals( 5, stat.getNumPoints());
 
-        TrackLogPoint tlp6 = TrackLogPoint.createGpsLogPoint(1234568675L, 49.4004, 8.6004, 3.14f, 152.45, 47.49f, 121.21f);
+        TrackLogPoint tlp6 = TrackLogPoint.createGpsLogPoint(1234568675L, 49.4004, 8.6004, 3.14f, 152.45, 47.49f, 1.23f, 121.21f);
         tlp6.setPressureAlt(101.96f);
         stat.updateWithPoint(tlp6);
 
@@ -145,7 +145,7 @@ class TrackLogStatisticTest {
 
         stat.setFrozen(true);
 
-        TrackLogPoint tlp7 = TrackLogPoint.createGpsLogPoint(1234568675L, 49.4004, 8.6004, 3.14f, 152.45, 47.49f, 121.21f);
+        TrackLogPoint tlp7 = TrackLogPoint.createGpsLogPoint(1234568675L, 49.4004, 8.6004, 3.14f, 152.45, 47.49f, 1.23f, 121.21f);
         tlp7.setPressureAlt(101.96f);
         stat.updateWithPoint(tlp7);
 
@@ -178,7 +178,7 @@ class TrackLogStatisticTest {
         stat.setMinEle(123.45f);
         stat.setMaxEle(543.21f);
 
-        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234567664L, 49.4, 8.6, 3.14f, 123.45, 0f, 121.21f);
+        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234567664L, 49.4, 8.6, 3.14f, 123.45, 0f, 1.23f, 121.21f);
         stat.updateWithPoint(tlp);
 
         assertEquals(3, stat.getSegmentIdx());
@@ -218,7 +218,7 @@ class TrackLogStatisticTest {
         stat2.setMinEle(123.45f);
         stat2.setMaxEle(543.21f);
 
-        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234567664L, 49.4, 8.6, 3.14f, 123.45, 0f, 121.21f);
+        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234567664L, 49.4, 8.6, 3.14f, 123.45, 0f, 1.23f, 121.21f);
         stat2.updateWithPoint(tlp);
 
         ByteBuffer buf = ByteBuffer.allocate(100);
@@ -252,7 +252,7 @@ class TrackLogStatisticTest {
         stat1.setMinEle(123.45f);
         stat1.setMaxEle(543.21f);
 
-        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234568154L, 49.4, 8.6, 3.14f, 123.45, 0f, 121.21f);
+        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234568154L, 49.4, 8.6, 3.14f, 123.45, 0f, 1.23f, 121.21f);
         stat1.updateWithPoint(tlp);
 
         TrackLogStatistic stat2 = new TrackLogStatistic(4);
@@ -264,7 +264,7 @@ class TrackLogStatisticTest {
         stat2.setMinEle(121.45f);
         stat2.setMaxEle(548.21f);
 
-        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(1234567952L, 49.4, 8.6, 3.14f, 123.45, 0f, 121.21f);
+        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(1234567952L, 49.4, 8.6, 3.14f, 123.45, 0f, 1.23f, 121.21f);
         stat2.updateWithPoint(tlp2);
 
         TrackLogStatistic stat = new TrackLogStatistic();
@@ -329,7 +329,7 @@ class TrackLogStatisticTest {
         stat1.setMinEle(123.45f);
         stat1.setMaxEle(543.21f);
 
-        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234569154L, 49.4, 8.6, 3.14f, 123.45, 0f, 121.21f);
+        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234569154L, 49.4, 8.6, 3.14f, 123.45, 0f, 1.23f, 121.21f);
         stat1.updateWithPoint(tlp);
 
         assertEquals("start=15.01.1970_07:56:07 duration=0:00:01 totalLength=123456.78 gain=1234.0 loss=1243.0 minEle=123.4 maxEle=543.2 numPoints=1", stat1.toString());

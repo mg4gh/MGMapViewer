@@ -22,7 +22,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -57,7 +56,10 @@ public class TrackLoggerService extends Service {
 
     public static void setPressureAlt(TrackLogPoint lp){
         if (lp.getPressure() != PointModel.NO_PRES){
-            lp.setPressureAlt( Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure()) * 10 ) / 10.0f);
+            float pressureAlt = Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure()) * 10 ) / 10.0f;
+            float pressureAlt2 = Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure()+lp.getPressureAccuracy()) * 10 ) / 10.0f;
+            lp.setPressureAlt( pressureAlt );
+            lp.setPressureAltAccuracy( pressureAlt - pressureAlt2 );
         }
     }
 
@@ -70,24 +72,22 @@ public class TrackLoggerService extends Service {
 
         turningInstructionService = new TurningInstructionService(application, application, prefCache);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String CHANNEL_ID = "my_channel_01";
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "MGMapViewer information channel",
-                    NotificationManager.IMPORTANCE_LOW);
+        String CHANNEL_ID = "my_channel_01";
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                "MGMapViewer information channel",
+                NotificationManager.IMPORTANCE_LOW);
 
-            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
 
-            Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
-            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.mg2)
-                    .setContentTitle("MGMapViewer")
-                    .setContentText("Location Listener is running.")
-                    .setContentIntent(    PendingIntent.getActivity(this.getApplicationContext(), 0, intent , PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
-                    .setSound(null)
-                    .build();
-        }
+        Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
+        notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.mg2)
+                .setContentTitle("MGMapViewer")
+                .setContentText("Location Listener is running.")
+                .setContentIntent(    PendingIntent.getActivity(this.getApplicationContext(), 0, intent , PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
+                .setSound(null)
+                .build();
 
 
     }
@@ -113,9 +113,7 @@ public class TrackLoggerService extends Service {
 
     protected void activateService(){
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForeground(1, notification);
-            }
+            startForeground(1, notification);
             long barometerSmoothingPeriod = 6000; // default value
 
             try {
@@ -138,9 +136,7 @@ public class TrackLoggerService extends Service {
     }
     protected void deactivateService(){
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                stopForeground(STOP_FOREGROUND_REMOVE);
-            }
+            stopForeground(STOP_FOREGROUND_REMOVE);
             locationListener.deactivate();
             barometerListener.deactivate();
         } catch (Exception e) {
@@ -149,7 +145,8 @@ public class TrackLoggerService extends Service {
     }
 
     protected void onNewTrackLogPoint(TrackLogPoint lp) {
-        lp.setPressure( barometerListener.getPressure(lp.getLat(), lp.getLon()) );
+        barometerListener.providePressureData(lp);
+//        lp.setPressure( barometerListener.getPressure(lp.getLat(), lp.getLon()) );
         setPressureAlt(lp);
         application.logPoints2process.add(lp);
         Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);

@@ -28,6 +28,7 @@ import java.util.Locale;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
@@ -46,7 +47,6 @@ class BarometerListener implements SensorEventListener {
     private final Sensor pressureSensor;
 
     private int cnt=0;
-    private double lastPressure = PointModel.NO_PRES;
     private long lastEventTimeMillis = 0;
 
     private final int speed;
@@ -109,7 +109,7 @@ class BarometerListener implements SensorEventListener {
         }
     }
 
-    float getPressure(double lat, double lon){ // parameters just for logging
+    void  providePressureData(TrackLogPoint tlp){
         String logInfo = " ";
         synchronized (pValues){
             if (pValues.size() > 0){
@@ -117,12 +117,18 @@ class BarometerListener implements SensorEventListener {
                 for (int idx=0; idx<pValues.size(); idx++){
                     total += pValues.valueAt(idx);
                 }
-                lastPressure = total/pValues.size();
-                logInfo += "lastPressure="+lastPressure+" pValues.size()="+pValues.size();
+                double avgPressure = total/pValues.size();
+                tlp.setPressure((float)avgPressure);
+                double totalDiff = 0;
+                for (int idx=0; idx<pValues.size(); idx++){
+                    totalDiff += Math.abs(pValues.valueAt(idx)-avgPressure);
+                }
+                double accPressure = totalDiff/pValues.size();
+                tlp.setPressureAccuracy((float)accPressure);
+                logInfo += " avgPressure="+avgPressure+" accPressure="+accPressure+" pValues.size()="+pValues.size();
             }
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+String.format(Locale.ENGLISH," lat=%2.6f lon=%2.6f ",lat, lon)+ logInfo);
-        return (float)lastPressure;
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+String.format(Locale.ENGLISH," lat=%2.6f lon=%2.6f ",tlp.getLat(), tlp.getLon())+ logInfo);
     }
 
     @Override

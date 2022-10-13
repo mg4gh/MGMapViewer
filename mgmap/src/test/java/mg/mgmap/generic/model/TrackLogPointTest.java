@@ -11,7 +11,7 @@ class TrackLogPointTest {
 
     @Test
     void createGpsLogPoint1() {
-        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(123456789L, 49.4, 8.6, 3.14f, 173.45, 49.49f, 111.11f);
+        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(123456789L, 49.4, 8.6, 3.14f, 173.45, 49.49f, 1.23f, 111.11f);
         assertEquals(123456789L, tlp.getTimestamp());
         assertEquals(49.4, tlp.getLat());
         assertEquals(8.6, tlp.getLon());
@@ -25,7 +25,7 @@ class TrackLogPointTest {
     }
     @Test
     void createGpsLogPoint2() {
-        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(123456789L, 49.4, 8.6, 3.14f, 0, 0, 111.11f);
+        TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(123456789L, 49.4, 8.6, 3.14f, 0, 0, 1.23f, 111.11f);
         assertEquals(123456789L, tlp.getTimestamp());
         assertEquals(49.4, tlp.getLat());
         assertEquals(8.6, tlp.getLon());
@@ -55,7 +55,7 @@ class TrackLogPointTest {
 
     @Test
     void createTrackLogPoint1() {
-        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(123456789L, 49.4, 8.6, 3.14f, 173.45, 49.49f, 111.11f);
+        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(123456789L, 49.4, 8.6, 3.14f, 173.45, 49.49f, 1.23f, 111.11f);
         tlp2.setPressure(1000.13f);
         tlp2.setPressureAlt(133.33f);
         TrackLogPoint tlp = new TrackLogPoint(tlp2);
@@ -75,7 +75,7 @@ class TrackLogPointTest {
 
     @Test
     void toFromByteBuffer() {
-        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(123456789L, 49.4, 8.6, 3.14f, 173.45, 49.49f, 111.11f);
+        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(123456789L, 49.4, 8.6, 3.14f, 173.45, 49.49f, 1.23f, 111.11f);
         tlp2.setPressure(1000.13f);
         tlp2.setPressureAlt(133.33f);
         ByteBuffer buf = ByteBuffer.allocate(100);

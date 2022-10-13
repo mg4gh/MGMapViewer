@@ -82,6 +82,11 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     }
 
     @Override
+    public float getEleAcc() {
+        return 10; // accuracy assumption for hgt and no height data
+    }
+
+    @Override
     public long getTimestamp() {
         return PointModel.NO_TIME;
     }

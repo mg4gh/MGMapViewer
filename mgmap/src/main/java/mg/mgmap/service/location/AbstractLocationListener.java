@@ -43,11 +43,12 @@ public class AbstractLocationListener {
 
     protected void locationChanged(Location location) {
         if ((location.hasAccuracy()) && (location.getAccuracy() < ACCURACY_LIMIT)){
+            float altAccuracy = location.hasVerticalAccuracy()?location.getVerticalAccuracyMeters():0;
             double alt = location.hasAltitude()?location.getAltitude():0;
             float hgtAlt = altitudeProvider.getAltitude(location.getLatitude(), location.getLongitude());
             float geoidOffset = (alt==0)?0:geoidProvider.getGeoidOffset(location.getLatitude(), location.getLongitude());
             TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
-                    location.getAccuracy(), alt, geoidOffset, hgtAlt);
+                    location.getAccuracy(), alt, geoidOffset, altAccuracy, hgtAlt);
             trackLoggerService.onNewTrackLogPoint(lp);
         } else {
             Log.w(MGMapApplication.LABEL, NameUtil.context() + " location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());
