@@ -16,8 +16,10 @@ package mg.mgmap.generic.view;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ViewTreeObserver;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
@@ -47,12 +49,44 @@ public class ExtendedTextView extends AppCompatTextView {
 
     private final Observer prefObserver = createObserver();
 
+    private Object value = null;
+    private int availableWidth = 0;
+    private String availableText = null;
+    private TextPaint availablePaint = new TextPaint();
+
     public ExtendedTextView(Context context) {
         this(context, null);
     }
 
     public ExtendedTextView(Context context,  AttributeSet attrs) {
         super(context, attrs);
+        initGlobalLayoutListener();
+    }
+
+    private void initGlobalLayoutListener(){
+        availablePaint.set( getPaint() );
+        ViewTreeObserver vto = getViewTreeObserver();
+        if ((vto != null) && (vto.isAlive())) {
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    try {
+                        int newAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - ((getCompoundDrawables()[0] != null) ? (getCompoundDrawablePadding() + getDrawableSize()) : 0);
+                        Log.v(MGMapApplication.LABEL, NameUtil.context() + logName+":" + getText() + " width=" + getWidth() + " drawableWidth=" + getDrawableSize() +
+                                " paddingLeft=" + getPaddingLeft() + " paddingRight=" + getPaddingRight() + " +compoundDrawablePadding=" + getCompoundDrawablePadding() + " available=" + availableWidth+ " newAvailable=" + newAvailableWidth+" value="+value);
+                        if (newAvailableWidth != availableWidth){
+                            availableWidth = newAvailableWidth;
+                            availableText = null; // force recalc text
+                            getPaint().set(availablePaint);
+                            setValue(value);
+                        }
+                    } catch (Exception e) {
+                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                    }
+                }
+            });
+            Log.d(MGMapApplication.LABEL, NameUtil.context() +" OnGlobalLayoutListener registered");
+        }
     }
 
     public ExtendedTextView setName(String logName){
@@ -187,11 +221,22 @@ public class ExtendedTextView extends AppCompatTextView {
         return this;
     }
     public boolean setValue(Object value){
-        String newText = Formatter.format(formatType, value);
-        if (!newText.equals(getText())){
-            setText( newText );
-            onChange("onSetValue: "+newText);
-            return true;
+        this.value = value;
+        TextPaint paint = getPaint();
+        if ((value!=null) && (availableWidth>0) && (paint!=null)){
+            String newText = Formatter.format(formatType, value, getPaint(), availableWidth*getMaxLines());
+            if (!newText.equals(availableText)){
+                // if text is still too large, make font smaller - will be restored on layout change
+                while ((paint.measureText(newText) > availableWidth*getMaxLines()) && (paint.getTextSize()>20)){
+                    paint.setTextSize( paint.getTextSize() * 0.95f );
+                    Log.v(MGMapApplication.LABEL, NameUtil.context()+ " text=\""+newText+"\""+" measuredWidth="+paint.measureText( newText )+" availableWidth="+availableWidth);
+                }
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+logName+":"+newText+ " availableWidth="+availableWidth);
+                setText( newText );
+                availableText = newText;
+                onChange("onSetValue: "+newText);
+                return true;
+            }
         }
         return false;
     }

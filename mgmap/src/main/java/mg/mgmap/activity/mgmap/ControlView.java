@@ -202,7 +202,7 @@ public class ControlView extends RelativeLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
-        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+//        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         etv.setOnClickListener(enlargeControl);
         return etv;
     }
@@ -242,7 +242,6 @@ public class ControlView extends RelativeLayout {
             String sIdx = "I="+statistic.getSegmentIdx();
             if (statistic.getSegmentIdx() == -1) sIdx = "All";
             if (statistic.getSegmentIdx() == -2) sIdx = "R";
-//            String sIdx = ("I"+statistic.getSegmentIdx()).replaceFirst("I=-1","All").replaceFirst("I=-2","R");
             ((ExtendedTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
             ((ExtendedTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
             ((ExtendedTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
@@ -330,7 +329,7 @@ public class ControlView extends RelativeLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
-        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+//        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         etv.setTextColor(CC.getColor(R.color.BLACK));
         etv.setBackgroundColor(CC.getColor(R.color.WHITE_A150));
         return etv;

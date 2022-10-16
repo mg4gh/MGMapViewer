@@ -156,7 +156,7 @@ public class TrackStatisticEntry extends TableLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setTextColor(getContext().getColor(R.color.WHITE));
-        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+//        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         etv.setLines(1);
         return etv;
     }
