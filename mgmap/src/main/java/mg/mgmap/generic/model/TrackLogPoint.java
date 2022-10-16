@@ -49,7 +49,7 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
     }
 
 
-    private long timestamp = 0;
+    private long timestamp = NO_TIME;
     private float accuracy = 0; // m rounded
     private float pressure = NO_PRES; // hpa
     private float wgs84alt = NO_ELE; // m

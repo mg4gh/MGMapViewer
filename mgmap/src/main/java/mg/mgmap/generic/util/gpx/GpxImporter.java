@@ -14,8 +14,11 @@
  */
 package mg.mgmap.generic.util.gpx;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.util.Log;
 
 import org.kxml2.io.KXmlParser;
@@ -44,18 +47,31 @@ public class GpxImporter {
 
     private static final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
+    @SuppressLint("Range")
     public static TrackLog checkLoadGpx(MGMapApplication application, Uri uri) {
         try {
             InputStream is;
+            String filename = "GPX" + System.currentTimeMillis(); // fallback name
             if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-                is = application.getContentResolver().openInputStream(uri);
+                ContentResolver contentResolver = application.getContentResolver();
+                Cursor cursor = contentResolver.query(uri, null, null, null, null);
+                try {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    }
+                } finally {
+                    cursor.close();
+                }
+
+                is = contentResolver.openInputStream(uri);
                 if (is == null) return null;
             } else {
                 String filePath = uri.getEncodedPath();
+                filename = filePath.replaceFirst(".*/","");
                 if (filePath == null) return null;
                 is = new FileInputStream(filePath);
             }
-            return new GpxImporter(application.getAltitudeProvider()).parseTrackLog("GPX" + System.currentTimeMillis(), is);
+            return new GpxImporter(application.getAltitudeProvider()).parseTrackLog( filename, is);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
@@ -98,13 +114,13 @@ public class GpxImporter {
                 trackLog = new WriteableTrackLog(filename);
             } else if (eventType == XmlPullParser.START_TAG) {
                 if ("trk".equals(qName)) {
-                    trackLog.startTrack(0);
+                    trackLog.startTrack(PointModel.NO_TIME);
                 }
                 if ("metadata".equals(qName)) {
                     meta = true;
                 }
                 if ("trkseg".equals(qName)) {
-                    trackLog.startSegment(0);
+                    trackLog.startSegment(PointModel.NO_TIME);
                 }
                 if ("trkpt".equals(qName)) {
                     double lat = Double.parseDouble(getStringAttribute("lat"));
@@ -129,13 +145,13 @@ public class GpxImporter {
                     trackLog.addPoint( tlp );
                 }
                 if ("trk".equals(qName)) {
-                    trackLog.stopTrack(0);
+                    trackLog.stopTrack(PointModel.NO_TIME);
                 }
                 if ("metadata".equals(qName)) {
                     meta = false;
                 }
                 if ("trkseg".equals(qName)) {
-                    trackLog.stopSegment(0);
+                    trackLog.stopSegment(PointModel.NO_TIME);
                 }
                 if ("name".equals(qName)) {
                     trackLog.setName(text);

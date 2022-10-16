@@ -37,7 +37,7 @@ public class TrackLogStatistic {
     private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
 
     private int segmentIdx = -1; // -1 means all segments; // -2 remainings statistic
-    private long tStart = 0;
+    private long tStart = PointModel.NO_TIME;
     private long duration = 0;
 
     private double totalLength = 0;

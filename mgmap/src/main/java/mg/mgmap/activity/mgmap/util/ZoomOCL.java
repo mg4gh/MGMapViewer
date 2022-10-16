@@ -34,6 +34,7 @@ public class ZoomOCL extends ExtendedClickListener {
 
     public ZoomOCL(float scale){
         this.scale = scale;
+        doubleClickTimeout = 200;
     }
 
     private float scale;

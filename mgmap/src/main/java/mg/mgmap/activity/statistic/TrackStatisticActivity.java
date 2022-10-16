@@ -86,7 +86,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         @Override
         public void update(Observable o, Object arg) {
             timer.removeCallbacks(ttReworkState);
-            timer.postDelayed(ttReworkState,100);
+            timer.postDelayed(ttReworkState,30);
         }
     };
 
@@ -246,7 +246,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                                 Log.v(MGMapApplication.LABEL, NameUtil.context()+" remainB working="+working+" size="+tracksRemain.size()+ " parent="+parent.getChildCount());
 
                                 try {
-                                    for (int i=0; (i<30)&&(!tracksRemain.isEmpty()) ; i++){
+                                    for (int i=0; (i<10)&&(!tracksRemain.isEmpty()) ; i++){
                                         parent.addView(tracksRemain.remove(0).initialize());
                                     }
                                 } catch (Exception e) {
@@ -262,7 +262,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
                         }
                         synchronized (this){
-                            this.wait(50);
+                            this.wait(30);
                         }
                     } catch (Exception e) {
                         Log.e(MGMapApplication.LABEL, e.getMessage(), e);
