@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2021 mg4gh
+ * Copyright 2017 - 2022 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -16,7 +16,7 @@ package mg.mgmap.generic.model;
 
 import androidx.annotation.NonNull;
 
-
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.Formatter;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     protected boolean modified = false;
     protected TrackLog referencedTrackLog = null;
     protected boolean filterMatched = true;
+    protected Pref<Boolean> prefSelected = new Pref<>(Boolean.FALSE);
 
     public TrackLogStatistic getTrackStatistic() {
         return trackStatistic;
@@ -167,5 +168,12 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     public void changed(Object o){
         setChanged();
         notifyObservers(o);
+    }
+
+    public Pref<Boolean> getPrefSelected() {
+        return prefSelected;
+    }
+    public boolean isSelected(){
+        return prefSelected.getValue();
     }
 }

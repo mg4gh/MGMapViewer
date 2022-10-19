@@ -1,23 +1,29 @@
+/*
+ * Copyright 2017 - 2022 mg4gh
+ *
+ * This program is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package mg.mgmap.activity.statistic;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
-import androidx.appcompat.widget.AppCompatEditText;
-
-import java.util.Calendar;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.util.EditPref;
@@ -46,12 +52,9 @@ public class TrackStatisticFilterDialog {
             createTextView(this, name, 20);
             epPref = createEditPref(this, pref, 20);
             cbPref = createCheckBox(this, prefOn, 5);
-            cbPref.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                    prefOn.setValue(checked);
-                    visualizeChecked(checked);
-                }
+            cbPref.setOnCheckedChangeListener((compoundButton, checked) -> {
+                prefOn.setValue(checked);
+                visualizeChecked(checked);
             });
             visualizeChecked(prefOn.getValue());
         }
@@ -112,28 +115,22 @@ public class TrackStatisticFilterDialog {
             tvSpace.setBackgroundColor(context.getColor(R.color.GRAY200));
 
             TextView tvCancel = createTextView(row, "CANCEL", 15);
-            tvCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    trackStatisticActivity.prefFilterOn.toggle();
-                    alertDialog.dismiss();
-                }
+            tvCancel.setOnClickListener(view -> {
+                trackStatisticActivity.prefFilterOn.toggle();
+                alertDialog.dismiss();
             });
             tvCancel.setTypeface(null, Typeface.BOLD);
 
             TextView tvOK = createTextView(row, "OK", 15);
-            tvOK.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    for (int i=0; i<table_dialog.getChildCount(); i++){
-                        if (table_dialog.getChildAt(i) instanceof Entry<?>) {
-                            Entry<?> entry = (Entry<?>) table_dialog.getChildAt(i);
-                            entry.confirm();
-                        }
+            tvOK.setOnClickListener(view -> {
+                for (int i=0; i<table_dialog.getChildCount(); i++){
+                    if (table_dialog.getChildAt(i) instanceof Entry<?>) {
+                        Entry<?> entry = (Entry<?>) table_dialog.getChildAt(i);
+                        entry.confirm();
                     }
-                    trackStatisticActivity.prefFilterChanged.toggle();
-                    alertDialog.dismiss();
                 }
+                trackStatisticActivity.prefFilterChanged.toggle();
+                alertDialog.dismiss();
             });
             tvOK.setTypeface(null, Typeface.BOLD);
 

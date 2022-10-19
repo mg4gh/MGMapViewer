@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2021 mg4gh
+ * Copyright 2017 - 2022 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -15,13 +15,17 @@
 package mg.mgmap.activity.statistic;
 
 import android.view.View;
-import android.view.ViewGroup;
+
+import java.util.ArrayList;
+
+import mg.mgmap.generic.model.TrackLog;
 
 public class SelectOCL implements View.OnClickListener{
-    ViewGroup parent;
+    ArrayList<TrackLog> trackLogs;
     boolean select;
-    public SelectOCL(ViewGroup parent, boolean select){
-        this.parent = parent;
+
+    public SelectOCL(ArrayList<TrackLog> allVisibleEntries, boolean select){
+        this.trackLogs = allVisibleEntries;
         this.select = select;
     }
 
@@ -31,11 +35,8 @@ public class SelectOCL implements View.OnClickListener{
     }
 
     private void setSelectedAll(boolean selected){
-        for (int idx=0; idx < parent.getChildCount(); idx++){
-            if (parent.getChildAt(idx) instanceof TrackStatisticEntry) {
-                TrackStatisticEntry entry = (TrackStatisticEntry) parent.getChildAt(idx);
-                entry.setPrefSelected(selected);
-            }
+        for (TrackLog trackLog : trackLogs){
+            trackLog.getPrefSelected().setValue(selected);
         }
     }
 

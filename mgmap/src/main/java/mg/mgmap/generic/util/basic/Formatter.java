@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2021 mg4gh
+ * Copyright 2017 - 2022 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -15,13 +15,10 @@
 package mg.mgmap.generic.util.basic;
 
 import android.graphics.Paint;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Locale;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 
 public class Formatter {
@@ -37,6 +34,16 @@ public class Formatter {
 
     private final FormatType formatType;
 
+    // cache width of digits, space, etc
+    static private float lastTextSize = 0;
+    static private float lastDigitWidth = 0;
+    static private float lastSpaceWidth = 0;
+    static private float lastPointWidth = 0;
+    static private float lastColonWidth = 0;
+    static private float lastmWidth = 0;
+    static private float lastkmWidth = 0;
+
+
     public Formatter(FormatType formatType){
         this.formatType = formatType;
     }
@@ -45,11 +52,36 @@ public class Formatter {
         return format(formatType, value);
     }
 
+    static private void initLastWidth(Paint paint){
+        if (lastTextSize != paint.getTextSize()){
+            lastTextSize = paint.getTextSize();
+            lastDigitWidth = paint.measureText("0");
+            lastSpaceWidth = paint.measureText(" ");
+            lastPointWidth = paint.measureText(".");
+            lastColonWidth = paint.measureText(":");
+            lastmWidth = paint.measureText("m");
+            lastkmWidth = paint.measureText("km");
+        }
+    }
+
+    static private int getIntDigits(double d){
+        int digits = 1;
+        int i = (int)d;
+        while (i >= 10){
+            i = i/10;
+            digits++;
+        }
+        return digits;
+    }
+
     public static String format(FormatType formatType, Object value) {
         return format(formatType,value, null, 0);
     }
     public static String format(FormatType formatType, Object value, Paint paint, int availableWidth) {
         String text = "";
+        if (paint != null){
+            initLastWidth(paint);
+        }
         if (formatType == FormatType.FORMAT_TIME) {
             long millis = (Long) value;
             if (millis > 0) {
@@ -58,22 +90,15 @@ public class Formatter {
         } else if (formatType == FormatType.FORMAT_DATE) {
             long millis = (Long) value;
             if (millis > 0) {
-                ArrayList<SimpleDateFormat> formats = new ArrayList<>();
-                formats.add(SDF1a);formats.add(SDF1b);formats.add(SDF1c);
-                if ((paint!=null) && (availableWidth>0)){
-                    for (SimpleDateFormat sfdFormat : formats){
-                        String textCandidate = sfdFormat.format(millis);
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+ "measuredFormat=\""+sfdFormat.toPattern()+"\" text=\""+text+"\""+" measuredWidth="+paint.measureText( textCandidate )+" availableWidth="+availableWidth);
-                        if (paint.measureText( textCandidate ) <= availableWidth){
-                            text = textCandidate;
-                            Log.v(MGMapApplication.LABEL, NameUtil.context()+ "selectedFormat=\""+sfdFormat.toPattern()+"\" text=\""+text+"\"");
-                            break;
-                        }
+                SimpleDateFormat sdf = SDF1c;
+                if (6*lastDigitWidth+2*lastPointWidth < availableWidth){
+                    if (8*lastDigitWidth+2*lastPointWidth < availableWidth){
+                        sdf = SDF1a;
+                    } else {
+                        sdf = SDF1b;
                     }
                 }
-                if ("".equals(text)) {
-                    text = formats.get(1).format(millis);
-                }
+                text = sdf.format(millis);
             }
         } else if (formatType == FormatType.FORMAT_TIMESTAMP) {
             long millis = (Long) value;
@@ -88,45 +113,42 @@ public class Formatter {
             if (distance < 0){
                 text = "";
             } else {
-                if ((paint!=null) && (availableWidth>0)){
-                    String[] formats = new String[]{"%.2f km", "%.1f km", "%.1fkm", "%.1f", "%.0f"};
-                    for (String format : formats){
-                        String textCandidate = String.format(Locale.ENGLISH, format, distance / 1000.0);
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+ "measuredFormat=\""+format+"\" text=\""+text+"\""+" measuredWidth="+paint.measureText( textCandidate )+" availableWidth="+availableWidth);
-                        if (paint.measureText( textCandidate ) <= availableWidth){
-                            text = textCandidate;
-                            Log.v(MGMapApplication.LABEL, NameUtil.context()+ "selectedFormat=\""+format+"\" text=\""+text+"\"");
-                            break;
-                        }
+                String distanceFormat = "%.1f km";
+                if ((paint!=null) && (availableWidth>0)) {
+                    int intDigits = getIntDigits(distance/1000);
+                    if ((intDigits + 2) * lastDigitWidth + lastPointWidth + lastSpaceWidth + lastkmWidth < availableWidth) {
+                        distanceFormat = "%.2f km";
+                    } else if ((intDigits + 1) * lastDigitWidth + lastPointWidth + lastSpaceWidth + lastkmWidth < availableWidth) {
+                        distanceFormat = "%.1f km";
+                    } else if ((intDigits + 1) * lastDigitWidth + lastPointWidth + lastkmWidth < availableWidth) {
+                        distanceFormat = "%.1fkm";
+                    } else if ((intDigits + 1) * lastDigitWidth + lastPointWidth < availableWidth) {
+                        distanceFormat = "%.1f";
+                    } else {
+                        distanceFormat = "%.0f";
                     }
                 }
-                if ("".equals(text)) {
-                    text = String.format(Locale.ENGLISH, "%.1f km", distance / 1000.0);
-                }
+                text = String.format(Locale.ENGLISH, distanceFormat, distance / 1000.0);
             }
         } else if (formatType == FormatType.FORMAT_HEIGHT) {
             float height = (Float) value;
             if (Math.abs(height) >= Math.abs(PointModel.NO_ELE)){
                 text = "";
             } else {
-                if ((paint!=null) && (availableWidth>0)){
-                    String[] formats = new String[]{"%.1f m", "%.0f m", "%.0fm", "%.0f"};
-                    for (String format : formats){
-                        String textCandidate = String.format(Locale.ENGLISH, format, height);
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+ "measuredFormat=\""+format+"\" text=\""+text+"\""+" measuredWidth="+paint.measureText( textCandidate )+" availableWidth="+availableWidth);
-                        if (paint.measureText( textCandidate ) <= availableWidth){
-                            text = textCandidate;
-                            Log.v(MGMapApplication.LABEL, NameUtil.context()+ "selectedFormat=\""+format+"\" text=\""+text+"\"");
-                            break;
-                        }
+                String heightFormat = "%.1f m";
+                if ((paint!=null) && (availableWidth>0)) {
+                    int intDigits = getIntDigits(height);
+                    if ((intDigits) * lastDigitWidth + lastSpaceWidth + lastmWidth < availableWidth) {
+                        heightFormat = "%.0f m";
+                    } else if ((intDigits) * lastDigitWidth + lastmWidth < availableWidth) {
+                        heightFormat = "%.0fm";
+                    } else {
+                        heightFormat = "%.0f";
                     }
                 }
-                if ("".equals(text)) {
-                    text = String.format(Locale.ENGLISH, "%.1f km", height);
-                }
+                text = String.format(Locale.ENGLISH, heightFormat, height);
             }
          } else if (formatType == FormatType.FORMAT_STRING) {
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+ "measuredFormat=String text=\""+text+"\""+" measuredWidth="+paint.measureText( text )+" availableWidth="+availableWidth);
             text = value.toString();
         } else if (formatType == FormatType.FORMAT_DURATION) {
             long duration = (Long) value;
@@ -135,29 +157,15 @@ public class Formatter {
             long hours = minutes / 60;
             seconds -= minutes * 60;
             minutes -= hours * 60;
-            String textCandidate1 = String.format(Locale.ENGLISH, "%d:%02d:%02d", hours, minutes, seconds);
-            String textCandidate2 = String.format(Locale.ENGLISH, "%d:%02d", hours, minutes);
-
             if ((paint!=null) && (availableWidth>0)){
-                if (paint.measureText( textCandidate1 ) <= availableWidth){
-                    text = textCandidate1;
-                    Log.v(MGMapApplication.LABEL, NameUtil.context()+ "selectedFormat=%d:%02d:%02d text=\""+text+"\"");
+                if ( (getIntDigits(hours)+4)*lastDigitWidth + 2*lastColonWidth < availableWidth ){
+                    text = String.format(Locale.ENGLISH, "%d:%02d:%02d", hours, minutes, seconds);
                 }
             }
             if ("".equals(text)) {
-                text = textCandidate2;
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+ "selectedFormat=%d:%02d text=\""+text+"\"");
+                text = String.format(Locale.ENGLISH, "%d:%02d", hours, minutes);
             }
         }
-
-//        // if text is still too large, make font smaller - will be restored on layout change
-//        if ((paint!=null) && (availableWidth>0) ){
-//            while ((paint.measureText(text) > availableWidth) && (paint.getTextSize()>20)){
-//                paint.setTextSize( paint.getTextSize() * 0.95f );
-//                Log.v(MGMapApplication.LABEL, NameUtil.context()+ " text=\""+text+"\""+" measuredWidth="+paint.measureText( text )+" availableWidth="+availableWidth);
-//            }
-//        }
-
         return text;
     }
 }

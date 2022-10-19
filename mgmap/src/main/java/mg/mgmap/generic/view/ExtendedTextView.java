@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2021 mg4gh
+ * Copyright 2017 - 2022 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -19,12 +19,10 @@ import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.ViewTreeObserver;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
-import java.util.Observable;
 import java.util.Observer;
 
 import mg.mgmap.application.MGMapApplication;
@@ -52,7 +50,7 @@ public class ExtendedTextView extends AppCompatTextView {
     private Object value = null;
     private int availableWidth = 0;
     private String availableText = null;
-    private TextPaint availablePaint = new TextPaint();
+    private final TextPaint availablePaint = new TextPaint();
 
     public ExtendedTextView(Context context) {
         this(context, null);
@@ -60,33 +58,27 @@ public class ExtendedTextView extends AppCompatTextView {
 
     public ExtendedTextView(Context context,  AttributeSet attrs) {
         super(context, attrs);
-        initGlobalLayoutListener();
+        availablePaint.set( getPaint() );
     }
 
-    private void initGlobalLayoutListener(){
-        availablePaint.set( getPaint() );
-        ViewTreeObserver vto = getViewTreeObserver();
-        if ((vto != null) && (vto.isAlive())) {
-            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    try {
-                        int newAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - ((getCompoundDrawables()[0] != null) ? (getCompoundDrawablePadding() + getDrawableSize()) : 0);
-                        Log.v(MGMapApplication.LABEL, NameUtil.context() + logName+":" + getText() + " width=" + getWidth() + " drawableWidth=" + getDrawableSize() +
-                                " paddingLeft=" + getPaddingLeft() + " paddingRight=" + getPaddingRight() + " +compoundDrawablePadding=" + getCompoundDrawablePadding() + " available=" + availableWidth+ " newAvailable=" + newAvailableWidth+" value="+value);
-                        if (newAvailableWidth != availableWidth){
-                            availableWidth = newAvailableWidth;
-                            availableText = null; // force recalc text
-                            getPaint().set(availablePaint);
-                            setValue(value);
-                        }
-                    } catch (Exception e) {
-                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                    }
-                }
-            });
-            Log.d(MGMapApplication.LABEL, NameUtil.context() +" OnGlobalLayoutListener registered");
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        try {
+            int newAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - ((getCompoundDrawables()[0] != null) ? (getCompoundDrawablePadding() + getDrawableSize()) : 0);
+//            Log.v(MGMapApplication.LABEL, NameUtil.context() + logName+":" + getText() + " width=" + getWidth() + " drawableWidth=" + getDrawableSize() +
+//                    " paddingLeft=" + getPaddingLeft() + " paddingRight=" + getPaddingRight() + " +compoundDrawablePadding=" + getCompoundDrawablePadding() + " available=" + availableWidth+ " newAvailable=" + newAvailableWidth+" value="+value);
+            if (newAvailableWidth != availableWidth){
+                availableWidth = newAvailableWidth;
+                Log.d(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" available=" + availableWidth);
+                availableText = null; // force recalc text
+                getPaint().set(availablePaint);
+                setValue(value);
+            }
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
+        Log.i(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" w="+w+" h="+h+" oldw="+oldw+" oldh="+oldh);
     }
 
     public ExtendedTextView setName(String logName){
@@ -98,6 +90,19 @@ public class ExtendedTextView extends AppCompatTextView {
         onChange(null);
         return this;
     }
+    public ExtendedTextView setData(int drId1, int drId2){
+        this.drId1 = drId1;
+        this.drId2 = drId2;
+        onChange(null);
+        return this;
+    }
+    public ExtendedTextView setData(Pref<Boolean> prState1){
+        this.prState1 = prState1;
+        prState1.addObserver(prefObserver);
+        onChange(null);
+        return this;
+    }
+
     public ExtendedTextView setData(Pref<Boolean> prState1, int drId1, int drId2){
         this.prState1 = prState1;
         prState1.addObserver(prefObserver);
@@ -159,11 +164,6 @@ public class ExtendedTextView extends AppCompatTextView {
         if ((prEnabled!=null) && (!prEnabled.getValue())){
             line2 = System.lineSeparator()+"disabled";
         } else {
-//            if (prEnabled==null){
-//                line2 = "";
-//            } else {
-//                line2 = "enabled";
-//            }
             String res = null;
             if ((prState1 != null) && (prState2 == null)){
                 res = prState1.getValue()?help2:help1;
@@ -176,11 +176,9 @@ public class ExtendedTextView extends AppCompatTextView {
                 }
             }
             if ((res!=null) && (res.length() > 0)){
-//                line2 = ((line2.length() > 0)?"; ":"")  + res;
                 line2 = System.lineSeparator()+res;
             }
         }
-//        return (help.length()>0)?(help + ((line2.length()>0)?(System.lineSeparator()+line2):"")):"";
         return help + line2;
     }
     public ExtendedTextView addActionObserver(Observer action1Observer){
@@ -194,21 +192,18 @@ public class ExtendedTextView extends AppCompatTextView {
     }
 
     private Observer createObserver(){
-        return new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                String info;
-                if (o instanceof Pref<?>) {
-                    Pref<?> pref = (Pref<?>) o;
-                    info = "update on "+ pref.getKey();
-                } else {
-                    info = "update on "+o.toString();
-                }
-                if (o == prEnabled){
-                    setEnabled();
-                }
-                onChange(info);
+        return (o, arg) -> {
+            String info;
+            if (o instanceof Pref<?>) {
+                Pref<?> pref = (Pref<?>) o;
+                info = "update on "+ pref.getKey();
+            } else {
+                info = "update on "+o.toString();
             }
+            if (o == prEnabled){
+                setEnabled();
+            }
+            onChange(info);
         };
     }
 
@@ -224,13 +219,8 @@ public class ExtendedTextView extends AppCompatTextView {
         this.value = value;
         TextPaint paint = getPaint();
         if ((value!=null) && (availableWidth>0) && (paint!=null)){
-            String newText = Formatter.format(formatType, value, getPaint(), availableWidth*getMaxLines());
+            String newText = Formatter.format(formatType, value, availablePaint, availableWidth*getMaxLines());
             if (!newText.equals(availableText)){
-                // if text is still too large, make font smaller - will be restored on layout change
-                while ((paint.measureText(newText) > availableWidth*getMaxLines()) && (paint.getTextSize()>20)){
-                    paint.setTextSize( paint.getTextSize() * 0.95f );
-                    Log.v(MGMapApplication.LABEL, NameUtil.context()+ " text=\""+newText+"\""+" measuredWidth="+paint.measureText( newText )+" availableWidth="+availableWidth);
-                }
                 Log.d(MGMapApplication.LABEL, NameUtil.context()+logName+":"+newText+ " availableWidth="+availableWidth);
                 setText( newText );
                 availableText = newText;

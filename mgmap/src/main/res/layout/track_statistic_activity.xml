@@ -4,22 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <mg.mgmap.activity.statistic.MyScrollView
-
-        android:layout_height="match_parent"
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trackStatisticEntries"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        >
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/trackStatisticEntries"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-        </LinearLayout>
-
-    </mg.mgmap.activity.statistic.MyScrollView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
         android:layout_width="match_parent"

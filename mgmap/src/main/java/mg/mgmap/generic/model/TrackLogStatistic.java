@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2021 mg4gh
+ * Copyright 2017 - 2022 mg4gh
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free Software
@@ -215,7 +215,7 @@ public class TrackLogStatistic {
             float smoothing = smoothingDiff * smoothingFactor / 2; // smoothing is maximal half of the difference
 
             float diff = (point.getEleD()-smoothing) - (lastPoint4GainLoss.getEleD()-lastSmoothing4GainLoss);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" point.getEleAcc()="+point.getEleAcc()+" smoothingFactor="+smoothingFactor+" smoothingDiff="+smoothingDiff+" smoothing="+smoothing+" eleD="+point.getEleD());
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+" point.getEleAcc()="+point.getEleAcc()+" smoothingFactor="+smoothingFactor+" smoothingDiff="+smoothingDiff+" smoothing="+smoothing+" eleD="+point.getEleD());
             if (Math.abs(diff) >= getEleThreshold(point)){
                 lastPoint4GainLoss = point;
                 lastSmoothing4GainLoss = smoothing;
