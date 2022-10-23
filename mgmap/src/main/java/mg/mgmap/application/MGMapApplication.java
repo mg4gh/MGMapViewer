@@ -41,7 +41,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.service.location.TrackLoggerService;
 import mg.mgmap.test.TestControl;
-import mg.mgmap.application.util.AltitudeProvider;
+import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.application.util.GeoidProvider;
 import mg.mgmap.generic.util.gpx.GpxExporter;
@@ -77,7 +77,7 @@ public class MGMapApplication extends Application {
     public static final String LABEL = "MGMap";
     private Process pLogcat = null;
 
-    private AltitudeProvider altitudeProvider;
+    private ElevationProvider elevationProvider;
     private GeoidProvider geoidProvider;
     private PersistenceManager persistenceManager;
     private MetaDataUtil metaDataUtil;
@@ -129,8 +129,8 @@ public class MGMapApplication extends Application {
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
-        altitudeProvider = new AltitudeProvider(persistenceManager); // for hgt data handling
-        geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea altitude
+        elevationProvider = new ElevationProvider(persistenceManager); // for hgt data handling
+        geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
         metaDataUtil = new MetaDataUtil(persistenceManager);
         testControl = new TestControl(this, prefCache);
         notificationUtil = new NotificationUtil(this);
@@ -144,115 +144,99 @@ public class MGMapApplication extends Application {
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
 
         // Recover state of RecordingTrackLog
-        new Thread(){
-            @Override
-            public void run() {
-                RecordingTrackLog rtl = RecordingTrackLog.initFromRaw(persistenceManager);
-                if ((rtl != null) && !rtl.isTrackRecording()){ // either finished or not yet started
-                    if (rtl.getNumberOfSegments() > 0){  // is finished
-                        GpxExporter.export(persistenceManager, rtl);
-                    }
-                    persistenceManager.clearRaw();
-                    rtl = null;
+        new Thread(() -> {
+            RecordingTrackLog rtl = RecordingTrackLog.initFromRaw(persistenceManager);
+            if ((rtl != null) && !rtl.isTrackRecording()){ // either finished or not yet started
+                if (rtl.getNumberOfSegments() > 0){  // is finished
+                    GpxExporter.export(persistenceManager, rtl);
                 }
-                recordingTrackLogObservable.setTrackLog(rtl);
-
-                if (rtl != null){
-                    rtl.setRecordRaw(true); // from now on record new entries in the tracklog
-                    if (rtl.isSegmentRecording()){
-                        prefGps.setValue(true);
-
-                        PointModel lastTlp = rtl.getCurrentSegment().getLastPoint();
-                        if (lastTlp != null){
-                            lastPositionsObservable.handlePoint(lastTlp);
-                        }
-                    }
-                }
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" init finished!");
+                persistenceManager.clearRaw();
+                rtl = null;
             }
-        }.start();
+            recordingTrackLogObservable.setTrackLog(rtl);
+
+            if (rtl != null){
+                rtl.setRecordRaw(true); // from now on record new entries in the tracklog
+                if (rtl.isSegmentRecording()){
+                    prefGps.setValue(true);
+
+                    PointModel lastTlp = rtl.getCurrentSegment().getLastPoint();
+                    if (lastTlp != null){
+                        lastPositionsObservable.handlePoint(lastTlp);
+                    }
+                }
+            }
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" init finished!");
+        }).start();
 
 
 
         // initialize Theme and MetaData (as used from AvailableTrackLogs service and statistic)
-        new Thread(){
-            @Override
-            public void run() {
-                if (persistenceManager.getThemeNames().length == 0){
-                    addBgJobs( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets()) );
-                }
-                ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, altitudeProvider);
-                for (TrackLog trackLog : metaDataUtil.loadMetaData()){
-                    trackStatisticFilter.checkFilter(trackLog);
-                    metaTrackLogs.put(trackLog.getNameKey(),trackLog);
-                }
+        new Thread(() -> {
+            if (persistenceManager.getThemeNames().length == 0){
+                addBgJobs( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets()) );
             }
-        }.start();
+            ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, elevationProvider);
+            for (TrackLog trackLog : metaDataUtil.loadMetaData()){
+                trackStatisticFilter.checkFilter(trackLog);
+                metaTrackLogs.put(trackLog.getNameKey(),trackLog);
+            }
+        }).start();
 
         // initialize handling of new points from TrackLoggerService
-        new Thread(){
-            @Override
-            public void run() {
-                Log.i(LABEL, NameUtil.context()+"handle TrackLogPoints: started ");
-                while (true){
-                    try {
-                        PointModel pointModel = logPoints2process.take();
-                        Log.i(LABEL, NameUtil.context() +" handle tlp="+pointModel);
-                        if (pointModel != null){
-                            if (recordingTrackLogObservable.getTrackLog() != null){
-                                recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
-                                Log.v(LABEL, NameUtil.context()+ "handle TrackLogPoints: Processed "+pointModel);
-                            }
-                            if (logPoints2process.size() == 0){ // trigger lastPositionsObservable only for the latest point in the queue
-                                lastPositionsObservable.handlePoint(pointModel);
-                            }
+        new Thread(() -> {
+            Log.i(LABEL, NameUtil.context()+"handle TrackLogPoints: started ");
+            while (true){
+                try {
+                    PointModel pointModel = logPoints2process.take();
+                    Log.i(LABEL, NameUtil.context() +" handle tlp="+pointModel);
+                    if (pointModel != null){
+                        if (recordingTrackLogObservable.getTrackLog() != null){
+                            recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
+                            Log.v(LABEL, NameUtil.context()+ "handle TrackLogPoints: Processed "+pointModel);
                         }
-                    } catch (Exception e) {
-                        Log.e(LABEL, NameUtil.context()+"handle TrackLogPoints: "+e.getMessage(),e);
+                        if (logPoints2process.size() == 0){ // trigger lastPositionsObservable only for the latest point in the queue
+                            lastPositionsObservable.handlePoint(pointModel);
+                        }
                     }
+                } catch (Exception e) {
+                    Log.e(LABEL, NameUtil.context()+"handle TrackLogPoints: "+e.getMessage(),e);
                 }
             }
-        }.start();
+        }).start();
 
-        new Thread(){
-            @Override
-            public void run() {
-                long TIMEOUT = 10000;
-                Log.i(LABEL, NameUtil.context()+"logcat supervision: start ");
-                int cnt = 0;
-                int escalationCnt = 0;
-                long lastCheck = System.currentTimeMillis();
-                while (true){
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            pLogcat.waitFor(TIMEOUT, TimeUnit.MILLISECONDS );
-                        } else {
-                            Thread.sleep(TIMEOUT);
-                        }
-                        int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
-                        Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
-                        startLogging(persistenceManager.getLogDir());
-                        lastCheck = System.currentTimeMillis();
-                    } catch (Exception e) {
-                        long now = System.currentTimeMillis();
-                        if (prefGps.getValue() && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
-                                Log.i(LABEL, NameUtil.context()+"Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
-                                escalationCnt++;
-                        } else {
-                            escalationCnt = 0;
-                        }
-                        if (escalationCnt > 3){
-                            Log.w(LABEL, NameUtil.context()+" try to notify user ...");
-                            notificationUtil.notifyAlarm();
-                        }
-                        if (++cnt % 6 == 0){
-                            Log.i(LABEL, NameUtil.context()+"logcat supervision: OK. (running "+(cnt/6)+" min)");
-                        }
-                        lastCheck = now;
+        new Thread(() -> {
+            long TIMEOUT = 10000;
+            Log.i(LABEL, NameUtil.context()+"logcat supervision: start ");
+            int cnt = 0;
+            int escalationCnt = 0;
+            long lastCheck = System.currentTimeMillis();
+            while (true){
+                try {
+                    pLogcat.waitFor(TIMEOUT, TimeUnit.MILLISECONDS );
+                    int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
+                    Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
+                    startLogging(persistenceManager.getLogDir());
+                    lastCheck = System.currentTimeMillis();
+                } catch (Exception e) {
+                    long now = System.currentTimeMillis();
+                    if (prefGps.getValue() && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
+                            Log.i(LABEL, NameUtil.context()+"Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
+                            escalationCnt++;
+                    } else {
+                        escalationCnt = 0;
                     }
+                    if (escalationCnt > 3){
+                        Log.w(LABEL, NameUtil.context()+" try to notify user ...");
+                        notificationUtil.notifyAlarm();
+                    }
+                    if (++cnt % 6 == 0){
+                        Log.i(LABEL, NameUtil.context()+"logcat supervision: OK. (running "+(cnt/6)+" min)");
+                    }
+                    lastCheck = now;
                 }
             }
-        }.start();
+        }).start();
 
     }
 
@@ -376,11 +360,7 @@ public class MGMapApplication extends Application {
 
     public void startTrackLoggerService(Context context){
         Intent intent = new Intent(context, TrackLoggerService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.startForegroundService(intent);
-        } else {
-            this.startService(intent);
-        }
+        this.startForegroundService(intent);
         Log.i(MGMapApplication.LABEL, NameUtil.context() + "prefGps="+prefGps.getValue());
         triggerGpsSupervisionWorker();
     }
@@ -403,8 +383,8 @@ public class MGMapApplication extends Application {
         }
     }
 
-    public AltitudeProvider getAltitudeProvider() {
-        return altitudeProvider;
+    public ElevationProvider getElevationProvider() {
+        return elevationProvider;
     }
 
     public GeoidProvider getGeoidProvider() {
@@ -450,11 +430,7 @@ public class MGMapApplication extends Application {
 
     private void startBgService(){
         Intent intent = new Intent(this, BgJobService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.startForegroundService(intent);
-        } else {
-            this.startService(intent);
-        }
+        this.startForegroundService(intent);
     }
 
     public synchronized BgJob getBgJob(){

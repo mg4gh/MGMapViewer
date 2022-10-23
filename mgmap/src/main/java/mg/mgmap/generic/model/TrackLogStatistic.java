@@ -36,6 +36,7 @@ public class TrackLogStatistic {
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
     private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
+    String logName = "";  // used only for debug puposes
 
     private int segmentIdx = -1; // -1 means all segments; // -2 remainings statistic
     private long tStart = PointModel.NO_TIME;
@@ -121,7 +122,7 @@ public class TrackLogStatistic {
         setGain(0);
         setLoss(0);
         numPoints = 0;
-        segmentIdx = -1;
+//        segmentIdx = -1; // segmentIdx shall survive
         duration = 0;
 //        tStart = 0; // tStart shall survive
         lastPoint4Distance = null;
@@ -214,12 +215,11 @@ public class TrackLogStatistic {
         if ( lastPoint4GainLoss == null){  // no reference point or first one (ignore first point height value)
             lastPoint4GainLoss = point;
         } else {
-            float smoothingFactor = Math.min(20, point.getEleAcc()) / 20.0f;
+            float smoothingFactor = (point.getEleAcc() == PointModel.NO_ACC)? 0.25f : Math.min(20, point.getEleAcc()) / 20.0f;
             float smoothingDiff = (point.getEleD() - lastPoint4GainLoss.getEleD());
             float smoothing = smoothingDiff * smoothingFactor / 2; // smoothing is maximal half of the difference
 
             float diff = (point.getEleD()-smoothing) - (lastPoint4GainLoss.getEleD()-lastSmoothing4GainLoss);
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" point.getEleAcc()="+point.getEleAcc()+" smoothingFactor="+smoothingFactor+" smoothingDiff="+smoothingDiff+" smoothing="+smoothing+" eleD="+point.getEleD());
             if ((Math.abs(diff) >= getEleThreshold(point)) ||
                     ((smoothing!=0) && (Math.signum(smoothing) == Math.signum(lastSmoothing4GainLoss)) && (Math.signum(lastSmoothing4GainLoss) == Math.signum(preLastSmoothing4GainLoss)))){
                 lastPoint4GainLoss = point;
@@ -230,9 +230,9 @@ public class TrackLogStatistic {
                 } else {
                     loss -= diff;
                 }
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+String.format("+ Time: %s | Diff: %+5.1f | Smooth: %+5.2f | gain: %5.1f", sdf.format(new Date(point.getTimestamp())), diff, smoothing, gain));
-//            } else {
-//                Log.v(MGMapApplication.LABEL, NameUtil.context()+String.format("- Time: %s | Diff: %+5.1f | Smooth: %+5.2f | gain: %5.1f", sdf.format(new Date(point.getTimestamp())), diff, smoothing, gain));
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+String.format("+ Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d", sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
+            } else {
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+String.format("- Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d", sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
             }
         }
     }
@@ -241,7 +241,7 @@ public class TrackLogStatistic {
 
         if (point instanceof TrackLogPoint) {
             TrackLogPoint tlp = (TrackLogPoint) point;
-            if (tlp.getPressureAlt() != PointModel.NO_ELE) return ELE_THRESHOLD_BARO;
+            if (tlp.getPressureEle() != PointModel.NO_ELE) return ELE_THRESHOLD_BARO;
         }
         return ELE_THRESHOLD_ELSE;
     }

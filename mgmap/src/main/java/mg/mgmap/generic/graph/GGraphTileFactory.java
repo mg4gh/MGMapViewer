@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.application.util.AltitudeProvider;
 import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -46,14 +46,14 @@ public class GGraphTileFactory {
     }
 
     private WayProvider wayProvider = null;
-    private AltitudeProvider altitudeProvider = null;
+    private ElevationProvider elevationProvider = null;
     private LinkedHashMap<Long, GGraphTile> cache = null;
 
     public GGraphTileFactory(){}
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider, AltitudeProvider altitudeProvider){
+    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider){
         this.wayProvider = wayProvider;
-        this.altitudeProvider = altitudeProvider;
+        this.elevationProvider = elevationProvider;
 
         cache = new LinkedHashMap <Long, GGraphTile>(100, 0.6f, true) {
             @Override
@@ -112,8 +112,8 @@ public class GGraphTileFactory {
         return am;
     }
 
-    public AltitudeProvider getAltitudeProvider() {
-        return altitudeProvider;
+    public ElevationProvider getElevationProvider() {
+        return elevationProvider;
     }
 
     private GGraphTile getGGraphTile(int tileX, int tileY){
@@ -123,7 +123,7 @@ public class GGraphTileFactory {
         if (gGraphTile == null){
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+cache.size()+")");
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
-            gGraphTile = new GGraphTile(altitudeProvider, tile);
+            gGraphTile = new GGraphTile(elevationProvider, tile);
             for (Way way : wayProvider.getWays(tile)) {
                 if (wayProvider.isHighway(way)){
 

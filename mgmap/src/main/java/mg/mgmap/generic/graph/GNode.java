@@ -28,11 +28,10 @@ public class GNode extends PointModelImpl {
     private final GNeighbour neighbour;
 
     // for Routing algorithms
-    private boolean connected = false;
     private GNodeRef nodeRef = null;
 
-    public GNode(double latitude, double longitude, float ele, double cost){
-        super(latitude, longitude, ele);
+    public GNode(double latitude, double longitude, float ele, float eleAcc, double cost){
+        super(latitude, longitude, ele, eleAcc);
         this.neighbour = new GNeighbour(this, cost);
     }
 
@@ -69,14 +68,6 @@ public class GNode extends PointModelImpl {
             if (nextNeighbour.getNeighbourNode() == oNode) return true;
         }
         return false;
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public void setConnected(boolean connected) {
-        this.connected = connected;
     }
 
     public GNodeRef getNodeRef() {

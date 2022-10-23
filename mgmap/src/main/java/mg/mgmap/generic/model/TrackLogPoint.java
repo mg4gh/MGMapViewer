@@ -23,21 +23,19 @@ import java.nio.ByteBuffer;
  */
 public class TrackLogPoint extends WriteablePointModelImpl implements WriteablePointModel{
 
-    public static TrackLogPoint createGpsLogPoint(long timestamp, double latitude, double longitude, float accuracy, double altitude, float geoidOffset, float altAccuracy, float hgtAlt){
+    public static TrackLogPoint createGpsLogPoint(long timestamp, double latitude, double longitude, float accuracy, double wgs84ele, float geoidOffset, float wgs84eleAcc){
         TrackLogPoint lp = new TrackLogPoint();
         lp.timestamp = timestamp;
         lp.la = LaLo.d2md(latitude);
         lp.lo = LaLo.d2md(longitude);
-        lp.hgtAlt = hgtAlt;
-        lp.accuracy = (Math.round(accuracy*10))/10.0f;
-        if (altitude != 0){
-            lp.wgs84alt = (float)altitude;
-            lp.nmeaAlt = lp.wgs84alt - geoidOffset;
-            lp.ele = lp.nmeaAlt;
-        } else { // no gps altitude
-            lp.ele = lp.hgtAlt;
+        lp.nmeaAcc = (Math.round(accuracy*10))/10.0f;
+        if (wgs84ele != NO_ELE){
+            if (wgs84ele != 0) { // don't trust wgs84ele value 0
+                lp.wgs84ele = (float) wgs84ele;
+                lp.nmeaEle = lp.wgs84ele - geoidOffset;
+                lp.nmeaEleAcc = (Math.round(wgs84eleAcc*10))/10.0f;
+            }
         }
-        lp.altAccuracy = (Math.round(altAccuracy*10))/10.0f;
         return lp;
     }
 
@@ -50,16 +48,16 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
 
 
     private long timestamp = NO_TIME;
-    private float accuracy = 0; // m rounded
+    private float nmeaAcc = NO_ACC; // m rounded - horizontal accuracy
+    private float wgs84ele = NO_ELE; // m
+    private float nmeaEle = NO_ELE; // m
+    private float nmeaEleAcc = NO_ACC; // m
     private float pressure = NO_PRES; // hpa
-    private float wgs84alt = NO_ELE; // m
-    private float nmeaAlt = NO_ELE; // m
-    private float pressureAlt = NO_ELE; // m
-    private float hgtAlt = NO_ELE; // m
-    private float altAccuracy = 0; // m
-    private float pressureAccuracy = 0; // delta hpa - only temporary used
-    private float pressureAltAccuracy = 0; // m
-    private float altSmoothing = 0; // m
+    private float pressureEle = NO_ELE; // m
+    private float pressureAcc = 0; // delta hpa - only temporary used
+    private float pressureEleAcc = NO_ACC; // m
+    private float hgtEle = NO_ELE; // m
+    private float hgtEleAcc = NO_ACC; // m
 
     public TrackLogPoint(){}
 
@@ -67,15 +65,17 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         this.timestamp = tlp.timestamp;
         this.la = tlp.la;
         this.lo = tlp.lo;
-        this.accuracy = tlp.accuracy;
+        this.nmeaAcc = tlp.nmeaAcc;
         this.pressure = tlp.pressure;
-        this.wgs84alt = tlp.wgs84alt;
-        this.nmeaAlt = tlp.nmeaAlt;
-        this.pressureAlt = tlp.pressureAlt;
+        this.wgs84ele = tlp.wgs84ele;
+        this.nmeaEle = tlp.nmeaEle;
+        this.pressureEle = tlp.pressureEle;
         this.ele = tlp.ele;
-        this.hgtAlt = tlp.hgtAlt;
-        this.altAccuracy = tlp.altAccuracy;
-        this.pressureAltAccuracy = tlp.pressureAltAccuracy;
+        this.hgtEle = tlp.hgtEle;
+        this.hgtEleAcc = tlp.hgtEleAcc;
+        this.nmeaEleAcc = tlp.nmeaEleAcc;
+        this.pressureEleAcc = tlp.pressureEleAcc;
+        this.pressureAcc = tlp.pressureAcc;
     }
 
 
@@ -83,29 +83,31 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         buf.putLong(timestamp);
         buf.putInt(la);
         buf.putInt(lo);
-        buf.putInt((int)accuracy*1000);
+        buf.putInt((int) nmeaAcc *1000);
         buf.putInt((int)(pressure*1000));
-        buf.putInt((int)(wgs84alt*1000));
-        buf.putInt((int)(nmeaAlt*1000));
+        buf.putInt((int)(wgs84ele *1000));
+        buf.putInt((int)(nmeaEle *1000));
         buf.putInt((int)(ele*1000));
-        buf.putInt((int)(pressureAlt*1000));
-        buf.putInt((int)(hgtAlt*1000));
-        buf.putInt((int)(altAccuracy*1000));
-        buf.putInt((int)(pressureAltAccuracy*1000));
+        buf.putInt((int)(pressureEle *1000));
+        buf.putInt((int)(hgtEle *1000));
+        buf.putInt((int)(hgtEleAcc *1000));
+        buf.putInt((int)(nmeaEleAcc *1000));
+        buf.putInt((int)(pressureEleAcc *1000));
     }
     public void fromByteBuffer(ByteBuffer buf){
         timestamp = buf.getLong();
         la = buf.getInt();
         lo = buf.getInt();
-        accuracy = buf.getInt()/1000.0f;
+        nmeaAcc = buf.getInt()/1000.0f;
         pressure = buf.getInt()/1000.0f;
-        wgs84alt = buf.getInt()/1000.0f;
-        nmeaAlt = buf.getInt()/1000.0f;
+        wgs84ele = buf.getInt()/1000.0f;
+        nmeaEle = buf.getInt()/1000.0f;
         ele = buf.getInt()/1000.0f;
-        pressureAlt = buf.getInt()/1000.0f;
-        hgtAlt = buf.getInt()/1000.0f;
-        altAccuracy = buf.getInt()/1000.0f;
-        pressureAltAccuracy = buf.getInt()/1000.0f;
+        pressureEle = buf.getInt()/1000.0f;
+        hgtEle = buf.getInt()/1000.0f;
+        hgtEleAcc = buf.getInt()/1000.0f;
+        nmeaEleAcc = buf.getInt()/1000.0f;
+        pressureEleAcc = buf.getInt()/1000.0f;
     }
 
     @Override
@@ -113,33 +115,39 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         if (ele != PointModel.NO_ELE){
             return ele;
         }
-        if (hgtAlt != PointModel.NO_ELE){
-            return hgtAlt;
+        if (hgtEle != PointModel.NO_ELE){
+            return hgtEle;
         }
-        return PointModel.NO_ELE;
+        if (nmeaEle != PointModel.NO_ELE){
+            return nmeaEle;
+        }
+        return super.getEleA();
     }
 
     @Override
     public float getEleD() {
-        if (pressureAlt != PointModel.NO_ELE){
-            return pressureAlt;
+        if (pressureEle != PointModel.NO_ELE){
+            return pressureEle;
         }
-        if (ele != PointModel.NO_ELE){
-            return ele;
+        if (hgtEle != PointModel.NO_ELE){
+            return hgtEle;
         }
-        if (hgtAlt != PointModel.NO_ELE){
-            return hgtAlt;
+        if (nmeaEle != PointModel.NO_ELE){
+            return nmeaEle;
         }
-        return PointModel.NO_ELE;
+        return super.getEleD();
     }
 
     @Override
     public float getEleAcc() {
-        if (pressureAlt != PointModel.NO_ELE){
-            return pressureAltAccuracy;
+        if (pressureEle != PointModel.NO_ELE){
+            return pressureEleAcc;
         }
-        if (ele != PointModel.NO_ELE){
-            return altAccuracy;
+        if (hgtEle != PointModel.NO_ELE){
+            return hgtEleAcc;
+        }
+        if (nmeaEle != PointModel.NO_ELE){
+            return nmeaEleAcc;
         }
         return super.getEleAcc();
     }
@@ -147,68 +155,68 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
     public long getTimestamp(){
         return timestamp;
     }
-    public float getNmeaAlt(){
-        return nmeaAlt;
+    public float getNmeaEle(){
+        return nmeaEle;
     }
-    public float getAccuracy() {
-        return accuracy;
+    public float getNmeaAcc() {
+        return nmeaAcc;
     }
     public float getPressure() {
         return pressure;
     }
-    public float getWgs84alt() {
-        return wgs84alt;
+    public float getWgs84ele() {
+        return wgs84ele;
     }
-    public float getPressureAlt() {
-        return pressureAlt;
+    public float getPressureEle() {
+        return pressureEle;
     }
-    public float getHgtAlt() {
-        return hgtAlt;
+    public float getHgtEle() {
+        return hgtEle;
     }
-    public float getAltAccuracy() {
-        return altAccuracy;
+    public float getHgtEleAcc() {
+        return hgtEleAcc;
     }
-    public float getPressureAccuracy() {
-        return pressureAccuracy;
+    public float getNmeaEleAcc() {
+        return nmeaEleAcc;
     }
-    public float getPressureAltAccuracy() {
-        return pressureAltAccuracy;
+    public float getPressureAcc() {
+        return pressureAcc;
     }
-    public float getAltSmoothing() {
-        return altSmoothing;
+    public float getPressureEleAcc() {
+        return pressureEleAcc;
     }
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
-    public void setAccuracy(float accuracy) {
-        this.accuracy = Math.round(accuracy);
+    public void setNmeaAcc(float nmeaAcc) {
+        this.nmeaAcc = Math.round(nmeaAcc);
     }
     public void setPressure(float pressure) {
         this.pressure = pressure;
     }
-    public void setWgs84alt(float wgs84alt) {
-        this.wgs84alt = wgs84alt;
+    public void setWgs84ele(float wgs84ele) {
+        this.wgs84ele = wgs84ele;
     }
-    public void setNmeaAlt(float nmeaAlt) {
-        this.nmeaAlt = nmeaAlt;
+    public void setNmeaEle(float nmeaEle) {
+        this.nmeaEle = nmeaEle;
     }
-    public void setPressureAlt(float pressureAlt) {
-        this.pressureAlt = pressureAlt;
+    public void setPressureEle(float pressureEle) {
+        this.pressureEle = pressureEle;
     }
-    public void setHgtAlt(float hgtAlt) {
-        this.hgtAlt = hgtAlt;
+    public void setHgtEle(float hgtEle) {
+        this.hgtEle = hgtEle;
     }
-    public void setAltAccuracy(float altAccuracy) {
-        this.altAccuracy = altAccuracy;
+    public void setHgtEleAcc(float hgtEleAcc) {
+        this.hgtEleAcc = hgtEleAcc;
     }
-    public void setPressureAccuracy(float pressureAccuracy) {
-        this.pressureAccuracy = pressureAccuracy;
+    public void setNmeaEleAcc(float nmeaEleAcc) {
+        this.nmeaEleAcc = nmeaEleAcc;
     }
-    public void setPressureAltAccuracy(float pressureAltAccuracy) {
-        this.pressureAltAccuracy = pressureAltAccuracy;
+    public void setPressureAcc(float pressureAcc) {
+        this.pressureAcc = pressureAcc;
     }
-    public void setAltSmoothing(float altSmoothing) {
-        this.altSmoothing = altSmoothing;
+    public void setPressureEleAcc(float pressureEleAcc) {
+        this.pressureEleAcc = pressureEleAcc;
     }
 }

@@ -17,11 +17,11 @@ package mg.mgmap.generic.graph;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 
+import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
-import mg.mgmap.application.util.AltitudeProvider;
 import mg.mgmap.generic.model.PointModelUtil;
 
 import java.util.ArrayList;
@@ -32,15 +32,16 @@ import java.util.ArrayList;
 
 public class GGraphTile extends GGraph {
 
-    AltitudeProvider altitudeProvider;
+    ElevationProvider elevationProvider;
 
     private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
     final Tile tile;
     final BBox tbBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
+    private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
 
-    GGraphTile(AltitudeProvider altitudeProvider, Tile tile){
-        this.altitudeProvider = altitudeProvider;
+    GGraphTile(ElevationProvider elevationProvider, Tile tile){
+        this.elevationProvider = elevationProvider;
         this.tile = tile;
         tbBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
     }
@@ -99,8 +100,11 @@ public class GGraphTile extends GGraph {
     private GNode getAddNode(double latitude, double longitude, int low, int high, boolean allowAdd){
         if (high - low == 1){ // nothing more to compare, insert a new GNode at high index
             if (allowAdd){
-                float hgtAlt = altitudeProvider.getAltitude(latitude, longitude);
-                GNode node = new GNode(latitude, longitude, hgtAlt, 0);
+                // use hgtTemp as parameter by reference to ElevationProvider, that return the hgtEle and the hgtEleAcc values via this reference - Since GNode is no WritablePointModel, it cannot be used directly for this.
+                hgtTemp.setLat(latitude);
+                hgtTemp.setLon(longitude);
+                elevationProvider.setElevation(hgtTemp);
+                GNode node = new GNode(latitude, longitude, hgtTemp.getEleA(), hgtTemp.getEleAcc(), 0);
                 getNodes().add(high, node);
                 return node;
             } else {

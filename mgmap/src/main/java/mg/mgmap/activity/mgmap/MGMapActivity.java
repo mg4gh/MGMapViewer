@@ -184,7 +184,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         coView = getControlView();
         mapViewUtility = new MapViewUtility(this, mapView);
-        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getAltitudeProvider());
+        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider());
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSBeeline(this));
@@ -235,15 +235,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             dialogColor.setAlpha(0);
             alertDialog.getWindow().setBackgroundDrawable(dialogColor);
             alertDialog.show();
-            new Thread(){
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(3);
-                    } catch (Exception e){ Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage()); }
-                    alertDialog.dismiss();
-                }
-            }.start();
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3);
+                } catch (Exception e){ Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage()); }
+                alertDialog.dismiss();
+            }).start();
         }
 
         for (FeatureService microService : featureServices) {
@@ -420,7 +417,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
                         if (selectedTrackLog != null){
                             String name = selectedTrackLog.getName();
-                            TrackLog aTrackLog = new GpxImporter(getMGMapApplication().getAltitudeProvider())
+                            TrackLog aTrackLog = new GpxImporter(getMGMapApplication().getElevationProvider())
                                     .parseTrackLog(name, getMGMapApplication().getPersistenceManager().openGpxInput(name));
                             if (aTrackLog.getReferencedTrackLog() != null){
                                 selectedTrackLog = aTrackLog.getReferencedTrackLog();
@@ -431,7 +428,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                                 application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
                                 application.addBgJob (new BgJob(){
                                     @Override
-                                    protected void doJob() throws Exception {
+                                    protected void doJob() {
                                         synchronized (getFS(FSRouting.class)){ // prevents that the Routing calculation thread is working
                                             getFS(FSMarker.class).createMarkerTrackLog(aTrackLog);
                                             getFS(FSRouting.class).optimize2(application.markerTrackLogObservable.getTrackLog());

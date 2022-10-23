@@ -19,6 +19,7 @@ public interface PointModel {
 
     double NO_LAT_LONG = 200;
     float NO_ELE = -20000;
+    float NO_ACC = -20002;
     float NO_PRES = 0;
     long NO_TIME = 946771200000L;
 

@@ -51,6 +51,7 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     }
     public void setName(String name) {
         this.name = name;
+        trackStatistic.logName = "st_"+name; // used only for debug purposes
     }
 
     public boolean isAvailable() {

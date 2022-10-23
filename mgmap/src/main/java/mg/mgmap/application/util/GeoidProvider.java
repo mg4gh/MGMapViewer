@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Provides for a given point (latitude, longitude) a difference between wgs84 altitude and nmea altitude.
+ * Provides for a given point (latitude, longitude) a difference between wgs84 elevation and nmea elevation.
  * For performance issues the results are cached.
  */
 

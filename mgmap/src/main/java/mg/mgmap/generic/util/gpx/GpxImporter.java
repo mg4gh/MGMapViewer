@@ -24,7 +24,7 @@ import android.util.Log;
 import org.kxml2.io.KXmlParser;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.application.util.AltitudeProvider;
+import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -71,7 +71,7 @@ public class GpxImporter {
                 if (filePath == null) return null;
                 is = new FileInputStream(filePath);
             }
-            return new GpxImporter(application.getAltitudeProvider()).parseTrackLog( filename, is);
+            return new GpxImporter(application.getElevationProvider()).parseTrackLog( filename, is);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
@@ -79,11 +79,11 @@ public class GpxImporter {
         return null;
     }
 
-    private final AltitudeProvider altitudeProvider;
+    private final ElevationProvider elevationProvider;
     private final XmlPullParser pullParser = new KXmlParser();
 
-    public GpxImporter(AltitudeProvider altitudeProvider){
-        this.altitudeProvider = altitudeProvider;
+    public GpxImporter(ElevationProvider elevationProvider){
+        this.elevationProvider = elevationProvider;
     }
 
 
@@ -140,7 +140,7 @@ public class GpxImporter {
             } else if (eventType == XmlPullParser.END_TAG) {
                 if ("trkpt".equals(qName)) {
                     if (tlp.getEleD() == PointModel.NO_ELE){
-                        tlp.setEle(altitudeProvider.getAlt(tlp)); // try to enrich data with hgt height information
+                        elevationProvider.setElevation(tlp); // try to enrich data with hgt height information
                     }
                     trackLog.addPoint( tlp );
                 }
@@ -189,29 +189,32 @@ public class GpxImporter {
                         for (String part : text.split(",")){
                             String[] val = part.split("=");
                             if (val.length == 2){
-                                if (val[0].equals("wgs84altitude")){
-                                    tlp.setWgs84alt( Float.parseFloat(val[1]) );
+                                if (val[0].equals("wgs84ele") || val[0].equals("wgs84altitude")){
+                                    tlp.setWgs84ele( Float.parseFloat(val[1]) );
                                 }
-                                if (val[0].equals("nmeaAltitude")){
-                                    tlp.setNmeaAlt( Float.parseFloat(val[1]) );
+                                if (val[0].equals("nmeaEle") || val[0].equals("nmeaAltitude")){
+                                    tlp.setNmeaEle( Float.parseFloat(val[1]) );
                                 }
-                                if (val[0].equals("accuracy")){
-                                    tlp.setAccuracy( Float.parseFloat(val[1]) );
+                                if (val[0].equals("nmeaAcc") || val[0].equals("accuracy")){
+                                    tlp.setNmeaAcc( Float.parseFloat(val[1]) );
                                 }
                                 if (val[0].equals("pressure")){
                                     tlp.setPressure( Float.parseFloat(val[1]) );
                                 }
-                                if (val[0].equals("presureAltitude")){
-                                    tlp.setPressureAlt( Float.parseFloat(val[1]) );
+                                if (val[0].equals("pressureEle") || val[0].equals("presureAltitude")){
+                                    tlp.setPressureEle( Float.parseFloat(val[1]) );
                                 }
-                                if (val[0].equals("hgtAltitude")){
-                                    tlp.setHgtAlt( Float.parseFloat(val[1]) );
+                                if (val[0].equals("hgtEle") || val[0].equals("hgtAltitude")){
+                                    tlp.setHgtEle( Float.parseFloat(val[1]) );
                                 }
-                                if (val[0].equals("altAccuracy")){
-                                    tlp.setAltAccuracy( Float.parseFloat(val[1]) );
+                                if (val[0].equals("hgtEleAcc") || val[0].equals("hgtAltAcc")){
+                                    tlp.setHgtEleAcc( Float.parseFloat(val[1]) );
                                 }
-                                if (val[0].equals("pressureAltAccuracy")){
-                                    tlp.setPressureAltAccuracy( Float.parseFloat(val[1]) );
+                                if (val[0].equals("nmeaEleAcc") || val[0].equals("altAccuracy")){
+                                    tlp.setNmeaEleAcc( Float.parseFloat(val[1]) );
+                                }
+                                if (val[0].equals("pressureEleAcc") || val[0].equals("pressureAltAccuracy")){
+                                    tlp.setPressureEleAcc( Float.parseFloat(val[1]) );
                                 }
                             }
                         }

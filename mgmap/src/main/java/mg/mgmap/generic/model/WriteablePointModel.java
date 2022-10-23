@@ -23,5 +23,7 @@ public interface WriteablePointModel extends PointModel {
 
     void setEle(float elevation);
 
+    void setEleAcc(float eleAcc);
+
     void setTimestamp(long timestamp);
 }

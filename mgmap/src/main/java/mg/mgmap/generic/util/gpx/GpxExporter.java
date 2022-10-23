@@ -82,21 +82,28 @@ public class GpxExporter {
                                 if (pm instanceof TrackLogPoint) {
                                     TrackLogPoint lp = (TrackLogPoint) pm;
                                     String cmt = "";
-                                    cmt += "wgs84altitude=" + String.format(Locale.ENGLISH,"%.1f",lp.getWgs84alt()) + ",";
-                                    cmt += "nmeaAltitude=" + String.format(Locale.ENGLISH,"%.1f",lp.getNmeaAlt()) + ",";
-                                    cmt += "accuracy=" + String.format(Locale.ENGLISH,"%.1f",lp.getAccuracy()) + ",";
-                                    if (lp.getPressure() > Integer.MIN_VALUE){
+                                    cmt += "nmeaAcc=" + String.format(Locale.ENGLISH,"%.1f",lp.getNmeaAcc()) + ",";
+                                    if (lp.getWgs84ele() != TrackLogPoint.NO_ELE) {
+                                        cmt += "wgs84ele=" + String.format(Locale.ENGLISH,"%.1f",lp.getWgs84ele()) + ",";
+                                    }
+                                    if (lp.getNmeaEle() != TrackLogPoint.NO_ELE) {
+                                        cmt += "nmeaEle=" + String.format(Locale.ENGLISH,"%.1f",lp.getNmeaEle()) + ",";
+                                    }
+                                    if (lp.getNmeaEleAcc() != PointModel.NO_ACC){
+                                        cmt += "nmeaEleAcc=" + String.format(Locale.ENGLISH,"%.1f",lp.getNmeaEleAcc() ) + "," ;
+                                    }
+                                    if (lp.getPressure() != PointModel.NO_PRES){
                                         cmt += "pressure=" + String.format(Locale.ENGLISH,"%.3f",lp.getPressure()) + ",";
-                                        cmt += "presureAltitude=" + String.format(Locale.ENGLISH,"%.1f",lp.getPressureAlt() ) + "," ;
+                                        cmt += "pressureEle=" + String.format(Locale.ENGLISH,"%.1f",lp.getPressureEle() ) + "," ;
                                     }
-                                    if (lp.getHgtAlt() != TrackLogPoint.NO_ELE){
-                                        cmt += "hgtAltitude=" + String.format(Locale.ENGLISH,"%.1f",lp.getHgtAlt() ) + "," ;
+                                    if (lp.getHgtEle() != TrackLogPoint.NO_ELE){
+                                        cmt += "hgtEle=" + String.format(Locale.ENGLISH,"%.1f",lp.getHgtEle() ) + "," ;
                                     }
-                                    if (lp.getAltAccuracy() != 0){
-                                        cmt += "altAccuracy=" + String.format(Locale.ENGLISH,"%.1f",lp.getAltAccuracy() ) + "," ;
+                                    if (lp.getHgtEleAcc() != PointModel.NO_ACC){
+                                        cmt += "hgtEleAcc=" + String.format(Locale.ENGLISH,"%.1f",lp.getHgtEleAcc() ) + "," ;
                                     }
-                                    if (lp.getPressureAltAccuracy() != 0){
-                                        cmt += "pressureAltAccuracy=" + String.format(Locale.ENGLISH,"%.1f",lp.getPressureAltAccuracy() ) + "," ;
+                                    if (lp.getPressureEleAcc() != PointModel.NO_ACC){
+                                        cmt += "pressureEleAcc=" + String.format(Locale.ENGLISH,"%.1f",lp.getPressureEleAcc() ) + "," ;
                                     }
                                     pw.println("\t\t\t\t<cmt>" + cmt.substring(0,cmt.length()-1) + "</cmt>");
                                 }

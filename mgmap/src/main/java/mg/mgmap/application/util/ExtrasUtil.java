@@ -30,16 +30,16 @@ import mg.mgmap.generic.util.gpx.GpxImporter;
 public class ExtrasUtil {
 
 
-    public static void checkCreateElevateTheme(PersistenceManager persistenceManager, AssetManager assetManager){
-        try {
-            AssetFileDescriptor fd = assetManager.openFd("Elevate.zip");
+//    public static void checkCreateElevateTheme(PersistenceManager persistenceManager, AssetManager assetManager){
+//        try {
+//            AssetFileDescriptor fd = assetManager.openFd("Elevate.zip");
+//
+//        } catch (Exception e){
+//            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+//        }
+//    }
 
-        } catch (Exception e){
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-        }
-    }
-
-    public static void checkCreateMeta(PersistenceManager persistenceManager, MetaDataUtil metaDataUtil, AltitudeProvider altitudeProvider){
+    public static void checkCreateMeta(PersistenceManager persistenceManager, MetaDataUtil metaDataUtil, ElevationProvider elevationProvider){
         Log.i(MGMapApplication.LABEL, NameUtil.context() );
         try {
             List<String> gpxNames = persistenceManager.getGpxNames();
@@ -51,7 +51,7 @@ public class ExtrasUtil {
 
             for (String name : newGpxNames){
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Create meta file for "+name );
-                TrackLog trackLog = new GpxImporter(altitudeProvider).parseTrackLog(name, persistenceManager.openGpxInput(name));
+                TrackLog trackLog = new GpxImporter(elevationProvider).parseTrackLog(name, persistenceManager.openGpxInput(name));
                 metaDataUtil.createMetaData(trackLog);
                 metaDataUtil.writeMetaData(persistenceManager.openMetaOutput(name), trackLog);
             }

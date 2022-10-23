@@ -54,12 +54,12 @@ public class TrackLoggerService extends Service {
     private PrefCache prefCache = null;
     private Pref<Boolean> prefGps;
 
-    public static void setPressureAlt(TrackLogPoint lp){
+    public static void setPressureEle(TrackLogPoint lp){
         if (lp.getPressure() != PointModel.NO_PRES){
-            float pressureAlt = Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure()) * 10 ) / 10.0f;
-            float pressureAlt2 = Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure()+lp.getPressureAccuracy()) * 10 ) / 10.0f;
-            lp.setPressureAlt( pressureAlt );
-            lp.setPressureAltAccuracy( pressureAlt - pressureAlt2 );
+            float pressureEle = Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure()) * 10 ) / 10.0f;
+            float pressureEle2 = Math.round(SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  lp.getPressure()+lp.getPressureAcc()) * 10 ) / 10.0f;
+            lp.setPressureEle( pressureEle );
+            lp.setPressureEleAcc( pressureEle - pressureEle2 );
         }
     }
 
@@ -146,8 +146,7 @@ public class TrackLoggerService extends Service {
 
     protected void onNewTrackLogPoint(TrackLogPoint lp) {
         barometerListener.providePressureData(lp);
-//        lp.setPressure( barometerListener.getPressure(lp.getLat(), lp.getLon()) );
-        setPressureAlt(lp);
+        setPressureEle(lp);
         application.logPoints2process.add(lp);
         Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);
         turningInstructionService.handleNewPoint(lp);

@@ -30,6 +30,7 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     int la = LaLo.d2md(NO_LAT_LONG);
     int lo = LaLo.d2md(NO_LAT_LONG);
     float ele = NO_ELE;
+    float eleAcc = NO_ACC;
 
     public static PointModelImpl createFromLaLo(long lalo){
         return createFromLaLo(LaLo.getLa(lalo), LaLo.getLo(lalo));
@@ -43,12 +44,13 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     }
 
     public PointModelImpl(PointModel pm){
-        this(pm.getLat(), pm.getLon(), pm.getEleA());
+        this(pm.getLat(), pm.getLon(), pm.getEleA(), pm.getEleAcc());
     }
 
-    public PointModelImpl(double latitude, double longitude, float ele){
+    public PointModelImpl(double latitude, double longitude, float ele, float eleAcc){
         this(latitude, longitude);
         this.ele = ele;
+        this.eleAcc = eleAcc;
     }
 
     public PointModelImpl(double latitude, double longitude){
@@ -83,7 +85,7 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
 
     @Override
     public float getEleAcc() {
-        return 10; // accuracy assumption for hgt and no height data
+        return eleAcc; // accuracy value for hgt
     }
 
     @Override

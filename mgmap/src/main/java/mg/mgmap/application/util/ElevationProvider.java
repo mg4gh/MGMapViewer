@@ -16,21 +16,36 @@ package mg.mgmap.application.util;
 
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.TrackLogPoint;
+import mg.mgmap.generic.model.WriteablePointModel;
+import mg.mgmap.generic.model.WriteablePointModelImpl;
 
 /** Provide an elevation value for a given position on the .hgt file basis. */
-public class AltitudeProvider {
+public class ElevationProvider {
 
     PersistenceManager persistenceManager;
 
-    public AltitudeProvider(PersistenceManager persistenceManager){
+    public ElevationProvider(PersistenceManager persistenceManager){
         this.persistenceManager = persistenceManager;
     }
 
-    public float getAlt(PointModel pm) {
-        return getAltitude(pm.getLat(), pm.getLon());
+    public void setElevation(TrackLogPoint tlp) {
+        WriteablePointModel tlpAdapter = new WriteablePointModelImpl(tlp.getLat(), tlp.getLon()){
+            @Override
+            public void setEle(float elevation) {
+                tlp.setHgtEle(elevation);
+            }
+            @Override
+            public void setEleAcc(float eleAcc) {
+                tlp.setHgtEleAcc(eleAcc);
+            }
+        };
+        setElevation(tlpAdapter);
     }
 
-    public float getAltitude(double latitude, double longitude) {
+    public void setElevation(WriteablePointModel wpm){
+        double latitude = wpm.getLat();
+        double longitude = wpm.getLon();
         int iLat = (int)latitude;
         int iLon = (int)longitude;
         if (latitude - iLat == 0){
@@ -61,9 +76,16 @@ public class AltitudeProvider {
             double nhi = interpolate(nwLon, neLon, nwEle, neEle, longitude);
             double shi = interpolate(swLon, seLon, swEle, seEle, longitude);
             double hi = interpolate(nwLat, swLat, nhi, shi, latitude);
-            return (float) hi;
+
+            double maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
+            double minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
+
+            wpm.setEle((float) hi);
+            wpm.setEleAcc((float) (maxEle-minEle));
+        } else {
+            wpm.setEle(PointModel.NO_ELE);
+            wpm.setEleAcc(PointModel.NO_ACC);
         }
-        return PointModel.NO_ELE;
     }
 
     private float getEle(byte[] hgtBuf, int oLat, int oLon) {

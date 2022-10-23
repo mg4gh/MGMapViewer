@@ -8,7 +8,7 @@ class ExtendedPointModelImplTest {
 
     @Test
     void createExtendedPointModelImplTest1() {
-        ExtendedPointModelImpl<Double> epmi = new ExtendedPointModelImpl<>(49.6084, 8.6051, 538.731f, 555.5555);
+        ExtendedPointModelImpl<Double> epmi = new ExtendedPointModelImpl<>(49.6084, 8.6051, 538.731f, 0, 555.5555);
         assertEquals(49608400, epmi.la);
         assertEquals( 8605100, epmi.lo);
         assertEquals( 538.731f, epmi.ele);
@@ -16,7 +16,7 @@ class ExtendedPointModelImplTest {
     }
     @Test
     void createExtendedPointModelImplTest2() {
-        ExtendedPointModelImpl<String> epmi = new ExtendedPointModelImpl<>(49.6084, 8.6051, 538.731f, "555.5555");
+        ExtendedPointModelImpl<String> epmi = new ExtendedPointModelImpl<>(49.6084, 8.6051, 538.731f, 0, "555.5555");
         assertEquals(49608400, epmi.la);
         assertEquals( 8605100, epmi.lo);
         assertEquals( 538.731f, epmi.ele);
@@ -24,7 +24,7 @@ class ExtendedPointModelImplTest {
     }
     @Test
     void createExtendedPointModelImplTest3() {
-        PointModel pm = new PointModelImpl(49.6084, 8.6051, 538.731f);
+        PointModel pm = new PointModelImpl(49.6084, 8.6051, 538.731f, 0);
         ExtendedPointModelImpl<String> epmi = new ExtendedPointModelImpl<>(pm, "555.5556");
         assertEquals(49608400, epmi.la);
         assertEquals( 8605100, epmi.lo);

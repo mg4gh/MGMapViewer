@@ -19,7 +19,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.LongSparseArray;
@@ -27,7 +26,6 @@ import android.util.LongSparseArray;
 import java.util.Locale;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.util.basic.NameUtil;
 
@@ -46,7 +44,6 @@ class BarometerListener implements SensorEventListener {
     private final SensorManager sensorManager;
     private final Sensor pressureSensor;
 
-    private int cnt=0;
     private long lastEventTimeMillis = 0;
 
     private final int speed;
@@ -74,9 +71,7 @@ class BarometerListener implements SensorEventListener {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " FifoReservedEventCount="+pressureSensor.getFifoReservedEventCount());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Power="+pressureSensor.getPower());
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Resolution="+pressureSensor.getResolution());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " HighestDirectReportRateLevel="+pressureSensor.getHighestDirectReportRateLevel());
-            }
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " HighestDirectReportRateLevel="+pressureSensor.getHighestDirectReportRateLevel());
         } else {
             Log.e(MGMapApplication.LABEL, NameUtil.context()+"BarometerListener: "+"pressureSensor not found");
         }
@@ -87,7 +82,6 @@ class BarometerListener implements SensorEventListener {
 
      @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        cnt++;
         float pressure = sensorEvent.values[0];
         long now = System.currentTimeMillis();
         long eventTimeMillis = ((sensorEvent.timestamp / 1000000) + uptimeMillis);
@@ -124,7 +118,7 @@ class BarometerListener implements SensorEventListener {
                     totalDiff += Math.abs(pValues.valueAt(idx)-avgPressure);
                 }
                 double accPressure = totalDiff/pValues.size();
-                tlp.setPressureAccuracy((float)accPressure);
+                tlp.setPressureAcc((float)accPressure);
                 logInfo += " avgPressure="+avgPressure+" accPressure="+accPressure+" pValues.size()="+pValues.size();
             }
         }

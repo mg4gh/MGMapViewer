@@ -31,6 +31,7 @@ public class WriteableTrackLog extends TrackLog {
     public void startTrack(long timestamp){
         if (timestamp != PointModel.NO_TIME){
             trackStatistic.setTStart(timestamp);
+            trackStatistic.logName = name;
         }
     }
 
@@ -38,6 +39,7 @@ public class WriteableTrackLog extends TrackLog {
         currentSegment = new TrackLogSegment(getNumberOfSegments(), true);
         trackLogSegments.add(currentSegment);
         currentSegment.getStatistic().setTStart(timestamp);
+        currentSegment.getStatistic().logName = name;
         if (trackStatistic.getTStart() == PointModel.NO_TIME){
             trackStatistic.setTStart(timestamp);
         }

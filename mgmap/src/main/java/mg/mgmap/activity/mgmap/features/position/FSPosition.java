@@ -47,7 +47,7 @@ public class FSPosition extends FeatureService {
     private final Pref<Boolean> prefAppRestart = getPref(R.string.MGMapApplication_pref_Restart, false);
     private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_pref_Center, true);
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
-    private final Pref<Boolean> prefGpsEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefGpsEnabled = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefRefreshMapView = getPref(R.string.FSPosition_pref_RefreshMapView, false);
     private final Pref<Boolean> prefMapMoving = getPref(R.string.FSPosition_pref_MapMoving, false);
 
@@ -112,7 +112,7 @@ public class FSPosition extends FeatureService {
             etv.setHelp(r(R.string.FSPosition_qcCenter_Help)).setHelp(r(R.string.FSPosition_qcCenter_Help1),r(R.string.FSPosition_qcCenter_Help2));
         } else if ("group_record".equals(info)){
             etv.setData(prefGps,R.drawable.group_record1,R.drawable.group_record2);
-            etv.setPrAction(new Pref<>(false));
+            etv.setPrAction(new Pref<>(Boolean.FALSE));
         }
         return etv;
     }
@@ -151,7 +151,7 @@ public class FSPosition extends FeatureService {
             TrackLogPoint trackLogPoint = (TrackLogPoint) pm;
             PointView accuracyCircle2 = new PointView(pm, PAINT_ACC_STROKE, PAINT_ACC_FILL);
             register(accuracyCircle2);
-            accuracyCircle2.setRadiusMeter(trackLogPoint.getAccuracy());
+            accuracyCircle2.setRadiusMeter(trackLogPoint.getNmeaAcc());
 
         }
         register(new PointView(pm, PAINT_FIX2_STROKE, PAINT_FIX2_FILL).setRadius( 6 ));

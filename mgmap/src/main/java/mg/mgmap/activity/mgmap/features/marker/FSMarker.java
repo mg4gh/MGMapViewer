@@ -217,7 +217,6 @@ public class FSMarker extends FeatureService {
             if (pointRef != null){
                 deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
             } else {
-//                pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
                 TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl,pmTap, getRadiusForMarkerActions());
                 if (lineRef != null){
                     if (mtl.getBestPoint(lineRef.getApproachPoint(), getRadiusForMarkerActions()) == null){ // if approachPoint is too close to other point, then don't insert
@@ -301,7 +300,7 @@ public class FSMarker extends FeatureService {
 
     private void moveMarkerPoint(TrackLog mtl, int segIdx, int tlpIdx, WriteablePointModel pos){
         mtlSupportProvider.optimizePosition(pos, getRadiusForMarkerActions());
-        pos.setEle(getApplication().getAltitudeProvider().getAlt(pos));
+        getApplication().getElevationProvider().setElevation(pos);
         TrackLogSegment segment = mtl.getTrackLogSegment(segIdx);
         segment.movePoint(tlpIdx, pos);
         mtlSupportProvider.pointMovedCallback(segment.get(tlpIdx));
@@ -315,7 +314,7 @@ public class FSMarker extends FeatureService {
 
     private void addPoint(WriteableTrackLog mtl, WriteablePointModel pmTap){
         mtlSupportProvider.optimizePosition(pmTap, getRadiusForMarkerActions());
-        pmTap.setEle(getApplication().getAltitudeProvider().getAlt(pmTap));
+        getApplication().getElevationProvider().setElevation(pmTap);
         mtl.addPoint( pmTap );
         mtlSupportProvider.pointAddedCallback( pmTap );
     }
@@ -326,7 +325,7 @@ public class FSMarker extends FeatureService {
         int tlpIdx = lineRef.getEndPointIndex();
         WriteablePointModel wpm = new WriteablePointModelImpl(lineRef.getApproachPoint());
         mtlSupportProvider.optimizePosition(wpm, getRadiusForMarkerActions());
-        wpm.setEle(getApplication().getAltitudeProvider().getAlt(wpm));
+        getApplication().getElevationProvider().setElevation(wpm);
         segment.addPoint(tlpIdx, wpm);
         mtlSupportProvider.pointAddedCallback( wpm );
     }
