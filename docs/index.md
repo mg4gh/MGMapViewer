@@ -47,7 +47,6 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Turning instructions](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output (currently only german) based on the route calculation
 
 ### Synchronization features
-- [GDrive](./Features/FurtherFeatures/GDrive/gdrive.md): synchronize your gpx files with a folder on your GDrive account
 - [SshSync](Features/FurtherFeatures/SshSync/sshsync.md): synchronize your gpx files with a configured path on a ssh server in your local net.
 
 
