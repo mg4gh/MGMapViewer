@@ -21,7 +21,7 @@ the .hgt file for N54E014. Each file provides data for a rectangle with one degr
 Place these downloaded hgt files as they are in the directory "./MGMapViewer/hgt" (do **not** unzip them).
 
 So this folder might look like this:  
-<img src="./HgtFolder.png" width="400" />
+<img src="./HgtFolder.PNG" width="400" />
 
 But which (latitude and longitude) hgt files do you need for you personal use? You can easily use a [grid layer](../../MainMapFeatures/MapGrid/mapgrid.md) to find out, which 
 hgt files do you need.
