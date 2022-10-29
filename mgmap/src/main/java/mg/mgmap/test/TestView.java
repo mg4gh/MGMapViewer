@@ -118,7 +118,7 @@ public class TestView extends RelativeLayout  {
         out.x += location[0];
         out.y += location[1];
     }
-    // convert position (in percent) to position in pixel
+    // convert position (in pixel) to position for click drawable (left top corner of drawable, again in pixel)
     public void clickOffset(Point in, Point out){
         out.x = in.x - click.getWidth()/2;
         out.y = in.y - click.getHeight()/2;

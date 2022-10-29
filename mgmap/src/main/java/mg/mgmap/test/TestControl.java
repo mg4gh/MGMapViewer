@@ -269,7 +269,7 @@ public class TestControl {
             limitPPos(pPosNew);
             tv.percent2pos(pPos, from);  // convert old position to pixel
             tv.percent2pos(pPosNew, toCursor); // convert new position to pixel
-            tv.clickOffset(toCursor, toClick); // convert new position to pixel
+            tv.clickOffset(toCursor, toClick); // convert new position to position of click drawable
 
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" form:"+pPos+" to:"+pPosNew
                     +" pxFrom:"+from+" pxTo:"+toCursor);
