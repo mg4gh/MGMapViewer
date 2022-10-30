@@ -76,7 +76,6 @@ public class TestControl {
 
 
     private void prepareTestSetup() { //drop files that are not on the reference list (create defined environment for start of test)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return; // setup doesn't work
         try{
             PersistenceManager pm = application.getPersistenceManager();
             File base = pm.getBaseDir();
