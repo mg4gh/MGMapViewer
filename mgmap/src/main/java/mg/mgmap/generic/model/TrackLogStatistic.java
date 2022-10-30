@@ -110,7 +110,7 @@ public class TrackLogStatistic {
     private PointModel lastPoint4GainLoss = null;
     private float lastSmoothing4GainLoss = 0;
     private float preLastSmoothing4GainLoss = 0;
-    private static final float ELE_THRESHOLD_BARO = 2.0f; // in meter
+    private static final float ELE_THRESHOLD_BARO = 1.9f; // in meter
     private static final float ELE_THRESHOLD_ELSE = 10.0f; // in meter
 
     public TrackLogStatistic(){}
@@ -218,6 +218,7 @@ public class TrackLogStatistic {
             float smoothingFactor = (point.getEleAcc() == PointModel.NO_ACC)? 0.25f : Math.min(20, point.getEleAcc()) / 20.0f;
             float smoothingDiff = (point.getEleD() - lastPoint4GainLoss.getEleD());
             float smoothing = smoothingDiff * smoothingFactor / 2; // smoothing is maximal half of the difference
+            if (Math.signum(lastSmoothing4GainLoss)!=Math.signum(smoothing)) lastSmoothing4GainLoss=0;
 
             float diff = (point.getEleD()-smoothing) - (lastPoint4GainLoss.getEleD()-lastSmoothing4GainLoss);
             if ((Math.abs(diff) >= getEleThreshold(point)) ||
