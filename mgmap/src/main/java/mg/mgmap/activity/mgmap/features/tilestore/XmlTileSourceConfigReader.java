@@ -45,6 +45,7 @@ public class XmlTileSourceConfigReader {
         String text = null;
         String qName;
         ArrayList<String> hostnameList = null;
+        boolean requestProperties = false;
 
         pullParser.setInput(inputStream, null);
 
@@ -57,6 +58,17 @@ public class XmlTileSourceConfigReader {
                 if ("hostnames".equals(qName)) {
                     hostnameList = new ArrayList<>();
                 }
+                if ("requestProperties".equals(qName)) {
+                    requestProperties = true;
+                }
+                if ("property".equals(qName)) {
+                    if (requestProperties){
+                        String key = getStringAttribute("key");
+                        String value = getStringAttribute("value");
+                        config.setConnRequestProperty(key, value);
+                    }
+                }
+
                 text = null;
 
             } else if (eventType == XmlPullParser.END_TAG) {
@@ -95,6 +107,12 @@ public class XmlTileSourceConfigReader {
                 }
                 if ("ttl".equals(qName)) {
                     config.ttl = Long.parseLong(text);
+                }
+                if ("connectTimeout".equals(qName)) {
+                    config.connectTimeout = Integer.parseInt(text);
+                }
+                if ("requestProperties".equals(qName)) {
+                    requestProperties = false;
                 }
             } else if (eventType == XmlPullParser.TEXT) {
                 text = (text==null)?pullParser.getText():text+pullParser.getText();

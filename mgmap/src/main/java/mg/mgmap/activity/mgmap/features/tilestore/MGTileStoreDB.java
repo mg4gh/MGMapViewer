@@ -28,7 +28,11 @@ import org.sqlite.database.sqlite.SQLiteDatabase;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Locale;
 
 import mg.mgmap.application.MGMapApplication;
@@ -52,6 +56,19 @@ public class MGTileStoreDB extends MGTileStore {
         super(storeDir, null, graphicFactory);
         this.graphicFactory = graphicFactory;
 
+//        String sdb = storeDir.getAbsolutePath()+File.separator+dbName;
+//        Log.i(MGMapApplication.LABEL, NameUtil.context() +" db="+sdb);
+//        File fdb = new File(sdb);
+//        Path p = Paths.get(sdb);
+//        Log.i(MGMapApplication.LABEL, NameUtil.context() +" db="+sdb+" exists="+fdb.exists()+ " rwx="+(Files.isReadable(p)?"r":"-")+(Files.isWritable(p)?"w":"-")+(Files.isExecutable(p)?"x":"-"));
+//        try {
+//            Log.i(MGMapApplication.LABEL, NameUtil.context() +" db="+sdb+" owner="+Files.getOwner(p)+" "+Files.getOwner(Paths.get(sdb.replaceFirst("Viewer.*","Viewer")))
+//                    +" "+Files.getOwner(Paths.get( storeDir.getAbsolutePath() ))+" "+Files.getOwner(Paths.get(  storeDir.getAbsolutePath().replaceFirst("/openbikemap",""))));
+//
+//        } catch (IOException e) {
+//            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+//        }
+//
         db = SQLiteDatabase.openDatabase(storeDir.getAbsolutePath()+File.separator+dbName, null, SQLiteDatabase.OPEN_READWRITE);
     }
 

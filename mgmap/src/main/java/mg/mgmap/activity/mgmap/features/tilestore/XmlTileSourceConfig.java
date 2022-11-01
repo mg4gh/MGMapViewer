@@ -29,6 +29,7 @@ public class XmlTileSourceConfig {
     long ttl;
     String urlPart;
     Map<String, String> connRequestProperties = null;
+    int connectTimeout = -1;
 
     public XmlTileSourceConfig(String name){
         this.name = name;
