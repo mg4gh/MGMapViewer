@@ -88,7 +88,7 @@ public class TrackStatisticFilter {
             res &= (prefFilterTimeMax.getValue().getTimeInMillis() >= aTrackLog.getTrackStatistic().getTStart());
         }
         if (prefFilterLengthMinOn.getValue()){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+prefFilterLengthMin.getValue()+" "+aTrackLog.getTrackStatistic().getTotalLength()/1000);
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+prefFilterLengthMin.getValue()+" "+aTrackLog.getTrackStatistic().getTotalLength()/1000);
             res &= (prefFilterLengthMin.getValue() <= aTrackLog.getTrackStatistic().getTotalLength()/1000); // length in Statistic is in m
         }
         if (prefFilterLengthMaxOn.getValue()){
