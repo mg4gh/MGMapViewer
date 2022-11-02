@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.mgmap.features.tilestore;
 
+import android.content.res.AssetManager;
 import android.util.Log;
 
 import org.mapsforge.core.graphics.GraphicFactory;
@@ -24,6 +25,7 @@ import org.mapsforge.map.layer.cache.TileStore;
 import org.mapsforge.map.layer.queue.Job;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 
 import mg.mgmap.application.MGMapApplication;
@@ -41,18 +43,30 @@ public abstract class MGTileStore extends TileStore {
         this.storeDir = storeDir;
     }
 
-    public static MGTileStore createTileStore(File storeDir){
-        String[] files = storeDir.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".mbtiles");
-            }
-        });
-        if (files.length == 1){ // ok, this tile store is based on a .mbtiles file
-            return new MGTileStoreDB(storeDir, files[0], AndroidGraphicFactory.INSTANCE);
-        } else {
-            return new MGTileStoreFiles(storeDir, AndroidGraphicFactory.INSTANCE);
+    public static MGTileStore createTileStore(File storeDir, AssetManager am) throws Exception{
+        boolean useFiles = false;
+        try {
+            useFiles = new XmlTileSourceConfigReader().parseXmlTileSourceConfig(storeDir.getName(), new FileInputStream(new File(storeDir, "config.xml"))).storeTypeFiles;
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         }
+        if (useFiles){
+            return new MGTileStoreFiles(storeDir, AndroidGraphicFactory.INSTANCE);
+        } else {
+            return new MGTileStoreDB(storeDir, am, AndroidGraphicFactory.INSTANCE);
+        }
+
+//        String[] files = storeDir.list(new FilenameFilter() {
+//            @Override
+//            public boolean accept(File dir, String name) {
+//                return name.endsWith(".mbtiles");
+//            }
+//        });
+//        if (files.length == 1){ // ok, this tile store is based on a .mbtiles file
+//            return new MGTileStoreDB(storeDir, files[0], AndroidGraphicFactory.INSTANCE);
+//        } else {
+//            return new MGTileStoreFiles(storeDir, AndroidGraphicFactory.INSTANCE);
+//        }
     }
 
 

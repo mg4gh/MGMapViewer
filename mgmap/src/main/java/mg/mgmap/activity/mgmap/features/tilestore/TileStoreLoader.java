@@ -113,18 +113,19 @@ public class TileStoreLoader {
                         Log.w(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
                     }
                 }
-                for (JsonValue i : cAll) {
-                    JsonObject io = i.asJsonObject();
-                    if (io != null){
-                        if ((io.get("name") != null) && (io.get("value") != null)){
-                            cookieMap.put(io.getString("name"), io.getString("value"));
-                        }
-                        if ((io.get("Name raw") != null) && (io.get("Content raw") != null)){
-                            cookieMap.put(io.getString("Name raw"), io.getString("Content raw"));
+                if (cAll != null){
+                    for (JsonValue i : cAll) {
+                        JsonObject io = i.asJsonObject();
+                        if (io != null){
+                            if ((io.get("name") != null) && (io.get("value") != null)){
+                                cookieMap.put(io.getString("name"), io.getString("value"));
+                            }
+                            if ((io.get("Name raw") != null) && (io.get("Content raw") != null)){
+                                cookieMap.put(io.getString("Name raw"), io.getString("Content raw"));
+                            }
                         }
                     }
-                }
-                if (cAll != null){
+
                     String separator = "; ";
                     String cookieRes = "";
                     String[] cookieParts = config.connRequestProperties.get("Cookie").split(separator); // from sample

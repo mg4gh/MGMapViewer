@@ -172,7 +172,7 @@ public class MGMapLayerFactory {
                     layer = tileRendererLayer;
                     break;
                 case MAPSTORES:
-                    MGTileStore tileStore = MGTileStore.createTileStore(entryFile);
+                    MGTileStore tileStore = MGTileStore.createTileStore(entryFile, activity.getMGMapApplication().getAssets());
                     InMemoryTileCache memoryTileCache = new InMemoryTileCache(AndroidUtil.getMinimumCacheSize(activity,
                             mapView.getModel().displayModel.getTileSize(),
                             mapView.getModel().frameBufferModel.getOverdrawFactor()*1.5, 1.0f));

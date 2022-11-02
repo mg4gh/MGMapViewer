@@ -15,6 +15,7 @@
 package mg.mgmap.activity.mgmap.features.tilestore;
 
 import android.content.ContentValues;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -28,8 +29,13 @@ import org.sqlite.database.sqlite.SQLiteDatabase;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +43,7 @@ import java.util.Locale;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class MGTileStoreDB extends MGTileStore {
@@ -52,9 +59,36 @@ public class MGTileStoreDB extends MGTileStore {
     private final SQLiteDatabase db;
     private final GraphicFactory graphicFactory;
 
-    public MGTileStoreDB(File storeDir, String dbName, GraphicFactory graphicFactory){
+    public MGTileStoreDB(File storeDir, AssetManager am, GraphicFactory graphicFactory) throws Exception{
         super(storeDir, null, graphicFactory);
         this.graphicFactory = graphicFactory;
+
+        File store = null;
+        File storeRW = null;
+        for (File file : storeDir.listFiles()){
+            if (file.getName().endsWith(".mbtiles")){
+                if (Files.isReadable(file.toPath())){
+                    store = file;
+                    if (Files.isWritable(file.toPath())){
+                        storeRW = file;
+                        break;
+                    }
+                }
+            }
+        }
+        String prefix = "["+storeDir.getName()+"] ";
+        if (store == null){
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+prefix+"nothing found - copy empty store form assets.");
+            storeRW = new File(storeDir, "store.mbtiles");
+            IOUtil.copyStreams(am.open("store.mbtiles"), new FileOutputStream(storeRW));
+        } else if (storeRW == null){ // store found, but is not writeable - create a clone that is writeable
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+prefix+"store found ("+store.getName()+"), but is not writeable - create a clone that is writeable");
+            storeRW = new File(store.getAbsolutePath().replaceFirst("\\.mbtiles", "_rw.mbtiles"));
+            IOUtil.copyStreams(new FileInputStream(store), new FileOutputStream(storeRW));
+        } else {
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+prefix+"store found with read/write access found: "+storeRW.getName());
+        }
+        db = SQLiteDatabase.openDatabase(storeRW.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
 
 //        String sdb = storeDir.getAbsolutePath()+File.separator+dbName;
 //        Log.i(MGMapApplication.LABEL, NameUtil.context() +" db="+sdb);
@@ -69,7 +103,7 @@ public class MGTileStoreDB extends MGTileStore {
 //            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
 //        }
 //
-        db = SQLiteDatabase.openDatabase(storeDir.getAbsolutePath()+File.separator+dbName, null, SQLiteDatabase.OPEN_READWRITE);
+//        db = SQLiteDatabase.openDatabase(storeDir.getAbsolutePath()+File.separator+dbName, null, SQLiteDatabase.OPEN_READWRITE);
     }
 
 
@@ -169,7 +203,9 @@ public class MGTileStoreDB extends MGTileStore {
                 c.close();
                 return null;
             }
-            byte[] bb = c.getBlob(c.getColumnIndex("tile_data"));
+            int colIdx = c.getColumnIndex("tile_data");
+            assert (colIdx >= 0);
+            byte[] bb = c.getBlob(colIdx);
             c.close();
             return bb;
         } catch (Exception e) {

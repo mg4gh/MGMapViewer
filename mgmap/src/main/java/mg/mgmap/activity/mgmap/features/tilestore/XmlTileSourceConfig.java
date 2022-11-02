@@ -30,6 +30,7 @@ public class XmlTileSourceConfig {
     String urlPart;
     Map<String, String> connRequestProperties = null;
     int connectTimeout = -1;
+    boolean storeTypeFiles = false;
 
     public XmlTileSourceConfig(String name){
         this.name = name;

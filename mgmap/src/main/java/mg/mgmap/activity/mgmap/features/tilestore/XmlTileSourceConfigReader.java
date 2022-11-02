@@ -114,6 +114,10 @@ public class XmlTileSourceConfigReader {
                 if ("requestProperties".equals(qName)) {
                     requestProperties = false;
                 }
+                if ("store".equals(qName)) {
+                    config.storeTypeFiles = text.equals("files");
+                }
+
             } else if (eventType == XmlPullParser.TEXT) {
                 text = (text==null)?pullParser.getText():text+pullParser.getText();
             }

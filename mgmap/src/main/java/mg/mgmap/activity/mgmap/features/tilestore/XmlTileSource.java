@@ -74,7 +74,9 @@ public class XmlTileSource extends AbstractTileSource {
     public URLConnection getURLConnection(byte zoomLevel, int tileX, int tileY) throws Exception{
         URL url = getTileUrl(zoomLevel, tileX, tileY);
         URLConnection conn = url.openConnection();
-        conn.setConnectTimeout( config.connectTimeout );
+        if (config.connectTimeout > 0){
+            conn.setConnectTimeout( config.connectTimeout );
+        }
         if (config.connRequestProperties != null){
             for (String key : config.connRequestProperties.keySet()){
                 conn.setRequestProperty(key,config.connRequestProperties.get(key));
