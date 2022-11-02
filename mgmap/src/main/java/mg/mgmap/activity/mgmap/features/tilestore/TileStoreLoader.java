@@ -22,20 +22,14 @@ import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.layer.queue.Job;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Properties;
 
 import javax.json.Json;
@@ -75,71 +69,50 @@ public class TileStoreLoader {
     private void init() throws Exception {
         XmlTileSourceConfig config = new XmlTileSourceConfigReader().parseXmlTileSourceConfig(storeDir.getName(), new FileInputStream(new File(storeDir, "config.xml")));
         xmlTileSource = new XmlTileSource(config);
-        try {
-            File sample = new File(storeDir, "sample.curl");
-            if (sample.exists()){
-                BufferedReader in = new BufferedReader(new FileReader(sample));
-                String line = in.readLine();
-                in.close();
 
-                String[] parts = line.split(" -H ");
-                for (int i=1; i<parts.length;i++){
-                    String[] subparts = parts[i].replaceAll("'$","").replaceAll("^'","").split(": ");
-                    if (subparts.length == 2){
-                        config.setConnRequestProperty(subparts[0], subparts[1]);
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" \""+subparts[0]+"\"=\""+subparts[1]+"\"");
-                    }
-                }
+        File cookies = new File(storeDir, "cookies.json");
+        if (cookies.exists()) {
+            Map<String, String> cookieMap = new HashMap<>();
+
+            JsonArray cAll = null;
+            try {
+                FileReader jsonFile = new FileReader(cookies);
+                JsonReader jsonReader = Json.createReader(jsonFile);
+                JsonObject oAll = jsonReader.readObject();
+                cAll = oAll.getJsonArray("cookies");
+            } catch (Exception e){
+                Log.w(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
             }
-            File cookies = new File(storeDir, "cookies.json");
-            if (cookies.exists()) {
-                Map<String, String> cookieMap = new HashMap<>();
-
-                JsonArray cAll = null;
+            if (cAll == null){
                 try {
                     FileReader jsonFile = new FileReader(cookies);
                     JsonReader jsonReader = Json.createReader(jsonFile);
-                    JsonObject oAll = jsonReader.readObject();
-                    cAll = oAll.getJsonArray("cookies");
+                    cAll = jsonReader.readArray();
                 } catch (Exception e){
                     Log.w(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
                 }
-                if (cAll == null){
-                    try {
-                        FileReader jsonFile = new FileReader(cookies);
-                        JsonReader jsonReader = Json.createReader(jsonFile);
-                        cAll = jsonReader.readArray();
-                    } catch (Exception e){
-                        Log.w(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
-                    }
-                }
-                if (cAll != null){
-                    for (JsonValue i : cAll) {
-                        JsonObject io = i.asJsonObject();
-                        if (io != null){
-                            if ((io.get("name") != null) && (io.get("value") != null)){
-                                cookieMap.put(io.getString("name"), io.getString("value"));
-                            }
-                            if ((io.get("Name raw") != null) && (io.get("Content raw") != null)){
-                                cookieMap.put(io.getString("Name raw"), io.getString("Content raw"));
-                            }
+            }
+            if (cAll != null){
+                for (JsonValue i : cAll) {
+                    JsonObject io = i.asJsonObject();
+                    if (io != null){
+                        if ((io.get("name") != null) && (io.get("value") != null)){
+                            cookieMap.put(io.getString("name"), io.getString("value"));
+                        }
+                        if ((io.get("Name raw") != null) && (io.get("Content raw") != null)){
+                            cookieMap.put(io.getString("Name raw"), io.getString("Content raw"));
                         }
                     }
-
-                    String separator = "; ";
-                    String cookieRes = "";
-                    String[] cookieParts = config.connRequestProperties.get("Cookie").split(separator); // from sample
-                    for (String cp : cookieParts){
-                        String[] subCp = cp.split("=");
-                        String subCpValue = cookieMap.get(subCp[0]);
-                        cookieRes += subCp[0]+"="+ ((subCpValue==null)?subCp[1]:subCpValue) + separator;
-                    }
-                    config.connRequestProperties.put("Cookie", cookieRes.substring(0, cookieRes.length()-separator.length()));
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" cookies.json result: "+config.connRequestProperties.get("Cookie"));
                 }
+
+                String separator = "; ";
+                StringBuilder cookieRes = new StringBuilder();
+                for (Map.Entry<String, String> entry : cookieMap.entrySet() ){
+                    cookieRes.append(entry.getKey()).append("=").append(entry.getValue()).append(separator);
+                }
+                config.connRequestProperties.put("Cookie", cookieRes.substring(0, cookieRes.length()-separator.length()));
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" cookies.json result: "+config.connRequestProperties.get("Cookie"));
             }
-        } catch (IOException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         }
         errorCounter = 0;
         successCounter = 0;
@@ -206,19 +179,9 @@ public class TileStoreLoader {
             errorCounter++;
         }
         String message = "successCounter="+successCounter+"  errorCounter="+errorCounter+"  jobCounter="+jobCounter;
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+message);
+        Log.d(MGMapApplication.LABEL, NameUtil.context() +"  "+message+ ((e==null)?"":e.getMessage()));
         if (successCounter + errorCounter == jobCounter){
-            new Thread(){
-                @Override
-                public void run() {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            reportResult();
-                        }
-                    });
-                }
-            }.start();
+            new Thread(() -> activity.runOnUiThread(this::reportResult)).start();
         }
     }
 
@@ -242,23 +205,20 @@ public class TileStoreLoader {
             if ((jobs.size()>0) && (jobs.get(0) instanceof MGTileStoreLoaderJob)){
                 builder.setNegativeButton("Retry", (dialog, which) -> {
                     Log.i(MGMapApplication.LABEL, NameUtil.context() + " Retry" );
-                    new Thread(){
-                        @Override
-                        public void run() {
-                            try {
-                                FileInputStream is = new FileInputStream(new File(storeDir, "retry.json"));
-                                FileOutputStream os = new FileOutputStream(new File(storeDir, "cookies.json"));
-                                Properties props = new Properties();
-                                props.load( new FileInputStream(new File(storeDir, "param.properties")) );
-                                if (new DynamicHandler(is, os, props).run()){
-                                    init();
-                                    application.addBgJobs(jobs);
-                                }
-                            } catch (Exception e) {
-                                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                    new Thread(() -> {
+                        try {
+                            FileInputStream is = new FileInputStream(new File(storeDir, "retry.json"));
+                            FileOutputStream os = new FileOutputStream(new File(storeDir, "cookies.json"));
+                            Properties props = new Properties();
+                            props.load( new FileInputStream(new File(storeDir, "param.properties")) );
+                            if (new DynamicHandler(is, os, props).run()){
+                                init();
+                                application.addBgJobs(jobs);
                             }
+                        } catch (Exception e) {
+                            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                         }
-                    }.start();
+                    }).start();
                     dialog.dismiss();
                 });
             }

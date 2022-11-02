@@ -26,7 +26,6 @@ import org.mapsforge.map.layer.queue.Job;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.BgJob;
@@ -48,7 +47,7 @@ public abstract class MGTileStore extends TileStore {
         try {
             useFiles = new XmlTileSourceConfigReader().parseXmlTileSourceConfig(storeDir.getName(), new FileInputStream(new File(storeDir, "config.xml"))).storeTypeFiles;
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            Log.w(MGMapApplication.LABEL, NameUtil.context()+e.getMessage()); // may be normal behaviour, e.g. for world.mbtiles
         }
         if (useFiles){
             return new MGTileStoreFiles(storeDir, AndroidGraphicFactory.INSTANCE);
@@ -56,17 +55,6 @@ public abstract class MGTileStore extends TileStore {
             return new MGTileStoreDB(storeDir, am, AndroidGraphicFactory.INSTANCE);
         }
 
-//        String[] files = storeDir.list(new FilenameFilter() {
-//            @Override
-//            public boolean accept(File dir, String name) {
-//                return name.endsWith(".mbtiles");
-//            }
-//        });
-//        if (files.length == 1){ // ok, this tile store is based on a .mbtiles file
-//            return new MGTileStoreDB(storeDir, files[0], AndroidGraphicFactory.INSTANCE);
-//        } else {
-//            return new MGTileStoreFiles(storeDir, AndroidGraphicFactory.INSTANCE);
-//        }
     }
 
 
