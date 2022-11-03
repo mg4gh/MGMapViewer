@@ -36,6 +36,7 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.BgJobUtil;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -390,7 +391,10 @@ public class FSBB extends FeatureService {
                     }
                 }
             }
-            getApplication().addBgJobs(jobs);
+            String title = "Download hgt files";
+            String message = "Download "+jobs.size()+" hgt files?";
+            new BgJobUtil(activity, application).processConfirmDialog(title, message, jobs);
+//            getApplication().addBgJobs(jobs);
         }
     }
     private void dropHgt(BBox bBox){
