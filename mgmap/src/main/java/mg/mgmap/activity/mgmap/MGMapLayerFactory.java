@@ -28,24 +28,20 @@ import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
-import org.mapsforge.map.layer.overlay.Grid;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.layer.tilestore.TileStoreLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import mg.mgmap.activity.mgmap.view.Grid;
+import mg.mgmap.activity.mgmap.view.HgtGridView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.basic.NameUtil;
@@ -72,7 +68,6 @@ public class MGMapLayerFactory {
     public static final String XML_CONFIG_NAME = "config.xml";
 
     public enum Types { MAPSFORGE, MAPSTORES, MAPONLINE, MAPGRID }
-    private final HashMap<Types, FilenameFilter> filters = new HashMap<>();
     private final HashMap<String, Layer> mapLayers = new HashMap<>();
 
     private final MGMapActivity activity;
@@ -83,47 +78,8 @@ public class MGMapLayerFactory {
         this.activity = activity;
         persistenceManager = activity.getMGMapApplication().getPersistenceManager();
         xmlRenderTheme = activity.getRenderTheme();
-//        initFilters();
     }
 
-//    private void initFilters(){
-//        filters.put(Types.MAPSFORGE, (dir, name) -> {
-//            boolean res = !(new File(dir,name).isDirectory());
-//            res &= name.endsWith(".map") || name.endsWith(".ref");
-//            return res;
-//        });
-//        filters.put(Types.MAPSTORES, (dir, name) -> (new File(dir,name).isDirectory()));
-//        filters.put(Types.MAPONLINE, (dir, name) -> {
-//            File fStore = new File(dir,name);
-//            File fConfig = new File(fStore,XML_CONFIG_NAME);
-//            return (fStore.isDirectory() && fConfig.exists());
-//        });
-//        FilenameFilter prop = (dir, name) -> {
-//            boolean res = !(new File(dir,name).isDirectory());
-//            res &= name.endsWith(".properties");
-//            return res;
-//        };
-//        filters.put(Types.MAPGRID,prop);
-//    }
-//
-
-
-//    /** Returns a list of available map layers */
-//    public String[] getAvailableMapLayers(){
-//        String[] resa = new String[]{"none"};
-//        File mapsDir = persistenceManager.getMapsDir();
-//        ArrayList<String> res = new ArrayList<>();
-//        res.add(resa[0]);
-//        for (Types type: Types.values()){
-//            File typeDir = new File(mapsDir, type.name().toLowerCase());
-//            String[] entries = typeDir.list(filters.get(type));
-//            Arrays.sort(entries);
-//            for (String entry : entries){
-//                res.add(type+": "+entry);
-//            }
-//        }
-//        return res.toArray(resa);
-//    }
 
     /** create a Layer object from corresponding key */
     public Layer getMapLayer(String key){
@@ -147,7 +103,6 @@ public class MGMapLayerFactory {
                 return null;
             }
 
-            layer = null;
             File mapsDir = persistenceManager.getMapsDir();
             File typeDir = new File(mapsDir, type.name().toLowerCase());
             File entryFile = new File(typeDir, entry);
@@ -203,22 +158,26 @@ public class MGMapLayerFactory {
                     break;
                 case MAPGRID:
                     try{
-                        Properties properties = new Properties();
-                        properties.load(new FileInputStream(entryFile));
-                        Map<Byte, Double> spacingConfig = new HashMap<>();
-                        for (Object propName : properties.keySet()){
-                            if (propName instanceof String){
-                                String sPropName = (String) propName;
-                                if (sPropName.toLowerCase().startsWith("zoomlevel")){
-                                    int idx =  9;
-                                    if (sPropName.toLowerCase().startsWith("zoomlevel_")) idx =10;
-                                    byte zl = Byte.parseByte(sPropName.substring(idx));
-                                    double value = Double.parseDouble( properties.getProperty(sPropName) );
-                                    spacingConfig.put(zl, value);
+                        if ("hgt".equals(entry)){
+                            layer = new HgtGridView(activity.application, AndroidGraphicFactory.INSTANCE, mapView.getModel().displayModel);
+                        } else {
+                            Properties properties = new Properties();
+                            properties.load(new FileInputStream(entryFile));
+                            Map<Byte, Double> spacingConfig = new HashMap<>();
+                            for (Object propName : properties.keySet()){
+                                if (propName instanceof String){
+                                    String sPropName = (String) propName;
+                                    if (sPropName.toLowerCase().startsWith("zoomlevel")){
+                                        int idx =  9;
+                                        if (sPropName.toLowerCase().startsWith("zoomlevel_")) idx =10;
+                                        byte zl = Byte.parseByte(sPropName.substring(idx));
+                                        double value = Double.parseDouble( properties.getProperty(sPropName) );
+                                        spacingConfig.put(zl, value);
+                                    }
                                 }
                             }
+                            layer = new Grid(AndroidGraphicFactory.INSTANCE, mapView.getModel().displayModel, spacingConfig);
                         }
-                        layer = new Grid(AndroidGraphicFactory.INSTANCE, mapView.getModel().displayModel, spacingConfig);
                     } catch (Exception e){
                         Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                     }
@@ -229,11 +188,19 @@ public class MGMapLayerFactory {
             }
 
             if (layer instanceof TileLayer<?>) {
-                TileLayer<?> tileLayer = (TileLayer<?>) layer;
+                TileLayer<?> alphaLayer = (TileLayer<?>) layer;
                 Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,1.0f);
                 prefAlpha.addObserver((o, arg) -> {
-                    tileLayer.setAlpha(prefAlpha.getValue());
-                    tileLayer.requestRedraw();
+                    alphaLayer.setAlpha(prefAlpha.getValue());
+                    alphaLayer.requestRedraw();
+                });
+            }
+            if (layer instanceof Grid) {
+                Grid alphaLayer = (Grid) layer;
+                Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,0.2f);
+                prefAlpha.addObserver((o, arg) -> {
+                    alphaLayer.setAlpha(prefAlpha.getValue());
+                    alphaLayer.requestRedraw();
                 });
             }
         } catch (Exception e) {
@@ -243,7 +210,10 @@ public class MGMapLayerFactory {
     }
 
     public boolean hasAlpha(String key){
-        return (getMapLayer(key) instanceof TileLayer);
+        return hasAlpha(getMapLayer(key));
+    }
+    public boolean hasAlpha(Layer layer){
+        return (layer instanceof TileLayer) || (layer instanceof Grid);
     }
 
     public Collection<Layer> getMapLayers(){

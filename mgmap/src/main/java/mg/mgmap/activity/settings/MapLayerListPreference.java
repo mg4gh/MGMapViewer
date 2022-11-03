@@ -75,11 +75,14 @@ public class MapLayerListPreference extends ListPreference {
             for (MGMapLayerFactory.Types type: MGMapLayerFactory.Types.values()){
                 File typeDir = new File(mapsDir, type.name().toLowerCase());
                 String[] entries = typeDir.list(filters.get(type));
-                Arrays.sort(entries);
-                for (String entry : entries){
-                    res.add(type+": "+entry);
+                if (entries != null){
+                    Arrays.sort(entries);
+                    for (String entry : entries){
+                        res.add(type+": "+entry);
+                    }
                 }
             }
+            res.add(MGMapLayerFactory.Types.MAPGRID.name()+": "+"hgt");
             resa = res.toArray(resa);
         }
         return resa;

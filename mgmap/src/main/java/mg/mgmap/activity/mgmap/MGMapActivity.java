@@ -165,6 +165,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         }
         setContentView(R.layout.mgmapactivity);
 
+        CC.setActivity(this);
+        PointModelUtil.init(getResources().getInteger(R.integer.CLOSE_THRESHOLD));
+
         mapLayerFactory = new MGMapLayerFactory(this);
 
         prefCache = new PrefCache(this);
@@ -175,9 +178,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         mapDataStoreUtil = new MapDataStoreUtil().onCreate(mapLayerFactory, sharedPreferences, getMapLayerKeys());
         initializePosition(mapView.getModel().mapViewPosition);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
-
-        CC.setActivity(this);
-        PointModelUtil.init(getResources().getInteger(R.integer.CLOSE_THRESHOLD));
 
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
