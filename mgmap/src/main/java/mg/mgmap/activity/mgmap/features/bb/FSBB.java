@@ -23,6 +23,7 @@ import org.mapsforge.map.layer.Layer;
 import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.view.HgtGridView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -34,11 +35,17 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
+import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.MVLayer;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class FSBB extends FeatureService {
 
@@ -64,6 +71,10 @@ public class FSBB extends FeatureService {
         triggerTSLoadRemain.addObserver( (o, args) -> tsAction(false, false));
         triggerTSLoadAll.addObserver( (o, args) -> tsAction(false, true));
         triggerTSDeleteAll.addObserver( (o, args) -> tsAction(true, true));
+        triggerTSLoadRemain.addObserver( (o, args) -> loadHgt(getBBox(), false));
+        triggerTSLoadAll.addObserver( (o, args) -> loadHgt(getBBox(), true));
+        triggerTSDeleteAll.addObserver( (o, args) -> dropHgt(getBBox()));
+
         prefBboxOn.addObserver(refreshObserver);
     }
 
@@ -144,7 +155,7 @@ public class FSBB extends FeatureService {
             hideBB();
         }
         prefLoadFromBBEnabled.setValue(isLoadAllowed());
-        boolean tsOpsAllowed = isLoadAllowed() && (tss.size() > 0);
+        boolean tsOpsAllowed = isLoadAllowed() && ((tss.size() == 1) ^ (identifyHgt()!=null)); // allow if either one TileStore or the hgt layer is visible
         prefTSActionsEnabled.setValue(tsOpsAllowed);
     }
 
@@ -295,6 +306,14 @@ public class FSBB extends FeatureService {
         }
         return tss;
     }
+    private HgtGridView identifyHgt(){
+        for (Layer layer : getMapLayerFactory().getMapLayers()){
+            if (layer instanceof HgtGridView) {
+                return (HgtGridView)layer;
+            }
+        }
+        return null;
+    }
 
     private void tsAction(boolean bDrop, boolean bAll){
         for (MGTileStore ts : tss){
@@ -330,7 +349,6 @@ public class FSBB extends FeatureService {
             }
             if (changed){
                 getApplication().availableTrackLogsObservable.changed();
-//                getMapViewUtility().zoomForBoundingBox(bBox2show);
             }
             if (filtered){
                 Toast.makeText(getActivity(), "Warning: Some Tracklogs are filtered!", Toast.LENGTH_SHORT).show();
@@ -338,5 +356,54 @@ public class FSBB extends FeatureService {
         }
         return changed;
     }
+
+    public static final String HGT_URL = "http://step.esa.int/auxdata/dem/SRTMGL1/";
+    private void loadHgt(BBox bBox, boolean all){
+        final HgtGridView hgtGridView = identifyHgt();
+        if (hgtGridView != null){
+            ArrayList<BgJob> jobs = new ArrayList<>();
+            for (int latitude = (int)bBox.minLatitude; latitude<(int)bBox.maxLatitude+1; latitude++ ){
+                for (int longitude = (int)bBox.minLongitude; longitude<(int)bBox.maxLongitude+1; longitude++ ){
+                    final int iLat = latitude;
+                    final int iLon = longitude;
+                    if (all || !getPersistenceManager().hasHgtData(iLat, iLon)){
+                        BgJob bgJob = new BgJob(){
+                            @Override
+                            protected void doJob() throws Exception {
+                                String url = HGT_URL + getPersistenceManager().getHgtFilename(iLat, iLon);
+
+                                OkHttpClient client = new OkHttpClient().newBuilder()
+                                        .build();
+                                Request request = new Request.Builder().url(url).build();
+                                Response response = client.newCall(request).execute();
+                                ResponseBody responseBody = response.body();
+                                if (responseBody == null) {
+                                    Log.w (MGMapApplication.LABEL, NameUtil.context()+" empty response body for download!");
+                                } else {
+                                    this.setText("Download "+ url.replaceFirst(".*/",""));
+                                    IOUtil.copyStreams(responseBody.byteStream(), getPersistenceManager().openHgtOutput(iLat, iLon));
+                                    hgtGridView.requestRedraw();
+                                }
+                            }
+                        };
+                        jobs.add(bgJob);
+                    }
+                }
+            }
+            getApplication().addBgJobs(jobs);
+        }
+    }
+    private void dropHgt(BBox bBox){
+        final HgtGridView hgtGridView = identifyHgt();
+        if (hgtGridView != null) {
+            for (int latitude = (int)bBox.minLatitude+1; latitude<(int)bBox.maxLatitude; latitude++ ){
+                for (int longitude = (int)bBox.minLongitude+1; longitude<(int)bBox.maxLongitude; longitude++ ){
+                    getPersistenceManager().dropHgt(latitude, longitude);
+                }
+            }
+            hgtGridView.requestRedraw();
+        }
+    }
+
 
 }

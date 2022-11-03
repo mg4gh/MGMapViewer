@@ -25,11 +25,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
@@ -38,7 +36,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.Assert;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
@@ -46,26 +43,8 @@ import mg.mgmap.generic.util.basic.NameUtil;
  */
 public class PersistenceManager {
 
-//    private static PersistenceManager persistenceManager = null;
-    private Context context = null;
+    private final Context context;
 
-
-//    public static PersistenceManager getInstance(Context context) {
-//        init(context);
-//        synchronized (PersistenceManager.class) {
-//            if (persistenceManager == null) {
-//                if (baseDir == null) throw new InvalidParameterException();
-//                persistenceManager = new PersistenceManager();
-//            }
-//        }
-//        return persistenceManager;
-//    }
-//
-//    public static PersistenceManager getInstance() {
-//        Assert.check (persistenceManager != null);
-//        Assert.check (baseDir != null);
-//        return persistenceManager;
-//    }
 
     private File baseDir;
     private final File appDir;
@@ -85,14 +64,6 @@ public class PersistenceManager {
     private final File fRaw;
     private FileOutputStream fosRaw = null;
 
-
-//    synchronized private static void init(Context context){
-//        if (baseDir == null){
-//            PersistenceManager.context = context;
-//            baseDir = context.getExternalFilesDir(null);
-//            Log.i(MGMapApplication.LABEL, NameUtil.context() + " Storage: "+baseDir.getAbsolutePath());
-//        }
-//    }
 
     public PersistenceManager(Context context) {
         this.context = context;
@@ -163,19 +134,20 @@ public class PersistenceManager {
     }
     public void cleanApkDir(){
         try {
-            for (File file : apkDir.listFiles()){
-                file.delete();
+            File[] files  = apkDir.listFiles();
+            if (files != null){
+                for (File file : files){
+                    if (!file.delete())
+                        Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to delete: "+file.getAbsolutePath());
+                }
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+            Log.w(MGMapApplication.LABEL, NameUtil.context() + e.getMessage());
+        }
     }
     public File getApkFile(){
-        String[] apkNames = apkDir.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".apk");
-            }
-        });
-        if (apkNames.length > 0){
+        String[] apkNames = apkDir.list((dir, name) -> name.endsWith(".apk"));
+        if ((apkNames != null) && (apkNames.length > 0)){
             return new File(apkDir, apkNames[0]);
         }
         return null;
@@ -183,9 +155,10 @@ public class PersistenceManager {
 
     public File createIfNotExists(File parent, String subDir) {
         File f = new File(parent, subDir);
-        synchronized (parent) {
+        synchronized (PersistenceManager.class) {
             if (!f.exists()) {
-                f.mkdir();
+                if (!f.mkdir())
+                    Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to create: "+f.getAbsolutePath());
             }
         }
         if (!f.exists()) {
@@ -197,9 +170,10 @@ public class PersistenceManager {
     public void createFileIfNotExists(File parent, String file) {
         File f = new File(parent, file);
         try {
-            synchronized (parent) {
+            synchronized (PersistenceManager.class) {
                 if (!f.exists()) {
-                    f.createNewFile();
+                    if (!f.createNewFile())
+                        Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to create: "+f.getAbsolutePath());
                 }
             }
         } catch (Exception e) {
@@ -229,7 +203,9 @@ public class PersistenceManager {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         }
         if (fRaw.exists()) {
-            fRaw.delete();
+            if (!fRaw.delete())
+                Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to delete: "+fRaw.getAbsolutePath());
+
         }
     }
 
@@ -238,7 +214,9 @@ public class PersistenceManager {
             if (fRaw.exists()) {
                 FileInputStream fis = new FileInputStream(fRaw);
                 byte[] b = new byte[fis.available()];
-                fis.read(b);
+                if (fis.read(b) != b.length)
+                    Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to read "+b.length+" bytes");
+
                 return b;
             }
         } catch (IOException e) {
@@ -253,17 +231,16 @@ public class PersistenceManager {
     }
     private void checkCreatePath(File file){
         File fParent = file.getParentFile();
+        assert fParent != null;
         if (!fParent.exists()){
-            fParent.mkdirs();
+            if (!fParent.mkdirs())
+                Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to create: "+fParent.getAbsolutePath());
         }
     }
 
     public boolean existsGpx(String filename) {
         File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
         return file.exists();
-    }
-    public File getGpx(String filename) {
-        return getAbsoluteFile(trackGpxDir, filename, ".gpx");
     }
     public PrintWriter openGpxOutput(String filename) {
         try {
@@ -287,8 +264,7 @@ public class PersistenceManager {
     public Uri getGpxUri(String filename) {
         try {
             File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
-            Uri uri = FileProvider.getUriForFile(context, "mg.mgmap.provider", file);
-            return uri;
+            return FileProvider.getUriForFile(context, "mg.mgmap.provider", file);
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
@@ -318,13 +294,16 @@ public class PersistenceManager {
 
     /** Retruns a list of relative path name, but without extension */
     public ArrayList<String> getNames(File baseDir, File dir, String endsWith, ArrayList<String> matchedList) {
-        for (File entry : dir.listFiles()) {
-            if (entry.isDirectory()) {
-                getNames(baseDir, entry, endsWith, matchedList);
-            } else {
-                if (entry.getName().endsWith(endsWith)) {
-                    String sPath = entry.getAbsolutePath();
-                    matchedList.add(sPath.substring((baseDir.getAbsolutePath()+File.pathSeparator ).length(), sPath.length() - endsWith.length()));
+        File[] entries = dir.listFiles();
+        if (entries != null){
+            for (File entry : entries) {
+                if (entry.isDirectory()) {
+                    getNames(baseDir, entry, endsWith, matchedList);
+                } else {
+                    if (entry.getName().endsWith(endsWith)) {
+                        String sPath = entry.getAbsolutePath();
+                        matchedList.add(sPath.substring((baseDir.getAbsolutePath()+File.pathSeparator ).length(), sPath.length() - endsWith.length()));
+                    }
                 }
             }
         }
@@ -342,12 +321,9 @@ public class PersistenceManager {
         return themesDir;
     }
     public String[] getThemeNames() {
-        return themesDir.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                if (!s.endsWith(".xml")) return false;
-                return !(new File(file,s).isDirectory());
-            }
+        return themesDir.list((file, s) -> {
+            if (!s.endsWith(".xml")) return false;
+            return !(new File(file,s).isDirectory());
         });
     }
 
@@ -355,22 +331,48 @@ public class PersistenceManager {
     TreeSet<HgtBuf> hgtBufs = new TreeSet<>();
     long hgtBufTimeout = 60000; // cleanup hgtBufs, if they are not accessed for that time (since buffers are rather large)
     Handler timer = new Handler();
-    Runnable ttCheckHgts = new Runnable() {
-        @Override
-        public void run() {
-            long now = System.currentTimeMillis();
-            for (HgtBuf hgtBuf : new TreeSet<>(hgtBufs)){
-                if ( (now - hgtBuf.lastAccess) > hgtBufTimeout ){ // drop, if last access is over a given threshold
-                    hgtBufs.remove(hgtBuf);
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" drop "+hgtBuf.name+" remaining hgtBufs.size="+hgtBufs.size());
-                }
+    Runnable ttCheckHgts = () -> {
+        long now = System.currentTimeMillis();
+        for (HgtBuf hgtBuf : new TreeSet<>(hgtBufs)){
+            if ( (now - hgtBuf.lastAccess) > hgtBufTimeout ){ // drop, if last access is over a given threshold
+                hgtBufs.remove(hgtBuf);
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" drop "+hgtBuf.name+" remaining hgtBufs.size="+hgtBufs.size());
             }
         }
     };
 
+    public String getHgtName(int iLat, int iLon) {
+        return String.format(Locale.GERMANY, "%s%02d%S%03d", (iLat > 0) ? "N" : "S", iLat, (iLon > 0) ? "E" : "W", iLon);
+    }
+    public String getHgtFilename(int iLat, int iLon) {
+        return getHgtName(iLat,iLon)+".SRTMGL1.hgt.zip";
+    }
+    public boolean hasHgtData(int iLat, int iLon){
+        File hgtFile = new File(hgtDir, getHgtFilename(iLat,iLon));
+        return hasHgtData(hgtFile);
+    }
+    public boolean hasHgtData(File hgtFile){
+        // file size less than 1000 indicates no valid height data file
+        return hgtFile.exists() && (hgtFile.length() > 1000L);
+    }
+
+    public void dropHgt(int iLat, int iLon){
+        File hgtFile = new File(hgtDir, getHgtFilename(iLat,iLon));
+        deleteFile(hgtFile);
+    }
+
+    public FileOutputStream openHgtOutput(int iLat, int iLon){
+        File hgtFile = new File(hgtDir, getHgtFilename(iLat,iLon));
+        try {
+            return new FileOutputStream(hgtFile);
+        } catch (FileNotFoundException e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        }
+        return null;
+    }
+
     public synchronized byte[] getHgtBuf(int iLat, int iLon){
-        byte[] buf = null;
-        String file = String.format(Locale.GERMANY, "%s%02d%S%03d",(iLat>0)?"N":"S",iLat,(iLon>0)?"E":"W",iLon);
+        String file = getHgtFilename(iLat,iLon);
         HgtBuf hgtBuf = getHgtBuf(file);
 
         if (hgtBuf != null) { // ok, exists already
@@ -382,11 +384,11 @@ public class PersistenceManager {
             }
 
             hgtBuf = new HgtBuf(file);
-            File hgtFile = new File(hgtDir, file+".SRTMGL1.hgt.zip");
-            if (hgtFile.exists() && (hgtFile.length() > 1000L)){ // file size less than 1000 indicates no valid height data file
+            File hgtFile = new File(hgtDir, file);
+            if (hasHgtData(hgtFile)){
                 try {
                     ZipFile zipFile = new ZipFile(hgtFile);
-                    ZipEntry zipEntry = zipFile.getEntry(file+".hgt");
+                    ZipEntry zipEntry = zipFile.getEntry(getHgtName(iLat,iLon)+".hgt");
                     InputStream zis = zipFile.getInputStream(zipEntry);
                     int todo = zis.available();
                     hgtBuf.buf = new byte[todo];
@@ -404,8 +406,7 @@ public class PersistenceManager {
             }
         }
         hgtBufs.add(hgtBuf);
-        buf = hgtBuf.buf;
-        return buf;
+        return hgtBuf.buf;
     }
 
     private HgtBuf getHgtBuf(String name){
@@ -451,8 +452,10 @@ public class PersistenceManager {
 
     public void renameTrack(String oldFilename, String newFilename) {
         deleteTrack(newFilename); // should never be the case - but just to be sure
-        getAbsoluteFile(trackGpxDir, oldFilename, ".gpx").renameTo( getAbsoluteFile(trackGpxDir, newFilename, ".gpx") );
-        getAbsoluteFile(trackMetaDir, oldFilename, ".meta").renameTo( getAbsoluteFile(trackMetaDir, newFilename, ".meta") );
+        if (!getAbsoluteFile(trackGpxDir, oldFilename, ".gpx").renameTo( getAbsoluteFile(trackGpxDir, newFilename, ".gpx") ))
+            Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to rename gpx: "+oldFilename+" to "+newFilename);
+        if (!getAbsoluteFile(trackMetaDir, oldFilename, ".meta").renameTo( getAbsoluteFile(trackMetaDir, newFilename, ".meta") ))
+            Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to rename meta: "+oldFilename+" to "+newFilename);
     }
 
 
@@ -468,22 +471,10 @@ public class PersistenceManager {
         }
     }
 
-    public InputStream openSearchConfigInput(String filename) {
-        try {
-            File file = new File(searchConfigDir, filename );
-            return new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-        }
-        return null;
-    }
     public String[] getSearchConfigNames() {
-        return searchConfigDir.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                if (!s.endsWith(".cfg")) return false;
-                return !(new File(file,s).isDirectory());
-            }
+        return searchConfigDir.list((file, s) -> {
+            if (!s.endsWith(".cfg")) return false;
+            return !(new File(file,s).isDirectory());
         });
     }
 
