@@ -20,6 +20,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [mapstores](./Features/MainMapFeatures/MapStore/mapstore.md): show maps, which are provided via an offline tile store
 - [maponline](./Features/MainMapFeatures/MapOnline/maponline.md): show maps, which are provided via an online tile store (e.g. openstreetmap via Mapnik renderer)
 - [mapgrid](./Features/MainMapFeatures/MapGrid/mapgrid.md): show a customizable grid from degree of latitude and longitude
+- [hgt grid layer](./Features/MainMapFeatures/MapGrid/hgt.md): show a fix grid with one degree of latitude and longitude and the local availability of [Height data](./Features/FurtherFeatures/HeightData/heightdata.md)
 - [Overlay multiple map layers](./Features/MainMapFeatures/MapMulti/multimap.md) and control transparency per layer (except grid)
 
 ### Main track features:

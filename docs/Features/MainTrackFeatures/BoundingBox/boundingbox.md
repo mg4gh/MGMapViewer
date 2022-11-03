@@ -44,6 +44,12 @@ you can reduce the number of visible tracks to the track(s) you are searching fo
 
 **Shortcut**: A long press action inside the marked area triggers also the load action.
 
+<a name="tileloading"> </a>
+
+## Tile loading
+
+This feature can also be used to load (or drop) tiles for a [mapstores](../../MainMapFeatures/MapStore/mapstore.md).
+
 #### Load all tiles of a marked area
 
 With <img src="../../../icons/group_bbox2.svg" width="24"/> + <img src="../../../icons/bb_ts_load_all.svg" width="24"/>  you can trigger a download of all tiles inside the marked area.
