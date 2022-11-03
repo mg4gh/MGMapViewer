@@ -14,11 +14,14 @@
  */
 package mg.mgmap.activity.height_profile;
 
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -119,6 +122,19 @@ public class HeightProfileActivity extends AppCompatActivity {
         createSeries(graph,  application.recordingTrackLogObservable.getTrackLog(), R.color.RED, showAscentGraph);
         createSeries(graph,  application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE, showAscentGraph);
         createSeries(graph,  application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A150, showAscentGraph);
+        if ((application.routeTrackLogObservable.getTrackLog() != null) && (!hasElevation(application.routeTrackLogObservable.getTrackLog()))){
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Warning");
+            alertDialog.setMessage("Download hgt data to see the height profile of the RouteTrackLog. You can do this via hgt layer!");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+//            Toast.makeText(this, "For height profile of route load hgt data (via hgt layer)!", Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -164,11 +180,8 @@ public class HeightProfileActivity extends AppCompatActivity {
         }
     }
 
-
-
-    private void fillHeightProfiles(TrackLog trackLog, ArrayList<SparseIntArray> segmentHeightProfiles, ArrayList<SparseIntArray> segmentAscentProfiles){
-        if (trackLog == null) return;
-
+    private boolean hasElevation(TrackLog trackLog){
+        if (trackLog == null) return false;
         TrackLogSegment tls = null;
         for (int idx=0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
@@ -180,8 +193,15 @@ public class HeightProfileActivity extends AppCompatActivity {
         if (tls != null){
             if ((tls.get(0).getEleA() != PointModel.NO_ELE) && (tls.get(1).getEleA() != PointModel.NO_ELE)){
                 // ok Tracklog seems to have ele values
-                fillHeightProfiles(trackLog.getTrackLogSegments(), segmentHeightProfiles, segmentAscentProfiles);
+                return true;
             }
+        }
+        return false;
+    }
+
+    private void fillHeightProfiles(TrackLog trackLog, ArrayList<SparseIntArray> segmentHeightProfiles, ArrayList<SparseIntArray> segmentAscentProfiles){
+        if (hasElevation(trackLog)){
+            fillHeightProfiles(trackLog.getTrackLogSegments(), segmentHeightProfiles, segmentAscentProfiles);
         }
     }
 
