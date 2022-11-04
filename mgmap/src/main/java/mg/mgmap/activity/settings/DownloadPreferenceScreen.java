@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
@@ -71,6 +72,15 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
         setBrowseIntent(R.string.preferences_dl_sw_other_key, R.string.url_github_apk_dir);
         setSWLatestOCL();
         setSWLocalOCL();
+
+        Context context = getContext().getApplicationContext();
+        if (context instanceof MGMapApplication) {
+            MGMapApplication application = (MGMapApplication) context;
+            if (application.getPersistenceManager().getConfigProperties(null, FTP_CONFIG_FILE).size() == 0){
+                Preference prefSwLocal = findPreference( getResources().getString(R.string.preferences_dl_sw_local_key) );
+                prefSwLocal.setVisible(false);
+            }
+        }
     }
 
 
