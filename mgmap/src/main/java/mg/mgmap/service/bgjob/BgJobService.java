@@ -70,18 +70,16 @@ public class BgJobService extends Service {
         super.onCreate();
         application = (MGMapApplication)getApplication();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CHANNEL_ID = "my_channel_02";
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "MGMapViewer information channel 02",
-                    NotificationManager.IMPORTANCE_LOW);
+        CHANNEL_ID = "my_channel_02";
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                "MGMapViewer information channel 02",
+                NotificationManager.IMPORTANCE_LOW);
 
-            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
 
-            Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
-            baseNotiBuilder = createNotificationBuilder("BgJobService: running");
-        }
+        Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
+        baseNotiBuilder = createNotificationBuilder("BgJobService: running");
     }
 
 
@@ -102,10 +100,8 @@ public class BgJobService extends Service {
                 active = true;
                 maxJobs = application.numBgJobs() + numWorkers.get();
                 lastNumBgJobs = maxJobs;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForeground(1, baseNotiBuilder.build());
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() +" startForeground() for BgJobService triggered.  ");
-                }
+                startForeground(1, baseNotiBuilder.build());
+                Log.i(MGMapApplication.LABEL, NameUtil.context() +" startForeground() for BgJobService triggered.  ");
 
                 timer = new Handler();
                 timer.postDelayed(ttNotify, 1000);
@@ -143,9 +139,7 @@ public class BgJobService extends Service {
         try {
             if (active && (application.numBgJobs() == 0) && (numWorkers.get() == 0)){
                 active = false;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    stopForeground(STOP_FOREGROUND_REMOVE);
-                }
+                stopForeground(STOP_FOREGROUND_REMOVE);
                 timer.removeCallbacks(ttNotify);
             }
         } catch (Exception e) {
@@ -165,17 +159,13 @@ public class BgJobService extends Service {
     }
 
     public void notifyUserProgress(NotificationCompat.Builder builder, int notificationId, int max, int progress, boolean indeterminate) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder.setProgress(max, progress, indeterminate);
-            NotificationManagerCompat.from(application).notify(notificationId, builder.build());
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+ " NOTI: id="+notificationId+" "+" max="+max+" progress="+progress);
-        }
+        builder.setProgress(max, progress, indeterminate);
+        NotificationManagerCompat.from(application).notify(notificationId, builder.build());
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+ " NOTI: id="+notificationId+" "+" max="+max+" progress="+progress);
     }
     public void notifyUserFinish(int notificationId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManagerCompat.from(application).cancel(notificationId);
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+ " NOTI: id="+notificationId+" "+" cancel");
-        }
+        NotificationManagerCompat.from(application).cancel(notificationId);
+        Log.v(MGMapApplication.LABEL, NameUtil.context()+ " NOTI: id="+notificationId+" "+" cancel");
     }
 
     @Nullable
