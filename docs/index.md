@@ -46,9 +46,8 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Status line](Features/FurtherFeatures/Statusline/status.md): show some state information in the status line
 - [Quick controls](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of MGMapActivity: these quick controls allow to control most frequently used features
 - [Turning instructions](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output (currently only german) based on the route calculation
-
-### Synchronization features
 - [SshSync](Features/FurtherFeatures/SshSync/sshsync.md): synchronize your gpx files with a configured path on a ssh server in your local net.
+- [Software update](Features/FurtherFeatures/SoftwareUpdate/softwareUpdate.md): Update your software
 
 
 ### Developer features

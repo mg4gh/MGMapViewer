@@ -11,11 +11,11 @@ For this purpose the map download feature can be used as described in step 4 of 
 **www.openandromaps.org**. By pressing the "Install others" button, a url with the protocol schema *mf-v4-map* is opened and since this app has registered for this protocol schema, this 
 app will be called with the url for the map download. The map download is based on the domain **ftp.gwdg.de**, which is an ftp server provided by the 
 "Gesellschaft für wissenschaftliche Datenverarbeitung mbH Göttingen" (a part of the university of Göttingen).
-- [Maponline](./Features/MainMapFeatures/MapOnline/maponline.md)<br>As the name of this feature suggests this is to visualize online maps that consists of a set of tiles. 
+- [Maponline](./Features/MainMapFeatures/MapOnline/maponline.md)<br>As the name of this feature suggests this feature is to visualize online maps that consists of a set of tiles. 
 For each such map you need to provide an config file with the list used serves (es the example in the feature description). The internet access for those
 online maps is part of the [mapsforge](https://github.com/mapsforge/mapsforge) library. It is just executing a tile download for the requested tiles.
 - [Mapstore](./Features/MainMapFeatures/MapStore/mapstore.md)<br>
-A mapstore can be downloaded completely offline and copied just to the path for mapstore. But there is an additional feature that allows to download tiles
+A mapstore can be downloaded completely offline and copied just to the path for the mapstore. But there is an additional feature that allows to download tiles
 similar to the online maps, except that the downloaded tiles are stored additionally in a local mapstore, similar to a cache. So they are available for later usage independent 
 on the internet access. Again the server have to be listed in a configuration file that is provided by the user. 
 - [hgt grid layer](./Features/MainMapFeatures/MapGrid/hgt.md)<br>
@@ -31,13 +31,14 @@ This feature obviously needs some data to find location based on a name or to fi
   - **Nominatim** - This search provider is based on the domain **nominatim.openstreetmap.org**. In case of a search request the search strings and positions for reverse geocoding are transferred to this server.
   - **GeoLatLong** - As this is only some visualisation of geo coordinates this provider has no internet access.
   - **Graphhopper** - This search provider is based on the domain **graphhopper.com**. In case of a search request the search strings and positions for reverse geocoding are transferred to this server. 
-Be aware that there starts an incremental search as soon as you searcj string has a length of 5 character.
+Be aware that an incremental search starts as soon as your search string has a at least 5 character.
   - **Pelias** - This search provider is based on the domain **api.openrouteservice.org**. In case of a search request the search strings and positions for reverse geocoding are transferred to this server.
-Be aware that there starts an incremental search as soon as you searcj string has a length of 5 character.
+    Be aware that an incremental search starts as soon as your search string has a at least 5 character.
 - [SshSync](Features/FurtherFeatures/SshSync/sshsync.md)<br>
 This feature allows an automatic backup of your gpx files. Once the corresponding configuration file will be found, then this feature starts to do its work and to sync to the specified server 
 (typically in your local network) - in other words: as long as you do not provide a config for this, there will be no data transfer.
-- Download Software
+- [Software update](Features/FurtherFeatures/SoftwareUpdate/softwareUpdate.md)<br>
+Depending on the selected option for software update the download is based on the project page on the **github.com** domain or based on a local ftp server.
 
 
 <small><small>[Back to Index](./index.md)</small></small>
