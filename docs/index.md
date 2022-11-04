@@ -1,4 +1,4 @@
-### Plan - Record - View - Share
+# Plan - Record - View - Share
 Based on the excellent [mapsforge](https://github.com/mapsforge/mapsforge) library the **MGMapViewer** app can handle multiple map types. 
 Using offline vector maps (e.g. from [openandromaps](https://www.openandromaps.org/)) you can plan, record, view and share
 your tracks ... and much more.
@@ -60,6 +60,8 @@ There [application design document](./more/add.pdf) provides an extensive descri
 - [approaches](./Features/DeveloperFeatures/Approach/approach.md) of marker points to ways as the basis of routing
 - [developer documentation](./Features/DeveloperFeatures/Developer/developer.md) provides more information for developers.
 
+# Privacy
+Please read carfully this [privacy information](./privacy.md).
 # About  
 [Here](./History.md) you can find some information, how this app was originated.
 
