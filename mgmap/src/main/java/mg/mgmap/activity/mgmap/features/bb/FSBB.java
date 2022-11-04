@@ -36,6 +36,7 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobUtil;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
@@ -362,7 +363,10 @@ public class FSBB extends FeatureService {
     private void loadHgt(BBox bBox, boolean all){
         final HgtGridView hgtGridView = identifyHgt();
         if (hgtGridView != null){
-            ArrayList<BgJob> jobs = new ArrayList<>();
+            BgJobGroup jobGroup = new BgJobGroup(application, activity,"Download hgt files", (total, success, fail) -> {
+                hgtGridView.requestRedraw();
+                return false;
+            });
             for (int latitude = (int)bBox.minLatitude; latitude<(int)bBox.maxLatitude+1; latitude++ ){
                 for (int longitude = (int)bBox.minLongitude; longitude<(int)bBox.maxLongitude+1; longitude++ ){
                     final int iLat = latitude;
@@ -382,30 +386,39 @@ public class FSBB extends FeatureService {
                                     Log.w (MGMapApplication.LABEL, NameUtil.context()+" empty response body for download!");
                                 } else {
                                     this.setText("Download "+ url.replaceFirst(".*/",""));
+                                    if (responseBody.contentLength() < 1000) throw new Exception("Invalid hgt size: "+responseBody.contentLength());
                                     IOUtil.copyStreams(responseBody.byteStream(), getPersistenceManager().openHgtOutput(iLat, iLon));
                                     hgtGridView.requestRedraw();
                                 }
                             }
                         };
-                        jobs.add(bgJob);
+                        jobGroup.addJob(bgJob);
                     }
                 }
             }
-            String title = "Download hgt files";
-            String message = "Download "+jobs.size()+" hgt files?";
-            new BgJobUtil(activity, application).processConfirmDialog(title, message, jobs);
-//            getApplication().addBgJobs(jobs);
+            jobGroup.setConstructed("Download "+jobGroup.size()+" hgt files?");
         }
     }
     private void dropHgt(BBox bBox){
         final HgtGridView hgtGridView = identifyHgt();
         if (hgtGridView != null) {
+            BgJobGroup jobGroup = new BgJobGroup(application, activity,"Drop hgt files", (total, success, fail) -> {
+                hgtGridView.requestRedraw();
+                return false;
+            });
             for (int latitude = (int)bBox.minLatitude+1; latitude<(int)bBox.maxLatitude; latitude++ ){
                 for (int longitude = (int)bBox.minLongitude+1; longitude<(int)bBox.maxLongitude; longitude++ ){
-                    getPersistenceManager().dropHgt(latitude, longitude);
+                    final int iLat = latitude;
+                    final int iLon = longitude;
+                    jobGroup.addJob(new BgJob(){
+                        @Override
+                        protected void doJob() throws Exception {
+                            getPersistenceManager().dropHgt(iLat, iLon);
+                        }
+                    });
                 }
             }
-            hgtGridView.requestRedraw();
+            jobGroup.setConstructed("Drop "+jobGroup.size()+" hgt files?");
         }
     }
 

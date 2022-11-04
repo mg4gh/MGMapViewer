@@ -81,6 +81,53 @@ public class BgJobUtil {
         alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(jobs.size()>0);
     }
 
+    public void processConfirmDialog(BgJobGroup bgJobGroup){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(bgJobGroup.title);
+        builder.setMessage(bgJobGroup.details);
+
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            dialog.dismiss();
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
+            FullscreenUtil.enforceState(activity);
+            bgJobGroup.doit();
+        });
+
+        builder.setNegativeButton("NO", (dialog, which) -> {
+            // Do nothing
+            dialog.dismiss();
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
+            FullscreenUtil.enforceState(activity);
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+        alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(bgJobGroup.size()>0);
+    }
+
+    void reportResult(BgJobGroup bgJobGroup){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(bgJobGroup.title);
+        builder.setMessage(bgJobGroup.details+"\n\nNumber of jobs: "+bgJobGroup.jobCounter+"\nSuccessful finished: "+bgJobGroup.successCounter+"\nUnsuccessful finished:"+bgJobGroup.errorCounter);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            dialog.dismiss();
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " ok" );
+        });
+
+        if (bgJobGroup.offerRetries){
+            builder.setNegativeButton("Retry", (dialog, which) -> {
+                Log.i(MGMapApplication.LABEL, NameUtil.context() + " Retry" );
+                bgJobGroup.retry();
+            });
+        }
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 //    public void processConfirmDialog2(String title, String message, ArrayList<BgJob> jobs){
 //        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 //

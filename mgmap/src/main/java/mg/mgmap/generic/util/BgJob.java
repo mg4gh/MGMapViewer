@@ -27,6 +27,7 @@ import mg.mgmap.generic.util.basic.NameUtil;
 public class BgJob {
 
     public BgJobService service = null;
+    public BgJobGroup group = null;
     public int notification_id = 0;
     private NotificationCompat.Builder notiBuilder = null;
     long lastNotification = 0;
@@ -42,7 +43,9 @@ public class BgJob {
             notification_id = 100+(int)(Math.random()*1000000000);
             started = true;
             doJob();
+            group.jobFinished(true, null);
         } catch (Exception e){
+            group.jobFinished(false, e);
             if (!(e instanceof FileNotFoundException)){
                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
             }
