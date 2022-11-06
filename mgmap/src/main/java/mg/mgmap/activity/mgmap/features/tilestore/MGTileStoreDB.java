@@ -31,14 +31,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.FilterOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Locale;
 
 import mg.mgmap.application.MGMapApplication;
@@ -65,13 +59,16 @@ public class MGTileStoreDB extends MGTileStore {
 
         File store = null;
         File storeRW = null;
-        for (File file : storeDir.listFiles()){
-            if (file.getName().endsWith(".mbtiles")){
-                if (Files.isReadable(file.toPath())){
-                    store = file;
-                    if (Files.isWritable(file.toPath())){
-                        storeRW = file;
-                        break;
+        File[] files = storeDir.listFiles();
+        if (files != null){
+            for (File file : files){
+                if (file.getName().endsWith(".mbtiles")){
+                    if (Files.isReadable(file.toPath())){
+                        store = file;
+                        if (Files.isWritable(file.toPath())){
+                            storeRW = file;
+                            break;
+                        }
                     }
                 }
             }
@@ -89,21 +86,6 @@ public class MGTileStoreDB extends MGTileStore {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+prefix+"store found with read/write access found: "+storeRW.getName());
         }
         db = SQLiteDatabase.openDatabase(storeRW.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
-
-//        String sdb = storeDir.getAbsolutePath()+File.separator+dbName;
-//        Log.i(MGMapApplication.LABEL, NameUtil.context() +" db="+sdb);
-//        File fdb = new File(sdb);
-//        Path p = Paths.get(sdb);
-//        Log.i(MGMapApplication.LABEL, NameUtil.context() +" db="+sdb+" exists="+fdb.exists()+ " rwx="+(Files.isReadable(p)?"r":"-")+(Files.isWritable(p)?"w":"-")+(Files.isExecutable(p)?"x":"-"));
-//        try {
-//            Log.i(MGMapApplication.LABEL, NameUtil.context() +" db="+sdb+" owner="+Files.getOwner(p)+" "+Files.getOwner(Paths.get(sdb.replaceFirst("Viewer.*","Viewer")))
-//                    +" "+Files.getOwner(Paths.get( storeDir.getAbsolutePath() ))+" "+Files.getOwner(Paths.get(  storeDir.getAbsolutePath().replaceFirst("/openbikemap",""))));
-//
-//        } catch (IOException e) {
-//            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
-//        }
-//
-//        db = SQLiteDatabase.openDatabase(storeDir.getAbsolutePath()+File.separator+dbName, null, SQLiteDatabase.OPEN_READWRITE);
     }
 
 
@@ -169,12 +151,7 @@ public class MGTileStoreDB extends MGTileStore {
 
     @Override
     public BgJob getDropJob(TileStoreLoader tileStoreLoader, int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel) {
-        return new MGTileStoreLoaderJob(tileStoreLoader, null) {
-            @Override
-            protected void doJobNow()  {
-                dropTiles(tileXMin,tileXMax, tileYMin, tileYMax, zoomLevel);
-            }
-        };
+        return new MGTileStoreDropJobDB(tileStoreLoader,tileXMin,tileXMax,tileYMin,tileYMax,zoomLevel);
     }
 
 
@@ -238,7 +215,7 @@ public class MGTileStoreDB extends MGTileStore {
         }
     }
 
-    private void dropTiles(int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel){
+    void dropTiles(int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel){
         final int[] tmsTileXYMin = googleTile2TmsTile(tileXMin, tileYMin, zoomLevel);
         final int[] tmsTileXYMax = googleTile2TmsTile(tileXMax, tileYMax, zoomLevel);
         dropTiles(tmsTileXYMin[0],tmsTileXYMax[0],tmsTileXYMax[1],tmsTileXYMin[1]);
@@ -260,9 +237,6 @@ public class MGTileStoreDB extends MGTileStore {
             String sql = String.format(Locale.ENGLISH," ((%d < tile_column) AND (tile_column<%d) AND (%d<tile_row) AND (tile_row<%d));",tileXMin,tileXMax,tileYMin,tileYMax);
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" SQL: "+sql);
             db.delete("tiles", sql, null);
-//            db.compileStatement("VACUUM").execute(); // vacuum taken out - first it runs on each zoom level; second, it takes too much time in a large db; third, it's not needed in real world lifecycle
-//            Log.i(MGMapApplication.LABEL, NameUtil.context()+" VACUUM finished.");
-
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
         }

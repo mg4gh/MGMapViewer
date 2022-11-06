@@ -12,9 +12,9 @@ import mg.mgmap.generic.util.basic.NameUtil;
 public class BgJobGroup {
 
     ArrayList<BgJob> bgJobs = new ArrayList<>();
-    int successCounter = 0;
-    int errorCounter = 0;
-    int jobCounter = 0;
+    protected int successCounter = 0;
+    protected int errorCounter = 0;
+    protected int jobCounter = 0;
     boolean constructed = false;
 
     String title;
@@ -39,11 +39,19 @@ public class BgJobGroup {
         }
     }
 
+    public void setTitle(String title){
+        this.title = title;
+    }
+
     public void setConstructed(String details){
         constructed = true;
         jobCounter = bgJobs.size();
         this.details = details;
-        new BgJobUtil(activity, application).processConfirmDialog(this);
+        if (title != null){
+            new BgJobUtil(activity, application).processConfirmDialog(this);
+        } else {
+            doit();
+        }
     }
 
     public int size(){
@@ -68,10 +76,12 @@ public class BgJobGroup {
         String message = "successCounter="+successCounter+"  errorCounter="+errorCounter+"  jobCounter="+jobCounter;
         Log.d(MGMapApplication.LABEL, NameUtil.context() +"  "+message+ ((e==null)?"":" "+e.getMessage()));
         if (successCounter + errorCounter == jobCounter){
-            if (groupCallback.groupFinished(jobCounter, successCounter, errorCounter)){
+            if (groupCallback.groupFinished(this, jobCounter, successCounter, errorCounter)){
                 offerRetries = true;
             }
-            new Thread(() -> activity.runOnUiThread(this::reportResult)).start();
+            if (title != null){
+                new Thread(() -> activity.runOnUiThread(this::reportResult)).start();
+            }
         }
     }
 
@@ -79,7 +89,17 @@ public class BgJobGroup {
         new BgJobUtil(activity, application).reportResult(this);
     }
 
+    void onReportResultOk(){
+        groupCallback.afterGroupFinished(this, jobCounter, successCounter, errorCounter);
+    }
 
+
+    public String getDetails(){
+        return details;
+    }
+    public String getResultDetails(){
+        return details+"\n\nNumber of jobs: "+jobCounter+"\nSuccessful finished: "+successCounter+"\nUnsuccessful finished:"+errorCounter;
+    }
 
 
 }

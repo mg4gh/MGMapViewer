@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -55,12 +54,7 @@ public class SshSyncUtil {
     public void trySynchronisation(MGMapApplication application) {
         long now = System.currentTimeMillis();
         if ((now -lastAction > 10 * 60 * 1000) && (!syncInProgress)){ // no sync, if there was one in the last 10 minutes or another sync is in progress
-            new Thread(){
-                @Override
-                public void run() {
-                    trySynchronisationAsync(application);
-                }
-            }.start();
+            new Thread(() -> trySynchronisationAsync(application)).start();
         }
     }
 
@@ -103,6 +97,7 @@ public class SshSyncUtil {
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" remoteSet: "+remoteMap.keySet());
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" commonSet: "+commonSet);
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" localSet: "+localMap.keySet());
+                    int total = localMap.size();
 
                     for (String commonName : new TreeSet<>(commonSet)){
                         long localTime = localMap.get(commonName);
@@ -117,28 +112,23 @@ public class SshSyncUtil {
                         }
                     }
 
-                    ArrayList<BgJob> jobs = new ArrayList<>();
+                    BgJobGroup bgJobGroup = new BgJobGroup(application, null, null, new BgJobGroupCallback() {
+                        @Override
+                        public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                            session.disconnect();
+                            return false;
+                        }
+                    });
                     for (String name : localMap.keySet()){
                         if (!commonSet.contains(name)) {
                             File f = new File(localFolder.getAbsolutePath()+"/"+name);
-                            jobs.add(new ScpUploadJob(session, localFolder, targetPrefix, f ));
+                            bgJobGroup.addJob(new ScpUploadJob(session, localFolder, targetPrefix, f ));
                         }
                     }
-
-
-                    String message = "SSH Sync Overview: \ntracks in sync: "+commonSet.size()+" \ntracks to upload: "+jobs.size();
+                    String message = "SSH Sync Overview: tracks in sync: "+(total-bgJobGroup.size())+" tracks to upload: "+bgJobGroup.size();
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+message);
-                    application.addBgJobs(jobs);
+                    bgJobGroup.setConstructed(null);
                 }
-
-                while (application.numBgJobs() > 0){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                    }
-                }
-                session.disconnect();
             } // fi - is connected to the right WLAN
 
 

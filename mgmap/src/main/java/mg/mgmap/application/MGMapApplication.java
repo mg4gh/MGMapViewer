@@ -17,7 +17,6 @@ package mg.mgmap.application;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.ExistingWorkPolicy;
@@ -34,6 +33,8 @@ import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
 import mg.mgmap.application.util.GpsSupervisorWorker;
 import mg.mgmap.application.util.NotificationUtil;
+import mg.mgmap.generic.util.BgJobGroup;
+import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -174,7 +175,9 @@ public class MGMapApplication extends Application {
         // initialize Theme and MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(() -> {
             if (persistenceManager.getThemeNames().length == 0){
-                addBgJobs( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets()) );
+                BgJobGroup jobGroup = new BgJobGroup(this, null, null, new BgJobGroupCallback() {});
+                jobGroup.addJob( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets()) );
+                jobGroup.setConstructed(null);
             }
             ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, elevationProvider);
             for (TrackLog trackLog : metaDataUtil.loadMetaData()){

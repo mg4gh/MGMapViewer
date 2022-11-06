@@ -38,14 +38,24 @@ public class BgJob {
     public boolean started = false;
     public boolean finished = false;
 
+    public BgJob(){}
+
     public void start(){
         try {
             notification_id = 100+(int)(Math.random()*1000000000);
             started = true;
-            doJob();
-            group.jobFinished(true, null);
+            if (group != null){
+                boolean success = false;
+                if ( (group.errorCounter - group.successCounter*3) < 8){
+                    doJob();
+                    success = true;
+                }
+                group.jobFinished(success, null);
+            } else {
+                doJob();
+            }
         } catch (Exception e){
-            group.jobFinished(false, e);
+            if (group != null) group.jobFinished(false, e);
             if (!(e instanceof FileNotFoundException)){
                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
             }

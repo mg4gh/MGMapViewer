@@ -36,11 +36,10 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
     }
 
     @Override
-    protected void doJobNow() throws Exception {
+    protected void doJob() throws Exception {
         MGTileStoreDB mgTileStoreDB = (MGTileStoreDB)tileStoreLoader.mgTileStore;
 
-        conn = tileStoreLoader.xmlTileSource.getURLConnection(tile.zoomLevel, tile.tileX, tile.tileY);
-        debug = conn.getURL() + " "+conn.getRequestProperties();
+        super.doJob();
 
         InputStream is = null;
         try {
@@ -48,8 +47,7 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
         } catch (IOException e) {
             if (conn instanceof HttpURLConnection) {
                 HttpURLConnection httpURLConnection = (HttpURLConnection) conn;
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+tileStoreLoader.successCounter+"/"+tileStoreLoader.errorCounter+"/"+tileStoreLoader.jobCounter+" "
-                        +httpURLConnection.getResponseCode()+" "+httpURLConnection.getResponseMessage()+" "+conn.getURL());
+                Log.d(MGMapApplication.LABEL, NameUtil.context()+httpURLConnection.getResponseCode()+" "+httpURLConnection.getResponseMessage()+" "+conn.getURL());
 
                 if (httpURLConnection.getResponseCode() == 404){
                     is = tileStoreLoader.application.getAssets().open("empty.png");

@@ -78,7 +78,7 @@ public class ExtendedTextView extends AppCompatTextView {
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" w="+w+" h="+h+" oldw="+oldw+" oldh="+oldh);
+        Log.v(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" w="+w+" h="+h+" oldw="+oldw+" oldh="+oldh);
     }
 
     public ExtendedTextView setName(String logName){

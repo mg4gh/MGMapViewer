@@ -14,8 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.features.tilestore;
 
-import android.app.AlertDialog;
-
 import android.util.Log;
 
 import org.mapsforge.core.model.Tile;
@@ -26,7 +24,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -42,8 +39,8 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.BBox;
-import mg.mgmap.generic.util.BgJob;
-import mg.mgmap.generic.util.BgJobUtil;
+import mg.mgmap.generic.util.BgJobGroup;
+import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class TileStoreLoader {
@@ -52,11 +49,9 @@ public class TileStoreLoader {
     MGMapApplication application;
     MGMapActivity activity;
     MGTileStore mgTileStore;
-    int jobCounter = 0;
-    int errorCounter = 0;
-    int successCounter = 0;
 
     public XmlTileSource xmlTileSource;
+    BgJobGroup jobGroup;
 
     public TileStoreLoader(MGMapActivity activity, MGMapApplication application, MGTileStore mgTileStore) throws Exception {
         this.activity = activity;
@@ -64,6 +59,36 @@ public class TileStoreLoader {
         this.mgTileStore = mgTileStore;
         this.storeDir = mgTileStore.getStoreDir();
         init();
+
+        jobGroup = new BgJobGroup(application, activity, "", new BgJobGroupCallback() {
+            @Override
+            public boolean groupFinished(BgJobGroup bgJobGroup, int total, int success, int fail) {
+                if (success > 0){
+                    mgTileStore.purgeCache();
+                    activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle(); //after Tile downloads/drops this helps to make downloaded tiles visible
+                }
+                return (fail == total) && (new File(storeDir, "retry.json").exists());
+            }
+
+            @Override
+            public void retry(BgJobGroup jobGroup) {
+                new Thread(() -> {
+                    try {
+                        FileInputStream is = new FileInputStream(new File(storeDir, "retry.json"));
+                        FileOutputStream os = new FileOutputStream(new File(storeDir, "cookies.json"));
+                        Properties props = new Properties();
+                        props.load( new FileInputStream(new File(storeDir, "param.properties")) );
+                        if (new DynamicHandler(is, os, props).run()){
+                            init();
+                            jobGroup.doit(); // this is the real retry
+                        }
+                    } catch (Exception e) {
+                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                    }
+                }).start();
+
+            }
+        });
     }
 
     private void init() throws Exception {
@@ -110,17 +135,12 @@ public class TileStoreLoader {
                 for (Map.Entry<String, String> entry : cookieMap.entrySet() ){
                     cookieRes.append(entry.getKey()).append("=").append(entry.getValue()).append(separator);
                 }
-                config.connRequestProperties.put("Cookie", cookieRes.substring(0, cookieRes.length()-separator.length()));
+                config.setConnRequestProperty("Cookie", cookieRes.substring(0, cookieRes.length()-separator.length()));
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" cookies.json result: "+config.connRequestProperties.get("Cookie"));
             }
         }
-        errorCounter = 0;
-        successCounter = 0;
     }
 
-
-
-    ArrayList<BgJob> jobs = new ArrayList<>();
 
     public void loadFromBB(BBox bBox, boolean all){
         int tileSize = mgTileStore.getTileSize();
@@ -137,16 +157,14 @@ public class TileStoreLoader {
                     Tile tile = new Tile(tileX, tileY, zoomLevel, tileSize);
                     boolean bOld = mgTileStore.containsKey(new Job(tile, false));
                     if (all || !bOld){
-                        jobs.add(  mgTileStore.getLoaderJob(this, tile, bOld) );
+                        jobGroup.addJob(  mgTileStore.getLoaderJob(this, tile, bOld) );
                     }
                 }
             }
         }
 
-        String title = "Load Tiles for \""+storeDir.getName()+"\"";
-        String message = "Load "+jobs.size()+" tiles?";
-        jobCounter = jobs.size();
-        new BgJobUtil(activity, application).processConfirmDialog(title, message, jobs);
+        jobGroup.setTitle("Load Tiles for \""+storeDir.getName()+"\"");
+        jobGroup.setConstructed("Load "+jobGroup.size()+" tiles?");
     }
 
     public void dropFromBB(BBox bBox){
@@ -162,70 +180,11 @@ public class TileStoreLoader {
 
             if ( ((tileXMax-tileXMin) > 1) && ((tileYMax-tileYMin) >1 )){
                 numDrops += (tileXMax-tileXMin-1)*(tileYMax-tileYMin-1);
-                jobs.add(  mgTileStore.getDropJob(this, tileXMin, tileXMax, tileYMin, tileYMax, zoomLevel) );
+                jobGroup.addJob(  mgTileStore.getDropJob(this, tileXMin, tileXMax, tileYMin, tileYMax, zoomLevel) );
             }
         }
 
-        String title = "Drop Tiles for \""+storeDir.getName()+"\"";
-        String message = "Drop "+numDrops+" tiles?";
-        jobCounter = jobs.size();
-        new BgJobUtil(activity, application).processConfirmDialog(title, message, jobs);
+        jobGroup.setTitle("Drop Tiles for \""+storeDir.getName()+"\"");
+        jobGroup.setConstructed("Drop "+numDrops+" tiles in "+jobGroup.size()+" jobs?");
     }
-
-    synchronized void jobFinished(boolean success, Exception e){
-        if (success){
-            successCounter++;
-        } else {
-            errorCounter++;
-        }
-        String message = "successCounter="+successCounter+"  errorCounter="+errorCounter+"  jobCounter="+jobCounter;
-        Log.d(MGMapApplication.LABEL, NameUtil.context() +"  "+message+ ((e==null)?"":e.getMessage()));
-        if (successCounter + errorCounter == jobCounter){
-            new Thread(() -> activity.runOnUiThread(this::reportResult)).start();
-        }
-    }
-
-    void reportResult(){
-        if (successCounter > 0){
-            mgTileStore.purgeCache();
-            activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle(); //after TileDownloads this helps to make downloaded tiles visible
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setTitle("Job report for \""+storeDir.getName()+"\"");
-        String message = "Number of jobs: "+jobCounter+"\nSuccessful finished: "+successCounter+"\nUnsuccessful finished:"+errorCounter;
-        builder.setMessage(message);
-
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            dialog.dismiss();
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " ok" );
-        });
-
-        if ((errorCounter == jobCounter) && (new File(storeDir, "retry.json").exists()) ){
-            if ((jobs.size()>0) && (jobs.get(0) instanceof MGTileStoreLoaderJob)){
-                builder.setNegativeButton("Retry", (dialog, which) -> {
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " Retry" );
-                    new Thread(() -> {
-                        try {
-                            FileInputStream is = new FileInputStream(new File(storeDir, "retry.json"));
-                            FileOutputStream os = new FileOutputStream(new File(storeDir, "cookies.json"));
-                            Properties props = new Properties();
-                            props.load( new FileInputStream(new File(storeDir, "param.properties")) );
-                            if (new DynamicHandler(is, os, props).run()){
-                                init();
-                                application.addBgJobs(jobs);
-                            }
-                        } catch (Exception e) {
-                            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                        }
-                    }).start();
-                    dialog.dismiss();
-                });
-            }
-        }
-
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
 }

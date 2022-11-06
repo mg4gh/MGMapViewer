@@ -37,7 +37,7 @@ import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
-import mg.mgmap.generic.util.BgJobUtil;
+import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -363,9 +363,12 @@ public class FSBB extends FeatureService {
     private void loadHgt(BBox bBox, boolean all){
         final HgtGridView hgtGridView = identifyHgt();
         if (hgtGridView != null){
-            BgJobGroup jobGroup = new BgJobGroup(application, activity,"Download hgt files", (total, success, fail) -> {
-                hgtGridView.requestRedraw();
-                return false;
+            BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download hgt files", new BgJobGroupCallback() {
+                @Override
+                public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                    hgtGridView.requestRedraw();
+                    return false;
+                }
             });
             for (int latitude = (int)bBox.minLatitude; latitude<(int)bBox.maxLatitude+1; latitude++ ){
                 for (int longitude = (int)bBox.minLongitude; longitude<(int)bBox.maxLongitude+1; longitude++ ){
@@ -402,9 +405,12 @@ public class FSBB extends FeatureService {
     private void dropHgt(BBox bBox){
         final HgtGridView hgtGridView = identifyHgt();
         if (hgtGridView != null) {
-            BgJobGroup jobGroup = new BgJobGroup(application, activity,"Drop hgt files", (total, success, fail) -> {
-                hgtGridView.requestRedraw();
-                return false;
+            BgJobGroup jobGroup = new BgJobGroup(application, activity,"Drop hgt files", new BgJobGroupCallback() {
+                @Override
+                public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                    hgtGridView.requestRedraw();
+                    return false;
+                }
             });
             for (int latitude = (int)bBox.minLatitude+1; latitude<(int)bBox.maxLatitude; latitude++ ){
                 for (int longitude = (int)bBox.minLongitude+1; longitude<(int)bBox.maxLongitude; longitude++ ){
@@ -412,7 +418,7 @@ public class FSBB extends FeatureService {
                     final int iLon = longitude;
                     jobGroup.addJob(new BgJob(){
                         @Override
-                        protected void doJob() throws Exception {
+                        protected void doJob(){
                             getPersistenceManager().dropHgt(iLat, iLon);
                         }
                     });

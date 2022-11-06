@@ -34,18 +34,7 @@ public abstract class MGTileStoreLoaderJob extends BgJob {
 
     @Override
     protected void doJob() throws Exception {
-        try {
-            boolean success = false;
-            if ( (tileStoreLoader.errorCounter - tileStoreLoader.successCounter*3) < 8){
-                doJobNow();
-                success = true;
-            }
-            tileStoreLoader.jobFinished(success, null);
-        } catch (Exception e) {
-            tileStoreLoader.jobFinished(false, e);
-            throw e;
-        }
+        conn = tileStoreLoader.xmlTileSource.getURLConnection(tile.zoomLevel, tile.tileX, tile.tileY);
+        debug = conn.getURL() + " "+conn.getRequestProperties();
     }
-
-    protected void doJobNow() throws Exception {}
- }
+}

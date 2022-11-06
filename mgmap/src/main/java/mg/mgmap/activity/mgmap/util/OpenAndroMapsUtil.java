@@ -15,77 +15,50 @@
 package mg.mgmap.activity.mgmap.util;
 
 import android.content.res.AssetManager;
-import android.net.Uri;
-import android.os.Build;
-import android.util.Log;
 
 import java.io.FilenameFilter;
 import java.net.URL;
-import java.util.ArrayList;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.Zipper;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 public class OpenAndroMapsUtil {
 
-    public static ArrayList<BgJob> createBgJobsFromIntentUriMap(PersistenceManager persistenceManager, Uri uri)  {
-        ArrayList<BgJob> jobs = new ArrayList<>();
-        BgJob job = new BgJob(){
+    public static BgJob createBgJobsFromIntentUriMap(PersistenceManager persistenceManager, URL url)  {
+        return new BgJob(){
             @Override
             protected void doJob() throws Exception {
                 Zipper zipper = new Zipper(null);
-                String s1 = uri.toString();
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+"  s1="+s1);
-                String s2 = s1.replaceFirst("mf-v4-map", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http"));
-//                String s2 = s1.replaceFirst("mf-v4-map://download.openandromaps.org/", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http")+"://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/");
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+"  s2="+s2);
-                URL url = new URL(s2);
                 FilenameFilter filter = (dir, name) -> (name.endsWith("map") || name.endsWith("poi"));
                 zipper.unpack(url, persistenceManager.getMapsforgeDir(), filter, this);
-
             }
         };
-        jobs.add(job);
-        return jobs;
     }
 
-    public static ArrayList<BgJob> createBgJobsFromIntentUriTheme(PersistenceManager persistenceManager, Uri uri)  {
-        ArrayList<BgJob> jobs = new ArrayList<>();
-        BgJob job = new BgJob() {
+    public static BgJob createBgJobsFromIntentUriTheme(PersistenceManager persistenceManager, URL url)  {
+        return new BgJob() {
             @Override
             protected void doJob() throws Exception {
                 super.doJob();
                 Zipper zipper = new Zipper(null);
-                String s1 = uri.toString();
-                String s2 = s1.replaceFirst("mf-theme", ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?"https":"http"));
-                URL url = new URL(s2);
-//                URL url = new URL("https://www.openandromaps.org/wp-content/users/tobias/Elevate.zip");
                 zipper.unpack(url, persistenceManager.getThemesDir(), null, this);
             }
         };
-        jobs.add(job);
-        return jobs;
     }
 
-    public static ArrayList<BgJob> createBgJobsFromAssetTheme(PersistenceManager persistenceManager, AssetManager assetManager) {
-        ArrayList<BgJob> jobs = new ArrayList<>();
-        BgJob job = new BgJob() {
+    public static BgJob createBgJobsFromAssetTheme(PersistenceManager persistenceManager, AssetManager assetManager) {
+        return new BgJob() {
             @Override
             protected void doJob() throws Exception {
                 super.doJob();
                 Zipper zipper = new Zipper(null);
-//                AssetFileDescriptor fd = assetManager.openFd("Elevate.zip");
                 this.setMax(1500);
                 this.setText("Unzip theme Elevate.zip");
                 this.setProgress(0);
                 zipper.unpack(assetManager.open("Elevate.zip"), persistenceManager.getThemesDir(), null, this);
             }
         };
-        jobs.add(job);
-        return jobs;
     }
 
 }

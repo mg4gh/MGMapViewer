@@ -52,6 +52,9 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import mg.mgmap.activity.settings.MainPreferenceScreen;
+import mg.mgmap.activity.settings.MapLayersPreferenceScreen;
+import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.atl.FSAvailableTrackLogs;
@@ -78,6 +81,8 @@ import mg.mgmap.generic.model.TrackLogRefZoom;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.BgJobGroup;
+import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.SshSyncUtil;
 import mg.mgmap.generic.util.gpx.GpxImporter;
@@ -95,6 +100,7 @@ import mg.mgmap.activity.mgmap.view.MVLayer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -374,10 +380,51 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
                         PersistenceManager pm = application.getPersistenceManager();
                         if (uri.getScheme().equals("mf-v4-map")){
-                            application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUriMap(pm, uri));
-                        } else
-                        if (uri.getScheme().equals("mf-theme")){
-                            application.addBgJobs(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(pm, uri));
+                            BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download map", new BgJobGroupCallback() {
+                                @Override
+                                public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                                    if (success > 0){
+                                        Intent intent = new Intent(MGMapActivity.this, SettingsActivity.class);
+                                        intent.putExtra("FSControl.info", MapLayersPreferenceScreen.class.getName());
+                                        startActivity(intent);
+                                    }
+                                }
+                            }){
+                                @Override
+                                public String getResultDetails() {
+                                    if (successCounter > 0){
+                                        return super.getDetails() + " finished successful.\n\n Now you can assign this map to a layer";
+                                    } else {
+                                        return super.getResultDetails();
+                                    }
+                                }
+                            };
+                            String sUrl = uri.toString().replaceFirst("mf-v4-map", "https");
+                            bgJobGroup.addJob(OpenAndroMapsUtil.createBgJobsFromIntentUriMap(pm, new URL(sUrl)));
+                            bgJobGroup.setConstructed("Download mapsforge map from "+sUrl);
+                        } else if (uri.getScheme().equals("mf-theme")){
+                            BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download map theme", new BgJobGroupCallback() {
+                                @Override
+                                public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                                    if (success > 0) {
+                                        Intent intent = new Intent(MGMapActivity.this, SettingsActivity.class);
+                                        intent.putExtra("FSControl.info", MainPreferenceScreen.class.getName());
+                                        startActivity(intent);
+                                    }
+                                }
+                            }){
+                                @Override
+                                public String getResultDetails() {
+                                    if (successCounter > 0){
+                                        return super.getDetails() + " finished successful.\n\n Now you can select downloaded theme.";
+                                    } else {
+                                        return super.getResultDetails();
+                                    }
+                                }
+                            };
+                            String sUrl = uri.toString().replaceFirst("mf-theme", "https");
+                            bgJobGroup.addJob(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(pm, new URL(sUrl)));
+                            bgJobGroup.setConstructed("Download mapsforge theme from "+sUrl);
                         }
                     }
 

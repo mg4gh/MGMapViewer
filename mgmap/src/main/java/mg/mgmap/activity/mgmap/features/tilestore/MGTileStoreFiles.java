@@ -21,7 +21,6 @@ import org.mapsforge.map.layer.queue.Job;
 import java.io.File;
 
 import mg.mgmap.generic.util.BgJob;
-import mg.mgmap.application.util.PersistenceManager;
 
 public class MGTileStoreFiles extends MGTileStore {
 
@@ -43,7 +42,7 @@ public class MGTileStoreFiles extends MGTileStore {
         File xDir = new File(zoomDir, Integer.toString(key.tile.tileX));
         if (!zoomDir.exists()) return false;
 
-        File yFile = new File(xDir, Integer.toString(key.tile.tileY) + SUFFIX);
+        File yFile = new File(xDir, key.tile.tileY + SUFFIX);
         return yFile.exists();
     }
 
@@ -53,21 +52,7 @@ public class MGTileStoreFiles extends MGTileStore {
     }
 
     public BgJob getDropJob(TileStoreLoader tileStoreLoader, int tileXMin, int tileXMax, int tileYMin, int tileYMax, byte zoomLevel){
-        return new MGTileStoreLoaderJob(tileStoreLoader, null) {
-            @Override
-            protected void doJobNow() throws Exception {
-                File zoomDir = new File(tileStoreLoader.storeDir,Byte.toString(zoomLevel));
-                for (int tileX = tileXMin+1; tileX< tileXMax; tileX++){
-                    File xDir = new File(zoomDir,Integer.toString(tileX));
-                    for (int tileY = tileYMin+1; tileY< tileYMax; tileY++) {
-                        File yFile = new File(xDir,Integer.toString(tileY)+".png");
-                        if (yFile.exists()){
-                            yFile.delete();
-                        }
-                    }
-                }
-            }
-        };
+        return new MGTileStoreDropJobFile(tileStoreLoader,tileXMin,tileXMax,tileYMin,tileYMax,zoomLevel);
     }
 
 }
