@@ -15,11 +15,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
@@ -86,70 +90,59 @@ public class SshSyncUtil {
 
 
                 File localFolder = persistenceManager.getTrackGpxDir();
-                Map<String, Long> localMap = new HashMap<>();
-                calcLocalMap(localMap, localFolder, localFolder.getAbsolutePath(), ".*\\.gpx");
+//                Map<String, Long> localMap = new HashMap<>();
+//                Map<String, Long> localMap = calcLocalMap(localFolder, ".*\\.gpx");
+                try (Stream<Path> walk = Files.walk(localFolder.toPath())){
+                    Map<String, Long> localMap = walk
+                            .filter(Files::isRegularFile)
+                            .filter(p -> p.toFile().getName().matches(".*\\.gpx"))
+                            .collect(Collectors.toMap(p -> p.toFile().getAbsolutePath().replaceFirst(localFolder.getAbsolutePath()+"[/\\\\]",""), p -> p.toFile().lastModified()/1000));
 
-                Map<String, Long> remoteMap = new HashMap<>();
-                if (calcRemoteList(session, remoteMap, targetPrefix)){
+                    Map<String, Long> remoteMap = new HashMap<>();
+                    if (calcRemoteList(session, remoteMap, targetPrefix)){
 
-                    Set<String> commonSet = new TreeSet<>(localMap.keySet());
-                    commonSet.retainAll(remoteMap.keySet());
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" remoteSet: "+remoteMap.keySet());
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" commonSet: "+commonSet);
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" localSet: "+localMap.keySet());
-                    int total = localMap.size();
+                        Set<String> commonSet = new TreeSet<>(localMap.keySet());
+                        commonSet.retainAll(remoteMap.keySet());
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" remoteSet: "+remoteMap.keySet());
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" commonSet: "+commonSet);
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" localSet: "+localMap.keySet());
+                        int total = localMap.size();
 
-                    for (String commonName : new TreeSet<>(commonSet)){
-                        long localTime = localMap.get(commonName);
-                        long remoteTime = remoteMap.get(commonName);
-                        if (localTime != remoteTime){
-                            if (localTime > remoteTime){
-                                remoteMap.remove(commonName); // ignore remote
-                            } else {
-                                localMap.remove(commonName); // ignore local
+                        for (String commonName : new TreeSet<>(commonSet)){
+                            Long localTime = localMap.get(commonName);
+                            Long remoteTime = remoteMap.get(commonName);
+
+                            if ((localTime != null) && (remoteTime != null) && (!localTime.equals(remoteTime))){
+                                if (localTime > remoteTime){
+                                    remoteMap.remove(commonName); // ignore remote
+                                } else {
+                                    localMap.remove(commonName); // ignore local
+                                }
+                                commonSet.remove(commonName);
                             }
-                            commonSet.remove(commonName);
                         }
-                    }
 
-                    BgJobGroup bgJobGroup = new BgJobGroup(application, null, null, new BgJobGroupCallback() {
-                        @Override
-                        public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
-                            session.disconnect();
-                            return false;
+                        BgJobGroup bgJobGroup = new BgJobGroup(application, null, null, new BgJobGroupCallback() {
+                            @Override
+                            public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                                session.disconnect();
+                                return false;
+                            }
+                        });
+                        for (String name : localMap.keySet()){
+                            if (!commonSet.contains(name)) {
+                                File f = new File(localFolder.getAbsolutePath()+"/"+name);
+                                bgJobGroup.addJob(new ScpUploadJob(session, localFolder, targetPrefix, f ));
+                            }
                         }
-                    });
-                    for (String name : localMap.keySet()){
-                        if (!commonSet.contains(name)) {
-                            File f = new File(localFolder.getAbsolutePath()+"/"+name);
-                            bgJobGroup.addJob(new ScpUploadJob(session, localFolder, targetPrefix, f ));
-                        }
-                    }
-                    String message = "SSH Sync Overview: tracks in sync: "+(total-bgJobGroup.size())+" tracks to upload: "+bgJobGroup.size();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+message);
-                    bgJobGroup.setConstructed(null);
-                }
+                        String message = "SSH Sync Overview: tracks in sync: "+(total-bgJobGroup.size())+" tracks to upload: "+bgJobGroup.size();
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+message);
+                        bgJobGroup.setConstructed(null);
+                    } // if (calcRemoteList(session, remoteMap, targetPrefix)){
+                } // try (Stream<Path> walk = Files.walk(localFolder.toPath())){
             } // fi - is connected to the right WLAN
-
-
         } catch (Throwable t) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), t);
-        }
-    }
-
-    private void calcLocalMap(Map<String, Long> map, File dir, String prefix, String match){
-        for (File f : dir.listFiles()){
-            if (f.isDirectory()){
-                calcLocalMap(map, f, prefix, match);
-            } else {
-                if (f.getName().matches(match)){
-                    String s1 = f.getAbsolutePath().replace(prefix, "");
-                    if (s1.startsWith("/") || s1.startsWith("\\")){
-                        s1 = s1.substring(1);
-                    }
-                    map.put(s1, f.lastModified()/1000);
-                }
-            }
         }
     }
 
