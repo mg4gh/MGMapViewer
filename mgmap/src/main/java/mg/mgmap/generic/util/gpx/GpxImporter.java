@@ -189,32 +189,43 @@ public class GpxImporter {
                         for (String part : text.split(",")){
                             String[] val = part.split("=");
                             if (val.length == 2){
-                                if (val[0].equals("wgs84ele") || val[0].equals("wgs84altitude")){
-                                    tlp.setWgs84ele( Float.parseFloat(val[1]) );
-                                }
-                                if (val[0].equals("nmeaEle") || val[0].equals("nmeaAltitude")){
-                                    tlp.setNmeaEle( Float.parseFloat(val[1]) );
-                                }
-                                if (val[0].equals("nmeaAcc") || val[0].equals("accuracy")){
-                                    tlp.setNmeaAcc( Float.parseFloat(val[1]) );
-                                }
-                                if (val[0].equals("pressure")){
-                                    tlp.setPressure( Float.parseFloat(val[1]) );
-                                }
-                                if (val[0].equals("pressureEle") || val[0].equals("presureAltitude")){
-                                    tlp.setPressureEle( Float.parseFloat(val[1]) );
-                                }
-                                if (val[0].equals("hgtEle") || val[0].equals("hgtAltitude")){
-                                    tlp.setHgtEle( Float.parseFloat(val[1]) );
-                                }
-                                if (val[0].equals("hgtEleAcc") || val[0].equals("hgtAltAcc")){
-                                    tlp.setHgtEleAcc( Float.parseFloat(val[1]) );
-                                }
-                                if (val[0].equals("nmeaEleAcc") || val[0].equals("altAccuracy")){
-                                    tlp.setNmeaEleAcc( Float.parseFloat(val[1]) );
-                                }
-                                if (val[0].equals("pressureEleAcc") || val[0].equals("pressureAltAccuracy")){
-                                    tlp.setPressureEleAcc( Float.parseFloat(val[1]) );
+                                assert tlp != null;
+                                switch (val[0]) {
+                                    case "wgs84ele":
+                                    case "wgs84altitude":
+                                        tlp.setWgs84ele(Float.parseFloat(val[1]));
+                                        break;
+                                    case "nmeaEle":
+                                    case "nmeaAltitude":
+                                        tlp.setNmeaEle(Float.parseFloat(val[1]));
+                                        break;
+                                    case "nmeaAcc":
+                                    case "accuracy":
+                                        tlp.setNmeaAcc(Float.parseFloat(val[1]));
+                                        break;
+                                    case "pressure":
+                                        tlp.setPressure(Float.parseFloat(val[1]));
+                                        break;
+                                    case "pressureEle":
+                                    case "presureAltitude":
+                                        tlp.setPressureEle(Float.parseFloat(val[1]));
+                                        break;
+                                    case "hgtEle":
+                                    case "hgtAltitude":
+                                        tlp.setHgtEle(Float.parseFloat(val[1]));
+                                        break;
+                                    case "hgtEleAcc":
+                                    case "hgtAltAcc":
+                                        tlp.setHgtEleAcc(Float.parseFloat(val[1]));
+                                        break;
+                                    case "nmeaEleAcc":
+                                    case "altAccuracy":
+                                        tlp.setNmeaEleAcc(Float.parseFloat(val[1]));
+                                        break;
+                                    case "pressureEleAcc":
+                                    case "pressureAltAccuracy":
+                                        tlp.setPressureEleAcc(Float.parseFloat(val[1]));
+                                        break;
                                 }
                             }
                         }

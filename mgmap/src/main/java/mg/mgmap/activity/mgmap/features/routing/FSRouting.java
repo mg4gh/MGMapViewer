@@ -25,6 +25,7 @@ import org.mapsforge.map.model.DisplayModel;
 import java.util.HashMap;
 import java.util.Observer;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
@@ -423,10 +424,12 @@ public class FSRouting extends FeatureService {
                 PointModel rtlpm = segment.get(bestMatch.getEndPointIndex());
                 RoutePointModel rpm = routingEngine.getRoutePointMap2().get(rtlpm);
                 PointModel mtlp = (rpm==null)?null:rpm.getMtlp();
-                WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-                TrackLogRefApproach mtlApproach = mtl.getBestPoint(mtlp, 1);
-                mtlApproach.setApproachPoint(bestMatch.getApproachPoint()); // take the approach point from the routing line
-                return mtlApproach;
+                if (mtlp != null){ // due to concurrent routing update actions the reference from the rtlpm to the mtlp might have failed
+                    WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+                    TrackLogRefApproach mtlApproach = mtl.getBestPoint(mtlp, 1);
+                    mtlApproach.setApproachPoint(bestMatch.getApproachPoint()); // take the approach point from the routing line
+                    return mtlApproach;
+                }
             }
         }
         return null;

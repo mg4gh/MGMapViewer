@@ -231,9 +231,13 @@ public class TrackLogStatistic {
                 } else {
                     loss -= diff;
                 }
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+String.format("+ Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d", sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
+                if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
+                    Log.v(MGMapApplication.LABEL, NameUtil.context()+String.format("+ Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d", sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
+                }
             } else {
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+String.format("- Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d", sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
+                if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
+                    Log.v(MGMapApplication.LABEL, NameUtil.context()+String.format("- Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d", sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
+                }
             }
         }
     }
