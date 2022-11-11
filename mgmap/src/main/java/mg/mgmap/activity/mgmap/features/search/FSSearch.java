@@ -151,7 +151,7 @@ public class FSSearch extends FeatureService {
         if (targetVisibility){
             if (searchView.getVisibility() == View.INVISIBLE){
                 try {
-                    String sProvider = getSharedPreferences().getString(getResources().getString(R.string.preference_choose_search_key), "Nominatim");
+                    String sProvider = getSharedPreferences().getString(getResources().getString(R.string.preference_choose_search_key), "Graphhopper");
                     setSearchProvider( (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+sProvider).newInstance() );
                 } catch (Exception e) {
                     Log.e(MGMapApplication.LABEL, NameUtil.context(),e);

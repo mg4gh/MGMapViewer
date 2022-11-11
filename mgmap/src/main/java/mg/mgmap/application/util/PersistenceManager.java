@@ -36,6 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
@@ -43,6 +44,7 @@ import mg.mgmap.generic.util.basic.NameUtil;
  */
 public class PersistenceManager {
 
+    private final MGMapApplication application;
     private final Context context;
 
 
@@ -65,8 +67,9 @@ public class PersistenceManager {
     private FileOutputStream fosRaw = null;
 
 
-    public PersistenceManager(Context context) {
-        this.context = context;
+    public PersistenceManager(MGMapApplication application) {
+        this.application = application;
+        this.context = application;
 
         baseDir = context.getExternalFilesDir(null);
         Log.i(MGMapApplication.LABEL, NameUtil.context() + " Default Storage: "+baseDir.getAbsolutePath());
@@ -104,6 +107,7 @@ public class PersistenceManager {
         searchConfigDir = createIfNotExists(configDir, "search");
         createFileIfNotExists(searchConfigDir, "POI.cfg");
         createFileIfNotExists(searchConfigDir, "Nominatim.cfg");
+        createGraphhopperCfgIfNotExists("Graphhopper.cfg");
         apkDir = createIfNotExists(appDir, "apk");
     }
 
@@ -503,4 +507,11 @@ public class PersistenceManager {
 
     }
 
+    void createGraphhopperCfgIfNotExists(String ghCfg){
+        try {
+            IOUtil.copyStreams( application.getAssets().open("graphhopper.log"), new FileOutputStream(new File(searchConfigDir, ghCfg)) );
+        } catch (IOException e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        }
+    }
 }
