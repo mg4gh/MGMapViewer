@@ -90,7 +90,7 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
 
     private ViewGroup dashboardRoute = null;
-    private volatile int refreshRequired = 0;
+    private final AtomicInteger refreshRequired = new AtomicInteger(0);
     private boolean runRouteCalcThread = true;
     private final MGMapApplication application;
     private MultiPointView dndVisualisationLayer = null;
@@ -111,42 +111,39 @@ public class FSRouting extends FeatureService {
                 }
             }
         });
-        new Thread(){
-            @Override
-            public void run() {
-                int lastRefreshRequired = refreshRequired;
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
-                while (runRouteCalcThread){
-                    try {
-                        synchronized (FSRouting.this){
-                            FSRouting.this.wait(100);
-                        }
-                        if (refreshRequired > 0){
-                            if (lastRefreshRequired == refreshRequired){ // no further refreshRequest within the last 100ms -> start calculation
-                                refreshRequired = 0;
-                                lastRefreshRequired = 0;
-                                updateRouting();
-                            } else {
-                                lastRefreshRequired = refreshRequired; // save current value of refreshRequired -> enable detection of further changes in next loop cycle
-                            }
-
-                        } else { //just to make sure, nothing is left
-                            if (dndVisualisationLayer != null){
-                                dndVisualisationLayer = null;
-                                doRefresh();
-                            }
-                        }
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        new Thread(() -> {
+            int lastRefreshRequired = refreshRequired.get();
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
+            while (runRouteCalcThread){
+                try {
+                    synchronized (FSRouting.this){
+                        FSRouting.this.wait(100);
                     }
+                    if (refreshRequired.get() > 0){
+                        if (lastRefreshRequired == refreshRequired.get()){ // no further refreshRequest within the last 100ms -> start calculation
+                            refreshRequired.set(0);
+                            lastRefreshRequired = 0;
+                            updateRouting();
+                        } else {
+                            lastRefreshRequired = refreshRequired.get(); // save current value of refreshRequired -> enable detection of further changes in next loop cycle
+                        }
+
+                    } else { //just to make sure, nothing is left
+                        if (dndVisualisationLayer != null){
+                            dndVisualisationLayer = null;
+                            doRefresh();
+                        }
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
             }
-        }.start();
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
+        }).start();
 
         application.markerTrackLogObservable.addObserver((o, arg) -> {
-            refreshRequired++; // refresh route calculation is required
+            refreshRequired.incrementAndGet(); // refresh route calculation is required
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
             synchronized (FSRouting.this){
                 FSRouting.this.notifyAll();
