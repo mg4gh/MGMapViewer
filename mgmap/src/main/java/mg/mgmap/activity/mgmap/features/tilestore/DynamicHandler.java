@@ -76,9 +76,11 @@ public class DynamicHandler {
                 }
             }
 
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+ " Map after init");
-            for (String key : map.keySet()){
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+" k="+key+" v="+map.get(key));
+            if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+ " Map after init");
+                for (String key : map.keySet()){
+                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" k="+key+" v="+map.get(key));
+                }
             }
 
 
@@ -133,9 +135,11 @@ public class DynamicHandler {
             Response response = call.execute();
 
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" rc="+response.code());
-            for (String s : response.headers().names()){
-                for (String v : response.headers(s)){
-                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" response header: "+s+": "+v);
+            if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
+                for (String s : response.headers().names()){
+                    for (String v : response.headers(s)){
+                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" response header: "+s+": "+v);
+                    }
                 }
             }
 

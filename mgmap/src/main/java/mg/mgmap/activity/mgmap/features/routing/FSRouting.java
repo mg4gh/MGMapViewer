@@ -383,7 +383,7 @@ public class FSRouting extends FeatureService {
 
         @Override
         public void optimizePosition(WriteablePointModel wpm, double threshold) {
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" pos="+wpm+" threshold="+threshold);
+            if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) Log.d(MGMapApplication.LABEL, NameUtil.context()+" pos="+wpm+" threshold="+threshold);
             TreeSet<ApproachModel> approaches = routingEngine.calcApproaches(wpm, (int)threshold);
             if (approaches.size() > 0){
                 PointModel pos = approaches.first().getApproachNode();

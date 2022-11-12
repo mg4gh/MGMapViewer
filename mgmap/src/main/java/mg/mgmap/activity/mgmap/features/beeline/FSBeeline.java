@@ -106,7 +106,7 @@ public class FSBeeline extends FeatureService {
             double beelineDistance = PointModelUtil.distance(pm, pmCenter);
             if (beelineDistance > 10.0){ //m
                 distance = beelineDistance;
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+" pm="+pm+" pmCenter="+pmCenter);
+                if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)) Log.v(MGMapApplication.LABEL, NameUtil.context()+" pm="+pm+" pmCenter="+pmCenter);
                 MultiPointModelImpl mpm = new MultiPointModelImpl().addPoint(pmCenter).addPoint(pm);
                 register( new MultiPointView(mpm, PAINT_BLACK_STROKE));
             }

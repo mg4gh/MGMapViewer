@@ -93,7 +93,6 @@ public class RouteOptimizer {
 
             for (int rIdx = 1; rIdx<route.size(); rIdx++){ //iterate over route parts - rIdx determines endpoint of part
                 rbBox.clear();
-                double dr = rdist[rIdx] - rdist[rIdx-1];
                 if (rpm.approachBBox.intersects( rbBox.extend(route.get(rIdx)).extend(route.get(rIdx-1))  )){ // ok, it might give a route match
                     for (ApproachModel approachModel : rpm.getApproaches()){
                         gFactory.validateApproachModel(approachModel); // renew node1 and node2, if GGraphTile was newly setup due to cache effect

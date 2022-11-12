@@ -147,7 +147,8 @@ public class TurningInstructionService {
     private void checkHints(TrackLogRefApproach bestMatch){
         int abstand = (int)bestMatch.getDistance();
         StringBuilder text = new StringBuilder();
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+"SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
+        if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG))
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+"SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
 
         PointModel lastPm = bestMatch.getApproachPoint();
         double routeDistance = 0;
@@ -161,7 +162,8 @@ public class TurningInstructionService {
 
                 double courseDegree = PointModelUtil.calcDegree( segment.get(bestMatch.getEndPointIndex()-1), bestMatch.getApproachPoint() , pmx );
                 int courseClock = PointModelUtil.clock4degree( courseDegree );
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
+                if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG))
+                    Log.d(MGMapApplication.LABEL, NameUtil.context()+" Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
                 if (((0 < courseDegree) && (courseDegree < 150)) || ((210 < courseDegree) && (courseDegree < 360))) {
                     if (text.length() > 0 ){ // add Kurs only, if there is a hint
                         text.append(" Kurs ").append(courseClock).append(" Uhr");
@@ -179,7 +181,8 @@ public class TurningInstructionService {
                 hint = epm.getExtent();
             }
             if (hint != null){
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
+                if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG))
+                    Log.d(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
                         +" l="+PointModelUtil.clock4degree(hint.nextLeftDegree)+" r="+PointModelUtil.clock4degree(hint.nextRightDegree));
                 int clock = PointModelUtil.clock4degree(hint.directionDegree);
                 if ((hint.numberOfPathes > 2) && (clock >= 0)){
