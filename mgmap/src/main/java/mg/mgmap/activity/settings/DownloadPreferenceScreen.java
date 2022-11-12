@@ -101,7 +101,11 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                             PersistenceManager persistenceManager = application.getPersistenceManager();
                             persistenceManager.cleanApkDir();
                             zipper.unpack(url, persistenceManager.getApkDir(), null, this);
-                            verifyAndInstall(context, persistenceManager);
+                            if (verifyAndInstall(context, persistenceManager)) {
+                                bgJobGroup.setTitle(null);
+                            } else {
+                                throw new Exception("APK Download not successful.");
+                            }
                         }
                     };
                     bgJobGroup.addJob(job);
