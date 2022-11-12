@@ -66,7 +66,7 @@ public class FSRouting extends FeatureService {
     private static final int ZOOM_LEVEL_RELAXED_VISIBILITY = 17;
 
     private final HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
-    final RoutingEngine routingEngine;
+    private final RoutingEngine routingEngine;
     private final RoutingContext interactiveRoutingContext = new RoutingContext(
             10000,
             false, // no extra snap, since FSMarker snaps point zoom level dependent
@@ -105,7 +105,7 @@ public class FSRouting extends FeatureService {
         prefMapMatching.addObserver((o, arg) -> {
             TrackLog selectedTrackLog = getApplication().availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
             if (selectedTrackLog != null){
-                synchronized (FSRouting.this){
+                synchronized (routingEngine){
                     fsMarker.createMarkerTrackLog(selectedTrackLog);
                     optimize();
                 }
@@ -258,7 +258,9 @@ public class FSRouting extends FeatureService {
         WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
             Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
-            rotl = routingEngine.updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
+            synchronized (routingEngine){
+                rotl = routingEngine.updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
+            }
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
         }
         application.routeTrackLogObservable.setTrackLog(rotl);
@@ -324,22 +326,26 @@ public class FSRouting extends FeatureService {
         }
     }
 
-    synchronized void optimize(){ // needs to be reworked
-        routingEngine.setRoutingContext( new RoutingContext(1000, false, 10, PointModelUtil.getCloseThreshold()) );
-        WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-        RouteOptimizer ro = new RouteOptimizer(getActivity().getGGraphTileFactory(), routingEngine);
-        ro.optimize(mtl);
-        routingEngine.setRoutingContext( new RoutingContext(1000, true, 3, PointModelUtil.getCloseThreshold()) );
-        updateRouting();
+    void optimize(){ // needs to be reworked
+        synchronized (routingEngine){
+            routingEngine.setRoutingContext( new RoutingContext(1000, false, 10, PointModelUtil.getCloseThreshold()) );
+            WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+            RouteOptimizer ro = new RouteOptimizer(getActivity().getGGraphTileFactory(), routingEngine);
+            ro.optimize(mtl);
+            routingEngine.setRoutingContext( new RoutingContext(1000, true, 3, PointModelUtil.getCloseThreshold()) );
+            updateRouting();
 //        application.markerTrackLogObservable.changed();
-        routingEngine.setRoutingContext(interactiveRoutingContext);
+            routingEngine.setRoutingContext(interactiveRoutingContext);
+        }
     }
 
-    public synchronized void optimize2(TrackLog trackLog){
-        routingEngine.setRoutingContext( new RoutingContext(10000, true, 3, PointModelUtil.getCloseThreshold()) );
-        RouteOptimizer2 ro = new RouteOptimizer2(getActivity().getGGraphTileFactory(), routingEngine);
-        ro.optimize(trackLog);
-        routingEngine.setRoutingContext(interactiveRoutingContext);
+    public void optimize2(TrackLog trackLog){
+        synchronized (routingEngine){
+            routingEngine.setRoutingContext( new RoutingContext(10000, true, 3, PointModelUtil.getCloseThreshold()) );
+            RouteOptimizer2 ro = new RouteOptimizer2(getActivity().getGGraphTileFactory(), routingEngine);
+            ro.optimize(trackLog);
+            routingEngine.setRoutingContext(interactiveRoutingContext);
+        }
     }
 
     public class RoutingControlLayer extends MVLayer {
