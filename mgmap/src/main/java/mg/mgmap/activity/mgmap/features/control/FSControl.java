@@ -99,7 +99,10 @@ public class FSControl extends FeatureService {
         super(activity);
 
         ttRefreshTime = 10;
-        prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue()));
+        prefFullscreen.addObserver((o, arg) -> {
+            FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue());
+            getControlView().setVerticalDashboardOffset(prefFullscreen.getValue());
+        });
         triggerHome.addObserver(homeObserver);
         prefQcs.addObserver(refreshObserver);
         triggerSettings.addObserver(settingsPrefObserver);

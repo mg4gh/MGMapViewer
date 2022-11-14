@@ -92,20 +92,20 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         // if the render theme has a style menu, its data is delivered via the intent
         renderthemeOptions = (XmlRenderThemeStyleMenu) getIntent().getSerializableExtra(getResources().getString(R.string.my_rendertheme_menu_key));
 
-        ViewGroup qcs = findViewById(R.id.tsa_qc);
-        ControlView.createQuickControlETV(qcs)
-                .setData(R.drawable.back)
-                .setOnClickListener(createBackOCL());
-        ControlView.createQuickControlETV(qcs)
-                .setData(R.drawable.home)
-                .setOnClickListener(createHomeOCL());
+//        ViewGroup qcs = findViewById(R.id.tsa_qc);
+//        ControlView.createQuickControlETV(qcs)
+//                .setData(R.drawable.back)
+//                .setOnClickListener(createBackOCL());
+//        ControlView.createQuickControlETV(qcs)
+//                .setData(R.drawable.home)
+//                .setOnClickListener(createHomeOCL());
     }
-    private View.OnClickListener createBackOCL(){
-        return v -> ThemeSettings.this.onBackPressed();
-    }
-    private View.OnClickListener createHomeOCL() {
-        return v -> HomeObserver.launchHomeScreen(this);
-    }
+//    private View.OnClickListener createBackOCL(){
+//        return v -> ThemeSettings.this.onBackPressed();
+//    }
+//    private View.OnClickListener createHomeOCL() {
+//        return v -> HomeObserver.launchHomeScreen(this);
+//    }
 
     public static class ThemeSettingsFragment extends PreferenceFragmentCompat {
         @Override

@@ -71,20 +71,20 @@ public class SettingsActivity extends AppCompatActivity implements
                 .beginTransaction()
                 .replace(R.id.settings, pfc )
                 .commit();
-        ViewGroup qcs = findViewById(R.id.sa_qc);
-        ControlView.createQuickControlETV(qcs)
-                .setData(R.drawable.back)
-                .setOnClickListener(createBackOCL());
-        ControlView.createQuickControlETV(qcs)
-                .setData(R.drawable.home)
-                .setOnClickListener(createHomeOCL());
+//        ViewGroup qcs = findViewById(R.id.sa_qc);
+//        ControlView.createQuickControlETV(qcs)
+//                .setData(R.drawable.back)
+//                .setOnClickListener(createBackOCL());
+//        ControlView.createQuickControlETV(qcs)
+//                .setData(R.drawable.home)
+//                .setOnClickListener(createHomeOCL());
     }
-    private View.OnClickListener createBackOCL(){
-        return v -> SettingsActivity.this.onBackPressed();
-    }
-    private View.OnClickListener createHomeOCL() {
-        return v -> HomeObserver.launchHomeScreen(this);
-    }
+//    private View.OnClickListener createBackOCL(){
+//        return v -> SettingsActivity.this.onBackPressed();
+//    }
+//    private View.OnClickListener createHomeOCL() {
+//        return v -> HomeObserver.launchHomeScreen(this);
+//    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {

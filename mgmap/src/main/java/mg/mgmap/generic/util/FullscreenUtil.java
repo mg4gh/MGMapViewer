@@ -16,13 +16,20 @@ package mg.mgmap.generic.util;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.NameUtil;
 
 public class FullscreenUtil {
 
@@ -44,14 +51,36 @@ public class FullscreenUtil {
     }
 
     public static void setFullscreen(Activity activity) {
-        int newUiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
-        newUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        newUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        newUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        activity.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        if (activity instanceof MGMapActivity){
+            int newUiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
+            newUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            newUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            newUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            activity.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                activity.getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+//                activity.getWindow().setStatusBarColor(0x80FFFFFF);
+                activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            }
+        } else {
+            hideFullscreen(activity);
+        }
     }
 
     public static void hideFullscreen(Activity activity) {
+        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (activity instanceof MGMapActivity) {
+//            activity.getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+                activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            } else {
+                activity.getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            }
+        }
         int newUiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
         newUiOptions &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         newUiOptions &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;

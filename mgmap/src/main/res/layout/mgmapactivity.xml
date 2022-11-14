@@ -21,11 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/menuBase"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
         <TableLayout
             android:id="@+id/base"
             android:layout_width="match_parent"
@@ -64,6 +59,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </TableRow>
             <TableRow
+                android:id="@+id/tr_spacer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp">

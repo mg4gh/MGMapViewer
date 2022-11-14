@@ -14,8 +14,11 @@
  */
 package mg.mgmap.activity.mgmap;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -83,8 +86,7 @@ public class ControlView extends RelativeLayout {
     TextView tv_enlarge = null;
     EnlargeControl enlargeControl = null;
 
-//    private final Map<View, ArrayList<View>> submenuMap = new HashMap<>();
-//    private final Map<View, Control> menuControlMap = new HashMap<>();
+    private int statusBarHeight;
 
     public ControlView(Context context) {
         super(context);
@@ -127,8 +129,8 @@ public class ControlView extends RelativeLayout {
 
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
             dashboard = findViewById(R.id.dashboard);
-
             controlComposer.composeDashboard(application, activity, this);
+            statusBarHeight = getStatusBarHeight(activity);
 
             controlComposer.composeAlphaSlider(application,activity,this);
             controlComposer.composeAlphaSlider2(application,activity,this);
@@ -144,6 +146,28 @@ public class ControlView extends RelativeLayout {
         } catch (Exception e){
             Log.e(MGMapApplication.LABEL, NameUtil.context()+"", e);
         }
+    }
+
+    public void setVerticalDashboardOffset(boolean fullscreenMode){
+        RelativeLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0,fullscreenMode?0:statusBarHeight,0,0);
+        dashboard.setLayoutParams(params);
+    }
+
+
+    private static int getStatusBarHeight(Activity activity) {
+        int height;
+        Resources myResources = activity.getResources();
+        @SuppressLint("InternalInsetResource")
+        int idStatusBarHeight = myResources.getIdentifier( "status_bar_height", "dimen", "android");
+        if (idStatusBarHeight > 0) {
+            height = activity.getResources().getDimensionPixelSize(idStatusBarHeight);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+ "Status Bar Height = " + height+ " "+ ControlView.dp(24));
+        } else {
+            height = 0;
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+ "Resources not found, status bar height set to 0");
+        }
+        return height;
     }
 
 // *************************************************************************************************
