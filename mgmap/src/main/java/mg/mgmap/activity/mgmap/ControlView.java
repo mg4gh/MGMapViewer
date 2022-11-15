@@ -47,6 +47,7 @@ import mg.mgmap.R;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.activity.mgmap.util.EnlargeControl;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
@@ -87,6 +88,7 @@ public class ControlView extends RelativeLayout {
     EnlargeControl enlargeControl = null;
 
     private int statusBarHeight;
+    Pref<String> prefVerticalDashboardFullscreenOffset;
 
     public ControlView(Context context) {
         super(context);
@@ -131,6 +133,11 @@ public class ControlView extends RelativeLayout {
             dashboard = findViewById(R.id.dashboard);
             controlComposer.composeDashboard(application, activity, this);
             statusBarHeight = getStatusBarHeight(activity);
+            prefVerticalDashboardFullscreenOffset = activity.getPrefCache().get(R.string.preferences_disp_dashb_fs_offset_key, ""+statusBarHeight);
+            prefVerticalDashboardFullscreenOffset.addObserver((observable, o) -> {
+                setVerticalDashboardOffset( activity.getPrefCache().get(R.string.FSControl_qcFullscreenOn, true).getValue() );
+            });
+
 
             controlComposer.composeAlphaSlider(application,activity,this);
             controlComposer.composeAlphaSlider2(application,activity,this);
@@ -150,12 +157,20 @@ public class ControlView extends RelativeLayout {
 
     public void setVerticalDashboardOffset(boolean fullscreenMode){
         RelativeLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0,fullscreenMode?0:statusBarHeight,0,0);
+        int offset = statusBarHeight;
+        if (fullscreenMode){
+            try{
+                offset = Integer.parseInt(prefVerticalDashboardFullscreenOffset.getValue());
+            } catch (NumberFormatException e) {
+                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            }
+        }
+        params.setMargins(0, offset,0,0);
         dashboard.setLayoutParams(params);
     }
 
 
-    private static int getStatusBarHeight(Activity activity) {
+    public static int getStatusBarHeight(Activity activity) {
         int height;
         Resources myResources = activity.getResources();
         @SuppressLint("InternalInsetResource")

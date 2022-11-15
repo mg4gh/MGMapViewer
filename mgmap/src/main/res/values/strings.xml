@@ -67,8 +67,13 @@
 
 
 
+    <string name="preferences_cat_disp_title">Display settings</string>
     <string name="preferences_cat_gl_title">Gain/Loss settings</string>
     <string name="preferences_cat_dev_title">Developer settings</string>
+
+    <string name="preferences_disp_dashb_fs_offset_key">pref_dashboard_vertical_fs_offset</string>
+    <string name="preferences_disp_dashb_fs_offset_title">Dashboard vertical fullscreen offset</string>
+    <string name="preferences_disp_dashb_fs_offset_desc">Vertical offset of dashboard in fullscreen mode (useful in case of notch).</string>
 
     <string name="preferences_hprof_gl_key">hprof_gl</string>
     <string name="preferences_hprof_gl_title">Ascent height profile</string>

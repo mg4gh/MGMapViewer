@@ -37,6 +37,22 @@
             />
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:title="@string/preferences_cat_disp_title"
+        app:iconSpaceReserved="false"
+        >
+        <EditTextPreference
+            app:defaultValue="-1"
+            app:key="@string/preferences_disp_dashb_fs_offset_key"
+            app:dialogTitle="@string/preferences_disp_dashb_fs_offset_title"
+            app:dialogMessage="@string/preferences_disp_dashb_fs_offset_desc"
+            android:inputType="number"
+            app:summary="@string/preferences_disp_dashb_fs_offset_desc"
+            app:title="@string/preferences_disp_dashb_fs_offset_title"
+            app:iconSpaceReserved="false"
+            />
+
+    </PreferenceCategory>
 
     <PreferenceCategory
         app:title="@string/preferences_cat_gl_title"

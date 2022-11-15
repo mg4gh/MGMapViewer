@@ -140,7 +140,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         return mapLayerFactory;
     }
     public ControlView getControlView(){
-        return (ControlView) findViewById(R.id.controlView);
+        return findViewById(R.id.controlView);
     }
 
     SharedPreferences getSharedPreferences(){
