@@ -48,7 +48,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
     protected MapView mapView;
     protected PreferencesFacade preferencesFacade;
     protected SharedPreferences sharedPreferences;
-    protected List<TileCache> tileCaches = new ArrayList<TileCache>();
+    protected List<TileCache> tileCaches = new ArrayList<>();
     protected List<String> recreatePreferences;
 
     @Override
@@ -125,15 +125,12 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
         // Some preference changes take effect due to activity restart - those need to be listed in recreatePreferences
         if (recreatePreferences.contains(key)){
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key).toString());
-                    for (TileCache tileCache : tileCaches) {
-                        tileCache.purge();
-                    }
-                    MapViewerBase.this.recreate(); // restart activity
+            new Handler().postDelayed(() -> {
+                Log.i(MGMapApplication.LABEL, NameUtil.context() + " recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key));
+                for (TileCache tileCache : tileCaches) {
+                    tileCache.purge();
                 }
+                MapViewerBase.this.recreate(); // restart activity
             }, 100);
         }
     }

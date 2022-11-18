@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.util;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -43,7 +45,7 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Pref<?> pref = prefMap.get(key);
         if (pref != null){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " context="+context.getClass().getSimpleName() + " key="+key+" value="+ sharedPreferences.getAll().get(key).toString());
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + " context="+context.getClass().getSimpleName() + " key="+key+" value="+ sharedPreferences.getAll().get(key));
             pref.onSharedPreferenceChanged();
         }
     }
@@ -74,9 +76,19 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
         TreeSet<String> keys = new TreeSet<>(prefMap.keySet());
         for (String key : keys ){
             Pref<?> pref = prefMap.get(key);
-            sPrefs.append(pref.toString()).append("\n");
+            if (pref != null){
+                sPrefs.append(pref).append("\n");
+            }
         }
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sPrefs);
     }
 
+    public static PrefCache getApplicationPrefCache(Activity activity){
+        Application application = activity.getApplication();
+        if (application instanceof MGMapApplication) {
+            MGMapApplication mgMapApplication = (MGMapApplication) application;
+            return mgMapApplication.getPrefCache();
+        }
+        return null;
+    }
 }

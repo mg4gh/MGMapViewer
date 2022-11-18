@@ -410,6 +410,10 @@ public class MGMapApplication extends Application {
         return trackStatisticFilter;
     }
 
+    public PrefCache getPrefCache(){
+        return prefCache;
+    }
+
     public synchronized void addBgJob(BgJob job){
         if (job == null) return;
         if (!bgJobs.isEmpty()){

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hintInitialMapDownload">hint_initial_map_download_key</string>
+    <string name="hintInitialMapDownload2">hint_initial_map_download2_key</string>
+
+</resources>

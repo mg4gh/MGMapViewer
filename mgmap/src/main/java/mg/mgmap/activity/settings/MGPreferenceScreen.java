@@ -14,37 +14,47 @@
  */
 package mg.mgmap.activity.settings;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.hints.AbstractHint;
+import mg.mgmap.generic.util.hints.HintUtil;
 
 public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
 
-    protected void setIntent(int resId, Intent intent){
+    protected void setIntent(int resId, Intent intent, AbstractHint hint){
         Preference preference = findPreference( getResources().getString(resId) );
-        if (preference != null){
-            preference.setIntent( intent );
-            preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+intent.getDataString());
-                    return false;
+        final Activity activity = getActivity();
+        if ((preference != null) && (activity != null)){
+            if (hint != null){
+                hint.addGotItAction(() -> activity.startActivity(intent));
+            }
+            preference.setOnPreferenceClickListener(preference1 -> {
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+intent.getDataString());
+                if (!HintUtil.showHint(hint)){
+                    activity.startActivity(intent);
                 }
+                return true;
             });
         }
     }
 
-    protected void setBrowseIntent(int resId, int uriId){
+    protected void setBrowseIntent(int resId, int uriId, AbstractHint hint){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(uriId)));
-        setIntent(resId, browserIntent);
+        setIntent(resId, browserIntent, hint);
     }
 
-
+    protected void setBrowseIntent(int resId, int uriId){
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(uriId)));
+        setIntent(resId, browserIntent, null);
+    }
 
 }

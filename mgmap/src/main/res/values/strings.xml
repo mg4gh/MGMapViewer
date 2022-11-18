@@ -65,6 +65,9 @@
     <string name="preferences_screen_further_title">Further Settings</string>
     <string name="preferences_screen_further_desc">Further Mapsforge, Gain/Loss and Developer Settings</string>
 
+    <string name="preferences_hints_key">pref_hints_key</string>
+    <string name="preferences_hints_title">Hints</string>
+    <string name="preferences_hints_desc">Show hints as popup dialog.</string>
 
 
     <string name="preferences_cat_disp_title">Display settings</string>
