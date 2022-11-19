@@ -41,12 +41,12 @@ public class MapDataStoreUtil implements WayProvider {
 
 
 
-    public MapDataStoreUtil onCreate(MGMapLayerFactory mapLayerFactory, SharedPreferences sharedPreferences, ArrayList<String> mapLayerKeys){
+    public MapDataStoreUtil onCreate(MGMapLayerFactory mapLayerFactory, SharedPreferences sharedPreferences){
         mapBBoxList = new ArrayList<>();
         mapDataStoreList = new ArrayList<>();
         tile2MapDataStore = new HashMap<>();
 
-        for (String prefKey : mapLayerKeys){
+        for (String prefKey : mapLayerFactory.getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "none");
 
             Layer layer = mapLayerFactory.getMapLayer(key);

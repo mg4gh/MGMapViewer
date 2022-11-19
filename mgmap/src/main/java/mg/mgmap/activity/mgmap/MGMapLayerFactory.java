@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.mgmap;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -35,7 +36,7 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -67,6 +68,21 @@ public class MGMapLayerFactory {
 
     public static final String XML_CONFIG_NAME = "config.xml";
 
+    public static ArrayList<String> getMapLayerKeys(Context context){
+        ArrayList<String> mapLayerKeys = new ArrayList<>();
+        int[] prefIds = new int[]{
+                R.string.Layers_pref_chooseMap1_key,
+                R.string.Layers_pref_chooseMap2_key,
+                R.string.Layers_pref_chooseMap3_key,
+                R.string.Layers_pref_chooseMap4_key,
+                R.string.Layers_pref_chooseMap5_key};
+        for (int id : prefIds){
+            mapLayerKeys.add( context.getResources().getString( id ));
+        }
+        return mapLayerKeys;
+    }
+
+
     public enum Types { MAPSFORGE, MAPSTORES, MAPONLINE, MAPGRID }
     private final HashMap<String, Layer> mapLayers = new HashMap<>();
 
@@ -80,6 +96,9 @@ public class MGMapLayerFactory {
         xmlRenderTheme = activity.getRenderTheme();
     }
 
+    public ArrayList<String> getMapLayerKeys() {
+        return getMapLayerKeys(activity);
+    }
 
     /** create a Layer object from corresponding key */
     public Layer getMapLayer(String key){
@@ -216,7 +235,7 @@ public class MGMapLayerFactory {
         return (layer instanceof TileLayer) || (layer instanceof Grid);
     }
 
-    public Collection<Layer> getMapLayers(){
-        return mapLayers.values();
+    public Map<String, Layer> getMapLayers(){
+        return mapLayers;
     }
 }

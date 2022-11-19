@@ -22,7 +22,6 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.Observer;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.atl.FSAvailableTrackLogs;
 import mg.mgmap.activity.mgmap.features.control.FSControl;
@@ -43,7 +42,7 @@ import mg.mgmap.generic.view.ExtendedTextView;
 public class ControlComposer {
 
 
-    void composeDashboard(MGMapApplication application, MGMapActivity activity, ControlView coView){
+    void composeDashboard(MGMapActivity activity, ControlView coView){
         activity.getFS(FSRecordingTrackLog.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "rtl");
         activity.getFS(FSRecordingTrackLog.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "rtls");
         activity.getFS(FSAvailableTrackLogs.class).initDashboard( composeDashboardEntry(coView, coView.createDashboardEntry() ), "stl");
@@ -61,9 +60,9 @@ public class ControlComposer {
         return dashboardEntry;
     }
 
-    void composeAlphaSlider(MGMapApplication application, MGMapActivity activity, ControlView coView){
+    void composeAlphaSlider(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.bars);
-        for (String prefKey : activity.getMapLayerKeys()) {
+        for (String prefKey : activity.getMapLayerFactory().getMapLayerKeys()) {
             final String key = activity.sharedPreferences.getString(prefKey, "");
             if (activity.getMapLayerFactory().hasAlpha(key)){
                 Pref<Boolean> visibility = new Pref<>("alpha_" + key+"_visibility", true, null);
@@ -73,7 +72,7 @@ public class ControlComposer {
         parent.setVisibility(View.INVISIBLE);
     }
 
-    void composeAlphaSlider2(MGMapApplication application, MGMapActivity activity, ControlView coView){
+    void composeAlphaSlider2(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.bars2);
         activity.getFS(FSRecordingTrackLog.class).initLabeledSlider(coView.createLabeledSlider(parent), "rtl");
         activity.getFS(FSMarker.class).initLabeledSlider(coView.createLabeledSlider(parent), "mtl");
@@ -83,7 +82,7 @@ public class ControlComposer {
         parent.setVisibility(View.INVISIBLE);
     }
 
-    void composeStatusLine(MGMapApplication application, MGMapActivity activity, ControlView coView){
+    void composeStatusLine(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.tr_states);
         activity.getFS(FSBeeline.class).initStatusLine(coView.createStatusLineETV(parent, 20), "center");
         activity.getFS(FSBeeline.class).initStatusLine(coView.createStatusLineETV(parent, 10), "zoom");
@@ -94,7 +93,7 @@ public class ControlComposer {
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "bat");
     }
 
-    void composeQuickControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
+    void composeQuickControls(MGMapActivity activity, ControlView coView) {
         Pref<Boolean> prefEditMarkerTrack = activity.getPrefCache().get(R.string.FSMarker_qc_EditMarkerTrack, false);
         Pref<Boolean> prefRoutingHints = activity.getPrefCache().get(R.string.FSRouting_qc_RoutingHint, false);
         Pref<Integer> prefQcs = activity.getPrefCache().get(R.string.FSControl_qc_selector, 0);
@@ -183,7 +182,7 @@ public class ControlComposer {
         return activity.getFS(clazz).initQuickControl(ControlView.createQuickControlETV(viewGroup), info).addActionObserver(grObserver);
     }
 
-    public void composeHelpControls(MGMapApplication application, MGMapActivity activity, ControlView coView) {
+    public void composeHelpControls(MGMapActivity activity, ControlView coView) {
         LinearLayout help = activity.findViewById(R.id.help);
         LinearLayout help1 = coView.createHelpPanel(help, Gravity.CENTER, 0);
         activity.getFS(FSControl.class).initHelpControl(coView.createHelpText1(help1), "help1");

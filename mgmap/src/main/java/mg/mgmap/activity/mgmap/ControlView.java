@@ -131,7 +131,7 @@ public class ControlView extends RelativeLayout {
 
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
             dashboard = findViewById(R.id.dashboard);
-            controlComposer.composeDashboard(application, activity, this);
+            controlComposer.composeDashboard(activity, this);
             statusBarHeight = getStatusBarHeight(activity);
             prefVerticalDashboardFullscreenOffset = activity.getPrefCache().get(R.string.preferences_disp_dashb_fs_offset_key, ""+statusBarHeight);
             prefVerticalDashboardFullscreenOffset.addObserver((observable, o) -> {
@@ -139,17 +139,17 @@ public class ControlView extends RelativeLayout {
             });
 
 
-            controlComposer.composeAlphaSlider(application,activity,this);
-            controlComposer.composeAlphaSlider2(application,activity,this);
+            controlComposer.composeAlphaSlider(activity,this);
+            controlComposer.composeAlphaSlider2(activity,this);
             registerSliderObserver(); // do this after the init call, which set the visibility prefs
             reworkLabeledSliderVisibility();
 
-            controlComposer.composeStatusLine(application, activity, this);
+            controlComposer.composeStatusLine(activity, this);
             finalizeStatusLine();
 
-            controlComposer.composeQuickControls(application, activity, this);
+            controlComposer.composeQuickControls(activity, this);
 
-            controlComposer.composeHelpControls(application, activity, this);
+            controlComposer.composeHelpControls(activity, this);
         } catch (Exception e){
             Log.e(MGMapApplication.LABEL, NameUtil.context()+"", e);
         }
@@ -377,7 +377,7 @@ public class ControlView extends RelativeLayout {
     void reworkStatusLine(){
         int cntVisible = 0;
         for (TextView tv : tvList){
-            boolean shouldBeVisible = (tv.getText() != null) && (!("".equals(tv.getText()) ) && (cntVisible < 5));
+            boolean shouldBeVisible = (tv.getText() != null) && (!("".contentEquals(tv.getText()) ) && (cntVisible < 5));
             boolean isVisible = (tv.getParent() != null);
             if (shouldBeVisible && !isVisible){
                 tr_states.addView(tv, cntVisible);

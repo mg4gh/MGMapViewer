@@ -15,16 +15,28 @@
 package mg.mgmap.activity.settings;
 
 import android.os.Bundle;
+import android.util.Log;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.MGMapLayerFactory;
+import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.HintUtil;
-import mg.mgmap.generic.util.hints.MapLayerAssignment;
+import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
 
 public class MapLayersPreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.map_layers_preferences, rootKey);
-        HintUtil.showHint( new MapLayerAssignment(getActivity()) );
+        try {
+            List<String> mapKeys = MGMapLayerFactory.getMapLayerKeys(getContext()).stream().map(key->findPreference(key).getSummary().toString()).collect(Collectors.toList());
+            HintUtil.showHint( new HintMapLayerAssignment(getActivity(), mapKeys) );
+        } catch (Exception e) {
+            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+        }
     }
 
 }

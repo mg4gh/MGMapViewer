@@ -66,6 +66,7 @@
             app:title="@string/preferences_hints_title"
             app:summary="@string/preferences_hints_desc"
             app:iconSpaceReserved="false"
+            app:defaultValue="true"
             />
 
         <Preference

@@ -39,7 +39,7 @@ import mg.mgmap.generic.util.HomeObserver;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.AbstractHint;
-import mg.mgmap.generic.util.hints.InitialMapDownload;
+import mg.mgmap.generic.util.hints.HintInitialMapDownload;
 import mg.mgmap.generic.view.ExtendedTextView;
 
 public class FSControl extends FeatureService {
@@ -146,7 +146,7 @@ public class FSControl extends FeatureService {
             getActivity().findViewById(R.id.help).setVisibility(iVis);
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" change help Visibility to "+ prefHelp.getValue());
         });
-        hintInitialMapDownload = new InitialMapDownload(getActivity());
+        hintInitialMapDownload = new HintInitialMapDownload(getActivity());
     }
 
     public void initQcss(ViewGroup[] qcss){

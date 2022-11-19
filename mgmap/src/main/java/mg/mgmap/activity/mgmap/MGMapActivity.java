@@ -181,7 +181,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         initMapView();
         createLayers();
 
-        mapDataStoreUtil = new MapDataStoreUtil().onCreate(mapLayerFactory, sharedPreferences, getMapLayerKeys());
+        mapDataStoreUtil = new MapDataStoreUtil().onCreate(mapLayerFactory, sharedPreferences);
         initializePosition(mapView.getModel().mapViewPosition);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
@@ -625,24 +625,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
 
-    public ArrayList<String> getMapLayerKeys(){
-        ArrayList<String> mapLayerKeys = new ArrayList<>();
-        int[] prefIds = new int[]{
-                R.string.Layers_pref_chooseMap1_key,
-                R.string.Layers_pref_chooseMap2_key,
-                R.string.Layers_pref_chooseMap3_key,
-                R.string.Layers_pref_chooseMap4_key,
-                R.string.Layers_pref_chooseMap5_key};
-        for (int id : prefIds){
-            mapLayerKeys.add( getResources().getString( id ));
-        }
-        return mapLayerKeys;
-    }
-
     /** Depending on the preferences for the five map layers the corresponding layer object are created. */
     protected void createLayers() {
         Layers layers = mapView.getLayerManager().getLayers();
-        for (String prefKey : getMapLayerKeys()){
+        for (String prefKey : mapLayerFactory.getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" prefKey="+prefKey+" key="+key);
             Layer layer = mapLayerFactory.getMapLayer(key);

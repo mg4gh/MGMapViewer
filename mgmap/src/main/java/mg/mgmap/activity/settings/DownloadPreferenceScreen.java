@@ -46,7 +46,7 @@ import mg.mgmap.generic.util.SHA256;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Zipper;
-import mg.mgmap.generic.util.hints.InitialMapDownload2;
+import mg.mgmap.generic.util.hints.HintInitialMapDownload2;
 
 public class DownloadPreferenceScreen extends MGPreferenceScreen {
 
@@ -60,7 +60,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
     public void onResume() {
         super.onResume();
 
-        InitialMapDownload2 hint = new InitialMapDownload2(getActivity());
+        HintInitialMapDownload2 hint = new HintInitialMapDownload2(getActivity());
         setBrowseIntent(R.string.preferences_dl_maps_wd_key, R.string.url_oam_dl, hint);
         setBrowseIntent(R.string.preferences_dl_maps_eu_key, R.string.url_oam_dl_eu, hint);
         setBrowseIntent(R.string.preferences_dl_maps_de_key, R.string.url_oam_dl_de, hint);

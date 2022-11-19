@@ -19,10 +19,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AlertDialogLayout;
 import androidx.core.content.res.ResourcesCompat;
 
-import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.Pref;
-import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class HintUtil {
@@ -35,8 +32,7 @@ public class HintUtil {
             String headline = hint.getHeadline();
             String hintText = hint.getText();
 
-            Pref<Boolean> prefShowHints = PrefCache.getApplicationPrefCache(activity).get(activity.getResources().getString(R.string.preferences_hints_key), true);
-            if (prefShowHints.getValue() && hint.checkHintCondition()) {
+            if (hint.checkHintCondition()) {
 
                 LinearLayout ll = new LinearLayout(activity);
                 ll.setLayoutParams(new AlertDialogLayout.LayoutParams(-2, -2));
@@ -73,35 +69,64 @@ public class HintUtil {
                 tv.setText(string);
                 ll.addView(tv);
 
-                LinearLayout ll2 = new LinearLayout(activity);
-                ll2.setLayoutParams(new AlertDialogLayout.LayoutParams(-2, -2));
-                ll2.setPadding(20, 20, 20, 20);
-                ll2.setOrientation(LinearLayout.HORIZONTAL);
-                ll.addView(ll2);
+                CheckBox cbHideThis = new CheckBox(activity);
+                cbHideThis.setChecked(!hint.prefShowHint.getValue() || hint.showOnce);
+                {
+                    LinearLayout ll2 = new LinearLayout(activity);
+                    ll2.setLayoutParams(new AlertDialogLayout.LayoutParams(-2, -2));
+                    ll2.setPadding(20, 20, 20, 20);
+                    ll2.setOrientation(LinearLayout.HORIZONTAL);
+                    ll.addView(ll2);
 
-                CheckBox cb = new CheckBox(activity);
-                LinearLayout.LayoutParams paramsCB = new LinearLayout.LayoutParams(0, -2);
-                paramsCB.weight = 10;
-                paramsCB.gravity = Gravity.CENTER;
-                cb.setLayoutParams(paramsCB);
-                ll2.addView(cb);
+                    LinearLayout.LayoutParams paramsCB = new LinearLayout.LayoutParams(0, -2);
+                    paramsCB.weight = 12;
+                    paramsCB.gravity = Gravity.CENTER;
+                    cbHideThis.setLayoutParams(paramsCB);
+                    ll2.addView(cbHideThis);
 
-                TextView tv2 = new TextView(activity);
-                LinearLayout.LayoutParams paramsTV = new LinearLayout.LayoutParams(0, -2);
-                paramsTV.weight = 80;
-                tv2.setLayoutParams(paramsTV);
-                tv2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                tv2.setPadding(20, 20, 20, 20);
-                tv2.setText("I don't want to get hints anymore.");
-                ll2.addView(tv2);
+                    TextView tv2 = new TextView(activity);
+                    LinearLayout.LayoutParams paramsTV = new LinearLayout.LayoutParams(0, -2);
+                    paramsTV.weight = 80;
+                    tv2.setLayoutParams(paramsTV);
+                    tv2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                    tv2.setPadding(20, 20, 20, 20);
+                    tv2.setText("Don't show this hint anymore.");
+                    ll2.addView(tv2);
+                }
+
+                CheckBox cbHideAll = new CheckBox(activity);
+                cbHideAll.setChecked(!hint.prefShowHints.getValue());
+                {
+                    LinearLayout ll2 = new LinearLayout(activity);
+                    ll2.setLayoutParams(new AlertDialogLayout.LayoutParams(-2, -2));
+                    ll2.setPadding(20, 20, 20, 20);
+                    ll2.setOrientation(LinearLayout.HORIZONTAL);
+                    ll.addView(ll2);
+
+                    LinearLayout.LayoutParams paramsCB = new LinearLayout.LayoutParams(0, -2);
+                    paramsCB.weight = 12;
+                    paramsCB.gravity = Gravity.CENTER;
+                    cbHideAll.setLayoutParams(paramsCB);
+                    ll2.addView(cbHideAll);
+
+                    TextView tv2 = new TextView(activity);
+                    LinearLayout.LayoutParams paramsTV = new LinearLayout.LayoutParams(0, -2);
+                    paramsTV.weight = 80;
+                    tv2.setLayoutParams(paramsTV);
+                    tv2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                    tv2.setPadding(20, 20, 20, 20);
+                    tv2.setText("Don't show hints anymore.");
+                    ll2.addView(tv2);
+                }
+
+
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity)
                         .setTitle(headline)
                         .setPositiveButton("Got it!", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int sumthin) {
-                                if (cb.isChecked()){
-                                    prefShowHints.setValue(false);
-                                }
+                                hint.prefShowHint.setValue(!cbHideThis.isChecked());
+                                hint.prefShowHints.setValue(!cbHideAll.isChecked());
                                 hint.gotItActions.forEach(Runnable::run);
                                 dialog.dismiss();
                             }

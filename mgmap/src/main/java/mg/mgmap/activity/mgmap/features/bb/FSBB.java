@@ -19,8 +19,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.mapsforge.map.layer.Layer;
+import org.mapsforge.map.layer.renderer.TileRendererLayer;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
@@ -54,6 +56,8 @@ public class FSBB extends FeatureService {
     private final Pref<Boolean> triggerBboxOn = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefBboxOn = getPref(R.string.FSBB_qc_bboxOn, false);
     private final Pref<Boolean> prefFilterOn = getPref(R.string.Statistic_pref_FilterOn, false);
+    private final Pref<Boolean> prefAutoDlHgt = getPref(R.string.FSBB_pref_autoDlHgt_key, true);
+    private final ArrayList<String> autoDlHgtAsked = new ArrayList<>(); // enter those layer keys that are asked at least after application start - don't ask those again
 
     private final Pref<Boolean> triggerLoadFromBB = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(Boolean.FALSE);
@@ -73,8 +77,8 @@ public class FSBB extends FeatureService {
         triggerTSLoadRemain.addObserver( (o, args) -> tsAction(false, false));
         triggerTSLoadAll.addObserver( (o, args) -> tsAction(false, true));
         triggerTSDeleteAll.addObserver( (o, args) -> tsAction(true, true));
-        triggerTSLoadRemain.addObserver( (o, args) -> loadHgt(getBBox(), false));
-        triggerTSLoadAll.addObserver( (o, args) -> loadHgt(getBBox(), true));
+        triggerTSLoadRemain.addObserver( (o, args) -> loadHgt(getBBox(), false, null));
+        triggerTSLoadAll.addObserver( (o, args) -> loadHgt(getBBox(), true, null));
         triggerTSDeleteAll.addObserver( (o, args) -> dropHgt(getBBox()));
 
         prefBboxOn.addObserver(refreshObserver);
@@ -131,6 +135,7 @@ public class FSBB extends FeatureService {
         super.onResume();
         prefBboxOn.setValue(false);
         refreshObserver.onChange();
+        getTimer().postDelayed(this::checkHgtAvailability, 100) ;
     }
 
     @Override
@@ -297,7 +302,7 @@ public class FSBB extends FeatureService {
 
     private ArrayList<MGTileStore> identifyTS(){
         ArrayList<MGTileStore> tss = new ArrayList<>();
-        for (Layer layer : getMapLayerFactory().getMapLayers()){
+        for (Layer layer : getMapLayerFactory().getMapLayers().values()){
             if (layer instanceof MGTileStoreLayer) {
                 MGTileStoreLayer mgTileStoreLayer = (MGTileStoreLayer) layer;
                 MGTileStore mgTileStore = mgTileStoreLayer.getMGTileStore();
@@ -309,12 +314,25 @@ public class FSBB extends FeatureService {
         return tss;
     }
     private HgtGridView identifyHgt(){
-        for (Layer layer : getMapLayerFactory().getMapLayers()){
+        for (Layer layer : getMapLayerFactory().getMapLayers().values()){
             if (layer instanceof HgtGridView) {
                 return (HgtGridView)layer;
             }
         }
         return null;
+    }
+
+    void checkHgtAvailability(){
+        if (prefAutoDlHgt.getValue()){
+            for (Map.Entry<String, Layer> entry : getMapLayerFactory().getMapLayers().entrySet()){
+                if ((entry.getValue() instanceof TileRendererLayer) && (!autoDlHgtAsked.contains(entry.getKey()))){
+                    autoDlHgtAsked.add(entry.getKey());
+                    BBox bBox = BBox.fromBoundingBox(((TileRendererLayer)entry.getValue()).getMapDataStore().boundingBox());
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" layer="+entry.getKey()+" bbox="+bBox);
+                    loadHgt(bBox, false, entry.getKey());
+                }
+            }
+        }
     }
 
     private void tsAction(boolean bDrop, boolean bAll){
@@ -360,46 +378,50 @@ public class FSBB extends FeatureService {
     }
 
     public static final String HGT_URL = "http://step.esa.int/auxdata/dem/SRTMGL1/";
-    private void loadHgt(BBox bBox, boolean all){
+    private void loadHgt(BBox bBox, boolean all, String layerName){
         final HgtGridView hgtGridView = identifyHgt();
-        if (hgtGridView != null){
-            BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download hgt files", new BgJobGroupCallback() {
-                @Override
-                public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+        BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download hgt files", new BgJobGroupCallback() {
+            @Override
+            public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                if (hgtGridView != null){
                     hgtGridView.requestRedraw();
-                    return false;
                 }
-            });
-            for (int latitude = (int)bBox.minLatitude; latitude<(int)bBox.maxLatitude+1; latitude++ ){
-                for (int longitude = (int)bBox.minLongitude; longitude<(int)bBox.maxLongitude+1; longitude++ ){
-                    final int iLat = latitude;
-                    final int iLon = longitude;
-                    if (all || !getPersistenceManager().hasHgtData(iLat, iLon)){
-                        BgJob bgJob = new BgJob(){
-                            @Override
-                            protected void doJob() throws Exception {
-                                String url = HGT_URL + getPersistenceManager().getHgtFilename(iLat, iLon);
+                return false;
+            }
+        });
+        for (int latitude = (int)bBox.minLatitude; latitude<(int)bBox.maxLatitude+1; latitude++ ){
+            for (int longitude = (int)bBox.minLongitude; longitude<(int)bBox.maxLongitude+1; longitude++ ){
+                final int iLat = latitude;
+                final int iLon = longitude;
+                if (all || !getPersistenceManager().hasHgtData(iLat, iLon)){
+                    BgJob bgJob = new BgJob(){
+                        @Override
+                        protected void doJob() throws Exception {
+                            String url = HGT_URL + getPersistenceManager().getHgtFilename(iLat, iLon);
 
-                                OkHttpClient client = new OkHttpClient().newBuilder()
-                                        .build();
-                                Request request = new Request.Builder().url(url).build();
-                                Response response = client.newCall(request).execute();
-                                ResponseBody responseBody = response.body();
-                                if (responseBody == null) {
-                                    Log.w (MGMapApplication.LABEL, NameUtil.context()+" empty response body for download!");
-                                } else {
-                                    this.setText("Download "+ url.replaceFirst(".*/",""));
-                                    if (responseBody.contentLength() < 1000) throw new Exception("Invalid hgt size: "+responseBody.contentLength());
-                                    IOUtil.copyStreams(responseBody.byteStream(), getPersistenceManager().openHgtOutput(iLat, iLon));
+                            OkHttpClient client = new OkHttpClient().newBuilder()
+                                    .build();
+                            Request request = new Request.Builder().url(url).build();
+                            Response response = client.newCall(request).execute();
+                            ResponseBody responseBody = response.body();
+                            if (responseBody == null) {
+                                Log.w (MGMapApplication.LABEL, NameUtil.context()+" empty response body for download!");
+                            } else {
+                                this.setText("Download "+ url.replaceFirst(".*/",""));
+                                if (responseBody.contentLength() < 1000) throw new Exception("Invalid hgt size: "+responseBody.contentLength());
+                                IOUtil.copyStreams(responseBody.byteStream(), getPersistenceManager().openHgtOutput(iLat, iLon));
+                                if (hgtGridView != null){
                                     hgtGridView.requestRedraw();
                                 }
                             }
-                        };
-                        jobGroup.addJob(bgJob);
-                    }
+                        }
+                    };
+                    jobGroup.addJob(bgJob);
                 }
             }
-            jobGroup.setConstructed("Download "+jobGroup.size()+" hgt files?");
+        }
+        if (jobGroup.size() > 0){
+            jobGroup.setConstructed("Download "+jobGroup.size()+" hgt files from "+HGT_URL+((layerName==null)?"":" for "+layerName) +"?");
         }
     }
     private void dropHgt(BBox bBox){

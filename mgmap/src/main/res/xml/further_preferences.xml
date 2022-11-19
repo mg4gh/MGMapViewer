@@ -60,9 +60,9 @@
         >
         <SwitchPreference
             app:defaultValue="true"
-            app:key="@string/FSATL_pref_stlGl"
-            app:summary="@string/FSATL_pref_stlGl_desc"
-            app:title="@string/FSATL_pref_stlGl_title"
+            app:key="@string/FSBB_pref_autoDlHgt_key"
+            app:summary="@string/FSBB_pref_autoDlHgt_desc"
+            app:title="@string/FSBB_pref_autoDlHgt_title"
             app:iconSpaceReserved="false"
             />
         <SwitchPreference
