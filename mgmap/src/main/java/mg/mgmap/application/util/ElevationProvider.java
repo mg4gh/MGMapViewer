@@ -101,7 +101,7 @@ public class ElevationProvider {
         if (hgtBuf.length >= off+2){
             byte b1 = hgtBuf[off];
             byte b2 = hgtBuf[off+1];
-            res = ((b1 & 0xff)<<8) + (b2 & 0xff);
+            res = (short)( ((b1 & 0xff)<<8) + (b2 & 0xff) );
         }
         return res;
     }
