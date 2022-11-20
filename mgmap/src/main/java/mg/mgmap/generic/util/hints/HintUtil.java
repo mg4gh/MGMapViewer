@@ -19,15 +19,28 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AlertDialogLayout;
 import androidx.core.content.res.ResourcesCompat;
 
+import java.util.HashSet;
+
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class HintUtil {
 
+    HashSet<Pref<Boolean>> prefs = new HashSet<>();
 
-    public static boolean showHint(AbstractHint hint){
+    private void registerHint(AbstractHint hint){
+        if (prefs.isEmpty()){ // first call
+            hint.prefShowHints.addObserver((observable, o) -> prefs.forEach(p -> p.setValue(true))); // add observer to cleanup, if changed
+        }
+        prefs.add(hint.prefShowHint);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+ prefs);
+    }
+
+    public boolean showHint(AbstractHint hint){
         if (hint == null) return false;
         try {
+            registerHint(hint);
             Activity activity = hint.getActivity();
             String headline = hint.getHeadline();
             String hintText = hint.getText();

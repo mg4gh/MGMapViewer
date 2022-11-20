@@ -35,7 +35,8 @@ public abstract class AbstractHint implements Runnable{
     @Override
     public void run() {
         Log.i(MGMapApplication.LABEL, NameUtil.context());
-        HintUtil.showHint(this);
+        MGMapApplication application = (MGMapApplication) getActivity().getApplication();
+        application.getHintUtil().showHint(this);
     }
 
     public Activity getActivity(){

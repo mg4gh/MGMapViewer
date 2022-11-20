@@ -26,6 +26,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.AbstractHint;
+import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
 import mg.mgmap.generic.util.hints.HintUtil;
 
 public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
@@ -39,7 +40,8 @@ public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
             }
             preference.setOnPreferenceClickListener(preference1 -> {
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+intent.getDataString());
-                if (!HintUtil.showHint(hint)){
+                MGMapApplication application = (MGMapApplication) getActivity().getApplication();
+                if (!application.getHintUtil().showHint( hint )){
                     activity.startActivity(intent);
                 }
                 return true;

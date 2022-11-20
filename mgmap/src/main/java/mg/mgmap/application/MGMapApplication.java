@@ -36,6 +36,7 @@ import mg.mgmap.application.util.HgtProvider;
 import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
+import mg.mgmap.generic.util.hints.HintUtil;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -87,6 +88,7 @@ public class MGMapApplication extends Application {
     private TestControl testControl;
     private NotificationUtil notificationUtil;
     private TrackStatisticFilter trackStatisticFilter;
+    private HintUtil hintUtil;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
@@ -139,6 +141,7 @@ public class MGMapApplication extends Application {
         testControl = new TestControl(this, prefCache);
         notificationUtil = new NotificationUtil(this);
         trackStatisticFilter = new TrackStatisticFilter(prefCache);
+        hintUtil = new HintUtil();
 
         prefRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
         prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
@@ -415,6 +418,10 @@ public class MGMapApplication extends Application {
 
     public TrackStatisticFilter getTrackStatisticFilter() {
         return trackStatisticFilter;
+    }
+
+    public HintUtil getHintUtil() {
+        return hintUtil;
     }
 
     public PrefCache getPrefCache(){
