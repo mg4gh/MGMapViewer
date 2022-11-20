@@ -359,19 +359,23 @@ public class PersistenceManager {
         byte[] buf = null;
         try {
             File hgtFile = getHgtFile(hgtName);
-            if (hgtFile.exists() && (hgtFile.length()>0)){
-                ZipFile zipFile = new ZipFile(hgtFile);
-                ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
-                InputStream zis = zipFile.getInputStream(zipEntry);
-                int todo = zis.available();
-                buf = new byte[todo];
-                int done = 0;
-                while (todo > 0) {
-                    int step = zis.read(buf, done, todo);
-                    todo -= step;
-                    done += step;
+            if (hgtFile.exists()){
+                if (hgtFile.length()>0){
+                    ZipFile zipFile = new ZipFile(hgtFile);
+                    ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
+                    InputStream zis = zipFile.getInputStream(zipEntry);
+                    int todo = zis.available();
+                    buf = new byte[todo];
+                    int done = 0;
+                    while (todo > 0) {
+                        int step = zis.read(buf, done, todo);
+                        todo -= step;
+                        done += step;
+                    }
+                    zipFile.close();
+                } else { // is dummy hgt file
+                    buf = new byte[0];
                 }
-                zipFile.close();
             }
         } catch (IOException e) { // should not happen
             e.printStackTrace();

@@ -3,10 +3,11 @@ package mg.mgmap.application.util;
 import android.content.res.AssetManager;
 import android.os.Handler;
 import android.util.Log;
+import android.util.LruCache;
 
 import java.util.Locale;
 import java.util.Properties;
-import java.util.TreeSet;
+import java.util.UUID;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.IOUtil;
@@ -24,7 +25,24 @@ public class HgtProvider {
     private final PersistenceManager persistenceManager;
     AssetManager assetManager;
 
-    Properties hgtSize = new Properties();
+    private final Properties hgtSize = new Properties();
+
+    private final Handler timer = new Handler();
+    private final LruCache<String, byte[]> hgtCache = new LruCache<String, byte[]>(4){
+        @Override
+        protected void entryRemoved(boolean evicted, String key, byte[] oldValue, byte[] newValue) {
+            super.entryRemoved(evicted, key, oldValue, newValue);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+" drop from LRUCache: key="+key);
+        }
+    };
+    private final Runnable ttCheckHgts = new Runnable() {
+        @Override
+        public void run() {
+            hgtCache.put(UUID.randomUUID().toString(), new byte[0]); // dummy value with "no" space will kick out large buffer, so its reducing memory usage
+            timer.postDelayed(ttCheckHgts, 5*60*1000L);
+        }
+    };
+
 
     public HgtProvider(PersistenceManager persistenceManager, AssetManager assetManager){
         this.persistenceManager = persistenceManager;
@@ -72,78 +90,20 @@ public class HgtProvider {
         persistenceManager.dropHgt(hgtName);
     }
 
-
-    TreeSet<CachedHgtBuf> cachedHgtBufs = new TreeSet<>();
-    long hgtBufTimeout = 60000; // cleanup hgtBufs, if they are not accessed for that time (since buffers are rather large)
-    Handler timer = new Handler();
-    Runnable ttCheckHgts = () -> {
-        long now = System.currentTimeMillis();
-        for (CachedHgtBuf hgtBuf : new TreeSet<>(cachedHgtBufs)){
-            if ( (now - hgtBuf.lastAccess) > hgtBufTimeout ){ // drop, if last access is over a given threshold
-                cachedHgtBufs.remove(hgtBuf);
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" drop "+hgtBuf.hgtName +" remaining hgtBufs.size="+ cachedHgtBufs.size());
-            }
-        }
-    };
-
     public String getHgtName(int iLat, int iLon) {
         return String.format(Locale.GERMANY, "%s%02d%S%03d", (iLat > 0) ? "N" : "S", iLat, (iLon > 0) ? "E" : "W", iLon);
     }
 
 
-
-    public synchronized byte[] getHgtBuf(String hgtName){ // assume hgt file exists
-        CachedHgtBuf cachedHgtBuf = getCachedHgtBuf(hgtName);
-
-        if (cachedHgtBuf != null) { // ok, exists already
-            cachedHgtBufs.remove(cachedHgtBuf);
-            cachedHgtBuf.accessNow();
-        } else {
-            if (cachedHgtBufs.size() >= 4){ // if cache contains already 4 bufs, remove last one
-                cachedHgtBufs.pollLast();
-            }
-            cachedHgtBuf = new CachedHgtBuf(hgtName);
-            cachedHgtBuf.buf = persistenceManager.getHgtBuf(hgtName);
+    public synchronized byte[] getHgtBuf(String hgtName) { // assume hgt file exists
+        timer.removeCallbacks(ttCheckHgts);
+        timer.postDelayed(ttCheckHgts, 5*60*1000L);
+        byte[] buf = hgtCache.get(hgtName);
+        if (buf == null){
+            buf = persistenceManager.getHgtBuf(hgtName);
+            hgtCache.put(hgtName, buf);
         }
-        cachedHgtBufs.add(cachedHgtBuf);
-        return cachedHgtBuf.buf;
-    }
-
-    private CachedHgtBuf getCachedHgtBuf(String name){
-        for (CachedHgtBuf hgtBuf : cachedHgtBufs){
-            if (hgtBuf.getHgtName().equals(name)){
-                return hgtBuf;
-            }
-        }
-        return null;
-    }
-
-    private class CachedHgtBuf implements Comparable<CachedHgtBuf>{
-        String hgtName;
-        byte[] buf = null;
-        long lastAccess;
-
-        private CachedHgtBuf(String hgtName){
-            this.hgtName = hgtName;
-            accessNow();
-        }
-        private void accessNow(){
-            lastAccess = System.currentTimeMillis();
-            timer.removeCallbacks(ttCheckHgts);
-            timer.postDelayed(ttCheckHgts, hgtBufTimeout);
-        }
-        private String getHgtName(){
-            return hgtName;
-        }
-
-        @Override
-        public int compareTo(CachedHgtBuf o) {
-            int res = Long.compare(lastAccess,o.lastAccess);
-            if (res == 0){
-                res = hgtName.compareTo(o.hgtName);
-            }
-            return res;
-        }
+        return buf;
     }
 
 }

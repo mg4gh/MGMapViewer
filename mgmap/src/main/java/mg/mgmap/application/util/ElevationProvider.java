@@ -52,9 +52,9 @@ public class ElevationProvider {
             iLat--;
         }
         String hgtName = hgtProvider.getHgtName(iLat,iLon);
-        if (hgtProvider.hgtIsAvailable(hgtName)) {
-            byte[] hgtBuf = hgtProvider.getHgtBuf(hgtName);
-            if (hgtBuf != null){ // ok, exists really
+        byte[] hgtBuf = hgtProvider.getHgtBuf(hgtName);
+        if (hgtBuf != null){ // hgt files exists
+            if (hgtBuf.length > 0){ // ok, exists with content
                 double dlat = 1 - (latitude - iLat);
                 int oLat = (int) (dlat * 3600);
                 double dlon = longitude - iLon;
