@@ -21,6 +21,7 @@ public class HgtGridView extends Grid {
 
     private static final Map<Byte, Double> spacingConfig = new HashMap<Byte, Double>() {
         {
+            put((byte) 5, 1.0);
             put((byte) 6, 1.0);
             put((byte) 7, 1.0);
             put((byte) 8, 1.0);
@@ -76,7 +77,7 @@ public class HgtGridView extends Grid {
             long mapSize = MercatorProjection.getMapSize(zoomLevel, this.displayModel.getTileSize());
 
 
-            int margin = (int)(10 * displayModel.getScaleFactor());
+            int margin = (int)(7 * displayModel.getScaleFactor());
             for (double latitude = minLatitude; latitude <= maxLatitude; latitude += spacing) {
                 int pixelY1 = (int) (MercatorProjection.latitudeToPixelY(latitude, mapSize) - topLeftPoint.y) - margin;
                 int pixelY2 = (int) (MercatorProjection.latitudeToPixelY(latitude+spacing, mapSize) - topLeftPoint.y) + margin;
