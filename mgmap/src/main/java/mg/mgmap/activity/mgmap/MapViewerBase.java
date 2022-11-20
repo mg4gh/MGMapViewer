@@ -83,6 +83,15 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         setMapScaleBar();
     }
 
+    private void saveMapViewModel(){
+        mapView.getModel().save(this.preferencesFacade);
+        this.preferencesFacade.save();
+    }
+
+    private void restoreModel(){
+        mapView.getModel().init(this.preferencesFacade);
+    }
+
 
     protected void createSharedPreferences() {
         this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( this.getClass().getSimpleName(), MODE_PRIVATE));
@@ -127,6 +136,10 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         if (recreatePreferences.contains(key) && (!preferences.getBoolean(getResources().getString(R.string.MGMapApplication_pref_Restart), true))){
             new Handler().postDelayed(() -> {
                 Log.i(MGMapApplication.LABEL, NameUtil.context() + " recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key));
+                if (MGMapLayerFactory.getMapLayerKeys(this).contains(key) && ("MAPGRID: hgt".equals(preferences.getAll().get(key)))){
+                    mapView.getModel().mapViewPosition.setZoomLevel((byte)7);
+                    saveMapViewModel();
+                }
                 for (TileCache tileCache : tileCaches) {
                     tileCache.purge();
                 }
