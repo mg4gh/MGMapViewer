@@ -23,10 +23,10 @@ import mg.mgmap.generic.model.WriteablePointModelImpl;
 /** Provide an elevation value for a given position on the .hgt file basis. */
 public class ElevationProvider {
 
-    PersistenceManager persistenceManager;
+    HgtProvider hgtProvider;
 
-    public ElevationProvider(PersistenceManager persistenceManager){
-        this.persistenceManager = persistenceManager;
+    public ElevationProvider(HgtProvider hgtProvider){
+        this.hgtProvider = hgtProvider;
     }
 
     public void setElevation(TrackLogPoint tlp) {
@@ -51,37 +51,42 @@ public class ElevationProvider {
         if (latitude - iLat == 0){
             iLat--;
         }
+        String hgtName = hgtProvider.getHgtName(iLat,iLon);
+        if (hgtProvider.hgtIsAvailable(hgtName)) {
+            byte[] hgtBuf = hgtProvider.getHgtBuf(hgtName);
+            if (hgtBuf != null){ // ok, exists really
+                double dlat = 1 - (latitude - iLat);
+                int oLat = (int) (dlat * 3600);
+                double dlon = longitude - iLon;
+                int oLon = (int) (dlon * 3600);
 
-        byte[] hgtBuf = persistenceManager.getHgtBuf(iLat, iLon);
-        if (hgtBuf != null) {
-            double dlat = 1 - (latitude - iLat);
-            int oLat = (int) (dlat * 3600);
-            double dlon = longitude - iLon;
-            int oLon = (int) (dlon * 3600);
+                double nwLat = iLat + (1 - oLat / 3600.0);  // nw - northWest
+                double nwLon = iLon + (oLon / 3600.0);
+                double nwEle = getEle(hgtBuf, oLat, oLon);
+                oLon++;
+                double neLon = iLon + (oLon / 3600.0);     // ne - northEast
+                double neEle = getEle(hgtBuf, oLat, oLon);
+                oLat++;
+                double seLon = iLon + (oLon / 3600.0);     // se - southEast
+                double seEle = getEle(hgtBuf, oLat, oLon);
+                oLon--;
+                double swLat = iLat + (1 - oLat / 3600.0); // sw - southWest
+                double swLon = iLon + (oLon / 3600.0);
+                double swEle = getEle(hgtBuf, oLat, oLon);
 
-            double nwLat = iLat + (1 - oLat / 3600.0);  // nw - northWest
-            double nwLon = iLon + (oLon / 3600.0);
-            double nwEle = getEle(hgtBuf, oLat, oLon);
-            oLon++;
-            double neLon = iLon + (oLon / 3600.0);     // ne - northEast
-            double neEle = getEle(hgtBuf, oLat, oLon);
-            oLat++;
-            double seLon = iLon + (oLon / 3600.0);     // se - southEast
-            double seEle = getEle(hgtBuf, oLat, oLon);
-            oLon--;
-            double swLat = iLat + (1 - oLat / 3600.0); // sw - southWest
-            double swLon = iLon + (oLon / 3600.0);
-            double swEle = getEle(hgtBuf, oLat, oLon);
+                double nhi = interpolate(nwLon, neLon, nwEle, neEle, longitude);
+                double shi = interpolate(swLon, seLon, swEle, seEle, longitude);
+                double hi = interpolate(nwLat, swLat, nhi, shi, latitude);
 
-            double nhi = interpolate(nwLon, neLon, nwEle, neEle, longitude);
-            double shi = interpolate(swLon, seLon, swEle, seEle, longitude);
-            double hi = interpolate(nwLat, swLat, nhi, shi, latitude);
+                double maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
+                double minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
 
-            double maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
-            double minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
-
-            wpm.setEle((float) hi);
-            wpm.setEleAcc((float) (maxEle-minEle));
+                wpm.setEle((float) hi);
+                wpm.setEleAcc((float) (maxEle-minEle));
+            } else { // dummy file for sea level
+                wpm.setEle(0);
+                wpm.setEleAcc(0);
+            }
         } else {
             wpm.setEle(PointModel.NO_ELE);
             wpm.setEleAcc(PointModel.NO_ACC);

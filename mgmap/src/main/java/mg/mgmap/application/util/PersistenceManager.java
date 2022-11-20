@@ -16,7 +16,6 @@ package mg.mgmap.application.util;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Handler;
 import android.util.Log;
 
 import androidx.core.content.FileProvider;
@@ -29,9 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Properties;
-import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -332,123 +329,57 @@ public class PersistenceManager {
     }
 
 
-    TreeSet<HgtBuf> hgtBufs = new TreeSet<>();
-    long hgtBufTimeout = 60000; // cleanup hgtBufs, if they are not accessed for that time (since buffers are rather large)
-    Handler timer = new Handler();
-    Runnable ttCheckHgts = () -> {
-        long now = System.currentTimeMillis();
-        for (HgtBuf hgtBuf : new TreeSet<>(hgtBufs)){
-            if ( (now - hgtBuf.lastAccess) > hgtBufTimeout ){ // drop, if last access is over a given threshold
-                hgtBufs.remove(hgtBuf);
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" drop "+hgtBuf.name+" remaining hgtBufs.size="+hgtBufs.size());
-            }
-        }
-    };
-
-    public String getHgtName(int iLat, int iLon) {
-        return String.format(Locale.GERMANY, "%s%02d%S%03d", (iLat > 0) ? "N" : "S", iLat, (iLon > 0) ? "E" : "W", iLon);
-    }
-    public String getHgtFilename(int iLat, int iLon) {
-        return getHgtName(iLat,iLon)+".SRTMGL1.hgt.zip";
-    }
-    public boolean hasHgtData(int iLat, int iLon){
-        File hgtFile = new File(hgtDir, getHgtFilename(iLat,iLon));
-        return hasHgtData(hgtFile);
-    }
-    public boolean hasHgtData(File hgtFile){
-        // file size less than 1000 indicates no valid height data file
-        return hgtFile.exists() && (hgtFile.length() > 1000L);
+    public File getHgtFile(String hgtName){
+        return new File(hgtDir, getHgtFilename(hgtName));
     }
 
-    public void dropHgt(int iLat, int iLon){
-        File hgtFile = new File(hgtDir, getHgtFilename(iLat,iLon));
-        deleteFile(hgtFile);
+    public void dropHgt(String hgtName){
+        deleteFile(getHgtFile(hgtName));
     }
 
-    public FileOutputStream openHgtOutput(int iLat, int iLon){
-        File hgtFile = new File(hgtDir, getHgtFilename(iLat,iLon));
+
+    public String getHgtFilename(String hgtName) {
+        return hgtName+".SRTMGL1.hgt.zip";
+    }
+
+    public FileOutputStream openHgtOutput(String hgtName){
         try {
-            return new FileOutputStream(hgtFile);
+            return new FileOutputStream(getHgtFile(hgtName));
         } catch (FileNotFoundException e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
         return null;
     }
 
-    public synchronized byte[] getHgtBuf(int iLat, int iLon){
-        String file = getHgtFilename(iLat,iLon);
-        HgtBuf hgtBuf = getHgtBuf(file);
-
-        if (hgtBuf != null) { // ok, exists already
-            hgtBufs.remove(hgtBuf);
-            hgtBuf.accessNow();
-        } else {
-            if (hgtBufs.size() >= 4){ // if cache contains already 4 bufs, remove last one
-                hgtBufs.pollLast();
-            }
-
-            hgtBuf = new HgtBuf(file);
-            File hgtFile = new File(hgtDir, file);
-            if (hasHgtData(hgtFile)){
-                try {
-                    ZipFile zipFile = new ZipFile(hgtFile);
-                    ZipEntry zipEntry = zipFile.getEntry(getHgtName(iLat,iLon)+".hgt");
-                    InputStream zis = zipFile.getInputStream(zipEntry);
-                    int todo = zis.available();
-                    hgtBuf.buf = new byte[todo];
-                    int done = 0;
-                    while (todo > 0) {
-                        int step = zis.read(hgtBuf.buf, done, todo);
-                        todo -= step;
-                        done += step;
-                    }
-                    zipFile.close();
-                } catch (IOException e) { // should not happen
-                    e.printStackTrace();
-                    hgtBuf.buf = null; // but if so, prevent accessing inconsistent data
-                }
-            }
-        }
-        hgtBufs.add(hgtBuf);
-        return hgtBuf.buf;
+    public boolean hgtIsAvailable(String hgtName){
+        return getHgtFile(hgtName).exists();
     }
 
-    private HgtBuf getHgtBuf(String name){
-        for (HgtBuf hgtBuf : hgtBufs){
-            if (hgtBuf.getName().equals(name)){
-                return hgtBuf;
-            }
-        }
-        return null;
-    }
-
-    private class HgtBuf implements Comparable<HgtBuf>{
-        String name;
+    public byte[] getHgtBuf(String hgtName){
         byte[] buf = null;
-        long lastAccess;
-
-        private HgtBuf(String name){
-            this.name = name;
-            accessNow();
-        }
-        private void accessNow(){
-            lastAccess = System.currentTimeMillis();
-            timer.removeCallbacks(ttCheckHgts);
-            timer.postDelayed(ttCheckHgts, hgtBufTimeout);
-        }
-        private String getName(){
-            return name;
-        }
-
-        @Override
-        public int compareTo(HgtBuf o) {
-            int res = Long.compare(lastAccess,o.lastAccess);
-            if (res == 0){
-                res = name.compareTo(o.name);
+        try {
+            File hgtFile = getHgtFile(hgtName);
+            if (hgtFile.exists() && (hgtFile.length()>0)){
+                ZipFile zipFile = new ZipFile(hgtFile);
+                ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
+                InputStream zis = zipFile.getInputStream(zipEntry);
+                int todo = zis.available();
+                buf = new byte[todo];
+                int done = 0;
+                while (todo > 0) {
+                    int step = zis.read(buf, done, todo);
+                    todo -= step;
+                    done += step;
+                }
+                zipFile.close();
             }
-            return res;
+        } catch (IOException e) { // should not happen
+            e.printStackTrace();
+            buf = null; // but if so, prevent accessing inconsistent data
         }
+        return buf;
     }
+
 
     public boolean existsTrack(String filename){
         return ( getAbsoluteFile(trackGpxDir, filename, ".gpx").exists() );

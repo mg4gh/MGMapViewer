@@ -32,6 +32,7 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
 import mg.mgmap.application.util.GpsSupervisorWorker;
+import mg.mgmap.application.util.HgtProvider;
 import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
@@ -78,6 +79,7 @@ public class MGMapApplication extends Application {
     public static final String LABEL = "MGMap";
     private Process pLogcat = null;
 
+    private HgtProvider hgtProvider;
     private ElevationProvider elevationProvider;
     private GeoidProvider geoidProvider;
     private PersistenceManager persistenceManager;
@@ -130,7 +132,8 @@ public class MGMapApplication extends Application {
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
-        elevationProvider = new ElevationProvider(persistenceManager); // for hgt data handling
+        hgtProvider = new HgtProvider(persistenceManager, getAssets()); // for hgt file handling
+        elevationProvider = new ElevationProvider(hgtProvider); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
         metaDataUtil = new MetaDataUtil(persistenceManager);
         testControl = new TestControl(this, prefCache);
@@ -384,6 +387,10 @@ public class MGMapApplication extends Application {
             Intent intent = new Intent(this, MGMapActivity.class);
             this.startActivity(intent);
         }
+    }
+
+    public HgtProvider getHgtProvider() {
+        return hgtProvider;
     }
 
     public ElevationProvider getElevationProvider() {

@@ -32,6 +32,7 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.tilestore.MGTileStore;
 import mg.mgmap.activity.mgmap.features.tilestore.MGTileStoreLayer;
 import mg.mgmap.activity.mgmap.features.tilestore.TileStoreLoader;
+import mg.mgmap.application.util.HgtProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
@@ -40,16 +41,11 @@ import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
-import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.MVLayer;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class FSBB extends FeatureService {
 
@@ -57,7 +53,7 @@ public class FSBB extends FeatureService {
     private final Pref<Boolean> prefBboxOn = getPref(R.string.FSBB_qc_bboxOn, false);
     private final Pref<Boolean> prefFilterOn = getPref(R.string.Statistic_pref_FilterOn, false);
     private final Pref<Boolean> prefAutoDlHgt = getPref(R.string.FSBB_pref_autoDlHgt_key, true);
-    private final ArrayList<String> autoDlHgtAsked = new ArrayList<>(); // enter those layer keys that are asked at least after application start - don't ask those again
+    private final Pref<String> prefAutoDlHgtAsked = getPref(R.string.FSBB_pref_autoDlHgt_AskedList, "");
 
     private final Pref<Boolean> triggerLoadFromBB = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(Boolean.FALSE);
@@ -82,6 +78,9 @@ public class FSBB extends FeatureService {
         triggerTSDeleteAll.addObserver( (o, args) -> dropHgt(getBBox()));
 
         prefBboxOn.addObserver(refreshObserver);
+        prefAutoDlHgt.addObserver((observable, o) -> {
+            if (!prefAutoDlHgt.getValue()) prefAutoDlHgtAsked.setValue("");
+        });
     }
 
     private WriteablePointModel p1 = null;
@@ -325,8 +324,8 @@ public class FSBB extends FeatureService {
     void checkHgtAvailability(){
         if (prefAutoDlHgt.getValue()){
             for (Map.Entry<String, Layer> entry : getMapLayerFactory().getMapLayers().entrySet()){
-                if ((entry.getValue() instanceof TileRendererLayer) && (!autoDlHgtAsked.contains(entry.getKey()))){
-                    autoDlHgtAsked.add(entry.getKey());
+                if ((entry.getValue() instanceof TileRendererLayer) && (!prefAutoDlHgtAsked.getValue().contains(" " + entry.getKey() + " "))){
+                    prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" "+entry.getKey()+" ");
                     BBox bBox = BBox.fromBoundingBox(((TileRendererLayer)entry.getValue()).getMapDataStore().boundingBox());
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" layer="+entry.getKey()+" bbox="+bBox);
                     loadHgt(bBox, false, entry.getKey());
@@ -377,8 +376,8 @@ public class FSBB extends FeatureService {
         return changed;
     }
 
-    public static final String HGT_URL = "http://step.esa.int/auxdata/dem/SRTMGL1/";
     private void loadHgt(BBox bBox, boolean all, String layerName){
+        final HgtProvider hgtProvider = getApplication().getHgtProvider();
         final HgtGridView hgtGridView = identifyHgt();
         BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download hgt files", new BgJobGroupCallback() {
             @Override
@@ -391,28 +390,15 @@ public class FSBB extends FeatureService {
         });
         for (int latitude = (int)bBox.minLatitude; latitude<(int)bBox.maxLatitude+1; latitude++ ){
             for (int longitude = (int)bBox.minLongitude; longitude<(int)bBox.maxLongitude+1; longitude++ ){
-                final int iLat = latitude;
-                final int iLon = longitude;
-                if (all || !getPersistenceManager().hasHgtData(iLat, iLon)){
+                String hgtName = hgtProvider.getHgtName(latitude, longitude);
+                if (all || !hgtProvider.hgtIsAvailable(hgtName)){
                     BgJob bgJob = new BgJob(){
                         @Override
-                        protected void doJob() throws Exception {
-                            String url = HGT_URL + getPersistenceManager().getHgtFilename(iLat, iLon);
-
-                            OkHttpClient client = new OkHttpClient().newBuilder()
-                                    .build();
-                            Request request = new Request.Builder().url(url).build();
-                            Response response = client.newCall(request).execute();
-                            ResponseBody responseBody = response.body();
-                            if (responseBody == null) {
-                                Log.w (MGMapApplication.LABEL, NameUtil.context()+" empty response body for download!");
-                            } else {
-                                this.setText("Download "+ url.replaceFirst(".*/",""));
-                                if (responseBody.contentLength() < 1000) throw new Exception("Invalid hgt size: "+responseBody.contentLength());
-                                IOUtil.copyStreams(responseBody.byteStream(), getPersistenceManager().openHgtOutput(iLat, iLon));
-                                if (hgtGridView != null){
-                                    hgtGridView.requestRedraw();
-                                }
+                        protected void doJob(){
+                            hgtProvider.downloadHgt(hgtName);
+                            this.setText("Download "+ hgtName);
+                            if (hgtGridView != null){
+                                hgtGridView.requestRedraw();
                             }
                         }
                     };
@@ -421,10 +407,11 @@ public class FSBB extends FeatureService {
             }
         }
         if (jobGroup.size() > 0){
-            jobGroup.setConstructed("Download "+jobGroup.size()+" hgt files from "+HGT_URL+((layerName==null)?"":" for "+layerName) +"?");
+            jobGroup.setConstructed("Download "+jobGroup.size()+" hgt files from "+ HgtProvider.HGT_URL+((layerName==null)?"":" for "+layerName) +"?");
         }
     }
     private void dropHgt(BBox bBox){
+        final HgtProvider hgtProvider = getApplication().getHgtProvider();
         final HgtGridView hgtGridView = identifyHgt();
         if (hgtGridView != null) {
             BgJobGroup jobGroup = new BgJobGroup(application, activity,"Drop hgt files", new BgJobGroupCallback() {
@@ -436,12 +423,11 @@ public class FSBB extends FeatureService {
             });
             for (int latitude = (int)bBox.minLatitude+1; latitude<(int)bBox.maxLatitude; latitude++ ){
                 for (int longitude = (int)bBox.minLongitude+1; longitude<(int)bBox.maxLongitude; longitude++ ){
-                    final int iLat = latitude;
-                    final int iLon = longitude;
+                    String hgtName = hgtProvider.getHgtName(latitude, longitude);
                     jobGroup.addJob(new BgJob(){
                         @Override
                         protected void doJob(){
-                            getPersistenceManager().dropHgt(iLat, iLon);
+                            hgtProvider.dropHgt(hgtName);
                         }
                     });
                 }

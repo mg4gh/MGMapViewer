@@ -91,7 +91,8 @@ public class HgtGridView extends Grid {
                     path.lineTo(pixelX2, pixelY2);
                     path.lineTo(pixelX1, pixelY2);
                     path.lineTo(pixelX1, pixelY1);
-                    canvas.drawPath(path, application.getPersistenceManager().hasHgtData((int)latitude,(int)longitude)?hgtAvail:hgtNotAvail);
+                    String hgtName = application.getHgtProvider().getHgtName((int)latitude,(int)longitude);
+                    canvas.drawPath(path, application.getHgtProvider().hgtIsAvailable(hgtName)?hgtAvail:hgtNotAvail);
                 }
             }
         } // if (spacing != null)
