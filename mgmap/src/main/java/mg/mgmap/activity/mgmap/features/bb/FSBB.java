@@ -379,7 +379,7 @@ public class FSBB extends FeatureService {
     private void loadHgt(BBox bBox, boolean all, String layerName){
         final HgtProvider hgtProvider = getApplication().getHgtProvider();
         final HgtGridView hgtGridView = identifyHgt();
-        BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download hgt files", new BgJobGroupCallback() {
+        BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download height data", new BgJobGroupCallback() {
             @Override
             public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
                 if (hgtGridView != null){
