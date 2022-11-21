@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
-def versionMajor = "0.9.6"
-def versionSuffix = "final"
+def versionMajor = "0.9.7"
+def versionSuffix = "pre"
 
 static def getDate() {
     return new Date().format('yyyyMMdd_HHmmss')
