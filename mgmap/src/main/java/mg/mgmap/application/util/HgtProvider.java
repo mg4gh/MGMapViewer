@@ -98,10 +98,13 @@ public class HgtProvider {
     public synchronized byte[] getHgtBuf(String hgtName) { // assume hgt file exists
         timer.removeCallbacks(ttCheckHgts);
         timer.postDelayed(ttCheckHgts, 5*60*1000L);
-        byte[] buf = hgtCache.get(hgtName);
-        if (buf == null){
-            buf = persistenceManager.getHgtBuf(hgtName);
-            hgtCache.put(hgtName, buf);
+        byte[] buf;
+        synchronized (this){
+            buf = hgtCache.get(hgtName);
+            if (buf == null){
+                buf = persistenceManager.getHgtBuf(hgtName);
+                hgtCache.put(hgtName, buf);
+            }
         }
         return buf;
     }
