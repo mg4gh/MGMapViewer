@@ -105,7 +105,7 @@ public class FSControl extends FeatureService {
         ttRefreshTime = 10;
         prefFullscreen.addObserver((o, arg) -> {
             FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue());
-            getControlView().setVerticalDashboardOffset(prefFullscreen.getValue());
+            getControlView().setVerticalOffset( );
         });
         triggerHome.addObserver(homeObserver);
         prefQcs.addObserver(refreshObserver);
@@ -238,6 +238,7 @@ public class FSControl extends FeatureService {
         prefQcs.setValue(0);
         prefFullscreen.onChange();
         refreshObserver.onChange();
+        getControlView().setVerticalOffset( );
 
         getTimer().postDelayed(hintInitialMapDownload, 300);
     }

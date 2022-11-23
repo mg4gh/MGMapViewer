@@ -88,7 +88,8 @@ public class ControlView extends RelativeLayout {
     EnlargeControl enlargeControl = null;
 
     private int statusBarHeight;
-    Pref<String> prefVerticalDashboardFullscreenOffset;
+    Pref<String> prefVerticalFullscreenOffset;
+    public ArrayList<View> variableVerticalOffsetViews = new ArrayList<>();
 
     public ControlView(Context context) {
         super(context);
@@ -133,11 +134,8 @@ public class ControlView extends RelativeLayout {
             dashboard = findViewById(R.id.dashboard);
             controlComposer.composeDashboard(activity, this);
             statusBarHeight = getStatusBarHeight(activity);
-            prefVerticalDashboardFullscreenOffset = activity.getPrefCache().get(R.string.preferences_disp_dashb_fs_offset_key, ""+statusBarHeight);
-            prefVerticalDashboardFullscreenOffset.addObserver((observable, o) -> {
-                setVerticalDashboardOffset( activity.getPrefCache().get(R.string.FSControl_qcFullscreenOn, true).getValue() );
-            });
-
+            variableVerticalOffsetViews.add(this);
+            prefVerticalFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_fullscreen_offset_key, ""+statusBarHeight);
 
             controlComposer.composeAlphaSlider(activity,this);
             controlComposer.composeAlphaSlider2(activity,this);
@@ -155,18 +153,20 @@ public class ControlView extends RelativeLayout {
         }
     }
 
-    public void setVerticalDashboardOffset(boolean fullscreenMode){
-        RelativeLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    public void setVerticalOffset(){
         int offset = statusBarHeight;
-        if (fullscreenMode){
+        if ( activity.getPrefCache().get(R.string.FSControl_qcFullscreenOn, true).getValue() ){ // is fullscreen
             try{
-                offset = Integer.parseInt(prefVerticalDashboardFullscreenOffset.getValue());
+                offset = Integer.parseInt(prefVerticalFullscreenOffset.getValue());
             } catch (NumberFormatException e) {
                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
             }
         }
-        params.setMargins(0, offset,0,0);
-        dashboard.setLayoutParams(params);
+        for (View view : variableVerticalOffsetViews){
+            RelativeLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, offset,0,0);
+            view.setLayoutParams(params);
+        }
     }
 
 

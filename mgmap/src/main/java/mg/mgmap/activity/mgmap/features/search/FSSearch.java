@@ -67,6 +67,7 @@ public class FSSearch extends FeatureService {
         searchView.init(mmActivity);
         RelativeLayout mainView = mmActivity.findViewById(R.id.mainView);
         mainView.addView(searchView);
+        getControlView().variableVerticalOffsetViews.add(searchView);
 
         EditText searchText = searchView.searchText;
         searchText.setSelectAllOnFocus(true);
