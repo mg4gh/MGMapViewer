@@ -114,6 +114,9 @@ public class TrackLog extends Observable implements Comparable<TrackLog>{
     }
 
 
+    public boolean hasGainLoss(){
+        return ((trackStatistic.getGain() != 0) || (trackStatistic.getLoss() != 0));
+    }
 
 
     public TrackLogRefApproach getBestDistance(PointModel pm, double maxDistance){
