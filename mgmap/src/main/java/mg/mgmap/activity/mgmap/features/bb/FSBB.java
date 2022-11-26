@@ -73,9 +73,9 @@ public class FSBB extends FeatureService {
         triggerTSLoadRemain.addObserver( (o, args) -> tsAction(false, false));
         triggerTSLoadAll.addObserver( (o, args) -> tsAction(false, true));
         triggerTSDeleteAll.addObserver( (o, args) -> tsAction(true, true));
-        triggerTSLoadRemain.addObserver( (o, args) -> loadHgt(getBBox(), false, null));
-        triggerTSLoadAll.addObserver( (o, args) -> loadHgt(getBBox(), true, null));
-        triggerTSDeleteAll.addObserver( (o, args) -> dropHgt(getBBox()));
+        triggerTSLoadRemain.addObserver( (o, args) -> hgtAction(false, false));
+        triggerTSLoadAll.addObserver( (o, args) -> hgtAction(false, true));
+        triggerTSDeleteAll.addObserver( (o, args) -> hgtAction(true, true));
 
         prefBboxOn.addObserver(refreshObserver);
         prefAutoDlHgt.addObserver((observable, o) -> {
@@ -346,6 +346,15 @@ public class FSBB extends FeatureService {
 
             } catch (Exception e) {
                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            }
+        }
+    }
+    private void hgtAction(boolean bDrop, boolean bAll){
+        if (identifyHgt() != null){
+            if (bDrop){
+                dropHgt(getBBox());
+            } else {
+                loadHgt(getBBox(),bAll, null);
             }
         }
     }
