@@ -25,10 +25,6 @@ afterEvaluate {
         args files("${buildDir}/outputs/apk/release")
     }
 
-    task downloadLatestDebug(){
-        PrintWriter out = new PrintWriter( new File("${rootDir}/docs/donloadDebug.md"));
-
-    }
 
      task mylist ()  {
          assembleRelease.dependsOn( mylist )
@@ -81,7 +77,7 @@ afterEvaluate {
         destinationDirectory = file( "../apk/debug")
     }
 
-    task _mgmapPublish (dependsOn: ['zipReleaseApk','zipDebugApk']){
+    task _mgmapPublish (dependsOn: ['zipReleaseApk','zipDebugApk', 'downloadMD']){
         doLast {
             System.out.println( "_mgmapPublish finished" )
         }
@@ -102,6 +98,18 @@ afterEvaluate {
         }
     }
 
+    task downloadMD(){
+        PrintWriter out = new PrintWriter( new File("${rootDir}/docs/download.md"))
+        out.println("<small><small>[Back to Index](./index.md)</small></small>\n")
+        out.println("## Debug apk")
+        out.println("Download latest debug [apk](../apk/debug/MGMapViewer-debug-"+project.android.defaultConfig.versionName+".apk)")
+        out.println()
+        out.println("## Release apk")
+        out.println("Download latest release [apk](../apk/release/MGMapViewer-release-"+project.android.defaultConfig.versionName+".apk)")
+        out.println()
+        out.println("<small><small>[Back to Index](./index.md)</small></small>\n")
+        out.close()
+    }
 
 }
 
