@@ -1,10 +1,10 @@
 <small><small>[Back to Index](./index.md)</small></small>
 
 ## Debug apk
-Download latest debug [apk](../apk/debug/MGMapViewer-debug-0.9.7-pre-20221127_194055.apk)
+Download latest debug [apk](https://https://github.com/mg4gh/MGMapViewer/blob/master/apk/debug/MGMapViewer-debug-0.9.7-pre-20221127_200051.apk?raw=true)
 
 ## Release apk
-Download latest release [apk](../apk/release/MGMapViewer-release-0.9.7-pre-20221127_194055.apk)
+Download latest release [apk](https://https://github.com/mg4gh/MGMapViewer/blob/master/apk/release/MGMapViewer-release-0.9.7-pre-20221127_200051.apk?raw=true)
 
 <small><small>[Back to Index](./index.md)</small></small>
 
