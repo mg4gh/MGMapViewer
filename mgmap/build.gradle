@@ -25,6 +25,10 @@ afterEvaluate {
         args files("${buildDir}/outputs/apk/release")
     }
 
+    task downloadLatestDebug(){
+        PrintWriter out = new PrintWriter( new File("${rootDir}/docs/donloadDebug.md"));
+
+    }
 
      task mylist ()  {
          assembleRelease.dependsOn( mylist )

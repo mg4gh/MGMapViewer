@@ -59,6 +59,9 @@ There [application design document](./more/add.pdf) provides an extensive descri
 - [approaches](./Features/DeveloperFeatures/Approach/approach.md) of marker points to ways as the basis of routing
 - [developer documentation](./Features/DeveloperFeatures/Developer/developer.md) provides more information for developers.
 
+# Download latest apk
+Here you can [download](./download.md) latest apk.
+
 # Privacy
 Please read carfully this [privacy information](./privacy.md).
 # About  
