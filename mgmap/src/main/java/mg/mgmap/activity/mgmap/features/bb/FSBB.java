@@ -22,6 +22,7 @@ import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
@@ -397,6 +398,7 @@ public class FSBB extends FeatureService {
                 return false;
             }
         });
+        long downloadSize = 0;
         for (int latitude = (int)bBox.minLatitude; latitude<(int)bBox.maxLatitude+1; latitude++ ){
             for (int longitude = (int)bBox.minLongitude; longitude<(int)bBox.maxLongitude+1; longitude++ ){
                 String hgtName = hgtProvider.getHgtName(latitude, longitude);
@@ -412,11 +414,13 @@ public class FSBB extends FeatureService {
                         }
                     };
                     jobGroup.addJob(bgJob);
+                    downloadSize += hgtProvider.hgtSize(hgtName);
                 }
             }
         }
         if (jobGroup.size() > 0){
-            jobGroup.setConstructed("Download "+jobGroup.size()+" hgt files from "+ HgtProvider.HGT_URL+((layerName==null)?"":" for "+layerName) +"?");
+            String msg = String.format(Locale.ENGLISH,"Downlaod %d hgt files [%.1fMB] from %s%s?", jobGroup.size(),downloadSize/1000000.0f,HgtProvider.HGT_URL,(layerName==null)?"":" for "+layerName);
+            jobGroup.setConstructed(msg);
         }
     }
     private void dropHgt(BBox bBox){

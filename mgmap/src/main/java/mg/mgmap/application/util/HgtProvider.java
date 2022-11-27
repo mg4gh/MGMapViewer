@@ -58,6 +58,21 @@ public class HgtProvider {
     private boolean hgtExists(String hgtName){
         return hgtSize.containsKey(hgtName);
     }
+    public long hgtSize(String hgtName){
+        Object oHgtSize = hgtSize.get(hgtName);
+        if (oHgtSize == null){
+            return 0;
+        }
+        String sHgtSize = oHgtSize.toString();
+        float fValue = Float.parseFloat(sHgtSize.substring(0,sHgtSize.length()-1));
+        if (sHgtSize.endsWith("K")){
+            fValue *= 1000;
+        }
+        if (sHgtSize.endsWith("M")){
+            fValue *= 1000 * 1000;
+        }
+        return (long)fValue;
+    }
     public boolean hgtIsAvailable(String hgtName){
         return persistenceManager.hgtIsAvailable(hgtName);
     }
