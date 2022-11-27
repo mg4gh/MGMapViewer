@@ -325,8 +325,8 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     etTrackLogName.setSelectAllOnFocus(true);
                     InputFilter filter = (source, start, end, dest, dstart, dend) -> {
                         for (int i = start; i < end; i++) {
-                            if ("/\\?%*:|\"<>.,;=\n".indexOf(source.charAt(i)) >= 0){
-                                etTrackLogName.setError("Not allowed characters: /\\?%*:|\"<>.,;=<LF>");
+                            if ("\\?%*:|\"<>.,;=\n".indexOf(source.charAt(i)) >= 0){
+//                                etTrackLogName.setError("Not allowed characters: /\\?%*:|\"<>.,;=<LF>");
                                 return "";
                             }
                         }
@@ -348,6 +348,11 @@ public class TrackStatisticActivity extends AppCompatActivity {
                                     if (persistenceManager.existsTrack(newName)){
                                         Toast.makeText(context, "Rename failed, name already exists: "+newName, Toast.LENGTH_LONG).show();
                                     } else{
+                                        if (newName.contains("/")){
+                                            String path = newName.replaceFirst("/[^/]*$","");
+                                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" check path="+path);
+                                            persistenceManager.createTrackPath(path);
+                                        }
                                         trackLog.setName(newName);
                                         persistenceManager.renameTrack(oldName, newName);
                                         application.metaTrackLogs.remove(oldNameKey);

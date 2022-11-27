@@ -158,7 +158,7 @@ public class PersistenceManager {
         File f = new File(parent, subDir);
         synchronized (PersistenceManager.class) {
             if (!f.exists()) {
-                if (!f.mkdir())
+                if (!f.mkdirs())
                     Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to create: "+f.getAbsolutePath());
             }
         }
@@ -384,6 +384,10 @@ public class PersistenceManager {
         return buf;
     }
 
+    public void createTrackPath(String trackPath){
+        createIfNotExists(trackGpxDir, trackPath);
+        createIfNotExists(trackMetaDir, trackPath);
+    }
 
     public boolean existsTrack(String filename){
         return ( getAbsoluteFile(trackGpxDir, filename, ".gpx").exists() );
@@ -442,6 +446,7 @@ public class PersistenceManager {
 
     }
 
+    @SuppressWarnings("SameParameterValue")
     void createGraphhopperCfgIfNotExists(String ghCfg){
         try {
             IOUtil.copyStreams( application.getAssets().open("graphhopper.log"), new FileOutputStream(new File(searchConfigDir, ghCfg)) );
