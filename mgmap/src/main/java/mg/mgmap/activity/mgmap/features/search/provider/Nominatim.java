@@ -42,7 +42,7 @@ import mg.mgmap.generic.model.PointModelUtil;
 public class Nominatim extends SearchProvider {
 
 
-    private static String URL_BASE = "https://nominatim.openstreetmap.org/";
+    private static final String URL_BASE = "https://nominatim.openstreetmap.org/";
 
     private SearchRequest searchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
@@ -66,61 +66,58 @@ public class Nominatim extends SearchProvider {
         double d2 = PointModelUtil.distance(bBox.maxLatitude, bBox.maxLongitude, bBox.maxLatitude, bBox.minLongitude);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" r="+radius+" d1="+d1+" d2="+d2);
 
-        new Thread(){
-            @Override
-            public void run() {
-                try {
-                    ArrayList<SearchResult> resList = new ArrayList<>();
+        new Thread(() -> {
+            try {
+                ArrayList<SearchResult> resList = new ArrayList<>();
 
-                    String sUrl;
-                    if (request.text.equals("")){
-                        sUrl = String.format(Locale.ENGLISH, "%sreverse?lon=%.6f&lat=%.6f&zoom=%d&format=geojson",
-                                URL_BASE, pm.getLon(), pm.getLat(),request.zoom);
-                    } else {
-                        String viewbox= String.format(Locale.ENGLISH, "viewbox=%.6f,%.6f,%.6f,%.6f",bBox.minLongitude,bBox.minLatitude,bBox.maxLongitude, bBox.maxLatitude);
-                        sUrl = String.format(Locale.ENGLISH, "%ssearch?q=%s&%s&bounded=1&limit=5&format=geojson",
-                                URL_BASE, request.text, viewbox);
-                    }
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
+                String sUrl;
+                if (request.text.equals("")){
+                    sUrl = String.format(Locale.ENGLISH, "%sreverse?lon=%.6f&lat=%.6f&zoom=%d&format=geojson",
+                            URL_BASE, pm.getLon(), pm.getLat(),request.zoom);
+                } else {
+                    String viewbox= String.format(Locale.ENGLISH, "viewbox=%.6f,%.6f,%.6f,%.6f",bBox.minLongitude,bBox.minLatitude,bBox.maxLongitude, bBox.maxLatitude);
+                    sUrl = String.format(Locale.ENGLISH, "%ssearch?q=%s&%s&bounded=1&limit=5&format=geojson",
+                            URL_BASE, request.text, viewbox);
+                }
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
 
-                    URL url = new URL(sUrl);
-                    URLConnection conn = url.openConnection();
-                    InputStream is = conn.getInputStream();
+                URL url = new URL(sUrl);
+                URLConnection conn = url.openConnection();
+                InputStream is = conn.getInputStream();
 
-                    JsonReader jsonReader = Json.createReader(is);
-                    JsonObject oAll = jsonReader.readObject();
+                JsonReader jsonReader = Json.createReader(is);
+                JsonObject oAll = jsonReader.readObject();
 
-                    JsonArray fAll = oAll.getJsonArray("features");
-                    for (JsonValue f : fAll) {
+                JsonArray fAll = oAll.getJsonArray("features");
+                for (JsonValue f : fAll) {
 
-                        try {
-                            JsonObject fo = f.asJsonObject();
+                    try {
+                        JsonObject fo = f.asJsonObject();
 
-                            JsonObject go = fo.getJsonObject("geometry");
-                            JsonArray coos = go.getJsonArray("coordinates");
+                        JsonObject go = fo.getJsonObject("geometry");
+                        JsonArray coos = go.getJsonArray("coordinates");
 
-                            double lon = coos.getJsonNumber(0).doubleValue();
-                            double lat = coos.getJsonNumber(1).doubleValue();
-                            PointModel pm = new PointModelImpl(lat,lon);
+                        double lon = coos.getJsonNumber(0).doubleValue();
+                        double lat = coos.getJsonNumber(1).doubleValue();
+                        PointModel pm1 = new PointModelImpl(lat,lon);
 
-                            JsonObject po = fo.getJsonObject("properties");
-                            String resText = String.format("%s", po.getString("display_name"));
+                        JsonObject po = fo.getJsonObject("properties");
+                        String resText = String.format("%s", po.getString("display_name"));
 
-                            resList.add( new SearchResult(request, resText, pm));
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+resText);
-                        } catch (Exception e) {
-                            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                        }
-
+                        resList.add( new SearchResult(request, resText, pm1));
+                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+resText);
+                    } catch (Exception e) {
+                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                     }
 
-                    publishResult(request, resList);
-                } catch (IOException e) {
-                    Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                 }
 
+                publishResult(request, resList);
+            } catch (IOException e) {
+                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
             }
-        }.start();
+
+        }).start();
     }
 
 
