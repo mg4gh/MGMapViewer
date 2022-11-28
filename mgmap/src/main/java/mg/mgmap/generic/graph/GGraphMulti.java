@@ -132,8 +132,10 @@ public class GGraphMulti extends GGraph {
         if ((remainingNodes1.size() > 0) && ((remainingNodes2.size() > 0))){
             ArrayList<GNode> stillRemainingNodes1 = new ArrayList<>(remainingNodes1);
             ArrayList<GNode> stillRemainingNodes2 = new ArrayList<>(remainingNodes2);
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+remainingNodes1);
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+remainingNodes2);
+            if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+remainingNodes1);
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+remainingNodes2);
+            }
             for (GNode node1 : remainingNodes1){
                 for (GNode node2 : remainingNodes2){
                     if ((node1.countNeighbours() == 1) && (node2.countNeighbours() == 1) && (PointModelUtil.distance(node1,node2)<CONNECT_THRESHOLD_METER*20)){
@@ -144,7 +146,9 @@ public class GGraphMulti extends GGraph {
                         if (PointModelUtil.distance(approchPoint,node1) > CONNECT_THRESHOLD_METER) continue;
                         if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approchPoint,0)) continue; // approach not found try next ponits
                         if (PointModelUtil.distance(approchPoint,node2) > CONNECT_THRESHOLD_METER) continue;
-                        Log.d(MGMapApplication.LABEL, NameUtil.context()+" OK, connect: node1 "+node1+" node1neighbour "+node1Neighbour+" node2 "+node2+" node2neighbour "+node2Neighbour);
+                        if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
+                            Log.d(MGMapApplication.LABEL, NameUtil.context() + " OK, connect: node1 " + node1 + " node1neighbour " + node1Neighbour + " node2 " + node2 + " node2neighbour " + node2Neighbour);
+                        }
                         connect(node1Neighbour, node2Neighbour);
                         stillRemainingNodes1.remove(node1);
                         stillRemainingNodes2.remove(node2);
@@ -155,8 +159,10 @@ public class GGraphMulti extends GGraph {
             remainingNodes2 = stillRemainingNodes2;
         }
         if ((remainingNodes1.size() > 0) || ((remainingNodes2.size() > 0))){
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" remainings1 "+remainingNodes1);
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" remainings2 "+remainingNodes2);
+            if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
+                Log.d(MGMapApplication.LABEL, NameUtil.context() + " remainings1 " + remainingNodes1);
+                Log.d(MGMapApplication.LABEL, NameUtil.context() + " remainings2 " + remainingNodes2);
+            }
         }
     }
 

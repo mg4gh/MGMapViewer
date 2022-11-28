@@ -158,7 +158,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
+        Log.i(MGMapApplication.LABEL, NameUtil.context());
         application = (MGMapApplication) getApplication();
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(application.getPersistenceManager()));
         //for fullscreen mode
@@ -365,7 +365,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void onNewIntent(Intent intent) {
         try {
             super.onNewIntent(intent);
-            Log.w(MGMapApplication.LABEL, NameUtil.context()+"  " + intent);
+            Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent);
             if (intent != null) {
                 String paramKey = getResources().getString(R.string.activity_param_key);
                 if (intent.hasExtra(paramKey)){

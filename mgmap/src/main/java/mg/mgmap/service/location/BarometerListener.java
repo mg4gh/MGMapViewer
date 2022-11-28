@@ -127,7 +127,9 @@ class BarometerListener implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+ "onAccuracyChanged: "+sensor.getName()+" "+i+" accChg");
+        if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)) {
+            Log.v(MGMapApplication.LABEL, NameUtil.context() + "onAccuracyChanged: " + sensor.getName() + " " + i + " accChg");
+        }
     }
 
     void activate(){

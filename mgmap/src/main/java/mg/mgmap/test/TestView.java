@@ -75,8 +75,10 @@ public class TestView extends RelativeLayout  {
         this.getLocationOnScreen(location);
         pxSize.x = this.getWidth();
         pxSize.y = this.getHeight();
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" TestView size: "+pxSize+" "
-                +" TestView location: "+location[0]+","+location[1]+" "+getContext().getClass().getSimpleName());
+        if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
+            Log.d(MGMapApplication.LABEL, NameUtil.context() + " TestView size: " + pxSize + " "
+                    + " TestView location: " + location[0] + "," + location[1] + " " + getContext().getClass().getSimpleName());
+        }
         application.getTestControl().onTestViewLayout(this);
     }
 

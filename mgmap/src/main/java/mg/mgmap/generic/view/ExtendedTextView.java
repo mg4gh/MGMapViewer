@@ -78,7 +78,9 @@ public class ExtendedTextView extends AppCompatTextView {
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
-        Log.v(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" w="+w+" h="+h+" oldw="+oldw+" oldh="+oldh);
+        if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)) {
+            Log.v(MGMapApplication.LABEL, NameUtil.context() + " " + logName + ":" + getText() + " - " + " w=" + w + " h=" + h + " oldw=" + oldw + " oldh=" + oldh);
+        }
     }
 
     public ExtendedTextView setName(String logName){
@@ -240,7 +242,7 @@ public class ExtendedTextView extends AppCompatTextView {
     }
 
     private void onChange(String reason){
-        if (reason != null){
+        if ((reason != null) && (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE))) {
             Log.v(MGMapApplication.LABEL, NameUtil.context()+" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" "+reason);
         }
         int drId;

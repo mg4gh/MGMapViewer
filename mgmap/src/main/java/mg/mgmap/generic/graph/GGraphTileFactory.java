@@ -61,7 +61,9 @@ public class GGraphTileFactory {
                 boolean bRes = (size() > CACHE_LIMIT);
                 if (bRes){
                     GGraphTile old = eldest.getValue();
-                    Log.d(MGMapApplication.LABEL, NameUtil.context() + " remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
+                    if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
+                        Log.d(MGMapApplication.LABEL, NameUtil.context() + " remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
+                    }
                 }
                 return bRes;
             }
@@ -85,8 +87,10 @@ public class GGraphTileFactory {
             int tileYMax = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( bBox.minLatitude , mapSize) , ZOOM_LEVEL, TILE_SIZE);
 
             int totalTiles = (tileXMax-tileXMin+1) * (tileYMax-tileYMin+1);
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" create GGraphTileList with tileXMin="+tileXMin+" tileYMin="+tileYMin+" and tileXMax="+tileXMax+" tileYMax="+tileYMax+
-                    " - total tiles="+ totalTiles);
+            if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
+                Log.d(MGMapApplication.LABEL, NameUtil.context() + " create GGraphTileList with tileXMin=" + tileXMin + " tileYMin=" + tileYMin + " and tileXMax=" + tileXMax + " tileYMax=" + tileYMax +
+                        " - total tiles=" + totalTiles);
+            }
             if (totalTiles < CACHE_LIMIT){
                 for (int tileX = tileXMin; tileX <= tileXMax; tileX++) {
                     for (int tileY = tileYMin; tileY <= tileYMax; tileY++) {
@@ -121,7 +125,9 @@ public class GGraphTileFactory {
 
         GGraphTile gGraphTile = cache.get(key);
         if (gGraphTile == null){
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" Load tileX="+tileX+" tileY="+tileY+" ("+cache.size()+")");
+            if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
+                Log.d(MGMapApplication.LABEL, NameUtil.context() + " Load tileX=" + tileX + " tileY=" + tileY + " (" + cache.size() + ")");
+            }
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
             gGraphTile = new GGraphTile(elevationProvider, tile);
             for (Way way : wayProvider.getWays(tile)) {
