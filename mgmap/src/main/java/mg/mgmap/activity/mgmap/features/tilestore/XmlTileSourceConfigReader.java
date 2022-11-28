@@ -23,10 +23,7 @@ import java.util.ArrayList;
 
 public class XmlTileSourceConfigReader {
 
-
-
-
-    private XmlPullParser pullParser = new KXmlParser();
+    private final XmlPullParser pullParser = new KXmlParser();
 
 
     private String getStringAttribute(String name) {
