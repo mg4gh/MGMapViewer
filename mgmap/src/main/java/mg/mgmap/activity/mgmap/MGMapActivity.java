@@ -668,24 +668,23 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         bestMatch = currentMatch;
                     }
                 }
-                if (bestMatch.getTrackLog() != null){
-                    if ((bestMatch.getTrackLog() == application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) && (bestMatch.getTrackLog().hasGainLoss())){
-                        prefCache.get(R.string.FSATL_pref_stlGl, false).toggle();
-                        return true;
-                    }
-                    if ((bestMatch.getTrackLog() == application.recordingTrackLogObservable.getTrackLog()) && (bestMatch.getTrackLog().hasGainLoss())) {
-                        prefCache.get(R.string.FSRecording_pref_rtlGl, false).toggle();
-                        return true;
-                    }
-                    if ((bestMatch.getTrackLog() == application.routeTrackLogObservable.getTrackLog()) && (bestMatch.getTrackLog().hasGainLoss())){
-                        prefCache.get(R.string.FSRouting_pref_RouteGL, false).toggle();
-                        return true;
-                    }
-                }
+                if (toggleGlOnMatch(bestMatch, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), prefCache.get(R.string.FSATL_pref_stlGl, false))) return true;
+                if (toggleGlOnMatch(bestMatch, application.recordingTrackLogObservable.getTrackLog(), prefCache.get(R.string.FSRecording_pref_rtlGl, false))) return true;
+                if (toggleGlOnMatch(bestMatch, application.routeTrackLogObservable.getTrackLog(), prefCache.get(R.string.FSRouting_pref_RouteGL, false))) return true;
                 return super.onLongPress(point);
             }
 
         });
+    }
+
+    private boolean toggleGlOnMatch(TrackLogRefApproach bestMatch, TrackLog candidate, Pref<Boolean> candidatesPref){
+        if ((bestMatch.getTrackLog() == candidate) && (candidate != null)){
+            if (candidate.hasGainLoss() || candidatesPref.getValue()){
+                candidatesPref.toggle();
+                return true;
+            }
+        }
+        return false;
     }
 
     public TrackLogRefApproach selectCloseTrack(PointModel pmTap) {
