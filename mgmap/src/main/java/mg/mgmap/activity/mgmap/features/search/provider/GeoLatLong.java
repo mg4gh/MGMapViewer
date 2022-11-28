@@ -15,6 +15,7 @@
 package mg.mgmap.activity.mgmap.features.search.provider;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -26,9 +27,11 @@ import mg.mgmap.activity.mgmap.features.search.SearchProvider;
 import mg.mgmap.activity.mgmap.features.search.SearchRequest;
 import mg.mgmap.activity.mgmap.features.search.SearchResult;
 import mg.mgmap.activity.mgmap.features.search.SearchView;
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 
+@SuppressWarnings("unused") // usage is via reflection
 public class GeoLatLong extends SearchProvider {
 
     private boolean autoCenter = true;
@@ -42,7 +45,9 @@ public class GeoLatLong extends SearchProvider {
         if (sAutoCenter != null){
             try {
                 autoCenter = Boolean.parseBoolean(sAutoCenter);
-            } catch (NumberFormatException e) { }
+            } catch (NumberFormatException e) {
+                Log.e(MGMapApplication.LABEL, e.getMessage());
+            }
         }
     }
 
@@ -71,7 +76,9 @@ public class GeoLatLong extends SearchProvider {
             } catch (NumberFormatException e) {
                 try {
                     lat = DegreeUtil.doubleDegree2double(true, words[idx]);
-                } catch (NumberFormatException e1) { }
+                } catch (NumberFormatException e1) {
+                    Log.e(MGMapApplication.LABEL, e.getMessage());
+                }
             }
             idx++;
             try {
@@ -81,7 +88,9 @@ public class GeoLatLong extends SearchProvider {
             } catch (NumberFormatException e) {
                 try {
                     lon = DegreeUtil.doubleDegree2double(false, words[idx]);
-                } catch (NumberFormatException e1) { }
+                } catch (NumberFormatException e1) {
+                    Log.e(MGMapApplication.LABEL, e.getMessage());
+                }
             }
             PointModel pm = new PointModelImpl(lat,lon);
             setResults(request, pm, resList);
