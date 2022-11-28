@@ -18,9 +18,6 @@ import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -28,7 +25,6 @@ import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.gpx.GpxExporter;
 import mg.mgmap.generic.util.Pref;
-import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
 
@@ -51,64 +47,55 @@ public class FSRecordingTrackLog extends FeatureService {
 
     public FSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);
-        getApplication().recordingTrackLogObservable.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                final RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
-                prefRecordTrack.setValue( (rtl != null) && ( rtl.isTrackRecording()) );
-                prefRecordSegment.setValue( (rtl != null) && ( rtl.isTrackRecording()) && (rtl.isSegmentRecording()));
+        getApplication().recordingTrackLogObservable.addObserver((o, arg) -> {
+            final RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+            prefRecordTrack.setValue( (rtl != null) && ( rtl.isTrackRecording()) );
+            prefRecordSegment.setValue( (rtl != null) && ( rtl.isTrackRecording()) && (rtl.isSegmentRecording()));
+        });
+        toggleRecordTrack.addObserver((o, arg) -> {
+            RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+            long timestamp = System.currentTimeMillis();
+            if (rtl == null){
+                rtl = new RecordingTrackLog( getPersistenceManager(), true);
+                getApplication().recordingTrackLogObservable.setTrackLog(rtl);
+                rtl.startTrack(timestamp);
+                rtl.startSegment(timestamp);
+                prefGps.setValue(true);
+            } else {
+                if (rtl.isSegmentRecording()) {
+                    rtl.stopSegment(timestamp);
+                    prefGps.setValue(false);
+                    getApplication().lastPositionsObservable.handlePoint(null);
+                }
+                rtl.stopTrack(timestamp);
+                GpxExporter.export(getPersistenceManager(), rtl);
+                getPersistenceManager().clearRaw();
+
+                getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
+                getApplication().metaTrackLogs.put(rtl.getNameKey(), rtl);
+                getApplication().recordingTrackLogObservable.setTrackLog(null);
+
+                application.getMetaDataUtil().createMetaData(rtl);
+                application.getMetaDataUtil().writeMetaData(application.getPersistenceManager().openMetaOutput(rtl.getName()), rtl);
+                getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
+
+                TrackLogRef selected = new TrackLogRef(rtl,rtl.getNumberOfSegments()-1);
+                getApplication().availableTrackLogsObservable.setSelectedTrackLogRef(selected);
+
+                getPref(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
             }
         });
-        toggleRecordTrack.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
-                long timestamp = System.currentTimeMillis();
-                if (rtl == null){
-                    rtl = new RecordingTrackLog( getPersistenceManager(), true);
-                    getApplication().recordingTrackLogObservable.setTrackLog(rtl);
-                    rtl.startTrack(timestamp);
+        toggleRecordSegment.addObserver((o, arg) -> {
+            long timestamp = System.currentTimeMillis();
+            RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
+            if ((rtl != null) && (rtl.isTrackRecording())){
+                if (!rtl.isSegmentRecording()){
                     rtl.startSegment(timestamp);
                     prefGps.setValue(true);
                 } else {
-                    if (rtl.isSegmentRecording()) {
-                        rtl.stopSegment(timestamp);
-                        prefGps.setValue(false);
-                        getApplication().lastPositionsObservable.handlePoint(null);
-                    }
-                    rtl.stopTrack(timestamp);
-                    GpxExporter.export(getPersistenceManager(), rtl);
-                    getPersistenceManager().clearRaw();
-
-                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
-                    getApplication().metaTrackLogs.put(rtl.getNameKey(), rtl);
-                    getApplication().recordingTrackLogObservable.setTrackLog(null);
-
-                    application.getMetaDataUtil().createMetaData(rtl);
-                    application.getMetaDataUtil().writeMetaData(application.getPersistenceManager().openMetaOutput(rtl.getName()), rtl);
-                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
-
-                    TrackLogRef selected = new TrackLogRef(rtl,rtl.getNumberOfSegments()-1);
-                    getApplication().availableTrackLogsObservable.setSelectedTrackLogRef(selected);
-
-                    getPref(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
-                }
-            }
-        });
-        toggleRecordSegment.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                long timestamp = System.currentTimeMillis();
-                RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
-                if ((rtl != null) && (rtl.isTrackRecording())){
-                    if (!rtl.isSegmentRecording()){
-                        rtl.startSegment(timestamp);
-                        prefGps.setValue(true);
-                    } else {
-                        rtl.stopSegment(timestamp);
-                        prefGps.setValue(false);
-                        getApplication().lastPositionsObservable.handlePoint(null);
-                    }
+                    rtl.stopSegment(timestamp);
+                    prefGps.setValue(false);
+                    getApplication().lastPositionsObservable.handlePoint(null);
                 }
             }
         });
