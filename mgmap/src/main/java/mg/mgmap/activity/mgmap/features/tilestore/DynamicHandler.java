@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -66,12 +67,12 @@ public class DynamicHandler {
                         map.put(k, subst(init.getString(k)) );
                     } else {
                         JsonObject jo = entry.getValue().asJsonObject();
-                        String jov = "";
+                        StringBuilder jov = new StringBuilder();
                         for (Map.Entry<String, JsonValue> joEntry : jo.entrySet()) {
                             String jok = joEntry.getKey();
-                            jov += subst(jo.getString(jok));
+                            jov.append(subst(jo.getString(jok)));
                         }
-                        map.put(k, jov);
+                        map.put(k, jov.toString());
                     }
                 }
             }
@@ -88,21 +89,21 @@ public class DynamicHandler {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Type="+type);
 
 
-            String url = cOne.getString("URL");
+            StringBuilder url = new StringBuilder(cOne.getString("URL"));
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" 1 URL="+url);
 
             JsonObject params = cOne.getJsonObject("Params");
             if (params != null){
                 for (Map.Entry<String, JsonValue> entry : params.entrySet()){
                     String k = entry.getKey();
-                    url += "&"+ kv(k, params.getString(k));
+                    url.append("&").append(kv(k, params.getString(k)));
                 }
             }
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" 2 URL="+url);
 
             Request.Builder requestBuilder = new Request.Builder()
                     .header("Content-Encoding", "gzip")
-                    .url(url);
+                    .url(url.toString());
 
             if (type.equals("POST")){
                 JsonObject bodyParams = cOne.getJsonObject("BodyReq");
@@ -198,7 +199,7 @@ public class DynamicHandler {
 
                 if (checkOk){
                     PrintWriter pw = new PrintWriter(os);
-                    pw.println(sb.toString());
+                    pw.println(sb);
                     pw.close();
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" checkOk");
                     res = true;
@@ -210,6 +211,7 @@ public class DynamicHandler {
         return res;
     }
 
+    @SuppressWarnings("ConstantConditions")
     public String subst(String value){
         switch (value) {
             case "${UUID}":
@@ -225,15 +227,15 @@ public class DynamicHandler {
                 value = "" + (System.currentTimeMillis() / 1000);
                 break;
         }
-        if (value.startsWith("$KV{") && value.endsWith("}")){
+        if ((value!=null) && value.startsWith("$KV{") && value.endsWith("}")){
             String varName = value.substring(4,value.length()-1);
             value = varName+"="+map.get(varName);
         }
-        if (value.startsWith("${") && value.endsWith("}")){
+        if ((value!=null) && value.startsWith("${") && value.endsWith("}")){
             String varName = value.substring(2,value.length()-1);
             value = map.get(varName);
         }
-        if (value.startsWith("$P{") && value.endsWith("}")){
+        if ((value!=null) && value.startsWith("$P{") && value.endsWith("}")){
             String varName = value.substring(3,value.length()-1);
             value = props.getProperty(varName);
         }
@@ -243,10 +245,6 @@ public class DynamicHandler {
     public String kv(String key, String value){
         return key+"="+subst(value);
     }
-    public String kv(String key){
-        return key+"="+subst("${"+key+"}");
-    }
-
 
     private void getHeader(Response response, String group, String name) {
         String value = getFromHeader(response, group, name);
@@ -258,13 +256,11 @@ public class DynamicHandler {
     private String getFromHeader(Response response, String group, String name){
         List<String> groupss = response.headers(group);
         for (String x : groupss){
-            if (groupss != null){
-                String[] groups = x.split(";");
-                for (String grp : groups){
-                    String[] part = grp.trim().split("=");
-                    if ((part.length == 2) && (part[0].equals(name))){
-                        return part[1];
-                    }
+            String[] groups = x.split(";");
+            for (String grp : groups){
+                String[] part = grp.trim().split("=");
+                if ((part.length == 2) && (part[0].equals(name))){
+                    return part[1];
                 }
             }
         }
@@ -279,13 +275,12 @@ public class DynamicHandler {
     }
 
 
+    @SuppressWarnings("SameParameterValue")
     private String getFromResponseBody(Response response, String pattern, int groupIndex){
         try {
             Pattern p = Pattern.compile(pattern);
-
-            BufferedReader in = new BufferedReader(response.body().charStream());
-            String line = "";
-            int cnt = 0;
+            BufferedReader in = new BufferedReader(Objects.requireNonNull(response.body()).charStream());
+            String line;
             while ((line = in.readLine()) != null){
                 Matcher m = p.matcher(line);
                 if (m.find()){
@@ -298,10 +293,11 @@ public class DynamicHandler {
         return null;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void dumpResponseBody(Response response, int numLines){
         try {
-            BufferedReader in = new BufferedReader(response.body().charStream());
-            String line = "";
+            BufferedReader in = new BufferedReader(Objects.requireNonNull(response.body()).charStream());
+            String line;
             int cnt = 0;
             while ((line = in.readLine()) != null){
                 Log.v(MGMapApplication.LABEL, NameUtil.context()+ String.format("lc=%04d %s", cnt++,line));
