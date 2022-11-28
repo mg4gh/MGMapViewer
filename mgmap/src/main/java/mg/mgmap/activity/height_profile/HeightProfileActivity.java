@@ -14,12 +14,10 @@
  */
 package mg.mgmap.activity.height_profile;
 
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,7 +54,6 @@ public class HeightProfileActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -67,12 +64,6 @@ public class HeightProfileActivity extends AppCompatActivity {
         showGraph(showAscentGraph);
         Log.i(MGMapApplication.LABEL, NameUtil.context() +" finished");
     }
-
-//    public static boolean check4trackLogRef(MGMapApplication application){
-//        if (null != application.recordingTrackLogObservable.getTrackLog()) return true;
-//        if (null != application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()) return true;
-//        return (null != application.routeTrackLogObservable.getTrackLog());
-//    }
 
     @Override
     protected void onPause() {
@@ -125,15 +116,10 @@ public class HeightProfileActivity extends AppCompatActivity {
         if ((application.routeTrackLogObservable.getTrackLog() != null) && (!hasElevation(application.routeTrackLogObservable.getTrackLog()))){
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle("Warning");
-            alertDialog.setMessage("Download hgt data to see the height profile of the RouteTrackLog. You can do this via hgt layer!");
+            alertDialog.setMessage("Download height data to see the height profile of the RouteTrackLog. You can do this via hgt layer!");
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                    (dialog, which) -> dialog.dismiss());
             alertDialog.show();
-//            Toast.makeText(this, "For height profile of route load hgt data (via hgt layer)!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -191,10 +177,7 @@ public class HeightProfileActivity extends AppCompatActivity {
             }
         }
         if (tls != null){
-            if ((tls.get(0).getEleA() != PointModel.NO_ELE) && (tls.get(1).getEleA() != PointModel.NO_ELE)){
-                // ok Tracklog seems to have ele values
-                return true;
-            }
+            return (tls.get(0).getEleA() != PointModel.NO_ELE) && (tls.get(1).getEleA() != PointModel.NO_ELE);
         }
         return false;
     }
