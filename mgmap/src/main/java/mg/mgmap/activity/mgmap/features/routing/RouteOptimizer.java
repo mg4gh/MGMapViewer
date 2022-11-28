@@ -173,7 +173,9 @@ public class RouteOptimizer {
                                 double amScore  = getScore(am);
                                 scoreMap.put(am, amScore + score*f);
                                 RoutePointModel rpm = routingEngine.getRoutePointMap().get(pm);
-                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" ii="+ii+" dist="+am.getApproachNode().getNeighbour().getCost()+" aIdx="+rpm.getApproaches().indexOf(am)+" +"+(score*f));
+                                if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG) && (rpm != null)){
+                                    Log.d(MGMapApplication.LABEL, NameUtil.context()+" ii="+ii+" dist="+am.getApproachNode().getNeighbour().getCost()+" aIdx="+rpm.getApproaches().indexOf(am)+" +"+(score*f));
+                                }
                             }
                         }
                     }
