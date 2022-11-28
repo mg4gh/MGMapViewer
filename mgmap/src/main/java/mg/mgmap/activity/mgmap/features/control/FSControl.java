@@ -217,7 +217,7 @@ public class FSControl extends FeatureService {
         return etv;
     }
 
-    public TextView initHelpControl(TextView helpView, String info){
+    public void initHelpControl(TextView helpView, String info){
         if ("help1".equals(info)) {
             helpView.setOnClickListener(v -> {
                 prefHelp.setValue(false);
@@ -226,7 +226,6 @@ public class FSControl extends FeatureService {
         } else if ("help2".equals(info)) {
             helpTexts.add(helpView);
         }
-        return helpView;
     }
 
     @Override
