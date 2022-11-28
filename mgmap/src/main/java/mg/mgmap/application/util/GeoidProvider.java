@@ -42,22 +42,23 @@ public class GeoidProvider {
         try {
             int latOffset = ((int) ((90 - latitude) * 4)) * 1440 * 2;
             int lonOffset = ((int) (longitude * 4)) * 2;
-            Float cachedGeoid = ccache.get(latOffset+lonOffset);
-            if (cachedGeoid != null){
-                return cachedGeoid; // chache hits
-            } else {
-                synchronized (this){
-                    InputStream is = am.open("nor/egm96-15.pgm");
-                    int offset = START_DATA+latOffset + lonOffset;
-                    if (is.skip(offset) == offset){
-                        int b2 = is.read();
-                        int b1 = is.read();
-                        is.close();
-                        int rawValue = ((b2 & 0xff) << 8) + (b1 & 0xff);
-                        float geoid = rawValue * 0.003f - 108;
-                        ccache.put(latOffset + lonOffset, geoid);
-                        return geoid;
-                    };
+            synchronized ( this ){
+                Float cachedGeoid = ccache.get(latOffset+lonOffset);
+                if (cachedGeoid != null){
+                    return cachedGeoid; // chache hits
+                } else {
+                    try (InputStream is = am.open("nor/egm96-15.pgm")){
+                        int offset = START_DATA+latOffset + lonOffset;
+                        if (is.skip(offset) == offset){
+                            int b2 = is.read();
+                            int b1 = is.read();
+                            is.close();
+                            int rawValue = ((b2 & 0xff) << 8) + (b1 & 0xff);
+                            float geoid = rawValue * 0.003f - 108;
+                            ccache.put(latOffset + lonOffset, geoid);
+                            return geoid;
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
