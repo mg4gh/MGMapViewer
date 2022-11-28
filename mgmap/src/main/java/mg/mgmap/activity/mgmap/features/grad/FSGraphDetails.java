@@ -143,9 +143,8 @@ public class FSGraphDetails extends FeatureService {
             }
         }
 
-
-
-        if ((bestNode != null) && (bestNeighbour != null) && (bestTile != null)){
+        //noinspection ConstantConditions
+        if ((bestNode != null) && (bestNeighbour != null) && (bestTile != null)){ // second and third condition are automatically true
             ArrayList<GNode> nodes = bestTile.segmentNodes(bestNode,bestNeighbour.getNeighbourNode(),Integer.MAX_VALUE);
 
             for (GNode node : nodes){
