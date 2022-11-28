@@ -115,11 +115,9 @@ public class FSRemainings extends FeatureService {
                     TrackLogRefApproach ref1 = selectedTrackLog.getBestDistance(lp);
                     if (ref1 != null) {
                         dist = selectedTrackLog.getRemainingDistance(ref1) ;
-                        drawableId = R.drawable.remaining;
                         if (prefReverse.getValue()) {
                             double total = selectedTrackLog.getTrackLogSegment(ref1.getSegmentIdx()).getStatistic().getTotalLength();
                             dist = total - dist;
-                            drawableId = R.drawable.remaining2;
                         }
                     }
                 }
