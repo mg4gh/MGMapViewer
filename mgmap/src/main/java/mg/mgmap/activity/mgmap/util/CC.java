@@ -15,6 +15,7 @@
 package mg.mgmap.activity.mgmap.util;
 
 import android.app.Activity;
+import android.app.Application;
 import android.graphics.Color;
 
 import androidx.core.content.ContextCompat;
@@ -26,6 +27,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Utility for ColorConstants.
@@ -33,15 +35,15 @@ import java.util.Map;
 public class CC { // short for ColorConstant
 
     private static final GraphicFactory GRAPHIC_FACTORY = AndroidGraphicFactory.INSTANCE;
-    private static Activity activity;
+    private static Application application;
 
     public static void setActivity(Activity activity){
-        CC.activity = activity;
+        CC.application = activity.getApplication();
     }
 
 
     public static int getColor(int colorId){
-        return ContextCompat.getColor(activity.getApplicationContext(),colorId);
+        return ContextCompat.getColor(application,colorId);
     }
 
     public static Paint getStrokePaint(int colorId, float width){
@@ -85,50 +87,59 @@ public class CC { // short for ColorConstant
         return paint;
     }
 
-    private static Map<Integer, Paint> glPaints = new HashMap<>();
+    private static final Map<Integer, Paint> glPaints = new HashMap<>();
 
     public static void initGlPaints(float fAlpha){
         int a = floatAlpha2int(fAlpha);
         if (glPaints.size() > 0){
-            if (Color.alpha(glPaints.get(0).getColor()) == a) return; // alpha unchanged
+            if (Color.alpha(Objects.requireNonNull(glPaints.get(0)).getColor()) == a) return; // alpha unchanged
         }
         int w=6;
-//        int a=0xC0;
-        int steps = 30;
-        for (int i=1; i<=steps; i++){
-            int r=0;
-            int g= 255 - (i*255)/steps;
-            int b=255;
-            int c = (a<<24) + (r<<16) + (g<<8) + b;
-            glPaints.put(-10-i,getStrokePaint4Color(c, w));
+        {
+            int steps = 30;
+            for (int i=1; i<=steps; i++){
+                int r=0;
+                int g= 255 - (i*255)/steps;
+                int b=255;
+                int c = argb(a,r,g,b);
+                glPaints.put(-10-i,getStrokePaint4Color(c, w));
+            }
         }
-        steps = 10;
-        for (int i=1; i<=steps; i++){
-            int r=0;
-            int g=255;
-            int b=(i*255)/steps;
-            int c = (a<<24) + (r<<16) + (g<<8) + b;
-            glPaints.put(-i,getStrokePaint4Color(c, w));
+        {
+            int steps = 10;
+            for (int i=1; i<=steps; i++){
+                int r=0;
+                int g=255;
+                int b=(i*255)/steps;
+                int c = argb(a,r,g,b);
+                glPaints.put(-i,getStrokePaint4Color(c, w));
+            }
         }
-
         glPaints.put(0,getStrokePaint4Color((a<<24) +0x00FF00, w));
-        steps = 10;
-        for (int i=1; i<=steps; i++){
-            int r=(i*255)/steps;
-            int g=255;
-            int b=0;
-            int c = (a<<24) + (r<<16) + (g<<8) + b;
-            glPaints.put(i,getStrokePaint4Color(c, w));
+        {
+            int steps = 10;
+            for (int i=1; i<=steps; i++){
+                int r=(i*255)/steps;
+                int g=255;
+                int b=0;
+                int c = argb(a,r,g,b);
+                glPaints.put(i,getStrokePaint4Color(c, w));
+            }
         }
-        steps = 30;
-        for (int i=1; i<=steps; i++){
-            int r=255;
-            int g= 255 - (i*255)/steps;
-            int b=0;
-            int c = (a<<24) + (r<<16) + (g<<8) + b;
-            glPaints.put(10+i,getStrokePaint4Color(c, w));
+        {
+            int steps = 30;
+            for (int i=1; i<=steps; i++){
+                int r=255;
+                int g= 255 - (i*255)/steps;
+                int b=0;
+                int c = argb(a,r,g,b);
+                glPaints.put(10+i,getStrokePaint4Color(c, w));
+            }
         }
+    }
 
+    public static int argb(int a, int r, int g, int b){
+        return (a<<24) + (r<<16) + (g<<8) + b;
     }
 
 
