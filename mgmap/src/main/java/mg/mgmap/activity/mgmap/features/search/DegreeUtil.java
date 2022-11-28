@@ -1,5 +1,7 @@
 package mg.mgmap.activity.mgmap.features.search;
 
+import android.annotation.SuppressLint;
+
 import java.util.Locale;
 
 public class DegreeUtil {
@@ -7,8 +9,10 @@ public class DegreeUtil {
     public static double degree2double(boolean isLatitude, String gms) throws NumberFormatException{
         if (gms == null) throw new NumberFormatException();
 
-        int degree = 0, negative = 1;
-        double minute = 0, second = 0;
+        int degree;
+        int negative = 1;
+        double minute = 0;
+        double second = 0;
 
         gms = gms.trim();
 
@@ -69,6 +73,8 @@ public class DegreeUtil {
     }
 
 
+    @SuppressWarnings("RedundantStringFormatCall")
+    @SuppressLint("DefaultLocale")
     public static void main(String[] args) {
         System.out.println( String.format("%2.6f", DegreeUtil.degree2double(true,"19") ));
         System.out.println( String.format("%2.6f", DegreeUtil.degree2double(true,"N19°") ));
