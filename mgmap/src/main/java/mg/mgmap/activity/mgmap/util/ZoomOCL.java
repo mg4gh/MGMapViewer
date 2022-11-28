@@ -30,22 +30,20 @@ import mg.mgmap.generic.util.ExtendedClickListener;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class ZoomOCL extends ExtendedClickListener {
-//public class ZoomOCL implements View.OnClickListener {
 
     public ZoomOCL(float scale){
         this.scale = scale;
         doubleClickTimeout = 200;
     }
 
-    private float scale;
-    private static Handler timer = new Handler();
+    private final float scale;
+    private static final Handler timer = new Handler();
     TextView tv;
     private int toMillis = 1500;
 
     final TimerTask ttResetTextSize = new TimerTask() {
         @Override
         public void run() {
-//            float scale = mapView.getModel().displayModel.getScaleFactor();
             float size = tv.getTextSize();
             Log.i(MGMapApplication.LABEL, NameUtil.context() + "size="+size);
 
@@ -58,7 +56,6 @@ public class ZoomOCL extends ExtendedClickListener {
     public void onSingleClick(View v) {
         if (v instanceof TextView){
             this.tv = (TextView)v;
-//            float scale = mapView.getModel().displayModel.getScaleFactor();
             float size = tv.getTextSize();
             Log.i(MGMapApplication.LABEL, NameUtil.context() + "size="+size);
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,  size+10*scale );
