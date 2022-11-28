@@ -18,6 +18,8 @@ the license of these maps!
 ## User documentation
 You will find the documentation on [GitHub Pages](https://mg4gh.github.io/MGMapViewer/) or directly on [GitHub](./docs/index.md).
 
+## Download latest apk
+Here you can [download](./docs/download.md) latest apk.
 
 
 
