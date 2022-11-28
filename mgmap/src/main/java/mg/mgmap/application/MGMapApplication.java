@@ -388,6 +388,7 @@ public class MGMapApplication extends Application {
     public void checkGpsStatus(){
         if (prefGps.getValue() && prefRestart.getValue()){ // if GPS is on ans restart flag is still set
             Intent intent = new Intent(this, MGMapActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             this.startActivity(intent);
         }
     }
