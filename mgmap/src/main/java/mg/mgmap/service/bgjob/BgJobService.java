@@ -70,9 +70,9 @@ public class BgJobService extends Service {
         super.onCreate();
         application = (MGMapApplication)getApplication();
 
-        CHANNEL_ID = "my_channel_02";
+        CHANNEL_ID = "MGMapViewer_BgJobService_Notification";
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                "MGMapViewer information channel 02",
+                "BgJobService notification channel",
                 NotificationManager.IMPORTANCE_LOW);
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);

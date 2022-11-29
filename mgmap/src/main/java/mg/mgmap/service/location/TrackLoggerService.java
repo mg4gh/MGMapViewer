@@ -72,9 +72,9 @@ public class TrackLoggerService extends Service {
 
         turningInstructionService = new TurningInstructionService(application, application, prefCache);
 
-        String CHANNEL_ID = "my_channel_01";
+        String CHANNEL_ID = "MGMapViewer_TrackLoggerService_Notification";
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                "MGMapViewer information channel",
+                "TrackLoggerService notification channel",
                 NotificationManager.IMPORTANCE_LOW);
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
