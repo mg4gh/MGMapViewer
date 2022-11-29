@@ -12,7 +12,6 @@ import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogSegment;
-import mg.mgmap.generic.util.basic.Assert;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class RouteOptimizer2 {
@@ -64,8 +63,8 @@ public class RouteOptimizer2 {
                 MultiPointModelImpl route = routingEngine.calcRouting(rpmSource, rpmTarget);
                 if (!route.isRoute()) continue;
 
-                Assert.check(rpmSource.getApproachNode() == route.get(0));
-                Assert.check(rpmTarget.getApproachNode() == route.get(route.size()-1));
+                assert (rpmSource.getApproachNode() == route.get(0));
+                assert (rpmTarget.getApproachNode() == route.get(route.size()-1));
 
                 boolean fits = true;
                 for (int idx=current+1; idx<currentEnd; idx++){

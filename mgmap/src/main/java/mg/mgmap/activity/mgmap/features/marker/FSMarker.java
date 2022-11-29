@@ -38,7 +38,6 @@ import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
-import mg.mgmap.generic.util.basic.Assert;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -316,7 +315,7 @@ public class FSMarker extends FeatureService {
     }
 
     private void insertPoint(WriteableTrackLog mtl, TrackLogRefApproach lineRef) {
-        Assert.check(lineRef.getTrackLog() == mtl);
+        assert (lineRef.getTrackLog() == mtl);
         TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
         int tlpIdx = lineRef.getEndPointIndex();
         WriteablePointModel wpm = new WriteablePointModelImpl(lineRef.getApproachPoint());

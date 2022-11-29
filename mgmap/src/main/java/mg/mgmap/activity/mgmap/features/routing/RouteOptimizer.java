@@ -28,7 +28,6 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteablePointModel;
-import mg.mgmap.generic.util.basic.Assert;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 
@@ -62,8 +61,8 @@ public class RouteOptimizer {
         MultiPointModelImpl route = routingEngine.calcRouting(rpmSource, rpmTarget);
         if (!route.isRoute()) return false;
 
-        Assert.check(rpmSource.getApproachNode() == route.get(0));
-        Assert.check(rpmTarget.getApproachNode() == route.get(route.size()-1));
+        assert (rpmSource.getApproachNode() == route.get(0));
+        assert (rpmTarget.getApproachNode() == route.get(route.size()-1));
 
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" startIdx="+startIdx+" endIdx="+endIdx);
 

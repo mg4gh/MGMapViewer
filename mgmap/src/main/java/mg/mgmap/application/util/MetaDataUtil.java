@@ -33,7 +33,6 @@ import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLogStatistic;
-import mg.mgmap.generic.util.basic.Assert;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class MetaDataUtil {
@@ -144,7 +143,7 @@ public class MetaDataUtil {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] b = new byte[MetaData.BUF_SIZE];
             while (in.available() >= b.length){
-                in.read(b);
+                assert (b.length == in.read(b));
                 ByteBuffer buf = ByteBuffer.wrap(b);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
                 if (buf.getLong() == MAGIC) break;  //indicates block with first lat,lon,ele values
@@ -153,8 +152,8 @@ public class MetaDataUtil {
             ByteBuffer buf = ByteBuffer.wrap(baos.toByteArray());
             buf.order(ByteOrder.LITTLE_ENDIAN);
 
-            Assert.check( buf.getLong() == MAGIC-1 );
-            Assert.check( buf.getInt() == VERSION );
+            assert( buf.getLong() == MAGIC-1 );
+            assert( buf.getInt() == VERSION );
 
             trackLog.setTrackStatistic( new TrackLogStatistic().fromByteBuffer(buf).setFrozen(true) );
             int numSegments = buf.getInt();
@@ -212,9 +211,9 @@ public class MetaDataUtil {
                 for (int mIdx = 0; mIdx<segment.getMetaDatas().size(); mIdx++) {
                     MetaData metaData = segment.getMetaDatas().get(mIdx);
                     ByteBuffer buf = getNextLaloBuf(in);
-                    Assert.check (buf != null);
-                    Assert.check ( buf.getShort() == segment.getSegmentIdx() );
-                    Assert.check ( buf.getShort() == mIdx );
+                    assert  (buf != null);
+                    assert  ( buf.getShort() == segment.getSegmentIdx() );
+                    assert  ( buf.getShort() == mIdx );
                     // all checks passed, now read the laloel values
                     for (int pIdx=0; pIdx<metaData.numPoints; pIdx++){
                         PointModelImpl pmi = new PointModelImpl();

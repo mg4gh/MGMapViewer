@@ -28,7 +28,6 @@ import java.util.Observer;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.generic.model.TrackLogRefZoom;
-import mg.mgmap.generic.util.basic.Assert;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -151,7 +150,7 @@ public class FSAvailableTrackLogs extends FeatureService {
         // handle selected track last, to get it on top
         TrackLog trackLog = available.getSelectedTrackLogRef().getTrackLog();
         if (trackLog!= null){
-            Assert.check(available.getAvailableTrackLogs().contains(trackLog));
+            assert (available.getAvailableTrackLogs().contains(trackLog));
             if (prefStlGl.getValue()){
                 CC.initGlPaints( prefAlphaStl.getValue() );
                 showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_STL_GL, prefAlphaStl.getValue()), true);
