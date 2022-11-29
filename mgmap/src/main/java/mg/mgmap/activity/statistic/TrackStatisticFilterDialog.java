@@ -149,7 +149,6 @@ public class TrackStatisticFilterDialog {
     }
 
 
-
     private TextView createTextView(ViewGroup parent, String text, float weight){
         TextView tv = new TextView(parent.getContext());
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT);
@@ -167,6 +166,7 @@ public class TrackStatisticFilterDialog {
     }
 
 
+    @SuppressWarnings("SameParameterValue")
     private <T> EditPref<T> createEditPref(ViewGroup parent, Pref<T> pref, float weight){
         EditPref<T> et = new EditPref<>(parent.getContext(), pref);
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT);
@@ -175,7 +175,6 @@ public class TrackStatisticFilterDialog {
         et.setLayoutParams(params);
         et.setGravity(Gravity.CENTER_HORIZONTAL);
         et.setPadding(5, 15, 5, 15);
-//        et.setText( pref.getValue().toString() );
         et.setTextColor(parent.getContext().getColor(R.color.WHITE));
         et.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         parent.addView(et);
@@ -183,6 +182,7 @@ public class TrackStatisticFilterDialog {
         return et;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private CheckBox createCheckBox(ViewGroup parent, Pref<Boolean> pref, float weight){
         CheckBox cb = new CheckBox(parent.getContext());
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT);
