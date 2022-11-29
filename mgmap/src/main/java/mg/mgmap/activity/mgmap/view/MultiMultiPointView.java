@@ -32,17 +32,6 @@ public class MultiMultiPointView extends MultiPointView {
         this.mpms = mpms;
     }
 
-//    @Override
-//    public synchronized boolean contains(Point tapXY, MapViewProjection mapViewProjection) {
-//        boolean res = false;
-//        for (int i=1; (i<mpms.size()) && (!res) ; i++){
-//            this.model = mpms.get(i);
-//            res |= super.contains(tapXY, mapViewProjection);
-//        }
-//        return res;
-//    }
-
-
     @Override
     public void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
         for (int i=0; i<mpms.size(); i++){
