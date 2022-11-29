@@ -20,9 +20,9 @@ import android.os.Bundle;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
@@ -42,10 +42,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.FullscreenUtil;
-import mg.mgmap.generic.util.HomeObserver;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.basic.TopExceptionHandler;
 
@@ -63,7 +61,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences,
                                           String key) {
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key).toString());
+        Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key));
         if (this.renderthemeOptions != null && this.renderthemeOptions.getId().equals(key)) {
             createRenderthemeMenu();
         }
@@ -78,7 +76,6 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         application = (MGMapApplication) getApplication();
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(application.getPersistenceManager()));
         super.onCreate(savedInstanceState);
-//        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler());
 
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -92,30 +89,18 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         // if the render theme has a style menu, its data is delivered via the intent
         renderthemeOptions = (XmlRenderThemeStyleMenu) getIntent().getSerializableExtra(getResources().getString(R.string.my_rendertheme_menu_key));
 
-//        ViewGroup qcs = findViewById(R.id.tsa_qc);
-//        ControlView.createQuickControlETV(qcs)
-//                .setData(R.drawable.back)
-//                .setOnClickListener(createBackOCL());
-//        ControlView.createQuickControlETV(qcs)
-//                .setData(R.drawable.home)
-//                .setOnClickListener(createHomeOCL());
     }
-//    private View.OnClickListener createBackOCL(){
-//        return v -> ThemeSettings.this.onBackPressed();
-//    }
-//    private View.OnClickListener createHomeOCL() {
-//        return v -> HomeObserver.launchHomeScreen(this);
-//    }
 
     public static class ThemeSettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.mypreferences, rootKey);
         }
+        @NonNull
         @Override
-        public RecyclerView onCreateRecyclerView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        public RecyclerView onCreateRecyclerView(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent, Bundle savedInstanceState) {
             RecyclerView recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState);
-            DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), RecyclerView.VERTICAL);
+            DividerItemDecoration itemDecoration = new DividerItemDecoration(requireContext(), RecyclerView.VERTICAL);
             recyclerView.addItemDecoration(itemDecoration);
             return recyclerView;
         }
