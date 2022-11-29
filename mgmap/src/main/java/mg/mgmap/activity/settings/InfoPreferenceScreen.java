@@ -16,24 +16,12 @@ package mg.mgmap.activity.settings;
 
 import android.os.Bundle;
 
-import androidx.preference.Preference;
-
-import mg.mgmap.BuildConfig;
 import mg.mgmap.R;
 
 public class InfoPreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.info_preferences, rootKey);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-//        setBrowseIntent(R.string.preferences_doc_main_key, R.string.url_doc_main);
-//
-//        Preference preference = findPreference(getResources().getString(R.string.preferences_version_key));
-//        preference.setSummary(BuildConfig.VERSION_NAME+" ("+ (BuildConfig.DEBUG?"debug":"release")+")");
     }
 
 }
