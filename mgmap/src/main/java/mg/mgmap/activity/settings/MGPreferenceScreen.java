@@ -19,15 +19,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.AbstractHint;
-import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
-import mg.mgmap.generic.util.hints.HintUtil;
 
 public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
 
