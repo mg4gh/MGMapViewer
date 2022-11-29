@@ -23,10 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
-
-import java.util.Observable;
-import java.util.Observer;
 
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.application.MGMapApplication;
@@ -39,8 +37,8 @@ public class LabeledSlider extends LinearLayout {
     Context context;
     Pref<Float> prefSlider = null;
     Pref<Boolean> prefSliderVisibility = null;
-    private TextView label;
-    private SeekBar seekBar;
+    private final TextView label;
+    private final SeekBar seekBar;
 
     public LabeledSlider(Context context) {
         this(context, null);
@@ -57,16 +55,12 @@ public class LabeledSlider extends LinearLayout {
         seekBar = this.createSeekBar(this);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public LabeledSlider initPrefData(Pref<Boolean> prefSliderVisibility, Pref<Float> prefSlider, Integer color, String text){
         label.setText(text);
         this.prefSliderVisibility = prefSliderVisibility;
         this.prefSlider = prefSlider;
-        this.prefSlider.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100));
-            }
-        });
+        this.prefSlider.addObserver((o, arg) -> seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100)));
         prefSlider.onChange();
         seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -84,11 +78,13 @@ public class LabeledSlider extends LinearLayout {
 
         if (color != null){
             GradientDrawable sd = (GradientDrawable) ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.shape3, getContext().getTheme());
-            sd.setTint(color);
-            sd.setBounds(0,0,convertDp(25),convertDp(10));
-            label.setCompoundDrawables(sd,null,null,null);
-            int drawablePadding = convertDp(3.0f);
-            label.setCompoundDrawablePadding(drawablePadding);
+            if (sd != null){
+                sd.setTint(color);
+                sd.setBounds(0,0,convertDp(25),convertDp(10));
+                label.setCompoundDrawables(sd,null,null,null);
+                int drawablePadding = convertDp(3.0f);
+                label.setCompoundDrawablePadding(drawablePadding);
+            }
         }
         return this;
     }
@@ -122,6 +118,7 @@ public class LabeledSlider extends LinearLayout {
         return prefSliderVisibility;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "LabeledSlider{" +
