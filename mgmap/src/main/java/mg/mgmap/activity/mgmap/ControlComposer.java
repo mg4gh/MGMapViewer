@@ -175,6 +175,7 @@ public class ControlComposer {
         createQC(activity, FSControl.class,qcss[7],"home",gos.get(0));
     }
 
+    @SuppressWarnings({"UnusedReturnValue", "SameParameterValue"})
     private ExtendedTextView createQC(MGMapActivity activity, Class<? extends FeatureService> clazz, ViewGroup viewGroup, String info){
         return createQC(activity,clazz,viewGroup,info,null);
     }
