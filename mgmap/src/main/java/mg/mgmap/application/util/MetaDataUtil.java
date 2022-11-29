@@ -234,7 +234,7 @@ public class MetaDataUtil {
             Log.d(MGMapApplication.LABEL, NameUtil.context()+ " "+in.available());
             while (in.available() >= MetaData.BUF_SIZE){
                 byte[] b = new byte[MetaData.BUF_SIZE];
-                in.read(b);
+                assert (b.length == in.read(b));
                 ByteBuffer buf = ByteBuffer.wrap(b);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
 
