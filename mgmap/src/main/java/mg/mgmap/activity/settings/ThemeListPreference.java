@@ -22,7 +22,6 @@ import androidx.preference.ListPreference;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
-import mg.mgmap.application.util.PersistenceManager;
 
 public class ThemeListPreference extends ListPreference {
 
