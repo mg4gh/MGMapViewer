@@ -20,7 +20,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.activity.mgmap.view.MVLayer;
+import mg.mgmap.activity.mgmap.view.DraggingMVLayer;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 
@@ -204,11 +204,7 @@ public class FSMarker extends FeatureService {
 
 
 
-    public class MarkerControlLayer extends MVLayer {
-
-        private MarkerControlLayer(){
-            setDragging();
-        }
+    public class MarkerControlLayer extends DraggingMVLayer<TrackLogRefApproach> {
 
         @Override
         public boolean onTap(WriteablePointModel pmTap) {
@@ -236,7 +232,7 @@ public class FSMarker extends FeatureService {
         }
 
         @Override
-        protected boolean checkDrag(PointModel pmStart, DragData dragData) {
+        protected boolean checkDrag(PointModel pmStart) {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, getRadiusForMarkerActions());
             TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl, pmStart, getRadiusForMarkerActions());
@@ -251,7 +247,7 @@ public class FSMarker extends FeatureService {
                     }
                 }
                 if (pointRef != null){
-                    dragData.setDragObject(pointRef);
+                    setDragObject(pointRef);
 
                     if (getMapView().getModel().mapViewPosition.getZoomLevel() < 15){
                         // if prev of next point are also close, then prohibit drag - if too much points close, the user intention is not clear
@@ -260,31 +256,31 @@ public class FSMarker extends FeatureService {
                         if (tlpIdx > 0){ // there is a previous point -> check whether also close
                             PointModel prevPoint = segment.get(tlpIdx-1);
                             if (getMapViewUtility().isClose( PointModelUtil.distance(pmStart, prevPoint) )){
-                                dragData.setDragObject(null);
+                                setDragObject(null);
                             }
                         }
                         if (tlpIdx < segment.size()-1){
                             PointModel nextPoint = segment.get(tlpIdx+1);
                             if (getMapViewUtility().isClose( PointModelUtil.distance(pmStart, nextPoint) )){
-                                dragData.setDragObject(null);
+                                setDragObject(null);
                             }
                         }
                     }
                 }
-                if (dragData.getDragObject() != null){
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" dragData.dragObject="+dragData.getDragObject());
+                if (getDragObject() != null){
+                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" dragObject="+getDragObject());
                 }
             } catch (Exception e){
-                dragData.setDragObject(null);
+                setDragObject(null);
             }
-            return (dragData.getDragObject() != null);
+            return (getDragObject() != null);
         }
 
         @Override
-        protected void handleDrag(WriteablePointModel pmCurrent, DragData dragData) {
+        protected void handleDrag(WriteablePointModel pmCurrent) {
             Log.i(MGMapApplication.LABEL, NameUtil.context()+" pmCurrent="+pmCurrent);
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
-            TrackLogRefApproach dragRef = dragData.getDragObject(TrackLogRefApproach.class);
+            TrackLogRefApproach dragRef = getDragObject();
             moveMarkerPoint(mtl, dragRef.getSegmentIdx(), dragRef.getEndPointIndex(), pmCurrent);
             mtl.recalcStatistic();
             mtl.setModified(true);

@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.view.DraggingMVLayer;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
@@ -46,7 +47,6 @@ import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
-import mg.mgmap.activity.mgmap.view.MVLayer;
 
 public class FSBB extends FeatureService {
 
@@ -166,10 +166,9 @@ public class FSBB extends FeatureService {
         prefTSActionsEnabled.setValue(tsOpsAllowed);
     }
 
-    public class BBControlLayer extends MVLayer {
+    public class BBControlLayer extends DraggingMVLayer<WriteablePointModel>{
 
         private BBControlLayer(){
-            setDragging();
             changed();
         }
 
@@ -188,7 +187,7 @@ public class FSBB extends FeatureService {
         }
 
         @Override
-        protected boolean checkDrag(PointModel pmStart, DragData dragData) {
+        protected boolean checkDrag(PointModel pmStart) {
             double dp1 = Double.MAX_VALUE;
             double dp2 = Double.MAX_VALUE;
             // 3 Fälle:
@@ -204,23 +203,23 @@ public class FSBB extends FeatureService {
 
             double close = getMapViewUtility().getCloseThreshouldForZoomLevel();
             if ((dp1 < close) && (dp2 > close)){
-                dragData.setDragObject(p1);
+                setDragObject(p1);
             }
             if ((dp2 < close) && (dp1 > close)){
-                dragData.setDragObject(p2);
+                setDragObject(p2);
             }
 
             if ((p1 == null) && (p2 == null)){
                 p1 = new WriteablePointModelImpl(pmStart);
                 p2 = new WriteablePointModelImpl(pmStart);
-                dragData.setDragObject(p1);
+                setDragObject(p1);
             }
-            return (dragData.getDragObject() != null);
+            return (getDragObject() != null);
         }
 
         @Override
-        protected void handleDrag(WriteablePointModel pmCurrent, DragData dragData) {
-            WriteablePointModel pmDrag = dragData.getDragObject(WriteablePointModel.class);
+        protected void handleDrag(WriteablePointModel pmCurrent) {
+            WriteablePointModel pmDrag = getDragObject();
             pmDrag.setLat(pmCurrent.getLat());
             pmDrag.setLon(pmCurrent.getLon());
             changed();

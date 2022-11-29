@@ -48,7 +48,6 @@ public abstract class MVLayer extends Layer {
 
     @Override
     public final synchronized void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
-//        Log.i(MGMapApplication.LABEL, NameUtil.context() + " "+this);
         this.topLeftPoint = topLeftPoint;
         mapSize = MercatorProjection.getMapSize(zoomLevel, displayModel.getTileSize());
         if (mapViewUtility != null) {
@@ -84,79 +83,6 @@ public abstract class MVLayer extends Layer {
         return false;
     }
 
-
-    private DragData dragData = null;
-
-    @Override
-    public boolean onScroll(float scrollX1, float scrollY1, float scrollX2, float scrollY2) {
-        if (dragData != null){
-            if (!dragData.checkDragXY(scrollX1,scrollY1)){
-                dragData.reset();
-                dragData.setDragXY(scrollX1,scrollY1);
-                PointModel pmStartScroll = new WriteablePointModelImpl(y2lat(scrollY1), x2lon(scrollX1));
-                if (checkDrag(pmStartScroll, dragData)){
-                    dragData.dragOrigin = pmStartScroll;
-                }
-            }
-
-            if (dragData.dragOrigin != null){
-                WriteablePointModel pmCurrent = new WriteablePointModelImpl(y2lat(scrollY2), x2lon(scrollX2));
-                handleDrag(pmCurrent, dragData);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public class DragData{
-        private float dragX;
-        private float dragY;
-        private PointModel dragOrigin = null;
-        private Object dragObject = null;
-
-        private DragData(){
-            reset();
-        }
-
-        private boolean checkDragXY(float scrollX, float scrollY){
-            return ((dragX == scrollX) && (dragY == scrollY));
-        }
-        private void setDragXY(float scrollX, float scrollY){
-            dragX = scrollX;
-            dragY = scrollY;
-        }
-        public PointModel getDragOrigin() {
-            return dragOrigin;
-        }
-
-        public void setDragObject(Object object){
-            dragObject = object;
-        }
-        public <T> T getDragObject(Class<T> tClass){
-            return (tClass.isInstance(dragObject))?(T) dragObject:null;
-        }
-        public Object getDragObject(){
-            return dragObject;
-        }
-
-        private void reset(){
-            dragX = Float.MIN_VALUE;
-            dragY = Float.MIN_VALUE;
-            dragOrigin = null;
-            dragObject = null;
-        }
-    }
-
-    protected boolean checkDrag(PointModel pmStart, DragData dragData){
-        return false;
-    }
-    protected void handleDrag(WriteablePointModel pmCurrent, DragData dragData){}
-
-    protected void setDragging() {
-        if (dragData == null) {
-            dragData = new DragData();
-        }
-    }
 
     @Override
     public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
