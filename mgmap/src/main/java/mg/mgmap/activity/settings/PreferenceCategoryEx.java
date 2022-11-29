@@ -18,9 +18,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceViewHolder;
 
+@SuppressWarnings("unused")
 public class PreferenceCategoryEx extends PreferenceCategory
 {
 
@@ -35,7 +37,7 @@ public class PreferenceCategoryEx extends PreferenceCategory
     }
 
     @Override
-    public void onBindViewHolder(PreferenceViewHolder holder)
+    public void onBindViewHolder(@NonNull PreferenceViewHolder holder)
     {
         super.onBindViewHolder(holder);
         TextView summary= (TextView)holder.findViewById(android.R.id.summary);
