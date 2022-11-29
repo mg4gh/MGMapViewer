@@ -18,8 +18,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,11 +28,9 @@ import androidx.preference.PreferenceManager;
 
 import java.util.Objects;
 
-import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.FullscreenUtil;
-import mg.mgmap.generic.util.HomeObserver;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class SettingsActivity extends AppCompatActivity implements
@@ -71,20 +67,7 @@ public class SettingsActivity extends AppCompatActivity implements
                 .beginTransaction()
                 .replace(R.id.settings, pfc )
                 .commit();
-//        ViewGroup qcs = findViewById(R.id.sa_qc);
-//        ControlView.createQuickControlETV(qcs)
-//                .setData(R.drawable.back)
-//                .setOnClickListener(createBackOCL());
-//        ControlView.createQuickControlETV(qcs)
-//                .setData(R.drawable.home)
-//                .setOnClickListener(createHomeOCL());
     }
-//    private View.OnClickListener createBackOCL(){
-//        return v -> SettingsActivity.this.onBackPressed();
-//    }
-//    private View.OnClickListener createHomeOCL() {
-//        return v -> HomeObserver.launchHomeScreen(this);
-//    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -96,6 +79,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     // copied from:
     // https://developer.android.com/guide/topics/ui/settings/organize-your-settings#java
+    // mg4gh: removed line "fragment.setTargetFragment(caller, 0);", since it is deprecated and it seems not necessary
     @Override
     public boolean onPreferenceStartFragment(@NonNull PreferenceFragmentCompat caller, Preference pref) {
         // Instantiate the new Fragment
@@ -105,7 +89,6 @@ public class SettingsActivity extends AppCompatActivity implements
                 Objects.requireNonNull(pref.getFragment()));
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" set fragment "+pref.getFragment());
         fragment.setArguments(args);
-        fragment.setTargetFragment(caller, 0);
         // Replace the existing Fragment with the new Fragment
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.settings, fragment)
