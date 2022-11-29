@@ -356,7 +356,7 @@ public class PersistenceManager {
     }
 
     public byte[] getHgtBuf(String hgtName){
-        byte[] buf = null;
+        byte[] buf = new byte[0];
         try {
             File hgtFile = getHgtFile(hgtName);
             if (hgtFile.exists()){
@@ -374,12 +374,12 @@ public class PersistenceManager {
                     }
                     zipFile.close();
                 } else { // is dummy hgt file
-                    buf = new byte[0];
+                    buf = new byte[1];
                 }
             }
         } catch (IOException e) { // should not happen
             e.printStackTrace();
-            buf = null; // but if so, prevent accessing inconsistent data
+            buf = new byte[0]; // but if so, prevent accessing inconsistent data
         }
         return buf;
     }

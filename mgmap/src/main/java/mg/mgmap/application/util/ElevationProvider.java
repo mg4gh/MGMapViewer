@@ -53,8 +53,8 @@ public class ElevationProvider {
         }
         String hgtName = hgtProvider.getHgtName(iLat,iLon);
         byte[] hgtBuf = hgtProvider.getHgtBuf(hgtName);
-        if (hgtBuf != null){ // hgt files exists
-            if (hgtBuf.length > 0){ // ok, exists with content
+        if ((hgtBuf != null) && (hgtBuf.length > 0)){ // hgt files exists (real one or dummy)
+            if (hgtBuf.length > 1){ // ok, exists with content (length 1 indicates dummy file for sea level)
                 double dlat = 1 - (latitude - iLat);
                 int oLat = (int) (dlat * 3600);
                 double dlon = longitude - iLon;
