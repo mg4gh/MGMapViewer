@@ -26,30 +26,19 @@ import mg.mgmap.generic.model.BBox;
 
 public class BoxView extends MVLayer {
 
-    private BBox model;
-    private Paint paintStroke;
-    private Paint paintFill = null;
-    private boolean keepAligned = true;
+    private static final GraphicFactory graphicFactory = AndroidGraphicFactory.INSTANCE;
 
-    private static GraphicFactory graphicFactory = AndroidGraphicFactory.INSTANCE;
+    private BBox model;
+    private final Paint paintStroke;
 
     public BoxView(BBox model, Paint paintStroke){
         this.model = model;
         this.paintStroke = paintStroke;
     }
-    public BoxView(BBox model, Paint paintStroke, Paint paintFill){
-        this(model, paintStroke);
-        this.paintFill = paintFill;
-    }
-    public BoxView(BBox model, Paint paintStroke, Paint paintFill, boolean keepAligned){
-        this(model, paintStroke, paintFill);
-        this.keepAligned = keepAligned;
-    }
-
 
     @Override
     public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
-        if (this.paintStroke == null && this.paintFill == null){
+        if (this.paintStroke == null){
             return;
         }
 
@@ -70,20 +59,9 @@ public class BoxView extends MVLayer {
         path.lineTo(maxX, minY);
         path.lineTo(minX, minY);
 
-        if (this.paintStroke != null) {
-            if (this.keepAligned) {
-                this.paintStroke.setBitmapShaderShift(topLeftPoint);
-            }
-            canvas.drawPath(path, this.paintStroke);
-        }
-        if (this.paintFill != null) {
-            if (this.keepAligned) {
-                this.paintFill.setBitmapShaderShift(topLeftPoint);
-            }
-            canvas.drawPath(path, this.paintFill);
-        }
+        this.paintStroke.setBitmapShaderShift(topLeftPoint);
+        canvas.drawPath(path, this.paintStroke);
     }
-
 
     public BBox getModel() {
         return model;
@@ -91,9 +69,5 @@ public class BoxView extends MVLayer {
 
     public void setModel(BBox model) {
         this.model = model;
-    }
-
-    public void setKeepAligned(boolean keepAligned) {
-        this.keepAligned = keepAligned;
     }
 }
