@@ -53,8 +53,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
 
     @Override
     protected void onPause() {
-        mapView.getModel().save(this.preferencesFacade);
-        this.preferencesFacade.save();
+        saveMapViewModel();
         super.onPause();
     }
 
@@ -76,7 +75,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
     /** MGMapViewer use exactly one mapView object, which is initialized here */
     protected void initMapView() {
         mapView = findViewById(R.id.mapView);
-        mapView.getModel().init(this.preferencesFacade);
+        restoreMapViewModel();
         mapView.setClickable(true);
         mapView.getMapScaleBar().setVisible(true);
         mapView.setBuiltInZoomControls(false);
@@ -88,7 +87,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         this.preferencesFacade.save();
     }
 
-    private void restoreModel(){
+    private void restoreMapViewModel(){
         mapView.getModel().init(this.preferencesFacade);
     }
 
