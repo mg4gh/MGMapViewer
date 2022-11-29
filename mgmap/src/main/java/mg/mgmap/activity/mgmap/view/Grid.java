@@ -12,6 +12,9 @@
  *
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright 2015-2019 mg4gh
+ * Adopted from mapsforge project - modified to add transparency.
  */
 package mg.mgmap.activity.mgmap.view;
 
@@ -91,7 +94,10 @@ public class Grid extends Layer {
         return paint;
     }
 
-    private int lineBackColor, lineFrontColor, textBackColor, textFrontColor;
+    private final int lineBackColor;
+    private final int lineFrontColor;
+    private final int textBackColor;
+    private final int textFrontColor;
     private final Paint lineBack, lineFront, textBack, textFront;
     private final Map<Byte, Double> spacingConfig;
 
@@ -116,28 +122,6 @@ public class Grid extends Layer {
         this.lineFront = createLineFront(graphicFactory, displayModel);
         this.textBack = createTextBack(graphicFactory, displayModel);
         this.textFront = createTextFront(graphicFactory, displayModel);
-    }
-
-    /**
-     * Ctor.
-     *
-     * @param displayModel  the display model of the map view.
-     * @param spacingConfig a map containing the spacing for every zoom level.
-     * @param lineBack      the back line paint.
-     * @param lineFront     the top line paint.
-     * @param textBack      the back text paint.
-     * @param textFront     the top text paint.
-     */
-    public Grid(DisplayModel displayModel, Map<Byte, Double> spacingConfig,
-                Paint lineBack, Paint lineFront, Paint textBack, Paint textFront) {
-        super();
-
-        this.displayModel = displayModel;
-        this.spacingConfig = spacingConfig;
-        this.lineBack = lineBack;
-        this.lineFront = lineFront;
-        this.textBack = textBack;
-        this.textFront = textFront;
     }
 
     @Override
