@@ -56,24 +56,6 @@ public class MultiPointView extends MVLayer {
         return model;
     }
 
-
-//    public synchronized boolean contains(Point tapXY, MapViewProjection mapViewProjection) {
-//        // Touch min 20 px at baseline mdpi (160dpi)
-//        double distance = Math.max(20 / 2 * this.displayModel.getScaleFactor(),
-//                this.paintStroke.getStrokeWidth() / 2);
-//        Point point2 = null;
-//        for (int i = 0; i < this.model.size() - 1; i++) {
-//            LatLong latLong = new LatLong(this.model.get(i).getLat(),this.model.get(i).getLon());
-//            Point point1 = i == 0 ? mapViewProjection.toPixels(latLong) : point2;
-//            LatLong latLong2 = new LatLong(this.model.get(i+1).getLat(),this.model.get(i+1).getLon());
-//            point2 = mapViewProjection.toPixels(latLong2);
-//            if (LatLongUtils.distanceSegmentPoint(point1.x, point1.y, point2.x, point2.y, tapXY.x, tapXY.y) <= distance) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     @Override
     public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
         try {
@@ -95,6 +77,7 @@ public class MultiPointView extends MVLayer {
             return;
         }
 
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (model){
             Iterator<PointModel> iterator = model.iterator();
             if (!iterator.hasNext()) {
@@ -140,40 +123,6 @@ public class MultiPointView extends MVLayer {
             canvas.drawCircle(x, y, (int)(pointRadius* getScale(zoomLevel)), this.paintStroke);
         }
     }
-
-    /**
-     * @return the {@code Paint} used to stroke this polyline (may be null).
-     */
-    public synchronized Paint getPaintStroke() {
-        return this.paintStroke;
-    }
-
-    /**
-     * @return the base to scale polyline stroke per zoom (default 1 not scale).
-     */
-    public synchronized double getStrokeIncrease() {
-        return strokeIncrease;
-    }
-
-    /**
-     * @return true if it keeps the bitmap aligned with the map, to avoid a
-     * moving effect of a bitmap shader, false otherwise.
-     */
-    public boolean isKeepAligned() {
-        return keepAligned;
-    }
-
-    public void setKeepAligned(boolean keepAligned) {
-        this.keepAligned = keepAligned;
-    }
-
-    /**
-     * @param paintStroke the new {@code Paint} used to stroke this polyline (may be null).
-     */
-    public synchronized void setPaintStroke(Paint paintStroke) {
-        this.paintStroke = paintStroke;
-    }
-
 
     /**
      * @param strokeIncrease the base to scale polyline stroke per zoom (default 1 not scale).
