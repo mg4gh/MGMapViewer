@@ -38,11 +38,6 @@ public class MultiPointGLView extends MultiPointView {
         super(model, paintStroke);
     }
 
-//    @Override
-//    public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
-//        drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
-//    }
-
     protected void drawModel(MultiPointModel model, BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint){
         if ((model == null) ||(model.size() <= 0) || this.paintStroke == null) {
             return;
@@ -61,14 +56,13 @@ public class MultiPointGLView extends MultiPointView {
         }
 
         {
-//            Log.d(MGMapApplication.LABEL, NameUtil.context()+" startGL");
             Path path = this.graphicFactory.createPath();
             PointModel pm1 = model.get(model.size() - 1), pm2;
-            int x1 = lon2x(pm1.getLon()), x2=x1, x3=x2;
-            int y1 = lat2y(pm1.getLat()), y2=y1, y3=y2;
-            float z1 = pm1.getEleD(), z2=z1;
-            double d1=0, d2=d1, d3=d2;
-            double gl1=0, gl2=gl1, gl3=gl2;
+            int x1 = lon2x(pm1.getLon()), x2=x1, x3;
+            int y1 = lat2y(pm1.getLat()), y2=y1, y3;
+            float z1 = pm1.getEleD(), z2;
+            double d1=0, d2=d1, d3;
+            double gl1=0, gl2=gl1, gl3;
 
             float scale = getScale(zoomLevel);
             float w0 = paintStroke.getStrokeWidth();
@@ -107,7 +101,7 @@ public class MultiPointGLView extends MultiPointView {
                     canvas.drawPath(path, paint);
                     // finally draw thin line in the direction of path (last 20%)
                     path.clear();
-                    path.moveTo((x2+4*x3)/5, (y2+4*y3)/5);
+                    path.moveTo((x2+4*x3)/5f, (y2+4*y3)/5f);
                     paintStroke.setStrokeWidth( w0 * 0.7f * scale / 3);
                     path.lineTo(x3,y3);
                     canvas.drawPath(path, paintStroke);
@@ -116,8 +110,6 @@ public class MultiPointGLView extends MultiPointView {
                 }
             }
             this.paintStroke.setStrokeWidth(w0);
-
-//            Log.d(MGMapApplication.LABEL, NameUtil.context()+" endGL");
         }
     }
 
