@@ -54,6 +54,7 @@ import mg.mgmap.activity.mgmap.view.MultiPointView;
  * <p>A second feature of the MicroServices is the register/unregister functionality for MapView layers. Beside the registration in the MapView.Layers object these Layers get also a reference to the MapViewUtility and
  * (depending on a parameter) their reference is also stored in the layer registry of the service.</p>
  */
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class FeatureService {
 
     /** A timer object. */
