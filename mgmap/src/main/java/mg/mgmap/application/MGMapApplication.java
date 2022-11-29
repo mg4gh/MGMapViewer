@@ -36,6 +36,7 @@ import mg.mgmap.application.util.HgtProvider;
 import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
+import mg.mgmap.generic.util.PrefUtil;
 import mg.mgmap.generic.util.hints.HintUtil;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.R;
@@ -89,6 +90,7 @@ public class MGMapApplication extends Application {
     private NotificationUtil notificationUtil;
     private TrackStatisticFilter trackStatisticFilter;
     private HintUtil hintUtil;
+    private PrefUtil prefUtil;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
@@ -132,6 +134,7 @@ public class MGMapApplication extends Application {
         persistenceManager = new PersistenceManager(this);
         startLogging(persistenceManager.getLogDir());
         AndroidGraphicFactory.createInstance(this);
+        prefUtil = new PrefUtil("", this);
         prefCache = new PrefCache(this);
 
         hgtProvider = new HgtProvider(persistenceManager, getAssets()); // for hgt file handling
@@ -423,6 +426,10 @@ public class MGMapApplication extends Application {
 
     public HintUtil getHintUtil() {
         return hintUtil;
+    }
+
+    public PrefUtil getPrefUtil() {
+        return prefUtil;
     }
 
     public PrefCache getPrefCache(){
