@@ -40,6 +40,7 @@ import org.mapsforge.map.model.DisplayModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Observer;
 
 import mg.mgmap.application.MGMapApplication;
@@ -108,10 +109,6 @@ public class ControlView extends RelativeLayout {
         return application;
     }
 
-    public String rstring(int id){
-        return getResources().getString(id);
-    }
-
     public static int dp(float f){
         return (int) (f * DisplayModel.getDeviceScaleFactor());
     }
@@ -173,7 +170,7 @@ public class ControlView extends RelativeLayout {
     public static int getStatusBarHeight(Activity activity) {
         int height;
         Resources myResources = activity.getResources();
-        @SuppressLint("InternalInsetResource")
+        @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
         int idStatusBarHeight = myResources.getIdentifier( "status_bar_height", "dimen", "android");
         if (idStatusBarHeight > 0) {
             height = activity.getResources().getDimensionPixelSize(idStatusBarHeight);
@@ -236,12 +233,12 @@ public class ControlView extends RelativeLayout {
         int drawablePadding = dp(3.0f);
         etv.setCompoundDrawablePadding(drawablePadding);
         Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
-
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        if (drawable != null){
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        }
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
-//        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         etv.setOnClickListener(enlargeControl);
         return etv;
     }
@@ -278,6 +275,7 @@ public class ControlView extends RelativeLayout {
 
     public void setDashboardValue(boolean condition, ViewGroup dashboardEntry, TrackLogStatistic statistic){
         if (setDashboardEntryVisibility(dashboardEntry, condition && (statistic != null) , (dashboardEntry.getParent() != null))){
+            assert statistic != null;
             String sIdx = "I="+statistic.getSegmentIdx();
             if (statistic.getSegmentIdx() == -1) sIdx = "All";
             if (statistic.getSegmentIdx() == -2) sIdx = "R";
@@ -301,18 +299,14 @@ public class ControlView extends RelativeLayout {
         LabeledSlider labeledSlider = new LabeledSlider(context);
         parent.addView(labeledSlider);
 
-        ArrayList<LabeledSlider> childList = labeledSliderMap.get(parent);
-        if (childList == null){
-            childList = new ArrayList<>();
-            labeledSliderMap.put(parent, childList);
-        }
+        ArrayList<LabeledSlider> childList = labeledSliderMap.computeIfAbsent(parent, k -> new ArrayList<>());
         childList.add(labeledSlider);
         return labeledSlider;
     }
 
     private void registerSliderObserver() {
         for (ViewGroup parent : labeledSliderMap.keySet()) {
-            for (LabeledSlider slider : labeledSliderMap.get(parent)) {
+            for (LabeledSlider slider : Objects.requireNonNull(labeledSliderMap.get(parent))) {
                 slider.getPrefSliderVisibility().addObserver(sliderVisibilityChangeObserver);
             }
         }
