@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.settings;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -31,9 +32,12 @@ public class MapLayersPreferenceScreen extends MGPreferenceScreen {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.map_layers_preferences, rootKey);
         try {
-            List<String> mapKeys = MGMapLayerFactory.getMapLayerKeys(getContext()).stream().map(key->findPreference(key).getSummary().toString()).collect(Collectors.toList());
-            MGMapApplication application = (MGMapApplication) getActivity().getApplication();
-            application.getHintUtil().showHint( new HintMapLayerAssignment(getActivity(), mapKeys) );
+            MGMapApplication application = (MGMapApplication) requireActivity().getApplication();
+            SharedPreferences sharedPreferences = application.getPrefUtil().getSharedPreferences();
+            if (sharedPreferences != null){
+                List<String> mapKeys = MGMapLayerFactory.getMapLayerKeys(getContext()).stream().map(key->sharedPreferences.getString(key,"")).collect(Collectors.toList());
+                application.getHintUtil().showHint( new HintMapLayerAssignment(getActivity(), mapKeys) );
+            }
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
         }
