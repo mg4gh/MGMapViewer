@@ -28,11 +28,10 @@ public class PointView extends MVLayer {
     private static final int DEFAULT_ZOOM_LEVEL = 15;
 
     private PointModel model;
-    private Paint paintStroke;
+    private final Paint paintStroke;
     private Paint paintFill = null;
     private float radius = 4;
     private float radiusIncrease = 1;
-    private float radiusMeter = -1;
 
 
     public PointView(PointModel model, Paint paintStroke){
@@ -43,10 +42,6 @@ public class PointView extends MVLayer {
         this(model, paintStroke);
         this.paintFill = paintFill;
     }
-    public PointView(PointModel model, Paint paintStroke, Paint paintFill, boolean keepAligned){
-        this(model, paintStroke, paintFill);
-    }
-
 
     @Override
     public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
@@ -61,7 +56,6 @@ public class PointView extends MVLayer {
         int pixelY = lat2y(model.getLat());
 
         int radiusInPixel = (int) (displayModel.getScaleFactor() * radius * getScale(zoomLevel));
-//        Log.v(MGMapApplication.LABEL, NameUtil.context()+" pixelX="+pixelX+" pixelY="+pixelY+" pos="+String.format("%.6f,%.6f",model.getLat(),model.getLon()));
 
         Rectangle canvasRectangle = new Rectangle(0, 0, canvas.getWidth(), canvas.getHeight());
         if (!canvasRectangle.intersectsCircle(pixelX, pixelY, radiusInPixel)) {
@@ -97,18 +91,10 @@ public class PointView extends MVLayer {
         this.radius = radius;
         return this;
     }
+    @SuppressWarnings("UnusedReturnValue")
     public PointView setRadiusMeter(float meter){
         this.radius = (float)MercatorProjection.metersToPixels(meter, model.getLat(), MercatorProjection.getMapSize((byte)15, this.displayModel.getTileSize())) / displayModel.getScaleFactor();
         this.radiusIncrease = 2;
-        return this;
-    }
-
-    public float getRadiusIncrease() {
-        return radiusIncrease;
-    }
-
-    public PointView setRadiusIncrease(float radiusIncrease) {
-        this.radiusIncrease = radiusIncrease;
         return this;
     }
 
