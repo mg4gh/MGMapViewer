@@ -62,10 +62,11 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
         return get(key, defaultValue);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Pref<T> get(String key, T defaultValue){
         Pref<?> pref = prefMap.get(key);
         if (pref == null){
-            pref = new Pref<T>(key, defaultValue, sharedPreferences);
+            pref = new Pref<>(key, defaultValue, sharedPreferences);
             prefMap.put(key, pref);
         }
         return (Pref<T>)pref;
