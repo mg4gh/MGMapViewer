@@ -22,6 +22,7 @@ import mg.mgmap.application.MGMapApplication;
  * Utility to determine the class name dynamically.
  * This is usually used fog logging purposes.
  */
+@SuppressWarnings("unused")
 public class NameUtil {
 	 
 	public static String getCurrentClassName(){
