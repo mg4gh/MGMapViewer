@@ -38,6 +38,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Provides the ability to import a TrackLog from a GPX file.
@@ -54,13 +55,10 @@ public class GpxImporter {
             String filename = "GPX" + System.currentTimeMillis(); // fallback name
             if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
                 ContentResolver contentResolver = application.getContentResolver();
-                Cursor cursor = contentResolver.query(uri, null, null, null, null);
-                try {
+                try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
                     if (cursor != null && cursor.moveToFirst()) {
                         filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                     }
-                } finally {
-                    cursor.close();
                 }
 
                 is = contentResolver.openInputStream(uri);
@@ -68,7 +66,6 @@ public class GpxImporter {
             } else {
                 String filePath = uri.getEncodedPath();
                 filename = filePath.replaceFirst(".*/","");
-                if (filePath == null) return null;
                 is = new FileInputStream(filePath);
             }
             return new GpxImporter(application.getElevationProvider()).parseTrackLog( filename, is);
@@ -114,22 +111,24 @@ public class GpxImporter {
                 trackLog = new WriteableTrackLog(filename);
             } else if (eventType == XmlPullParser.START_TAG) {
                 if ("trk".equals(qName)) {
+                    assert trackLog != null;
                     trackLog.startTrack(PointModel.NO_TIME);
                 }
                 if ("metadata".equals(qName)) {
                     meta = true;
                 }
                 if ("trkseg".equals(qName)) {
+                    assert trackLog != null;
                     trackLog.startSegment(PointModel.NO_TIME);
                 }
                 if ("trkpt".equals(qName)) {
-                    double lat = Double.parseDouble(getStringAttribute("lat"));
-                    double lon = Double.parseDouble(getStringAttribute("lon"));
+                    double lat = Double.parseDouble(Objects.requireNonNull(getStringAttribute("lat")));
+                    double lon = Double.parseDouble(Objects.requireNonNull(getStringAttribute("lon")));
                     tlp = TrackLogPoint.createLogPoint(lat, lon);
                 }
                 if ("wpt".equals(qName)) {
-                    double lat = Double.parseDouble(getStringAttribute("lat"));
-                    double lon = Double.parseDouble(getStringAttribute("lon"));
+                    double lat = Double.parseDouble(Objects.requireNonNull(getStringAttribute("lat")));
+                    double lon = Double.parseDouble(Objects.requireNonNull(getStringAttribute("lon")));
                     tlp = TrackLogPoint.createLogPoint(lat, lon);
                     if (referencedTrackLog != null){
                         referencedTrackLog.getTrackLogSegment(0).addPoint(tlp);
@@ -139,21 +138,26 @@ public class GpxImporter {
 
             } else if (eventType == XmlPullParser.END_TAG) {
                 if ("trkpt".equals(qName)) {
+                    assert tlp != null;
                     if (tlp.getEleD() == PointModel.NO_ELE){
                         elevationProvider.setElevation(tlp); // try to enrich data with hgt height information
                     }
+                    assert trackLog != null;
                     trackLog.addPoint( tlp );
                 }
                 if ("trk".equals(qName)) {
+                    assert trackLog != null;
                     trackLog.stopTrack(PointModel.NO_TIME);
                 }
                 if ("metadata".equals(qName)) {
                     meta = false;
                 }
                 if ("trkseg".equals(qName)) {
+                    assert trackLog != null;
                     trackLog.stopSegment(PointModel.NO_TIME);
                 }
                 if ("name".equals(qName)) {
+                    assert trackLog != null;
                     trackLog.setName(text);
                 }
                 if ("keywords".equals(qName)) {
@@ -161,12 +165,15 @@ public class GpxImporter {
                         String name = filename.replaceAll("MarkerRoute$","MarkerTrack");
                         referencedTrackLog = new WriteableTrackLog(name);
                         referencedTrackLog.getTrackLogSegments().add(new TrackLogSegment(0));
+                        assert trackLog != null;
                         trackLog.setReferencedTrackLog(referencedTrackLog);
                         referencedTrackLog.getTrackStatistic().setTStart(trackLog.getTrackStatistic().getTStart());
                     }
                 }
                 if ("ele".equals(qName)) {
                     try{
+                        assert tlp != null;
+                        assert text != null;
                         tlp.setEle( Float.parseFloat(text) );
                     }catch(Exception e){
                         Log.w(MGMapApplication.LABEL, NameUtil.context()+" Parse elevation failed: "+e.getMessage());
@@ -175,10 +182,13 @@ public class GpxImporter {
                 if ("time".equals(qName)) {
                     try {
                         if (tlp != null){
-                            tlp.setTimestamp( sdf2.parse(text.replaceAll("T","_")).getTime() );
+                            assert text != null;
+                            tlp.setTimestamp( Objects.requireNonNull(sdf2.parse(text.replaceAll("T", "_"))).getTime() );
                         }
                         if (meta){
-                            trackLog.getTrackStatistic().setTStart( sdf2.parse(text.replaceAll("T","_")).getTime() );
+                            assert trackLog != null;
+                            assert text != null;
+                            trackLog.getTrackStatistic().setTStart( Objects.requireNonNull(sdf2.parse(text.replaceAll("T", "_"))).getTime() );
                         }
                     } catch (Exception e) {
                         Log.w(MGMapApplication.LABEL, NameUtil.context()+" Parse time failed: "+e.getMessage());
@@ -186,6 +196,7 @@ public class GpxImporter {
                 }
                 if ("cmt".equals(qName)) {
                     try {
+                        assert text != null;
                         for (String part : text.split(",")){
                             String[] val = part.split("=");
                             if (val.length == 2){
@@ -239,6 +250,7 @@ public class GpxImporter {
             }
             eventType = pullParser.next();
         } while (eventType != XmlPullParser.END_DOCUMENT);
+        assert trackLog != null;
         trackLog.setModified(true);
         return trackLog;
     }
