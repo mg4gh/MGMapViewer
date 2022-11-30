@@ -17,13 +17,14 @@ package mg.mgmap.generic.util.basic;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
  * Utility to catch uncaught exception and to protocol the in a stacktrace file.
@@ -39,28 +40,28 @@ public class TopExceptionHandler implements Thread.UncaughtExceptionHandler {
         this.persistenceManager = persistenceManager;
     }
 
-    public void uncaughtException(Thread t, Throwable e) {
+    public void uncaughtException(@NonNull Thread t, Throwable e) {
         StackTraceElement[] arr = e.getStackTrace();
-        String report = e.toString()+"\n\n";
-        report += "--------- Stack trace ---------\n\n";
+        StringBuilder report = new StringBuilder(e + "\n\n");
+        report.append("--------- Stack trace ---------\n\n");
         for (StackTraceElement ste : arr) {
-            report += "    "+ste.toString()+"\n";
+            report.append("    ").append(ste.toString()).append("\n");
         }
-        report += "-------------------------------\n\n";
+        report.append("-------------------------------\n\n");
 
         // If the exception was thrown in a background thread inside
         // AsyncTask, then the actual exception can be found with getCause
 
-        report += "--------- Cause ---------\n\n";
+        report.append("--------- Cause ---------\n\n");
         Throwable cause = e.getCause();
         if(cause != null) {
-            report += cause.toString() + "\n\n";
+            report.append(cause).append("\n\n");
             arr = cause.getStackTrace();
             for (StackTraceElement ste : arr) {
-                report += "    "+ste.toString()+"\n";
+                report.append("    ").append(ste.toString()).append("\n");
             }
         }
-        report += "-------------------------------\n\n";
+        report.append("-------------------------------\n\n");
 
 
         try {
@@ -77,7 +78,7 @@ public class TopExceptionHandler implements Thread.UncaughtExceptionHandler {
             if (dir != null){
                 File file = new File(dir,"stacktrace_"+System.currentTimeMillis()+".txt");
                 FileOutputStream fos = new FileOutputStream(file);
-                fos.write(report.getBytes());
+                fos.write(report.toString().getBytes());
                 fos.close();
             }
         } catch (IOException ex) {
