@@ -215,13 +215,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         coView.init(application, this);
         onNewIntent(getIntent());
         // use prefGps and prefRestart from applications prefCache to prevent race conditions during startup phase
-        application.prefGps.addObserver((o, arg) -> triggerTrackLoggerService());
+        application.prefGps.addObserver((e) -> triggerTrackLoggerService());
         Log.d(MGMapApplication.LABEL, NameUtil.context()+" prefGps="+application.prefGps.getValue()+" prefRestart="+application.prefRestart.getValue() );
         if (application.prefGps.getValue() && application.prefRestart.getValue()){
             triggerTrackLoggerService(); // restart track logger service after app restart while track recording is on
         }
         application.prefRestart.setValue(false);
-        prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).addObserver((o, arg) -> new SshSyncUtil().trySynchronisation(application));
+        prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).addObserver((e) -> new SshSyncUtil().trySynchronisation(application));
         prefCache.dumpPrefs();
     }
 

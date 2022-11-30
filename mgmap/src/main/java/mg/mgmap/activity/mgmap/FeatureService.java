@@ -28,8 +28,9 @@ import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.model.common.Observer;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Observable;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
@@ -71,26 +72,26 @@ public class FeatureService {
         logName = this.getClass().getSimpleName();
     }
 
-    public class RefreshObserver implements Observer, java.util.Observer{
+    public class RefreshObserver implements Observer, PropertyChangeListener {
 
-        public  Observable last;
-
-        @Override
-        public void update(Observable o, Object arg) {
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" c="+logName+" o="+o+" arg="+arg);
-            last = o;
-            onUpdate(o,arg);
-            onChange();
-        }
+        public Object last;
 
         @Override
         public void onChange() {
             cancelRefresh();
             getTimer().postDelayed(ttRefresh,ttRefreshTime);
         }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            last = event.getSource();
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+ "source="+last+" name="+event.getPropertyName()+" old="+event.getOldValue()+" new="+event.getNewValue());
+            onUpdate(event);
+            onChange();
+        }
     }
 
-    protected void onUpdate(Observable o, Object arg){} //hook for derived classes
+    protected void onUpdate(PropertyChangeEvent event){} //hook for derived classes
 
     protected long ttRefreshTime = 100;
     private final Runnable ttRefresh = this::doRefresh;

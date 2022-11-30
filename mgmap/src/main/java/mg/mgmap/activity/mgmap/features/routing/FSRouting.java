@@ -23,7 +23,6 @@ import org.mapsforge.core.model.Point;
 import org.mapsforge.map.model.DisplayModel;
 
 import java.util.HashMap;
-import java.util.Observer;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -46,6 +45,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -102,7 +102,7 @@ public class FSRouting extends FeatureService {
         ttRefreshTime = 50;
         mtlSupportProvider = new AdvancedMtlSupportProvider();
         fsMarker.mtlSupportProvider = mtlSupportProvider;
-        prefMapMatching.addObserver((o, arg) -> {
+        prefMapMatching.addObserver((e) -> {
             TrackLog selectedTrackLog = getApplication().availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
             if (selectedTrackLog != null){
                 synchronized (routingEngine){
@@ -142,7 +142,7 @@ public class FSRouting extends FeatureService {
             Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
         }).start();
 
-        application.markerTrackLogObservable.addObserver((o, arg) -> {
+        application.markerTrackLogObservable.addObserver((e) -> {
             refreshRequired.incrementAndGet(); // refresh route calculation is required
             Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
             synchronized (FSRouting.this){
@@ -159,7 +159,7 @@ public class FSRouting extends FeatureService {
         if (getPref(R.string.MGMapApplication_pref_Restart, false).getValue()){
             prefRoutingHints.setValue(false);
         }
-        Observer routingHintsEnabledObserver = (o, arg) -> {
+        Observer routingHintsEnabledObserver = (e) -> {
             prefRoutingHintsEnabled.setValue( prefGps.getValue() && prefMtlVisibility.getValue());
             if (!prefRoutingHintsEnabled.getValue()){
                 prefRoutingHints.setValue(false);

@@ -47,12 +47,12 @@ public class FSRecordingTrackLog extends FeatureService {
 
     public FSRecordingTrackLog(MGMapActivity mmActivity) {
         super(mmActivity);
-        getApplication().recordingTrackLogObservable.addObserver((o, arg) -> {
+        getApplication().recordingTrackLogObservable.addObserver((e) -> {
             final RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
             prefRecordTrack.setValue( (rtl != null) && ( rtl.isTrackRecording()) );
             prefRecordSegment.setValue( (rtl != null) && ( rtl.isTrackRecording()) && (rtl.isSegmentRecording()));
         });
-        toggleRecordTrack.addObserver((o, arg) -> {
+        toggleRecordTrack.addObserver((e) -> {
             RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
             long timestamp = System.currentTimeMillis();
             if (rtl == null){
@@ -85,7 +85,7 @@ public class FSRecordingTrackLog extends FeatureService {
                 getPref(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
             }
         });
-        toggleRecordSegment.addObserver((o, arg) -> {
+        toggleRecordSegment.addObserver((e) -> {
             long timestamp = System.currentTimeMillis();
             RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
             if ((rtl != null) && (rtl.isTrackRecording())){

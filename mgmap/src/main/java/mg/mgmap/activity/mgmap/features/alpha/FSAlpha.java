@@ -14,11 +14,10 @@
  */
 package mg.mgmap.activity.mgmap.features.alpha;
 
-import java.util.Observer;
-
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 
@@ -39,13 +38,13 @@ public class FSAlpha extends FeatureService {
     public FSAlpha(MGMapActivity activity){
         super(activity);
 
-        Observer  prefSliderTracksObserver =
-                (o,args)-> prefSliderTracksEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() || prefRtlVisibility.getValue() );
+        Observer prefSliderTracksObserver =
+                (e)-> prefSliderTracksEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() || prefRtlVisibility.getValue() );
         prefStlVisibility.addObserver(prefSliderTracksObserver);
         prefAtlVisibility.addObserver(prefSliderTracksObserver);
         prefMtlVisibility.addObserver(prefSliderTracksObserver);
         prefRtlVisibility.addObserver(prefSliderTracksObserver);
-        prefSliderTracksObserver.update(null, null);
+        prefSliderTracksObserver.propertyChange(null);
 
         prefAlphaLayers.addObserver(refreshObserver);
         prefAlphaTracks.addObserver(refreshObserver);

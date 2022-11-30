@@ -51,7 +51,7 @@ public class TestControl {
         this.prefCache = prefCache;
 
 
-        prefCache.get(R.string.preference_testTrigger_key, false).addObserver((o, arg) -> { // observer to detect that test should start
+        prefCache.get(R.string.preference_testTrigger_key, false).addObserver((e) -> { // observer to detect that test should start
             if (prefTestMode.getValue()){                   // test run is triggered
                 new Thread(){                               // do this in background
                     @Override

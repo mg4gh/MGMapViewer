@@ -58,16 +58,16 @@ public class FSPosition extends FeatureService {
         if (prefAppRestart.getValue()){
             prefCenter.setValue(true);
         }
-        getApplication().recordingTrackLogObservable.addObserver((o, arg) -> {
+        getApplication().recordingTrackLogObservable.addObserver((e) -> {
             RecordingTrackLog rtl = getApplication().recordingTrackLogObservable.getTrackLog();
             prefGpsEnabled.setValue( (rtl == null) || (!rtl.isTrackRecording()) );
         });
         prefGps.addObserver(refreshObserver);
         prefCenter.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
-        prefRefreshMapView.addObserver((o, arg) -> refreshMapView());
+        prefRefreshMapView.addObserver((e) -> refreshMapView());
 
-        prefMapMoving.addObserver((o, arg) -> {
+        prefMapMoving.addObserver((e) -> {
             if ( ! prefMapMoving.getValue() ){
                 refreshObserver.onChange();
                 cancelTTMapMovingOff();

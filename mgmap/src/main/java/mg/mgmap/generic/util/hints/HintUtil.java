@@ -31,7 +31,7 @@ public class HintUtil {
 
     private void registerHint(AbstractHint hint){
         if (prefs.isEmpty()){ // first call
-            hint.prefShowHints.addObserver((observable, o) -> prefs.forEach(p -> p.setValue(true))); // add observer to cleanup, if changed
+            hint.prefShowHints.addObserver((e) -> prefs.forEach(p -> p.setValue(true))); // add observer to cleanup, if changed
         }
         prefs.add(hint.prefShowHint);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+ prefs);

@@ -31,14 +31,13 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.TextViewCompat;
 
-import java.util.Observer;
-
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.util.ExtendedClickListener;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -111,7 +110,7 @@ public class TrackStatisticView extends TableLayout {
 
 
         setOnClickListener(new StatisticClickListener());
-        modifiedObserver = (o, arg) -> {
+        modifiedObserver = (e) -> {
             TrackLogStatistic statistic = trackLog.getTrackStatistic();
             etvName.setValue( trackLog.getName() + (trackLog.isModified()?"*":""));
             etvName.invalidate();
@@ -124,7 +123,7 @@ public class TrackStatisticView extends TableLayout {
             etvMinEle.setValue(statistic.getMinEle());
             Log.d(MGMapApplication.LABEL, NameUtil.context() + trackLog.getName());
         };
-        selectedObserver = (o, arg) -> TrackStatisticView.this.setViewtreeColor(TrackStatisticView.this,  getColorIdForTrackLog(trackLog));
+        selectedObserver = (e) -> TrackStatisticView.this.setViewtreeColor(TrackStatisticView.this,  getColorIdForTrackLog(trackLog));
     }
 
     public void bind(TrackLog trackLog) {
@@ -156,7 +155,7 @@ public class TrackStatisticView extends TableLayout {
         etvTime.setValue( statistic.getTStart() );
 
         trackLog.addObserver(modifiedObserver);
-        modifiedObserver.update(null,null);
+        modifiedObserver.propertyChange(null);
 
         setViewtreeColor(TrackStatisticView.this, getColorIdForTrackLog(trackLog));
         setOnClickListener(new StatisticClickListener());
@@ -245,7 +244,7 @@ public class TrackStatisticView extends TableLayout {
     @Override
     public void invalidate() {
         super.invalidate();
-        modifiedObserver.update(null,null);
+        modifiedObserver.propertyChange(null);
     }
 
     @Override

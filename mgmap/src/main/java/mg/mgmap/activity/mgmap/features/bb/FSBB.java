@@ -69,17 +69,17 @@ public class FSBB extends FeatureService {
     public FSBB(MGMapActivity mmActivity) {
         super(mmActivity);
 
-        triggerBboxOn.addObserver( (o, args) -> prefBboxOn.toggle());
-        triggerLoadFromBB.addObserver( (o, args) -> loadFromBB());
-        triggerTSLoadRemain.addObserver( (o, args) -> tsAction(false, false));
-        triggerTSLoadAll.addObserver( (o, args) -> tsAction(false, true));
-        triggerTSDeleteAll.addObserver( (o, args) -> tsAction(true, true));
-        triggerTSLoadRemain.addObserver( (o, args) -> hgtAction(false, false));
-        triggerTSLoadAll.addObserver( (o, args) -> hgtAction(false, true));
-        triggerTSDeleteAll.addObserver( (o, args) -> hgtAction(true, true));
+        triggerBboxOn.addObserver( (e) -> prefBboxOn.toggle());
+        triggerLoadFromBB.addObserver( (e) -> loadFromBB());
+        triggerTSLoadRemain.addObserver( (e) -> tsAction(false, false));
+        triggerTSLoadAll.addObserver( (e) -> tsAction(false, true));
+        triggerTSDeleteAll.addObserver( (e) -> tsAction(true, true));
+        triggerTSLoadRemain.addObserver( (e) -> hgtAction(false, false));
+        triggerTSLoadAll.addObserver( (e) -> hgtAction(false, true));
+        triggerTSDeleteAll.addObserver( (e) -> hgtAction(true, true));
 
         prefBboxOn.addObserver(refreshObserver);
-        prefAutoDlHgt.addObserver((observable, o) -> {
+        prefAutoDlHgt.addObserver((e) -> {
             if (!prefAutoDlHgt.getValue()) prefAutoDlHgtAsked.setValue("");
         });
     }

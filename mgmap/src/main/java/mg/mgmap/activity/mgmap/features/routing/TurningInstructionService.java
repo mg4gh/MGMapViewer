@@ -59,7 +59,7 @@ public class TurningInstructionService {
         this.application = application;
 
         prefRoutingHints = prefCache.get(R.string.FSRouting_qc_RoutingHint, false);
-        prefRoutingHints.addObserver((o, arg) -> {
+        prefRoutingHints.addObserver((e) -> {
             if (prefRoutingHints.getValue()){
                 tryStartTTSService();
             } else {

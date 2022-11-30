@@ -27,8 +27,6 @@ import android.widget.RelativeLayout;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 
-import java.util.Observer;
-
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
@@ -39,6 +37,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.FullscreenUtil;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -91,7 +90,7 @@ public class FSSearch extends FeatureService {
         searchText.setOnClickListener(v -> triggerTTHideKeyboard());
         setSearchProvider(new Nominatim());
 
-        Observer showPositionObserver = (o, arg) -> {
+        Observer showPositionObserver = (e) -> {
             unregisterAll();
             if (prefShowSearchResult.getValue()){
                 showSearchPos();
@@ -100,7 +99,7 @@ public class FSSearch extends FeatureService {
         prefShowSearchResult.addObserver(showPositionObserver);
         prefShowPos.addObserver(showPositionObserver);
 
-        prefShowPos.addObserver((o, arg) -> prefShowSearchResultEnabled.setValue(prefShowPos.getValue() != NO_POS));
+        prefShowPos.addObserver((e) -> prefShowSearchResultEnabled.setValue(prefShowPos.getValue() != NO_POS));
 
         if (getPref(R.string.MGMapApplication_pref_Restart, true).getValue()){
             prefShowSearchResult.setValue(false);

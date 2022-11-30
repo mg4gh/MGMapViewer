@@ -209,7 +209,7 @@ public class MGMapLayerFactory {
             if (layer instanceof TileLayer<?>) {
                 TileLayer<?> alphaLayer = (TileLayer<?>) layer;
                 Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,1.0f);
-                prefAlpha.addObserver((o, arg) -> {
+                prefAlpha.addObserver((e) -> {
                     alphaLayer.setAlpha(prefAlpha.getValue());
                     alphaLayer.requestRedraw();
                 });
@@ -217,7 +217,7 @@ public class MGMapLayerFactory {
             if (layer instanceof Grid) {
                 Grid alphaLayer = (Grid) layer;
                 Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,0.2f);
-                prefAlpha.addObserver((o, arg) -> {
+                prefAlpha.addObserver((e) -> {
                     alphaLayer.setAlpha(prefAlpha.getValue());
                     alphaLayer.requestRedraw();
                 });

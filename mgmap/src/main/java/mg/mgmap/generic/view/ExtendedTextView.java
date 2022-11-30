@@ -23,9 +23,8 @@ import android.util.Log;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
-import java.util.Observer;
-
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.NameUtil;
@@ -44,8 +43,6 @@ public class ExtendedTextView extends AppCompatTextView {
     private String help = "";
     private String help1 = null, help2 = null, help3 = null, help4 = null;
     private String logName = "";
-
-    private final Observer prefObserver = createObserver();
 
     private Object value = null;
     private int availableWidth = 0;
@@ -99,25 +96,21 @@ public class ExtendedTextView extends AppCompatTextView {
         return this;
     }
     public ExtendedTextView setData(Pref<Boolean> prState1){
-        this.prState1 = prState1;
-        prState1.addObserver(prefObserver);
-        onChange(null);
-        return this;
+        return setData(prState1, drId1, drId2);
     }
 
     public ExtendedTextView setData(Pref<Boolean> prState1, int drId1, int drId2){
-        this.prState1 = prState1;
-        prState1.addObserver(prefObserver);
-        this.drId1 = drId1;
-        this.drId2 = drId2;
-        onChange(null);
-        return this;
+        return setData(prState1, prState2, drId1, drId2, drId3, drId4);
     }
     public ExtendedTextView setData(Pref<Boolean> prState1, Pref<Boolean> prState2, int drId1, int drId2, int drId3, int drId4){
-        this.prState1 = prState1;
-        prState1.addObserver(prefObserver);
-        this.prState2 = prState2;
-        prState2.addObserver(prefObserver);
+        if (prState1 != null){
+            this.prState1 = prState1;
+            prState1.addObserver(e -> onChange(prState1.getKey()));
+        }
+        if (prState2 != null){
+            this.prState2 = prState2;
+            prState2.addObserver(e -> onChange(prState2.getKey()));
+        }
         this.drId1 = drId1;
         this.drId2 = drId2;
         this.drId3 = drId3;
@@ -139,7 +132,7 @@ public class ExtendedTextView extends AppCompatTextView {
     }
     public ExtendedTextView setDisabledData(Pref<Boolean> prEnabled, int drIdDis){
         this.prEnabled = prEnabled;
-        prEnabled.addObserver(prefObserver);
+        prEnabled.addObserver(e -> { onChange(prEnabled.getKey()); setEnabled(); });
         this.drIdDis = drIdDis;
         setEnabled();
         onChange("setDisabledData");
@@ -193,22 +186,6 @@ public class ExtendedTextView extends AppCompatTextView {
         return this;
     }
 
-    private Observer createObserver(){
-        return (o, arg) -> {
-            String info;
-            if (o instanceof Pref<?>) {
-                Pref<?> pref = (Pref<?>) o;
-                info = "update on "+ pref.getKey();
-            } else {
-                info = "update on "+o.toString();
-            }
-            if (o == prEnabled){
-                setEnabled();
-            }
-            onChange(info);
-        };
-    }
-
     private void setEnabled(){
         setEnabled((prEnabled!=null)?prEnabled.getValue():true);
     }
@@ -243,7 +220,7 @@ public class ExtendedTextView extends AppCompatTextView {
 
     private void onChange(String reason){
         if ((reason != null) && (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE))) {
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" "+reason);
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" reason="+reason);
         }
         int drId;
         if ((prEnabled != null) && (!prEnabled.getValue())){

@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
-import java.util.Observer;
+//import java.util.Observer;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.atl.FSAvailableTrackLogs;
@@ -35,6 +35,7 @@ import mg.mgmap.activity.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -103,7 +104,7 @@ public class ControlComposer {
         for (int idx=0; idx<qcss.length; idx++){
             qcss[idx] = ControlView.createRow(coView.getContext());
             final int iidx = idx;
-            gos.add((o, arg) -> prefQcs.setValue(iidx));
+            gos.add((e) -> prefQcs.setValue(iidx));
         }
         activity.getFS(FSControl.class).initQcss(qcss);
 

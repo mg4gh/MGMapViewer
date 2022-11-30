@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Observer;
 
 import mg.mgmap.activity.height_profile.HeightProfileActivity;
 import mg.mgmap.activity.mgmap.MGMapActivity;
@@ -35,7 +34,7 @@ import mg.mgmap.activity.settings.FurtherPreferenceScreen;
 import mg.mgmap.activity.settings.MainPreferenceScreen;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.generic.util.FullscreenUtil;
-import mg.mgmap.generic.util.HomeObserver;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.AbstractHint;
@@ -63,32 +62,37 @@ public class FSControl extends FeatureService {
     ViewGroup[] qcss = null; // quick controls groups (index 0 is menu control group and index 1..7 are seven sub action menus)
     ArrayList<TextView> helpTexts = new ArrayList<>(); // TextView Instances, which are used to show the help Info
 
-    HomeObserver homeObserver = new HomeObserver(getActivity());
 
-    Observer settingsPrefObserver = (o, arg) -> {
+    Observer homeObserver = (e) -> {
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN, null);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        activity.startActivity(homeIntent);
+    };
+    Observer settingsPrefObserver = (e) -> {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, SettingsActivity.class);
         String prefScreenClass = MainPreferenceScreen.class.getName();
-        if (o == triggerFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
-        if (o == triggerDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
+        if (e.getSource() == triggerFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
+        if (e.getSource() == triggerDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
         intent.putExtra("FSControl.info", prefScreenClass);
         activity.startActivity(intent);
     };
-    Observer statisticObserver = (o, arg) -> {
+    Observer statisticObserver = (e) -> {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, TrackStatisticActivity.class);
         activity.startActivity(intent);
     };
-    Observer heightProfileObserver = (o, arg) -> {
+    Observer heightProfileObserver = (e) -> {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, HeightProfileActivity.class);
         activity.startActivity(intent);
     };
-    Observer exitObserver = (o, arg) -> {
+    Observer exitObserver = (e) -> {
         getActivity().finishAndRemoveTask();
         System.exit(0);
     };
-    Observer themesObserver = (o, arg) -> {
+    Observer themesObserver = (e) -> {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, ThemeSettings.class);
         if (activity.getRenderThemeStyleMenu() != null) {
@@ -103,7 +107,7 @@ public class FSControl extends FeatureService {
         super(activity);
 
         ttRefreshTime = 10;
-        prefFullscreen.addObserver((o, arg) -> {
+        prefFullscreen.addObserver((e) -> {
             FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue());
             getControlView().setVerticalOffset( );
         });
@@ -115,16 +119,16 @@ public class FSControl extends FeatureService {
         triggerStatistic.addObserver(statisticObserver);
         triggerHeightProfile.addObserver(heightProfileObserver);
         triggerExit.addObserver(exitObserver);
-        triggerZoomIn.addObserver((o, arg) -> {
+        triggerZoomIn.addObserver((e) -> {
             getMapView().getModel().mapViewPosition.zoomIn();
             setupTTHideQCS();
         });
-        triggerZoomOut.addObserver((o, arg) -> {
+        triggerZoomOut.addObserver((e) -> {
             getMapView().getModel().mapViewPosition.zoomOut();
             setupTTHideQCS();
         });
         triggerThemes.addObserver(themesObserver);
-        prefHelp.addObserver((o, arg) -> {
+        prefHelp.addObserver((ev) -> {
             int iVis = (prefHelp.getValue())?View.VISIBLE:View.INVISIBLE;
             if (prefHelp.getValue()){
                 ViewGroup qcs = qcss[prefQcs.getValue()];

@@ -60,7 +60,7 @@ public class LabeledSlider extends LinearLayout {
         label.setText(text);
         this.prefSliderVisibility = prefSliderVisibility;
         this.prefSlider = prefSlider;
-        this.prefSlider.addObserver((o, arg) -> seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100)));
+        this.prefSlider.addObserver((e) -> seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100)));
         prefSlider.onChange();
         seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
             @Override

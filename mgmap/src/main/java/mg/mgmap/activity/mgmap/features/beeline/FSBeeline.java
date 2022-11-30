@@ -18,8 +18,7 @@ import android.util.Log;
 
 import org.mapsforge.core.graphics.Paint;
 
-
-import java.util.Observable;
+import java.beans.PropertyChangeEvent;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
@@ -79,7 +78,7 @@ public class FSBeeline extends FeatureService {
     }
 
     @Override
-    protected void onUpdate(Observable o, Object arg) {
+    protected void onUpdate(PropertyChangeEvent event) {
         ttRefreshTime = 150; // avoid refresh faster than FSPosition
     }
 

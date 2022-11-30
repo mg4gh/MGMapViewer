@@ -16,14 +16,14 @@ package mg.mgmap.generic.model;
 
 import androidx.annotation.NonNull;
 
+import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.Formatter;
 
 import java.util.ArrayList;
-import java.util.Observable;
 
 /** A TrackLog consists of multiple TrackLogSegment objects, a total TrackLogStatistic over all segments and a track log name */
-public class TrackLog extends Observable implements Comparable<TrackLog>{
+public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
 
     protected ArrayList<TrackLogSegment> trackLogSegments = new ArrayList<>();
     protected TrackLogStatistic trackStatistic = new TrackLogStatistic(-1);

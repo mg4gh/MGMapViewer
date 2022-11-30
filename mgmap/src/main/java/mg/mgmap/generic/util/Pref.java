@@ -20,11 +20,9 @@ import android.view.View;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Observable;
 import java.util.UUID;
 
-public class Pref<T> extends Observable implements View.OnClickListener, View.OnLongClickListener {
+public class Pref<T> extends ObservableImpl implements View.OnClickListener, View.OnLongClickListener {
 
     public SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
     protected final String key;

@@ -23,12 +23,11 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 
-import java.util.Observer;
-
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.generic.model.TrackLogRefZoom;
 import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
@@ -56,10 +55,10 @@ public class FSAvailableTrackLogs extends FeatureService {
 
     public FSAvailableTrackLogs(MGMapActivity mmActivity) {
         super(mmActivity);
-        triggerHideStl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeSelected());
-        triggerHideAtl.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeUnselected());
-        triggerHideAll.addObserver((o, arg) -> getApplication().availableTrackLogsObservable.removeAll());
-        Observer hideAllEnabledObserver = (o, arg) -> prefHideAllEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() );
+        triggerHideStl.addObserver((e) -> getApplication().availableTrackLogsObservable.removeSelected());
+        triggerHideAtl.addObserver((e) -> getApplication().availableTrackLogsObservable.removeUnselected());
+        triggerHideAll.addObserver((e) -> getApplication().availableTrackLogsObservable.removeAll());
+        Observer hideAllEnabledObserver = (e) -> prefHideAllEnabled.setValue( prefStlVisibility.getValue() || prefAtlVisibility.getValue() || prefMtlVisibility.getValue() );
         prefStlVisibility.addObserver(hideAllEnabledObserver);
         prefAtlVisibility.addObserver(hideAllEnabledObserver);
         prefMtlVisibility.addObserver(hideAllEnabledObserver);

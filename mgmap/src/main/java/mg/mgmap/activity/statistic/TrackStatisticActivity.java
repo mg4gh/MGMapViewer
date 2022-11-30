@@ -40,8 +40,8 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.FullscreenUtil;
-import mg.mgmap.generic.util.HomeObserver;
 import mg.mgmap.generic.model.TrackLogRef;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.gpx.GpxExporter;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.TrackLog;
@@ -53,8 +53,6 @@ import mg.mgmap.generic.view.ExtendedTextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -85,16 +83,13 @@ public class TrackStatisticActivity extends AppCompatActivity {
         return application;
     }
 
-    Observer reworkObserver = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-            timer.removeCallbacks(ttReworkState);
-            timer.postDelayed(ttReworkState,30);
-        }
-    };
-
     Handler timer = new Handler();
     Runnable ttReworkState = () -> TrackStatisticActivity.this.runOnUiThread(this::reworkState);
+
+    Observer reworkObserver = (e) -> {
+        timer.removeCallbacks(ttReworkState);
+        timer.postDelayed(ttReworkState,30);
+    };
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -111,14 +106,14 @@ public class TrackStatisticActivity extends AppCompatActivity {
         prefCache = new PrefCache(context);
         prefFilterOn = prefCache.get(R.string.Statistic_pref_FilterOn, false);
 
-        prefFilterOn.addObserver((observable, o) -> {
+        prefFilterOn.addObserver((e) -> {
             if (prefFilterOn.getValue()){
                 new TrackStatisticFilterDialog().show(context, TrackStatisticActivity.this);
             } else {
                 refreshVisibleEntries();
             }
         });
-        prefFilterChanged.addObserver((observable, o) -> {
+        prefFilterChanged.addObserver((e) -> {
             TrackStatisticFilter filter = application.getTrackStatisticFilter();
             if (prefFilterOn.getValue()){
                 for (TrackLog entry : allEntries){
@@ -129,9 +124,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         });
 
         prefFullscreen = prefCache.get(R.string.FSControl_qcFullscreenOn, true);
-        prefFullscreen.addObserver((o, arg) -> FullscreenUtil.enforceState(TrackStatisticActivity.this, prefFullscreen.getValue()));
-        Pref<Boolean> triggerHome = new Pref<>(Boolean.TRUE);
-        triggerHome.addObserver( new HomeObserver(this) );
+        prefFullscreen.addObserver((e) -> FullscreenUtil.enforceState(TrackStatisticActivity.this, prefFullscreen.getValue()));
 
         recyclerView = (RecyclerView) findViewById(R.id.trackStatisticEntries);
         statisticAdapter = new TrackStatisticAdapter(visibleEntries);
@@ -149,7 +142,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         etvNone.setData(prefNoneSelected,R.drawable.deselect_all,R.drawable.deselect_all2)
                 .setOnClickListener(new SelectOCL(visibleEntries, false));
         qcs.removeView(etvNone);
-        prefAllSelected.addObserver((observable, o) -> {
+        prefAllSelected.addObserver((e) -> {
             if (prefAllSelected.getValue()){
                 if ((etvAll.getParent() != null) && (etvNone.getParent() == null)) {
                     qcs.addView(etvNone, qcs.indexOfChild(etvAll));
@@ -203,7 +196,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         refreshVisibleEntries();
 
         prefFullscreen.onChange();
-        reworkObserver.update(null,null);
+        reworkObserver.propertyChange(null);
     }
 
     @Override

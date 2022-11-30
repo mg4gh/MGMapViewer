@@ -2,10 +2,9 @@ package mg.mgmap.generic.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import mg.mgmap.generic.util.Observer;
 
 class TrackLogTest {
 
@@ -58,12 +57,11 @@ class TrackLogTest {
     boolean bObserverTest = false;
     @Test
     void testModified() {
-        Observer o = (o1, arg) -> bObserverTest = true;
+        Observer o = (e) -> bObserverTest = true;
         TrackLog trackLog = new TrackLog();
         trackLog.addObserver(o);
         assertFalse(trackLog.modified);
         assertFalse(trackLog.isModified());
-        assertTrue(trackLog instanceof Observable);
         trackLog.setModified(true);
         assertTrue(trackLog.modified);
         assertTrue(bObserverTest);

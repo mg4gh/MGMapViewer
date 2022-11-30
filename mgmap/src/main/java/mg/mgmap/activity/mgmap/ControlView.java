@@ -41,13 +41,13 @@ import org.mapsforge.map.model.DisplayModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Observer;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.activity.mgmap.util.EnlargeControl;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -293,7 +293,7 @@ public class ControlView extends RelativeLayout {
 
 
     HashMap<ViewGroup, ArrayList<LabeledSlider>> labeledSliderMap = new HashMap<>();
-    Observer sliderVisibilityChangeObserver = (o, arg) -> reworkLabeledSliderVisibility();
+    Observer sliderVisibilityChangeObserver = (e) -> reworkLabeledSliderVisibility();
 
     LabeledSlider createLabeledSlider(ViewGroup parent){
         LabeledSlider labeledSlider = new LabeledSlider(context);

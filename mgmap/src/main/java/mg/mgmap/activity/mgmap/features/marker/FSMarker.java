@@ -27,7 +27,6 @@ import mg.mgmap.activity.mgmap.FeatureService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Observer;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -39,6 +38,7 @@ import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
@@ -71,14 +71,14 @@ public class FSMarker extends FeatureService {
 
     public FSMarker(MGMapActivity mmActivity) {
         super(mmActivity);
-        toggleEditMarkerTrack.addObserver((o, arg) -> prefEditMarkerTrack.toggle());
-        prefEditMarkerTrack.addObserver((o, arg) -> checkStartStopMCL());
+        toggleEditMarkerTrack.addObserver((e) -> prefEditMarkerTrack.toggle());
+        prefEditMarkerTrack.addObserver((e) -> checkStartStopMCL());
 
         ttRefreshTime = 20;
         markerTrackLogObservable.addObserver(refreshObserver);
         prefAlphaMtl.addObserver(refreshObserver);
 
-        Observer hideMarkerTrackObserver = (o, arg) -> {
+        Observer hideMarkerTrackObserver = (e) -> {
             getApplication().markerTrackLogObservable.setTrackLog(null);
             prefEditMarkerTrack.setValue(false);
         };

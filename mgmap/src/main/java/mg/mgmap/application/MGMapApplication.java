@@ -36,6 +36,8 @@ import mg.mgmap.application.util.HgtProvider;
 import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
+import mg.mgmap.generic.util.ObservableImpl;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.PrefUtil;
 import mg.mgmap.generic.util.hints.HintUtil;
 import mg.mgmap.service.bgjob.BgJobService;
@@ -64,8 +66,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -264,7 +264,8 @@ public class MGMapApplication extends Application {
         super.onTerminate();
     }
 
-    public static class LastPositionsObservable extends Observable{
+    public static class LastPositionsObservable extends ObservableImpl {
+
         public PointModel lastGpsPoint = null;
         public PointModel secondLastGpsPoint = null;
 
@@ -272,10 +273,6 @@ public class MGMapApplication extends Application {
             secondLastGpsPoint = lastGpsPoint;
             lastGpsPoint = lp;
             changed();
-        }
-        public void changed(){
-            setChanged();
-            notifyObservers();
         }
         public void clear(){
             lastGpsPoint = null;
@@ -286,7 +283,7 @@ public class MGMapApplication extends Application {
 
     // TODO: Probably it makes sense to split this in a TrackLogObservable for the selected TrackLog and an AvailableTrackLogsObeservable without selected TrackLog information.
     @SuppressWarnings("WeakerAccess")
-    public static class AvailableTrackLogsObservable extends Observable{
+    public static class AvailableTrackLogsObservable extends ObservableImpl{
         TrackLogRef noRef = new TrackLogRef(null,-1);
         public TreeSet<TrackLog> availableTrackLogs = new TreeSet<>(Collections.reverseOrder());
         public TrackLogRef selectedTrackLogRef = noRef;
@@ -322,15 +319,11 @@ public class MGMapApplication extends Application {
             }
             changed();
         }
-        public void changed(){
-            setChanged();
-            notifyObservers();
-        }
     }
 
 
     @SuppressWarnings("WeakerAccess")
-    public class TrackLogObservable<T extends TrackLog> extends Observable{
+    public class TrackLogObservable<T extends TrackLog> extends ObservableImpl{
         T trackLog = null;
         boolean addToMetaTrackLogs;
 
@@ -342,9 +335,9 @@ public class MGMapApplication extends Application {
             return trackLog;
         }
 
-        Observer proxyObserver = (observable, o) -> {
+        Observer proxyObserver = (e) -> {
             setChanged();
-            notifyObservers(o);
+            notifyObservers();
         };
 
         public void setTrackLog(T trackLog){
