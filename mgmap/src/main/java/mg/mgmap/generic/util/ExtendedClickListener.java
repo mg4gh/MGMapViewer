@@ -23,7 +23,7 @@ import mg.mgmap.generic.util.basic.NameUtil;
 
 public class ExtendedClickListener implements View.OnClickListener {
 
-    private static Handler timer = new Handler();
+    private static final Handler timer = new Handler();
     protected long doubleClickTimeout = 10;
     private class TTSingle implements Runnable{
         @Override
@@ -31,7 +31,7 @@ public class ExtendedClickListener implements View.OnClickListener {
             ttSingle = null;
             onSingleClick(view);
         }
-    };
+    }
     private TTSingle ttSingle = null;
     private View view = null;
 
