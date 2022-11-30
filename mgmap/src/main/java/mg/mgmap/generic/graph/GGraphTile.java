@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.graph;
 
+import androidx.annotation.NonNull;
+
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 
@@ -138,6 +140,7 @@ public class GGraphTile extends GGraph {
         return tile.tileY;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "GGraphTile-"+tbBox.toString();
