@@ -24,11 +24,11 @@ import mg.mgmap.generic.model.PointModelUtil;
 
 public class GNodeRef implements Comparable<GNodeRef>{
 
-    private GNode node;
-    private GNode predecessor;
-    private GNeighbour neighbour;
-    private double cost = 0;
-    private double heuristic = 0;
+    private final GNode node;
+    private final GNode predecessor;
+    private final GNeighbour neighbour;
+    private final double cost;
+    private final double heuristic;
     private boolean settled = false;
 
     GNodeRef(GNode node, double cost, GNode predecessor, GNeighbour neighbour, double heuristic){
@@ -38,7 +38,6 @@ public class GNodeRef implements Comparable<GNodeRef>{
         this.neighbour = neighbour;
         this.heuristic = heuristic;
     }
-
 
     public int compareTo(@NonNull GNodeRef gNodeRef) {
         if (getHeuristicCost() == gNodeRef.getHeuristicCost()){
@@ -50,41 +49,33 @@ public class GNodeRef implements Comparable<GNodeRef>{
         return 1;
     }
 
-
     public GNode getNode() {
         return node;
     }
-
 
     public GNode getPredecessor() {
         return predecessor;
     }
 
-
     public GNeighbour getNeighbour() {
         return neighbour;
     }
-
 
     public double getCost() {
         return cost;
     }
 
-
     public double getHeuristic() {
         return heuristic;
     }
 
-
     public double getHeuristicCost() {
-        return cost+heuristic;
+        return getCost()+getHeuristic();
     }
-
 
     public boolean isSetteled() {
         return settled;
     }
-
 
     public void setSettled(boolean settled) {
         this.settled = settled;
