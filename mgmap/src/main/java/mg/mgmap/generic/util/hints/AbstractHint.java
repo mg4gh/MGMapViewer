@@ -28,7 +28,7 @@ public abstract class AbstractHint implements Runnable{
         this.showOnce = showOnce;
         prefCache = PrefCache.getApplicationPrefCache(activity);
         assert prefCache != null;
-        prefShowHints = PrefCache.getApplicationPrefCache(activity).get(activity.getResources().getString(R.string.preferences_hints_key), true);
+        prefShowHints = prefCache.get(activity.getResources().getString(R.string.preferences_hints_key), true);
         prefShowHint = prefCache.get(activity.getResources().getString(prefShowHintId), true);
     }
 
