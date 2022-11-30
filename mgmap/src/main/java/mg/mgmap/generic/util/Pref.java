@@ -17,14 +17,18 @@ package mg.mgmap.generic.util;
 import android.content.SharedPreferences;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Pref<T> extends ObservableImpl implements View.OnClickListener, View.OnLongClickListener {
 
-    public SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+    public SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
     protected final String key;
     protected T value;
     protected final SharedPreferences sharedPreferences;
@@ -34,6 +38,7 @@ public class Pref<T> extends ObservableImpl implements View.OnClickListener, Vie
     }
 
     public Pref(String key, T initialValue, SharedPreferences sharedPreferences){
+        super(key);
         if (initialValue == null){
             throw new RuntimeException("null not allowed");
         }
@@ -45,6 +50,7 @@ public class Pref<T> extends ObservableImpl implements View.OnClickListener, Vie
         }
     }
 
+    @SuppressWarnings({"unchecked", "WrapperTypeMayBePrimitive"})
     private T getSharedPreference(){
         if (!sharedPreferences.contains(key)){
             setSharedPreference(value);
@@ -124,6 +130,7 @@ public class Pref<T> extends ObservableImpl implements View.OnClickListener, Vie
         }
     }
 
+    @SuppressWarnings({"unchecked", "WrapperTypeMayBePrimitive"})
     public void toggle(){
         if (value instanceof Boolean){
             Boolean bNewValue = !((Boolean)value);
@@ -149,6 +156,7 @@ public class Pref<T> extends ObservableImpl implements View.OnClickListener, Vie
         notifyObservers();
     }
 
+    @SuppressWarnings({"unchecked", "WrapperTypeMayBePrimitive"})
     public T verify(String v){
         try {
             if (v.contains("\n")) throw new ParseException(v, v.indexOf("\n"));
@@ -162,14 +170,13 @@ public class Pref<T> extends ObservableImpl implements View.OnClickListener, Vie
                 Float res = ("".equals(v))?0:Float.parseFloat(v);
                 return (T)res;
             } else if (value instanceof String){
-                String res = v;
-                return (T)res;
+                return (T) v;
             } else if (value instanceof Long){
                 Long res = ("".equals(v))?0:Long.parseLong(v);
                 return (T)res;
             } else if (value instanceof Calendar){
                 Calendar res = Calendar.getInstance();
-                res.setTime( sdf.parse(v) );
+                res.setTime(Objects.requireNonNull(sdf.parse(v)));
                 return (T)res;
             } else {
                 throw new RuntimeException("type not allowed: "+value.getClass().getName());
@@ -186,6 +193,7 @@ public class Pref<T> extends ObservableImpl implements View.OnClickListener, Vie
         }
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "MGPref{key='" + key + "', value='" + value + "'}";
