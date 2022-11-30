@@ -120,6 +120,7 @@ public class GGraphTileFactory {
         return elevationProvider;
     }
 
+    @SuppressWarnings("CommentedOutCode")
     private GGraphTile getGGraphTile(int tileX, int tileY){
         long key = getKey(tileX,tileY);
 
