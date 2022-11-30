@@ -89,6 +89,7 @@ public class ControlView extends RelativeLayout {
     EnlargeControl enlargeControl = null;
 
     private int statusBarHeight;
+    private int navigationBarHeight;
     Pref<String> prefVerticalFullscreenOffset;
     public ArrayList<View> variableVerticalOffsetViews = new ArrayList<>();
 
@@ -130,7 +131,7 @@ public class ControlView extends RelativeLayout {
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
             dashboard = findViewById(R.id.dashboard);
             controlComposer.composeDashboard(activity, this);
-            statusBarHeight = getStatusBarHeight(activity);
+            initSystemBarHeight(activity);
             variableVerticalOffsetViews.add(this);
             prefVerticalFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_fullscreen_offset_key, ""+statusBarHeight);
 
@@ -151,35 +152,37 @@ public class ControlView extends RelativeLayout {
     }
 
     public void setVerticalOffset(){
-        int offset = statusBarHeight;
-        if ( activity.getPrefCache().get(R.string.FSControl_qcFullscreenOn, true).getValue() ){ // is fullscreen
+        initSystemBarHeight(activity);
+        boolean fullscreen =  activity.getPrefCache().get(R.string.FSControl_qcFullscreenOn, true).getValue();
+        int top = statusBarHeight;
+        if ( fullscreen ){ // is fullscreen
             try{
-                offset = Integer.parseInt(prefVerticalFullscreenOffset.getValue());
+                top = Integer.parseInt(prefVerticalFullscreenOffset.getValue());
             } catch (NumberFormatException e) {
                 Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
             }
         }
+        int bottom = ControlView.dp(2)+(fullscreen?0:navigationBarHeight);
         for (View view : variableVerticalOffsetViews){
             RelativeLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0, offset,0,0);
+            params.setMargins(0, top,0,bottom);
             view.setLayoutParams(params);
         }
+        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        mapView.getMapScaleBar().setMarginVertical(bottom + dp(65));
+        mapView.getMapScaleBar().redrawScaleBar();
+        activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle();
     }
 
 
-    public static int getStatusBarHeight(Activity activity) {
-        int height;
+    @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
+    public void initSystemBarHeight(Activity activity) {
         Resources myResources = activity.getResources();
-        @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
         int idStatusBarHeight = myResources.getIdentifier( "status_bar_height", "dimen", "android");
-        if (idStatusBarHeight > 0) {
-            height = activity.getResources().getDimensionPixelSize(idStatusBarHeight);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ "Status Bar Height = " + height+ " "+ ControlView.dp(24));
-        } else {
-            height = 0;
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ "Resources not found, status bar height set to 0");
-        }
-        return height;
+        statusBarHeight = (idStatusBarHeight > 0)?activity.getResources().getDimensionPixelSize(idStatusBarHeight):ControlView.dp(24);
+        int idNavBarHeight = myResources.getIdentifier( "navigation_bar_height", "dimen", "android");
+        navigationBarHeight = (idNavBarHeight > 0)?activity.getResources().getDimensionPixelSize(idNavBarHeight):ControlView.dp(24);
+        Log.i(MGMapApplication.LABEL, NameUtil.context()+"statusBarHeight="+statusBarHeight+" navigationBarHeight"+navigationBarHeight);
     }
 
 // *************************************************************************************************
