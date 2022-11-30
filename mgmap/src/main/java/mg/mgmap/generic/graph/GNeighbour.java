@@ -20,8 +20,8 @@ package mg.mgmap.generic.graph;
 
 public class GNeighbour{
 
-    private GNode neighbourNode;
-    private double cost = 0;
+    private final GNode neighbourNode;
+    private final double cost;
     private GNeighbour nextNeighbour = null;
 
     public GNeighbour(GNode neighbourNode, double cost){
