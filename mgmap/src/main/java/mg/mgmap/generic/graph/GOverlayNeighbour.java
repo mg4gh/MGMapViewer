@@ -44,15 +44,4 @@ public class GOverlayNeighbour {
         return neighbour;
     }
 
-    public void setNeighbour(GNeighbour neighbour) {
-        this.neighbour = neighbour;
-    }
-
-    public GNeighbour getNextNeighbour() {
-        return nextNeighbour;
-    }
-
-    public void setNextNeighbour(GNeighbour nextNeighbour) {
-        this.nextNeighbour = nextNeighbour;
-    }
 }
