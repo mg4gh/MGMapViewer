@@ -1,8 +1,8 @@
 package mg.mgmap.generic.util.hints;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -37,6 +37,7 @@ public class HintUtil {
         Log.i(MGMapApplication.LABEL, NameUtil.context()+ prefs);
     }
 
+    @SuppressLint({"DiscouragedApi", "SetTextI18n"})
     public boolean showHint(AbstractHint hint){
         if (hint == null) return false;
         try {
@@ -136,13 +137,11 @@ public class HintUtil {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity)
                         .setTitle(headline)
-                        .setPositiveButton("Got it!", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int sumthin) {
-                                hint.prefShowHint.setValue(!cbHideThis.isChecked());
-                                hint.prefShowHints.setValue(!cbHideAll.isChecked());
-                                hint.gotItActions.forEach(Runnable::run);
-                                dialog.dismiss();
-                            }
+                        .setPositiveButton("Got it!", (dialog, which) -> {
+                            hint.prefShowHint.setValue(!cbHideThis.isChecked());
+                            hint.prefShowHints.setValue(!cbHideAll.isChecked());
+                            hint.gotItActions.forEach(Runnable::run);
+                            dialog.dismiss();
                         })
                         .setView(ll);
 
