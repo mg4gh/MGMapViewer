@@ -13,6 +13,12 @@ Idea:
 - use a dedicated SharedPreferences Instance to control which key will be used at startup time, changing a particular key inside would cause the application to restart with new
 value for this key
 - testdata shell be downloaded right at the beginning of application startup, maybe even in advance - just throw away old data and unzip expected data package
+- Introduce a "mgmap.properties" with
+  - basePath=MGMapViewer (or alternative for tests)
+  - logLevel=info (or alternative) -> will be used for logcat command
+    -> application may provide LogLevel
+  - sharedPreferences=mpmap.mg_preferences (or alternative) // check default
+- "mgmap.properties" will be read by application at startup
 
 
 ## External Interface types
