@@ -40,6 +40,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+@SuppressWarnings("unused")
 public class Zipper
 {
     private final String password;
