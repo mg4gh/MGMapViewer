@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
+import java.util.Objects;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
@@ -24,7 +25,7 @@ public class SHA256 {
             if (args.length >= 1){
                 File f = new File(args[0]);
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
-                for (File child : f.listFiles()){
+                for (File child : Objects.requireNonNull(f.listFiles())){
                     if (child.getName().endsWith(".apk")){
 
                         String hash = getFileChecksum(md, child);
