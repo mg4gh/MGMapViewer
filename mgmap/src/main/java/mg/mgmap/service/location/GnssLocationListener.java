@@ -21,7 +21,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.model.TrackLogPoint;
 
 /**
  * Location Listener for TrackLoggerService
