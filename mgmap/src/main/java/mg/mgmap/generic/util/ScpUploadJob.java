@@ -129,10 +129,10 @@ public class ScpUploadJob extends BgJob {
                 sb.append((char) c);
             } while (c != '\n');
             if (b == 1) { // error
-                Log.e(MGMapApplication.LABEL, NameUtil.context()+" Error: "+sb.toString());
+                Log.e(MGMapApplication.LABEL, NameUtil.context()+" Error: "+ sb);
             }
             if (b == 2) { // fatal error
-                Log.e(MGMapApplication.LABEL, NameUtil.context()+" Fatal: "+sb.toString());
+                Log.e(MGMapApplication.LABEL, NameUtil.context()+" Fatal: "+ sb);
             }
         }
         return b;
