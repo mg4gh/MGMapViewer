@@ -90,8 +90,6 @@ public class SshSyncUtil {
 
 
                 File localFolder = persistenceManager.getTrackGpxDir();
-//                Map<String, Long> localMap = new HashMap<>();
-//                Map<String, Long> localMap = calcLocalMap(localFolder, ".*\\.gpx");
                 try (Stream<Path> walk = Files.walk(localFolder.toPath())){
                     Map<String, Long> localMap = walk
                             .filter(Files::isRegularFile)
@@ -171,11 +169,7 @@ public class SshSyncUtil {
                 boolean exit2 = (channel.getExitStatus() >= 0);
 
                 if (exit || exit2) break;
-                try {
-                    Thread.sleep(20);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                WaitUtil.doWait(this.getClass(), 20, MGMapApplication.LABEL);
             }
             channel.disconnect();
         } catch (Exception e) {
