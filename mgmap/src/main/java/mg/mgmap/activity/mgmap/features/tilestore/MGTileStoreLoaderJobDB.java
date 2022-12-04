@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
@@ -58,16 +59,8 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
             }
         }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-        byte[] b = new byte[2048];
-        int length;
-
-        while ((length = is.read(b)) != -1) {
-            os.write(b, 0, length);
-        }
+        IOUtil.copyStreams(conn.getInputStream() , os);
         byte[] tileData = os.toByteArray();
-        is.close();
-        os.close();
 
         mgTileStoreDB.saveTileBytes(tile, tileData, bOld);
     }

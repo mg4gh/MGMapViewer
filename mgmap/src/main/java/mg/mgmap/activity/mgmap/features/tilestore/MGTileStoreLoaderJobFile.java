@@ -18,10 +18,9 @@ import org.mapsforge.core.model.Tile;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import mg.mgmap.application.util.PersistenceManager;
+import mg.mgmap.generic.util.basic.IOUtil;
 
 public class MGTileStoreLoaderJobFile extends MGTileStoreLoaderJob{
 
@@ -37,20 +36,7 @@ public class MGTileStoreLoaderJobFile extends MGTileStoreLoaderJob{
         File yFile = new File(xDir, tile.tileY +".png");
 
         super.doJob();
-        InputStream is = conn.getInputStream();
-        OutputStream os = new FileOutputStream(yFile);
-
-        byte[] b = new byte[2048];
-        int length;
-
-        while ((length = is.read(b)) != -1) {
-            os.write(b, 0, length);
-        }
-
-        is.close();
-        os.close();
-
-
+        IOUtil.copyStreams(conn.getInputStream() , new FileOutputStream(yFile));
     }
 
 
