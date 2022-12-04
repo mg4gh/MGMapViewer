@@ -29,6 +29,7 @@ import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.NameUtil;
 
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ExtendedTextView extends AppCompatTextView {
 
     private Pref<Boolean> prState1=null, prState2=null;
@@ -63,8 +64,6 @@ public class ExtendedTextView extends AppCompatTextView {
         super.onSizeChanged(w, h, oldw, oldh);
         try {
             int newAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - ((getCompoundDrawables()[0] != null) ? (getCompoundDrawablePadding() + getDrawableSize()) : 0);
-//            Log.v(MGMapApplication.LABEL, NameUtil.context() + logName+":" + getText() + " width=" + getWidth() + " drawableWidth=" + getDrawableSize() +
-//                    " paddingLeft=" + getPaddingLeft() + " paddingRight=" + getPaddingRight() + " +compoundDrawablePadding=" + getCompoundDrawablePadding() + " available=" + availableWidth+ " newAvailable=" + newAvailableWidth+" value="+value);
             if (newAvailableWidth != availableWidth){
                 availableWidth = newAvailableWidth;
                 Log.d(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" available=" + availableWidth);
