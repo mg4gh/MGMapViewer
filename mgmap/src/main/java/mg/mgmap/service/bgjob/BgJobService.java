@@ -19,7 +19,6 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -31,7 +30,6 @@ import androidx.core.app.NotificationManagerCompat;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.basic.NameUtil;
@@ -77,8 +75,6 @@ public class BgJobService extends Service {
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
-
-        Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
         baseNotiBuilder = createNotificationBuilder("BgJobService: running");
     }
 
@@ -115,20 +111,17 @@ public class BgJobService extends Service {
         try {
             while ((numWorkers.get() < MAX_WORKER) && (application.numBgJobs() > 0)){
                 numWorkers.incrementAndGet();
-                new Thread(){
-                    @Override
-                    public void run() {
-                        BgJob job;
-                        while ((job = application.getBgJob()) != null){
-                            job.service = BgJobService.this;
-                            application.addActiveJob(job);
-                            job.start();
-                            application.removeActiveJob(job);
-                        }
-                        numWorkers.decrementAndGet();
-                        checkDeactivateService();
+                new Thread(() -> {
+                    BgJob job;
+                    while ((job = application.getBgJob()) != null){
+                        job.service = BgJobService.this;
+                        application.addActiveJob(job);
+                        job.start();
+                        application.removeActiveJob(job);
                     }
-                }.start();
+                    numWorkers.decrementAndGet();
+                    checkDeactivateService();
+                }).start();
             }
         } catch (Exception e) {
             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
