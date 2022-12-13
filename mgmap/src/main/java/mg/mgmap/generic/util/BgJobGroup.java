@@ -81,6 +81,8 @@ public class BgJobGroup {
             }
             if (title != null){
                 new Thread(() -> activity.runOnUiThread(this::reportResult)).start();
+            } else {
+                groupCallback.afterGroupFinished(this, jobCounter, successCounter, errorCounter);
             }
         }
     }

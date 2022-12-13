@@ -194,7 +194,12 @@ public class MGMapApplication extends Application {
         // initialize Theme and MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(() -> {
             if (persistenceManager.getThemeNames().length == 0){
-                BgJobGroup jobGroup = new BgJobGroup(this, null, null, new BgJobGroupCallback() {});
+                BgJobGroup jobGroup = new BgJobGroup(this, null, null, new BgJobGroupCallback() {
+                    @Override
+                    public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                        getSharedPreferences().edit().putString(getResources().getString(R.string.preference_choose_theme_key), "Elevate.xml").apply();
+                    }
+                });
                 jobGroup.addJob( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets()) );
                 jobGroup.setConstructed(null);
             }
