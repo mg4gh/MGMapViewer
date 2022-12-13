@@ -17,7 +17,6 @@ package mg.mgmap.activity.mgmap;
 import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
 import android.os.Handler;
 import android.util.Log;
@@ -93,8 +92,9 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
 
 
     protected void createSharedPreferences() {
-        this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( this.getClass().getSimpleName(), MODE_PRIVATE));
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        this.sharedPreferences = MGMapApplication.getByContext(this).getSharedPreferences();
+        String preferencesName = MGMapApplication.getByContext(this).getPreferencesName();
+        this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( preferencesName+"_"+this.getClass().getSimpleName(), MODE_PRIVATE));
         this.sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         recreatePreferences = Arrays.asList(
                 getResources().getString(R.string.Layers_pref_chooseMap1_key),

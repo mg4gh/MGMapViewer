@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.height_profile;
 
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +22,6 @@ import android.util.SparseIntArray;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
@@ -59,8 +59,8 @@ public class HeightProfileActivity extends AppCompatActivity {
         super.onResume();
         Log.i(MGMapApplication.LABEL, NameUtil.context() +" started");
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-
-        boolean showAscentGraph = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getResources().getString(R.string.preferences_hprof_gl_key), false);
+        SharedPreferences sharedPreferences = MGMapApplication.getByContext(this).getSharedPreferences();
+        boolean showAscentGraph = sharedPreferences.getBoolean(getResources().getString(R.string.preferences_hprof_gl_key), false);
         showGraph(showAscentGraph);
         Log.i(MGMapApplication.LABEL, NameUtil.context() +" finished");
     }

@@ -18,7 +18,7 @@ import mg.mgmap.generic.util.basic.NameUtil;
 
 public class NotificationUtil {
 
-    private NotificationManager notificationManager = null;
+    private final NotificationManager notificationManager;
     private Notification notification = null;
     private final String CHANNEL_ID;
     private final Context context;
@@ -33,7 +33,6 @@ public class NotificationUtil {
 
         notificationManager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
         notificationManager.createNotificationChannel(channel);
-//            channel.setSound(PreferenceManager..getNotificationRingTone(context), null);
         Log.i(MGMapApplication.LABEL, NameUtil.context() + "create \""+ channel.getName()+"\" - importance: " + channel.getImportance());
     }
 
@@ -48,12 +47,9 @@ public class NotificationUtil {
                 .build();
         Log.i(MGMapApplication.LABEL, NameUtil.context() + "send alarm notification");
         notificationManager.notify(77,notification);
-        timer.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + "cancel alarm notification");
-                notificationManager.cancel(77);
-            }
+        timer.postDelayed(() -> {
+            Log.i(MGMapApplication.LABEL, NameUtil.context() + "cancel alarm notification");
+            notificationManager.cancel(77);
         }, 60*1000);
     }
 }

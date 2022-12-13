@@ -1,9 +1,5 @@
 package mg.mgmap.generic.util;
 
-import android.content.Context;
-import android.net.wifi.SupplicantState;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import com.jcraft.jsch.Channel;
@@ -36,25 +32,7 @@ public class SshSyncUtil {
 
     long lastAction = 0;
     boolean syncInProgress = false;
-
-    boolean checkWLAN(MGMapApplication application, String wlanSSID){
-        if (wlanSSID == null) return false;
-        String ssid = "";
-        try {
-            WifiManager wifiManager = (WifiManager) application.getSystemService(Context.WIFI_SERVICE);
-            WifiInfo wifiInfo;
-
-            wifiInfo = wifiManager.getConnectionInfo();
-            if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
-                ssid = wifiInfo.getSSID();
-            }
-        } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-        }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" current ssid=\""+ssid+"\"");
-        return wlanSSID.equals(ssid);
-    }
-
+    
     public void trySynchronisation(MGMapApplication application) {
         long now = System.currentTimeMillis();
         if ((now -lastAction > 10 * 60 * 1000) && (!syncInProgress)){ // no sync, if there was one in the last 10 minutes or another sync is in progress
@@ -66,6 +44,7 @@ public class SshSyncUtil {
         try {
             PersistenceManager persistenceManager = application.getPersistenceManager();
             Properties props = persistenceManager.getConfigProperties(null,SYNC_CONFIG);
+            if (props.size() == 0) return;
 
             String pkFile = props.getProperty("pkFile", "id_rsa");
             String passphrase = props.getProperty("passphrase", "");
@@ -75,7 +54,7 @@ public class SshSyncUtil {
             String targetPrefix = props.getProperty("targetPrefix", "mgmap/");
             String wlanSSID = props.getProperty("wlanSSID", "MeinWLAN");
 
-            if (checkWLAN(application, wlanSSID)){
+            if (WiFiUtil.checkWLAN(application, wlanSSID)){
 
                 File pkDir = new File(persistenceManager.getConfigDir(), SSH_PK_SUB_DIR);
 

@@ -29,7 +29,6 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -77,7 +76,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(application.getPersistenceManager()));
         super.onCreate(savedInstanceState);
 
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        this.prefs = MGMapApplication.getByContext(this).getSharedPreferences();
 
         setContentView(R.layout.theme_settings_activity);
         themeSettingsFragment = new ThemeSettingsFragment();
@@ -121,7 +120,9 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         if (renderthemeOptions != null) {
             // the preference category is hard-wired into this app and serves as
             // the hook to add a list preference to allow users to select a style
-            renderthemeMenu = (PreferenceCategory) themeSettingsFragment.findPreference(getResources().getString(R.string.my_rendertheme_menu_key));
+            renderthemeMenu = themeSettingsFragment.findPreference(getResources().getString(R.string.my_rendertheme_menu_key));
+            assert renderthemeMenu != null;
+            renderthemeMenu.getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(this).getPreferencesName());
             createRenderthemeMenu();
         }
     }

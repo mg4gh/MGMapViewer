@@ -20,13 +20,14 @@ import android.os.Bundle;
 
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceManager;
 
 import mg.mgmap.R;
+import mg.mgmap.application.MGMapApplication;
 
 public class FurtherPreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
         setPreferencesFromResource(R.xml.further_preferences, rootKey);
     }
 
@@ -47,7 +48,7 @@ public class FurtherPreferenceScreen extends MGPreferenceScreen {
             pref.setOnPreferenceClickListener(preference -> {
                 Activity activity = getActivity();
                 if (activity != null){
-                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+                    SharedPreferences sharedPreferences = MGMapApplication.getByContext(activity).getSharedPreferences();
                     boolean triggerValue = sharedPreferences.getBoolean(getResources().getString(R.string.preference_testTrigger_key), true);
                     sharedPreferences.edit().putBoolean(getResources().getString(R.string.preference_testTrigger_key), !triggerValue).apply();
                     getActivity().finish();

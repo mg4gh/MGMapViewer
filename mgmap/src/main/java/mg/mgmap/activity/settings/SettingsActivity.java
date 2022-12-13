@@ -24,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import java.util.Objects;
 
@@ -43,7 +42,7 @@ public class SettingsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = MGMapApplication.getByContext(this).getSharedPreferences();
         PreferenceFragmentCompat pfc = new MainPreferenceScreen();
         Intent intent = getIntent();
         if (intent != null) {

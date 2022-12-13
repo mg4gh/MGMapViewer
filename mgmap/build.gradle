@@ -10,18 +10,29 @@ static def getDate() {
 afterEvaluate {
 
 
+    task provideDebugApkOnSshServer(type: JavaExec, dependsOn: assembleDebug) {
+        group = "Execution"
+        description = "Run the main class with JavaExecTask"
+        classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
+        classpath += files(getProjectDir().toString() +"/libs/jsch-0.1.55.jar")
+        getMainClass().set("mg.mgmap.generic.util.SshBuild")
+//        args = ["192.168.178.180", "22", "build", files("id_rsa").first().toString(), "", files("$buildDir/outputs/apk/debug/*.apk").first(), "data"  ]
+        args = [ files("$projectDir/../.ssh/config.properties").first(), "apk" , files("$buildDir/outputs/apk/debug/*.apk").first()]
+
+    }
+
     task generateDebugSHA(type: JavaExec, dependsOn: assembleDebug) {
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
-        mainClass = "mg.mgmap.generic.util.SHA256"
+        getMainClass().set("mg.mgmap.generic.util.SHA256")
         args files("${buildDir}/outputs/apk/debug")
     }
     task generateReleaseSHA(type: JavaExec, dependsOn: assembleRelease) {
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
-        mainClass = "mg.mgmap.generic.util.SHA256"
+        getMainClass().set("mg.mgmap.generic.util.SHA256")
         args files("${buildDir}/outputs/apk/release")
     }
 
@@ -88,10 +99,13 @@ afterEvaluate {
         classpath = files("C:/data/dev/Java/FTP/prepJar.jar")
     }
 
-    task _mgmapDebugApk (dependsOn: generateDebugSHA){
+    task _mgmapDebugApk (dependsOn: ['generateDebugSHA']){
         File ftpDir = new File("C:/data/dev/Java/FTP")
         if (ftpDir.exists()){
             dependsOn(startFTP2)
+        }
+        if (new File("./.ssh").exists()){
+            dependsOn(provideDebugApkOnSshServer)
         }
         doLast {
             System.out.println( "_mgmapDebugApk finished" )
@@ -200,15 +214,15 @@ configurations {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'androidx.preference:preference:1.2.0'
     api 'net.sf.kxml:kxml2:2.3.0'
 
     implementation 'com.android.support:preference-v7:33.0.0'
     implementation files('libs/commons-net-3.8.0.jar')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
     implementation files('libs/javax.json-1.1.2.jar')
     implementation files('libs/javax.json-api-1.1.2.jar')
 
@@ -216,9 +230,9 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-    implementation 'com.jcraft:jsch:0.1.55'
+//    implementation 'com.jcraft:jsch:0.1.55'
 
-    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
 
     implementation 'org.mapsforge:mapsforge-map-android:0.18.0'
     implementation 'org.mapsforge:mapsforge-themes:0.18.0'

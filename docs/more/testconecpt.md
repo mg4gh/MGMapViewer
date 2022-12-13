@@ -20,6 +20,48 @@ value for this key
   - sharedPreferences=mpmap.mg_preferences (or alternative) // check default
 - "mgmap.properties" will be read by application at startup
 
+### Further idea:
+
+#### Data structure on device
+- device contains in "application.getExternalFilesDir(null)" which is "/sdcard/Android/data/mg.mgmap/files" a folder "testSetup" with two files:
+  - config.properties: contains properties to connect to ssh server (used as sftp server)
+    - username: username to be used for ssh 
+    - hostname: target hostname
+    - port: target port to be used
+    - pkFile: private key for login without password, e.g. id_rsa (shuold be in same folder))
+    - passphrase: passphrase, if key is secured
+    - wifi: ssid of wifi, in which the test shall be done
+    - targetPrefix: path prefix on target host that shall be used for all actions (e.g. "data")
+  - id_rsa (or similar)
+  and a directory with tem data
+  - temp
+    - testgroup.properties
+    - files.properties
+  
+#### Data structure on testServer:
+```
+~<username>/<targetPrefix>/apk/<apk for fast installation>
+                          /testData/testgroup<nnnn>/testgroup.properties
+                                                      appDir (default MGMapViewer)
+                                                      preferences (default mg.mgmap_preferences)
+                                                      cleanup
+                                                   /files.properties (defines the set of required files)
+                                                      <localFile>=<remoteFile>  
+                                                   /result.properties
+```
+#### Procedure during startup: 
+  
+- if testSetup incl testSetup/config.properties exists // only do something, if test setup exists
+  - Construct Sftp class based on config.properties
+  - if (currentWifi == config.properties.wifi) // only do something, if device is in test WLAN environment
+    - Setup sftp connection and channel
+    - iterate over ~<username>/<targetPrefix>/testData/testgroup<nnnn>/
+      - if result.properties exists continue (if results exists, then do not redo test - delete results if redo is required)
+      - use appDir and preferences from testgroup.properties
+      - if (cleanup and addDir!=MGMapViewer) delete all in appDir
+
+
+
 
 ## External Interface types
 

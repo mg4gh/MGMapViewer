@@ -25,7 +25,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.view.WindowCompat;
 import androidx.lifecycle.Lifecycle;
-import androidx.preference.PreferenceManager;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
@@ -35,7 +34,7 @@ import mg.mgmap.generic.util.basic.NameUtil;
 public class FullscreenUtil {
 
     public static void enforceState(AppCompatActivity activity) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        SharedPreferences sharedPreferences = MGMapApplication.getByContext(activity).getSharedPreferences();
         boolean fullscreenOn = sharedPreferences.getBoolean(activity.getResources().getString(R.string.FSControl_qcFullscreenOn), true);
         enforceState(activity, fullscreenOn);
     }

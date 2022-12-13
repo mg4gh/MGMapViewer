@@ -17,10 +17,12 @@ package mg.mgmap.activity.settings;
 import android.os.Bundle;
 
 import mg.mgmap.R;
+import mg.mgmap.application.MGMapApplication;
 
 public class InfoPreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
         setPreferencesFromResource(R.xml.info_preferences, rootKey);
     }
 

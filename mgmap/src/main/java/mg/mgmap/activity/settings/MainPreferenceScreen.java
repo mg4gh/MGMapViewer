@@ -20,10 +20,13 @@ import androidx.preference.Preference;
 
 import mg.mgmap.BuildConfig;
 import mg.mgmap.R;
+import mg.mgmap.application.MGMapApplication;
 
 public class MainPreferenceScreen extends MGPreferenceScreen {
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
         setPreferencesFromResource(R.xml.main_preferences, rootKey);
     }
 

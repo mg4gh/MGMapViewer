@@ -20,8 +20,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
 import java.util.HashMap;
 import java.util.TreeSet;
 
@@ -37,7 +35,7 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
     public PrefCache(Context context){
         this.context = context;
         prefMap = new HashMap<>();
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences = MGMapApplication.getByContext(context).getSharedPreferences();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 

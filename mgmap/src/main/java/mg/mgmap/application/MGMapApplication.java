@@ -23,6 +23,7 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.mapsforge.core.util.Parameters;
@@ -65,6 +66,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -103,6 +105,8 @@ public class MGMapApplication extends Application {
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
     private final ArrayList<BgJob> activeBgJobs = new ArrayList<>();
 
+    private SharedPreferences sharedPreferences = null;
+    private String preferencesName;
     PrefCache prefCache = null;
     public Pref<Boolean> prefRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
     public Pref<Boolean> prefGps = null;
@@ -129,8 +133,17 @@ public class MGMapApplication extends Application {
         System.out.println("MGMapViewer Application start!!!!");
         super.onCreate();
 
-        persistenceManager = new PersistenceManager(this);
+        Setup setup = new Setup();
+        setup.init(this);
+        preferencesName = setup.getPreferencesName();
+        sharedPreferences = setup.getSharedPreferences();
+        persistenceManager = new PersistenceManager(this, setup.getAppDirName());
         startLogging(persistenceManager.getLogDir());
+        Log.i(LABEL,NameUtil.context()+" Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" *** START ***");
+        for (Map.Entry<String, ?> entry: setup.getSharedPreferences().getAll().entrySet()){
+            Log.d(MGMapApplication.LABEL, NameUtil.context()+String.format("        key=%s value=%s", entry.getKey(), entry.getValue()));
+        }
+        Log.i(LABEL,NameUtil.context()+" Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" **** END ****");
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
@@ -420,6 +433,19 @@ public class MGMapApplication extends Application {
 
     public PrefCache getPrefCache(){
         return prefCache;
+    }
+
+    public SharedPreferences getSharedPreferences(){
+        return sharedPreferences;
+    }
+
+    public String getPreferencesName() {
+        return preferencesName;
+    }
+
+    public static MGMapApplication getByContext(Context context){
+        assert (context.getApplicationContext() instanceof MGMapApplication);
+        return (MGMapApplication) context.getApplicationContext();
     }
 
     public synchronized void addBgJob(BgJob job){

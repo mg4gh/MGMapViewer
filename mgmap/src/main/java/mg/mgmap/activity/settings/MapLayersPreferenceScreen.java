@@ -30,6 +30,7 @@ import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
 public class MapLayersPreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
         setPreferencesFromResource(R.xml.map_layers_preferences, rootKey);
         try {
             MGMapApplication application = (MGMapApplication) requireActivity().getApplication();

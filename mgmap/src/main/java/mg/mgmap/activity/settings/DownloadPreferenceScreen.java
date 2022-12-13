@@ -53,6 +53,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
     private static final String FTP_CONFIG_FILE = "ftp_config.properties";
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
         setPreferencesFromResource(R.xml.download_preferences, rootKey);
     }
 

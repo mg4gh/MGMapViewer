@@ -91,3 +91,6 @@ lint/tmp/
 .stignore
 .stversions
 
+#ssh for copy to pi
+.ssh
+
