@@ -113,7 +113,7 @@ public class Zipper
         Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedZipFilePath="+extractedZipFilePath);
         while ((localFileHeader = zipInputStream.getNextEntry()) != null) {
 
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+localFileHeader.getFileName());
+            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+localFileHeader.getFileName());
             long fileLengthC = localFileHeader.getCompressedSize();
             long fileLengthU = localFileHeader.getUncompressedSize();
             double compressionFactor = fileLengthC / (double)fileLengthU;
@@ -123,7 +123,7 @@ public class Zipper
             OutputStream outputStream = null;
             try {
                 File extractedFile = new File(extractedZipFilePath, localFileHeader.getFileName());
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile);
+                Log.v(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile);
 
                 if (localFileHeader.isDirectory()){
                     boolean res = extractedFile.mkdirs();

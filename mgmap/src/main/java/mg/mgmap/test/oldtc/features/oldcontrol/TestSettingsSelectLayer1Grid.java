@@ -1,15 +1,15 @@
-package mg.mgmap.test.tc.features.control;
+package mg.mgmap.test.oldtc.features.oldcontrol;
 
 import android.graphics.PointF;
 import android.util.Log;
 
 import mg.mgmap.R;
-import mg.mgmap.test.TestControl;
-import mg.mgmap.test.Testcase;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 
-public class TestSettingsSelectLayer1Grid extends Testcase {
+public class TestSettingsSelectLayer1Grid extends OldTestcase {
 
-    public TestSettingsSelectLayer1Grid(TestControl tc) {
+    public TestSettingsSelectLayer1Grid(OldTestControl tc) {
         super(tc, Log.DEBUG);
     }
 

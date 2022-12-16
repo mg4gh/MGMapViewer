@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
 
-public class TestControlComposer {
+public class OldTestControlComposer {
 
     Application application;
 
-    public TestControlComposer(Application application) {
+    public OldTestControlComposer(Application application) {
         this.application = application;
     }
 
@@ -32,7 +32,7 @@ public class TestControlComposer {
         }
     }
 
-    public void compose(TestControl tc, String testset, ArrayList<Testcase> testcases){
+    public void compose(OldTestControl tc, String testset, ArrayList<OldTestcase> testcases){
         Log.d(MGMapApplication.LABEL, NameUtil.context()+" Pattern(s) for testcase selection: "+testset);
         String[] setArray = testset.split("\n");
 
@@ -57,8 +57,8 @@ public class TestControlComposer {
         for (String testcaseName : matchedList){
             try {
                 Class<?> clazz = Class.forName(testcaseName);
-                Constructor<?> clazzConstructor = clazz.getConstructor(TestControl.class);
-                Testcase testcase = (Testcase)clazzConstructor.newInstance(tc);
+                Constructor<?> clazzConstructor = clazz.getConstructor(OldTestControl.class);
+                OldTestcase testcase = (OldTestcase)clazzConstructor.newInstance(tc);
 
                 testcases.add(testcase);
             } catch (Exception e) {

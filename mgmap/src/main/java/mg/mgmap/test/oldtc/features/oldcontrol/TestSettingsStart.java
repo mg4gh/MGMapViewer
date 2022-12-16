@@ -1,14 +1,14 @@
-package mg.mgmap.test.tc.features.control;
+package mg.mgmap.test.oldtc.features.oldcontrol;
 
 import android.graphics.PointF;
 import android.util.Log;
 
-import mg.mgmap.test.TestControl;
-import mg.mgmap.test.Testcase;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 
-public class TestSettingsStart extends Testcase {
+public class TestSettingsStart extends OldTestcase {
 
-    public TestSettingsStart(TestControl tc) {
+    public TestSettingsStart(OldTestControl tc) {
         super(tc, Log.DEBUG);
     }
 

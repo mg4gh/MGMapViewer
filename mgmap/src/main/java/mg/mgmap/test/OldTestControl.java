@@ -3,7 +3,6 @@ package mg.mgmap.test;
 import android.animation.ObjectAnimator;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +26,7 @@ import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 
-public class TestControl {
+public class OldTestControl {
 
 
     private static final float MIN_X_PERCENT = 1f;
@@ -38,7 +37,7 @@ public class TestControl {
     TestView testView = null;
     PointF pPos = new PointF(); // percent position (of TestView) - useful for different screen sizes and resolutions, also for fullscreen on/off
     boolean cursorVisibility = false; // remember cursorVisibility
-    Testcase currentTestcase = null; // remember current testcase
+    OldTestcase currentTestcase = null; // remember current testcase
 
     public final Handler timer = new Handler(); // timer for tests
     private final Handler suTimer = new Handler(); // separate timer for supervision
@@ -46,7 +45,7 @@ public class TestControl {
     PrefCache prefCache; // access to shared preferences via applications prefCache (lifecycle of TestControl corresponds to application)
     Pref<Boolean> prefTestMode; // preference for testing mode (on/off)
 
-    public TestControl(MGMapApplication application, PrefCache prefCache){
+    public OldTestControl(MGMapApplication application, PrefCache prefCache){
         this.application = application;
         this.prefCache = prefCache;
 
@@ -63,9 +62,9 @@ public class TestControl {
                         } catch (InterruptedException e) {
                             Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
                         }
-                        ArrayList<Testcase> testcases = new ArrayList<>();
+                        ArrayList<OldTestcase> testcases = new ArrayList<>();
                         String testSet = prefCache.get(R.string.preference_testSet_key, "").getValue();
-                        new TestControlComposer(application).compose(TestControl.this, testSet, testcases); // fill the list of testcases according to the value of testSet
+                        new OldTestControlComposer(application).compose(OldTestControl.this, testSet, testcases); // fill the list of testcases according to the value of testSet
                         executeTestCases(testcases);       // finally process the testcases
                     }
                 }.start();
@@ -155,7 +154,7 @@ public class TestControl {
         }
     }
 
-    private void executeTestCases(ArrayList<Testcase> testcases){
+    private void executeTestCases(ArrayList<OldTestcase> testcases){
         boolean finished = false;
         StringBuilder sb = new StringBuilder();
         Runnable rStop = null;
@@ -167,7 +166,7 @@ public class TestControl {
                         Log.i(MGMapApplication.LABEL, NameUtil.context());
                         currentTestcase = testcases.remove(0);               // take testcase
                         currentTestcase.start();                                   // ... and start it
-                        final Testcase theTestcase = currentTestcase;
+                        final OldTestcase theTestcase = currentTestcase;
                         rStop = () -> {
                             Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+ theTestcase.name);
                             if (theTestcase.isRunning()){
@@ -259,7 +258,7 @@ public class TestControl {
     }
 
 
-    public void animateTo(Testcase testcase, PointF pPosNew, int duration){
+    public void animateTo(OldTestcase testcase, PointF pPosNew, int duration){
         TestView tv = testView;
         if ((tv != null) && (currentTestcase == testcase)){
             Point from = new Point();
@@ -295,7 +294,7 @@ public class TestControl {
     }
 
     // execute a test click
-    public void doClick(Testcase testcase){
+    public void doClick(OldTestcase testcase){
         final TestView tv = testView;
         if ((tv != null) && (currentTestcase == testcase)){
             Point to = new Point();
@@ -321,7 +320,7 @@ public class TestControl {
         }
     }
 
-    public void swipeTo(Testcase testcase, PointF pPosNew, int duration) {
+    public void swipeTo(OldTestcase testcase, PointF pPosNew, int duration) {
         TestView tv = testView;
         if ((tv != null) && (currentTestcase == testcase)){
             Point fromRaw = new Point();

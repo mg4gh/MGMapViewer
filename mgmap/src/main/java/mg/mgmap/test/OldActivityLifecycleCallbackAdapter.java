@@ -8,11 +8,11 @@ import android.util.Log;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
 
-public class ActivityLifecycleCallbackAdapter implements Application.ActivityLifecycleCallbacks{
+public class OldActivityLifecycleCallbackAdapter implements Application.ActivityLifecycleCallbacks{
 
     Activity activity;
 
-    public ActivityLifecycleCallbackAdapter(Activity activity) {
+    public OldActivityLifecycleCallbackAdapter(Activity activity) {
         this.activity = activity;
     }
 

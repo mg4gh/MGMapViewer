@@ -1,15 +1,15 @@
-package mg.mgmap.test.tc.features.control;
+package mg.mgmap.test.oldtc.features.oldcontrol;
 
 import android.graphics.PointF;
 import android.util.Log;
 
 import mg.mgmap.R;
-import mg.mgmap.test.TestControl;
-import mg.mgmap.test.Testcase;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 
-public class TestFuSettingsGL extends Testcase {
+public class TestFuSettingsGL extends OldTestcase {
 
-    public TestFuSettingsGL(TestControl tc) {
+    public TestFuSettingsGL(OldTestControl tc) {
         super(tc, Log.DEBUG);
     }
 

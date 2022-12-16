@@ -1,4 +1,4 @@
-package mg.mgmap.test.tc.features.complex.a1;
+package mg.mgmap.test.oldtc.features.complex.a1;
 
 import android.graphics.PointF;
 import android.util.Log;
@@ -9,12 +9,12 @@ import org.mapsforge.map.model.IMapViewPosition;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
-import mg.mgmap.test.TestControl;
-import mg.mgmap.test.Testcase;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 
-public class A1_03_TestBB extends Testcase {
+public class A1_03_TestBB extends OldTestcase {
 
-    public A1_03_TestBB(TestControl tc) {
+    public A1_03_TestBB(OldTestControl tc) {
         super(tc);
     }
 

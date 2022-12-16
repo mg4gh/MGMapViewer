@@ -1,4 +1,4 @@
-package mg.mgmap.test.tc.init;
+package mg.mgmap.test.oldtc.oldinit;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,13 +9,13 @@ import android.util.Log;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.test.TestControl;
-import mg.mgmap.test.Testcase;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 import mg.mgmap.generic.util.basic.NameUtil;
 
-public class TestInitBW extends Testcase {
+public class TestInitBW extends OldTestcase {
 
-    public TestInitBW(TestControl tc) {
+    public TestInitBW(OldTestControl tc) {
         super(tc);
     }
 

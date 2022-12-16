@@ -1,3 +1,4 @@
+mg.mgmap.test.tc.AbstractTestCase
 mg.mgmap.test.tc.features.complex.a1.A1_01_TestMarker
 mg.mgmap.test.tc.features.complex.a1.A1_02_TestStatisticSave
 mg.mgmap.test.tc.features.complex.a1.A1_03_TestBB
@@ -16,3 +17,4 @@ mg.mgmap.test.tc.features.extra.TestSwipeMap
 mg.mgmap.test.tc.features.statistic.TestStatisticView
 mg.mgmap.test.tc.init.TestInitBW
 mg.mgmap.test.tc.init.TestInitD
+mg.mgmap.test.tc.T1

@@ -43,29 +43,32 @@ public class TestView extends RelativeLayout  {
     private void init(Context context){
         if (context instanceof Activity) {
             activity = (Activity) context;
-            if (activity.getApplication() instanceof MGMapApplication) {
-                application = (MGMapApplication) activity.getApplication();
-                application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbackAdapter(activity){
-                    @Override
-                    public void onActivityResumed(Activity activity) {
-                        super.onActivityResumed(activity);
-                        if (TestView.this.activity == activity){
-                            application.getTestControl().onResume(TestView.this); // register this TestView at TestControl
-                        }
-                    }
-
-                    @Override
-                    public void onActivityPaused(Activity activity) {
-                        super.onActivityPaused(activity);
-                        if (TestView.this.activity == activity){
-                            application.getTestControl().onPause(TestView.this); // unregister this TestView at TestControl
-                            setVisibility(INVISIBLE, click);
-                        }
-                    }
-                });
-                createCursor(context);
-                createClick(context);
-            }
+            application = MGMapApplication.getByContext(context);
+            createCursor(context);
+            createClick(context);
+//            if (activity.getApplication() instanceof MGMapApplication) {
+//                application = (MGMapApplication) activity.getApplication();
+//                application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbackAdapter(activity){
+//                    @Override
+//                    public void onActivityResumed(Activity activity) {
+//                        super.onActivityResumed(activity);
+//                        if (TestView.this.activity == activity){
+//                            application.getTestControl().onResume(TestView.this); // register this TestView at TestControl
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onActivityPaused(Activity activity) {
+//                        super.onActivityPaused(activity);
+//                        if (TestView.this.activity == activity){
+//                            application.getTestControl().onPause(TestView.this); // unregister this TestView at TestControl
+//                            setVisibility(INVISIBLE, click);
+//                        }
+//                    }
+//                });
+//                createCursor(context);
+//                createClick(context);
+//            }
         }
     }
 
@@ -109,6 +112,16 @@ public class TestView extends RelativeLayout  {
         }
     }
 
+    public void setCursorPosition(Point positionOnScreen){
+        cursor.setX(positionOnScreen.x - location[0]);
+        cursor.setY(positionOnScreen.y - location[1]);
+    }
+    public void setClickPosition(Point positionOnScreen){
+        click.setX(positionOnScreen.x - location[0] - click.getWidth()/2.0f);
+        click.setY(positionOnScreen.y - location[1] - click.getHeight()/2.0f);
+    }
+
+
     // convert position (in percent) to position in pixel
     public void percent2pos(PointF in, Point out){
         out.x = (int)(pxSize.x*in.x/100);
@@ -126,4 +139,18 @@ public class TestView extends RelativeLayout  {
         out.y = in.y - click.getHeight()/2;
     }
 
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        Log.d(MGMapApplication.LABEL, NameUtil.context()+activity.getClass().getSimpleName()+": Visibility="+visibility);
+        if ( (visibility & (View.INVISIBLE | View.GONE)) == 0 ) { // is visible
+            application.getTestDataRegistry().registerTestView(this);
+        } else {
+            application.getTestDataRegistry().unregisterTestView(this);
+        }
+    }
+
+    public Activity getActivity() {
+        return activity;
+    }
 }

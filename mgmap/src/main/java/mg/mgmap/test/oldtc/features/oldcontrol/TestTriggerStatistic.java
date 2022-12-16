@@ -1,13 +1,13 @@
-package mg.mgmap.test.tc.features.control;
+package mg.mgmap.test.oldtc.features.oldcontrol;
 
 import android.graphics.PointF;
 
-import mg.mgmap.test.Testcase;
-import mg.mgmap.test.TestControl;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 
-public class TestTriggerStatistic extends Testcase {
+public class TestTriggerStatistic extends OldTestcase {
 
-    public TestTriggerStatistic(TestControl tc) {
+    public TestTriggerStatistic(OldTestControl tc) {
         super(tc);
     }
 

@@ -1,4 +1,4 @@
-package mg.mgmap.test.tc.features.control;
+package mg.mgmap.test.oldtc.features.oldcontrol;
 
 import android.content.Intent;
 import android.graphics.PointF;
@@ -7,13 +7,13 @@ import android.util.Log;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.test.Testcase;
-import mg.mgmap.test.TestControl;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 import mg.mgmap.generic.util.basic.NameUtil;
 
-public class TestTriggerDownload extends Testcase {
+public class TestTriggerDownload extends OldTestcase {
 
-    public TestTriggerDownload(TestControl tc) {
+    public TestTriggerDownload(OldTestControl tc) {
         super(tc);
     }
 

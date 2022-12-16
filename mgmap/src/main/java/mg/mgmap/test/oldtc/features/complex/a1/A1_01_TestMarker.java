@@ -1,4 +1,4 @@
-package mg.mgmap.test.tc.features.complex.a1;
+package mg.mgmap.test.oldtc.features.complex.a1;
 
 import android.graphics.PointF;
 import android.util.Log;
@@ -6,19 +6,17 @@ import android.util.Log;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.model.IMapViewPosition;
 
-import java.util.Locale;
-
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.NameUtil;
-import mg.mgmap.test.TestControl;
-import mg.mgmap.test.Testcase;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 
-public class A1_01_TestMarker extends Testcase {
+public class A1_01_TestMarker extends OldTestcase {
 
-    public A1_01_TestMarker(TestControl tc) {
+    public A1_01_TestMarker(OldTestControl tc) {
         super(tc);
     }
 

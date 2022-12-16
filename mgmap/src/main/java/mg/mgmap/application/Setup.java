@@ -2,6 +2,7 @@ package mg.mgmap.application;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 
 import com.jcraft.jsch.ChannelSftp;
@@ -18,6 +19,7 @@ import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Sftp;
 import mg.mgmap.generic.util.WiFiUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.test.oldtc.T1;
 
 public class Setup {
 
@@ -36,11 +38,15 @@ public class Setup {
 
     private static final String DEFAULT_APP_DIR = "MGMapViewer";
 
+    private MGMapApplication mgMapApplication;
+
     private String sAppDir = "MGMapViewer";
     private String preferencesName;
     private SharedPreferences sharedPreferences;
+    private boolean testMode = false;
 
     public void init(MGMapApplication application){
+        this.mgMapApplication = application;
         preferencesName = application.getPackageName() + "_preferences";
 
         Log.d(MGMapApplication.LABEL, NameUtil.context()+"Setup start");
@@ -80,6 +86,7 @@ public class Setup {
                                         SftpATTRS aTestResult = stat(lsEntry.getFilename()+"/"+TEST_RESULT);
                                         if ((aTestgroup != null) && (aTestResult == null)){
                                             // ok, use this testgroup for setup
+                                            testMode = true;
                                             channelSftp.get(lsEntry.getFilename()+"/"+TEST_GROUP, TEST_SETUP+"/"+TEST_TEMP+"/"+TEST_GROUP);
                                             Properties pTestgroup = new Properties();
                                             pTestgroup.load(new FileInputStream(new File(testTemp, TEST_GROUP)));
@@ -124,6 +131,8 @@ public class Setup {
                                                 }
                                                 editor.apply();
                                             }
+
+                                            application.registerActivityLifecycleCallbacks(application.getTestDataRegistry());
                                         }
                                     }
 
@@ -151,7 +160,29 @@ public class Setup {
             }
         }
         sharedPreferences = application.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
+        application.getTestDataRegistry().setTestMode(isTestMode());
         Log.d(MGMapApplication.LABEL, NameUtil.context()+"Setup end");
+        prepareTest();
+    }
+
+    public void prepareTest(){
+        if (isTestMode()){
+
+            Handler timer = new Handler();
+            timer.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            new T1(mgMapApplication).run();
+                        }
+                    }.start();
+
+                }
+            },15000);
+
+        }
     }
 
 
@@ -163,5 +194,8 @@ public class Setup {
     }
     public SharedPreferences getSharedPreferences(){
         return sharedPreferences;
+    }
+    public boolean isTestMode() {
+        return testMode;
     }
 }

@@ -1,15 +1,14 @@
-package mg.mgmap.test.tc.features.statistic;
+package mg.mgmap.test.oldtc.features.oldstatistic;
 
 import android.graphics.PointF;
 import android.util.Log;
 
-import mg.mgmap.R;
-import mg.mgmap.test.TestControl;
-import mg.mgmap.test.Testcase;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 
-public class TestStatisticView extends Testcase {
+public class TestStatisticView extends OldTestcase {
 
-    public TestStatisticView(TestControl tc) {
+    public TestStatisticView(OldTestControl tc) {
         super(tc, Log.DEBUG);
     }
 

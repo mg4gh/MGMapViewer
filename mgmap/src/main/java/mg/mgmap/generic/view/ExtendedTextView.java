@@ -66,6 +66,12 @@ public class ExtendedTextView extends AppCompatTextView {
             int newAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - ((getCompoundDrawables()[0] != null) ? (getCompoundDrawablePadding() + getDrawableSize()) : 0);
             if (newAvailableWidth != availableWidth){
                 availableWidth = newAvailableWidth;
+                int[] location = new int[2];
+                getLocationOnScreen(location);
+                MGMapApplication mgMapApplication = MGMapApplication.getByContext(getContext());
+                if (mgMapApplication.isTestMode()){
+                    mgMapApplication.getTestDataRegistry().registerViewPosition(logName,location[0],location[1],location[0]+w,location[1]+h);
+                }
                 Log.d(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" available=" + availableWidth);
                 availableText = null; // force recalc text
                 getPaint().set(availablePaint);

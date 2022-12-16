@@ -2,7 +2,7 @@ package mg.mgmap.test;
 
 import java.util.List;
 
-public interface TestPackage {
+public interface OldTestPackage {
 
     public List<String> getSubPackages();
 

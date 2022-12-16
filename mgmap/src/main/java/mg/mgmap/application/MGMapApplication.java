@@ -46,7 +46,6 @@ import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.service.location.TrackLoggerService;
-import mg.mgmap.test.TestControl;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.application.util.GeoidProvider;
@@ -59,6 +58,8 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.application.util.ExtrasUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.TestDataRegistry;
 
 
 import java.io.File;
@@ -87,7 +88,7 @@ public class MGMapApplication extends Application {
     private GeoidProvider geoidProvider;
     private PersistenceManager persistenceManager;
     private MetaDataUtil metaDataUtil;
-    private TestControl testControl;
+    private OldTestControl testControl;
     private NotificationUtil notificationUtil;
     private TrackStatisticFilter trackStatisticFilter;
     private HintUtil hintUtil;
@@ -105,11 +106,14 @@ public class MGMapApplication extends Application {
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
     private final ArrayList<BgJob> activeBgJobs = new ArrayList<>();
 
-    private SharedPreferences sharedPreferences = null;
-    private String preferencesName;
+//    private SharedPreferences sharedPreferences = null;
+//    private String preferencesName;
     PrefCache prefCache = null;
     public Pref<Boolean> prefRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
     public Pref<Boolean> prefGps = null;
+
+    private Setup setup;
+    private final TestDataRegistry testDataRegistry = new TestDataRegistry();
 
     public void startLogging(File logDir){
         try {
@@ -133,10 +137,8 @@ public class MGMapApplication extends Application {
         System.out.println("MGMapViewer Application start!!!!");
         super.onCreate();
 
-        Setup setup = new Setup();
+        setup = new Setup();
         setup.init(this);
-        preferencesName = setup.getPreferencesName();
-        sharedPreferences = setup.getSharedPreferences();
         persistenceManager = new PersistenceManager(this, setup.getAppDirName());
         startLogging(persistenceManager.getLogDir());
         Log.i(LABEL,NameUtil.context()+" Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" *** START ***");
@@ -151,7 +153,7 @@ public class MGMapApplication extends Application {
         elevationProvider = new ElevationProvider(hgtProvider); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
         metaDataUtil = new MetaDataUtil(persistenceManager);
-        testControl = new TestControl(this, prefCache);
+        testControl = new OldTestControl(this, prefCache);
         notificationUtil = new NotificationUtil(this);
         trackStatisticFilter = new TrackStatisticFilter(prefCache);
         hintUtil = new HintUtil();
@@ -242,6 +244,7 @@ public class MGMapApplication extends Application {
                 try {
                     pLogcat.waitFor(TIMEOUT, TimeUnit.MILLISECONDS );
                     int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
+                    Thread.sleep(1000); // prevent fast loop
                     Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
                     startLogging(persistenceManager.getLogDir());
                     lastCheck = System.currentTimeMillis();
@@ -424,7 +427,7 @@ public class MGMapApplication extends Application {
         return metaDataUtil;
     }
 
-    public TestControl getTestControl() {
+    public OldTestControl getTestControl() {
         return testControl;
     }
 
@@ -441,11 +444,17 @@ public class MGMapApplication extends Application {
     }
 
     public SharedPreferences getSharedPreferences(){
-        return sharedPreferences;
+        return setup.getSharedPreferences();
     }
 
     public String getPreferencesName() {
-        return preferencesName;
+        return setup.getPreferencesName();
+    }
+    public TestDataRegistry getTestDataRegistry(){
+        return testDataRegistry;
+    }
+    public boolean isTestMode(){
+        return setup.isTestMode();
     }
 
     public static MGMapApplication getByContext(Context context){

@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
 
-public class Testcase {
+public class OldTestcase {
 
     protected long timeout = 15000;
-    protected TestControl tc;
+    protected OldTestControl tc;
     protected String name;
     protected ArrayList<String> regexs = new ArrayList<>();
     protected ArrayList<String> matches = new ArrayList<>();
@@ -21,11 +21,11 @@ public class Testcase {
     int level;
     int lineCnt;
 
-    public Testcase(TestControl tc) {
+    public OldTestcase(OldTestControl tc) {
         this(tc, Log.INFO);
     }
 
-    public Testcase(TestControl tc, int level){
+    public OldTestcase(OldTestControl tc, int level){
         this.tc = tc;
         this.name = this.getClass().getSimpleName();
         this.level = level;
@@ -76,7 +76,7 @@ public class Testcase {
     protected Runnable rFinal = new Runnable() {
         @Override
         public void run() {
-            if (tc.currentTestcase == Testcase.this){
+            if (tc.currentTestcase == OldTestcase.this){
                 lineCnt = lm.stopMatch();
                 tc.setCursorVisibility(false);
                 running = false;

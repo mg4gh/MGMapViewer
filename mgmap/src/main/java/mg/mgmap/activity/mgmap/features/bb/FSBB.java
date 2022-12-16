@@ -324,8 +324,8 @@ public class FSBB extends FeatureService {
     void checkHgtAvailability(){
         if (prefAutoDlHgt.getValue()){
             for (Map.Entry<String, Layer> entry : getMapLayerFactory().getMapLayers().entrySet()){
-                if ((entry.getValue() instanceof TileRendererLayer) && (!prefAutoDlHgtAsked.getValue().contains(" " + entry.getKey() + " "))){
-                    prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" "+entry.getKey()+" ");
+                if ((entry.getValue() instanceof TileRendererLayer) && (!prefAutoDlHgtAsked.getValue().contains("\"" + entry.getKey() + "\""))){
+                    prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" \""+entry.getKey()+"\"");
                     BBox bBox = BBox.fromBoundingBox(((TileRendererLayer)entry.getValue()).getMapDataStore().boundingBox());
                     Log.i(MGMapApplication.LABEL, NameUtil.context()+" layer="+entry.getKey()+" bbox="+bBox);
                     loadHgt(bBox, false, entry.getKey());

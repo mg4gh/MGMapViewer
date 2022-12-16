@@ -1,16 +1,16 @@
-package mg.mgmap.test.tc.features.complex.a1;
+package mg.mgmap.test.oldtc.features.complex.a1;
 
 import android.graphics.PointF;
 import android.util.Log;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
-import mg.mgmap.test.TestControl;
-import mg.mgmap.test.Testcase;
+import mg.mgmap.test.OldTestControl;
+import mg.mgmap.test.OldTestcase;
 
-public class A1_02_TestStatisticSave extends Testcase {
+public class A1_02_TestStatisticSave extends OldTestcase {
 
-    public A1_02_TestStatisticSave(TestControl tc) {
+    public A1_02_TestStatisticSave(OldTestControl tc) {
         super(tc, Log.DEBUG);
     }
 
