@@ -14,30 +14,31 @@
  */
 package mg.mgmap.activity.mgmap.features.position;
 
-import android.util.Log;
-
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.view.InputListener;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.PointView;
 
 public class FSPosition extends FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final Paint PAINT_FIX2_FILL = CC.getFillPaint(R.color.RED_A50);
     private static final Paint PAINT_FIX2_STROKE = CC.getStrokePaint(R.color.RED, 5);
@@ -176,10 +177,10 @@ public class FSPosition extends FeatureService {
     private void setupTTMapMovingOff(){
         getTimer().removeCallbacks(ttMapMovingOff);
         getTimer().postDelayed(ttMapMovingOff, 7000);
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" setup MapMoving 7000 ");
+        mgLog.v("setup MapMoving 7000 ");
     }
     private void cancelTTMapMovingOff(){
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" cancel MapMoving Timer ");
+        mgLog.v("cancel MapMoving Timer ");
         getTimer().removeCallbacks(ttMapMovingOff);
     }
 

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import mg.mgmap.activity.height_profile.HeightProfileActivity;
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.theme.ThemeSettings;
@@ -37,7 +36,6 @@ import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintInitialMapDownload;
 import mg.mgmap.generic.view.ExtendedTextView;

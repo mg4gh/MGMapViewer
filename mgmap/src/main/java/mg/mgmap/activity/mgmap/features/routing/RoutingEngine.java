@@ -14,15 +14,13 @@
  */
 package mg.mgmap.activity.mgmap.features.routing;
 
-import android.util.Log;
-
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.graph.AStar;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.GGraphMulti;
@@ -41,10 +39,12 @@ import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteableTrackLog;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 
 public class RoutingEngine {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final GGraphTileFactory gFactory;
 
@@ -91,7 +91,7 @@ public class RoutingEngine {
             if (rpm.selectedApproach != null){
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
                     if (pm instanceof WriteablePointModel) {
-                        Log.d(MGMapApplication.LABEL, NameUtil.context());
+                        mgLog.d("");
                         WriteablePointModel wpm = (WriteablePointModel) pm;
                         wpm.setLat(rpm.selectedApproach.getApproachNode().getLat());
                         wpm.setLon(rpm.selectedApproach.getApproachNode().getLon());
@@ -176,7 +176,7 @@ public class RoutingEngine {
             routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
             routeTrackLog.setModified(mtl.isModified());
             routeTrackLog.setReferencedTrackLog(mtl);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Route modified: "+name);
+            mgLog.i("Route modified: "+name);
 
             ArrayList<PointModel> rpmKeys = new ArrayList<>(routePointMap.keySet()); // create a list to detect unused entries in routePointMap
             for (TrackLogSegment segment : mtl.getTrackLogSegments()){
@@ -218,14 +218,15 @@ public class RoutingEngine {
         return calcRouting(source,target,false,null,null);
     }
 
+    @SuppressWarnings("ReplaceNullCheck")
     MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target, boolean direct, Map<PointModel, RoutingHint> hints, ArrayList<PointModel> relaxedNodes){
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" Start");
+        mgLog.d("Start");
 
         GNode gStart = source.getApproachNode();
         GNode gEnd = target.getApproachNode();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+ " start "+gStart+" end "+gEnd);
+        mgLog.i("start "+gStart+" end "+gEnd);
 
         double distLimit = acceptedRouteDistance(source.mtlp, target.mtlp);
         GGraphMulti multi = null;
@@ -244,7 +245,7 @@ public class RoutingEngine {
                 for (GNodeRef gnr : aStar.perform(gStart, gEnd, distLimit, relaxedNodes)){
                     mpm.addPoint(gnr.getNode() );
                 }
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+aStar.getResult());
+                mgLog.i(aStar.getResult());
 
                 // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
                 if (mpm.size() == 3){
@@ -264,7 +265,7 @@ public class RoutingEngine {
                 }
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
         mpm.setRoute(mpm.size() != 0);
 
@@ -318,7 +319,7 @@ public class RoutingEngine {
                 hints.put(hint.pmCurrent, hint);
             }
         }
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
+        mgLog.d("End");
         return mpm;
     }
 

@@ -16,8 +16,8 @@ package mg.mgmap.activity.mgmap.features.routing;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 
 import mg.mgmap.application.MGMapApplication;
@@ -27,12 +27,15 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogSegment;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 
 public class TurningInstructionService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final int THRESHOLD_FAR = 200;
     private static final int THRESHOLD_NEAR = 40;
@@ -72,9 +75,9 @@ public class TurningInstructionService {
     private void tryStartTTSService(){
         if (serviceState == ServiceState.OFF){
             serviceState = ServiceState.INIT;
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech start");
+            mgLog.i("TextToSpeech start");
             tts = new TextToSpeech(context, status -> {
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" TextToSpeech started status="+status);
+                mgLog.i("TextToSpeech started status="+status);
                 if(status != TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.GERMAN);
                     serviceState = ServiceState.ON;
@@ -92,7 +95,7 @@ public class TurningInstructionService {
                 tts.stop();
                 tts.shutdown();
                 tts = null;
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " TextToSpeech stoped");
+                mgLog.i("TextToSpeech stoped");
             }
         }
     }
@@ -106,7 +109,7 @@ public class TurningInstructionService {
             if ((tts != null) && (serviceState == ServiceState.ON) && prefGps.getValue()){
 //                PointModel pm = getApplication().lastPositionsObservable.lastGpsPoint;
 
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" lastGps="+pm);
+                mgLog.i("lastGps="+pm);
                 if (pm != null) { // have a new position to handle
                     TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(pm, THRESHOLD_FAR);
                     if ((bestMatch != null)){
@@ -116,21 +119,21 @@ public class TurningInstructionService {
                         } else {
                             // not really close
                             mediumAwayCnt++;
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" away="+mediumAwayCnt);
+                            mgLog.i("away="+mediumAwayCnt);
                             if (mediumAwayCnt <=3){ // don't repeat all the time
                                 StringBuilder text = new StringBuilder();
                                 for (int i=0;i<mediumAwayCnt;i++) text.append("Achtung! ");
                                 int abstand = (int)bestMatch.getDistance();
                                 text.append("Abstand ").append(abstand).append(" Meter");
-                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" away="+mediumAwayCnt+" text="+text);
+                                mgLog.i("away="+mediumAwayCnt+" text="+text);
                                 tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
                             }
                         }
                     } else {
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" far away");
+                        mgLog.i("far away");
                         if (mediumAwayCnt <= 3 ){
                             String text = "Großer Abstand mehr als "+ (THRESHOLD_FAR)+" Meter";
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" away="+mediumAwayCnt+" text="+text);
+                            mgLog.i("away="+mediumAwayCnt+" text="+text);
                             tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
                             mediumAwayCnt = 4;
                         }
@@ -139,7 +142,7 @@ public class TurningInstructionService {
                 }
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL,NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 
@@ -147,8 +150,7 @@ public class TurningInstructionService {
     private void checkHints(TrackLogRefApproach bestMatch){
         int abstand = (int)bestMatch.getDistance();
         StringBuilder text = new StringBuilder();
-        if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG))
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+"SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
+        mgLog.d("SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
 
         PointModel lastPm = bestMatch.getApproachPoint();
         double routeDistance = 0;
@@ -162,8 +164,7 @@ public class TurningInstructionService {
 
                 double courseDegree = PointModelUtil.calcDegree( segment.get(bestMatch.getEndPointIndex()-1), bestMatch.getApproachPoint() , pmx );
                 int courseClock = PointModelUtil.clock4degree( courseDegree );
-                if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG))
-                    Log.d(MGMapApplication.LABEL, NameUtil.context()+" Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
+                mgLog.d("Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
                 if (((0 < courseDegree) && (courseDegree < 150)) || ((210 < courseDegree) && (courseDegree < 360))) {
                     if (text.length() > 0 ){ // add Kurs only, if there is a hint
                         text.append(" Kurs ").append(courseClock).append(" Uhr");
@@ -181,8 +182,7 @@ public class TurningInstructionService {
                 hint = epm.getExtent();
             }
             if (hint != null){
-                if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG))
-                    Log.d(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
+                mgLog.d("HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
                         +" l="+PointModelUtil.clock4degree(hint.nextLeftDegree)+" r="+PointModelUtil.clock4degree(hint.nextRightDegree));
                 int clock = PointModelUtil.clock4degree(hint.directionDegree);
                 if ((hint.numberOfPathes > 2) && (clock >= 0)){
@@ -213,13 +213,13 @@ public class TurningInstructionService {
                     }
                 }
             } else {
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" HINT d="+routeDistance);
+                mgLog.d("HINT d="+routeDistance);
             }
             lastPm = pm;
         }
 
         if (text.length() > 0){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" TTS: "+text);
+            mgLog.i("TTS: "+text);
             tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
         }
     }

@@ -14,8 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.features.marker;
 
-import android.util.Log;
-
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
 
@@ -24,6 +22,7 @@ import mg.mgmap.activity.mgmap.view.DraggingMVLayer;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 
+import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -39,13 +38,15 @@ import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.Observer;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
 
 public class FSMarker extends FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final long TT_HIDE_TIME = 60000;
 
@@ -235,7 +236,7 @@ public class FSMarker extends FeatureService {
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, getRadiusForMarkerActions());
             TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl, pmStart, getRadiusForMarkerActions());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmStart);
+            mgLog.i(pmStart);
             try {
                 if (pointRef == null){
                     if (lineRef != null){
@@ -267,7 +268,7 @@ public class FSMarker extends FeatureService {
                     }
                 }
                 if (getDragObject() != null){
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" dragObject="+getDragObject());
+                    mgLog.i("dragObject="+getDragObject());
                 }
             } catch (Exception e){
                 setDragObject(null);
@@ -277,7 +278,7 @@ public class FSMarker extends FeatureService {
 
         @Override
         protected void handleDrag(WriteablePointModel pmCurrent) {
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" pmCurrent="+pmCurrent);
+            mgLog.i("pmCurrent="+pmCurrent);
             WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
             TrackLogRefApproach dragRef = getDragObject();
             moveMarkerPoint(mtl, dragRef.getSegmentIdx(), dragRef.getEndPointIndex(), pmCurrent);

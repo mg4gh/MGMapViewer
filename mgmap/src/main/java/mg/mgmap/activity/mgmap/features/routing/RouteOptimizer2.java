@@ -1,10 +1,8 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
-import android.util.Log;
-
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
@@ -12,9 +10,11 @@ import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogSegment;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class RouteOptimizer2 {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     GGraphTileFactory gFactory;
     RoutingEngine routingEngine;
@@ -52,10 +52,10 @@ public class RouteOptimizer2 {
                     break;
                 }
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" current="+current+" upto="+upto);
+            mgLog.i("current="+current+" upto="+upto);
             int minStep = 3;
             for (int currentEnd = upto; currentEnd > current+minStep-1; currentEnd-=minStep){
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" current="+current+" currentEnd="+currentEnd);
+                mgLog.i("current="+current+" currentEnd="+currentEnd);
 
                 RoutePointModel rpmSource =  getRoutePointModel(segment.get(current) );
                 RoutePointModel rpmTarget =  getRoutePointModel(segment.get(currentEnd) );
@@ -74,13 +74,13 @@ public class RouteOptimizer2 {
                     PointModelUtil.getBestDistance(route,segment.get(idx),bestMatch);
                     if (bestMatch.getDistance() == maxDistance) {
                         fits = false;
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" fits failed idx="+idx);
+                        mgLog.i("fits failed idx="+idx);
                         break;
                     }
                 }
                 if (fits){
                     idx2keep.add(currentEnd);
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" idx2keep add idx="+currentEnd);
+                    mgLog.i("idx2keep add idx="+currentEnd);
                     break;
                 }
             }

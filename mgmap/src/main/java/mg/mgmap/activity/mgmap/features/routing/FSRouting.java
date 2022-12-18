@@ -14,7 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.features.routing;
 
-import android.util.Log;
 import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
@@ -22,6 +21,7 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.model.DisplayModel;
 
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,7 +46,7 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.Observer;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
@@ -55,6 +55,8 @@ import mg.mgmap.activity.mgmap.view.MultiPointView;
 import mg.mgmap.activity.mgmap.view.PointView;
 
 public class FSRouting extends FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE_A150, DisplayModel.getDeviceScaleFactor()*5.0f);
     private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE_A150);
@@ -113,7 +115,7 @@ public class FSRouting extends FeatureService {
         });
         new Thread(() -> {
             int lastRefreshRequired = refreshRequired.get();
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread created");
+            mgLog.d("routeCalcThread created");
             while (runRouteCalcThread){
                 try {
                     synchronized (FSRouting.this){
@@ -139,12 +141,12 @@ public class FSRouting extends FeatureService {
                     e.printStackTrace();
                 }
             }
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+"  routeCalcThread terminating");
+            mgLog.d("routeCalcThread terminating");
         }).start();
 
         application.markerTrackLogObservable.addObserver((e) -> {
             refreshRequired.incrementAndGet(); // refresh route calculation is required
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" set refreshRequired");
+            mgLog.d("set refreshRequired");
             synchronized (FSRouting.this){
                 FSRouting.this.notifyAll();
             }
@@ -254,11 +256,11 @@ public class FSRouting extends FeatureService {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+ " Start");
+            mgLog.d("Start");
             synchronized (routingEngine){
                 rotl = routingEngine.updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
             }
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" End");
+            mgLog.d("End");
         }
         application.routeTrackLogObservable.setTrackLog(rotl);
         refreshObserver.onChange(); // trigger visualization
@@ -383,11 +385,11 @@ public class FSRouting extends FeatureService {
 
         @Override
         public void optimizePosition(WriteablePointModel wpm, double threshold) {
-            if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) Log.d(MGMapApplication.LABEL, NameUtil.context()+" pos="+wpm+" threshold="+threshold);
+            mgLog.d("pos="+wpm+" threshold="+threshold);
             TreeSet<ApproachModel> approaches = routingEngine.calcApproaches(wpm, (int)threshold);
             if (approaches.size() > 0){
                 PointModel pos = approaches.first().getApproachNode();
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" optimize Pos "+wpm+" to "+pos);
+                mgLog.i("optimize Pos "+wpm+" to "+pos);
                 wpm.setLat(pos.getLat());
                 wpm.setLon(pos.getLon());
             }
