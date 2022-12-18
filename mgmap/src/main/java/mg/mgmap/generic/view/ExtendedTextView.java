@@ -23,14 +23,19 @@ import android.util.Log;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ExtendedTextView extends AppCompatTextView {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private Pref<Boolean> prState1=null, prState2=null;
     private Pref<Boolean> prAction1=null, prAction2=null;
@@ -72,17 +77,16 @@ public class ExtendedTextView extends AppCompatTextView {
                 if (mgMapApplication.isTestMode()){
                     mgMapApplication.getTestControl().registerViewPosition(logName,location[0],location[1],location[0]+w,location[1]+h);
                 }
-                Log.d(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" available=" + availableWidth);
+                mgLog.d(logName+":"+getText()+" - "+" available=" + availableWidth);
                 availableText = null; // force recalc text
                 getPaint().set(availablePaint);
                 setValue(value);
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
-        if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)) {
-            Log.v(MGMapApplication.LABEL, NameUtil.context() + " " + logName + ":" + getText() + " - " + " w=" + w + " h=" + h + " oldw=" + oldw + " oldh=" + oldh);
-        }
+        mgLog.v(logName + ":" + getText() + " - " + " w=" + w + " h=" + h + " oldw=" + oldw + " oldh=" + oldh);
+
     }
 
     public ExtendedTextView setName(String logName){
@@ -205,7 +209,7 @@ public class ExtendedTextView extends AppCompatTextView {
         if ((value!=null) && (availableWidth>0) && (paint!=null)){
             String newText = Formatter.format(formatType, value, availablePaint, availableWidth*getMaxLines());
             if (!newText.equals(availableText)){
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+logName+":"+newText+ " availableWidth="+availableWidth);
+                mgLog.d(logName+":"+newText+ " availableWidth="+availableWidth);
                 setText( newText );
                 availableText = newText;
                 onChange("onSetValue: "+newText);
@@ -224,8 +228,8 @@ public class ExtendedTextView extends AppCompatTextView {
     }
 
     private void onChange(String reason){
-        if ((reason != null) && (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE))) {
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" reason="+reason);
+        if (reason != null) {
+            mgLog.v(" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" reason="+reason);
         }
         int drId;
         if ((prEnabled != null) && (!prEnabled.getValue())){

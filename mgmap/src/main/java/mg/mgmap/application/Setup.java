@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
@@ -14,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Properties;
@@ -24,11 +24,13 @@ import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Sftp;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.WiFiUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.test.AbstractTestCase;
-import mg.mgmap.test.tc.T1;
 
 public class Setup {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     static private final Object semaphore = new Object();
 
@@ -199,57 +201,48 @@ public class Setup {
     }
 
     Runnable testManager = new Runnable() {
+        @SuppressWarnings("unchecked")
         @Override
         public void run() {
-            new Thread(){
-                @Override
-                public void run() {
-                    for (Map.Entry<String, String> tcEntry : testCases.entrySet()){
-                        try {
-                            Class<? extends  AbstractTestCase> testCaseClazz = (Class<? extends AbstractTestCase>) Class.forName(tcEntry.getValue());
-                            Constructor<? extends  AbstractTestCase> constructor = testCaseClazz.getConstructor(MGMapApplication.class);
-                            AbstractTestCase testCase = constructor.newInstance(mgMapApplication);
-
-                            Log.d(MGMapApplication.LABEL, NameUtil.context()+testCase.getName()+" start" );
-                            testCase.start();
-                            Log.d(MGMapApplication.LABEL, NameUtil.context()+testCase.getName()+" run" );
-                            new Thread(testCase::run).start();
-
-                            long limit = System.currentTimeMillis() + testCase.getDurationLimit();
-                            while (System.currentTimeMillis() < limit){
-//                                Log.d(MGMapApplication.LABEL, NameUtil.context()+"remaining: "+ ( (limit - System.currentTimeMillis())/1000) );
-                                WaitUtil.doWait(token, 1000, MGMapApplication.LABEL);
-//                                synchronized (token){
-//                                    token.wait(1000);
-//                                }
-                                if (! testCase.isRunning()) break; // leave loop if testcase is finished
-                            }
-                            Log.d(MGMapApplication.LABEL, NameUtil.context()+testCase.getName()+" stop" );
-                            testCase.stop();
-                            String result = testCase.getResult();
-                            pTestResults.put(testCase.getName(), result);
-                            Log.d(MGMapApplication.LABEL, NameUtil.context()+testCase.getName()+" finished - result: "+result );
-//                            WaitUtil.doWait(token, 1000, MGMapApplication.LABEL);
-                        } catch (Exception e) {
-                            Log.e(MGMapApplication.LABEL, NameUtil.context()+ e.getMessage(),e);
-                        }
-                    }
-
+            new Thread(() -> {
+                for (Map.Entry<String, String> tcEntry : testCases.entrySet()){
                     try {
-                        pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+TEST_RESULT)),"xxxyyyzzz");
-                        new Sftp(testConfig) {
-                            @Override
-                            protected void doCopy() throws IOException, SftpException, InterruptedException {
-                                channelSftp.cd(TEST_DATA);
-//                                channelSftp.put(testSetup.getAbsolutePath()+"/"+TEST_TEMP+"/"+TEST_RESULT, testgroup+"/"+TEST_RESULT);
-                            }
-                        }.copy();
-                    } catch (Exception e) {
-                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-                    }
+                        Class<? extends  AbstractTestCase> testCaseClazz = (Class<? extends AbstractTestCase>) Class.forName(tcEntry.getValue());
+                        Constructor<? extends  AbstractTestCase> constructor = testCaseClazz.getConstructor(MGMapApplication.class);
+                        AbstractTestCase testCase = constructor.newInstance(mgMapApplication);
 
+                        testCase.start();
+                        new Thread(testCase::run).start();
+
+                        long limit = System.currentTimeMillis() + testCase.getDurationLimit();
+                        while (System.currentTimeMillis() < limit){
+                            WaitUtil.doWait(token, 1000, MGMapApplication.LABEL);
+                            if (! testCase.isRunning()) break; // leave loop if testcase is finished
+                        }
+                        testCase.stop();
+                        String result = testCase.getResult();
+                        pTestResults.put(testCase.getName(), result);
+                        mgLog.d(" finished - result: "+result );
+                        WaitUtil.doWait(token, 1000, MGMapApplication.LABEL);
+                    } catch (Exception e) {
+                        Log.e(MGMapApplication.LABEL, NameUtil.context()+ e.getMessage(),e);
+                    }
                 }
-            }.start();
+
+                try {
+                    pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+TEST_RESULT)),"xxxyyyzzz");
+                    new Sftp(testConfig) {
+                        @Override
+                        protected void doCopy() throws SftpException {
+                            channelSftp.cd(TEST_DATA);
+//                                channelSftp.put(testSetup.getAbsolutePath()+"/"+TEST_TEMP+"/"+TEST_RESULT, testgroup+"/"+TEST_RESULT);
+                        }
+                    }.copy();
+                } catch (Exception e) {
+                    mgLog.e(e);
+                }
+
+            }).start();
 
          }
     };

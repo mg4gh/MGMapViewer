@@ -17,7 +17,6 @@ package mg.mgmap.activity.height_profile;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseIntArray;
 
 import androidx.appcompat.app.AlertDialog;
@@ -34,9 +33,10 @@ import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -45,6 +45,7 @@ import java.util.Locale;
  */
 public class HeightProfileActivity extends AppCompatActivity {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,21 +58,21 @@ public class HeightProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(MGMapApplication.LABEL, NameUtil.context() +" started");
+        mgLog.i("started");
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         SharedPreferences sharedPreferences = MGMapApplication.getByContext(this).getSharedPreferences();
         boolean showAscentGraph = sharedPreferences.getBoolean(getResources().getString(R.string.preferences_hprof_gl_key), false);
         showGraph(showAscentGraph);
-        Log.i(MGMapApplication.LABEL, NameUtil.context() +" finished");
+        mgLog.i("finished");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(MGMapApplication.LABEL, NameUtil.context() +" started");
+        mgLog.i("started");
         GraphView graph = findViewById(R.id.graph);
         graph.getSeries().clear();
-        Log.i(MGMapApplication.LABEL, NameUtil.context() +" finished");
+        mgLog.i("finished");
     }
 
 

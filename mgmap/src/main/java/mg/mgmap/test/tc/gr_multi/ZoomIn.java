@@ -1,7 +1,6 @@
 package mg.mgmap.test.tc.gr_multi;
 
 import android.graphics.Point;
-import android.util.Log;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
@@ -11,15 +10,13 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.WaitUtil;
-import mg.mgmap.generic.util.basic.LogCB;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.test.AbstractTestCase;
 import mg.mgmap.test.TestControl;
 
 public class ZoomIn extends AbstractTestCase {
 
-    MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public ZoomIn(MGMapApplication mgMapApplication) {
         super(mgMapApplication);
@@ -29,13 +26,10 @@ public class ZoomIn extends AbstractTestCase {
         MGMapActivity mgMapActivity = testControl.getActivity(MGMapActivity.class);
         if (mgMapActivity == null) return; // runs in background - do nothing
 
-        mgMapActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-                mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-                setCursorPosition(getCenterPosition());
-            }
+        mgMapActivity.runOnUiThread(() -> {
+            MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
+            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+            setCursorPosition(getCenterPosition());
         });
         WaitUtil.doWait(TestControl.class, 2000, MGMapApplication.LABEL);
 
@@ -49,10 +43,9 @@ public class ZoomIn extends AbstractTestCase {
 
         Point clickPosZoomIn = testControl.getViewClickPos("zoom_in");
         mgLog.d(clickPosZoomIn);
-        mgLog.d(() -> {
-            Log.w(MGMapApplication.LABEL, NameUtil.context()+"XXXXXX");
-            return regexs.toString();
-        });
+//        mgLog.d(() -> {
+//            return regexs.toString();
+//        });
         if (clickPosZoomIn != null){
             animateTo(clickPosZoomIn, 1000);
             doClick();

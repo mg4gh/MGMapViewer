@@ -14,14 +14,12 @@
  */
 package mg.mgmap.activity.mgmap.features.beeline;
 
-import android.util.Log;
-
 import org.mapsforge.core.graphics.Paint;
 
 import java.beans.PropertyChangeEvent;
+import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -29,13 +27,15 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.basic.Formatter;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.MultiPointView;
 
 public class FSBeeline extends FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static final Paint PAINT_BLACK_STROKE = CC.getStrokePaint(R.color.BLACK, 2);
 
@@ -105,7 +105,7 @@ public class FSBeeline extends FeatureService {
             double beelineDistance = PointModelUtil.distance(pm, pmCenter);
             if (beelineDistance > 10.0){ //m
                 distance = beelineDistance;
-                if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)) Log.v(MGMapApplication.LABEL, NameUtil.context()+" pm="+pm+" pmCenter="+pmCenter);
+                mgLog.v(" pm="+pm+" pmCenter="+pmCenter);
                 MultiPointModelImpl mpm = new MultiPointModelImpl().addPoint(pmCenter).addPoint(pm);
                 register( new MultiPointView(mpm, PAINT_BLACK_STROKE));
             }

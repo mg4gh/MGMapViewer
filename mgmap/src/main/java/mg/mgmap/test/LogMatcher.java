@@ -9,17 +9,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.util.basic.MGLogObserver;
 import mg.mgmap.generic.util.basic.NameUtil;
 
-public class LogMatcher {
-
-    public static void cleanup(){
-        try {
-            Runtime.getRuntime().exec("logcat -c");
-        } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
-        }
-    }
+public class LogMatcher implements MGLogObserver {
 
     int level;
     int lineCnt = 0;
@@ -75,6 +69,20 @@ public class LogMatcher {
         }.start();
     }
 
+    @Override
+    public void processLog(int level, String tag, String message) {
+        if (matchRunning && (this.level <= level)){
+            boolean lineMatch = message.matches(regexs.get(0));
+//                                if (!message.contains("          **** "))  Log.d("mg.mgmap","          **** "+lineMatch+" "+message);
+            if (lineMatch){
+                regexs.remove(0);
+                matches.add(message);
+                Log.i(MGMapApplication.LABEL, NameUtil.context()+" LogMatcher add line: "+matches.size()+" "+message.substring(0,40)+" ...");
+            }
+            lineCnt++;
+        }
+    }
+
     private ArrayList<String> regexs;
     private ArrayList<String> matches;
     boolean matchRunning = false;
@@ -83,9 +91,10 @@ public class LogMatcher {
         matchRunning = true;
         this.regexs = new ArrayList<>(regexs); // use internally a clone
         this.matches = matches;
-        match();
+        MGLog.addLogObserver(this);
     }
     public int stopMatch(){
+        MGLog.removeLogObserver(this);
         matchRunning = false;
         return lineCnt;
     }

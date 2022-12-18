@@ -20,13 +20,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.TreeSet;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeListener{
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final Context context;
     private final HashMap<String, Pref<?>> prefMap;
@@ -43,7 +47,7 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Pref<?> pref = prefMap.get(key);
         if (pref != null){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " context="+context.getClass().getSimpleName() + " key="+key+" value="+ sharedPreferences.getAll().get(key));
+            mgLog.i(" context="+context.getClass().getSimpleName() + " key="+key+" value="+ sharedPreferences.getAll().get(key));
             pref.onSharedPreferenceChanged();
         }
     }

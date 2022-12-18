@@ -1,21 +1,22 @@
 package mg.mgmap.test.tc.gr_multi;
 
 import android.graphics.Point;
-import android.util.Log;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.WaitUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.AbstractTestCase;
 import mg.mgmap.test.TestControl;
 
 public class ZoomOut extends AbstractTestCase {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public ZoomOut(MGMapApplication mgMapApplication) {
         super(mgMapApplication);
@@ -25,18 +26,15 @@ public class ZoomOut extends AbstractTestCase {
         MGMapActivity mgMapActivity = testControl.getActivity(MGMapActivity.class);
         if (mgMapActivity == null) return; // runs in background - do nothing
 
-        mgMapActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-                mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-                setCursorPosition(getCenterPosition());
-            }
+        mgMapActivity.runOnUiThread(() -> {
+            MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
+            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+            setCursorPosition(getCenterPosition());
         });
         WaitUtil.doWait(TestControl.class, 2000, MGMapApplication.LABEL);
 
         Point clickPosGroupMulti = testControl.getViewClickPos("group_multi");
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+clickPosGroupMulti);
+        mgLog.d(clickPosGroupMulti);
         if (clickPosGroupMulti != null){
             animateTo(clickPosGroupMulti, 1000);
         }
@@ -44,14 +42,12 @@ public class ZoomOut extends AbstractTestCase {
         doClick();
 
         Point clickPosZoomOut = testControl.getViewClickPos("zoom_out");
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+clickPosZoomOut);
+        mgLog.d(clickPosZoomOut);
         if (clickPosZoomOut != null){
             animateTo(clickPosZoomOut, 1000);
             doClick();
         }
         animateTo(getCenterPosition(), 1000);
-        WaitUtil.doWait(TestControl.class, 1000, MGMapApplication.LABEL);
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+getName()+" stop" );
         WaitUtil.doWait(TestControl.class, 1000, MGMapApplication.LABEL);
         stop();
     }

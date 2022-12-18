@@ -2,13 +2,21 @@ package mg.mgmap.generic.util.basic;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.TreeMap;
 
-@SuppressWarnings("ThrowableNotThrown")
+@SuppressWarnings({"unused"})
 public class MGLog {
 
     public static TreeMap<String, Integer> logConfig = new TreeMap<>();
+    private static ArrayList<MGLogObserver> logObservers = new ArrayList<>();
 
+    public static void addLogObserver(MGLogObserver observer){
+        logObservers.add(observer);
+    }
+    public static void removeLogObserver(MGLogObserver observer){
+        logObservers.remove(observer);
+    }
 
     public static void se(String msg, Throwable t){
         log(Log.ERROR, msg + Log.getStackTraceString(t));
@@ -66,7 +74,12 @@ public class MGLog {
 
     public static void log(int level, String msg){
         StackTraceElement ste = new Throwable().getStackTrace()[2];
-        android.util.Log.println(level, NameUtil.getPackage(ste), NameUtil.context(ste)+msg);
+        String tag = ste.getClassName();
+        msg = NameUtil.context(ste)+msg;
+        android.util.Log.println(level, tag, msg);
+        for (MGLogObserver observer : logObservers){
+            observer.processLog(level, tag, msg);
+        }
     }
 
 
@@ -86,6 +99,11 @@ public class MGLog {
         }
     }
 
+    public void e(Throwable t){
+        if (level <= Log.ERROR){
+            log(Log.ERROR, Log.getStackTraceString(t));
+        }
+    }
     public void e(String msg, Throwable t){
         if (level <= Log.ERROR){
             log(Log.ERROR, msg + Log.getStackTraceString(t));

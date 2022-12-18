@@ -15,11 +15,11 @@
 package mg.mgmap.activity.mgmap.features.control;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.activity.height_profile.HeightProfileActivity;
@@ -36,12 +36,15 @@ import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintInitialMapDownload;
 import mg.mgmap.generic.view.ExtendedTextView;
 
 public class FSControl extends FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
     private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
@@ -139,7 +142,7 @@ public class FSControl extends FeatureService {
                             TextView tv = helpTexts.get(i);
                             tv.setText(etv.getHelp());
                         } catch (Exception e) {
-                            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+                            mgLog.e(e);
                         }
                     }
                 }
@@ -148,7 +151,7 @@ public class FSControl extends FeatureService {
                 setupTTHideQCS();
             }
             getActivity().findViewById(R.id.help).setVisibility(iVis);
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" change help Visibility to "+ prefHelp.getValue());
+            mgLog.d("change help Visibility to "+ prefHelp.getValue());
         });
         hintInitialMapDownload = new HintInitialMapDownload(getActivity());
     }
@@ -265,7 +268,7 @@ public class FSControl extends FeatureService {
     };
 
     private void setEnableMenu(boolean enable){
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" enable="+enable);
+        mgLog.d("enable="+enable);
         if (qcss[0]==null) return; // should never happen
         for (int cIdx=0; cIdx<qcss[0].getChildCount();cIdx++){
             qcss[0].getChildAt(cIdx).setEnabled(enable);
@@ -275,10 +278,10 @@ public class FSControl extends FeatureService {
     private void setupTTHideQCS(){
         getTimer().removeCallbacks(ttHideSubQCS);
         getTimer().postDelayed(ttHideSubQCS, 3000);
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" Help Timer 3000 ");
+        mgLog.v("Help Timer 3000 ");
     }
     private void cancelTTHideQCS(){
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" cancel Help Timer ");
+        mgLog.v("cancel Help Timer ");
         getTimer().removeCallbacks(ttHideSubQCS);
     }
 

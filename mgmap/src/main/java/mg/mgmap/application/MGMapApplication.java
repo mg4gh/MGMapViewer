@@ -81,7 +81,7 @@ import java.util.concurrent.TimeUnit;
 public class MGMapApplication extends Application {
 
     // Label for Logging.
-    public static final String LABEL = "MGMap";
+    public static final String LABEL = "mg.mgmap";
     private Process pLogcat = null;
 
     private HgtProvider hgtProvider;

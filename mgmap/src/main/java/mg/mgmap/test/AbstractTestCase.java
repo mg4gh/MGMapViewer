@@ -9,14 +9,18 @@ import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.view.MapView;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class AbstractTestCase {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     protected MGMapApplication mgMapApplication;
     protected TestControl testControl;
@@ -43,6 +47,7 @@ public class AbstractTestCase {
         lm = new LogMatcher(level);
         addRegexs();
         lm.startMatch(regexs, matches);
+        mgLog.i(getName()+" start");
         setCursorVisibility(true);
     }
 
@@ -50,6 +55,7 @@ public class AbstractTestCase {
 
     public synchronized void stop(){
         if (isRunning()){
+            mgLog.i(getName()+" stop");
             lineCnt = lm.stopMatch();
             setCursorVisibility(false);
             running = false;

@@ -30,6 +30,7 @@ import org.mapsforge.map.model.common.Observer;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.application.MGMapApplication;
@@ -37,6 +38,7 @@ import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
@@ -57,6 +59,8 @@ import mg.mgmap.activity.mgmap.view.MultiPointView;
  */
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public class FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     /** A timer object. */
     private static final Handler timer = new Handler();
@@ -85,7 +89,7 @@ public class FeatureService {
         @Override
         public void propertyChange(PropertyChangeEvent event) {
             last = event.getSource();
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+ "source="+last+" name="+event.getPropertyName()+" old="+event.getOldValue()+" new="+event.getNewValue());
+            mgLog.d("source="+last+" name="+event.getPropertyName()+" old="+event.getOldValue()+" new="+event.getNewValue());
             onUpdate(event);
             onChange();
         }
