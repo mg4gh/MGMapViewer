@@ -70,7 +70,7 @@ public class ExtendedTextView extends AppCompatTextView {
                 getLocationOnScreen(location);
                 MGMapApplication mgMapApplication = MGMapApplication.getByContext(getContext());
                 if (mgMapApplication.isTestMode()){
-                    mgMapApplication.getTestDataRegistry().registerViewPosition(logName,location[0],location[1],location[0]+w,location[1]+h);
+                    mgMapApplication.getTestControl().registerViewPosition(logName,location[0],location[1],location[0]+w,location[1]+h);
                 }
                 Log.d(MGMapApplication.LABEL, NameUtil.context() +" "+logName+":"+getText()+" - "+" available=" + availableWidth);
                 availableText = null; // force recalc text

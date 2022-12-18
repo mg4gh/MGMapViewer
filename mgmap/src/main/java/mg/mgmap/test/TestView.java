@@ -72,18 +72,18 @@ public class TestView extends RelativeLayout  {
         }
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) { // needed to determine the size of this TestView, but also the location
-        super.onLayout(changed, l, t, r, b);
-        this.getLocationOnScreen(location);
-        pxSize.x = this.getWidth();
-        pxSize.y = this.getHeight();
-        if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
-            Log.d(MGMapApplication.LABEL, NameUtil.context() + " TestView size: " + pxSize + " "
-                    + " TestView location: " + location[0] + "," + location[1] + " " + getContext().getClass().getSimpleName());
-        }
-        application.getTestControl().onTestViewLayout(this);
-    }
+//    @Override
+//    protected void onLayout(boolean changed, int l, int t, int r, int b) { // needed to determine the size of this TestView, but also the location
+//        super.onLayout(changed, l, t, r, b);
+//        this.getLocationOnScreen(location);
+//        pxSize.x = this.getWidth();
+//        pxSize.y = this.getHeight();
+//        if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
+//            Log.d(MGMapApplication.LABEL, NameUtil.context() + " TestView size: " + pxSize + " "
+//                    + " TestView location: " + location[0] + "," + location[1] + " " + getContext().getClass().getSimpleName());
+//        }
+//        application.getTestControl().onTestViewLayout(this);
+//    }
 
     public void setVisibility(int visibility, View view){
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
@@ -144,9 +144,9 @@ public class TestView extends RelativeLayout  {
         super.onWindowVisibilityChanged(visibility);
         Log.d(MGMapApplication.LABEL, NameUtil.context()+activity.getClass().getSimpleName()+": Visibility="+visibility);
         if ( (visibility & (View.INVISIBLE | View.GONE)) == 0 ) { // is visible
-            application.getTestDataRegistry().registerTestView(this);
+            application.getTestControl().registerTestView(this);
         } else {
-            application.getTestDataRegistry().unregisterTestView(this);
+            application.getTestControl().unregisterTestView(this);
         }
     }
 

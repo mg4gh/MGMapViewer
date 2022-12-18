@@ -29,6 +29,7 @@ import android.util.Log;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
+import mg.mgmap.BuildConfig;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
@@ -39,6 +40,7 @@ import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.hints.HintUtil;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.R;
@@ -58,8 +60,7 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.application.util.ExtrasUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
-import mg.mgmap.test.OldTestControl;
-import mg.mgmap.test.TestDataRegistry;
+import mg.mgmap.test.TestControl;
 
 
 import java.io.File;
@@ -88,7 +89,6 @@ public class MGMapApplication extends Application {
     private GeoidProvider geoidProvider;
     private PersistenceManager persistenceManager;
     private MetaDataUtil metaDataUtil;
-    private OldTestControl testControl;
     private NotificationUtil notificationUtil;
     private TrackStatisticFilter trackStatisticFilter;
     private HintUtil hintUtil;
@@ -106,14 +106,12 @@ public class MGMapApplication extends Application {
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
     private final ArrayList<BgJob> activeBgJobs = new ArrayList<>();
 
-//    private SharedPreferences sharedPreferences = null;
-//    private String preferencesName;
     PrefCache prefCache = null;
     public Pref<Boolean> prefRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
     public Pref<Boolean> prefGps = null;
 
     private Setup setup;
-    private final TestDataRegistry testDataRegistry = new TestDataRegistry();
+    private TestControl testControl;
 
     public void startLogging(File logDir){
         try {
@@ -137,6 +135,8 @@ public class MGMapApplication extends Application {
         System.out.println("MGMapViewer Application start!!!!");
         super.onCreate();
 
+        MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG?Log.DEBUG:Log.INFO);
+        testControl = new TestControl(this);
         setup = new Setup();
         setup.init(this);
         persistenceManager = new PersistenceManager(this, setup.getAppDirName());
@@ -153,7 +153,6 @@ public class MGMapApplication extends Application {
         elevationProvider = new ElevationProvider(hgtProvider); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
         metaDataUtil = new MetaDataUtil(persistenceManager);
-        testControl = new OldTestControl(this, prefCache);
         notificationUtil = new NotificationUtil(this);
         trackStatisticFilter = new TrackStatisticFilter(prefCache);
         hintUtil = new HintUtil();
@@ -244,7 +243,9 @@ public class MGMapApplication extends Application {
                 try {
                     pLogcat.waitFor(TIMEOUT, TimeUnit.MILLISECONDS );
                     int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
-                    Thread.sleep(1000); // prevent fast loop
+                    synchronized (MGMapApplication.class){
+                        MGMapApplication.class.wait(1000);
+                    }
                     Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
                     startLogging(persistenceManager.getLogDir());
                     lastCheck = System.currentTimeMillis();
@@ -427,10 +428,6 @@ public class MGMapApplication extends Application {
         return metaDataUtil;
     }
 
-    public OldTestControl getTestControl() {
-        return testControl;
-    }
-
     public TrackStatisticFilter getTrackStatisticFilter() {
         return trackStatisticFilter;
     }
@@ -450,8 +447,8 @@ public class MGMapApplication extends Application {
     public String getPreferencesName() {
         return setup.getPreferencesName();
     }
-    public TestDataRegistry getTestDataRegistry(){
-        return testDataRegistry;
+    public TestControl getTestControl(){
+        return testControl;
     }
     public boolean isTestMode(){
         return setup.isTestMode();

@@ -6,20 +6,27 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Sftp;
+import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.WiFiUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
-import mg.mgmap.test.oldtc.T1;
+import mg.mgmap.test.AbstractTestCase;
+import mg.mgmap.test.tc.T1;
 
 public class Setup {
 
@@ -35,6 +42,7 @@ public class Setup {
     private static final String TEST_SETUP = "testSetup";
     private static final String TEST_TEMP = "temp";
     private static final String TEST_APP_DIR = "appDir";
+    private static final String TEST_CASES = "tests.properties";
 
     private static final String DEFAULT_APP_DIR = "MGMapViewer";
 
@@ -44,15 +52,24 @@ public class Setup {
     private String preferencesName;
     private SharedPreferences sharedPreferences;
     private boolean testMode = false;
+    private Handler timer = null;
+    private final TreeMap<String, String> testCases = new TreeMap<>();
+    private final Object token = new Object();
+    private final Properties pTestResults = new Properties();
+    String testgroup = null;
+
+    File baseDir;
+    File testSetup;
+    File testConfig;
 
     public void init(MGMapApplication application){
         this.mgMapApplication = application;
         preferencesName = application.getPackageName() + "_preferences";
 
         Log.d(MGMapApplication.LABEL, NameUtil.context()+"Setup start");
-        File baseDir = application.getExternalFilesDir(null);
-        File testSetup = new File(baseDir, TEST_SETUP);
-        File testConfig = new File(testSetup, TEST_CONFIG);
+        baseDir = application.getExternalFilesDir(null);
+        testSetup = new File(baseDir, TEST_SETUP);
+        testConfig = new File(testSetup, TEST_CONFIG);
         File testOff = new File(testSetup, TEST_OFF);
 
         if (testConfig.exists() && !testOff.exists()){
@@ -86,6 +103,7 @@ public class Setup {
                                         SftpATTRS aTestResult = stat(lsEntry.getFilename()+"/"+TEST_RESULT);
                                         if ((aTestgroup != null) && (aTestResult == null)){
                                             // ok, use this testgroup for setup
+                                            testgroup = lsEntry.getFilename();
                                             testMode = true;
                                             channelSftp.get(lsEntry.getFilename()+"/"+TEST_GROUP, TEST_SETUP+"/"+TEST_TEMP+"/"+TEST_GROUP);
                                             Properties pTestgroup = new Properties();
@@ -132,7 +150,18 @@ public class Setup {
                                                 editor.apply();
                                             }
 
-                                            application.registerActivityLifecycleCallbacks(application.getTestDataRegistry());
+                                            SftpATTRS aTestCases = stat(lsEntry.getFilename()+"/"+TEST_CASES);
+                                            if (aTestCases != null){
+                                                channelSftp.get(lsEntry.getFilename()+"/"+TEST_CASES, TEST_SETUP+"/"+TEST_TEMP+"/"+TEST_CASES);
+                                                Properties pPreferences = new Properties();
+                                                pPreferences.load(new FileInputStream(new File(testTemp, TEST_CASES)));
+                                                for (Object oPrefName  : pPreferences.keySet()) {
+                                                    testCases.put(oPrefName.toString(), pPreferences.getProperty(oPrefName.toString()));
+                                                }
+                                            }
+
+                                            application.registerActivityLifecycleCallbacks(application.getTestControl());
+                                            break;
                                         }
                                     }
 
@@ -160,30 +189,70 @@ public class Setup {
             }
         }
         sharedPreferences = application.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
-        application.getTestDataRegistry().setTestMode(isTestMode());
+        application.getTestControl().setTestMode(isTestMode());
         Log.d(MGMapApplication.LABEL, NameUtil.context()+"Setup end");
-        prepareTest();
-    }
 
-    public void prepareTest(){
         if (isTestMode()){
-
-            Handler timer = new Handler();
-            timer.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    new Thread(){
-                        @Override
-                        public void run() {
-                            new T1(mgMapApplication).run();
-                        }
-                    }.start();
-
-                }
-            },15000);
-
+            timer = new Handler();
+            timer.postDelayed( testManager, 7000); // wait initial time before starting the tests
         }
     }
+
+    Runnable testManager = new Runnable() {
+        @Override
+        public void run() {
+            new Thread(){
+                @Override
+                public void run() {
+                    for (Map.Entry<String, String> tcEntry : testCases.entrySet()){
+                        try {
+                            Class<? extends  AbstractTestCase> testCaseClazz = (Class<? extends AbstractTestCase>) Class.forName(tcEntry.getValue());
+                            Constructor<? extends  AbstractTestCase> constructor = testCaseClazz.getConstructor(MGMapApplication.class);
+                            AbstractTestCase testCase = constructor.newInstance(mgMapApplication);
+
+                            Log.d(MGMapApplication.LABEL, NameUtil.context()+testCase.getName()+" start" );
+                            testCase.start();
+                            Log.d(MGMapApplication.LABEL, NameUtil.context()+testCase.getName()+" run" );
+                            new Thread(testCase::run).start();
+
+                            long limit = System.currentTimeMillis() + testCase.getDurationLimit();
+                            while (System.currentTimeMillis() < limit){
+//                                Log.d(MGMapApplication.LABEL, NameUtil.context()+"remaining: "+ ( (limit - System.currentTimeMillis())/1000) );
+                                WaitUtil.doWait(token, 1000, MGMapApplication.LABEL);
+//                                synchronized (token){
+//                                    token.wait(1000);
+//                                }
+                                if (! testCase.isRunning()) break; // leave loop if testcase is finished
+                            }
+                            Log.d(MGMapApplication.LABEL, NameUtil.context()+testCase.getName()+" stop" );
+                            testCase.stop();
+                            String result = testCase.getResult();
+                            pTestResults.put(testCase.getName(), result);
+                            Log.d(MGMapApplication.LABEL, NameUtil.context()+testCase.getName()+" finished - result: "+result );
+//                            WaitUtil.doWait(token, 1000, MGMapApplication.LABEL);
+                        } catch (Exception e) {
+                            Log.e(MGMapApplication.LABEL, NameUtil.context()+ e.getMessage(),e);
+                        }
+                    }
+
+                    try {
+                        pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+TEST_RESULT)),"xxxyyyzzz");
+                        new Sftp(testConfig) {
+                            @Override
+                            protected void doCopy() throws IOException, SftpException, InterruptedException {
+                                channelSftp.cd(TEST_DATA);
+//                                channelSftp.put(testSetup.getAbsolutePath()+"/"+TEST_TEMP+"/"+TEST_RESULT, testgroup+"/"+TEST_RESULT);
+                            }
+                        }.copy();
+                    } catch (Exception e) {
+                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                    }
+
+                }
+            }.start();
+
+         }
+    };
 
 
     public String getAppDirName(){

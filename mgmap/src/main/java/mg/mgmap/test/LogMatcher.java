@@ -53,7 +53,9 @@ public class LogMatcher {
                             Thread.sleep(100);
 
                             while ( matchRunning && (regexs!=null) && (regexs.size() > 0) && ((line = in.readLine()) != null)){
+                                if (!matchRunning) break;
                                 boolean lineMatch = line.matches(regexs.get(0));
+//                                if (!line.contains("          **** "))  System.out.println("          **** "+lineMatch+" "+line);
                                 if (lineMatch){
                                     regexs.remove(0);
                                     matches.add(line);

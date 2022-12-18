@@ -4,12 +4,16 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Application;
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+
+import org.mapsforge.core.model.Dimension;
+import org.mapsforge.core.util.MercatorProjection;
+import org.mapsforge.map.view.MapView;
 
 import java.util.Map;
 import java.util.Set;
@@ -17,13 +21,17 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.NameUtil;
 
-public class TestDataRegistry implements Application.ActivityLifecycleCallbacks{
+public class TestControl implements Application.ActivityLifecycleCallbacks{
 
     public final Handler timer = new Handler(); // timer for tests
 
+    private MGMapApplication application;
     boolean testMode = false;
 
     public SortedMap<String, Activity> activityMap = new TreeMap<>();
@@ -31,6 +39,9 @@ public class TestDataRegistry implements Application.ActivityLifecycleCallbacks{
     public Set<String> activityStartedToStopped = new TreeSet<>();
     public Set<String> activityResumedToPaused = new TreeSet<>();
 
+    public TestControl(MGMapApplication application){
+        this.application = application;
+    }
 
     public boolean isTestMode() {
         return testMode;
@@ -150,6 +161,10 @@ public class TestDataRegistry implements Application.ActivityLifecycleCallbacks{
             currentTestView.setCursorPosition(currentCursorPos);
         }
     }
+    protected Point getCenterPos(){
+        DisplayMetrics dm = application.getResources().getDisplayMetrics();
+        return new Point(dm.widthPixels/2, dm.heightPixels/2);
+    }
 
     protected boolean currentCursorVisibility;
     public void setCursorVisibility(boolean cursorVisibility){
@@ -189,6 +204,7 @@ public class TestDataRegistry implements Application.ActivityLifecycleCallbacks{
                 tv.click.setScaleX(1);                              // and the scale will be reset to normal size (1)
                 tv.click.setScaleY(1);
             },600);
+            WaitUtil.doWait(TestControl.class, 800, MGMapApplication.LABEL);
         }
     }
 
@@ -214,6 +230,7 @@ public class TestDataRegistry implements Application.ActivityLifecycleCallbacks{
                 }
 
             });
+            WaitUtil.doWait(TestControl.class, duration, MGMapApplication.LABEL);
             currentCursorPos = newPosition;  // take the new position
         }
     }
@@ -221,7 +238,6 @@ public class TestDataRegistry implements Application.ActivityLifecycleCallbacks{
     public void swipeTo(Point newPosition, int duration) {
         TestView tv = currentTestView;
         if (tv != null){
-
             tv.click.setScaleX(1.5f);                              // scale will bebe enlarged (1.5)
             tv.click.setScaleY(1.5f);
             setClickVisibility(true);
@@ -232,7 +248,7 @@ public class TestDataRegistry implements Application.ActivityLifecycleCallbacks{
                 tv.click.setScaleX(1);                              // and the scale will be reset to normal size (1)
                 tv.click.setScaleY(1);
             },duration + 200);
-
+            WaitUtil.doWait(TestControl.class, duration+400, MGMapApplication.LABEL);
         }
     }
 

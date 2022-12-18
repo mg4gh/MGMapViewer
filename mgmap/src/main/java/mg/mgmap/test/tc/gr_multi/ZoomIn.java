@@ -1,0 +1,74 @@
+package mg.mgmap.test.tc.gr_multi;
+
+import android.graphics.Point;
+import android.util.Log;
+
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.MapPosition;
+
+import java.lang.invoke.MethodHandles;
+
+import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.WaitUtil;
+import mg.mgmap.generic.util.basic.LogCB;
+import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.test.AbstractTestCase;
+import mg.mgmap.test.TestControl;
+
+public class ZoomIn extends AbstractTestCase {
+
+    MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
+    public ZoomIn(MGMapApplication mgMapApplication) {
+        super(mgMapApplication);
+    }
+
+    public void run(){
+        MGMapActivity mgMapActivity = testControl.getActivity(MGMapActivity.class);
+        if (mgMapActivity == null) return; // runs in background - do nothing
+
+        mgMapActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
+                mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+                setCursorPosition(getCenterPosition());
+            }
+        });
+        WaitUtil.doWait(TestControl.class, 2000, MGMapApplication.LABEL);
+
+        Point clickPosGroupMulti = testControl.getViewClickPos("group_multi");
+        MGLog.sd(clickPosGroupMulti);
+        if (clickPosGroupMulti != null){
+            animateTo(clickPosGroupMulti, 1000);
+        }
+        testControl.setCurrentCursorPos(clickPosGroupMulti);
+        doClick();
+
+        Point clickPosZoomIn = testControl.getViewClickPos("zoom_in");
+        mgLog.d(clickPosZoomIn);
+        mgLog.d(() -> {
+            Log.w(MGMapApplication.LABEL, NameUtil.context()+"XXXXXX");
+            return regexs.toString();
+        });
+        if (clickPosZoomIn != null){
+            animateTo(clickPosZoomIn, 1000);
+            doClick();
+        }
+        animateTo(getCenterPosition(), 1000);
+        WaitUtil.doWait(TestControl.class, 1000, MGMapApplication.LABEL);
+        stop();
+    }
+
+    @Override
+    protected void addRegexs() {
+        addRegex(getName()+" start");
+        addRegex("context=MGMapActivity key=FSBeeline.ZoomLevel value=15");
+        addRegex("key=FSControl.qc_selector value=7");
+        addRegex("context=MGMapActivity key=FSBeeline.ZoomLevel value=16");
+        addRegex(getName()+" stop");
+    }
+
+}

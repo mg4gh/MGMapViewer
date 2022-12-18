@@ -33,19 +33,25 @@ public class NameUtil {
 		return new Throwable().getStackTrace()[1].getMethodName();
 	}
 
-	public static String getCurrentStackName(){
-		StackTraceElement ste = new Throwable().getStackTrace()[1];
-		return ste.getClassName()+"."+ste.getMethodName()+"("+ste.getFileName()+":"+ste.getLineNumber()+")";
+	public static String getPackage(StackTraceElement ste){
+		return ste.getClassName().replaceAll("\\.[^\\.]*$","");
 	}
 
 	public static String context(){
 		StackTraceElement ste = new Throwable().getStackTrace()[1];
+		return context(ste);
+	}
+	public static String context(StackTraceElement ste){
 		return ste.getClassName()+"."+ste.getMethodName()+"("+ste.getFileName()+":"+ste.getLineNumber()+") ";
 	}
+	public static String context(int n){
+		StackTraceElement ste = new Throwable().getStackTrace()[n];
+		return context(ste);
+	}
 
-	public static String[] context(int num){
-		String[] steArray = new String[num];
-		for (int i=0; i<num; i++){
+	public static String[] context(int from, int to){
+		String[] steArray = new String[to-from+1];
+		for (int i=from; i<=to; i++){
 			StackTraceElement ste = new Throwable().getStackTrace()[1+i];
 			steArray[i] = ste.getClassName()+"."+ste.getMethodName()+"("+ste.getFileName()+":"+ste.getLineNumber()+") ";
 		}
