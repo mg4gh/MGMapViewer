@@ -14,28 +14,28 @@
  */
 package mg.mgmap.generic.graph;
 
-import android.util.Log;
-
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
 
 import org.mapsforge.map.datastore.Way;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.LaLo;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.WayProvider;
 
 public class GGraphTileFactory {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final int CACHE_LIMIT = 1000;
     private final byte ZOOM_LEVEL = 15;
@@ -55,15 +55,13 @@ public class GGraphTileFactory {
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
 
-        cache = new LinkedHashMap <Long, GGraphTile>(100, 0.6f, true) {
+        cache = new LinkedHashMap<>(100, 0.6f, true) {
             @Override
             protected boolean removeEldestEntry(Entry<Long, GGraphTile> eldest) {
                 boolean bRes = (size() > CACHE_LIMIT);
-                if (bRes){
+                if (bRes) {
                     GGraphTile old = eldest.getValue();
-                    if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
-                        Log.d(MGMapApplication.LABEL, NameUtil.context() + " remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
-                    }
+                    mgLog.d(() -> "remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
                 }
                 return bRes;
             }
@@ -87,10 +85,8 @@ public class GGraphTileFactory {
             int tileYMax = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( bBox.minLatitude , mapSize) , ZOOM_LEVEL, TILE_SIZE);
 
             int totalTiles = (tileXMax-tileXMin+1) * (tileYMax-tileYMin+1);
-            if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
-                Log.d(MGMapApplication.LABEL, NameUtil.context() + " create GGraphTileList with tileXMin=" + tileXMin + " tileYMin=" + tileYMin + " and tileXMax=" + tileXMax + " tileYMax=" + tileYMax +
+            mgLog.d(()->"create GGraphTileList with tileXMin=" + tileXMin + " tileYMin=" + tileYMin + " and tileXMax=" + tileXMax + " tileYMax=" + tileYMax +
                         " - total tiles=" + totalTiles);
-            }
             if (totalTiles < CACHE_LIMIT){
                 for (int tileX = tileXMin; tileX <= tileXMax; tileX++) {
                     for (int tileY = tileYMin; tileY <= tileYMax; tileY++) {
@@ -99,7 +95,7 @@ public class GGraphTileFactory {
                     }
                 }
             } else {
-                Log.e(MGMapApplication.LABEL, NameUtil.context()+" totalTiles exceeds CACHE_LIMIT: totalTiles="+ totalTiles+" CACHE_LIMIT="+ CACHE_LIMIT);
+                mgLog.e("totalTiles exceeds CACHE_LIMIT: totalTiles="+ totalTiles+" CACHE_LIMIT="+ CACHE_LIMIT);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,8 +107,8 @@ public class GGraphTileFactory {
         GGraphTile gGraphTile = getGGraphTile(am.getTileX(), am.getTileY());
         am.setNode1( gGraphTile.getNode(am.getNode1().getLat(),am.getNode1().getLon()) );
         am.setNode2( gGraphTile.getNode(am.getNode2().getLat(),am.getNode2().getLon()) );
-        if (am.getNode1() == null) Log.e(MGMapApplication.LABEL, NameUtil.context()+" node1==null ->rework failed");
-        if (am.getNode2() == null) Log.e(MGMapApplication.LABEL, NameUtil.context()+" node2==null ->rework failed");
+        if (am.getNode1() == null) mgLog.e("node1==null ->rework failed");
+        if (am.getNode2() == null) mgLog.e("node2==null ->rework failed");
         return am;
     }
 
@@ -126,9 +122,7 @@ public class GGraphTileFactory {
 
         GGraphTile gGraphTile = cache.get(key);
         if (gGraphTile == null){
-            if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
-                Log.d(MGMapApplication.LABEL, NameUtil.context() + " Load tileX=" + tileX + " tileY=" + tileY + " (" + cache.size() + ")");
-            }
+            mgLog.d(()->"Load tileX=" + tileX + " tileY=" + tileY + " (" + cache.size() + ")");
             Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
             gGraphTile = new GGraphTile(elevationProvider, tile);
             for (Way way : wayProvider.getWays(tile)) {

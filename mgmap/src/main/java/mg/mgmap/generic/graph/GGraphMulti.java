@@ -14,14 +14,12 @@
  */
 package mg.mgmap.generic.graph;
 
-import android.util.Log;
-
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 
@@ -31,6 +29,7 @@ import java.util.ArrayList;
 
 public class GGraphMulti extends GGraph {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final ArrayList<GGraphTile> gGraphTiles = new ArrayList<>();
     ArrayList<GOverlayNeighbour> overlayNeighbours = new ArrayList<>(); // used for neighbour tile connections and for approaches
@@ -117,8 +116,8 @@ public class GGraphMulti extends GGraph {
                 borderNodes2.add(node);
             }
         }
-        ArrayList<GNode> remainingNodes1 = new ArrayList<>(borderNodes1);
-        ArrayList<GNode> remainingNodes2 = new ArrayList<>(borderNodes2);
+        final ArrayList<GNode> remainingNodes1 = new ArrayList<>(borderNodes1);
+        final ArrayList<GNode> remainingNodes2 = new ArrayList<>(borderNodes2);
         double threshold = (horizontal)?PointModelUtil.latitudeDistance(CONNECT_THRESHOLD_METER):PointModelUtil.longitudeDistance(CONNECT_THRESHOLD_METER, connectAt);
         for (GNode node1 : borderNodes1){
             for (GNode node2 : borderNodes2){
@@ -132,10 +131,8 @@ public class GGraphMulti extends GGraph {
         if ((remainingNodes1.size() > 0) && ((remainingNodes2.size() > 0))){
             ArrayList<GNode> stillRemainingNodes1 = new ArrayList<>(remainingNodes1);
             ArrayList<GNode> stillRemainingNodes2 = new ArrayList<>(remainingNodes2);
-            if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+remainingNodes1);
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+remainingNodes2);
-            }
+            mgLog.v(remainingNodes1::toString);
+            mgLog.v(remainingNodes2::toString);
             for (GNode node1 : remainingNodes1){
                 for (GNode node2 : remainingNodes2){
                     if ((node1.countNeighbours() == 1) && (node2.countNeighbours() == 1) && (PointModelUtil.distance(node1,node2)<CONNECT_THRESHOLD_METER*20)){
@@ -146,23 +143,21 @@ public class GGraphMulti extends GGraph {
                         if (PointModelUtil.distance(approchPoint,node1) > CONNECT_THRESHOLD_METER) continue;
                         if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approchPoint,0)) continue; // approach not found try next ponits
                         if (PointModelUtil.distance(approchPoint,node2) > CONNECT_THRESHOLD_METER) continue;
-                        if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
-                            Log.d(MGMapApplication.LABEL, NameUtil.context() + " OK, connect: node1 " + node1 + " node1neighbour " + node1Neighbour + " node2 " + node2 + " node2neighbour " + node2Neighbour);
-                        }
+                        mgLog.d(()->"OK, connect: node1 " + node1 + " node1neighbour " + node1Neighbour + " node2 " + node2 + " node2neighbour " + node2Neighbour);
                         connect(node1Neighbour, node2Neighbour);
                         stillRemainingNodes1.remove(node1);
                         stillRemainingNodes2.remove(node2);
                     }
                 }
             }
-            remainingNodes1 = stillRemainingNodes1;
-            remainingNodes2 = stillRemainingNodes2;
+            remainingNodes1.clear();
+            remainingNodes1.addAll(stillRemainingNodes1);
+            remainingNodes2.clear();
+            remainingNodes2.addAll(stillRemainingNodes2);
         }
         if ((remainingNodes1.size() > 0) || ((remainingNodes2.size() > 0))){
-            if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
-                Log.d(MGMapApplication.LABEL, NameUtil.context() + " remainings1 " + remainingNodes1);
-                Log.d(MGMapApplication.LABEL, NameUtil.context() + " remainings2 " + remainingNodes2);
-            }
+            mgLog.d(()->"remainings1 " + remainingNodes1);
+            mgLog.d(()->"remainings2 " + remainingNodes2);
         }
     }
 
