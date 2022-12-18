@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -32,6 +31,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Objects;
 import java.util.Properties;
@@ -43,12 +43,14 @@ import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.SHA256;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Zipper;
 import mg.mgmap.generic.util.hints.HintInitialMapDownload2;
 
 public class DownloadPreferenceScreen extends MGPreferenceScreen {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final String FTP_CONFIG_FILE = "ftp_config.properties";
     @Override
@@ -114,7 +116,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                     bgJobGroup.addJob(job);
                     bgJobGroup.setConstructed(Objects.requireNonNull(prefSwLatest.getSummary()).toString());
                 } else {
-                    Log.e(MGMapApplication.LABEL, NameUtil.context()+" failed to add job");
+                    mgLog.e("failed to add job");
                 }
                 return true;
             }
@@ -135,7 +137,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 BgJob job = new BgJob(){
                     @Override
                     protected void doJob() throws Exception {
-                        Log.i(MGMapApplication.LABEL, NameUtil.context());
+                        mgLog.i();
                         Properties props = application.getPersistenceManager().getConfigProperties(null, FTP_CONFIG_FILE);
                         String host = props.getProperty("FTP_SERVER");
                         int port = Integer.parseInt( props.getProperty("PORT"));
@@ -149,34 +151,34 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                         FTPClient mFTPClient = new FTPClient();
                         // connecting to the host
                         mFTPClient.connect(host, port);
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" connect rc="+mFTPClient.getReplyCode());
+                        mgLog.i("connect rc="+mFTPClient.getReplyCode());
                         // now check the reply code, if positive mean connection success
                         if (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) {
                             // login using username & password
                             boolean status = mFTPClient.login(username, password);
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" status="+status);
+                            mgLog.i("status="+status);
 
                             mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" filetype rc="+mFTPClient.getReplyCode());
+                            mgLog.i("filetype rc="+mFTPClient.getReplyCode());
 
                             if ((emulator != null) && ("true".endsWith(emulator))){
                                 mFTPClient.enterLocalPassiveMode();
-                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" enterLocalPassiveMode rc="+mFTPClient.getReplyCode());
+                                mgLog.i("enterLocalPassiveMode rc="+mFTPClient.getReplyCode());
                             } else {
                                 mFTPClient.enterLocalActiveMode();
-                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" enterLocalActiveMode rc="+mFTPClient.getReplyCode());
+                                mgLog.i("enterLocalActiveMode rc="+mFTPClient.getReplyCode());
                             }
                             mFTPClient.setRemoteVerificationEnabled(false);
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" setRemoteVerificationEnabled rc="+mFTPClient.getReplyCode());
+                            mgLog.i("setRemoteVerificationEnabled rc="+mFTPClient.getReplyCode());
 
                             String remoteName = null;
                             for (String name : mFTPClient.listNames()){
-                                Log.i(MGMapApplication.LABEL, NameUtil.context()+ "name=\""+name+"\"");
+                                mgLog.i("name=\""+name+"\"");
                                 if (name.endsWith(".apk")){
                                     remoteName = "/"+name;
                                 }
                             }
-                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" remoteName="+remoteName);
+                            mgLog.i(" remoteName="+remoteName);
                             boolean success = false;
                             if (remoteName != null){
                                 {
@@ -184,7 +186,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                                     OutputStream outputStream1 = new BufferedOutputStream(new FileOutputStream(localFile));
                                     success = mFTPClient.retrieveFile(remoteName, outputStream1);
                                     outputStream1.close();
-                                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+remoteName+" "+success);
+                                    mgLog.i(remoteName+" "+success);
                                 }
                                 {
                                     remoteName += ".sha256"; // try to copy also corresponding sha256 fingerprint
@@ -192,7 +194,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                                     OutputStream outputStream1 = new BufferedOutputStream(new FileOutputStream(localFile));
                                     success &= mFTPClient.retrieveFile(remoteName, outputStream1);
                                     outputStream1.close();
-                                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+remoteName+" "+success);
+                                    mgLog.i(remoteName+" "+success);
                                 }
                             }
 
@@ -212,7 +214,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 bgJobGroup.addJob(job);
                 bgJobGroup.setConstructed(Objects.requireNonNull(prefSwLocal.getSummary()).toString());
             } else {
-                Log.e(MGMapApplication.LABEL, NameUtil.context()+" expected MGMapApplication, found "+context.getClass().getName());
+                mgLog.e("expected MGMapApplication, found "+context.getClass().getName());
             }
             return true;
         });
@@ -220,10 +222,10 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
 
     private boolean verifyAndInstall(Context context, PersistenceManager persistenceManager){
         File file = persistenceManager.getApkFile();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Install file="+file.getAbsolutePath());
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Install size="+file.length());
+        mgLog.i("Install file="+file.getAbsolutePath());
+        mgLog.i("Install size="+file.length());
         if (SHA256.verify(file)){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" checksum verification successful");
+            mgLog.i("checksum verification successful");
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
 

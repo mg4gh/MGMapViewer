@@ -19,7 +19,6 @@ import android.os.Handler;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -31,6 +30,8 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.TextViewCompat;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
@@ -39,12 +40,13 @@ import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.util.ExtendedClickListener;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
 
 @SuppressLint("ViewConstructor")
 public class TrackStatisticView extends TableLayout {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final TrackStatisticActivity context;
     private final MGMapApplication application;
@@ -121,16 +123,14 @@ public class TrackStatisticView extends TableLayout {
             etvLoss.setValue(statistic.getLoss());
             etvMaxEle.setValue(statistic.getMaxEle());
             etvMinEle.setValue(statistic.getMinEle());
-            Log.d(MGMapApplication.LABEL, NameUtil.context() + trackLog.getName());
+            mgLog.d(trackLog.getName());
         };
         selectedObserver = (e) -> TrackStatisticView.this.setViewtreeColor(TrackStatisticView.this,  getColorIdForTrackLog(trackLog));
     }
 
     public void bind(TrackLog trackLog) {
         this.trackLog = trackLog;
-
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+trackLog.getName());
-
+        mgLog.d(trackLog.getName());
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
 
         etvSelected.setName("SEL_"+trackLog.getName());
@@ -165,7 +165,7 @@ public class TrackStatisticView extends TableLayout {
     }
 
     public void unbind(){
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+ trackLog.getName());
+        mgLog.i(trackLog.getName());
         trackLog.deleteObserver(modifiedObserver);
         trackLog.getPrefSelected().deleteObserver(selectedObserver);
         trackLog = null;
@@ -260,10 +260,10 @@ public class TrackStatisticView extends TableLayout {
     private void hack(){
         if ((trackLog != null) && (etvName != null)){
             if (trackLog.getName().length() > 26){
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" hack triggered for "+trackLog.getNameKey());
+                mgLog.d("hack triggered for "+trackLog.getNameKey());
                 timer.postDelayed(() -> context.runOnUiThread(() -> {
                     if (trackLog != null) {
-                        Log.d(MGMapApplication.LABEL, NameUtil.context()+" hack executed for "+trackLog.getNameKey());
+                        mgLog.d("hack executed for "+trackLog.getNameKey());
                         String suffix = etvName.getText().toString().endsWith(" ")?"":" ";
                         etvName.setValue(trackLog.getName() + (trackLog.isModified() ? "*" : "") + suffix);
                     }

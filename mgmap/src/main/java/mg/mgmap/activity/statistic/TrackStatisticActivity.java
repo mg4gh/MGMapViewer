@@ -23,7 +23,6 @@ import android.os.Bundle;
 
 import android.os.Handler;
 import android.text.InputFilter;
-import android.util.Log;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +41,8 @@ import mg.mgmap.R;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxExporter;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.application.util.PersistenceManager;
@@ -51,12 +50,15 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.view.ExtendedTextView;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class TrackStatisticActivity extends AppCompatActivity {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private Context context = null;
     private MGMapApplication application = null;
@@ -95,7 +97,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.d();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         setContentView(R.layout.track_statistic_activity);
@@ -126,7 +128,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         prefFullscreen = prefCache.get(R.string.FSControl_qcFullscreenOn, true);
         prefFullscreen.addObserver((e) -> FullscreenUtil.enforceState(TrackStatisticActivity.this, prefFullscreen.getValue()));
 
-        recyclerView = (RecyclerView) findViewById(R.id.trackStatisticEntries);
+        recyclerView = findViewById(R.id.trackStatisticEntries);
         statisticAdapter = new TrackStatisticAdapter(visibleEntries);
         recyclerView.setAdapter(statisticAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -191,7 +193,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.d();
 
         Set<String> nameKeys = new TreeSet<>();
         addTrackLog(nameKeys, application.recordingTrackLogObservable.getTrackLog());
@@ -212,7 +214,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.d();
         visibleEntries.clear();
         allEntries.clear();
     }
@@ -288,7 +290,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
     private void reworkState(){
         ArrayList<TrackLog> trackLogs = getSelectedEntries();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+ getNames(trackLogs, false));
+        mgLog.i(getNames(trackLogs, false));
         prefNoneSelected.setValue(trackLogs.size() == 0);
         prefAllSelected.setValue(visibleEntries.size() == trackLogs.size());
         prefEditAllowed.setValue( trackLogs.size() == 1 );
@@ -346,14 +348,14 @@ public class TrackStatisticActivity extends AppCompatActivity {
                                 String oldName = trackLog.getName();
                                 String oldNameKey = trackLog.getNameKey();
                                 String newName = etTrackLogName.getText().toString();
-                                Log.i(MGMapApplication.LABEL, NameUtil.context()+" rename \""+oldName+"\" to \""+newName+"\"");
+                                mgLog.i("rename \""+oldName+"\" to \""+newName+"\"");
                                 if (!newName.equals(oldName)){
                                     if (persistenceManager.existsTrack(newName)){
                                         Toast.makeText(context, "Rename failed, name already exists: "+newName, Toast.LENGTH_LONG).show();
                                     } else{
                                         if (newName.contains("/")){
                                             String path = newName.replaceFirst("/[^/]*$","");
-                                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" check path="+path);
+                                            mgLog.i("check path="+path);
                                             persistenceManager.createTrackPath(path);
                                         }
                                         trackLog.setName(newName);
@@ -442,7 +444,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
             if (!prefNoneModified.getValue()){
                 ArrayList<TrackLog> trackLogs = getModifiedEntries();
                 for (TrackLog trackLog : trackLogs){
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" save "+trackLog.getName());
+                    mgLog.i("save "+trackLog.getName());
                     GpxExporter.export(persistenceManager, trackLog);
                     application.getMetaDataUtil().createMetaData(trackLog);
                 }
@@ -464,7 +466,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
                 builder.setPositiveButton("YES", (dialog, which) -> {
                     dialog.dismiss();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() +" confirm delete for list \""+msg+"\"");
+                    mgLog.i("confirm delete for list \""+msg+"\"");
                     for(TrackLog trackLog : trackLogs){
                         application.metaTrackLogs.remove(trackLog.getNameKey());
                         application.availableTrackLogsObservable.availableTrackLogs.remove(trackLog);
@@ -479,7 +481,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                 builder.setNegativeButton("NO", (dialog, which) -> {
                     // Do nothing
                     dialog.dismiss();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() +" abort delete for list \""+msg+"\"");
+                    mgLog.i("abort delete for list \""+msg+"\"");
                 });
 
                 AlertDialog alert = builder.create();

@@ -14,8 +14,7 @@
  */
 package mg.mgmap.activity.statistic;
 
-import android.util.Log;
-
+import java.lang.invoke.MethodHandles;
 import java.util.Calendar;
 
 import mg.mgmap.R;
@@ -23,9 +22,12 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class TrackStatisticFilter {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     PrefCache prefCache;
     Pref<String> prefFilterNamePart;
@@ -88,7 +90,7 @@ public class TrackStatisticFilter {
             res &= (prefFilterTimeMax.getValue().getTimeInMillis() >= aTrackLog.getTrackStatistic().getTStart());
         }
         if (prefFilterLengthMinOn.getValue()){
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+prefFilterLengthMin.getValue()+" "+aTrackLog.getTrackStatistic().getTotalLength()/1000);
+            mgLog.v(prefFilterLengthMin.getValue()+" "+aTrackLog.getTrackStatistic().getTotalLength()/1000);
             res &= (prefFilterLengthMin.getValue() <= aTrackLog.getTrackStatistic().getTotalLength()/1000); // length in Statistic is in m
         }
         if (prefFilterLengthMaxOn.getValue()){

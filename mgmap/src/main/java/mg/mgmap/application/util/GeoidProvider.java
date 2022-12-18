@@ -16,11 +16,13 @@ package mg.mgmap.application.util;
 
 import android.app.Application;
 import android.content.res.AssetManager;
-import android.util.Log;
 import android.util.SparseArray;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
+
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Provides for a given point (latitude, longitude) a difference between wgs84 elevation and nmea elevation.
@@ -28,6 +30,8 @@ import java.io.InputStream;
  */
 
 public class GeoidProvider {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final int START_DATA = 408;
 
@@ -62,7 +66,7 @@ public class GeoidProvider {
                 }
             }
         } catch (IOException e) {
-            Log.e(GeoidProvider.class.getSimpleName(),e.getMessage(),e);
+            mgLog.e(e);
         }
         return 0;
     }

@@ -17,16 +17,20 @@ package mg.mgmap.activity.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.AbstractHint;
 
 public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     protected void setIntent(int resId, Intent intent, AbstractHint hint){
         Preference preference = findPreference( getResources().getString(resId) );
@@ -36,7 +40,7 @@ public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
                 hint.addGotItAction(() -> activity.startActivity(intent));
             }
             preference.setOnPreferenceClickListener(preference1 -> {
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+intent.getDataString());
+                mgLog.i(intent.getDataString());
                 MGMapApplication application = (MGMapApplication) getActivity().getApplication();
                 if (!application.getHintUtil().showHint( hint )){
                     activity.startActivity(intent);

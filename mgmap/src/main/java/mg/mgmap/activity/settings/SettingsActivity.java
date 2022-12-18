@@ -17,7 +17,6 @@ package mg.mgmap.activity.settings;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,15 +24,17 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.FullscreenUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
-public class SettingsActivity extends AppCompatActivity implements
-        PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+public class SettingsActivity extends AppCompatActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     SharedPreferences prefs;
 
@@ -49,14 +50,14 @@ public class SettingsActivity extends AppCompatActivity implements
             String clazzname = intent.getStringExtra("FSControl.info");
             if (clazzname != null) {
                 try {
-                    Log.i(MGMapApplication.LABEL, NameUtil.context() + " open PreferenceFragment " + clazzname);
+                    mgLog.i("open PreferenceFragment " + clazzname);
                     Class<?> clazz = Class.forName(clazzname);
                     Object obj = clazz.newInstance();
                     if (obj instanceof PreferenceFragmentCompat) {
                         pfc = (PreferenceFragmentCompat) obj;
                     }
                 } catch (Exception e) {
-                    Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                    mgLog.e(e);
                 }
             }
             super.onNewIntent(intent);
@@ -86,7 +87,7 @@ public class SettingsActivity extends AppCompatActivity implements
         final Fragment fragment = getSupportFragmentManager().getFragmentFactory().instantiate(
                 getClassLoader(),
                 Objects.requireNonNull(pref.getFragment()));
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" set fragment "+pref.getFragment());
+        mgLog.i("set fragment "+pref.getFragment());
         fragment.setArguments(args);
         // Replace the existing Fragment with the new Fragment
         getSupportFragmentManager().beginTransaction()

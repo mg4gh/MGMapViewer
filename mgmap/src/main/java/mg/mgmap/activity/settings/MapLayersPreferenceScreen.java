@@ -15,8 +15,8 @@
 package mg.mgmap.activity.settings;
 
 import android.os.Bundle;
-import android.util.Log;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,10 +24,13 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapLayerFactory;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.PrefCache;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
 
 public class MapLayersPreferenceScreen extends MGPreferenceScreen {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
@@ -38,7 +41,7 @@ public class MapLayersPreferenceScreen extends MGPreferenceScreen {
             List<String> mapKeys = MGMapLayerFactory.getMapLayerKeys(getContext()).stream().map(key->prefCache.get(key,"").getValue()).collect(Collectors.toList());
             application.getHintUtil().showHint( new HintMapLayerAssignment(getActivity(), mapKeys) );
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
     }
 

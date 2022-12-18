@@ -2,22 +2,23 @@ package mg.mgmap.application.util;
 
 import android.content.res.AssetManager;
 import android.os.Handler;
-import android.util.Log;
 import android.util.LruCache;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.IOUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class HgtProvider {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static final String HGT_URL = "http://step.esa.int/auxdata/dem/SRTMGL1/";
 
@@ -32,7 +33,7 @@ public class HgtProvider {
         @Override
         protected void entryRemoved(boolean evicted, String key, byte[] oldValue, byte[] newValue) {
             super.entryRemoved(evicted, key, oldValue, newValue);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" drop from LRUCache: key="+key);
+            mgLog.i("drop from LRUCache: key="+key);
         }
     };
     private final Runnable ttCheckHgts = new Runnable() {
@@ -50,7 +51,7 @@ public class HgtProvider {
         try {
             hgtSize.load(assetManager.open("hgt.properties"));
         } catch (Exception e){
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
 
     }
@@ -88,7 +89,7 @@ public class HgtProvider {
                 Response response = client.newCall(request).execute();
                 ResponseBody responseBody = response.body();
                 if (responseBody == null) {
-                    Log.w (MGMapApplication.LABEL, NameUtil.context()+" empty response body for download!");
+                    mgLog.w("empty response body for download!");
                 } else {
                     if (responseBody.contentLength() < 1000) throw new Exception("Invalid hgt size: "+responseBody.contentLength());
                     IOUtil.copyStreams(responseBody.byteStream(), persistenceManager.openHgtOutput(hgtName));
@@ -97,7 +98,7 @@ public class HgtProvider {
                 IOUtil.copyStreams(assetManager.open("empty.hgt"), persistenceManager.openHgtOutput(hgtName));
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
     }
 

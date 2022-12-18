@@ -53,7 +53,6 @@ import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.application.util.GeoidProvider;
 import mg.mgmap.generic.util.gpx.GpxExporter;
 import mg.mgmap.application.util.MetaDataUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.generic.model.TrackLog;
@@ -65,6 +64,7 @@ import mg.mgmap.test.TestControl;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,6 +79,8 @@ import java.util.concurrent.TimeUnit;
  * Mainly it provides some Observable objects that represent the application state.
  */
 public class MGMapApplication extends Application {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     // Label for Logging.
     public static final String LABEL = "mg.mgmap";
@@ -116,18 +118,18 @@ public class MGMapApplication extends Application {
     public void startLogging(File logDir){
         try {
             String cmd = "logcat "+ LABEL+":i *:W -f "+logDir.getAbsolutePath()+"/log.txt -r 10000 -n10";
-            Log.i(LABEL, NameUtil.context()+" Start Logging: "+cmd);
+            mgLog.i("Start Logging: "+cmd);
             pLogcat = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
-            Log.e(LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
-        Log.i(LABEL,NameUtil.context()+" Starting Logger finished.");
+        mgLog.i("Starting Logger finished.");
 
-        Log.v(MGMapApplication.LABEL, NameUtil.context());
-        Log.d(MGMapApplication.LABEL, NameUtil.context());
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
-        Log.e(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.v("");
+        mgLog.d("");
+        mgLog.i("");
+        mgLog.w("");
+        mgLog.e("");
     }
 
     @Override
@@ -135,17 +137,17 @@ public class MGMapApplication extends Application {
         System.out.println("MGMapViewer Application start!!!!");
         super.onCreate();
 
-        MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG?Log.DEBUG:Log.INFO);
+        MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG? Log.DEBUG:Log.INFO);
         testControl = new TestControl(this);
         setup = new Setup();
         setup.init(this);
         persistenceManager = new PersistenceManager(this, setup.getAppDirName());
         startLogging(persistenceManager.getLogDir());
-        Log.i(LABEL,NameUtil.context()+" Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" *** START ***");
+        mgLog.i("Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" *** START ***");
         for (Map.Entry<String, ?> entry: setup.getSharedPreferences().getAll().entrySet()){
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+String.format("        key=%s value=%s", entry.getKey(), entry.getValue()));
+            mgLog.d(String.format("        key=%s value=%s", entry.getKey(), entry.getValue()));
         }
-        Log.i(LABEL,NameUtil.context()+" Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" **** END ****");
+        mgLog.i("Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" **** END ****");
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
@@ -187,7 +189,7 @@ public class MGMapApplication extends Application {
                     }
                 }
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" init finished!");
+            mgLog.i("init finished!");
         }).start();
 
 
@@ -213,29 +215,29 @@ public class MGMapApplication extends Application {
 
         // initialize handling of new points from TrackLoggerService
         new Thread(() -> {
-            Log.i(LABEL, NameUtil.context()+"handle TrackLogPoints: started ");
+            mgLog.i("handle TrackLogPoints: started ");
             while (true){
                 try {
                     PointModel pointModel = logPoints2process.take();
-                    Log.i(LABEL, NameUtil.context() +" handle tlp="+pointModel);
+                    mgLog.i("handle tlp="+pointModel);
                     if (pointModel != null){
                         if (recordingTrackLogObservable.getTrackLog() != null){
                             recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
-                            Log.v(LABEL, NameUtil.context()+ "handle TrackLogPoints: Processed "+pointModel);
+                            mgLog.v("handle TrackLogPoints: Processed "+pointModel);
                         }
                         if (logPoints2process.size() == 0){ // trigger lastPositionsObservable only for the latest point in the queue
                             lastPositionsObservable.handlePoint(pointModel);
                         }
                     }
                 } catch (Exception e) {
-                    Log.e(LABEL, NameUtil.context()+"handle TrackLogPoints: "+e.getMessage(),e);
+                    mgLog.e(e);
                 }
             }
         }).start();
 
         new Thread(() -> {
             long TIMEOUT = 10000;
-            Log.i(LABEL, NameUtil.context()+"logcat supervision: start ");
+            mgLog.i("logcat supervision: start ");
             int cnt = 0;
             int escalationCnt = 0;
             long lastCheck = System.currentTimeMillis();
@@ -246,23 +248,23 @@ public class MGMapApplication extends Application {
                     synchronized (MGMapApplication.class){
                         MGMapApplication.class.wait(1000);
                     }
-                    Log.e(MGMapApplication.LABEL,NameUtil.context()+"  logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
+                    mgLog.e("logcat supervision: logcat process terminated with exitCode "+ec+". Try to start again.");
                     startLogging(persistenceManager.getLogDir());
                     lastCheck = System.currentTimeMillis();
                 } catch (Exception e) {
                     long now = System.currentTimeMillis();
                     if (prefGps.getValue() && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
-                            Log.i(LABEL, NameUtil.context()+"Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
+                            mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
                             escalationCnt++;
                     } else {
                         escalationCnt = 0;
                     }
                     if (escalationCnt > 3){
-                        Log.w(LABEL, NameUtil.context()+" try to notify user ...");
+                        mgLog.w("try to notify user ...");
                         notificationUtil.notifyAlarm();
                     }
                     if (++cnt % 6 == 0){
-                        Log.i(LABEL, NameUtil.context()+"logcat supervision: OK. (running "+(cnt/6)+" min)");
+                        mgLog.i("logcat supervision: OK. (running "+(cnt/6)+" min)");
                     }
                     lastCheck = now;
                 }
@@ -273,12 +275,12 @@ public class MGMapApplication extends Application {
 
     @Override
     public void onTerminate() {
-        Log.w(LABEL, NameUtil.context()+" MGMapViewer Application stop");
+        mgLog.w("MGMapViewer Application stop");
         try {
             NotificationManagerCompat.from(this).cancelAll();
             prefCache.cleanup();
         } catch (Exception e) {
-            Log.e(LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
         super.onTerminate();
     }
@@ -385,14 +387,14 @@ public class MGMapApplication extends Application {
     public void startTrackLoggerService(Context context){
         Intent intent = new Intent(context, TrackLoggerService.class);
         this.startForegroundService(intent);
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + "prefGps="+prefGps.getValue());
+        mgLog.i("prefGps="+prefGps.getValue());
         triggerGpsSupervisionWorker();
     }
 
 
     public void triggerGpsSupervisionWorker(){
         if (prefGps.getValue()){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + "trigger OneTimeWorkRequest in 300s for GpsSupervisorWorker!");
+            mgLog.i("trigger OneTimeWorkRequest in 300s for GpsSupervisorWorker!");
             OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(GpsSupervisorWorker.class)
                     .setInitialDelay(300, TimeUnit.SECONDS).build();
             String uniqueWokName = getApplicationContext().getString(R.string.unique_work_name);

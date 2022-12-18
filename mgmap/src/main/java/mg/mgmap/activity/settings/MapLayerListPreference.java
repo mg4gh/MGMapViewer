@@ -16,21 +16,23 @@ package mg.mgmap.activity.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import androidx.preference.ListPreference;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.MGMapLayerFactory;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class MapLayerListPreference extends ListPreference {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final HashMap<MGMapLayerFactory.Types, FilenameFilter> filters = new HashMap<>();
 
@@ -92,7 +94,7 @@ public class MapLayerListPreference extends ListPreference {
 
     @Override
     protected void onClick() {
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" key="+getKey()+" value="+getValue());
+        mgLog.i("key="+getKey()+" value="+getValue());
         super.onClick();
     }
 }

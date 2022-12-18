@@ -16,14 +16,17 @@ package mg.mgmap.activity.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import androidx.preference.ListPreference;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class SearchProviderListPreference extends ListPreference {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public SearchProviderListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -45,7 +48,7 @@ public class SearchProviderListPreference extends ListPreference {
             setDefaultValue("Nominatim");
 
             setOnPreferenceChangeListener((preference, newValue) -> {
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" key="+preference.getKey()+" value="+newValue);
+                mgLog.i("key="+preference.getKey()+" value="+newValue);
                 return true;
             });
         }
@@ -53,7 +56,7 @@ public class SearchProviderListPreference extends ListPreference {
 
     @Override
     protected void onClick() {
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" key="+getKey()+" value="+getValue());
+        mgLog.i("key="+getKey()+" value="+getValue());
         super.onClick();
     }
 }

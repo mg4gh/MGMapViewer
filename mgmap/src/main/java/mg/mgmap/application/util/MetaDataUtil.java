@@ -14,18 +14,16 @@
  */
 package mg.mgmap.application.util;
 
-import android.util.Log;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MetaData;
 import mg.mgmap.generic.model.PointModel;
@@ -33,9 +31,11 @@ import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLogStatistic;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class MetaDataUtil {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static final long MAGIC = 0xAFFEAFFED00FD00FL;
     public static final int VERSION = 0x0200;
@@ -127,19 +127,19 @@ public class MetaDataUtil {
 
 
         } catch (IOException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         } finally {
             try {
                 fos.close();
             } catch (IOException e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+                mgLog.e(e);
             }
         }
     }
 
     public void readMetaData(FileInputStream in, TrackLog trackLog) {
         try {
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+trackLog.getName());
+            mgLog.d(trackLog.getName());
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] b = new byte[MetaData.BUF_SIZE];
             while (in.available() >= b.length){
@@ -177,19 +177,19 @@ public class MetaDataUtil {
 
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         } finally {
             try {
                 in.close();
             } catch (IOException e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+                mgLog.e(e);
             }
         }
     }
 
     public ArrayList<TrackLog> loadMetaData(){
         ArrayList<TrackLog> trackLogs = new ArrayList<>();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" loading meta files started");
+        mgLog.i("loading meta files started");
 
         for (String name : persistenceManager.getMetaNames()){
             final TrackLog trackLog = new TrackLog();
@@ -198,7 +198,7 @@ public class MetaDataUtil {
             trackLogs.add(trackLog);
         }
 
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" loading meta files finished ("+trackLogs.size()+").");
+        mgLog.i("loading meta files finished ("+trackLogs.size()+").");
         return trackLogs;
     }
 
@@ -224,14 +224,14 @@ public class MetaDataUtil {
             }
             in.close();
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
 
     }
 
     private ByteBuffer getNextLaloBuf(InputStream in){
         try {
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+ " "+in.available());
+            mgLog.d(in.available());
             while (in.available() >= MetaData.BUF_SIZE){
                 byte[] b = new byte[MetaData.BUF_SIZE];
                 assert (b.length == in.read(b));

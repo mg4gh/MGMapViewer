@@ -3,7 +3,6 @@ package mg.mgmap.application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.util.Log;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
@@ -25,7 +24,6 @@ import mg.mgmap.generic.util.Sftp;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.WiFiUtil;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.test.AbstractTestCase;
 
 public class Setup {
@@ -68,7 +66,7 @@ public class Setup {
         this.mgMapApplication = application;
         preferencesName = application.getPackageName() + "_preferences";
 
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+"Setup start");
+        mgLog.d("Setup start");
         baseDir = application.getExternalFilesDir(null);
         testSetup = new File(baseDir, TEST_SETUP);
         testConfig = new File(testSetup, TEST_CONFIG);
@@ -77,14 +75,14 @@ public class Setup {
         if (testConfig.exists() && !testOff.exists()){
             new Thread(() -> {
                 try {
-                    Log.d(MGMapApplication.LABEL, NameUtil.context()+"preferencesName="+preferencesName);
-                    Log.d(MGMapApplication.LABEL, NameUtil.context()+"Setup run");
+                    mgLog.d("preferencesName="+preferencesName);
+                    mgLog.d("Setup run");
 
                     new Sftp(testConfig) {
 
                         @Override
                         protected boolean checkPreconditions() {
-                            Log.d(MGMapApplication.LABEL, NameUtil.context()+"checkPreconditions start");
+                            mgLog.d("checkPreconditions start");
                             return (WiFiUtil.checkWLAN(application, props.getProperty(PROP_WIFI)));
                         }
 
@@ -132,7 +130,7 @@ public class Setup {
                                                     String lFilename = oFilename.toString();
                                                     String rFilename = pFiles.getProperty(lFilename);
                                                     File lParent = new File(baseDir, sAppDir+"/"+lFilename).getParentFile();
-                                                    Log.d(MGMapApplication.LABEL, NameUtil.context()+"copy from="+TEST_APP_DIR+"/"+rFilename+" to "+sAppDir+"/"+lFilename);
+                                                    mgLog.d("copy from="+TEST_APP_DIR+"/"+rFilename+" to "+sAppDir+"/"+lFilename);
                                                     assert lParent != null;
                                                     lParent.mkdirs();
                                                     channelSftp.get(TEST_APP_DIR+"/"+rFilename, sAppDir+"/"+lFilename);
@@ -175,24 +173,18 @@ public class Setup {
                     }.copy();
 
                 } catch (Exception e) {
-                    Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+                    mgLog.e(e);
                 } finally {
                     synchronized (semaphore){
                         semaphore.notifyAll();
                     }
                 }
             }).start();
-            synchronized (semaphore){
-                try {
-                    semaphore.wait(60*1000);
-                } catch (InterruptedException e) {
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" interrupted!!");
-                }
-            }
+            WaitUtil.doWait(semaphore,60*1000);
         }
         sharedPreferences = application.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
         application.getTestControl().setTestMode(isTestMode());
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+"Setup end");
+        mgLog.d("Setup end");
 
         if (isTestMode()){
             timer = new Handler();
@@ -225,7 +217,7 @@ public class Setup {
                         mgLog.d(" finished - result: "+result );
                         WaitUtil.doWait(token, 1000);
                     } catch (Exception e) {
-                        Log.e(MGMapApplication.LABEL, NameUtil.context()+ e.getMessage(),e);
+                        mgLog.e(e);
                     }
                 }
 

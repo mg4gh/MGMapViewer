@@ -23,26 +23,21 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceViewHolder;
 
 @SuppressWarnings("unused")
-public class PreferenceCategoryEx extends PreferenceCategory
-{
+public class PreferenceCategoryEx extends PreferenceCategory {
 
-    public PreferenceCategoryEx(Context ctx, AttributeSet attrs, int defStyle)
-    {
+    public PreferenceCategoryEx(Context ctx, AttributeSet attrs, int defStyle) {
         super(ctx, attrs, defStyle);
     }
 
-    public PreferenceCategoryEx(Context ctx, AttributeSet attrs)
-    {
+    public PreferenceCategoryEx(Context ctx, AttributeSet attrs) {
         super(ctx, attrs);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PreferenceViewHolder holder)
-    {
+    public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         TextView summary= (TextView)holder.findViewById(android.R.id.summary);
-        if (summary != null)
-        {
+        if (summary != null) {
             // Enable multiple line support
             summary.setSingleLine(false);
             summary.setMaxLines(10); // Just need to be high enough I guess

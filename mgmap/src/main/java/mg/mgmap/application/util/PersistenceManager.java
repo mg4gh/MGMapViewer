@@ -16,7 +16,6 @@ package mg.mgmap.application.util;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.core.content.FileProvider;
 
@@ -27,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -34,12 +34,14 @@ import java.util.zip.ZipFile;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.IOUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Covers all handling towards the file system.
  */
 public class PersistenceManager {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final MGMapApplication application;
     private final Context context;
@@ -69,24 +71,24 @@ public class PersistenceManager {
         this.context = application;
 
         baseDir = context.getExternalFilesDir(null);
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Default Storage: "+baseDir.getAbsolutePath());
+        mgLog.i("Default Storage: "+getBaseDir().getAbsolutePath());
 
         if (! new File(baseDir, sAppDir).exists()){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " Default Storage not found - check alternatives");
+            mgLog.i("Default Storage not found - check alternatives");
             for (File f : context.getExternalFilesDirs(null)){
                 boolean exists = new File(f, sAppDir).exists();
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + "check Storage: "+baseDir.getAbsolutePath()+" ->exists: "+exists);
+                mgLog.i("check Storage: "+baseDir.getAbsolutePath()+" ->exists: "+exists);
                 if (exists){
                     baseDir = f;
                 }
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " f= "+f.getAbsolutePath());
+                mgLog.i("f= "+f.getAbsolutePath());
             }
         }
 
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Storage: "+baseDir.getAbsolutePath());
+        mgLog.i("Storage: "+baseDir.getAbsolutePath());
 
         appDir = createIfNotExists(baseDir, sAppDir);
-        File trackDir = createIfNotExists(appDir, "track");
+        File trackDir = createIfNotExists(getAppDir(), "track");
         trackMetaDir = createIfNotExists(trackDir, "meta");
         trackGpxDir = createIfNotExists(trackDir, "gpx");
         File trackRecDir = createIfNotExists(trackDir, "recording");
@@ -139,11 +141,11 @@ public class PersistenceManager {
             if (files != null){
                 for (File file : files){
                     if (!file.delete())
-                        Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to delete: "+file.getAbsolutePath());
+                        mgLog.w("Failed to delete: "+file.getAbsolutePath());
                 }
             }
         } catch (Exception e) {
-            Log.w(MGMapApplication.LABEL, NameUtil.context() + e.getMessage());
+            mgLog.w(e.getMessage());
         }
     }
     public File getApkFile(){
@@ -159,11 +161,11 @@ public class PersistenceManager {
         synchronized (PersistenceManager.class) {
             if (!f.exists()) {
                 if (!f.mkdirs())
-                    Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to create: "+f.getAbsolutePath());
+                    mgLog.w("Failed to create: "+f.getAbsolutePath());
             }
         }
         if (!f.exists()) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context()+" Failed to create directory: " + f.getAbsolutePath());
+            mgLog.e("Failed to create directory: " + f.getAbsolutePath());
             throw new RuntimeException("Failed to create directory: " + f.getAbsolutePath());
         }
         return f;
@@ -174,11 +176,11 @@ public class PersistenceManager {
             synchronized (PersistenceManager.class) {
                 if (!f.exists()) {
                     if (!f.createNewFile())
-                        Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to create: "+f.getAbsolutePath());
+                        mgLog.w("Failed to create: "+f.getAbsolutePath());
                 }
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 
@@ -190,7 +192,7 @@ public class PersistenceManager {
             fosRaw.write(b, offset, length);
             fosRaw.flush();
         } catch (IOException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 
@@ -201,11 +203,11 @@ public class PersistenceManager {
                 fosRaw = null;
             }
         } catch (IOException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
         if (fRaw.exists()) {
             if (!fRaw.delete())
-                Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to delete: "+fRaw.getAbsolutePath());
+                mgLog.w("Failed to delete: "+fRaw.getAbsolutePath());
 
         }
     }
@@ -216,12 +218,12 @@ public class PersistenceManager {
                 FileInputStream fis = new FileInputStream(fRaw);
                 byte[] b = new byte[fis.available()];
                 if (fis.read(b) != b.length)
-                    Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to read "+b.length+" bytes");
+                    mgLog.w("Failed to read "+b.length+" bytes");
 
                 return b;
             }
         } catch (IOException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
         return null;
     }
@@ -235,7 +237,7 @@ public class PersistenceManager {
         assert fParent != null;
         if (!fParent.exists()){
             if (!fParent.mkdirs())
-                Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to create: "+fParent.getAbsolutePath());
+                mgLog.w("Failed to create: "+fParent.getAbsolutePath());
         }
     }
 
@@ -249,7 +251,7 @@ public class PersistenceManager {
             checkCreatePath(file);
             return new PrintWriter(file);
         } catch (FileNotFoundException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
         return null;
     }
@@ -258,7 +260,7 @@ public class PersistenceManager {
             File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
         return null;
     }
@@ -267,7 +269,7 @@ public class PersistenceManager {
             File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
             return FileProvider.getUriForFile(context, "mg.mgmap.provider", file);
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
         return null;
     }
@@ -278,7 +280,7 @@ public class PersistenceManager {
             checkCreatePath(file);
             return new FileOutputStream(file);
         } catch (FileNotFoundException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
         return null;
     }
@@ -288,7 +290,7 @@ public class PersistenceManager {
             File file = getAbsoluteFile(trackMetaDir, filename, ".meta");
             return new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
         return null;
     }
@@ -346,7 +348,7 @@ public class PersistenceManager {
         try {
             return new FileOutputStream(getHgtFile(hgtName));
         } catch (FileNotFoundException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
         return null;
     }
@@ -396,9 +398,9 @@ public class PersistenceManager {
     public void renameTrack(String oldFilename, String newFilename) {
         deleteTrack(newFilename); // should never be the case - but just to be sure
         if (!getAbsoluteFile(trackGpxDir, oldFilename, ".gpx").renameTo( getAbsoluteFile(trackGpxDir, newFilename, ".gpx") ))
-            Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to rename gpx: "+oldFilename+" to "+newFilename);
+            mgLog.w("Failed to rename gpx: "+oldFilename+" to "+newFilename);
         if (!getAbsoluteFile(trackMetaDir, oldFilename, ".meta").renameTo( getAbsoluteFile(trackMetaDir, newFilename, ".meta") ))
-            Log.w(MGMapApplication.LABEL, NameUtil.context() +"Failed to rename meta: "+oldFilename+" to "+newFilename);
+            mgLog.w("Failed to rename meta: "+oldFilename+" to "+newFilename);
     }
 
 
@@ -443,7 +445,7 @@ public class PersistenceManager {
             if (group != null){
                 configDir = new File(configDir, group);
                 if (!configDir.exists()){
-                    Log.w(MGMapApplication.LABEL, NameUtil.context() +" configDir not found: "+configDir.getAbsolutePath());
+                    mgLog.w("configDir not found: "+configDir.getAbsolutePath());
                 }
             }
             File configFile = new File(configDir, name );
@@ -452,10 +454,10 @@ public class PersistenceManager {
                 props.load( fis );
                 fis.close();
             } else {
-                Log.w(MGMapApplication.LABEL, NameUtil.context() +" configFile not found: "+configFile.getAbsolutePath());
+                mgLog.w("configFile not found: "+configFile.getAbsolutePath());
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
         return props;
 
@@ -466,7 +468,7 @@ public class PersistenceManager {
         try {
             IOUtil.copyStreams( application.getAssets().open("graphhopper.log"), new FileOutputStream(new File(searchConfigDir, ghCfg)) );
         } catch (IOException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
     }
 }

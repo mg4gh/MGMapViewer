@@ -18,7 +18,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -35,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
@@ -43,10 +43,12 @@ import java.util.UUID;
 import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.FullscreenUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.TopExceptionHandler;
 
 public class ThemeSettings extends AppCompatActivity implements OnSharedPreferenceChangeListener {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     MGMapApplication application = null;
     ListPreference baseLayerPreference;
@@ -60,7 +62,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences,
                                           String key) {
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " key="+key+" value="+ preferences.getAll().get(key));
+        mgLog.i("key="+key+" value="+ preferences.getAll().get(key));
         if (this.renderthemeOptions != null && this.renderthemeOptions.getId().equals(key)) {
             createRenderthemeMenu();
         }
@@ -71,7 +73,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.w(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.i();
         application = (MGMapApplication) getApplication();
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(application.getPersistenceManager()));
         super.onCreate(savedInstanceState);

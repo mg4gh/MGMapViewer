@@ -7,16 +7,18 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class NotificationUtil {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final NotificationManager notificationManager;
     private Notification notification = null;
@@ -30,14 +32,12 @@ public class NotificationUtil {
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
                 "PowerSaving notification channel",
                 NotificationManager.IMPORTANCE_HIGH);
-
         notificationManager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
         notificationManager.createNotificationChannel(channel);
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + "create \""+ channel.getName()+"\" - importance: " + channel.getImportance());
+        mgLog.i("create \""+ channel.getName()+"\" - importance: " + channel.getImportance());
     }
 
     public void notifyAlarm() {
-
         Intent intent = new Intent(context, MGMapActivity.class);
         notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.mg2)
@@ -45,10 +45,10 @@ public class NotificationUtil {
                 .setContentText("Power saving problem detected")
                 .setContentIntent(PendingIntent.getActivity(context.getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                 .build();
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + "send alarm notification");
+        mgLog.i("send alarm notification");
         notificationManager.notify(77,notification);
         timer.postDelayed(() -> {
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + "cancel alarm notification");
+            mgLog.i("cancel alarm notification");
             notificationManager.cancel(77);
         }, 60*1000);
     }

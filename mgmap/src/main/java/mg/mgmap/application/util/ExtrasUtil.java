@@ -14,21 +14,21 @@
  */
 package mg.mgmap.application.util;
 
-import android.util.Log;
-
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.TrackLog;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
 
 /** Utility for extra tasks */
 public class ExtrasUtil {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
     public static void checkCreateMeta(PersistenceManager persistenceManager, MetaDataUtil metaDataUtil, ElevationProvider elevationProvider){
-        Log.i(MGMapApplication.LABEL, NameUtil.context() );
+        mgLog.i();
         try {
             List<String> gpxNames = persistenceManager.getGpxNames();
             List<String> metaNames = persistenceManager.getMetaNames();
@@ -38,17 +38,17 @@ public class ExtrasUtil {
             metaNames.removeAll(gpxNames); // remove meta files without corresponding gpx
 
             for (String name : newGpxNames){
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Create meta file for "+name );
+                mgLog.i("Create meta file for "+name );
                 TrackLog trackLog = new GpxImporter(elevationProvider).parseTrackLog(name, persistenceManager.openGpxInput(name));
                 metaDataUtil.createMetaData(trackLog);
                 metaDataUtil.writeMetaData(persistenceManager.openMetaOutput(name), trackLog);
             }
             for (String name : metaNames){
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Delete meta file for "+name);
+                mgLog.i("Delete meta file for "+name);
                 persistenceManager.deleteTrack(name);
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 }
