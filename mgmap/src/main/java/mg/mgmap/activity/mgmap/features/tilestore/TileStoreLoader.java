@@ -14,8 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.features.tilestore;
 
-import android.util.Log;
-
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.layer.queue.Job;
@@ -24,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -41,9 +40,11 @@ import mg.mgmap.R;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class TileStoreLoader {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public File storeDir;
     MGMapApplication application;
@@ -83,7 +84,7 @@ public class TileStoreLoader {
                             jobGroup.doit(); // this is the real retry
                         }
                     } catch (Exception e) {
-                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                        mgLog.e(e);
                     }
                 }).start();
 
@@ -106,7 +107,7 @@ public class TileStoreLoader {
                 JsonObject oAll = jsonReader.readObject();
                 cAll = oAll.getJsonArray("cookies");
             } catch (Exception e){
-                Log.w(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
+                mgLog.w(e.getMessage());
             }
             if (cAll == null){
                 try {
@@ -114,7 +115,7 @@ public class TileStoreLoader {
                     JsonReader jsonReader = Json.createReader(jsonFile);
                     cAll = jsonReader.readArray();
                 } catch (Exception e){
-                    Log.w(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
+                    mgLog.w(e.getMessage());
                 }
             }
             if (cAll != null){
@@ -136,7 +137,7 @@ public class TileStoreLoader {
                     cookieRes.append(entry.getKey()).append("=").append(entry.getValue()).append(separator);
                 }
                 config.setConnRequestProperty("Cookie", cookieRes.substring(0, cookieRes.length()-separator.length()));
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" cookies.json result: "+config.connRequestProperties.get("Cookie"));
+                mgLog.i("cookies.json result: "+config.connRequestProperties.get("Cookie"));
             }
         }
     }
@@ -150,7 +151,7 @@ public class TileStoreLoader {
             int tileXMax = MercatorProjection.pixelXToTileX(MercatorProjection.longitudeToPixelX(bBox.maxLongitude, mapSize), zoomLevel, tileSize);
             int tileYMin = MercatorProjection.pixelYToTileY(MercatorProjection.latitudeToPixelY(bBox.maxLatitude, mapSize), zoomLevel, tileSize); // min and max reversed for tiles
             int tileYMax = MercatorProjection.pixelYToTileY(MercatorProjection.latitudeToPixelY(bBox.minLatitude, mapSize), zoomLevel, tileSize);
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " " + String.format(Locale.ENGLISH, "dls %d %d %d %d %d", zoomLevel, tileXMin, tileXMax, tileYMin, tileYMax));
+            mgLog.i(String.format(Locale.ENGLISH, "dls %d %d %d %d %d", zoomLevel, tileXMin, tileXMax, tileYMin, tileYMax));
 
             for (int tileX = tileXMin; tileX<= tileXMax; tileX++){
                 for (int tileY = tileYMin; tileY<= tileYMax; tileY++) {
@@ -176,7 +177,7 @@ public class TileStoreLoader {
             int tileXMax = MercatorProjection.pixelXToTileX(MercatorProjection.longitudeToPixelX(bBox.maxLongitude, mapSize), zoomLevel, tileSize);
             int tileYMin = MercatorProjection.pixelYToTileY(MercatorProjection.latitudeToPixelY(bBox.maxLatitude, mapSize), zoomLevel, tileSize); // min and max reversed for tiles
             int tileYMax = MercatorProjection.pixelYToTileY(MercatorProjection.latitudeToPixelY(bBox.minLatitude, mapSize), zoomLevel, tileSize);
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " " + String.format(Locale.ENGLISH, "dls %d %d %d %d %d", zoomLevel, tileXMin, tileXMax, tileYMin, tileYMax));
+            mgLog.i(String.format(Locale.ENGLISH, "dls %d %d %d %d %d", zoomLevel, tileXMin, tileXMax, tileYMin, tileYMax));
 
             if ( ((tileXMax-tileXMin) > 1) && ((tileYMax-tileYMin) >1 )){
                 numDrops += (tileXMax-tileXMin-1)*(tileYMax-tileYMin-1);

@@ -17,7 +17,6 @@ package mg.mgmap.activity.mgmap.features.tilestore;
 import android.content.ContentValues;
 import android.content.res.AssetManager;
 import android.database.Cursor;
-import android.util.Log;
 
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.TileBitmap;
@@ -32,21 +31,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.util.Locale;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.basic.IOUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class MGTileStoreDB extends MGTileStore {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     static {
         try {
             System.loadLibrary("sqliteX");
         } catch (Throwable t) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), t);
+            mgLog.e(t);
         }
     }
 
@@ -75,15 +76,15 @@ public class MGTileStoreDB extends MGTileStore {
         }
         String prefix = "["+storeDir.getName()+"] ";
         if (store == null){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+prefix+"nothing found - copy empty store form assets.");
+            mgLog.i(prefix+"nothing found - copy empty store form assets.");
             storeRW = new File(storeDir, "store.mbtiles");
             IOUtil.copyStreams(am.open("store.mbtiles"), new FileOutputStream(storeRW));
         } else if (storeRW == null){ // store found, but is not writeable - create a clone that is writeable
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+prefix+"store found ("+store.getName()+"), but is not writeable - create a clone that is writeable");
+            mgLog.i(prefix+"store found ("+store.getName()+"), but is not writeable - create a clone that is writeable");
             storeRW = new File(store.getAbsolutePath().replaceFirst("\\.mbtiles", "_rw.mbtiles"));
             IOUtil.copyStreams(new FileInputStream(store), new FileOutputStream(storeRW));
         } else {
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+prefix+"store found with read/write access found: "+storeRW.getName());
+            mgLog.i(prefix+"store found with read/write access found: "+storeRW.getName());
         }
         db = SQLiteDatabase.openDatabase(storeRW.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
     }
@@ -113,10 +114,10 @@ public class MGTileStoreDB extends MGTileStore {
     @Override
     public synchronized void destroy() {
         try {
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Try to close database.");
+            mgLog.i("Try to close database.");
             db.close();
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 
@@ -138,7 +139,7 @@ public class MGTileStoreDB extends MGTileStore {
             }
             c.close();
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
         return bRes;
 
@@ -186,7 +187,7 @@ public class MGTileStoreDB extends MGTileStore {
             c.close();
             return bb;
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
             return null;
         }
     }
@@ -211,7 +212,7 @@ public class MGTileStoreDB extends MGTileStore {
             db.insert("tiles", null, cv);
 
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 
@@ -225,20 +226,20 @@ public class MGTileStoreDB extends MGTileStore {
     private synchronized void dropTile(String tileX, String tileY){
         try {
             String sql = String.format(Locale.ENGLISH," ((%s == tile_column) AND (%s == tile_row));",tileX,tileY);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" SQL: "+sql);
+            mgLog.i("SQL: "+sql);
             db.delete("tiles", sql, null);
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 
     private synchronized void dropTiles(int tileXMin, int tileXMax, int tileYMin, int tileYMax){
         try {
             String sql = String.format(Locale.ENGLISH," ((%d < tile_column) AND (tile_column<%d) AND (%d<tile_row) AND (tile_row<%d));",tileXMin,tileXMax,tileYMin,tileYMax);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" SQL: "+sql);
+            mgLog.i("SQL: "+sql);
             db.delete("tiles", sql, null);
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 

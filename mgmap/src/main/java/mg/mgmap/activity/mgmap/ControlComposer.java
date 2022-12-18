@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
-//import java.util.Observer;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.atl.FSAvailableTrackLogs;

@@ -15,16 +15,16 @@
 package mg.mgmap.activity.mgmap.features.rtl;
 
 import android.hardware.SensorManager;
-import android.util.Log;
 
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.basic.Formatter;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import java.util.Locale;
  */
 public class RecordingTrackLog extends WriteableTrackLog {
 
-    private static final String TAG = NameUtil.getTag();
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final PersistenceManager persistenceManager;
 
@@ -232,7 +232,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
             }
 
             float calEle = sumEle / cntEle;
-            Log.i(TAG, "reworkData: "+ String.format(Locale.ENGLISH, "Calibration data: pressure=%.3f refEle=%.1f calEle=%.1f", refLp.getPressure() , refEle, calEle));
+            mgLog.i("reworkData: "+ String.format(Locale.ENGLISH, "Calibration data: pressure=%.3f refEle=%.1f calEle=%.1f", refLp.getPressure() , refEle, calEle));
 
             float maxEle = PointModel.NO_ELE;
             float minEle = -PointModel.NO_ELE;

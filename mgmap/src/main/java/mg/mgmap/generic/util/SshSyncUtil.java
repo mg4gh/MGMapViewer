@@ -148,7 +148,7 @@ public class SshSyncUtil {
                 boolean exit2 = (channel.getExitStatus() >= 0);
 
                 if (exit || exit2) break;
-                WaitUtil.doWait(this.getClass(), 20, MGMapApplication.LABEL);
+                WaitUtil.doWait(this.getClass(), 20);
             }
             channel.disconnect();
         } catch (Exception e) {

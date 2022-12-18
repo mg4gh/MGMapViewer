@@ -14,20 +14,20 @@
  */
 package mg.mgmap.activity.mgmap.features.tilestore;
 
-import android.util.Log;
-
 import org.mapsforge.core.model.Tile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.HttpURLConnection;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.IOUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     boolean bOld;
 
@@ -48,7 +48,7 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
         } catch (IOException e) {
             if (conn instanceof HttpURLConnection) {
                 HttpURLConnection httpURLConnection = (HttpURLConnection) conn;
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+httpURLConnection.getResponseCode()+" "+httpURLConnection.getResponseMessage()+" "+conn.getURL());
+                mgLog.d(httpURLConnection.getResponseCode()+" "+httpURLConnection.getResponseMessage()+" "+conn.getURL());
 
                 if (httpURLConnection.getResponseCode() == 404){
                     is = tileStoreLoader.application.getAssets().open("empty.png");

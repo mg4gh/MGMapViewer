@@ -19,7 +19,6 @@ import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
-import android.util.Log;
 
 import org.mapsforge.map.android.util.AndroidPreferences;
 import org.mapsforge.map.android.util.AndroidUtil;
@@ -30,12 +29,14 @@ import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
 import org.mapsforge.map.scalebar.NauticalUnitAdapter;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
@@ -43,6 +44,8 @@ import mg.mgmap.generic.util.basic.NameUtil;
  * Covers the most handling concerning the preferences and also concerning the MapView initialization
  */
 public abstract class MapViewerBase extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     protected MapView mapView;
     protected PreferencesFacade preferencesFacade;
@@ -134,7 +137,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         // Some preference changes take effect due to activity restart - those need to be listed in recreatePreferences
         if (recreatePreferences.contains(key) && (!preferences.getBoolean(getResources().getString(R.string.MGMapApplication_pref_Restart), true))){
             new Handler().postDelayed(() -> {
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key));
+                mgLog.i("recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key));
                 if (MGMapLayerFactory.getMapLayerKeys(this).contains(key) && ("MAPGRID: hgt".equals(preferences.getAll().get(key)))){
                     mapView.getModel().mapViewPosition.setZoomLevel((byte)7);
                     saveMapViewModel();

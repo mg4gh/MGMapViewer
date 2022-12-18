@@ -33,10 +33,6 @@ public class NameUtil {
 		return new Throwable().getStackTrace()[1].getMethodName();
 	}
 
-	public static String getPackage(StackTraceElement ste){
-		return ste.getClassName().replaceAll("\\.[^\\.]*$","");
-	}
-
 	public static String context(){
 		StackTraceElement ste = new Throwable().getStackTrace()[1];
 		return context(ste);
@@ -65,12 +61,6 @@ public class NameUtil {
 			Log.d(MGMapApplication.LABEL, "     Context: "+ste.getClassName()+"."+ste.getMethodName()+"("+ste.getFileName()+":"+ste.getLineNumber()+") ");
 		}
 	}
-
-	public static String getTag(){
-		return "MGMapViewer "+new Throwable().getStackTrace()[1].getClassName();
-	}
-
-
 
 
 

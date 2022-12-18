@@ -216,14 +216,14 @@ public class Setup {
 
                         long limit = System.currentTimeMillis() + testCase.getDurationLimit();
                         while (System.currentTimeMillis() < limit){
-                            WaitUtil.doWait(token, 1000, MGMapApplication.LABEL);
+                            WaitUtil.doWait(token, 1000);
                             if (! testCase.isRunning()) break; // leave loop if testcase is finished
                         }
                         testCase.stop();
                         String result = testCase.getResult();
                         pTestResults.put(testCase.getName(), result);
                         mgLog.d(" finished - result: "+result );
-                        WaitUtil.doWait(token, 1000, MGMapApplication.LABEL);
+                        WaitUtil.doWait(token, 1000);
                     } catch (Exception e) {
                         Log.e(MGMapApplication.LABEL, NameUtil.context()+ e.getMessage(),e);
                     }

@@ -17,7 +17,6 @@ package mg.mgmap.activity.mgmap.features.search;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -27,8 +26,9 @@ import android.widget.RelativeLayout;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.search.provider.Nominatim;
@@ -38,13 +38,15 @@ import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.Observer;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.MVLayer;
 
 public class FSSearch extends FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
     private static final long NO_POS = PointModelUtil.NO_POS; // default invalid position for prefShowPos
@@ -154,7 +156,7 @@ public class FSSearch extends FeatureService {
                     String sProvider = getSharedPreferences().getString(getResources().getString(R.string.preference_choose_search_key), "Graphhopper");
                     setSearchProvider( (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+sProvider).newInstance() );
                 } catch (Exception e) {
-                    Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+                    mgLog.e(e);
                 }
 
                 searchView.setVisibility( View.VISIBLE );
@@ -187,7 +189,7 @@ public class FSSearch extends FeatureService {
         @Override
         public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
             PointModel pos = new PointModelImpl(tapLatLong);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" rev Geocode: pos="+pos);
+            mgLog.i("rev Geocode: pos="+pos);
             long timestamp = System.currentTimeMillis();
             searchProvider.doSearch(new SearchRequest("",0,timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
             hideKeyboard();
@@ -210,7 +212,7 @@ public class FSSearch extends FeatureService {
     private void doSearch(String text, int actionId){
         long timestamp = System.currentTimeMillis();
         triggerTTHideKeyboard();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" text="+text+" actionId="+actionId+" timestamp="+timestamp);
+        mgLog.i("text="+text+" actionId="+actionId+" timestamp="+timestamp);
         PointModel pos = new PointModelImpl( getActivity().getMapViewUtility().getCenter() );
         searchProvider.doSearch(new SearchRequest(text, actionId, timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
         if (actionId == EditorInfo.IME_ACTION_GO
@@ -226,7 +228,7 @@ public class FSSearch extends FeatureService {
         long lalo = prefShowPos.getValue();
         if ((lalo != 0) && (lalo != NO_POS)){
             PointModel pos = PointModelImpl.createFromLaLo(lalo);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pos);
+            mgLog.i(pos);
             getMapViewUtility().setMapViewPosition(pos);
             register(new PointViewSearch(pos).setRadius(10));
             register(new PointViewSearch(pos).setRadius(1));
@@ -252,10 +254,10 @@ public class FSSearch extends FeatureService {
 
     public void setSearchResult(PointModel pmSearchResult) {
         if (activity.getMapDataStoreUtil().getMapDataStore(new BBox().extend(pmSearchResult)) == null){
-            Log.w(MGMapApplication.LABEL, NameUtil.context()+" outside of map: "+pmSearchResult);
+            mgLog.w("outside of map: "+pmSearchResult);
             return;
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+pmSearchResult);
+        mgLog.i(pmSearchResult);
         prefShowPos.setValue(pmSearchResult.getLaLo());
         if (prefShowSearchResult.getValue()){
             prefShowSearchResult.onChange(); // even if result is already shown, this triggers to center the result

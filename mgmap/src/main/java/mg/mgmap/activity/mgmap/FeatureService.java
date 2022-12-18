@@ -18,7 +18,6 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.lifecycle.Lifecycle;
@@ -39,7 +38,6 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
 import mg.mgmap.activity.mgmap.view.MVLayer;

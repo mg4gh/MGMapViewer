@@ -22,7 +22,6 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -38,6 +37,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.DisplayModel;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -49,7 +49,7 @@ import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.activity.mgmap.util.EnlargeControl;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
 
@@ -67,6 +67,8 @@ import mg.mgmap.activity.mgmap.view.LabeledSlider;
  *
  */
 public class ControlView extends RelativeLayout {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     Context context;
     MGMapApplication application = null;
@@ -147,7 +149,7 @@ public class ControlView extends RelativeLayout {
 
             controlComposer.composeHelpControls(activity, this);
         } catch (Exception e){
-            Log.e(MGMapApplication.LABEL, NameUtil.context()+"", e);
+            mgLog.e(e);
         }
     }
 
@@ -159,7 +161,7 @@ public class ControlView extends RelativeLayout {
             try{
                 top = Integer.parseInt(prefVerticalFullscreenOffset.getValue());
             } catch (NumberFormatException e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                mgLog.e(e);
             }
         }
         int bottom = ControlView.dp(2)+(fullscreen?0:navigationBarHeight);
@@ -168,7 +170,6 @@ public class ControlView extends RelativeLayout {
             params.setMargins(0, top,0,bottom);
             view.setLayoutParams(params);
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
         mapView.getMapScaleBar().setMarginVertical(bottom + dp(65));
         mapView.getMapScaleBar().redrawScaleBar();
         activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle();
@@ -182,7 +183,7 @@ public class ControlView extends RelativeLayout {
         statusBarHeight = (idStatusBarHeight > 0)?activity.getResources().getDimensionPixelSize(idStatusBarHeight):ControlView.dp(24);
         int idNavBarHeight = myResources.getIdentifier( "navigation_bar_height", "dimen", "android");
         navigationBarHeight = (idNavBarHeight > 0)?activity.getResources().getDimensionPixelSize(idNavBarHeight):ControlView.dp(24);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+"statusBarHeight="+statusBarHeight+" navigationBarHeight"+navigationBarHeight);
+        mgLog.i("statusBarHeight="+statusBarHeight+" navigationBarHeight"+navigationBarHeight);
     }
 
 // *************************************************************************************************

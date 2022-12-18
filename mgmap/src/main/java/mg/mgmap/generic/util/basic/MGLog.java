@@ -125,6 +125,11 @@ public class MGLog {
         }
     }
 
+    public void w(String msg, Throwable t){
+        if (level <= Log.WARN){
+            log(Log.WARN, msg + Log.getStackTraceString(t));
+        }
+    }
     public void w(String msg){
         if (level <= Log.WARN){
             log(Log.WARN, msg);
@@ -141,6 +146,11 @@ public class MGLog {
         }
     }
 
+    public void i(){
+        if (level <= Log.INFO){
+            log(Log.INFO, "");
+        }
+    }
     public void i(String msg){
         if (level <= Log.INFO){
             log(Log.INFO, msg);
@@ -157,6 +167,11 @@ public class MGLog {
         }
     }
 
+    public void d(){
+        if (level <= Log.DEBUG){
+            log(Log.DEBUG, "");
+        }
+    }
     public void d(String msg){
         if (level <= Log.DEBUG){
             log(Log.DEBUG, msg);

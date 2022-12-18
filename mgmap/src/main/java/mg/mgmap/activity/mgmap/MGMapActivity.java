@@ -26,7 +26,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 
@@ -85,10 +84,11 @@ import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.SshSyncUtil;
+import mg.mgmap.generic.util.WaitUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
 import mg.mgmap.activity.mgmap.util.MapDataStoreUtil;
 import mg.mgmap.activity.mgmap.util.MapViewUtility;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.mgmap.util.Permissions;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -100,6 +100,7 @@ import mg.mgmap.activity.mgmap.view.MVLayer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,6 +112,8 @@ import java.util.Set;
  * and modification functionality.
  */
 public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCallback {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     /** Reference to the MGMapApplication object */
     MGMapApplication application = null;
@@ -158,7 +161,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.i();
         application = (MGMapApplication) getApplication();
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(application.getPersistenceManager()));
         //for fullscreen mode
@@ -183,7 +186,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         mapDataStoreUtil = new MapDataStoreUtil().onCreate(mapLayerFactory, sharedPreferences);
         initializePosition(mapView.getModel().mapViewPosition);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
+        mgLog.i("Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
@@ -207,16 +210,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSAlpha(this));
         featureServices.add(new FSControl(this));
 
-        try{
-            Thread.sleep(100);
-        }catch(Exception e){
-            Log.w(MGMapApplication.LABEL, NameUtil.context());
-        }
+        WaitUtil.doWait(this.getClass(), 100);
         coView.init(application, this);
         onNewIntent(getIntent());
         // use prefGps and prefRestart from applications prefCache to prevent race conditions during startup phase
         application.prefGps.addObserver((e) -> triggerTrackLoggerService());
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+" prefGps="+application.prefGps.getValue()+" prefRestart="+application.prefRestart.getValue() );
+        mgLog.d("prefGps="+application.prefGps.getValue()+" prefRestart="+application.prefRestart.getValue() );
         if (application.prefGps.getValue() && application.prefRestart.getValue()){
             triggerTrackLoggerService(); // restart track logger service after app restart while track recording is on
         }
@@ -228,7 +227,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.i();
         application = (MGMapApplication) getApplication();
 
         // This is a workaround for frozen Screen after 2 times switch off/on with setShowWhenLocked(true);
@@ -244,17 +243,17 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             new Thread(() -> {
                 try {
                     Thread.sleep(3);
-                } catch (Exception e){ Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage()); }
+                } catch (Exception e){ mgLog.e(e.getMessage()); }
                 alertDialog.dismiss();
             }).start();
         }
 
         for (FeatureService microService : featureServices) {
             try {
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" onResume " + microService + " beginning ");
+                mgLog.d("onResume " + microService + " beginning ");
                 microService.onResume();
             } catch (Exception e) {
-                Log.w(MGMapApplication.LABEL, NameUtil.context()+" onResume " + microService + " failed: " + e.getMessage(), e);
+                mgLog.w("onResume " + microService + " failed: " + e.getMessage(), e);
             }
         }
         for (Layer layer : mapView.getLayerManager().getLayers()){
@@ -277,19 +276,19 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus){
             FullscreenUtil.enforceState(this);
-            Log.i(MGMapApplication.LABEL, NameUtil.context());
+            mgLog.i();
         }
     }
 
     @Override
     protected void onPause() {
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.i();
         for (int i = featureServices.size() - 1; i >= 0; i--) { // reverse order
             FeatureService microService = featureServices.get(i);
             try {
                 microService.onPause();
             } catch (Exception e) {
-                Log.w(MGMapApplication.LABEL, NameUtil.context()+" onPause " + microService + " failed: " + e.getMessage());
+                mgLog.w("onPause " + microService + " failed: " + e.getMessage());
             }
         }
         for (Layer layer : mapView.getLayerManager().getLayers()){
@@ -303,13 +302,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     @Override
     protected void onDestroy() {
-        Log.w(MGMapApplication.LABEL, NameUtil.context() + " Destroy started");
+        mgLog.w("Destroy started");
         for (int i = featureServices.size() - 1; i >= 0; i--) { // reverse order
             FeatureService microService = featureServices.get(i);
             try {
                 microService.onDestroy();
             } catch (Exception e) {
-                Log.w(MGMapApplication.LABEL, NameUtil.context()+" stop " + microService + " failed: " + e.getMessage());
+                mgLog.w("stop " + microService + " failed: " + e.getMessage());
             }
         }
         application.availableTrackLogsObservable.deleteObservers();
@@ -323,7 +322,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         gGraphTileFactory.onDestroy();
         prefCache.cleanup();
         AndroidGraphicFactory.clearResourceMemoryCache(); // do this as very last action - otherwise some crash might occur
-        Log.w(MGMapApplication.LABEL, NameUtil.context() + " Destroy finished");
+        mgLog.w("Destroy finished");
         super.onDestroy();
     }
 
@@ -343,10 +342,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         String prefLang = sharedPreferences.getString(getResources().getString(R.string.preferences_language_key), "de");
         sharedPreferences.edit().putString(getResources().getString(R.string.preferences_language_key), prefLang).apply();
 
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device scale factor " + DisplayModel.getDeviceScaleFactor());
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " Device screen size " + getResources().getDisplayMetrics().widthPixels + "x" + getResources().getDisplayMetrics().heightPixels);
+        mgLog.i("Device scale factor " + DisplayModel.getDeviceScaleFactor());
+        mgLog.i("Device screen size " + getResources().getDisplayMetrics().widthPixels + "x" + getResources().getDisplayMetrics().heightPixels);
         float fs = Float.parseFloat(sharedPreferences.getString(getResources().getString(R.string.preferences_scale_key), Float.toString(DisplayModel.getDefaultUserScaleFactor())));
-        Log.i(MGMapApplication.LABEL, NameUtil.context() + " User ScaleFactor " + fs);
+        mgLog.i("User ScaleFactor " + fs);
         if (fs != DisplayModel.getDefaultUserScaleFactor()) {
             DisplayModel.setDefaultUserScaleFactor(fs);
         }
@@ -365,19 +364,19 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected void onNewIntent(Intent intent) {
         try {
             super.onNewIntent(intent);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent);
+            mgLog.i(intent);
             if (intent != null) {
                 String paramKey = getResources().getString(R.string.activity_param_key);
                 if (intent.hasExtra(paramKey)){
                     String value = intent.getStringExtra(paramKey);
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+paramKey+" "+value );
+                    mgLog.i(paramKey+" "+value );
                     prefCache.get(R.string.activity_param_key, "").setValue(value);
                 }
 
                 if (intent.getType() == null){
                     Uri uri = intent.getData();
                     if (uri != null) {
-                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
+                        mgLog.i("uri: " + uri);
                         PersistenceManager pm = application.getPersistenceManager();
                         if (uri.getScheme().equals("mf-v4-map")){
                             BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download map", new BgJobGroupCallback() {
@@ -432,7 +431,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     String stl = intent.getStringExtra("stl");
                     String atl = intent.getStringExtra("atl");
                     List<String> atls = (atl==null)?new ArrayList<>():Arrays.asList( atl.substring(1,atl.length()-1).split(", ") );
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent.getType()+" stl="+stl+" atl="+atl);
+                    mgLog.i(intent.getType()+" stl="+stl+" atl="+atl);
 
                     BBox bBox2show = new BBox();
                     TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
@@ -458,7 +457,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
                 } else if (intent.getType().equals("mgmap/markTrack")){
                     String stl = intent.getStringExtra("stl");
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+"  " + intent.getType()+" stl="+stl);
+                    mgLog.i(intent.getType()+" stl="+stl);
                     if (stl != null){
                         BBox bBox2show = new BBox();
                         TrackLog selectedTrackLog = application.metaTrackLogs.get(stl);
@@ -493,7 +492,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 } else {
                     Uri uri = intent.getData();
                     if (uri != null) {
-                        Log.i(MGMapApplication.LABEL, NameUtil.context() + " uri: " + uri);
+                        mgLog.i("uri: " + uri);
                         if (uri.toString().startsWith("content")){ // assume this is a gpx file
                             TrackLog trackLog = GpxImporter.checkLoadGpx(application, uri);
                             if (trackLog != null) {
@@ -507,7 +506,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 }
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
 
     }
@@ -518,9 +517,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private static final int ACCESS_BACKGROUND_LOCATION = 997; // just an id to identify the callback
     /** trigger TrackLoggerService, request permission on demand. */
     public void triggerTrackLoggerService(){
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+"  ");
+        mgLog.i();
         if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+"  ");
+            mgLog.i();
             if (Build.VERSION.SDK_INT < 28){
                 Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_CODE);
             } else {
@@ -583,7 +582,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             renderTheme.setMenuCallback(this);
             return renderTheme;
         } catch (FileNotFoundException e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage());
+            mgLog.e(e.getMessage());
 
             return InternalRenderTheme.DEFAULT;
         }
@@ -601,7 +600,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         XmlRenderThemeStyleLayer baseLayer = this.renderThemeStyleMenu.getLayer(id);
         if (baseLayer == null) {
-            Log.w(MGMapApplication.LABEL, NameUtil.context()+" Invalid style " + id );
+            mgLog.w("Invalid style " + id );
             return null;
         }
         Set<String> result = baseLayer.getCategories();
@@ -630,7 +629,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Layers layers = mapView.getLayerManager().getLayers();
         for (String prefKey : mapLayerFactory.getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "");
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" prefKey="+prefKey+" key="+key);
+            mgLog.d("prefKey="+prefKey+" key="+key);
             Layer layer = mapLayerFactory.getMapLayer(key);
             if (layer != null){
                 if (!layers.contains(layer)){

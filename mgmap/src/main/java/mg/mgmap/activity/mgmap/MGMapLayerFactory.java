@@ -16,7 +16,6 @@ package mg.mgmap.activity.mgmap;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
@@ -36,6 +35,7 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,9 +43,8 @@ import java.util.Properties;
 
 import mg.mgmap.activity.mgmap.view.Grid;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.activity.mgmap.features.tilestore.XmlTileSource;
 import mg.mgmap.activity.mgmap.features.tilestore.XmlTileSourceConfig;
@@ -65,6 +64,8 @@ import mg.mgmap.generic.util.Pref;
  * </ul>
  */
 public class MGMapLayerFactory {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static final String XML_CONFIG_NAME = "config.xml";
 
@@ -118,7 +119,7 @@ public class MGMapLayerFactory {
                 type = Types.valueOf(keypart[0]);
                 entry = keypart[1];
             } catch (Exception e){
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                mgLog.e(e);
                 return null;
             }
 
@@ -198,7 +199,7 @@ public class MGMapLayerFactory {
                             layer = new Grid(AndroidGraphicFactory.INSTANCE, mapView.getModel().displayModel, spacingConfig);
                         }
                     } catch (Exception e){
-                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                        mgLog.e(e);
                     }
                     break;
             }
@@ -223,7 +224,7 @@ public class MGMapLayerFactory {
                 });
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context()+" "+e.getMessage(),e);
+            mgLog.e(e);
         }
         return layer;
     }

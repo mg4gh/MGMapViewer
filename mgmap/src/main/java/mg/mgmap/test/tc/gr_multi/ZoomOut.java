@@ -31,7 +31,7 @@ public class ZoomOut extends AbstractTestCase {
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
             setCursorPosition(getCenterPosition());
         });
-        WaitUtil.doWait(TestControl.class, 2000, MGMapApplication.LABEL);
+        WaitUtil.doWait(TestControl.class, 2000);
 
         Point clickPosGroupMulti = testControl.getViewClickPos("group_multi");
         mgLog.d(clickPosGroupMulti);
@@ -48,7 +48,7 @@ public class ZoomOut extends AbstractTestCase {
             doClick();
         }
         animateTo(getCenterPosition(), 1000);
-        WaitUtil.doWait(TestControl.class, 1000, MGMapApplication.LABEL);
+        WaitUtil.doWait(TestControl.class, 1000);
         stop();
     }
 

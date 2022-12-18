@@ -204,7 +204,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
                 tv.click.setScaleX(1);                              // and the scale will be reset to normal size (1)
                 tv.click.setScaleY(1);
             },600);
-            WaitUtil.doWait(TestControl.class, 800, MGMapApplication.LABEL);
+            WaitUtil.doWait(TestControl.class, 800);
         }
     }
 
@@ -230,7 +230,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
                 }
 
             });
-            WaitUtil.doWait(TestControl.class, duration, MGMapApplication.LABEL);
+            WaitUtil.doWait(TestControl.class, duration);
             currentCursorPos = newPosition;  // take the new position
         }
     }
@@ -248,7 +248,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
                 tv.click.setScaleX(1);                              // and the scale will be reset to normal size (1)
                 tv.click.setScaleY(1);
             },duration + 200);
-            WaitUtil.doWait(TestControl.class, duration+400, MGMapApplication.LABEL);
+            WaitUtil.doWait(TestControl.class, duration+400);
         }
     }
 

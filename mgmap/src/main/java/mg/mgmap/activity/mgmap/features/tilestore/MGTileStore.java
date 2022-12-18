@@ -15,7 +15,6 @@
 package mg.mgmap.activity.mgmap.features.tilestore;
 
 import android.content.res.AssetManager;
-import android.util.Log;
 
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.model.Tile;
@@ -26,12 +25,14 @@ import org.mapsforge.map.layer.queue.Job;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.invoke.MethodHandles;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.BgJob;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public abstract class MGTileStore extends TileStore {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     TileCache tileCache = null;
     protected int tileSize = 256;
@@ -47,7 +48,7 @@ public abstract class MGTileStore extends TileStore {
         try {
             useFiles = new XmlTileSourceConfigReader().parseXmlTileSourceConfig(storeDir.getName(), new FileInputStream(new File(storeDir, "config.xml"))).storeTypeFiles;
         } catch (Exception e) {
-            Log.w(MGMapApplication.LABEL, NameUtil.context()+e.getMessage()); // may be normal behaviour, e.g. for world.mbtiles
+            mgLog.w(e.getMessage()); // may be normal behaviour, e.g. for world.mbtiles
         }
         if (useFiles){
             return new MGTileStoreFiles(storeDir, AndroidGraphicFactory.INSTANCE);
@@ -63,7 +64,7 @@ public abstract class MGTileStore extends TileStore {
     }
     void purgeCache(){
         if (tileCache != null){
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " purge TileStore cache" );
+            mgLog.i("purge TileStore cache" );
             tileCache.purge();
         }
     }

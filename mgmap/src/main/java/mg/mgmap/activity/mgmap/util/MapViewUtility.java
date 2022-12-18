@@ -26,7 +26,6 @@ import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.IMapViewPosition;
 
 import mg.mgmap.generic.model.BBox;
-import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;

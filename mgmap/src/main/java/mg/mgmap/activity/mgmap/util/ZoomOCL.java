@@ -17,19 +17,20 @@ package mg.mgmap.activity.mgmap.util;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.lang.invoke.MethodHandles;
 import java.util.TimerTask;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.ExtendedClickListener;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class ZoomOCL extends ExtendedClickListener {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public ZoomOCL(float scale){
         this.scale = scale;
@@ -45,7 +46,7 @@ public class ZoomOCL extends ExtendedClickListener {
         @Override
         public void run() {
             float size = tv.getTextSize();
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + "size="+size);
+            mgLog.i("size="+size);
 
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,  size-10*scale);
             scaleBoundsForDrawable(tv,(int)(-10*scale));
@@ -57,7 +58,7 @@ public class ZoomOCL extends ExtendedClickListener {
         if (v instanceof TextView){
             this.tv = (TextView)v;
             float size = tv.getTextSize();
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + "size="+size);
+            mgLog.i("size="+size);
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,  size+10*scale );
             scaleBoundsForDrawable(tv,(int)(10*scale));
             ((LinearLayout.LayoutParams)tv.getLayoutParams()).weight += 5*scale;

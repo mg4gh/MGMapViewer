@@ -14,19 +14,19 @@
  */
 package mg.mgmap.activity.mgmap.features.tilestore;
 
-import android.util.Log;
-
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 
+import java.lang.invoke.MethodHandles;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class XmlTileSource extends AbstractTileSource {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     XmlTileSourceConfig config;
 
@@ -51,7 +51,7 @@ public class XmlTileSource extends AbstractTileSource {
         urlPart = urlPart.replace("{y}", ""+tileY);
         urlPart = urlPart.replace("{z}", ""+zoomLevel);
         URL url = new URL(config.protocol, getHostName(), config.port, urlPart);
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+ " url="+url);
+        mgLog.d("url="+url);
         return url;
     }
 

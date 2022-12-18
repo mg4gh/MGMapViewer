@@ -1,12 +1,11 @@
 package mg.mgmap.activity.mgmap.features.tilestore;
 
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +22,7 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -32,6 +30,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class DynamicHandler {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     Map<String, String> map = new HashMap<>();
     InputStream is;
@@ -57,7 +57,7 @@ public class DynamicHandler {
                     .build();
 
             JsonObject cOne = cOneV.asJsonObject();
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" cOne=" +cOne);
+            mgLog.i("cOne=" +cOne);
 
             JsonObject init = cOne.getJsonObject("Init");
             if (init != null){
@@ -77,20 +77,16 @@ public class DynamicHandler {
                 }
             }
 
-            if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+ " Map after init");
-                for (String key : map.keySet()){
-                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" k="+key+" v="+map.get(key));
-                }
+            mgLog.v("Map after init");
+            for (String key : map.keySet()){
+                mgLog.v("k="+key+" v="+map.get(key));
             }
 
-
             String type = cOne.getString("Type");
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Type="+type);
-
+            mgLog.i("Type="+type);
 
             StringBuilder url = new StringBuilder(cOne.getString("URL"));
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" 1 URL="+url);
+            mgLog.i("1 URL="+url);
 
             JsonObject params = cOne.getJsonObject("Params");
             if (params != null){
@@ -99,7 +95,7 @@ public class DynamicHandler {
                     url.append("&").append(kv(k, params.getString(k)));
                 }
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" 2 URL="+url);
+            mgLog.i("2 URL="+url);
 
             Request.Builder requestBuilder = new Request.Builder()
                     .header("Content-Encoding", "gzip")
@@ -112,7 +108,7 @@ public class DynamicHandler {
                     for (Map.Entry<String, JsonValue> entry : bodyParams.entrySet()){
                         String k = entry.getKey();
                         String v = subst( bodyParams.getString(k) );
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" body params: "+k+": "+v);
+                        mgLog.v("body params: "+k+": "+v);
                         fbb.add(k, v);
                     }
                     FormBody fb = fbb.build();
@@ -125,7 +121,7 @@ public class DynamicHandler {
                 for (Map.Entry<String, JsonValue> entry : header.entrySet()){
                     String k = entry.getKey();
                     String v = subst(header.getString(k));
-                    Log.v(MGMapApplication.LABEL, NameUtil.context()+" request header: "+k+": "+v);
+                    mgLog.v("request header: "+k+": "+v);
                     requestBuilder.addHeader(k,v);
                 }
             }
@@ -135,12 +131,10 @@ public class DynamicHandler {
             Call call = client.newCall(request);
             Response response = call.execute();
 
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" rc="+response.code());
-            if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
-                for (String s : response.headers().names()){
-                    for (String v : response.headers(s)){
-                        Log.v(MGMapApplication.LABEL, NameUtil.context()+" response header: "+s+": "+v);
-                    }
+            mgLog.i("rc="+response.code());
+            for (String s : response.headers().names()){
+                for (String v : response.headers(s)){
+                    mgLog.v("response header: "+s+": "+v);
                 }
             }
 
@@ -163,9 +157,9 @@ public class DynamicHandler {
                     getFromResponse(response, k, bodyResp.getString(k));
                 }
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Map after resp");
+            mgLog.i("Map after resp");
             for (String key : map.keySet()){
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " k="+key+" v="+map.get(key));
+                mgLog.i("k="+key+" v="+map.get(key));
             }
 
             JsonString number = cOne.getJsonString("Number");
@@ -201,12 +195,12 @@ public class DynamicHandler {
                     PrintWriter pw = new PrintWriter(os);
                     pw.println(sb);
                     pw.close();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" checkOk");
+                    mgLog.i("checkOk");
                     res = true;
                 }
             }
 
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+"************************* "+(cnt++)+" finished *****************************");
+            mgLog.i("************************* "+(cnt++)+" finished *****************************");
         }
         return res;
     }
@@ -300,7 +294,7 @@ public class DynamicHandler {
             String line;
             int cnt = 0;
             while ((line = in.readLine()) != null){
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+ String.format("lc=%04d %s", cnt++,line));
+                mgLog.v(String.format("lc=%04d %s", cnt++,line));
                 if (cnt > numLines) return;
             }
 
