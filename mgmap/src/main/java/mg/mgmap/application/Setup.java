@@ -13,8 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
-import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -24,7 +22,6 @@ import mg.mgmap.generic.util.Sftp;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.WiFiUtil;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.test.AbstractTestCase;
 
 public class Setup {
 
@@ -54,7 +51,6 @@ public class Setup {
     private boolean testMode = false;
     private Handler timer = null;
     private final TreeMap<String, String> testCases = new TreeMap<>();
-    private final Object token = new Object();
     private final Properties pTestResults = new Properties();
     String testgroup = null;
 
@@ -193,34 +189,10 @@ public class Setup {
     }
 
     Runnable testManager = new Runnable() {
-        @SuppressWarnings("unchecked")
         @Override
         public void run() {
             new Thread(() -> {
-                for (Map.Entry<String, String> tcEntry : testCases.entrySet()){
-                    try {
-                        Class<? extends  AbstractTestCase> testCaseClazz = (Class<? extends AbstractTestCase>) Class.forName(tcEntry.getValue());
-                        Constructor<? extends  AbstractTestCase> constructor = testCaseClazz.getConstructor(MGMapApplication.class);
-                        AbstractTestCase testCase = constructor.newInstance(mgMapApplication);
-
-                        testCase.start();
-                        new Thread(testCase::run).start();
-
-                        long limit = System.currentTimeMillis() + testCase.getDurationLimit();
-                        while (System.currentTimeMillis() < limit){
-                            WaitUtil.doWait(token, 1000);
-                            if (! testCase.isRunning()) break; // leave loop if testcase is finished
-                        }
-                        testCase.stop();
-                        String result = testCase.getResult();
-                        pTestResults.put(testCase.getName(), result);
-                        mgLog.d(" finished - result: "+result );
-                        WaitUtil.doWait(token, 1000);
-                    } catch (Exception e) {
-                        mgLog.e(e);
-                    }
-                }
-
+                mgMapApplication.getTestControl().runTests(testCases, pTestResults);
                 try {
                     pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+TEST_RESULT)),"xxxyyyzzz");
                     new Sftp(testConfig) {

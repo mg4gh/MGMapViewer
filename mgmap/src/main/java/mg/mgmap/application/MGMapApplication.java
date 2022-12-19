@@ -138,6 +138,8 @@ public class MGMapApplication extends Application {
         super.onCreate();
 
         MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG? Log.DEBUG:Log.INFO);
+        mgLog.evaluateLevel();
+
         testControl = new TestControl(this);
         setup = new Setup();
         setup.init(this);

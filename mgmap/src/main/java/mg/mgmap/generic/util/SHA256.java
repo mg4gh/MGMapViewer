@@ -1,20 +1,20 @@
 package mg.mgmap.generic.util;
 
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.security.MessageDigest;
 import java.util.Objects;
 
-import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class SHA256 {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static void main(String[] args) {
         System.out.println("Hello from SHA256 " + args.length);
@@ -54,7 +54,7 @@ public class SHA256 {
                     String line = new BufferedReader(new FileReader(f2)).readLine();
                     String hash = getFileChecksum(md, apkFile);
                     if (line != null){
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+"\n calcSHA="+hash+"\ntransSHA="+line.replaceFirst(".*=",""));
+                        mgLog.i("\n calcSHA="+hash+"\ntransSHA="+line.replaceFirst(".*=",""));
                         if (hash.equals(line.replaceFirst(".*=", ""))) {
                             res = true;
                         }

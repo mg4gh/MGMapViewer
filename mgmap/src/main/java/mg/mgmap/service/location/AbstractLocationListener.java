@@ -15,13 +15,15 @@
 package mg.mgmap.service.location;
 
 import android.location.Location;
-import android.util.Log;
+
+import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.GeoidProvider;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
@@ -29,6 +31,8 @@ import mg.mgmap.generic.util.basic.NameUtil;
  */
 
 public class AbstractLocationListener {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     protected static final float ACCURACY_LIMIT = 30.0f; // accuracy limit in meter
     protected final ElevationProvider elevationProvider;
@@ -52,18 +56,18 @@ public class AbstractLocationListener {
             elevationProvider.setElevation(lp);
             trackLoggerService.onNewTrackLogPoint(lp);
         } else {
-            Log.w(MGMapApplication.LABEL, NameUtil.context() + " location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());
+            mgLog.w("location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());
         }
     }
 
 
     protected void activate(int minMillis,int minDistance) throws SecurityException{
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" start locationListener ("+this.getClass().getSimpleName()+")");
+        mgLog.i("start locationListener ("+this.getClass().getSimpleName()+")");
     }
 
 
     protected void deactivate(){
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" stop locationListener ("+this.getClass().getSimpleName()+")");
+        mgLog.i("stop locationListener ("+this.getClass().getSimpleName()+")");
     }
 
 }

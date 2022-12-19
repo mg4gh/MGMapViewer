@@ -14,17 +14,19 @@
  */
 package mg.mgmap.generic.util;
 
-import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
 
 import java.io.FileNotFoundException;
+import java.lang.invoke.MethodHandles;
 
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.service.bgjob.BgJobService;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 public class BgJob {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public BgJobService service = null;
     public BgJobGroup group = null;
@@ -57,7 +59,7 @@ public class BgJob {
         } catch (Exception e){
             if (group != null) group.jobFinished(false, e);
             if (!(e instanceof FileNotFoundException)){
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                mgLog.e(e);
             }
         } finally {
             finished = true;
@@ -89,7 +91,7 @@ public class BgJob {
         if (now - lastNotification > 1000){
             lastNotification = now;
             service.notifyUserProgress(notiBuilder, notification_id, max, progress, (max==0)||(progress==0));
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+text+" "+max+" "+progress);
+            mgLog.i(text+" "+max+" "+progress);
         }
     }
 

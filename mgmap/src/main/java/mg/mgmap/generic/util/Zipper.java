@@ -14,8 +14,6 @@
  */
 package mg.mgmap.generic.util;
 
-import android.util.Log;
-
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
@@ -31,18 +29,20 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 
-import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 @SuppressWarnings("unused")
-public class Zipper
-{
+public class Zipper {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
     private final String password;
     private static final String EXTENSION = "zip";
 
@@ -83,7 +83,7 @@ public class Zipper
     }
 
     public void unpack(URL url, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" extract url="+url+" extractedZipFilePath="+extractedZipFilePath);
+        mgLog.i("extract url="+url+" extractedZipFilePath="+extractedZipFilePath);
 
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .hostnameVerifier((hostname, session) -> true)
@@ -92,7 +92,7 @@ public class Zipper
         Response response = client.newCall(request).execute();
         ResponseBody responseBody = response.body();
         if (responseBody == null) {
-            Log.w (MGMapApplication.LABEL, NameUtil.context()+" empty response body for download!");
+            mgLog.w("empty response body for download!");
         } else {
             bgJob.setMax((int)(responseBody.contentLength()/1000));
             bgJob.setText("Download "+ url.toString().replaceFirst(".*/",""));
@@ -110,10 +110,10 @@ public class Zipper
 
         byte[] readBuffer = new byte[4096];
 
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedZipFilePath="+extractedZipFilePath);
+        mgLog.i("extractedZipFilePath="+extractedZipFilePath);
         while ((localFileHeader = zipInputStream.getNextEntry()) != null) {
 
-            Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+localFileHeader.getFileName());
+            mgLog.v(localFileHeader.getFileName());
             long fileLengthC = localFileHeader.getCompressedSize();
             long fileLengthU = localFileHeader.getUncompressedSize();
             double compressionFactor = fileLengthC / (double)fileLengthU;
@@ -123,11 +123,11 @@ public class Zipper
             OutputStream outputStream = null;
             try {
                 File extractedFile = new File(extractedZipFilePath, localFileHeader.getFileName());
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile);
+                mgLog.v("extractedFile="+extractedFile);
 
                 if (localFileHeader.isDirectory()){
                     boolean res = extractedFile.mkdirs();
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" extractedFile="+extractedFile+" dir created "+res);
+                    mgLog.i("extractedFile="+extractedFile+" dir created "+res);
                 } else {
                     if ((filter==null) || ( filter.accept( extractedFile.getParentFile(), extractedFile.getName() ))) {
                         outputStream = new FileOutputStream(extractedFile);
@@ -145,14 +145,14 @@ public class Zipper
                 }
 
             } catch (Exception e) {
-                Log.e (MGMapApplication.LABEL, NameUtil.context(),e);
+                mgLog.e(e);
             } finally {
                 try {
                     if (outputStream != null){
                         outputStream.close();
                     }
                 } catch (Exception e){
-                    Log.e (MGMapApplication.LABEL, NameUtil.context(),e);
+                    mgLog.e(e);
                 }
             }
         }

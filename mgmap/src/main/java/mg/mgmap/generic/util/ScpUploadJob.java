@@ -14,8 +14,6 @@
  */
 package mg.mgmap.generic.util;
 
-import android.util.Log;
-
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.Session;
@@ -25,11 +23,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
 
-import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class ScpUploadJob extends BgJob {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     Session session;
     File base;
@@ -42,27 +42,27 @@ public class ScpUploadJob extends BgJob {
         this.base = base;
         this.targetPrefix = targetPrefix;
         this.file = file;
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" base="+base.getAbsolutePath()+" targetPrefix="+targetPrefix+" file="+file.getAbsolutePath());
+        mgLog.i("base="+base.getAbsolutePath()+" targetPrefix="+targetPrefix+" file="+file.getAbsolutePath());
     }
 
     @Override
     protected void doJob() throws Exception {
         if (!process()){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Job failed for "+file.getName());
+            mgLog.i("Job failed for "+file.getName());
         }
     }
 
     public boolean process() throws Exception{
         synchronized (ScpUploadJob.class){ // Multiple BgJob Instances are serialized by this block - otherwise random exceptions occur on channel.connect();
 
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Job start for "+file.getName());
+            mgLog.i("Job start for "+file.getName());
             if (!session.isConnected()) {
                 return false;
             }
 
             Channel channel=session.openChannel("exec");
             String cmd = "scp -t \""+targetPrefix+ file.getAbsolutePath().replace(base.getAbsolutePath(),"").substring(1)+"\"";
-            Log.d(MGMapApplication.LABEL, NameUtil.context()+" cmd="+cmd);
+            mgLog.d("cmd="+cmd);
             ((ChannelExec)channel).setCommand(cmd);
             OutputStream out=channel.getOutputStream();
             InputStream in=channel.getInputStream();
@@ -103,7 +103,7 @@ public class ScpUploadJob extends BgJob {
             channel.disconnect();
 
 
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+" Job finished for "+file.getName());
+            mgLog.i("Job finished for "+file.getName());
         }
         return true;
     }
@@ -129,10 +129,10 @@ public class ScpUploadJob extends BgJob {
                 sb.append((char) c);
             } while (c != '\n');
             if (b == 1) { // error
-                Log.e(MGMapApplication.LABEL, NameUtil.context()+" Error: "+ sb);
+                mgLog.e("Error: "+ sb);
             }
             if (b == 2) { // fatal error
-                Log.e(MGMapApplication.LABEL, NameUtil.context()+" Fatal: "+ sb);
+                mgLog.e("Fatal: "+ sb);
             }
         }
         return b;

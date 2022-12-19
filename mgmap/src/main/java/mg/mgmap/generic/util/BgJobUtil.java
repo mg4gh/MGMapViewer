@@ -16,14 +16,17 @@ package mg.mgmap.generic.util;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class BgJobUtil {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     AppCompatActivity activity;
     MGMapApplication application;
@@ -41,7 +44,7 @@ public class BgJobUtil {
 
         builder.setPositiveButton("YES", (dialog, which) -> {
             dialog.dismiss();
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " do it." );
+            mgLog.i("do it." );
             FullscreenUtil.enforceState(activity);
             bgJobGroup.doit();
         });
@@ -49,7 +52,7 @@ public class BgJobUtil {
         builder.setNegativeButton("NO", (dialog, which) -> {
             // Do nothing
             dialog.dismiss();
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " don't do it." );
+            mgLog.i("don't do it." );
             FullscreenUtil.enforceState(activity);
         });
 
@@ -67,12 +70,12 @@ public class BgJobUtil {
         builder.setPositiveButton("OK", (dialog, which) -> {
             dialog.dismiss();
             bgJobGroup.onReportResultOk();
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " ok" );
+            mgLog.i("ok" );
         });
 
         if (bgJobGroup.offerRetries){
             builder.setNegativeButton("Retry", (dialog, which) -> {
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " Retry" );
+                mgLog.i("Retry" );
                 bgJobGroup.retry();
             });
         }

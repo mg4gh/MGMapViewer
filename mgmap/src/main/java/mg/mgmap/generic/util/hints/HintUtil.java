@@ -9,7 +9,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.CheckBox;
@@ -19,13 +18,15 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AlertDialogLayout;
 import androidx.core.content.res.ResourcesCompat;
 
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.Pref;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class HintUtil {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     HashSet<Pref<Boolean>> prefs = new HashSet<>();
 
@@ -34,7 +35,7 @@ public class HintUtil {
             hint.prefShowHints.addObserver((e) -> prefs.forEach(p -> p.setValue(true))); // add observer to cleanup, if changed
         }
         prefs.add(hint.prefShowHint);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+ prefs);
+        mgLog.i(prefs);
     }
 
     @SuppressLint({"DiscouragedApi", "SetTextI18n"})
@@ -151,7 +152,7 @@ public class HintUtil {
                 return true;
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
         return false;
     }

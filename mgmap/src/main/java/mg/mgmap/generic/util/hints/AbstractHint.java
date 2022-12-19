@@ -1,7 +1,6 @@
 package mg.mgmap.generic.util.hints;
 
 import android.app.Activity;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -9,7 +8,6 @@ import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 public abstract class AbstractHint implements Runnable{
 
@@ -34,7 +32,6 @@ public abstract class AbstractHint implements Runnable{
 
     @Override
     public void run() {
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
         MGMapApplication application = (MGMapApplication) getActivity().getApplication();
         application.getHintUtil().showHint(this);
     }

@@ -1,12 +1,9 @@
 package mg.mgmap.test;
 
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.util.Log;
 
-import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.view.MapView;
 
 import java.lang.invoke.MethodHandles;
@@ -16,8 +13,8 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 
+@SuppressWarnings("unused")
 public class AbstractTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -137,17 +134,16 @@ public class AbstractTestCase {
         boolean success = (matches.size() == regexs.size());
         String result = (success?"passed":"failed")+" (lineCnt="+lineCnt+")";
         for (String s : regexs){
-            Log.println(success?Log.VERBOSE:Log.INFO, MGMapApplication.LABEL, NameUtil.context()+ " R "+s);
+            mgLog.any(success?Log.VERBOSE:Log.INFO, " R "+s);
         }
         for (String s : matches){
-            Log.println(success?Log.VERBOSE:Log.INFO, MGMapApplication.LABEL, NameUtil.context()+ " M "+s);
+            mgLog.any(success?Log.VERBOSE:Log.INFO, " M "+s);
         }
         return result;
     }
 
 
     public long getDurationLimit() {
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" ATC " + durationLimit);
         return durationLimit;
     }
 

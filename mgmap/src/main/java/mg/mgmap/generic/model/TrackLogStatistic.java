@@ -14,25 +14,24 @@
  */
 package mg.mgmap.generic.model;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.Formatter;
-import mg.mgmap.generic.util.basic.NameUtil;
-
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Statistic of a TrackLog or of a Segment of a TrackLog.
  */
 
 public class TrackLogStatistic {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
     private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
@@ -231,13 +230,11 @@ public class TrackLogStatistic {
                 } else {
                     loss -= diff;
                 }
-                if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
-                    Log.v(MGMapApplication.LABEL, NameUtil.context()+String.format("+ Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d", sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
-                }
+                mgLog.v(()->String.format(Locale.ENGLISH,"+ Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d",
+                        sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
             } else {
-                if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)){
-                    Log.v(MGMapApplication.LABEL, NameUtil.context()+String.format("- Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d", sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
-                }
+                mgLog.v(()->String.format(Locale.ENGLISH,"- Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d",
+                        sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
             }
         }
     }

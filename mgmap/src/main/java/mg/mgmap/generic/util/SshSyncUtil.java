@@ -1,7 +1,5 @@
 package mg.mgmap.generic.util;
 
-import android.util.Log;
-
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -11,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -23,9 +22,11 @@ import java.util.stream.Stream;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class SshSyncUtil {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final String SYNC_CONFIG = "sync.cfg";
     private static final String SSH_PK_SUB_DIR = "tokens";
@@ -80,9 +81,9 @@ public class SshSyncUtil {
 
                         Set<String> commonSet = new TreeSet<>(localMap.keySet());
                         commonSet.retainAll(remoteMap.keySet());
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" remoteSet: "+remoteMap.keySet());
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" commonSet: "+commonSet);
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" localSet: "+localMap.keySet());
+                        mgLog.i("remoteSet: "+remoteMap.keySet());
+                        mgLog.i("commonSet: "+commonSet);
+                        mgLog.i("localSet: "+localMap.keySet());
                         int total = localMap.size();
 
                         for (String commonName : new TreeSet<>(commonSet)){
@@ -113,13 +114,13 @@ public class SshSyncUtil {
                             }
                         }
                         String message = "SSH Sync Overview: tracks in sync: "+(total-bgJobGroup.size())+" tracks to upload: "+bgJobGroup.size();
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+message);
+                        mgLog.i(message);
                         bgJobGroup.setConstructed(null);
                     } // if (calcRemoteList(session, remoteMap, targetPrefix)){
                 } // try (Stream<Path> walk = Files.walk(localFolder.toPath())){
             } // fi - is connected to the right WLAN
         } catch (Throwable t) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), t);
+            mgLog.e(t);
         }
     }
 
@@ -141,7 +142,7 @@ public class SshSyncUtil {
                 boolean exit = (channel.getExitStatus() >= 0);
                 if (in.available() > 0) {
                     while ((line = bin.readLine()) != null) {
-                        Log.d(MGMapApplication.LABEL, NameUtil.context()+" "+line);
+                        mgLog.d(line);
                         map.put(line.replaceFirst(".*:"+targetPrefix,""), Long.parseLong(line.replaceFirst(":.*","")));
                     }
                 }
@@ -152,7 +153,7 @@ public class SshSyncUtil {
             }
             channel.disconnect();
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
             return false;
         }
         return true;

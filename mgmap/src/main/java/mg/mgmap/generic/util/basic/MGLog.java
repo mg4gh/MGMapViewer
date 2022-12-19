@@ -9,7 +9,7 @@ import java.util.TreeMap;
 public class MGLog {
 
     public static TreeMap<String, Integer> logConfig = new TreeMap<>();
-    private static ArrayList<MGLogObserver> logObservers = new ArrayList<>();
+    private static final ArrayList<MGLogObserver> logObservers = new ArrayList<>();
 
     public static void addLogObserver(MGLogObserver observer){
         logObservers.add(observer);
@@ -81,13 +81,29 @@ public class MGLog {
             observer.processLog(level, tag, msg);
         }
     }
+    public static void ctx(int level, int depth){
+        StackTraceElement[] stes = new Throwable().getStackTrace();
+        for (int i=2; (i<2+depth)&&(i<stes.length); i++){
+            StackTraceElement ste = stes[i];
+            String tag = ste.getClassName();
+            String msg = "        "+NameUtil.context(ste);
+            android.util.Log.println(level, tag, msg);
+        }
+    }
 
 
-    private int level = Log.INFO; // default
+    public String tag;
+    public int level;
+
+    public MGLog(String tag){
+        this.tag = tag;
+        evaluateLevel();
+    }
 
     @SuppressWarnings("ConstantConditions")
-    public MGLog(String tag){
-
+    public void evaluateLevel(){
+        String tag = this.tag;
+        level = Log.INFO; // default
         while (tag.length() > 0){
             if (logConfig.containsKey(tag)){
                 level = logConfig.get(tag);
@@ -97,6 +113,7 @@ public class MGLog {
                 tag = tag.substring(0,idx);
             }
         }
+        i(this.tag+" : "+level);
     }
 
     public void e(Throwable t){
@@ -201,6 +218,27 @@ public class MGLog {
     public void v(LogCB logCB){
         if (level <= Log.VERBOSE){
             log(Log.VERBOSE, logCB.logCB());
+        }
+    }
+
+    public void any(int level, Object o){
+        if (this.level <= level){
+            log(level, o == null ? "" : o.toString());
+        }
+    }
+    public void any(int level, String msg){
+        if (this.level <= level){
+            log(level, msg);
+        }
+    }
+    public void any(int level, LogCB logCB){
+        if (this.level <= level){
+            log(level, logCB.logCB());
+        }
+    }
+    public void any(int level, int depth){
+        if (this.level <= level){
+            ctx(level, depth);
         }
     }
 

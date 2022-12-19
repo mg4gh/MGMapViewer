@@ -21,24 +21,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.BgJob;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Android Service that coordinates gps and barometer access
  */
 
 public class BgJobService extends Service {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final int MAX_WORKER = 8;
     private MGMapApplication application = null;
@@ -74,7 +76,7 @@ public class BgJobService extends Service {
                 NotificationManager.IMPORTANCE_LOW);
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
+        mgLog.i("importance: "+channel.getImportance());
         baseNotiBuilder = createNotificationBuilder("BgJobService: running");
     }
 
@@ -97,13 +99,13 @@ public class BgJobService extends Service {
                 maxJobs = application.numBgJobs() + numWorkers.get();
                 lastNumBgJobs = maxJobs;
                 startForeground(1, baseNotiBuilder.build());
-                Log.i(MGMapApplication.LABEL, NameUtil.context() +" startForeground() for BgJobService triggered.  ");
+                mgLog.i("startForeground() for BgJobService triggered.  ");
 
                 timer = new Handler();
                 timer.postDelayed(ttNotify, 1000);
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
     }
 
@@ -124,19 +126,19 @@ public class BgJobService extends Service {
                 }).start();
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
 
     }
     synchronized protected void checkDeactivateService(){
         try {
-            if (active && (application.numBgJobs() == 0) && (numWorkers.get() == 0)){
+            if (isActive() && (application.numBgJobs() == 0) && (numWorkers.get() == 0)){
                 active = false;
                 stopForeground(STOP_FOREGROUND_REMOVE);
                 timer.removeCallbacks(ttNotify);
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
     }
 
@@ -154,11 +156,11 @@ public class BgJobService extends Service {
     public void notifyUserProgress(NotificationCompat.Builder builder, int notificationId, int max, int progress, boolean indeterminate) {
         builder.setProgress(max, progress, indeterminate);
         NotificationManagerCompat.from(application).notify(notificationId, builder.build());
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+ " NOTI: id="+notificationId+" "+" max="+max+" progress="+progress);
+        mgLog.v("NOTI: id="+notificationId+" "+" max="+max+" progress="+progress);
     }
     public void notifyUserFinish(int notificationId) {
         NotificationManagerCompat.from(application).cancel(notificationId);
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+ " NOTI: id="+notificationId+" "+" cancel");
+        mgLog.v("NOTI: id="+notificationId+" "+" cancel");
     }
 
     @Nullable

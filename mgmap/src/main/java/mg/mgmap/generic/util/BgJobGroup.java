@@ -1,15 +1,16 @@
 package mg.mgmap.generic.util;
 
-import android.util.Log;
-
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class BgJobGroup {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     ArrayList<BgJob> bgJobs = new ArrayList<>();
     protected int successCounter = 0;
@@ -74,7 +75,7 @@ public class BgJobGroup {
             errorCounter++;
         }
         String message = "successCounter="+successCounter+"  errorCounter="+errorCounter+"  jobCounter="+jobCounter;
-        Log.d(MGMapApplication.LABEL, NameUtil.context() +"  "+message+ ((e==null)?"":" "+e.getMessage()));
+        mgLog.d(message+ ((e==null)?"":" "+e.getMessage()));
         if (successCounter + errorCounter == jobCounter){
             if (groupCallback.groupFinished(this, jobCounter, successCounter, errorCounter)){
                 offerRetries = true;

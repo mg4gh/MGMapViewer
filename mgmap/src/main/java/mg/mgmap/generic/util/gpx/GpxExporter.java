@@ -14,17 +14,17 @@
  */
 package mg.mgmap.generic.util.gpx;
 
-import android.util.Log;
-
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogPoint;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -35,6 +35,7 @@ import java.util.Locale;
 
 public class GpxExporter {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private static final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
     public static void export(PersistenceManager persistenceManager, TrackLog trackLog) {
@@ -119,7 +120,7 @@ public class GpxExporter {
             }
             trackLog.setModified(false);
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         } finally {
             if (pw != null){
                 pw.close();

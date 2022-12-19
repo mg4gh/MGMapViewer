@@ -8,30 +8,29 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 
-import org.mapsforge.core.model.Dimension;
-import org.mapsforge.core.util.MercatorProjection;
-import org.mapsforge.map.view.MapView;
-
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.WaitUtil;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
+@SuppressWarnings("unused")
 public class TestControl implements Application.ActivityLifecycleCallbacks{
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public final Handler timer = new Handler(); // timer for tests
 
-    private MGMapApplication application;
+    private final MGMapApplication mgMapApplication;
     boolean testMode = false;
 
     public SortedMap<String, Activity> activityMap = new TreeMap<>();
@@ -39,8 +38,8 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     public Set<String> activityStartedToStopped = new TreeSet<>();
     public Set<String> activityResumedToPaused = new TreeSet<>();
 
-    public TestControl(MGMapApplication application){
-        this.application = application;
+    public TestControl(MGMapApplication mgMapApplication){
+        this.mgMapApplication = mgMapApplication;
     }
 
     public boolean isTestMode() {
@@ -50,45 +49,84 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
         this.testMode = testMode;
     }
 
+
+    @SuppressWarnings("unchecked")
+    public void runTests(SortedMap<String, String> testCases, Properties pTestResults){
+        for (Map.Entry<String, String> tcEntry : testCases.entrySet()){
+            try {
+                Class<? extends  AbstractTestCase> testCaseClazz = (Class<? extends AbstractTestCase>) Class.forName(tcEntry.getValue());
+                Constructor<? extends  AbstractTestCase> constructor = testCaseClazz.getConstructor(MGMapApplication.class);
+                AbstractTestCase testCase = constructor.newInstance(mgMapApplication);
+
+                testCase.start();
+                new Thread(() -> {
+                    try {
+                        testCase.run();
+                    } catch (Exception e) {
+                        mgLog.e(e);
+                    } finally {
+                        testCase.stop();
+                    }
+                }).start();
+
+                long limit = System.currentTimeMillis() + testCase.getDurationLimit();
+                while (System.currentTimeMillis() < limit){
+                    WaitUtil.doWait(this.getClass(), 1000);
+                    if (! testCase.isRunning()) break; // leave loop if testcase is finished
+                }
+                testCase.stop();
+                String result = testCase.getResult();
+                pTestResults.put(testCase.getName(), result);
+                mgLog.d(" finished - result: "+result );
+                WaitUtil.doWait(this.getClass(), 1000);
+            } catch (Exception e) {
+                mgLog.e(e);
+            }
+        }
+
+    }
+
+
+
     @Override
     public void onActivityStopped(Activity activity) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityStartedToStopped.remove(activity.getClass().getSimpleName());
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+activity.getClass().getSimpleName()+ " "+activityStartedToStopped);
+        mgLog.v(activity.getClass().getSimpleName()+ " "+activityStartedToStopped);
     }
     @Override
     public void onActivityStarted(Activity activity) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityStartedToStopped.add(activity.getClass().getSimpleName());
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+activity.getClass().getSimpleName()+ " "+activityStartedToStopped);
+        mgLog.v(activity.getClass().getSimpleName()+ " "+activityStartedToStopped);
     }
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+activity.getClass().getSimpleName());
+        mgLog.v(activity.getClass().getSimpleName());
     }
     @Override
     public void onActivityResumed(Activity activity) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityResumedToPaused.add(activity.getClass().getSimpleName());
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+activity.getClass().getSimpleName()+ " "+activityResumedToPaused);
+        mgLog.v(activity.getClass().getSimpleName()+ " "+activityResumedToPaused);
     }
     @Override
     public void onActivityPaused(Activity activity) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityResumedToPaused.remove(activity.getClass().getSimpleName());
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+activity.getClass().getSimpleName()+ " "+activityResumedToPaused);
+        mgLog.v(activity.getClass().getSimpleName()+ " "+activityResumedToPaused);
     }
     @Override
     public void onActivityDestroyed(Activity activity) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityCreatedToDestroyed.remove(activity.getClass().getSimpleName());
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+activity.getClass().getSimpleName()+ " "+activityCreatedToDestroyed);
+        mgLog.v(activity.getClass().getSimpleName()+ " "+activityCreatedToDestroyed);
     }
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityCreatedToDestroyed.add(activity.getClass().getSimpleName());
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" "+activity.getClass().getSimpleName()+ " "+activityCreatedToDestroyed);
+        mgLog.v(activity.getClass().getSimpleName()+ " "+activityCreatedToDestroyed);
     }
 
     @SuppressWarnings("unchecked")
@@ -116,7 +154,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     public void registerTestView(TestView testView){
         if (isTestMode()){
             if (this.currentTestView != testView){
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+""+testView.getActivity());
+                mgLog.v(testView.getActivity());
                 this.currentTestView = testView;
                 currentTestView.setCursorPosition(currentCursorPos);
             }
@@ -125,14 +163,14 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     public void unregisterTestView(TestView testView){
         if (isTestMode()){
             if (this.currentTestView == testView){
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+""+testView.getActivity());
+                mgLog.v(testView.getActivity());
                 this.currentTestView = null;
             }
         }
     }
 
 
-    private SortedMap<String, Rect> viewPositionRegistry = new TreeMap<String, Rect>();
+    private final SortedMap<String, Rect> viewPositionRegistry = new TreeMap<>();
 
     public void registerViewPosition(String key, int left, int top, int right, int bottom){
         if ((key != null) && (key.length() > 0)){
@@ -162,7 +200,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
         }
     }
     protected Point getCenterPos(){
-        DisplayMetrics dm = application.getResources().getDisplayMetrics();
+        DisplayMetrics dm = mgMapApplication.getResources().getDisplayMetrics();
         return new Point(dm.widthPixels/2, dm.heightPixels/2);
     }
 

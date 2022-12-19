@@ -17,7 +17,6 @@ package mg.mgmap.generic.util;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -26,12 +25,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.lifecycle.Lifecycle;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class FullscreenUtil {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static void enforceState(AppCompatActivity activity) {
         SharedPreferences sharedPreferences = MGMapApplication.getByContext(activity).getSharedPreferences();
@@ -51,7 +54,7 @@ public class FullscreenUtil {
     }
 
     public static void setFullscreen(Activity activity) {
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.i();
         if (activity instanceof MGMapActivity){
             int newUiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
             newUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
@@ -68,7 +71,7 @@ public class FullscreenUtil {
     }
 
     public static void hideFullscreen(Activity activity) {
-        Log.i(MGMapApplication.LABEL, NameUtil.context());
+        mgLog.i();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (activity instanceof MGMapActivity) {
                 activity.getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;

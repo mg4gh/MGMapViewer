@@ -20,14 +20,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
-import android.util.Log;
 import android.util.LongSparseArray;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.TrackLogPoint;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Implements a BarometerListener on top of the generic SensorListener.
@@ -40,6 +40,7 @@ import mg.mgmap.generic.util.basic.NameUtil;
  */
 class BarometerListener implements SensorEventListener {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final SensorManager sensorManager;
     private final Sensor pressureSensor;
@@ -58,22 +59,21 @@ class BarometerListener implements SensorEventListener {
         sensorManager = (SensorManager) application.getSystemService(Application.SENSOR_SERVICE);
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         if (pressureSensor != null){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " BarometerListener: "+"pressureSensor found");
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " isWakeupSensor="+pressureSensor.isWakeUpSensor());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " isAdditionalInfoSupported="+pressureSensor.isAdditionalInfoSupported());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " isDynamicSensor="+pressureSensor.isDynamicSensor());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " minDelay="+pressureSensor.getMinDelay());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " maxDelay="+pressureSensor.getMaxDelay());
-
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " FifoMaxEventCount="+pressureSensor.getFifoMaxEventCount());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " ReportingMode="+pressureSensor.getReportingMode());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " MaximumRange="+pressureSensor.getMaximumRange());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " FifoReservedEventCount="+pressureSensor.getFifoReservedEventCount());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Power="+pressureSensor.getPower());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Resolution="+pressureSensor.getResolution());
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ " HighestDirectReportRateLevel="+pressureSensor.getHighestDirectReportRateLevel());
+            mgLog.i("BarometerListener: pressureSensor found");
+            mgLog.d("isWakeupSensor="+pressureSensor.isWakeUpSensor());
+            mgLog.d("isAdditionalInfoSupported="+pressureSensor.isAdditionalInfoSupported());
+            mgLog.d("isDynamicSensor="+pressureSensor.isDynamicSensor());
+            mgLog.d("minDelay="+pressureSensor.getMinDelay());
+            mgLog.d("maxDelay="+pressureSensor.getMaxDelay());
+            mgLog.d("FifoMaxEventCount="+pressureSensor.getFifoMaxEventCount());
+            mgLog.d("ReportingMode="+pressureSensor.getReportingMode());
+            mgLog.d("MaximumRange="+pressureSensor.getMaximumRange());
+            mgLog.d("FifoReservedEventCount="+pressureSensor.getFifoReservedEventCount());
+            mgLog.d("Power="+pressureSensor.getPower());
+            mgLog.d("Resolution="+pressureSensor.getResolution());
+            mgLog.d("HighestDirectReportRateLevel="+pressureSensor.getHighestDirectReportRateLevel());
         } else {
-            Log.e(MGMapApplication.LABEL, NameUtil.context()+"BarometerListener: "+"pressureSensor not found");
+            mgLog.w("BarometerListener: "+"pressureSensor not found");
         }
         long elapsedRealtime = SystemClock.elapsedRealtime();
         long currentTimeMillis = System.currentTimeMillis();
@@ -98,7 +98,7 @@ class BarometerListener implements SensorEventListener {
                         break;
                     }
                 }
-                Log.v(MGMapApplication.LABEL, NameUtil.context()+pressure+" ts="+now+" tse="+eventTimeMillis+" "+pValues.size());
+                mgLog.v(pressure+" ts="+now+" tse="+eventTimeMillis+" "+pValues.size());
             }
         }
     }
@@ -122,26 +122,24 @@ class BarometerListener implements SensorEventListener {
                 logInfo += " avgPressure="+avgPressure+" accPressure="+accPressure+" pValues.size()="+pValues.size();
             }
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+String.format(Locale.ENGLISH," lat=%2.6f lon=%2.6f ",tlp.getLat(), tlp.getLon())+ logInfo);
+        mgLog.i(String.format(Locale.ENGLISH," lat=%2.6f lon=%2.6f ",tlp.getLat(), tlp.getLon())+ logInfo);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-        if (Log.isLoggable(MGMapApplication.LABEL, Log.VERBOSE)) {
-            Log.v(MGMapApplication.LABEL, NameUtil.context() + "onAccuracyChanged: " + sensor.getName() + " " + i + " accChg");
-        }
+        mgLog.v("onAccuracyChanged: " + sensor.getName() + " " + i + " accChg");
     }
 
     void activate(){
         if (pressureSensor != null){
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+"activate: "+"start sensorEventListener");
+            mgLog.i("activate: "+"start sensorEventListener");
             sensorManager.registerListener(this, pressureSensor, speed );
         }
     }
     void deactivate(){
         if (pressureSensor != null){
             sensorManager.unregisterListener(this);
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+"deactivate: "+"stop sensorEventListener");
+            mgLog.i("deactivate: "+"stop sensorEventListener");
             pValues.clear();
         }
     }

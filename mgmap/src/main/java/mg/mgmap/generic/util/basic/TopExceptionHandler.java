@@ -15,15 +15,14 @@
 package mg.mgmap.generic.util.basic;
 
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 
 /**
@@ -31,6 +30,8 @@ import mg.mgmap.application.util.PersistenceManager;
  * Try to write the stacktrace to the log folder, otherwise to the download path.
  */
 public class TopExceptionHandler implements Thread.UncaughtExceptionHandler {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final Thread.UncaughtExceptionHandler defaultUEH;
     private final PersistenceManager persistenceManager;
@@ -73,7 +74,7 @@ public class TopExceptionHandler implements Thread.UncaughtExceptionHandler {
                     dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                 }
             } catch (Exception ex) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context());
+                mgLog.e(ex);
             }
             if (dir != null){
                 File file = new File(dir,"stacktrace_"+System.currentTimeMillis()+".txt");
@@ -82,7 +83,7 @@ public class TopExceptionHandler implements Thread.UncaughtExceptionHandler {
                 fos.close();
             }
         } catch (IOException ex) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context());
+            mgLog.e(ex);
         }
         defaultUEH.uncaughtException(t, e);
     }

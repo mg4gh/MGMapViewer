@@ -23,10 +23,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
@@ -34,7 +35,7 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.routing.TurningInstructionService;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogPoint;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 
@@ -43,6 +44,8 @@ import mg.mgmap.generic.util.PrefCache;
  */
 
 public class TrackLoggerService extends Service {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private MGMapApplication application = null;
 
@@ -78,7 +81,7 @@ public class TrackLoggerService extends Service {
                 NotificationManager.IMPORTANCE_LOW);
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" importance: "+channel.getImportance());
+        mgLog.i("importance: "+channel.getImportance());
 
         Intent intent = new Intent(getApplicationContext(), MGMapActivity.class);
         notification = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -99,7 +102,7 @@ public class TrackLoggerService extends Service {
         application = (MGMapApplication)getApplication();
 
         boolean shouldBeActive = prefGps.getValue();
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" active="+active+" shouldBeActive="+shouldBeActive);
+        mgLog.i("active="+active+" shouldBeActive="+shouldBeActive);
         if (!active && shouldBeActive){
             active = true;
             activateService();
@@ -120,9 +123,9 @@ public class TrackLoggerService extends Service {
                 String sBarometerSmoothingPeriod = prefCache.get(R.string.preferences_pressure_smoothing_gl_key, "6000").getValue();
                 barometerSmoothingPeriod = Long.parseLong(sBarometerSmoothingPeriod);
             } catch (NumberFormatException e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                mgLog.e(e);
             }
-            Log.i(MGMapApplication.LABEL, NameUtil.context()+ "smoothingPeriod="+barometerSmoothingPeriod);
+            mgLog.i("smoothingPeriod="+barometerSmoothingPeriod);
             barometerListener = new BarometerListener(application,  SensorManager.SENSOR_DELAY_FASTEST, barometerSmoothingPeriod);
             boolean prefFused = prefCache.get(R.string.FSPosition_pref_FusedLocationProvider, false).getValue();
             locationListener = prefFused?new FusedLocationListener(application, this):new GnssLocationListener(application, this);
@@ -130,7 +133,7 @@ public class TrackLoggerService extends Service {
             locationListener.activate(4000,20);
             barometerListener.activate();
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
 
     }
@@ -140,7 +143,7 @@ public class TrackLoggerService extends Service {
             locationListener.deactivate();
             barometerListener.deactivate();
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
     }
 
@@ -148,7 +151,7 @@ public class TrackLoggerService extends Service {
         barometerListener.providePressureData(lp);
         setPressureEle(lp);
         application.logPoints2process.add(lp);
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" new TrackLogPoint: "+lp);
+        mgLog.v("new TrackLogPoint: "+lp);
         turningInstructionService.handleNewPoint(lp);
     }
 

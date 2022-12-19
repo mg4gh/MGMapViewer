@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -26,7 +25,6 @@ import java.util.TreeSet;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeListener{
 
@@ -83,7 +81,7 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
                 sPrefs.append(pref).append("\n");
             }
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sPrefs);
+        mgLog.i(sPrefs);
     }
 
     public static PrefCache getApplicationPrefCache(Activity activity){

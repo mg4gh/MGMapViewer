@@ -7,18 +7,22 @@ import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.core.content.res.ResourcesCompat;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
+@SuppressWarnings("unused")
 public class TestView extends RelativeLayout  {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     Point pxSize = new Point(); // size of the TestView in pixel
     int[] location = new int[2]; // location on screen - typically 0,0, but on Smartphone with notch e.g. 0,88
@@ -46,29 +50,6 @@ public class TestView extends RelativeLayout  {
             application = MGMapApplication.getByContext(context);
             createCursor(context);
             createClick(context);
-//            if (activity.getApplication() instanceof MGMapApplication) {
-//                application = (MGMapApplication) activity.getApplication();
-//                application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbackAdapter(activity){
-//                    @Override
-//                    public void onActivityResumed(Activity activity) {
-//                        super.onActivityResumed(activity);
-//                        if (TestView.this.activity == activity){
-//                            application.getTestControl().onResume(TestView.this); // register this TestView at TestControl
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onActivityPaused(Activity activity) {
-//                        super.onActivityPaused(activity);
-//                        if (TestView.this.activity == activity){
-//                            application.getTestControl().onPause(TestView.this); // unregister this TestView at TestControl
-//                            setVisibility(INVISIBLE, click);
-//                        }
-//                    }
-//                });
-//                createCursor(context);
-//                createClick(context);
-//            }
         }
     }
 
@@ -142,7 +123,7 @@ public class TestView extends RelativeLayout  {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        Log.d(MGMapApplication.LABEL, NameUtil.context()+activity.getClass().getSimpleName()+": Visibility="+visibility);
+        mgLog.d(activity.getClass().getSimpleName()+": Visibility="+visibility);
         if ( (visibility & (View.INVISIBLE | View.GONE)) == 0 ) { // is visible
             application.getTestControl().registerTestView(this);
         } else {

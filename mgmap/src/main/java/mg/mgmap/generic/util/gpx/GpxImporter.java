@@ -19,7 +19,6 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.util.Log;
 
 import org.kxml2.io.KXmlParser;
 
@@ -30,12 +29,13 @@ import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogPoint;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Objects;
@@ -46,6 +46,7 @@ import java.util.Objects;
 
 public class GpxImporter {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private static final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
     @SuppressLint("Range")
@@ -70,9 +71,9 @@ public class GpxImporter {
             }
             return new GpxImporter(application.getElevationProvider()).parseTrackLog( filename, is);
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" Track loaded for " + uri);
+        mgLog.i("Track loaded for " + uri);
         return null;
     }
 
@@ -176,7 +177,7 @@ public class GpxImporter {
                         assert text != null;
                         tlp.setEle( Float.parseFloat(text) );
                     }catch(Exception e){
-                        Log.w(MGMapApplication.LABEL, NameUtil.context()+" Parse elevation failed: "+e.getMessage());
+                        mgLog.w("Parse elevation failed: "+e.getMessage());
                     }
                 }
                 if ("time".equals(qName)) {
@@ -191,7 +192,7 @@ public class GpxImporter {
                             trackLog.getTrackStatistic().setTStart( Objects.requireNonNull(sdf2.parse(text.replaceAll("T", "_"))).getTime() );
                         }
                     } catch (Exception e) {
-                        Log.w(MGMapApplication.LABEL, NameUtil.context()+" Parse time failed: "+e.getMessage());
+                        mgLog.w("Parse time failed: "+e.getMessage());
                     }
                 }
                 if ("cmt".equals(qName)) {
@@ -241,7 +242,7 @@ public class GpxImporter {
                             }
                         }
                     } catch (Exception e) {
-                        Log.w(MGMapApplication.LABEL, NameUtil.context()+" Parse comment failed: "+e.getMessage());
+                        mgLog.w("Parse comment failed: "+e.getMessage());
                     }
                 }
 

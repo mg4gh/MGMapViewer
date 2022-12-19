@@ -5,12 +5,15 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.util.Log;
+
+import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class WiFiUtil {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static boolean checkWLAN(MGMapApplication application, String wlanSSID){
         if (wlanSSID == null) return false;
@@ -25,9 +28,9 @@ public class WiFiUtil {
                 ssid = wifiInfo.getSSID();
             }
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+            mgLog.e(e);
         }
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" currentSsid=\""+ssid+"\""+" checkSsid=\""+wlanSSID+"\"" );
+        mgLog.i("currentSsid=\""+ssid+"\""+" checkSsid=\""+wlanSSID+"\"" );
         return wlanSSID.equals(ssid);
     }
 

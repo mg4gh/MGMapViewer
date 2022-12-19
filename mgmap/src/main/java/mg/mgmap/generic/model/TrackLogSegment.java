@@ -14,11 +14,8 @@
  */
 package mg.mgmap.generic.model;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 
 /** A TrackLogSegment contains additionally to the points in the MultiPointModel a few  more data.
