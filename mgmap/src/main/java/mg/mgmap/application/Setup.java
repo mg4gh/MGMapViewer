@@ -194,12 +194,12 @@ public class Setup {
             new Thread(() -> {
                 mgMapApplication.getTestControl().runTests(testCases, pTestResults);
                 try {
-                    pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+TEST_RESULT)),"xxxyyyzzz");
+                    pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+TEST_RESULT)),"Test Results:");
                     new Sftp(testConfig) {
                         @Override
                         protected void doCopy() throws SftpException {
                             channelSftp.cd(TEST_DATA);
-//                                channelSftp.put(testSetup.getAbsolutePath()+"/"+TEST_TEMP+"/"+TEST_RESULT, testgroup+"/"+TEST_RESULT);
+                            channelSftp.put(testSetup.getAbsolutePath()+"/"+TEST_TEMP+"/"+TEST_RESULT, testgroup+"/"+TEST_RESULT);
                         }
                     }.copy();
                 } catch (Exception e) {

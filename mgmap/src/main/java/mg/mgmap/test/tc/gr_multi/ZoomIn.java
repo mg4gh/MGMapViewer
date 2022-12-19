@@ -27,6 +27,12 @@ public class ZoomIn extends AbstractTestCase {
         if (mgMapActivity == null) return; // runs in background - do nothing
 
         mgMapActivity.runOnUiThread(() -> {
+            MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 14);
+            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+            setCursorPosition(getCenterPosition());
+        });
+        WaitUtil.doWait(TestControl.class, 500);
+        mgMapActivity.runOnUiThread(() -> {
             MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
             setCursorPosition(getCenterPosition());

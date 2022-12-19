@@ -77,7 +77,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
                 testCase.stop();
                 String result = testCase.getResult();
                 pTestResults.put(testCase.getName(), result);
-                mgLog.d(" finished - result: "+result );
+                mgLog.d(" finished "+testCase.getName()+" - result: "+result );
                 WaitUtil.doWait(this.getClass(), 1000);
             } catch (Exception e) {
                 mgLog.e(e);
