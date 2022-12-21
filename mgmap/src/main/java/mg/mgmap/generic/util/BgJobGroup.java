@@ -81,7 +81,8 @@ public class BgJobGroup {
                 offerRetries = true;
             }
             if (title != null){
-                new Thread(() -> activity.runOnUiThread(this::reportResult)).start();
+                activity.runOnUiThread(this::reportResult);
+//                new Thread(() -> activity.runOnUiThread(this::reportResult)).start();
             } else {
                 groupCallback.afterGroupFinished(this, jobCounter, successCounter, errorCounter);
             }
