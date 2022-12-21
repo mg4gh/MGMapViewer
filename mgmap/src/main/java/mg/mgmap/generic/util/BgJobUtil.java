@@ -14,9 +14,9 @@
  */
 package mg.mgmap.generic.util;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.invoke.MethodHandles;
@@ -59,6 +59,7 @@ public class BgJobUtil {
         AlertDialog alert = builder.create();
         alert.show();
         alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(bgJobGroup.size()>0);
+        MGMapApplication.getByContext(activity).registerAlertDialog(alert,activity);
     }
 
     void reportResult(BgJobGroup bgJobGroup){
@@ -82,6 +83,7 @@ public class BgJobUtil {
 
         AlertDialog alert = builder.create();
         alert.show();
+        MGMapApplication.getByContext(activity).registerAlertDialog(alert,activity);
     }
 
 }

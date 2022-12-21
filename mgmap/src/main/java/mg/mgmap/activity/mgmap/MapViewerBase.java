@@ -137,7 +137,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         // Some preference changes take effect due to activity restart - those need to be listed in recreatePreferences
         if (recreatePreferences.contains(key) && (!preferences.getBoolean(getResources().getString(R.string.MGMapApplication_pref_Restart), true))){
             new Handler().postDelayed(() -> {
-                mgLog.i("recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key));
+                mgLog.w("recreate MGMapActivity due to key="+key+" value="+ preferences.getAll().get(key));
                 if (MGMapLayerFactory.getMapLayerKeys(this).contains(key) && ("MAPGRID: hgt".equals(preferences.getAll().get(key)))){
                     mapView.getModel().mapViewPosition.setZoomLevel((byte)7);
                     saveMapViewModel();

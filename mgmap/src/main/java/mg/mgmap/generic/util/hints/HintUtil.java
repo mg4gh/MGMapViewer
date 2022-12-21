@@ -2,7 +2,6 @@ package mg.mgmap.generic.util.hints;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -15,12 +14,14 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AlertDialogLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -149,6 +150,7 @@ public class HintUtil {
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
                 alertDialog.getWindow().setLayout(-2, -2);
+                MGMapApplication.getByContext(activity).registerAlertDialog(alertDialog,activity);
                 return true;
             }
         } catch (Exception e) {

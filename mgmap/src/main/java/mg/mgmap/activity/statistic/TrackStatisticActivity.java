@@ -213,10 +213,11 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         mgLog.d();
         visibleEntries.clear();
         allEntries.clear();
+        application.unregisterAlertDialogs(this);
+        super.onPause();
     }
 
     @Override
@@ -339,7 +340,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     };
                     etTrackLogName.setFilters(new InputFilter[] { filter });
 
-                    new AlertDialog.Builder(this)
+                    application.registerAlertDialog( new AlertDialog.Builder(this)
                             .setTitle("Rename Track")
                             .setMessage("Old name: "+trackLog.getName())
                             .setView(etTrackLogName)
@@ -368,7 +369,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                                 }
                             })
                             .setNegativeButton("Cancel", (dialog, whichButton) -> {})
-                            .show();
+                            .show(), this);
                 }
             }
         };
@@ -486,6 +487,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
                 AlertDialog alert = builder.create();
                 alert.show();
+                application.registerAlertDialog(alert,this);
             }
         };
     }

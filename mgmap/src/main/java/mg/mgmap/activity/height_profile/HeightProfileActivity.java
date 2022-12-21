@@ -72,6 +72,8 @@ public class HeightProfileActivity extends AppCompatActivity {
         mgLog.i("started");
         GraphView graph = findViewById(R.id.graph);
         graph.getSeries().clear();
+        ((MGMapApplication)getApplication()).unregisterAlertDialogs(this);
+        super.onPause();
         mgLog.i("finished");
     }
 
@@ -121,6 +123,7 @@ public class HeightProfileActivity extends AppCompatActivity {
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                     (dialog, which) -> dialog.dismiss());
             alertDialog.show();
+            application.registerAlertDialog(alertDialog, this);
         }
     }
 

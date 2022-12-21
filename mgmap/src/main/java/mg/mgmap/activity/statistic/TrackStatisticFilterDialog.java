@@ -14,7 +14,6 @@
  */
 package mg.mgmap.activity.statistic;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.TypedValue;
@@ -25,7 +24,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
 import mg.mgmap.R;
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.EditPref;
 import mg.mgmap.generic.util.Pref;
 
@@ -75,7 +77,7 @@ public class TrackStatisticFilterDialog {
 
         TrackStatisticFilter filter = trackStatisticActivity.getMGMapApplication().getTrackStatisticFilter();
 
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context );
+        AlertDialog.Builder builder = new AlertDialog.Builder(context );
         Context dialogContext = builder.getContext();
 
         TableLayout table_dialog = new TableLayout(dialogContext);
@@ -143,7 +145,7 @@ public class TrackStatisticFilterDialog {
 
         alertDialog = builder.create();
         alertDialog.show();
-
+        MGMapApplication.getByContext(trackStatisticActivity).registerAlertDialog(alertDialog, trackStatisticActivity);
 
 
     }

@@ -15,7 +15,6 @@
 package mg.mgmap.activity.mgmap;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -31,6 +30,7 @@ import android.view.Window;
 
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
@@ -297,6 +297,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 tileDownloadLayer.onPause();
             }
         }
+        application.unregisterAlertDialogs(this);
         super.onPause();
     }
 
