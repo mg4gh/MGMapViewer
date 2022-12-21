@@ -48,6 +48,7 @@ public class MapDataStoreUtil implements WayProvider {
 
         for (String prefKey : mapLayerFactory.getMapLayerKeys()){
             String key = sharedPreferences.getString(prefKey, "none");
+            sharedPreferences.edit().putString(prefKey,key).apply(); // so if pref was not existing, then default value "none" is now set - this helps to prevent recreate activity on initial set
 
             Layer layer = mapLayerFactory.getMapLayer(key);
             if (layer instanceof TileRendererLayer) {

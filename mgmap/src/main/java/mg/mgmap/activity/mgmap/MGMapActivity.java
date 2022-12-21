@@ -185,6 +185,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         createLayers();
 
         mapDataStoreUtil = new MapDataStoreUtil().onCreate(mapLayerFactory, sharedPreferences);
+        initSharedPreferencesDone(); // after MapDatastoreUtil creation
         initializePosition(mapView.getModel().mapViewPosition);
         mgLog.i("Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 

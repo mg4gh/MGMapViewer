@@ -98,7 +98,6 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         this.sharedPreferences = MGMapApplication.getByContext(this).getSharedPreferences();
         String preferencesName = MGMapApplication.getByContext(this).getPreferencesName();
         this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( preferencesName+"_"+this.getClass().getSimpleName(), MODE_PRIVATE));
-        this.sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         recreatePreferences = Arrays.asList(
                 getResources().getString(R.string.Layers_pref_chooseMap1_key),
                 getResources().getString(R.string.Layers_pref_chooseMap2_key),
@@ -110,6 +109,10 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
                 getResources().getString(R.string.preferences_scale_key),
                 getResources().getString(R.string.preferences_scalebar_key),
                 getResources().getString(R.string.preferences_language_key));
+    }
+
+    protected void initSharedPreferencesDone(){
+        this.sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
 
