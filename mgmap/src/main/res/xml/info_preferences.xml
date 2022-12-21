@@ -5,6 +5,12 @@
         app:iconSpaceReserved="false"
         >
         <Preference
+            app:key="@string/preferences_build_number_key"
+            app:title="Build number"
+            app:summary="-"
+            app:iconSpaceReserved="false"
+            />
+        <Preference
             app:title="MGMapViewer"
             app:summary="The main application software package.\nSee  https://mg4gh.github.io/MGMapViewer/"
             app:iconSpaceReserved="false"

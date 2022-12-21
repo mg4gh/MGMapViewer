@@ -49,6 +49,7 @@
 
 
     <string name="MGMapApplication_pref_Restart">MGMapApplication.Restart</string>
+    <string name="MGMapApplication_pref_Developer">MGMapApplication.Developer</string>
 
     <string name="my_rendertheme_menu_key">myrenderthememenu</string>
 
@@ -100,21 +101,12 @@
 
     <string name="preferences_version_key">versionKey</string>
     <string name="preferences_version_title">App Info</string>
-    <string name="preferences_version_desc">-</string>
+    <string name="preferences_version_desc">Detail version information</string>
+    <string name="preferences_build_number_key">build_number_key</string>
+    <string name="preferences_developer_settings_key">build_number_key</string>
+
 
     <string name="activity_param_key">mg.mgmap.args</string>
-
-    <string name="preference_testMode_key">mg.mgmap.testmode</string>
-    <string name="preference_testMode_title">Test mode</string>
-    <string name="preference_testMode_desc">Toggle test mode - do not use it unless you know what to do</string>
-
-    <string name="preference_testSet_key">mg.mgmap.testset</string>
-    <string name="preference_testSet_title">Pattern(s) for test selection</string>
-    <string name="preference_testSet_desc">-</string>
-
-    <string name="preference_testTrigger_key">mg.mgmap.testtrigger</string>
-    <string name="preference_testTrigger_title">Start selected tests</string>
-    <string name="preference_testTrigger_desc">Press here to start the test(s)</string>
 
     <string name="preferences_ssh_uploadGpxTrigger">Ssh.uploadGpxTrigger</string>
 

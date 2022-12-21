@@ -34,28 +34,11 @@ public class FurtherPreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onResume() {
         super.onResume();
-        setTestTriggerOCL();
+        Preference preference = findPreference(getResources().getString(R.string.preferences_developer_settings_key));
+        assert preference != null;
+        boolean developer = MGMapApplication.getByContext(getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
+        preference.setVisible(developer);
     }
 
-    private void setTestTriggerOCL() {
-        Preference prefSet =  findPreference(getResources().getString(R.string.preference_testSet_key));
-        if (prefSet != null){
-            prefSet.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
-        }
-
-        Preference pref = findPreference(getResources().getString(R.string.preference_testTrigger_key));
-        if (pref != null){
-            pref.setOnPreferenceClickListener(preference -> {
-                Activity activity = getActivity();
-                if (activity != null){
-                    SharedPreferences sharedPreferences = MGMapApplication.getByContext(activity).getSharedPreferences();
-                    boolean triggerValue = sharedPreferences.getBoolean(getResources().getString(R.string.preference_testTrigger_key), true);
-                    sharedPreferences.edit().putBoolean(getResources().getString(R.string.preference_testTrigger_key), !triggerValue).apply();
-                    getActivity().finish();
-                }
-                return true;
-            });
-        }
-    }
 
 }

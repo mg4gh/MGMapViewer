@@ -34,10 +34,6 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
     public void onResume() {
         super.onResume();
         setBrowseIntent(R.string.preferences_doc_main_key, R.string.url_doc_main);
-
-        Preference preference = findPreference(getResources().getString(R.string.preferences_version_key));
-        assert preference != null;
-        preference.setSummary(BuildConfig.VERSION_NAME+" ("+ (BuildConfig.DEBUG?"debug":"release")+")");
     }
 
 }
