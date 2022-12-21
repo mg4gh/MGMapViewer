@@ -27,7 +27,7 @@ public class MGLog {
     public static void se(Object o){
         log(Log.ERROR, o==null?"":o.toString());
     }
-    public static void se(LogCB logCB){
+    public static void se(MGLogCB logCB){
         log(Log.ERROR, logCB.logCB());
     }
 
@@ -37,7 +37,7 @@ public class MGLog {
     public static void sw(Object o){
         log(Log.WARN, o==null?"":o.toString());
     }
-    public static void sw(LogCB logCB){
+    public static void sw(MGLogCB logCB){
         log(Log.WARN, logCB.logCB());
     }
 
@@ -47,7 +47,7 @@ public class MGLog {
     public static void si(Object o){
         log(Log.INFO, o==null?"":o.toString());
     }
-    public static void si(LogCB logCB){
+    public static void si(MGLogCB logCB){
         log(Log.INFO, logCB.logCB());
     }
 
@@ -57,7 +57,7 @@ public class MGLog {
     public static void sd(Object o){
         log(Log.DEBUG, o==null?"":o.toString());
     }
-    public static void sd(LogCB logCB){
+    public static void sd(MGLogCB logCB){
         log(Log.DEBUG, logCB.logCB());
     }
 
@@ -67,7 +67,7 @@ public class MGLog {
     public static void sv(Object o){
         log(Log.VERBOSE, o==null?"":o.toString());
     }
-    public static void sv(LogCB logCB){
+    public static void sv(MGLogCB logCB){
         log(Log.VERBOSE, logCB.logCB());
     }
 
@@ -136,7 +136,7 @@ public class MGLog {
             log(Log.ERROR, o == null ? "" : o.toString());
         }
     }
-    public void e(LogCB logCB){
+    public void e(MGLogCB logCB){
         if (level <= Log.ERROR){
             log(Log.ERROR, logCB.logCB());
         }
@@ -157,7 +157,7 @@ public class MGLog {
             log(Log.WARN, o == null ? "" : o.toString());
         }
     }
-    public void w(LogCB logCB){
+    public void w(MGLogCB logCB){
         if (level <= Log.WARN){
             log(Log.WARN, logCB.logCB());
         }
@@ -178,7 +178,7 @@ public class MGLog {
             log(Log.INFO, o == null ? "" : o.toString());
         }
     }
-    public void i(LogCB logCB){
+    public void i(MGLogCB logCB){
         if (level <= Log.INFO){
             log(Log.INFO, logCB.logCB());
         }
@@ -199,7 +199,7 @@ public class MGLog {
             log(Log.DEBUG, o == null ? "" : o.toString());
         }
     }
-    public void d(LogCB logCB){
+    public void d(MGLogCB logCB){
         if (level <= Log.DEBUG){
             log(Log.DEBUG, logCB.logCB());
         }
@@ -215,7 +215,7 @@ public class MGLog {
             log(Log.VERBOSE, o == null ? "" : o.toString());
         }
     }
-    public void v(LogCB logCB){
+    public void v(MGLogCB logCB){
         if (level <= Log.VERBOSE){
             log(Log.VERBOSE, logCB.logCB());
         }
@@ -231,7 +231,7 @@ public class MGLog {
             log(level, msg);
         }
     }
-    public void any(int level, LogCB logCB){
+    public void any(int level, MGLogCB logCB){
         if (this.level <= level){
             log(level, logCB.logCB());
         }
