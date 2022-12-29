@@ -40,10 +40,9 @@ public class InfoPreferenceScreen extends MGPreferenceScreen {
 
         Preference preference = findPreference(getResources().getString(R.string.preferences_build_number_key));
         assert preference != null;
-        setBuildNumberSummary(preference);
+        InfoPreferenceScreen.setBuildNumberSummary(preference);
 
         devCount = 0;
-
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(@NonNull Preference preference) {
@@ -57,8 +56,8 @@ public class InfoPreferenceScreen extends MGPreferenceScreen {
         });
     }
 
-    private void setBuildNumberSummary(Preference preference){
-        boolean developer = MGMapApplication.getByContext(getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
+    public static void setBuildNumberSummary(Preference preference){
+        boolean developer = MGMapApplication.getByContext(preference.getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
         preference.setSummary(BuildConfig.VERSION_NAME+" ("+ (BuildConfig.DEBUG?"debug":"release")+")"+" "+(developer?"(Developer)":""));
     }
 }
