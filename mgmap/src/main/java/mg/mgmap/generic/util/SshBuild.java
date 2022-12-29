@@ -11,9 +11,10 @@ public class SshBuild {
 
     /**
      * @param args
-     * 1.) ssh.properties
+     * 1.) sftp.properties
      * 2.) target 2nd prefix
-     * 3..n) file(s)ToCopy
+     * 3.) cleanup regex
+     * 4..n) file(s)ToCopy
      */
     public static void main(String[] args) {
         System.out.println("Hello from SshBuild " + args.length);
@@ -31,13 +32,13 @@ public class SshBuild {
                     @SuppressWarnings("unchecked")
                     Vector<ChannelSftp.LsEntry> vLsEntries = channelSftp.ls(channelSftp.pwd());
                     for (ChannelSftp.LsEntry lsEntry : vLsEntries){
-                        if (lsEntry.getFilename().endsWith(".apk")){
-                            System.out.println("remove old apk: "+lsEntry.getFilename());
+                        if (!lsEntry.getAttrs().isDir() && lsEntry.getFilename().matches(args[2])){
+                            System.out.println("remove old entry: "+lsEntry.getFilename());
                             channelSftp.rm(lsEntry.getFilename());
                         }
                     }
                     ArrayList<File> files = new ArrayList<>();
-                    for (int i = 2; i < args.length; i++) {
+                    for (int i = 3; i < args.length; i++) {
                         File f = new File(args[i]);
                         if (f.exists() && f.canRead()) {
                             files.add(f);

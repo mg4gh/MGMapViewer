@@ -16,8 +16,7 @@ afterEvaluate {
         classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
         classpath += files(getProjectDir().toString() +"/libs/jsch-0.1.55.jar")
         getMainClass().set("mg.mgmap.generic.util.SshBuild")
-//        args = ["192.168.178.180", "22", "build", files("id_rsa").first().toString(), "", files("$buildDir/outputs/apk/debug/*.apk").first(), "data"  ]
-        args = [ files("$projectDir/../.ssh/config.properties").first(), "apk" , files("$buildDir/outputs/apk/debug/*.apk").first()]
+        args = [ files("$projectDir/../.ssh/config.properties").first(), "apk" , ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/debug/*.apk").first(), files("$buildDir/outputs/apk/debug/*.sha256").first()]
 
     }
 
