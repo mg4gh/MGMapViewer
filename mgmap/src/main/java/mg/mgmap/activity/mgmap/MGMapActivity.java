@@ -83,7 +83,7 @@ import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.FullscreenUtil;
-import mg.mgmap.generic.util.SshSyncUtil;
+import mg.mgmap.generic.util.GpxSyncUtil;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
@@ -221,7 +221,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             triggerTrackLoggerService(); // restart track logger service after app restart while track recording is on
         }
         application.prefRestart.setValue(false);
-        prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).addObserver((e) -> new SshSyncUtil().trySynchronisation(application));
+        prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> new GpxSyncUtil().trySynchronisation(application));
         prefCache.dumpPrefs();
     }
 
@@ -269,7 +269,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.lastPositionsObservable.changed();
         application.markerTrackLogObservable.changed();
 
-        new Handler().postDelayed(() -> prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(), 60*1000);
+        new Handler().postDelayed(() -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(), 60*1000);
     }
 
     @Override

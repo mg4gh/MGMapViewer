@@ -82,7 +82,7 @@ public class FSRecordingTrackLog extends FeatureService {
                 TrackLogRef selected = new TrackLogRef(rtl,rtl.getNumberOfSegments()-1);
                 getApplication().availableTrackLogsObservable.setSelectedTrackLogRef(selected);
 
-                getPref(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
+                getPref(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
             }
         });
         toggleRecordSegment.addObserver((e) -> {

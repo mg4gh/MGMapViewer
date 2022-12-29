@@ -363,7 +363,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                                         persistenceManager.renameTrack(oldName, newName);
                                         application.metaTrackLogs.remove(oldNameKey);
                                         application.metaTrackLogs.put(trackLog.getNameKey(), trackLog);
-                                        prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
+                                        prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
                                     }
                                     statisticAdapter.notifyItemChanged(visibleEntries.indexOf(trackLog));
                                 }
@@ -449,7 +449,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     GpxExporter.export(persistenceManager, trackLog);
                     application.getMetaDataUtil().createMetaData(trackLog);
                 }
-                prefCache.get(R.string.preferences_ssh_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
+                prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
             }
         };
     }
