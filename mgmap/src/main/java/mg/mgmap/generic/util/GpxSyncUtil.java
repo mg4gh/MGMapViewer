@@ -24,7 +24,7 @@ public class GpxSyncUtil {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static final String SYNC_CONFIG = "sync.properties";
+    private static final String SYNC_CONFIG = "gpx_sync.properties";
 
     long lastAction = 0;
     boolean syncInProgress = false;
@@ -68,7 +68,6 @@ public class GpxSyncUtil {
                         mgLog.i("remoteSet: " + remoteMap.keySet());
                         mgLog.i("commonSet: " + commonSet);
                         mgLog.i("localSet: " + localMap.keySet());
-//                        int total = localMap.size();
 
                         for (String commonName : new TreeSet<>(commonSet)) {
                             Long localTime = localMap.get(commonName);
