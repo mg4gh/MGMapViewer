@@ -23,18 +23,14 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.preference.Preference;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPReply;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.SftpException;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Objects;
-import java.util.Properties;
+import java.util.Vector;
 
 import mg.mgmap.BuildConfig;
 import mg.mgmap.application.MGMapApplication;
@@ -43,6 +39,7 @@ import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.SHA256;
+import mg.mgmap.generic.util.Sftp;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Zipper;
@@ -52,10 +49,11 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static final String FTP_CONFIG_FILE = "ftp_config.properties";
+    private static final String LOCAL_APK_SYNC_PROPERTIES = "apk_sync.properties";
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
+        getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(requireContext()).getPreferencesName());
         setPreferencesFromResource(R.xml.download_preferences, rootKey);
     }
 
@@ -77,7 +75,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
         Context context = requireContext().getApplicationContext();
         if (context instanceof MGMapApplication) {
             MGMapApplication application = (MGMapApplication) context;
-            if (application.getPersistenceManager().getConfigProperties(null, FTP_CONFIG_FILE).size() == 0){
+            if (application.getPersistenceManager().getConfigProperties(null, LOCAL_APK_SYNC_PROPERTIES).size() == 0){
                 Preference prefSwLocal = findPreference( getResources().getString(R.string.preferences_dl_sw_local_key) );
                 assert prefSwLocal != null;
                 prefSwLocal.setVisible(false);
@@ -132,84 +130,35 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 MGMapApplication application = (MGMapApplication) context;
                 SettingsActivity activity = (SettingsActivity) requireActivity();
 
-//                    ArrayList<BgJob> jobs = new ArrayList<>();
                 BgJobGroup bgJobGroup = new BgJobGroup(application, activity, Objects.requireNonNull(prefSwLocal.getTitle()).toString(), new BgJobGroupCallback(){} );
                 BgJob job = new BgJob(){
                     @Override
                     protected void doJob() throws Exception {
                         mgLog.i();
-                        Properties props = application.getPersistenceManager().getConfigProperties(null, FTP_CONFIG_FILE);
-                        String host = props.getProperty("FTP_SERVER");
-                        int port = Integer.parseInt( props.getProperty("PORT"));
-                        String username = props.getProperty("USERNAME");
-                        String password = props.getProperty("PASSWORD");
-                        String emulator = props.getProperty("EMULATOR");
-
                         PersistenceManager persistenceManager = application.getPersistenceManager();
                         persistenceManager.cleanApkDir();
 
-                        FTPClient mFTPClient = new FTPClient();
-                        // connecting to the host
-                        mFTPClient.connect(host, port);
-                        mgLog.i("connect rc="+mFTPClient.getReplyCode());
-                        // now check the reply code, if positive mean connection success
-                        if (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) {
-                            // login using username & password
-                            boolean status = mFTPClient.login(username, password);
-                            mgLog.i("status="+status);
-
-                            mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);
-                            mgLog.i("filetype rc="+mFTPClient.getReplyCode());
-
-                            if ((emulator != null) && ("true".endsWith(emulator))){
-                                mFTPClient.enterLocalPassiveMode();
-                                mgLog.i("enterLocalPassiveMode rc="+mFTPClient.getReplyCode());
-                            } else {
-                                mFTPClient.enterLocalActiveMode();
-                                mgLog.i("enterLocalActiveMode rc="+mFTPClient.getReplyCode());
-                            }
-                            mFTPClient.setRemoteVerificationEnabled(false);
-                            mgLog.i("setRemoteVerificationEnabled rc="+mFTPClient.getReplyCode());
-
-                            String remoteName = null;
-                            for (String name : mFTPClient.listNames()){
-                                mgLog.i("name=\""+name+"\"");
-                                if (name.endsWith(".apk")){
-                                    remoteName = "/"+name;
+                        new Sftp(new File(persistenceManager.getConfigDir(),LOCAL_APK_SYNC_PROPERTIES)){
+                            @SuppressWarnings("unchecked")
+                            @Override
+                            protected void doCopy() throws SftpException {
+                                channelSftp.lcd(persistenceManager.getApkDir().getAbsolutePath());
+                                Vector<ChannelSftp.LsEntry> vLsEntries = channelSftp.ls(channelSftp.pwd());
+                                for (ChannelSftp.LsEntry lsEntry : vLsEntries){
+                                    if (!lsEntry.getAttrs().isDir() && lsEntry.getFilename().matches(".*\\.apk(\\.sha256)?")){
+                                        mgLog.i("handle entry: "+lsEntry.getFilename());
+                                        channelSftp.get(lsEntry.getFilename(),lsEntry.getFilename());
+                                    }
                                 }
-                            }
-                            mgLog.i(" remoteName="+remoteName);
-                            boolean success = false;
-                            if (remoteName != null){
-                                {
-                                    File localFile = new File(persistenceManager.getApkDir(), remoteName);
-                                    OutputStream outputStream1 = new BufferedOutputStream(new FileOutputStream(localFile));
-                                    success = mFTPClient.retrieveFile(remoteName, outputStream1);
-                                    outputStream1.close();
-                                    mgLog.i(remoteName+" "+success);
-                                }
-                                {
-                                    remoteName += ".sha256"; // try to copy also corresponding sha256 fingerprint
-                                    File localFile = new File(persistenceManager.getApkDir(), remoteName);
-                                    OutputStream outputStream1 = new BufferedOutputStream(new FileOutputStream(localFile));
-                                    success &= mFTPClient.retrieveFile(remoteName, outputStream1);
-                                    outputStream1.close();
-                                    mgLog.i(remoteName+" "+success);
-                                }
-                            }
 
-                            mFTPClient.logout();
-                            mFTPClient.disconnect();
-                            if (success){
-                                success = verifyAndInstall(application, persistenceManager);
                             }
-                            if (success) {
-                                bgJobGroup.setTitle(null);
-                            } else {
-                                throw new Exception("FTP Download not successful.");
-                            }
-                        } // if (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) {
-                    } // protected void doJob() throws Exception {
+                        }.copy();
+                        if (verifyAndInstall(application, persistenceManager)) {
+                            bgJobGroup.setTitle(null); // prevents jobGroup finished alert window
+                        } else {
+                            throw new Exception("SFTP Download not successful.");
+                        }
+                    }
                 };
                 bgJobGroup.addJob(job);
                 bgJobGroup.setConstructed(Objects.requireNonNull(prefSwLocal.getSummary()).toString());
@@ -222,19 +171,23 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
 
     private boolean verifyAndInstall(Context context, PersistenceManager persistenceManager){
         File file = persistenceManager.getApkFile();
-        mgLog.i("Install file="+file.getAbsolutePath());
-        mgLog.i("Install size="+file.length());
-        if (SHA256.verify(file)){
-            mgLog.i("checksum verification successful");
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+        if (file != null){
+            mgLog.i("Install file="+file.getAbsolutePath());
+            mgLog.i("Install size="+file.length());
+            if (SHA256.verify(file)){
+                mgLog.i("checksum verification successful");
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
 
-            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
-            intent.setDataAndType(uri, "application/vnd.android.package-archive");
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(intent);
-            return true;
+                Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+                intent.setDataAndType(uri, "application/vnd.android.package-archive");
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+                return true;
+            }
+        } else {
+            mgLog.e("apk file not found!");
         }
         return false;
 
