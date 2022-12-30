@@ -121,6 +121,7 @@ public class FSPosition extends FeatureService {
     @Override
     protected void onResume() {
         super.onResume();
+        prefMapMoving.setValue(false);
         refreshObserver.onChange();
     }
 
