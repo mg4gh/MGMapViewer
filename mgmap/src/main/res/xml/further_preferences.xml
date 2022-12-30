@@ -82,6 +82,16 @@
             app:title="@string/preferences_pressure_smoothing_gl_title"
             app:iconSpaceReserved="false"
             />
+        <EditTextPreference
+            app:defaultValue="100"
+            app:key="@string/preferences_height_consistency_check_key"
+            app:dialogTitle="@string/preferences_height_consistency_check_title"
+            app:dialogMessage="@string/preferences_height_consistency_check_desc2"
+            android:inputType="number"
+            app:summary="@string/preferences_height_consistency_check_desc"
+            app:title="@string/preferences_height_consistency_check_title"
+            app:iconSpaceReserved="false"
+            />
 
     </PreferenceCategory>
 

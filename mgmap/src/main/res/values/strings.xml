@@ -88,6 +88,11 @@
     <string name="preferences_pressure_smoothing_gl_desc">Period for smoothing pressure values</string>
     <string name="preferences_pressure_smoothing_gl_desc2">Period for smoothing pressure values in milliseconds. \nThe proper value may depend on the device,
         since e.g. LG devices do smoothing already in hardware, while Pixel devices do no smoothing at all.</string>
+    <string name="preferences_height_consistency_check_key">height_consistency_check</string>
+    <string name="preferences_height_consistency_check_title">Height data trust interval</string>
+    <string name="preferences_height_consistency_check_desc">Accepted GPS to HGT height differance</string>
+    <string name="preferences_height_consistency_check_desc2">Accepted GPS to HGT height differance (in meter). \nPoints that exceed this height difference are not used,
+        since they may be more inaccurate than the accuracy data suggest.</string>
 
 
     <string name="preferences_cat_gnss_title">GNSS settings</string>

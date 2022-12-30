@@ -18,11 +18,13 @@ import android.location.Location;
 
 import java.lang.invoke.MethodHandles;
 
+import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.GeoidProvider;
+import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
@@ -38,12 +40,14 @@ public class AbstractLocationListener {
     protected final ElevationProvider elevationProvider;
     protected final GeoidProvider geoidProvider;
     protected final TrackLoggerService trackLoggerService;
+    private final PrefCache prefCache;
 
 
     AbstractLocationListener(MGMapApplication application, TrackLoggerService trackLoggerService){
         this.trackLoggerService = trackLoggerService;
         elevationProvider = application.getElevationProvider();
         geoidProvider = application.getGeoidProvider();
+        prefCache = application.getPrefCache();
     }
 
     protected void locationChanged(Location location) {
@@ -54,7 +58,16 @@ public class AbstractLocationListener {
             TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
                     location.getAccuracy(), wgs84ele, geoidOffset, wgs84eleAcc);
             elevationProvider.setElevation(lp);
-            trackLoggerService.onNewTrackLogPoint(lp);
+            double heightConsistencyThreshold;
+            try {
+                heightConsistencyThreshold = Double.parseDouble( prefCache.get(R.string.preferences_height_consistency_check_key, "100").getValue() );
+            } catch (NumberFormatException e) {
+                mgLog.e(e);
+                heightConsistencyThreshold = 100;
+            }
+            if ((lp.getNmeaEle() == PointModel.NO_ELE) || (lp.getHgtEle() == PointModel.NO_ELE) || (Math.abs(lp.getNmeaEle() - lp.getHgtEle()) < heightConsistencyThreshold )){
+                trackLoggerService.onNewTrackLogPoint(lp);
+            }
         } else {
             mgLog.w("location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());
         }
