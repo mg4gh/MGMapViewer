@@ -22,7 +22,7 @@ public class LogMatcher implements MGLogObserver {
 
     @Override
     public void processLog(int level, String tag, String message) {
-        if (matchRunning && (this.level <= level)){
+        if (matchRunning && (this.level <= level) && (regexs.size()>0)){
             boolean lineMatch = message.matches(regexs.get(0));
 //                                if (!message.contains("          **** "))  Log.d("mg.mgmap","          **** "+lineMatch+" "+message);
             if (lineMatch){

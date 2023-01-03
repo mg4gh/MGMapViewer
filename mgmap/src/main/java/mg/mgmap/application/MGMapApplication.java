@@ -17,6 +17,7 @@ package mg.mgmap.application;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import androidx.appcompat.app.AlertDialog;
@@ -27,6 +28,7 @@ import androidx.work.WorkManager;
 
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Button;
 
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
@@ -142,6 +144,7 @@ public class MGMapApplication extends Application {
         super.onCreate();
 
         MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG? Log.DEBUG:Log.INFO);
+//        MGLog.logConfig.put("mg.mgmap.test.TestControl", Log.VERBOSE);
         mgLog.evaluateLevel();
 
         testControl = new TestControl(this);
@@ -527,7 +530,10 @@ public class MGMapApplication extends Application {
     public void registerAlertDialog(AlertDialog dialog, Activity activity){
         alertDialogActivityMap.put(dialog, activity);
     }
-    public void unregisterAlertDialogs(Activity activity){
+    public void unregisterAlertDialogs(Activity activity) {
+        unregisterAlertDialogs(activity,true);
+    }
+    public void unregisterAlertDialogs(Activity activity, boolean dismiss){
         ArrayList<AlertDialog> toBeRemoved = new ArrayList<>();
         for (Map.Entry<AlertDialog,Activity> entry :alertDialogActivityMap.entrySet()){
             AlertDialog dialog = entry.getKey();
@@ -535,7 +541,13 @@ public class MGMapApplication extends Application {
             if (activity.equals(dialogActivity)){
                 toBeRemoved.add(dialog);
                 if (dialog.isShowing()){
-                    dialog.dismiss();
+                    if (dismiss){
+                        dialog.dismiss();
+                    } else {
+                        Button bt = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                        mgLog.i("clock on: "+bt.getText());
+                        bt.performClick();
+                    }
                 }
             }
         }

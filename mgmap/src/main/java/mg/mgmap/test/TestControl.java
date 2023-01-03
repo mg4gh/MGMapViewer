@@ -3,6 +3,7 @@ package mg.mgmap.test;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -10,8 +11,13 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
 
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -20,6 +26,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -156,6 +163,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
             if (this.currentTestView != testView){
                 mgLog.v(testView.getActivity());
                 this.currentTestView = testView;
+                setCursorVisibility(currentCursorVisibility);
                 currentTestView.setCursorPosition(currentCursorPos);
             }
         }
@@ -268,7 +276,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
                 }
 
             });
-            WaitUtil.doWait(TestControl.class, duration);
+            WaitUtil.doWait(TestControl.class, duration+200);
             currentCursorPos = newPosition;  // take the new position
         }
     }
@@ -290,5 +298,26 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
         }
     }
 
+
+    public static DialogFragment hasOpenedDialogs(FragmentActivity activity) {
+        List<Fragment> fragments = activity.getSupportFragmentManager().getFragments();
+        DialogFragment res = null;
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof DialogFragment) {
+                res =  (DialogFragment)fragment;
+            }
+        }
+        return res;
+    }
+
+    public void handleDialog(FragmentActivity activity, String prefKey, String valueToSet){
+        DialogFragment dialogFragment = hasOpenedDialogs(activity);
+        if (dialogFragment != null){
+            dialogFragment.dismiss();
+            if (prefKey != null){
+                mgMapApplication.getSharedPreferences().edit().putString(prefKey, valueToSet).apply();
+            }
+        }
+    }
 
 }

@@ -119,12 +119,12 @@ public class AbstractTestCase {
         }
     }
     public void animateTo(Point newPosition, int duration) {
-        if (running){
+        if (running && (newPosition != null)){
             testControl.animateTo(newPosition, duration);
         }
     }
     public void swipeTo(Point newPosition, int duration) {
-        if (running){
+        if (running && (newPosition != null)){
             testControl.swipeTo(newPosition, duration);
         }
     }

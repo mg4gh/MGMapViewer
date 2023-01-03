@@ -25,7 +25,6 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.util.hints.AbstractHint;
 
 public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {

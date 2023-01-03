@@ -36,21 +36,21 @@ afterEvaluate {
     }
 
 
-     task mylist ()  {
-         assembleRelease.dependsOn( mylist )
-         assembleDebug.dependsOn( mylist )
-         System.out.println("mylist is executed")
-         PrintWriter out = new PrintWriter( new File("${rootDir}/mgmap/src/main/assets/testcases.list"))
-         def files =  fileTree("${rootDir}").matching {include "**/src/main/java/**/test/tc*/**"}.files
-         for (File file : files){
-             out.println(file.absolutePath
-                     .replaceAll("\\\\", "/")
-                     .replaceFirst(".*github/MGMapViewer/mgmap/src/main/java/","")
-                     .replaceFirst("\\.java","")
-                     .replaceAll("/", "\\."))
-         }
-         out.close()
-    }
+//     task mylist ()  {
+//         assembleRelease.dependsOn( mylist )
+//         assembleDebug.dependsOn( mylist )
+//         System.out.println("mylist is executed")
+//         PrintWriter out = new PrintWriter( new File("${rootDir}/mgmap/src/main/assets/testcases.list"))
+//         def files =  fileTree("${rootDir}").matching {include "**/src/main/java/**/test/tc*/**"}.files
+//         for (File file : files){
+//             out.println(file.absolutePath
+//                     .replaceAll("\\\\", "/")
+//                     .replaceFirst(".*github/MGMapViewer/mgmap/src/main/java/","")
+//                     .replaceFirst("\\.java","")
+//                     .replaceAll("/", "\\."))
+//         }
+//         out.close()
+//    }
     task myclean {
         assembleRelease.dependsOn( myclean )
         assembleDebug.dependsOn( myclean )

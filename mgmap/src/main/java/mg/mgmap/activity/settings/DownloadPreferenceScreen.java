@@ -61,10 +61,9 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
     public void onResume() {
         super.onResume();
 
-        HintInitialMapDownload2 hint = new HintInitialMapDownload2(getActivity());
-        setBrowseIntent(R.string.preferences_dl_maps_wd_key, R.string.url_oam_dl, hint);
-        setBrowseIntent(R.string.preferences_dl_maps_eu_key, R.string.url_oam_dl_eu, hint);
-        setBrowseIntent(R.string.preferences_dl_maps_de_key, R.string.url_oam_dl_de, hint);
+        setBrowseIntent(R.string.preferences_dl_maps_wd_key, R.string.url_oam_dl, new HintInitialMapDownload2(getActivity()));
+        setBrowseIntent(R.string.preferences_dl_maps_eu_key, R.string.url_oam_dl_eu, new HintInitialMapDownload2(getActivity()));
+        setBrowseIntent(R.string.preferences_dl_maps_de_key, R.string.url_oam_dl_de, new HintInitialMapDownload2(getActivity()));
 
         setBrowseIntent(R.string.preferences_dl_theme_el_key, R.string.url_oam_th_el);
 

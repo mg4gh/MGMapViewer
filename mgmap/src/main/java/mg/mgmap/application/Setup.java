@@ -65,10 +65,11 @@ public class Setup {
         mgLog.d("Setup start");
         baseDir = application.getExternalFilesDir(null);
         testSetup = new File(baseDir, TEST_SETUP);
-        testConfig = new File(testSetup, TEST_CONFIG);
+        testConfig = new File(baseDir, TEST_CONFIG);
         File testOff = new File(testSetup, TEST_OFF);
 
         if (testConfig.exists() && !testOff.exists()){
+            testSetup.mkdir();
             new Thread(() -> {
                 try {
                     mgLog.d("preferencesName="+preferencesName);
@@ -184,7 +185,7 @@ public class Setup {
 
         if (isTestMode()){
             timer = new Handler();
-            timer.postDelayed( testManager, 7000); // wait initial time before starting the tests
+            timer.postDelayed( testManager, 4000); // wait initial time before starting the tests
         }
     }
 
