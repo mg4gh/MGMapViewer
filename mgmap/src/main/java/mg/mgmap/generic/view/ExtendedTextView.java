@@ -126,15 +126,20 @@ public class ExtendedTextView extends AppCompatTextView {
         return this;
     }
     public ExtendedTextView setPrAction(Pref<Boolean> prAction){
-        this.prAction1 = prAction;
-        this.setOnClickListener(prAction);
-        return this;
+        return setPrAction(prAction, null);
     }
     public ExtendedTextView setPrAction(Pref<Boolean> prAction1, Pref<Boolean> prAction2){
         this.prAction1 = prAction1;
-        this.setOnClickListener(prAction1);
+        this.setOnClickListener(v -> {
+            mgLog.d("onClick "+logName);
+            prAction1.toggle();
+        });
         this.prAction2 = prAction2;
-        this.setOnLongClickListener(prAction2);
+        this.setOnLongClickListener(v -> {
+            mgLog.d("onClick "+logName);
+            prAction2.toggle();
+            return true;
+        });
         return this;
     }
     public ExtendedTextView setDisabledData(Pref<Boolean> prEnabled, int drIdDis){
@@ -207,7 +212,7 @@ public class ExtendedTextView extends AppCompatTextView {
         if ((value!=null) && (availableWidth>0) && (paint!=null)){
             String newText = Formatter.format(formatType, value, availablePaint, availableWidth*getMaxLines());
             if (!newText.equals(availableText)){
-                mgLog.d(logName+":"+newText+ " availableWidth="+availableWidth);
+                mgLog.d(logName+":"+newText /*+ " availableWidth="+availableWidth*/);
                 setText( newText );
                 availableText = newText;
                 onChange("onSetValue: "+newText);

@@ -15,7 +15,6 @@
 package mg.mgmap.generic.util;
 
 import android.content.SharedPreferences;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -26,7 +25,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Pref<T> extends ObservableImpl implements View.OnClickListener, View.OnLongClickListener {
+public class Pref<T> extends ObservableImpl  {
 
     public SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
     protected final String key;
@@ -138,17 +137,6 @@ public class Pref<T> extends ObservableImpl implements View.OnClickListener, Vie
         } else {
             throw new RuntimeException("type not allowed: "+value.getClass().getName());
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-        toggle();
-    }
-
-    @Override
-    public boolean onLongClick(View v) {
-        toggle();
-        return true;
     }
 
     public void onChange(){
