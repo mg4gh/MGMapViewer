@@ -78,7 +78,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
 
     @Override
     protected void onPause() {
-        ((MGMapApplication)getApplication()).unregisterAlertDialogs(this);
+        ((MGMapApplication)getApplication()).disposeAlertDialogs(this);
         super.onPause();
     }
 

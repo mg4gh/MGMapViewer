@@ -530,10 +530,19 @@ public class MGMapApplication extends Application {
     public void registerAlertDialog(AlertDialog dialog, Activity activity){
         alertDialogActivityMap.put(dialog, activity);
     }
-    public void unregisterAlertDialogs(Activity activity) {
-        unregisterAlertDialogs(activity,true);
+    public void disposeAlertDialogs(Activity activity) {
+        unregisterAlertDialogs(activity,true, 0);
     }
-    public void unregisterAlertDialogs(Activity activity, boolean dismiss){
+    public void confirmAlertDialogs(Activity activity) {
+        unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_POSITIVE);
+    }
+    public void denyAlertDialogs(Activity activity) {
+        unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_NEGATIVE);
+    }
+    public void acceptAlertDialogs(Activity activity) {
+        unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_NEUTRAL);
+    }
+    public void unregisterAlertDialogs(Activity activity, boolean dismiss, int actionButton){
         ArrayList<AlertDialog> toBeRemoved = new ArrayList<>();
         for (Map.Entry<AlertDialog,Activity> entry :alertDialogActivityMap.entrySet()){
             AlertDialog dialog = entry.getKey();
@@ -544,8 +553,8 @@ public class MGMapApplication extends Application {
                     if (dismiss){
                         dialog.dismiss();
                     } else {
-                        Button bt = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                        mgLog.i("clock on: "+bt.getText());
+                        Button bt = dialog.getButton(actionButton);
+                        mgLog.i("click on: "+bt.getText());
                         bt.performClick();
                     }
                 }

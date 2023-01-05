@@ -128,6 +128,7 @@ public class TestView extends RelativeLayout  {
             application.getTestControl().registerTestView(this);
         } else {
             application.getTestControl().unregisterTestView(this);
+            click.setVisibility(INVISIBLE);
         }
     }
 

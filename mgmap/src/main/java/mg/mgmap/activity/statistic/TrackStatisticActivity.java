@@ -216,7 +216,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         mgLog.d();
         visibleEntries.clear();
         allEntries.clear();
-        application.unregisterAlertDialogs(this);
+        application.disposeAlertDialogs(this);
         super.onPause();
     }
 

@@ -25,7 +25,7 @@ public class AbstractTestCase {
     protected String name;
     protected ArrayList<String> regexs = new ArrayList<>();
     protected ArrayList<String> matches = new ArrayList<>();
-    protected long durationLimit = 15000;
+    protected long durationLimit = 30000;
 
     LogMatcher lm;
     protected boolean running = false;

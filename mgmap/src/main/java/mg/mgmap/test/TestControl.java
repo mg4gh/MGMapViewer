@@ -1,6 +1,7 @@
 package mg.mgmap.test;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -11,9 +12,15 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroupAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
@@ -25,6 +32,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.ControlView;
+import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WaitUtil;
@@ -44,9 +54,13 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     public Set<String> activityCreatedToDestroyed = new TreeSet<>();
     public Set<String> activityStartedToStopped = new TreeSet<>();
     public Set<String> activityResumedToPaused = new TreeSet<>();
+    private final int statusBarHeight;
 
     public TestControl(MGMapApplication mgMapApplication){
         this.mgMapApplication = mgMapApplication;
+
+        int idStatusBarHeight = mgMapApplication.getResources().getIdentifier( "status_bar_height", "dimen", "android");
+        statusBarHeight = (idStatusBarHeight > 0)?mgMapApplication.getResources().getDimensionPixelSize(idStatusBarHeight): ControlView.dp(24);
     }
 
     public boolean isTestMode() {
@@ -225,17 +239,20 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
         }
     }
 
-
-
-
+    public int getStatusBarHeight() {
+        return statusBarHeight;
+    }
 
     // execute a test click
     public void doClick(){
         final TestView tv = currentTestView;
+        int[] tvLoc = new int[2];
+        tv.getLocationOnScreen(tvLoc);
+        Point screenPos = new Point(currentCursorPos.x + tvLoc[0], currentCursorPos.y + tvLoc[1]);
         if (tv != null){
             tv.setClickPosition(currentCursorPos);
             setClickVisibility(true);
-            timer.postDelayed(new ScreenClicker(currentCursorPos), 200);
+            timer.postDelayed(new ScreenClicker(screenPos), 200);
             // do the click after 200ms + some time to execute this command
             tv.getActivity().runOnUiThread(() -> {
                 ObjectAnimator animation = ObjectAnimator.ofFloat(tv.click, "scaleX", 2);
@@ -318,6 +335,40 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
                 mgMapApplication.getSharedPreferences().edit().putString(prefKey, valueToSet).apply();
             }
         }
+    }
+
+    public Point getPreferenceCenter(int  keyId) {
+        AppCompatActivity settingsActivity = getActivity(SettingsActivity.class);
+        String key = settingsActivity.getResources().getString(keyId);
+
+        Fragment f = settingsActivity.getSupportFragmentManager().getFragments().get(0);
+        if (f instanceof PreferenceFragmentCompat) {
+            PreferenceFragmentCompat pfc = (PreferenceFragmentCompat) f; // corresponds to preference screen
+
+            RecyclerView rv = pfc.getListView();
+            RecyclerView.Adapter<?> ra = rv.getAdapter();
+
+            if (ra instanceof PreferenceGroupAdapter) {
+                PreferenceGroupAdapter pga = (PreferenceGroupAdapter) ra;
+                @SuppressLint("RestrictedApi") int pIdx = pga.getPreferenceAdapterPosition(key);
+
+
+                RecyclerView.LayoutManager rlm = rv.getLayoutManager();
+                if (rlm instanceof LinearLayoutManager) {
+                    LinearLayoutManager llm = (LinearLayoutManager) rlm;
+
+                    int[] loc = new int[2];
+                    View v = llm.getChildAt(pIdx);
+                    if (v!=null){
+                        v.getLocationOnScreen(loc);
+                        Point pt = new Point(loc[0] + v.getWidth() / 2, loc[1] + v.getHeight() / 2 - getStatusBarHeight());
+                        mgLog.d(pt);
+                        return pt;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
 }

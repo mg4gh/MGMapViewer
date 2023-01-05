@@ -1,12 +1,8 @@
 package mg.mgmap.test.tc.init;
 
 import android.annotation.SuppressLint;
-import android.graphics.Point;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
+import android.content.Intent;
+import android.net.Uri;
 
 import java.lang.invoke.MethodHandles;
 
@@ -19,6 +15,7 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.AbstractTestCase;
 import mg.mgmap.test.TestControl;
 
+@SuppressWarnings("unused")
 public class Init1 extends AbstractTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -37,42 +34,53 @@ public class Init1 extends AbstractTestCase {
         if (mgMapActivity == null) return; // runs in background - do nothing
 
         setCursorPosition(getCenterPosition());
-        mgMapApplication.unregisterAlertDialogs(mgMapActivity);
-
+        mgMapActivity.runOnUiThread(() -> {
+            mgMapApplication.confirmAlertDialogs(mgMapActivity); // confirm HintInitialMapDownload
+        });
 
         animateTo(testControl.getViewClickPos("group_task"), 1000);
         doClick();
         animateTo(testControl.getViewClickPos("download"), 1000);
         doClick();
 
+        WaitUtil.doWait(TestControl.class, 300);
+        animateTo(testControl.getPreferenceCenter(R.string.preferences_dl_maps_de_key), 1000);
         WaitUtil.doWait(TestControl.class, 1000);
+        doClick();
 
-
-        animateTo(new Point(700,650), 1000);
-
-        AppCompatActivity settingsActivity =  testControl.getActivity(SettingsActivity.class);
-        Fragment f = settingsActivity.getSupportFragmentManager().getFragments().get(0);
-        if (f instanceof PreferenceFragmentCompat) {
-            PreferenceFragmentCompat pfc = (PreferenceFragmentCompat) f;
-
-            Preference p = pfc.findPreference(settingsActivity.getResources().getString(R.string.preferences_dl_maps_eu_key));
-//            pfc.getListView().getAdapter().
-
-            p.performClick();
-//            View v = pfc.getListView().getChildAt(2);
-//            int[] loc = new int[2];
-//            v.getLocationOnScreen(loc);
-//            Point pt = new Point(loc[0]+v.getWidth()/2, loc[1]+v.getHeight()/2);
-//            animateTo(pt, 1000);
-        }
-        mgLog.d("and click");
-//        doClick();
-        mgLog.d("and wait");
-        WaitUtil.doWait(TestControl.class, 1000);
+        animateTo(getCenterPosition(), 1000);
+        WaitUtil.doWait(TestControl.class, 2000); // now you see HintInitialMapDownload2
         mgMapActivity.runOnUiThread(() -> {
-            mgMapApplication.unregisterAlertDialogs(testControl.getActivity(SettingsActivity.class), false);
+            mgMapApplication.confirmAlertDialogs(testControl.getActivity(SettingsActivity.class)); // confirm hint alertDialog, which triggers the Intent to open the Browser with the maps download page
         });
-        WaitUtil.doWait(TestControl.class, 4000);
-
+        WaitUtil.doWait(TestControl.class, 2000);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mf-v4-map://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/germany/Berlin.zip"));
+        testControl.getActivity(SettingsActivity.class).startActivity(intent);
+        WaitUtil.doWait(TestControl.class, 2000);
+        mgMapActivity.runOnUiThread(() -> {
+            mgMapApplication.confirmAlertDialogs(mgMapActivity); // confirm start Download alert Dialog
+        });
+        WaitUtil.doWait(TestControl.class, 10000);
+        mgMapActivity.runOnUiThread(() -> {
+            mgMapApplication.confirmAlertDialogs(mgMapActivity); // confirm Download finished alert Dialog
+        });
+        WaitUtil.doWait(TestControl.class, 2000);
+        mgMapActivity.runOnUiThread(() -> {
+            mgMapApplication.confirmAlertDialogs(testControl.getActivity(SettingsActivity.class)); // confirm Map layer assignment hint alert Dialog
+        });
+        testControl.setCursorVisibility(true);
+        WaitUtil.doWait(TestControl.class, 1000);
+        animateTo(testControl.getPreferenceCenter(R.string.Layers_pref_chooseMap2_key), 1000);
+        doClick();
     }
+
+    @Override
+    protected void addRegexs() {
+        addRegex(getName()+" start");
+        addRegex("click on: Got it!"); // hint_initial_map_download_key is already visible at start of test
+        addRegex("onClick group_task");
+        addRegex("onClick download");
+        addRegex(getName()+" stop");
+    }
+
 }
