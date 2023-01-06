@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -13,10 +12,12 @@ import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceDialogFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroupAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,11 +33,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -59,6 +58,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     public TestControl(MGMapApplication mgMapApplication){
         this.mgMapApplication = mgMapApplication;
 
+        @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
         int idStatusBarHeight = mgMapApplication.getResources().getIdentifier( "status_bar_height", "dimen", "android");
         statusBarHeight = (idStatusBarHeight > 0)?mgMapApplication.getResources().getDimensionPixelSize(idStatusBarHeight): ControlView.dp(24);
     }
@@ -90,8 +90,8 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
                     }
                 }).start();
 
-                long limit = System.currentTimeMillis() + testCase.getDurationLimit();
-                while (System.currentTimeMillis() < limit){
+                long now = System.currentTimeMillis() + testCase.getDurationLimit();
+                while (System.currentTimeMillis() < now + testCase.getDurationLimit()){
                     WaitUtil.doWait(this.getClass(), 1000);
                     if (! testCase.isRunning()) break; // leave loop if testcase is finished
                 }
@@ -246,10 +246,10 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     // execute a test click
     public void doClick(){
         final TestView tv = currentTestView;
-        int[] tvLoc = new int[2];
-        tv.getLocationOnScreen(tvLoc);
-        Point screenPos = new Point(currentCursorPos.x + tvLoc[0], currentCursorPos.y + tvLoc[1]);
         if (tv != null){
+            int[] tvLoc = new int[2];
+            tv.getLocationOnScreen(tvLoc);
+            Point screenPos = new Point(currentCursorPos.x + tvLoc[0], currentCursorPos.y + tvLoc[1]);
             tv.setClickPosition(currentCursorPos);
             setClickVisibility(true);
             timer.postDelayed(new ScreenClicker(screenPos), 200);
@@ -316,23 +316,34 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     }
 
 
-    public static DialogFragment hasOpenedDialogs(FragmentActivity activity) {
+    public static void dismissPreferenceDialogFragmentCompat(FragmentActivity activity) {
         List<Fragment> fragments = activity.getSupportFragmentManager().getFragments();
-        DialogFragment res = null;
+        PreferenceDialogFragmentCompat res = null;
         for (Fragment fragment : fragments) {
-            if (fragment instanceof DialogFragment) {
-                res =  (DialogFragment)fragment;
+            if (fragment instanceof PreferenceDialogFragmentCompat) {
+                ((PreferenceDialogFragmentCompat)fragment).dismiss();
             }
         }
-        return res;
     }
 
-    public void handleDialog(FragmentActivity activity, String prefKey, String valueToSet){
-        DialogFragment dialogFragment = hasOpenedDialogs(activity);
-        if (dialogFragment != null){
-            dialogFragment.dismiss();
-            if (prefKey != null){
-                mgMapApplication.getSharedPreferences().edit().putString(prefKey, valueToSet).apply();
+    public void handleSettingsDialog(int keyId, String valueToSet){
+        AppCompatActivity settingsActivity = getActivity(SettingsActivity.class);
+        dismissPreferenceDialogFragmentCompat(settingsActivity);
+
+        if (keyId != 0){
+            String key = settingsActivity.getResources().getString(keyId);
+            Fragment f = settingsActivity.getSupportFragmentManager().getFragments().get(0);
+            if (f instanceof PreferenceFragmentCompat) {
+                PreferenceFragmentCompat pfc = (PreferenceFragmentCompat) f; // corresponds to preference screen
+                Preference preference = pfc.findPreference(key);
+                assert preference != null;
+                if (preference instanceof ListPreference) {
+                    ListPreference listPreference = (ListPreference) preference;
+                    settingsActivity.runOnUiThread(()->listPreference.setValue(valueToSet));
+                } else if (preference instanceof EditTextPreference) {
+                    EditTextPreference listPreference = (EditTextPreference) preference;
+                    settingsActivity.runOnUiThread(()->listPreference.setText(valueToSet));
+                }
             }
         }
     }

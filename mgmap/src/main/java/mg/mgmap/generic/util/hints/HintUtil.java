@@ -32,11 +32,12 @@ public class HintUtil {
     HashSet<Pref<Boolean>> prefs = new HashSet<>();
 
     private void registerHint(AbstractHint hint){
+        mgLog.d("new: "+hint.prefShowHint);
         if (prefs.isEmpty()){ // first call
             hint.prefShowHints.addObserver((e) -> prefs.forEach(p -> p.setValue(true))); // add observer to cleanup, if changed
         }
         prefs.add(hint.prefShowHint);
-        mgLog.i(prefs);
+        mgLog.d("all:"+prefs);
     }
 
     @SuppressLint({"DiscouragedApi", "SetTextI18n"})
@@ -49,7 +50,7 @@ public class HintUtil {
             String hintText = hint.getText();
 
             if (hint.checkHintCondition()) {
-
+                mgLog.d("showHint key="+hint.prefShowHint.getKey());
                 LinearLayout ll = new LinearLayout(activity);
                 ll.setLayoutParams(new AlertDialogLayout.LayoutParams(-2, -2));
                 ll.setPadding(20, 20, 20, 20);

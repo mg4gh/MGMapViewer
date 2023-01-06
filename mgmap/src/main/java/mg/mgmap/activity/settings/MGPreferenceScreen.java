@@ -39,7 +39,7 @@ public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
                 hint.addGotItAction(() -> activity.startActivity(intent));
             }
             preference.setOnPreferenceClickListener(preference1 -> {
-                mgLog.i(intent.getDataString());
+                mgLog.i("onPreferenceClick "+intent.getDataString());
                 MGMapApplication application = (MGMapApplication) getActivity().getApplication();
                 if (!application.getHintUtil().showHint( hint )){
                     activity.startActivity(intent);

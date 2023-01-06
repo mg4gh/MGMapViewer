@@ -1,10 +1,6 @@
 package mg.mgmap.test.tc.gr_task;
 
 import android.graphics.Point;
-import android.view.MotionEvent;
-
-import androidx.fragment.app.DialogFragment;
-import androidx.preference.ListPreferenceDialogFragmentCompat;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
@@ -67,7 +63,7 @@ public class Settings extends AbstractTestCase {
         WaitUtil.doWait(TestControl.class, 500);
         animateTo(getCenterPosition(), 1000);
         SettingsActivity sa = testControl.getActivity(SettingsActivity.class);
-        testControl.handleDialog(sa, sa.getResources().getString(R.string.preference_choose_theme_key), "Elements.xml");
+        testControl.handleSettingsDialog(R.string.preference_choose_theme_key, "Elements.xml");
 
         WaitUtil.doWait(TestControl.class, 3000);
         stop();

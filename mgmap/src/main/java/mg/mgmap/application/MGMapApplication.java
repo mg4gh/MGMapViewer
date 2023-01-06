@@ -83,6 +83,7 @@ import java.util.concurrent.TimeUnit;
  * The application of the MgMapActivity.
  * Mainly it provides some Observable objects that represent the application state.
  */
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class MGMapApplication extends Application {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -530,19 +531,20 @@ public class MGMapApplication extends Application {
     public void registerAlertDialog(AlertDialog dialog, Activity activity){
         alertDialogActivityMap.put(dialog, activity);
     }
-    public void disposeAlertDialogs(Activity activity) {
-        unregisterAlertDialogs(activity,true, 0);
+    public boolean disposeAlertDialogs(Activity activity) {
+        return unregisterAlertDialogs(activity,true, 0);
     }
-    public void confirmAlertDialogs(Activity activity) {
-        unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_POSITIVE);
+    public boolean confirmAlertDialogs(Activity activity) {
+        return unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_POSITIVE);
     }
-    public void denyAlertDialogs(Activity activity) {
-        unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_NEGATIVE);
+    public boolean denyAlertDialogs(Activity activity) {
+        return unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_NEGATIVE);
     }
-    public void acceptAlertDialogs(Activity activity) {
-        unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_NEUTRAL);
+    public boolean acceptAlertDialogs(Activity activity) {
+        return unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_NEUTRAL);
     }
-    public void unregisterAlertDialogs(Activity activity, boolean dismiss, int actionButton){
+    public boolean unregisterAlertDialogs(Activity activity, boolean dismiss, int actionButton){
+        boolean bResult = false;
         ArrayList<AlertDialog> toBeRemoved = new ArrayList<>();
         for (Map.Entry<AlertDialog,Activity> entry :alertDialogActivityMap.entrySet()){
             AlertDialog dialog = entry.getKey();
@@ -557,12 +559,14 @@ public class MGMapApplication extends Application {
                         mgLog.i("click on: "+bt.getText());
                         bt.performClick();
                     }
+                    bResult = true;
                 }
             }
         }
         for (AlertDialog dialog : toBeRemoved){
             alertDialogActivityMap.remove(dialog);
         }
+        return bResult;
     }
 
 }
