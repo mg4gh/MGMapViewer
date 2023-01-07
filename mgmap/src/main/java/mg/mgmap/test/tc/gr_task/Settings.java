@@ -9,13 +9,13 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.AbstractTestCase;
 import mg.mgmap.test.TestControl;
 
+@SuppressWarnings("unused")
 public class Settings extends AbstractTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -55,14 +55,11 @@ public class Settings extends AbstractTestCase {
             animateTo(clickPosZoomIn, 1000);
             doClick();
         }
-        animateTo(getCenterPosition(), 1000);
-        WaitUtil.doWait(TestControl.class, 3000);
-        animateTo(new Point(700,650), 1000);
+        animateTo(testControl.getPreferenceCenter(R.string.preference_choose_theme_key), 1000);
         WaitUtil.doWait(TestControl.class, 1000);
         doClick();
         WaitUtil.doWait(TestControl.class, 500);
         animateTo(getCenterPosition(), 1000);
-        SettingsActivity sa = testControl.getActivity(SettingsActivity.class);
         testControl.handleSettingsDialog(R.string.preference_choose_theme_key, "Elements.xml");
 
         WaitUtil.doWait(TestControl.class, 3000);
