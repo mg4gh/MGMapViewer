@@ -15,7 +15,7 @@ class TrackLogPointTest {
         assertEquals(123456789L, tlp.getTimestamp());
         assertEquals(49.4, tlp.getLat());
         assertEquals(8.6, tlp.getLon());
-        assertEquals(3, tlp.getNmeaAcc());
+        assertTrue(Math.abs( tlp.getNmeaAcc() - 3.1) < 0.001);
         assertTrue(Math.abs(tlp.getWgs84ele()-173.45) < 0.001 );
         assertTrue(Math.abs(tlp.getNmeaEle()-(173.45 -49.49f)) < 0.001 );
         assertTrue(Math.abs(tlp.getEleA()-(173.45 -49.49f)) < 0.001);
@@ -28,11 +28,11 @@ class TrackLogPointTest {
         assertEquals(123456789L, tlp.getTimestamp());
         assertEquals(49.4, tlp.getLat());
         assertEquals(8.6, tlp.getLon());
-        assertEquals(3, tlp.getNmeaAcc());
+        assertTrue(Math.abs( tlp.getNmeaAcc() - 3.1) < 0.001);
         assertTrue(Math.abs(tlp.getWgs84ele()-PointModel.NO_ELE) < 0.001 );
         assertTrue(Math.abs(tlp.getNmeaEle()-PointModel.NO_ELE) < 0.001 );
-        assertTrue(Math.abs(tlp.getHgtEle()-111.11) < 0.001);
-        assertTrue(Math.abs(tlp.getEleA()-111.11) < 0.001);
+        assertTrue(Math.abs(tlp.getHgtEle()-PointModel.NO_ELE) < 0.001);
+        assertTrue(Math.abs(tlp.getEleA()-PointModel.NO_ELE) < 0.001);
         assertTrue(Math.abs(tlp.getPressure()-PointModel.NO_PRES) < 0.001 );
         assertTrue(Math.abs(tlp.getPressureEle()-PointModel.NO_ELE) < 0.001 );
     }
@@ -43,7 +43,7 @@ class TrackLogPointTest {
         assertEquals(PointModel.NO_TIME, tlp.getTimestamp());
         assertEquals(49.4, tlp.getLat());
         assertEquals(8.6, tlp.getLon());
-        assertEquals(0, tlp.getNmeaAcc());
+        assertEquals(PointModel.NO_ACC, tlp.getNmeaAcc());
         assertTrue(Math.abs(tlp.getWgs84ele()-PointModel.NO_ELE) < 0.001 );
         assertTrue(Math.abs(tlp.getNmeaEle()-PointModel.NO_ELE) < 0.001 );
         assertTrue(Math.abs(tlp.getHgtEle()-PointModel.NO_ELE) < 0.001);
@@ -62,10 +62,11 @@ class TrackLogPointTest {
         assertEquals(123456789L, tlp.getTimestamp());
         assertEquals(49.4, tlp.getLat());
         assertEquals(8.6, tlp.getLon());
-        assertEquals(3, tlp.getNmeaAcc());
+        assertTrue(Math.abs(tlp.getNmeaAcc()-3.1) < 0.001 );
         assertTrue(Math.abs(tlp.getWgs84ele()-173.45) < 0.001 );
         assertTrue(Math.abs(tlp.getNmeaEle()-(173.45 -49.49f)) < 0.001 );
-        assertTrue(Math.abs(tlp.getHgtEle()-111.11) < 0.001);
+        assertEquals(PointModel.NO_ELE, tlp.getHgtEle());
+//        assertTrue(Math.abs(tlp.getHgtEle()-111.11) < 0.001);
         assertTrue(Math.abs(tlp.getEleA()-(173.45 -49.49f)) < 0.001);
         assertTrue(Math.abs(tlp.getPressure()-1000.13) < 0.001 );
         assertTrue(Math.abs(tlp.getPressureEle()-133.33) < 0.001 );
@@ -79,7 +80,7 @@ class TrackLogPointTest {
         tlp2.setPressureEle(133.33f);
         ByteBuffer buf = ByteBuffer.allocate(100);
         tlp2.toByteBuffer(buf);
-        assertEquals(44, buf.position());
+        assertEquals(56, buf.position());
         buf.rewind();
         TrackLogPoint tlp = new TrackLogPoint();
         tlp.fromByteBuffer(buf);
@@ -87,10 +88,10 @@ class TrackLogPointTest {
         assertEquals(123456789L, tlp.getTimestamp());
         assertEquals(49.4, tlp.getLat());
         assertEquals(8.6, tlp.getLon());
-        assertEquals(3, tlp.getNmeaAcc());
+        assertTrue(Math.abs(tlp.getNmeaAcc()-3.1) < 0.001 );
         assertTrue(Math.abs(tlp.getWgs84ele()-173.45) < 0.001 );
         assertTrue(Math.abs(tlp.getNmeaEle()-(173.45 -49.49f)) < 0.001 );
-        assertTrue(Math.abs(tlp.getHgtEle()-111.11) < 0.001);
+        assertTrue(Math.abs(tlp.getHgtEle()-PointModel.NO_ELE) < 0.001);
         assertTrue(Math.abs(tlp.getEleA()-(173.45 -49.49f)) < 0.001);
         assertTrue(Math.abs(tlp.getPressure()-1000.13) < 0.001 );
         assertTrue(Math.abs(tlp.getPressureEle()-133.33) < 0.001 );
@@ -112,11 +113,11 @@ class TrackLogPointTest {
     void getEleD() {
         TrackLogPoint tlp = new TrackLogPoint();
         assertTrue(Math.abs(tlp.getEleD()-PointModel.NO_ELE) < 0.001);
+        tlp.setEle(123.45f);
+        assertTrue(Math.abs(tlp.getEleD()-123.45) < 0.001);
         tlp.setHgtEle(111.23f);
         assertTrue(Math.abs(tlp.getHgtEle()-111.23) < 0.001);
         assertTrue(Math.abs(tlp.getEleD()-111.23) < 0.001);
-        tlp.setEle(123.45f);
-        assertTrue(Math.abs(tlp.getEleD()-123.45) < 0.001);
         tlp.setPressureEle(211.45f);
         assertTrue(Math.abs(tlp.getEleD()-211.45) < 0.001);
     }
@@ -140,7 +141,7 @@ class TrackLogPointTest {
     @Test
     void getAccuracy() {
         TrackLogPoint tlp = new TrackLogPoint();
-        assertTrue(Math.abs(tlp.getNmeaAcc()-0) < 0.001);
+        assertEquals(PointModel.NO_ACC, tlp.getNmeaAcc());
         tlp.setNmeaAcc(11.23f);
         assertTrue(Math.abs(tlp.getNmeaAcc()-11) < 0.001);
     }

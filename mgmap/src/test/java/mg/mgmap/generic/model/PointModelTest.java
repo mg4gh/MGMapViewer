@@ -7,19 +7,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class PointModelTest {
 
     @Test
-    void testNoLatLong() {
+    public void testNoLatLong() {
         assertEquals(200, PointModel.NO_LAT_LONG);
     }
     @Test
-    void testNoEle() {
+    public void testNoEle() {
         assertEquals(-20000, PointModel.NO_ELE);
     }
     @Test
-    void testNoPres() {
+    public void testNoPres() {
         assertEquals(0, PointModel.NO_PRES);
     }
     @Test
-    void testTime() {
-        assertEquals(0, PointModel.NO_TIME);
+    public void testTime() {
+        assertEquals(946771200000L, PointModel.NO_TIME);
     }
 }
