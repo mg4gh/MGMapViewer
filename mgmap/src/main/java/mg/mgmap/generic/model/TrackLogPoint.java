@@ -83,7 +83,7 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         buf.putLong(timestamp);
         buf.putInt(la);
         buf.putInt(lo);
-        buf.putInt((int) nmeaAcc *1000);
+        buf.putInt((int)(nmeaAcc *1000));
         buf.putInt((int)(pressure*1000));
         buf.putInt((int)(wgs84ele *1000));
         buf.putInt((int)(nmeaEle *1000));
