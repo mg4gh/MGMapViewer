@@ -466,7 +466,10 @@ public class PersistenceManager {
     @SuppressWarnings("SameParameterValue")
     void createGraphhopperCfgIfNotExists(String ghCfg){
         try {
-            IOUtil.copyStreams( application.getAssets().open("graphhopper.log"), new FileOutputStream(new File(searchConfigDir, ghCfg)) );
+            File graphhopperSearchConfig = new File(searchConfigDir, ghCfg);
+            if (!graphhopperSearchConfig.exists()){
+                IOUtil.copyStreams( application.getAssets().open("graphhopper.log"), new FileOutputStream(new File(searchConfigDir, ghCfg)) );
+            }
         } catch (IOException e) {
             mgLog.e(e);
         }
