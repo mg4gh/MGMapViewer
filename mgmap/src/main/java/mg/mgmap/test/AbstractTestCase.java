@@ -29,7 +29,7 @@ public class AbstractTestCase {
 
     LogMatcher lm;
     protected boolean running = false;
-    int level = Log.DEBUG;
+    MGLog.Level level = MGLog.Level.DEBUG;
     int lineCnt;
 
 
@@ -134,10 +134,10 @@ public class AbstractTestCase {
         boolean success = (matches.size() == regexs.size());
         String result = (success?"passed":"failed")+" (lineCnt="+lineCnt+")";
         for (String s : regexs){
-            mgLog.any(success?Log.VERBOSE:Log.INFO, " R "+s);
+            mgLog.any(success?MGLog.Level.VERBOSE:MGLog.Level.INFO, " R "+s);
         }
         for (String s : matches){
-            mgLog.any(success?Log.VERBOSE:Log.INFO, " M "+s);
+            mgLog.any(success?MGLog.Level.VERBOSE:MGLog.Level.INFO, " M "+s);
         }
         return result;
     }

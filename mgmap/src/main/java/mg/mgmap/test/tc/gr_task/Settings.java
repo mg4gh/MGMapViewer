@@ -69,9 +69,9 @@ public class Settings extends AbstractTestCase {
     @Override
     protected void addRegexs() {
         addRegex(getName()+" start");
-        addRegex("context=MGMapActivity key=FSBeeline.ZoomLevel value=15");
-        addRegex("key=FSControl.qc_selector value=7");
-        addRegex("context=MGMapActivity key=FSBeeline.ZoomLevel value=16");
+        addRegex("onClick group_task");
+        addRegex("onClick settings");
+        addRegex("recreate MGMapActivity due to key=SelectTheme value=Elements.xml");
         addRegex(getName()+" stop");
     }
 

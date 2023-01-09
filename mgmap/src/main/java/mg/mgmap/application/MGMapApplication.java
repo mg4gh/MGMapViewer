@@ -144,8 +144,8 @@ public class MGMapApplication extends Application {
         System.out.println("MGMapViewer Application start!!!!");
         super.onCreate();
 
-        MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG? Log.DEBUG:Log.INFO);
-//        MGLog.logConfig.put("mg.mgmap.test.TestControl", Log.VERBOSE);
+        MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG? MGLog.Level.DEBUG:MGLog.Level.INFO);
+//        MGLog.logConfig.put("mg.mgmap.test.TestControl", MGLog.Level.VERBOSE);
         mgLog.evaluateLevel();
 
         testControl = new TestControl(this);

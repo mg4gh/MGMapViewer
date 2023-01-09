@@ -10,19 +10,17 @@ import mg.mgmap.generic.util.basic.MGLogObserver;
 
 public class LogMatcher implements MGLogObserver {
 
-    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
-
-    int level;
+    MGLog.Level level;
     int lineCnt = 0;
 
-    public LogMatcher(int level){
+    public LogMatcher(MGLog.Level level){
         this.level = level;
     }
 
 
     @Override
-    public void processLog(int level, String tag, String message) {
-        if (matchRunning && (this.level <= level) && (regexs.size()>0)){
+    public void processLog(MGLog.Level level, String tag, String message) {
+        if (matchRunning && (this.level.ordinal() <= level.ordinal()) && (regexs.size()>0)){
             boolean lineMatch = message.matches(regexs.get(0));
 //                                if (!message.contains("          **** "))  Log.d("mg.mgmap","          **** "+lineMatch+" "+message);
             if (lineMatch){
