@@ -179,7 +179,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         mapLayerFactory = new MGMapLayerFactory(this);
 
-        prefCache = new PrefCache(this);
+        prefCache = application.getPrefCache();
 
         initMapView();
         createLayers();
