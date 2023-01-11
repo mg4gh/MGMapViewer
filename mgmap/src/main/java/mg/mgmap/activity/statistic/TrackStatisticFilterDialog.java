@@ -69,9 +69,8 @@ public class TrackStatisticFilterDialog {
                         }
                     }
                     trackStatisticActivity.prefFilterChanged.toggle();
-                    KeyboardUtil.hideKeyboard(trackStatisticActivity);
                 })
-                .setNegative("Cancel", evt -> KeyboardUtil.hideKeyboard(trackStatisticActivity))
+                .setNegative("Cancel", evt-> trackStatisticActivity.prefFilterOn.toggle())
                 .show();
 
     }
