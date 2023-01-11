@@ -3,7 +3,6 @@ package mg.mgmap.test;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -53,18 +52,15 @@ public class TestView extends RelativeLayout  {
         }
     }
 
-//    @Override
-//    protected void onLayout(boolean changed, int l, int t, int r, int b) { // needed to determine the size of this TestView, but also the location
-//        super.onLayout(changed, l, t, r, b);
-//        this.getLocationOnScreen(location);
-//        pxSize.x = this.getWidth();
-//        pxSize.y = this.getHeight();
-//        if (Log.isLoggable(MGMapApplication.LABEL, Log.DEBUG)) {
-//            Log.d(MGMapApplication.LABEL, NameUtil.context() + " TestView size: " + pxSize + " "
-//                    + " TestView location: " + location[0] + "," + location[1] + " " + getContext().getClass().getSimpleName());
-//        }
-//        application.getTestControl().onTestViewLayout(this);
-//    }
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) { // needed to determine the size of this TestView, but also the location
+        super.onLayout(changed, l, t, r, b);
+        this.getLocationOnScreen(location);
+        pxSize.x = this.getWidth();
+        pxSize.y = this.getHeight();
+        application.getTestControl().onTestViewLayout(this);
+        mgLog.d(" TestView size: " + pxSize +" TestView location: " + location[0] + "," + location[1] + " " + getContext().getClass().getSimpleName());
+    }
 
     public void setVisibility(int visibility, View view){
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
@@ -100,24 +96,6 @@ public class TestView extends RelativeLayout  {
     public void setClickPosition(Point positionOnScreen){
         click.setX(positionOnScreen.x - location[0] - click.getWidth()/2.0f);
         click.setY(positionOnScreen.y - location[1] - click.getHeight()/2.0f);
-    }
-
-
-    // convert position (in percent) to position in pixel
-    public void percent2pos(PointF in, Point out){
-        out.x = (int)(pxSize.x*in.x/100);
-        out.y = (int)(pxSize.y*in.y/100);
-    }
-    // convert position (in percent) to position in raw pixel (needed e.g. for Clicker ... to do /system/bin/input tap x y t )
-    public void percent2rawPos(PointF in, Point out){
-        percent2pos(in, out);
-        out.x += location[0];
-        out.y += location[1];
-    }
-    // convert position (in pixel) to position for click drawable (left top corner of drawable, again in pixel)
-    public void clickOffset(Point in, Point out){
-        out.x = in.x - click.getWidth()/2;
-        out.y = in.y - click.getHeight()/2;
     }
 
     @Override

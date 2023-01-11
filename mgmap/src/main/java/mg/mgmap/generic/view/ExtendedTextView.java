@@ -51,7 +51,7 @@ public class ExtendedTextView extends AppCompatTextView {
     private Object value = null;
     private int availableWidth = 0;
     private String availableText = null;
-    private final TextPaint availablePaint = new TextPaint();
+//    private final TextPaint availablePaint = new TextPaint();
 
     public ExtendedTextView(Context context) {
         this(context, null);
@@ -59,7 +59,7 @@ public class ExtendedTextView extends AppCompatTextView {
 
     public ExtendedTextView(Context context,  AttributeSet attrs) {
         super(context, attrs);
-        availablePaint.set( getPaint() );
+//        availablePaint.set( getPaint() );
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ExtendedTextView extends AppCompatTextView {
                 }
                 mgLog.d(logName+":"+getText()+" - "+" available=" + availableWidth);
                 availableText = null; // force recalc text
-                getPaint().set(availablePaint);
+//                getPaint().set(availablePaint);
                 setValue(value);
             }
         } catch (Exception e) {
@@ -210,9 +210,9 @@ public class ExtendedTextView extends AppCompatTextView {
         this.value = value;
         TextPaint paint = getPaint();
         if ((value!=null) && (availableWidth>0) && (paint!=null)){
-            String newText = Formatter.format(formatType, value, availablePaint, availableWidth*getMaxLines());
+            String newText = Formatter.format(formatType, value, getPaint() /*availablePaint*/, availableWidth*getMaxLines());
             if (!newText.equals(availableText)){
-                mgLog.d(logName+":"+newText /*+ " availableWidth="+availableWidth*/);
+                mgLog.d(logName+":"+newText /*+ " availableWidth="+availableWidth +" textSize="+getTextSize()*/);
                 setText( newText );
                 availableText = newText;
                 onChange("onSetValue: "+newText);

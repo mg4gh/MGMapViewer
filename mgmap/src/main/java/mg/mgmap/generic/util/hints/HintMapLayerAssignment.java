@@ -12,7 +12,7 @@ public class HintMapLayerAssignment extends AbstractHint implements Runnable{
 
     List<String> mapKeys;
     public HintMapLayerAssignment(Activity activity, List<String> mapKeys){
-        super(activity, R.string.hintMapLayerAssignment, true);
+        super(activity, R.string.hintMapLayerAssignment);
         this.mapKeys = mapKeys;
         title = "Map layer assignment";
         spanText = "There are up to five map layers that can be put one over the other with the option to control transparency of each layer. " +

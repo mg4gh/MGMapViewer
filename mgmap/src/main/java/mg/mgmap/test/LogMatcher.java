@@ -26,7 +26,7 @@ public class LogMatcher implements MGLogObserver {
             if (lineMatch){
                 regexs.remove(0);
                 matches.add(message);
-                Log.i(LogMatcher.class.getName()," LogMatcher add line: "+matches.size()+" "+message.substring(0,Math.min(40,message.length()))+" ...");
+                Log.i(LogMatcher.class.getName(),"  LogMatcher add line: "+matches.size()+" "+message.substring(0,Math.min(80,message.length()))+" ...");
             }
             lineCnt++;
         }

@@ -14,19 +14,13 @@
  */
 package mg.mgmap.generic.util;
 
-import android.content.DialogInterface;
-
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.lang.invoke.MethodHandles;
-
+import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.view.DialogView;
 
 public class BgJobUtil {
-
-    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     AppCompatActivity activity;
     MGMapApplication application;
@@ -37,53 +31,26 @@ public class BgJobUtil {
     }
 
     public void processConfirmDialog(BgJobGroup bgJobGroup){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setTitle(bgJobGroup.title);
-        builder.setMessage(bgJobGroup.getDetails());
-
-        builder.setPositiveButton("YES", (dialog, which) -> {
-            dialog.dismiss();
-            mgLog.i("do it." );
-            FullscreenUtil.enforceState(activity);
-            bgJobGroup.doit();
-        });
-
-        builder.setNegativeButton("NO", (dialog, which) -> {
-            // Do nothing
-            dialog.dismiss();
-            mgLog.i("don't do it." );
-            FullscreenUtil.enforceState(activity);
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
-        alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(bgJobGroup.size()>0);
-        MGMapApplication.getByContext(activity).registerAlertDialog(alert,activity);
+        DialogView dialogView = activity.findViewById(R.id.dialog_parent);
+        dialogView
+                .setTitle(bgJobGroup.title)
+                .setContent(bgJobGroup.getDetails())
+                .setLogPrefix("bgJobGroupConfirm "+bgJobGroup.title)
+                .setPositive("YES", evt -> bgJobGroup.doit())
+                .setNegative("NO", null)
+                .show();
     }
 
     void reportResult(BgJobGroup bgJobGroup){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        DialogView dialogView = activity.findViewById(R.id.dialog_parent);
+        dialogView
+                .setTitle(bgJobGroup.title)
+                .setContent(bgJobGroup.getDetails())
+                .setLogPrefix("bgJobGroupResult "+bgJobGroup.title)
+                .setPositive("YES", evt -> bgJobGroup.onReportResultOk())
+                .setNegative(bgJobGroup.offerRetries ? "Retry" : null, evt -> bgJobGroup.retry())
+                .show();
 
-        builder.setTitle(bgJobGroup.title);
-        builder.setMessage(bgJobGroup.getResultDetails());
-
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            dialog.dismiss();
-            bgJobGroup.onReportResultOk();
-            mgLog.i("ok" );
-        });
-
-        if (bgJobGroup.offerRetries){
-            builder.setNegativeButton("Retry", (dialog, which) -> {
-                mgLog.i("Retry" );
-                bgJobGroup.retry();
-            });
-        }
-
-        AlertDialog alert = builder.create();
-        alert.show();
-        MGMapApplication.getByContext(activity).registerAlertDialog(alert,activity);
     }
 
 }

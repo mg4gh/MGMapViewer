@@ -14,16 +14,17 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AlertDialogLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 
-import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.view.DialogView;
 
 public class HintUtil {
 
@@ -53,13 +54,13 @@ public class HintUtil {
                 mgLog.d("showHint key="+hint.prefShowHint.getKey());
                 LinearLayout ll = new LinearLayout(activity);
                 ll.setLayoutParams(new AlertDialogLayout.LayoutParams(-2, -2));
-                ll.setPadding(20, 20, 20, 20);
+                ll.setPadding(ControlView.dp(5),ControlView.dp(5),ControlView.dp(5),ControlView.dp(5));
                 ll.setOrientation(LinearLayout.VERTICAL);
 
                 TextView tv = new TextView(activity);
                 tv.setLayoutParams(new LinearLayout.LayoutParams(-2, -2));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-                tv.setPadding(20, 20, 20, 20);
+                tv.setPadding(ControlView.dp(5),ControlView.dp(5),ControlView.dp(5),ControlView.dp(5));
 
                 SpannableString string = new SpannableString(hintText);
                 int pos = 0;
@@ -91,7 +92,7 @@ public class HintUtil {
                 {
                     LinearLayout ll2 = new LinearLayout(activity);
                     ll2.setLayoutParams(new AlertDialogLayout.LayoutParams(-2, -2));
-                    ll2.setPadding(20, 20, 20, 20);
+                    ll2.setPadding(ControlView.dp(5),ControlView.dp(5),ControlView.dp(5),ControlView.dp(5));
                     ll2.setOrientation(LinearLayout.HORIZONTAL);
                     ll.addView(ll2);
 
@@ -106,7 +107,7 @@ public class HintUtil {
                     paramsTV.weight = 80;
                     tv2.setLayoutParams(paramsTV);
                     tv2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                    tv2.setPadding(20, 20, 20, 20);
+                    tv2.setPadding(ControlView.dp(5),ControlView.dp(5),ControlView.dp(5),ControlView.dp(5));
                     tv2.setText("Don't show this hint anymore.");
                     ll2.addView(tv2);
                 }
@@ -116,7 +117,7 @@ public class HintUtil {
                 {
                     LinearLayout ll2 = new LinearLayout(activity);
                     ll2.setLayoutParams(new AlertDialogLayout.LayoutParams(-2, -2));
-                    ll2.setPadding(20, 20, 20, 20);
+                    ll2.setPadding(ControlView.dp(5),ControlView.dp(5),ControlView.dp(5),ControlView.dp(5));
                     ll2.setOrientation(LinearLayout.HORIZONTAL);
                     ll.addView(ll2);
 
@@ -131,27 +132,23 @@ public class HintUtil {
                     paramsTV.weight = 80;
                     tv2.setLayoutParams(paramsTV);
                     tv2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                    tv2.setPadding(20, 20, 20, 20);
+                    tv2.setPadding(ControlView.dp(5),ControlView.dp(5),ControlView.dp(5),ControlView.dp(5));
                     tv2.setText("Don't show hints anymore.");
                     ll2.addView(tv2);
                 }
 
-
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+                ((DialogView)activity.findViewById(R.id.dialog_parent))
                         .setTitle(headline)
-                        .setPositiveButton("Got it!", (dialog, which) -> {
+                        .setContentView(ll)
+                        .setLogPrefix(hint.getClass().getSimpleName())
+                        .setPositive("Got it", evt -> {
                             hint.prefShowHint.setValue(!cbHideThis.isChecked());
                             hint.prefShowHints.setValue(!cbHideAll.isChecked());
                             hint.gotItActions.forEach(Runnable::run);
-                            dialog.dismiss();
                         })
-                        .setView(ll);
+                        .setNegative( hint.isAllowAbort()?"Abort":null, null)
+                        .show();
 
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-                alertDialog.getWindow().setLayout(-2, -2);
-                MGMapApplication.getByContext(activity).registerAlertDialog(alertDialog,activity);
                 return true;
             }
         } catch (Exception e) {

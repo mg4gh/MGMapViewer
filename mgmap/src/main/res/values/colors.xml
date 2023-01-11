@@ -4,6 +4,7 @@
     <color name="BLACK">#FF000000</color>
     <color name="BLACK_A150" >#96000000</color>
     <color name="BLACK_A50" >#32000000</color>
+    <color name="BLACK_A20" >#14000000</color>
     <color name="WHITE">#FFFFFFFF</color>
     <color name="WHITE_A150">#96FFFFFF</color>
     <color name="WHITE_A100">#64FFFFFF</color>

@@ -1,7 +1,6 @@
 package mg.mgmap.test;
 
 import android.graphics.Point;
-import android.util.Log;
 
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.view.MapView;
@@ -98,10 +97,15 @@ public class AbstractTestCase {
         return getActivity(MGMapActivity.class).getMapViewUtility().getPointModel4Point(p);
     }
 
-
-    public Point getCenterPosition() {
-        return testControl.getCenterPos();
+    protected Point getCenterPosition(){
+        return getPercentPosition(50,50);
     }
+    protected Point getPercentPosition(float x, float y){
+        Point screenDimension = testControl.screenDimension;
+        mgLog.d("screenDimension="+screenDimension);
+        return new Point((int)(screenDimension.x*x)/100, (int)(screenDimension.y*y)/100);
+    }
+
     public void setCursorPosition(Point p) {
         if (running){
             testControl.setCurrentCursorPos(p);

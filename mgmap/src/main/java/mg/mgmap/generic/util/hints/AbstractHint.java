@@ -17,13 +17,13 @@ public abstract class AbstractHint implements Runnable{
     protected ArrayList<Runnable> gotItActions = new ArrayList<>();
     Pref<Boolean> prefShowHints;
     Pref<Boolean> prefShowHint;
-    boolean showOnce;
+    protected boolean showOnce = true;
+    protected boolean allowAbort = false;
 
     protected PrefCache prefCache;
 
-    public AbstractHint(Activity activity, int prefShowHintId, boolean showOnce){
+    public AbstractHint(Activity activity, int prefShowHintId){
         this.activity = activity;
-        this.showOnce = showOnce;
         prefCache = PrefCache.getApplicationPrefCache(activity);
         assert prefCache != null;
         prefShowHints = prefCache.get(activity.getResources().getString(R.string.preferences_hints_key), true);
@@ -53,5 +53,9 @@ public abstract class AbstractHint implements Runnable{
 
     public void addGotItAction(Runnable gotItAction){
         gotItActions.add(gotItAction);
+    }
+
+    public boolean isAllowAbort() {
+        return allowAbort;
     }
 }

@@ -8,7 +8,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,7 +32,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.WaitUtil;
@@ -53,16 +51,13 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     public Set<String> activityCreatedToDestroyed = new TreeSet<>();
     public Set<String> activityStartedToStopped = new TreeSet<>();
     public Set<String> activityResumedToPaused = new TreeSet<>();
-    private final int statusBarHeight;
+    Point screenDimension = new Point();
 
     public TestControl(MGMapApplication mgMapApplication){
         this.mgMapApplication = mgMapApplication;
-
-        @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
-        int idStatusBarHeight = mgMapApplication.getResources().getIdentifier( "status_bar_height", "dimen", "android");
-        statusBarHeight = (idStatusBarHeight > 0)?mgMapApplication.getResources().getDimensionPixelSize(idStatusBarHeight): ControlView.dp(24);
     }
 
+    protected Point currentCursorPos = new Point(0,0); // on screen (not in window)
     public boolean isTestMode() {
         return testMode;
     }
@@ -191,12 +186,20 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
         }
     }
 
+    public void onTestViewLayout(TestView testView){
+        if (testView.getHeight() > screenDimension.y){
+            screenDimension = new Point(testView.getWidth(), testView.getHeight());
+        }
+    }
+
 
     private final SortedMap<String, Rect> viewPositionRegistry = new TreeMap<>();
 
     public void registerViewPosition(String key, int left, int top, int right, int bottom){
         if ((key != null) && (key.length() > 0)){
-            viewPositionRegistry.put(key, new Rect(left,top,right,bottom));
+            Rect rect = new Rect(left,top,right,bottom);
+            mgLog.d("register key: "+key +" rect="+rect);
+            viewPositionRegistry.put(key, rect);
         }
     }
     public Rect getViewPosition(String key){
@@ -205,13 +208,14 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     public Point getViewClickPos(String key){
         Rect rect = viewPositionRegistry.get(key);
         if (rect != null){
-            return new Point((rect.left+rect.right)/2, (rect.top+rect.bottom)/2 );
+            int[] loc = new int[2];
+            currentTestView.getLocationOnScreen(loc);
+            return new Point((rect.left+rect.right)/2 - loc[0], (rect.top+rect.bottom)/2 - loc[1]);
         }
         return null;
     }
 
 
-    protected Point currentCursorPos = new Point(0,0);
     public Point getCurrentCursorPos() {
         return currentCursorPos;
     }
@@ -220,10 +224,6 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
         if (currentTestView != null){
             currentTestView.setCursorPosition(currentCursorPos);
         }
-    }
-    protected Point getCenterPos(){
-        DisplayMetrics dm = mgMapApplication.getResources().getDisplayMetrics();
-        return new Point(dm.widthPixels/2, dm.heightPixels/2);
     }
 
     protected boolean currentCursorVisibility;
@@ -239,10 +239,6 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
         }
     }
 
-    public int getStatusBarHeight() {
-        return statusBarHeight;
-    }
-
     // execute a test click
     public void doClick(){
         final TestView tv = currentTestView;
@@ -250,7 +246,7 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
             int[] tvLoc = new int[2];
             tv.getLocationOnScreen(tvLoc);
             Point screenPos = new Point(currentCursorPos.x + tvLoc[0], currentCursorPos.y + tvLoc[1]);
-            tv.setClickPosition(currentCursorPos);
+            tv.setClickPosition(screenPos);
             setClickVisibility(true);
             timer.postDelayed(new ScreenClicker(screenPos), 200);
             // do the click after 200ms + some time to execute this command
@@ -368,11 +364,13 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
                 if (rlm instanceof LinearLayoutManager) {
                     LinearLayoutManager llm = (LinearLayoutManager) rlm;
 
-                    int[] loc = new int[2];
                     View v = llm.getChildAt(pIdx);
                     if (v!=null){
-                        v.getLocationOnScreen(loc);
-                        Point pt = new Point(loc[0] + v.getWidth() / 2, loc[1] + v.getHeight() / 2 - getStatusBarHeight());
+                        int[] loc1 = new int[2];
+                        int[] loc2 = new int[2];
+                        v.getLocationOnScreen(loc1);
+                        currentTestView.getLocationOnScreen(loc2);
+                        Point pt = new Point(loc1[0] + v.getWidth() / 2, loc1[1] + v.getHeight() / 2 - loc2[1]);
                         mgLog.d(pt);
                         return pt;
                     }
