@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,6 +47,7 @@ import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
+import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
 
 import java.lang.invoke.MethodHandles;
@@ -110,7 +110,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
         prefFilterOn.addObserver((e) -> {
             if (prefFilterOn.getValue()){
-                new TrackStatisticFilterDialog().show(context, TrackStatisticActivity.this);
+                new TrackStatisticFilterDialog(TrackStatisticActivity.this).show();
             } else {
                 refreshVisibleEntries();
             }
@@ -216,7 +216,6 @@ public class TrackStatisticActivity extends AppCompatActivity {
         mgLog.d();
         visibleEntries.clear();
         allEntries.clear();
-        application.disposeAlertDialogs(this);
         super.onPause();
     }
 
@@ -340,12 +339,11 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     };
                     etTrackLogName.setFilters(new InputFilter[] { filter });
 
-                    application.registerAlertDialog( new AlertDialog.Builder(this)
+                    ((DialogView)findViewById(R.id.dialog_parent))
                             .setTitle("Rename Track")
                             .setMessage("Old name: "+trackLog.getName())
-                            .setView(etTrackLogName)
-                            .setCancelable(false)
-                            .setPositiveButton("OK", (dialog, whichButton) -> {
+                            .setContentView(etTrackLogName)
+                            .setPositive("OK", evt -> {
                                 String oldName = trackLog.getName();
                                 String oldNameKey = trackLog.getNameKey();
                                 String newName = etTrackLogName.getText().toString();
@@ -368,8 +366,8 @@ public class TrackStatisticActivity extends AppCompatActivity {
                                     statisticAdapter.notifyItemChanged(visibleEntries.indexOf(trackLog));
                                 }
                             })
-                            .setNegativeButton("Cancel", (dialog, whichButton) -> {})
-                            .show(), this);
+                            .setNegative("Cancel", null)
+                            .show();
                 }
             }
         };
@@ -458,36 +456,24 @@ public class TrackStatisticActivity extends AppCompatActivity {
         return v -> {
             if (prefDeleteAllowed.getValue()){
                 ArrayList<TrackLog> trackLogs = getSelectedEntries();
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(TrackStatisticActivity.this);
-                builder.setTitle(getResources().getString(R.string.ctx_stat_del_track));
                 String msg = getNames(trackLogs, false).toString();
-                builder.setMessage(msg.substring(1,msg.length()-1));
-
-
-                builder.setPositiveButton("YES", (dialog, which) -> {
-                    dialog.dismiss();
-                    mgLog.i("confirm delete for list \""+msg+"\"");
-                    for(TrackLog trackLog : trackLogs){
-                        application.metaTrackLogs.remove(trackLog.getNameKey());
-                        application.availableTrackLogsObservable.availableTrackLogs.remove(trackLog);
-                        if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == trackLog) {
-                            application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
-                        }
-                        persistenceManager.deleteTrack(trackLog.getName()); // no problem, if no persistent file exists
-                    }
-                    TrackStatisticActivity.this.recreate();
-                });
-
-                builder.setNegativeButton("NO", (dialog, which) -> {
-                    // Do nothing
-                    dialog.dismiss();
-                    mgLog.i("abort delete for list \""+msg+"\"");
-                });
-
-                AlertDialog alert = builder.create();
-                alert.show();
-                application.registerAlertDialog(alert,this);
+                ((DialogView)findViewById(R.id.dialog_parent))
+                        .setTitle(getResources().getString(R.string.ctx_stat_del_track))
+                        .setMessage(msg.substring(1,msg.length()-1))
+                        .setPositive("OK", evt -> {
+                            mgLog.i("confirm delete for list \""+msg+"\"");
+                            for(TrackLog trackLog : trackLogs){
+                                application.metaTrackLogs.remove(trackLog.getNameKey());
+                                application.availableTrackLogsObservable.availableTrackLogs.remove(trackLog);
+                                if (application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog() == trackLog) {
+                                    application.availableTrackLogsObservable.setSelectedTrackLogRef(new TrackLogRef());
+                                }
+                                persistenceManager.deleteTrack(trackLog.getName()); // no problem, if no persistent file exists
+                            }
+                            TrackStatisticActivity.this.recreate();
+                        })
+                        .setNegative("Cancel", null)
+                        .show();
             }
         };
     }

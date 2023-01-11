@@ -14,21 +14,16 @@
  */
 package mg.mgmap.application;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import android.content.SharedPreferences;
-import android.util.Log;
-import android.widget.Button;
 
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
@@ -71,7 +66,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -113,7 +107,6 @@ public class MGMapApplication extends Application {
 
     private final ArrayList<BgJob> bgJobs = new ArrayList<>();
     private final ArrayList<BgJob> activeBgJobs = new ArrayList<>();
-    private final Map<AlertDialog, Activity> alertDialogActivityMap = new HashMap<>();
 
     PrefCache prefCache = null;
     public Pref<Boolean> prefRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
@@ -528,45 +521,5 @@ public class MGMapApplication extends Application {
         activeBgJobs.remove(job);
     }
 
-    public void registerAlertDialog(AlertDialog dialog, Activity activity){
-        alertDialogActivityMap.put(dialog, activity);
-    }
-    public boolean disposeAlertDialogs(Activity activity) {
-        return unregisterAlertDialogs(activity,true, 0);
-    }
-    public boolean confirmAlertDialogs(Activity activity) {
-        return unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_POSITIVE);
-    }
-    public boolean denyAlertDialogs(Activity activity) {
-        return unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_NEGATIVE);
-    }
-    public boolean acceptAlertDialogs(Activity activity) {
-        return unregisterAlertDialogs(activity,false, DialogInterface.BUTTON_NEUTRAL);
-    }
-    public boolean unregisterAlertDialogs(Activity activity, boolean dismiss, int actionButton){
-        boolean bResult = false;
-        ArrayList<AlertDialog> toBeRemoved = new ArrayList<>();
-        for (Map.Entry<AlertDialog,Activity> entry :alertDialogActivityMap.entrySet()){
-            AlertDialog dialog = entry.getKey();
-            Activity dialogActivity = entry.getValue();
-            if (activity.equals(dialogActivity)){
-                toBeRemoved.add(dialog);
-                if (dialog.isShowing()){
-                    if (dismiss){
-                        dialog.dismiss();
-                    } else {
-                        Button bt = dialog.getButton(actionButton);
-                        mgLog.i("click on: "+bt.getText());
-                        bt.performClick();
-                    }
-                    bResult = true;
-                }
-            }
-        }
-        for (AlertDialog dialog : toBeRemoved){
-            alertDialogActivityMap.remove(dialog);
-        }
-        return bResult;
-    }
 
 }

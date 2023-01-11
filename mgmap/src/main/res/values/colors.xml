@@ -19,6 +19,7 @@
     <color name="ORANGE_A50">#32FF6000</color>
     <color name="ORANGE">#FFFF6000</color>
     <color name="GRAY200">#FFC8C8C8</color>
+    <color name="GRAY240">#FFF0F0F0</color>
     <color name="GRAY100_A100">#64646464</color>
     <color name="GRAY100_A150">#96646464</color>
     <color name="BLUE">#FF0000FF</color>

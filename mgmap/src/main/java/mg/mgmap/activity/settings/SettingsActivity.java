@@ -76,12 +76,6 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
         FullscreenUtil.enforceState(this, fullscreen);
     }
 
-    @Override
-    protected void onPause() {
-        ((MGMapApplication)getApplication()).disposeAlertDialogs(this);
-        super.onPause();
-    }
-
     // copied from:
     // https://developer.android.com/guide/topics/ui/settings/organize-your-settings#java
     // mg4gh: removed line "fragment.setTargetFragment(caller, 0);", since it is deprecated and it seems not necessary

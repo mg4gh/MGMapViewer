@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.inputmethod.EditorInfo;
 
 import java.util.Calendar;
 import java.util.Objects;
@@ -36,22 +37,38 @@ public class EditPref<T> extends androidx.appcompat.widget.AppCompatEditText{
             public void afterTextChanged(Editable editable) {
                 if (getText() != null) {
                     if ((!calOk) || (pref.verify(getText().toString()) == null)) {
-                        setText(old);
+                        if (pref.verify(old) != null){
+                            setText(old);
+                        }
                     }
                 }
             }
         });
+
+        setOnFocusChangeListener((view, focused) -> {
+            if (focused){
+                callOnClick();
+            }
+        });
+
+        setOnEditorActionListener((tv, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_GO
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || actionId == EditorInfo.IME_ACTION_NEXT
+                    || actionId == EditorInfo.IME_ACTION_SEND
+                    || actionId == EditorInfo.IME_ACTION_SEARCH ) {
+                KeyboardUtil.hideKeyboard(this);
+            }
+            return true;
+        });
+        setSingleLine();
+
 
         if (pref.getValue() instanceof Calendar) {
             @SuppressWarnings("unchecked")
             Pref<Calendar> prefC = (Pref<Calendar>)pref;
             setText( pref.sdf.format(prefC.getValue().getTime()) );
 
-            setOnFocusChangeListener((view, focused) -> {
-                if (focused){
-                    callOnClick();
-                }
-            });
             setOnClickListener(v -> {
                 Calendar c = prefC.verify( Objects.requireNonNull(getText()).toString() ); // get current value to calendar format
                 DatePickerDialog datePickerDialog = new DatePickerDialog(

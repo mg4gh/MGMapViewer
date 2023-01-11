@@ -300,7 +300,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 tileDownloadLayer.onPause();
             }
         }
-        application.disposeAlertDialogs(this);
         super.onPause();
     }
 

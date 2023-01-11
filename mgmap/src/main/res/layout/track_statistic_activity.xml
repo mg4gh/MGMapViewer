@@ -24,10 +24,16 @@
         >
     </LinearLayout>
 
+    <mg.mgmap.generic.view.DialogView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/dialog_parent"
+        />
+
     <mg.mgmap.test.TestView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/test3"
+        android:id="@+id/testview"
         />
 
 </RelativeLayout>

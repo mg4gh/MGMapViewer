@@ -34,7 +34,7 @@ public class BgJobUtil {
         DialogView dialogView = activity.findViewById(R.id.dialog_parent);
         dialogView
                 .setTitle(bgJobGroup.title)
-                .setContent(bgJobGroup.getDetails())
+                .setMessage(bgJobGroup.getDetails())
                 .setLogPrefix("bgJobGroupConfirm "+bgJobGroup.title)
                 .setPositive("YES", evt -> bgJobGroup.doit())
                 .setNegative("NO", null)
@@ -45,9 +45,9 @@ public class BgJobUtil {
         DialogView dialogView = activity.findViewById(R.id.dialog_parent);
         dialogView
                 .setTitle(bgJobGroup.title)
-                .setContent(bgJobGroup.getDetails())
+                .setMessage(bgJobGroup.getResultDetails())
                 .setLogPrefix("bgJobGroupResult "+bgJobGroup.title)
-                .setPositive("YES", evt -> bgJobGroup.onReportResultOk())
+                .setPositive("OK", evt -> bgJobGroup.onReportResultOk())
                 .setNegative(bgJobGroup.offerRetries ? "Retry" : null, evt -> bgJobGroup.retry())
                 .show();
 

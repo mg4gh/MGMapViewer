@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.ControlView;
+import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -30,6 +31,7 @@ public class DialogView extends RelativeLayout {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private String title = null;
+    private View messageView = null;
     private View contentView = null;
     private ExtendedTextView neutralETV = null;
     private ExtendedTextView positiveETV = null;
@@ -67,11 +69,13 @@ public class DialogView extends RelativeLayout {
         setBackgroundColor(0x00FFFFFF);
         setClickable(false);
         title = null;
+        messageView = null;
         contentView = null;
         neutralETV = null;
         positiveETV = null;
         negativeETV = null;
         logPrefix = "";
+        KeyboardUtil.hideKeyboard(this);
     }
 
     public String getTitle() {
@@ -95,13 +99,13 @@ public class DialogView extends RelativeLayout {
         this.contentView = contentView;
         return this;
     }
-    public DialogView setContent(String text) {
+    public DialogView setMessage(String text) {
         TextView tv = new TextView(getContext());
         tv.setLayoutParams(new LinearLayout.LayoutParams(-2, -2));
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         tv.setPadding(defaultPadding,defaultPadding,defaultPadding,defaultPadding);
         tv.setText(text);
-        this.contentView = tv;
+        this.messageView = tv;
         return this;
     }
 
@@ -153,7 +157,7 @@ public class DialogView extends RelativeLayout {
 
     public DialogView show(){
         LinearLayout llDialog = new LinearLayout(getContext());
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(ControlView.dp(20),ControlView.dp(20),ControlView.dp(20),ControlView.dp(20));
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
         llDialog.setLayoutParams(params);
@@ -163,7 +167,12 @@ public class DialogView extends RelativeLayout {
         llDialog.setBackgroundColor(0xFFFFFFFF);
 
         llDialog.addView(createTitleView());
-        llDialog.addView(contentView);
+        if (messageView != null){
+            llDialog.addView(messageView);
+        }
+        if (contentView != null){
+            llDialog.addView(contentView);
+        }
 
         LinearLayout buttonView = new LinearLayout(getContext());
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);

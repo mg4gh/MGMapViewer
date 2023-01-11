@@ -19,7 +19,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.SparseIntArray;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
@@ -35,6 +34,7 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.view.DialogView;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class HeightProfileActivity extends AppCompatActivity {
         mgLog.i("started");
         GraphView graph = findViewById(R.id.graph);
         graph.getSeries().clear();
-        ((MGMapApplication)getApplication()).disposeAlertDialogs(this);
+//        ((MGMapApplication)getApplication()).disposeAlertDialogs(this);
         super.onPause();
         mgLog.i("finished");
     }
@@ -117,13 +117,11 @@ public class HeightProfileActivity extends AppCompatActivity {
         createSeries(graph,  application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE, showAscentGraph);
         createSeries(graph,  application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A150, showAscentGraph);
         if ((application.routeTrackLogObservable.getTrackLog() != null) && (!hasElevation(application.routeTrackLogObservable.getTrackLog()))){
-            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle("Warning");
-            alertDialog.setMessage("Download height data to see the height profile of the RouteTrackLog. You can do this via hgt layer!");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    (dialog, which) -> dialog.dismiss());
-            alertDialog.show();
-            application.registerAlertDialog(alertDialog, this);
+            ((DialogView)findViewById(R.id.dialog_parent))
+                    .setTitle("Warning")
+                    .setMessage("Download height data to see the height profile of the RouteTrackLog. You can do this via hgt layer!")
+                    .setPositive("OK", null)
+                    .show();
         }
     }
 
