@@ -12,7 +12,10 @@ public class ObservableImpl implements Observable{
         static final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(ObservableImpl.class);
     }
 
-    private static PropertyChangeSupport getPropertyChangeSupport(){
+    private PropertyChangeSupport getPropertyChangeSupport(){
+        if (propertyChangeSupport != null){
+            return propertyChangeSupport;
+        }
         return PropertyChangeSupportHolder.propertyChangeSupport;
     }
 
@@ -20,6 +23,7 @@ public class ObservableImpl implements Observable{
     private final String propertyName;
     private Object value;
     private boolean changed;
+    private PropertyChangeSupport propertyChangeSupport = null;
 
     public ObservableImpl(){
         propertyName = UUID.randomUUID().toString();
@@ -27,6 +31,10 @@ public class ObservableImpl implements Observable{
 
     public ObservableImpl(String propertyName){
         this.propertyName = propertyName;
+    }
+
+    public void setPropertyChangeSupport(PropertyChangeSupport propertyChangeSupport) {
+        this.propertyChangeSupport = propertyChangeSupport;
     }
 
     public void addObserver(PropertyChangeListener propertyChangeListener){

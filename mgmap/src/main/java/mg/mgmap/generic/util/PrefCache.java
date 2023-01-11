@@ -19,6 +19,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.beans.PropertyChangeSupport;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.TreeSet;
@@ -33,12 +34,14 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
     private final Context context;
     private final HashMap<String, Pref<?>> prefMap;
     private final SharedPreferences sharedPreferences;
+    private final PropertyChangeSupport propertyChangeSupport;
 
     public PrefCache(Context context){
         this.context = context;
         prefMap = new HashMap<>();
         sharedPreferences = MGMapApplication.getByContext(context).getSharedPreferences();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        propertyChangeSupport = new PropertyChangeSupport(ObservableImpl.class);
     }
 
     @Override
@@ -68,6 +71,7 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
         if (pref == null){
             pref = new Pref<>(key, defaultValue, sharedPreferences);
             prefMap.put(key, pref);
+            pref.setPropertyChangeSupport(propertyChangeSupport);
         }
         return (Pref<T>)pref;
     }
