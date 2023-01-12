@@ -130,16 +130,20 @@ public class ExtendedTextView extends AppCompatTextView {
     }
     public ExtendedTextView setPrAction(Pref<Boolean> prAction1, Pref<Boolean> prAction2){
         this.prAction1 = prAction1;
-        this.setOnClickListener(v -> {
-            mgLog.d("onClick "+logName);
-            prAction1.toggle();
-        });
+        if (prAction1 != null){
+            this.setOnClickListener(v -> {
+                mgLog.d("onClick "+logName);
+                prAction1.toggle();
+            });
+        }
         this.prAction2 = prAction2;
-        this.setOnLongClickListener(v -> {
-            mgLog.d("onClick "+logName);
-            prAction2.toggle();
-            return true;
-        });
+        if (prAction2 != null){
+            this.setOnLongClickListener(v -> {
+                mgLog.d("onClick "+logName);
+                prAction2.toggle();
+                return true;
+            });
+        }
         return this;
     }
     public ExtendedTextView setDisabledData(Pref<Boolean> prEnabled, int drIdDis){
