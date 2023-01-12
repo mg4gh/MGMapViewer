@@ -580,13 +580,14 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     protected XmlRenderTheme getRenderTheme() {
         try {
-            File theme = new File(application.getPersistenceManager().getThemesDir(), sharedPreferences.getString(getResources().getString(R.string.preference_choose_theme_key), "Elevate.xml"));
+            File theme = new File(application.getPersistenceManager().getThemesDir(), sharedPreferences.getString(getResources().getString(R.string.preference_choose_theme_key), "invalid.xml"));
             ExternalRenderTheme renderTheme = new ExternalRenderTheme( theme.getAbsolutePath() );
             renderTheme.setMenuCallback(this);
             return renderTheme;
         } catch (FileNotFoundException e) {
-            mgLog.e(e.getMessage());
-
+            if ((e.getMessage()!=null) && (!e.getMessage().contains("invalid.xml"))){
+                mgLog.e(e.getMessage());
+            }
             return InternalRenderTheme.DEFAULT;
         }
     }
