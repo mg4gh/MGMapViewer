@@ -53,7 +53,7 @@ public class ObservableImpl implements Observable{
     }
 
 
-    public void notifyObservers(){
+    synchronized public void notifyObservers(){
         if (changed){
             getPropertyChangeSupport().firePropertyChange(new PropertyChangeEvent(this, propertyName, 0, 1));
             changed = false;
