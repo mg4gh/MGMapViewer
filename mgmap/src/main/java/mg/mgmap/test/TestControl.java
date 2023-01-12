@@ -231,12 +231,12 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
     public void setCursorVisibility(boolean cursorVisibility){
         this.currentCursorVisibility = cursorVisibility;
         if (currentTestView != null){
-            currentTestView.setVisibility(cursorVisibility? View.VISIBLE:View.INVISIBLE, currentTestView.cursor);
+            currentTestView.setVisibility(cursorVisibility? View.VISIBLE:View.INVISIBLE, currentTestView.getCursor());
         }
     }
     public void setClickVisibility(boolean clickVisibility){
         if (currentTestView != null){
-            currentTestView.setVisibility(clickVisibility? View.VISIBLE:View.INVISIBLE, currentTestView.click);
+            currentTestView.setVisibility(clickVisibility? View.VISIBLE:View.INVISIBLE, currentTestView.getClick());
         }
     }
 
@@ -252,17 +252,17 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
             timer.postDelayed(new ScreenClicker(screenPos), 200);
             // do the click after 200ms + some time to execute this command
             tv.getActivity().runOnUiThread(() -> {
-                ObjectAnimator animation = ObjectAnimator.ofFloat(tv.click, "scaleX", 2);
+                ObjectAnimator animation = ObjectAnimator.ofFloat(tv.getClick(), "scaleX", 2);
                 animation.setDuration(500);                             // ... run the click animation
                 animation.start();                                      // but start this immediately
-                ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.click, "scaleY", 2);
+                ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.getClick(), "scaleY", 2);
                 animation2.setDuration(500);                            // same for Y direction
                 animation2.start();
             });
             timer.postDelayed(() -> {                               // finally after 600ms the click animation steps
                 setClickVisibility(false);                          // ImageIcon will disappear
-                tv.click.setScaleX(1);                              // and the scale will be reset to normal size (1)
-                tv.click.setScaleY(1);
+                tv.getClick().setScaleX(1);                              // and the scale will be reset to normal size (1)
+                tv.getClick().setScaleY(1);
             },600);
             WaitUtil.doWait(TestControl.class, 800);
         }
@@ -273,18 +273,18 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
         if (tv != null){
             tv.getActivity().runOnUiThread(() -> {
                 {
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(tv.cursor, "translationX", newPosition.x);
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(tv.getCursor(), "translationX", newPosition.x);
                     animation.setDuration(duration);
                     animation.start();
-                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.cursor, "translationY", newPosition.y);
+                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.getCursor(), "translationY", newPosition.y);
                     animation2.setDuration(duration);
                     animation2.start();
                 }
                 {
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(tv.click, "translationX", newPosition.x);
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(tv.getClick(), "translationX", newPosition.x);
                     animation.setDuration(duration);
                     animation.start();
-                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.click, "translationY", newPosition.y);
+                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.getClick(), "translationY", newPosition.y);
                     animation2.setDuration(duration);
                     animation2.start();
                 }
@@ -298,15 +298,15 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
     public void swipeTo(Point newPosition, int duration) {
         TestView tv = currentTestView;
         if (tv != null){
-            tv.click.setScaleX(1.5f);                              // scale will bebe enlarged (1.5)
-            tv.click.setScaleY(1.5f);
+            tv.getClick().setScaleX(1.5f);                              // scale will bebe enlarged (1.5)
+            tv.getClick().setScaleY(1.5f);
             setClickVisibility(true);
             timer.postDelayed(new ScreenSwiper(currentCursorPos, newPosition, duration), 1);
             timer.postDelayed(() -> animateTo(newPosition, duration), 100);
             timer.postDelayed(() -> {
                 setClickVisibility(false);                          // ImageIcon will disappear
-                tv.click.setScaleX(1);                              // and the scale will be reset to normal size (1)
-                tv.click.setScaleY(1);
+                tv.getClick().setScaleX(1);                              // and the scale will be reset to normal size (1)
+                tv.getClick().setScaleY(1);
             },duration + 200);
             WaitUtil.doWait(TestControl.class, duration+400);
         }

@@ -15,7 +15,6 @@ import androidx.core.content.res.ResourcesCompat;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -24,15 +23,14 @@ public class TestView extends RelativeLayout  {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    Point pxSize = new Point(); // size of the TestView in pixel
-    int[] location = new int[2]; // location on screen - typically 0,0, but on Smartphone with notch e.g. 0,88
+    private final Point pxSize = new Point(); // size of the TestView in pixel
+    private final int[] location = new int[2]; // location on screen - typically 0,0, but on Smartphone with notch e.g. 0,88
 
-    ImageView cursor = null; // ImageView of the animated cursor
-    ImageView click = null; // ImageView for animated click event (let this circle rise)
+    private ImageView cursor = null; // ImageView of the animated cursor
+    private ImageView click = null; // ImageView for animated click event (let this circle rise)
 
-    Activity activity; // any activity (of this app)
-    MGMapApplication application; // but the specific application -> provides access to TestControl
-    static TestViewHook testViewHook = null;
+    private Activity activity; // any activity (of this app)
+    private static TestViewHook testViewHook = null;
 
     public TestView(Context context) {
         super(context);
@@ -42,6 +40,14 @@ public class TestView extends RelativeLayout  {
     public TestView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         init(context);
+    }
+
+    public ImageView getCursor() {
+        return cursor;
+    }
+
+    public ImageView getClick() {
+        return click;
     }
 
     interface TestViewHook{
@@ -57,7 +63,6 @@ public class TestView extends RelativeLayout  {
     private void init(Context context){
         if (context instanceof Activity) {
             activity = (Activity) context;
-            application = MGMapApplication.getByContext(context);
             createCursor(context);
             createClick(context);
         }
