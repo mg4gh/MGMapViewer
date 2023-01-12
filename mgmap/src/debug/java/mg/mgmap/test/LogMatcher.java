@@ -2,7 +2,6 @@ package mg.mgmap.test;
 
 import android.util.Log;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.generic.util.basic.MGLog;
