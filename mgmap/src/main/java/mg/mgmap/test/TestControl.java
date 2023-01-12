@@ -39,6 +39,7 @@ import mg.mgmap.application.Setup;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
+import mg.mgmap.generic.view.TestView;
 
 @SuppressWarnings("unused")
 public class TestControl implements Setup.TestRunner,Application.ActivityLifecycleCallbacks{

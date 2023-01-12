@@ -1,4 +1,4 @@
-package mg.mgmap.test;
+package mg.mgmap.generic.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -50,7 +50,7 @@ public class TestView extends RelativeLayout  {
         return click;
     }
 
-    interface TestViewHook{
+    public interface TestViewHook{
         void registerTestView(TestView testView);
         void unregisterTestView(TestView testView);
         void onTestViewLayout(TestView testView);
