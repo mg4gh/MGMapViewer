@@ -21,8 +21,8 @@ public class Init1 extends AbstractTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public Init1(MGMapApplication mgMapApplication) {
-        super(mgMapApplication);
+    public Init1(MGMapApplication mgMapApplication, TestControl testControl) {
+        super(mgMapApplication, testControl);
     }
 
 

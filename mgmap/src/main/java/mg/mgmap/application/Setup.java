@@ -13,9 +13,11 @@ import com.jcraft.jsch.SftpException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -51,22 +53,26 @@ public class Setup {
     private String sAppDir = "MGMapViewer";
     private String preferencesName;
     private SharedPreferences sharedPreferences;
-    private boolean testMode = false;
     private Handler timer = null;
     private final TreeMap<String, String> testCases = new TreeMap<>();
     private final Properties pTestResults = new Properties();
     String testgroup = null;
+    BaseConfig.Mode mode = BaseConfig.Mode.NORMAL;
+    private TestRunner testRunner;
 
-    File baseDir;
-    File testSetup;
-    File testConfig;
+    private File testSetup;
+    private File testConfig;
 
-    public void init(MGMapApplication application){
+    public interface TestRunner{
+        void runTests(SortedMap<String, String> testCases, Properties pTestResults);
+    }
+
+    public BaseConfig init(MGMapApplication application){
         this.mgMapApplication = application;
         preferencesName = application.getPackageName() + "_preferences";
 
         mgLog.d("Setup start");
-        baseDir = application.getExternalFilesDir(null);
+        File baseDir = application.getExternalFilesDir(null);
         testSetup = new File(baseDir, TEST_SETUP);
         testConfig = new File(baseDir, TEST_CONFIG);
         File testOff = new File(testSetup, TEST_OFF);
@@ -75,7 +81,7 @@ public class Setup {
             if (testSetup.mkdir()){
                 mgLog.d(testSetup.getAbsolutePath()+" created");
             }
-            new Thread(() -> {
+            new Thread(() -> { // network handling has to use a separate worker thread, even if the main thread is waiting for completion
                 try {
                     mgLog.d("preferencesName="+preferencesName);
                     mgLog.d("Setup run");
@@ -90,7 +96,7 @@ public class Setup {
 
                         @SuppressWarnings("ResultOfMethodCallIgnored")
                         @Override
-                        public void doCopy() throws IOException, SftpException {
+                        public void doCopy() throws Exception {
                             channelSftp.lcd(baseDir.getAbsolutePath());
                             File testTemp = new File(testSetup, TEST_TEMP);
                             PersistenceManager.deleteRecursivly(testTemp);
@@ -107,7 +113,6 @@ public class Setup {
                                         if ((aTestgroup != null) && (aTestResultDir != null) && (aTestResult == null)){
                                             // ok, use this testgroup for setup
                                             testgroup = lsEntry.getFilename();
-                                            testMode = true;
                                             channelSftp.get(lsEntry.getFilename()+"/"+TEST_GROUP, TEST_SETUP+"/"+TEST_TEMP+"/"+TEST_GROUP);
                                             Properties pTestgroup = new Properties();
                                             pTestgroup.load(new FileInputStream(new File(testTemp, TEST_GROUP)));
@@ -163,8 +168,8 @@ public class Setup {
                                                 }
                                             }
 
-                                            application.registerActivityLifecycleCallbacks(application.getTestControl());
-                                            break;
+                                            mode = BaseConfig.Mode.SYSTEM_TEST;
+                                            break; // testgroup found -> leave loop
                                         }
                                     }
 
@@ -179,27 +184,35 @@ public class Setup {
                     mgLog.e(e);
                 } finally {
                     synchronized (semaphore){
-                        semaphore.notifyAll();
+                        semaphore.notifyAll(); // initial setup finished -> notify
                     }
                 }
             }).start();
-            WaitUtil.doWait(semaphore,60*1000);
+            WaitUtil.doWait(semaphore,60*1000); // wait for initial setup to be finished, at most 60s
         }
         sharedPreferences = application.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
-        application.getTestControl().setTestMode(isTestMode());
-        mgLog.d("Setup end");
-
-        if (isTestMode()){
-            timer = new Handler();
-            timer.postDelayed( testManager, 5000); // wait initial time before starting the tests
+        if (mode == BaseConfig.Mode.SYSTEM_TEST){
+            try {
+                // create TestControl without java dependency
+                Class<?> clazz = Class.forName("mg.mgmap.test.TestControl");
+                Constructor<?> constructor = clazz.getConstructor(MGMapApplication.class, Setup.class);
+                constructor.newInstance(mgMapApplication, this);
+                // this (Handler creation) has to be done on this main thread, not on a worker Thread (as testgroup setup above)
+                timer = new Handler();
+                timer.postDelayed( testManager, 5000); // wait initial time before starting the tests
+            } catch (Exception e) {
+                mgLog.e(e);
+            }
         }
+        mgLog.d("Setup end"+(testgroup==null?"":": testgroup="+testgroup));
+        return new BaseConfig(sAppDir, preferencesName, sharedPreferences, mode);
     }
 
     Runnable testManager = new Runnable() {
         @Override
         public void run() {
             new Thread(() -> {
-                mgMapApplication.getTestControl().runTests(testCases, pTestResults);
+                Optional.ofNullable(testRunner).ifPresent(tr -> tr.runTests(testCases, pTestResults));
                 try {
                     String testResultFileName = testgroup+TEST_RESULT_SUFFIX;
                     pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+testResultFileName)),"Test Results:");
@@ -221,18 +234,8 @@ public class Setup {
          }
     };
 
-
-    public String getAppDirName(){
-        return sAppDir;
-    }
-    public String getPreferencesName(){
-        return preferencesName;
-    }
-    public SharedPreferences getSharedPreferences(){
-        return sharedPreferences;
-    }
-    public boolean isTestMode() {
-        return testMode;
+    public void setTestRunner(TestRunner testRunner){
+        this.testRunner = testRunner;
     }
 
     private void restartApplication(){

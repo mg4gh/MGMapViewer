@@ -62,13 +62,13 @@ public abstract class Sftp {
         }
     }
 
-    public void copy() throws IOException, SftpException, InterruptedException{
+    public void copy() throws Exception{
         if ((session != null) && (channelSftp != null)){
             doCopy();
         }
     }
 
-    protected abstract void doCopy() throws IOException, SftpException, InterruptedException;
+    protected abstract void doCopy() throws Exception;
 
     public void close(){
         if (channelSftp != null){

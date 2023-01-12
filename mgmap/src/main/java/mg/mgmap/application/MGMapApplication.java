@@ -58,8 +58,6 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.application.util.ExtrasUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
-import mg.mgmap.test.TestControl;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +65,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -113,7 +110,7 @@ public class MGMapApplication extends Application {
     public Pref<Boolean> prefGps = null;
 
     private Setup setup;
-    private TestControl testControl;
+    public BaseConfig baseConfig;
 
     public void startLogging(File logDir){
         try {
@@ -134,23 +131,20 @@ public class MGMapApplication extends Application {
 
     @Override
     public void onCreate() {
-        System.out.println("MGMapViewer Application start!!!!");
+        System.out.println("***********************************************************************************************************************");
+        System.out.println("****************************************** MGMapViewer Application start!!!! ******************************************");
+        System.out.println("***********************************************************************************************************************");
         super.onCreate();
 
         MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG? MGLog.Level.DEBUG:MGLog.Level.INFO);
 //        MGLog.logConfig.put("mg.mgmap.test.TestControl", MGLog.Level.VERBOSE);
         mgLog.evaluateLevel();
 
-        testControl = new TestControl(this);
         setup = new Setup();
-        setup.init(this);
-        persistenceManager = new PersistenceManager(this, setup.getAppDirName());
+        baseConfig = setup.init(this);
+        persistenceManager = new PersistenceManager(this, baseConfig.getAppDirName());
         startLogging(persistenceManager.getLogDir());
-        mgLog.i("Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" *** START ***");
-        for (Map.Entry<String, ?> entry: setup.getSharedPreferences().getAll().entrySet()){
-            mgLog.d(String.format("        key=%s value=%s", entry.getKey(), entry.getValue()));
-        }
-        mgLog.i("Start application with appDir=\""+setup.getAppDirName()+"\" preferenceName=\""+setup.getPreferencesName()+" **** END ****");
+        mgLog.i(baseConfig);
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
@@ -446,17 +440,11 @@ public class MGMapApplication extends Application {
     }
 
     public SharedPreferences getSharedPreferences(){
-        return setup.getSharedPreferences();
+        return baseConfig.getSharedPreferences();
     }
 
     public String getPreferencesName() {
-        return setup.getPreferencesName();
-    }
-    public TestControl getTestControl(){
-        return testControl;
-    }
-    public boolean isTestMode(){
-        return setup.isTestMode();
+        return baseConfig.getPreferencesName();
     }
 
     public static MGMapApplication getByContext(Context context){

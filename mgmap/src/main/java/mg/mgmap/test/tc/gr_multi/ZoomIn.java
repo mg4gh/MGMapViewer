@@ -18,8 +18,8 @@ public class ZoomIn extends AbstractTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public ZoomIn(MGMapApplication mgMapApplication) {
-        super(mgMapApplication);
+    public ZoomIn(MGMapApplication mgMapApplication, TestControl testControl) {
+        super(mgMapApplication, testControl);
     }
 
     public void run(){

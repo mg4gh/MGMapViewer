@@ -20,8 +20,8 @@ public class Settings extends AbstractTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public Settings(MGMapApplication mgMapApplication) {
-        super(mgMapApplication);
+    public Settings(MGMapApplication mgMapApplication, TestControl testControl) {
+        super(mgMapApplication, testControl);
     }
 
     public void run(){

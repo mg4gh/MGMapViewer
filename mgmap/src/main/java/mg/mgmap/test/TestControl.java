@@ -33,19 +33,21 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import mg.mgmap.activity.settings.SettingsActivity;
+import mg.mgmap.application.BaseConfig;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.application.Setup;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.view.ExtendedTextView;
 
 @SuppressWarnings("unused")
-public class TestControl implements Application.ActivityLifecycleCallbacks{
+public class TestControl implements Setup.TestRunner,Application.ActivityLifecycleCallbacks{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public final Handler timer = new Handler(); // timer for tests
 
     private final MGMapApplication mgMapApplication;
-    boolean testMode = false;
 
     public SortedMap<String, Activity> activityMap = new TreeMap<>();
     public Set<String> activityCreatedToDestroyed = new TreeSet<>();
@@ -53,26 +55,57 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     public Set<String> activityResumedToPaused = new TreeSet<>();
     Point screenDimension = new Point();
 
-    public TestControl(MGMapApplication mgMapApplication){
+    public TestControl(MGMapApplication mgMapApplication, Setup setup){
         this.mgMapApplication = mgMapApplication;
+
+        setup.setTestRunner(this); // dependency injection
+        mgMapApplication.registerActivityLifecycleCallbacks(this);
+        ExtendedTextView.setViewPositionHook((key, left, top, right, bottom) -> {
+            if ((key != null) && (key.length() > 0)){
+                Rect rect = new Rect(left,top,right,bottom);
+                mgLog.d("register key: "+key +" rect="+rect);
+                viewPositionRegistry.put(key, rect);
+            }
+        });
+        TestView.setTestViewHook(new TestView.TestViewHook() {
+            @Override
+            public void registerTestView(TestView testView){
+                if (mgMapApplication.baseConfig.getMode() == BaseConfig.Mode.SYSTEM_TEST){
+                    if (TestControl.this.currentTestView != testView){
+                        mgLog.v(testView.getActivity());
+                        TestControl.this.currentTestView = testView;
+                        setCursorVisibility(currentCursorVisibility);
+                        currentTestView.setCursorPosition(currentCursorPos);
+                    }
+                }
+            }
+            @Override
+            public void unregisterTestView(TestView testView){
+                if (mgMapApplication.baseConfig.getMode() == BaseConfig.Mode.SYSTEM_TEST){
+                    if (TestControl.this.currentTestView == testView){
+                        mgLog.v(testView.getActivity());
+                        TestControl.this.currentTestView = null;
+                    }
+                }
+            }
+            @Override
+            public void onTestViewLayout(TestView testView){
+                if (testView.getHeight() > screenDimension.y){
+                    screenDimension = new Point(testView.getWidth(), testView.getHeight());
+                }
+            }
+        });
     }
 
     protected Point currentCursorPos = new Point(0,0); // on screen (not in window)
-    public boolean isTestMode() {
-        return testMode;
-    }
-    public void setTestMode(boolean testMode) {
-        this.testMode = testMode;
-    }
-
 
     @SuppressWarnings("unchecked")
     public void runTests(SortedMap<String, String> testCases, Properties pTestResults){
         for (Map.Entry<String, String> tcEntry : testCases.entrySet()){
             try {
                 Class<? extends  AbstractTestCase> testCaseClazz = (Class<? extends AbstractTestCase>) Class.forName(tcEntry.getValue());
-                Constructor<? extends  AbstractTestCase> constructor = testCaseClazz.getConstructor(MGMapApplication.class);
-                AbstractTestCase testCase = constructor.newInstance(mgMapApplication);
+                Constructor<? extends  AbstractTestCase> constructor = testCaseClazz.getConstructor(MGMapApplication.class, TestControl.class);
+                AbstractTestCase testCase = constructor.newInstance(mgMapApplication, this);
 
                 testCase.start();
                 new Thread(() -> {
@@ -167,41 +200,9 @@ public class TestControl implements Application.ActivityLifecycleCallbacks{
     }
 
     public TestView currentTestView = null;
-    public void registerTestView(TestView testView){
-        if (isTestMode()){
-            if (this.currentTestView != testView){
-                mgLog.v(testView.getActivity());
-                this.currentTestView = testView;
-                setCursorVisibility(currentCursorVisibility);
-                currentTestView.setCursorPosition(currentCursorPos);
-            }
-        }
-    }
-    public void unregisterTestView(TestView testView){
-        if (isTestMode()){
-            if (this.currentTestView == testView){
-                mgLog.v(testView.getActivity());
-                this.currentTestView = null;
-            }
-        }
-    }
-
-    public void onTestViewLayout(TestView testView){
-        if (testView.getHeight() > screenDimension.y){
-            screenDimension = new Point(testView.getWidth(), testView.getHeight());
-        }
-    }
-
 
     private final SortedMap<String, Rect> viewPositionRegistry = new TreeMap<>();
 
-    public void registerViewPosition(String key, int left, int top, int right, int bottom){
-        if ((key != null) && (key.length() > 0)){
-            Rect rect = new Rect(left,top,right,bottom);
-            mgLog.d("register key: "+key +" rect="+rect);
-            viewPositionRegistry.put(key, rect);
-        }
-    }
     public Rect getViewPosition(String key){
         return viewPositionRegistry.get(key);
     }

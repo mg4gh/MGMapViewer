@@ -23,8 +23,8 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
@@ -52,6 +52,7 @@ public class ExtendedTextView extends AppCompatTextView {
     private int availableWidth = 0;
     private String availableText = null;
 //    private final TextPaint availablePaint = new TextPaint();
+    private static ViewPositionHook viewPositionHook = null;
 
     public ExtendedTextView(Context context) {
         this(context, null);
@@ -60,6 +61,14 @@ public class ExtendedTextView extends AppCompatTextView {
     public ExtendedTextView(Context context,  AttributeSet attrs) {
         super(context, attrs);
 //        availablePaint.set( getPaint() );
+    }
+
+    public interface ViewPositionHook {
+        void changed(String key, int left, int top, int right, int bottom);
+    }
+
+    public static void setViewPositionHook(ViewPositionHook viewPositionHook) {
+        ExtendedTextView.viewPositionHook = viewPositionHook;
     }
 
     @Override
@@ -71,10 +80,7 @@ public class ExtendedTextView extends AppCompatTextView {
                 availableWidth = newAvailableWidth;
                 int[] location = new int[2];
                 getLocationOnScreen(location);
-                MGMapApplication mgMapApplication = MGMapApplication.getByContext(getContext());
-                if (mgMapApplication.isTestMode()){
-                    mgMapApplication.getTestControl().registerViewPosition(logName,location[0],location[1],location[0]+w,location[1]+h);
-                }
+                Optional.ofNullable(viewPositionHook).ifPresent(vph -> vph.changed(logName,location[0],location[1],location[0]+w,location[1]+h));
                 mgLog.d(logName+":"+getText()+" - "+" available=" + availableWidth);
                 availableText = null; // force recalc text
 //                getPaint().set(availablePaint);

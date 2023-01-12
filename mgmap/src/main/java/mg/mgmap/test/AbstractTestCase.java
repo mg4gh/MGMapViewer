@@ -32,9 +32,9 @@ public class AbstractTestCase {
     int lineCnt;
 
 
-    public AbstractTestCase(MGMapApplication mgMapApplication) {
+    public AbstractTestCase(MGMapApplication mgMapApplication, TestControl testControl) {
         this.mgMapApplication = mgMapApplication;
-        this.testControl = mgMapApplication.getTestControl();
+        this.testControl = testControl;
         this.name = this.getClass().getSimpleName();
     }
 

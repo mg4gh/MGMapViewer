@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
@@ -31,6 +32,7 @@ public class TestView extends RelativeLayout  {
 
     Activity activity; // any activity (of this app)
     MGMapApplication application; // but the specific application -> provides access to TestControl
+    static TestViewHook testViewHook = null;
 
     public TestView(Context context) {
         super(context);
@@ -40,7 +42,16 @@ public class TestView extends RelativeLayout  {
     public TestView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         init(context);
+    }
 
+    interface TestViewHook{
+        void registerTestView(TestView testView);
+        void unregisterTestView(TestView testView);
+        void onTestViewLayout(TestView testView);
+    }
+
+    public static void setTestViewHook(TestViewHook testViewHook) {
+        TestView.testViewHook = testViewHook;
     }
 
     private void init(Context context){
@@ -58,7 +69,7 @@ public class TestView extends RelativeLayout  {
         this.getLocationOnScreen(location);
         pxSize.x = this.getWidth();
         pxSize.y = this.getHeight();
-        application.getTestControl().onTestViewLayout(this);
+        Optional.ofNullable(testViewHook).ifPresent(tvh -> tvh.onTestViewLayout(this));
         mgLog.d(" TestView size: " + pxSize +" TestView location: " + location[0] + "," + location[1] + " " + getContext().getClass().getSimpleName());
     }
 
@@ -103,9 +114,9 @@ public class TestView extends RelativeLayout  {
         super.onWindowVisibilityChanged(visibility);
         mgLog.d(activity.getClass().getSimpleName()+": Visibility="+visibility);
         if ( (visibility & (View.INVISIBLE | View.GONE)) == 0 ) { // is visible
-            application.getTestControl().registerTestView(this);
+            Optional.ofNullable(testViewHook).ifPresent(tvh -> tvh.registerTestView(this));
         } else {
-            application.getTestControl().unregisterTestView(this);
+            Optional.ofNullable(testViewHook).ifPresent(tvh -> tvh.unregisterTestView(this));
             click.setVisibility(INVISIBLE);
         }
     }

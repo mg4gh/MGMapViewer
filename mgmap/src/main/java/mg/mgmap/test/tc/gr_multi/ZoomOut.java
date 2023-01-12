@@ -18,8 +18,8 @@ public class ZoomOut extends AbstractTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public ZoomOut(MGMapApplication mgMapApplication) {
-        super(mgMapApplication);
+    public ZoomOut(MGMapApplication mgMapApplication, TestControl testControl) {
+        super(mgMapApplication, testControl);
     }
 
     public void run(){
