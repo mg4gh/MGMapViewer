@@ -14,12 +14,10 @@
  */
 package mg.mgmap.activity.mgmap.features.search;
 
-import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
@@ -37,6 +35,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.FullscreenUtil;
+import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
@@ -236,20 +235,11 @@ public class FSSearch extends FeatureService {
     }
 
     private void hideKeyboard(){
-        InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        View focus = getActivity().getCurrentFocus();
-        if((inputMethodManager != null) && (focus != null)){
-            inputMethodManager.hideSoftInputFromWindow(focus.getWindowToken(), 0);
-            FullscreenUtil.enforceState(getActivity());
-        }
+        KeyboardUtil.hideKeyboard(searchView.searchText);
     }
 
     private void showKeyboard(){
-        InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        View focus = getActivity().getCurrentFocus();
-        if((inputMethodManager != null) && (focus != null)){
-            inputMethodManager.showSoftInput(focus, 0);
-        }
+        KeyboardUtil.showKeyboard(searchView.searchText);
     }
 
     public void setSearchResult(PointModel pmSearchResult) {

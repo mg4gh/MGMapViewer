@@ -31,4 +31,10 @@ public class KeyboardUtil {
         }
     }
 
+    public static void showKeyboard(View view){
+        InputMethodManager inputMethodManager = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(inputMethodManager != null){
+            inputMethodManager.showSoftInput(view, 0);
+        }
+    }
 }

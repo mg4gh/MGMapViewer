@@ -26,7 +26,6 @@ import android.widget.TextView;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.generic.util.EditPref;
-import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.DialogView;
 
