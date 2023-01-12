@@ -136,7 +136,7 @@ public class AbstractTestCase {
 
     public String getResult(){
         boolean success = (matches.size() == regexs.size());
-        String result = (success?"passed":"failed")+" (lineCnt="+lineCnt+")";
+        String result = (success?"passed":"failed")+" (lineCnt: "+lineCnt+")";
         for (String s : regexs){
             mgLog.any(success?MGLog.Level.VERBOSE:MGLog.Level.INFO, " R "+s);
         }

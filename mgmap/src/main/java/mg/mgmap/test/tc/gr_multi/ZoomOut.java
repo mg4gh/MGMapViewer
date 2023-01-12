@@ -61,9 +61,10 @@ public class ZoomOut extends AbstractTestCase {
     @Override
     protected void addRegexs() {
         addRegex(getName()+" start");
-        addRegex("context=MGMapActivity key=FSBeeline.ZoomLevel value=15");
-        addRegex("key=FSControl.qc_selector value=7");
-        addRegex("context=MGMapActivity key=FSBeeline.ZoomLevel value=14");
+        addRegex("context=MGMapApplication key=FSBeeline.ZoomLevel value=15");
+        addRegex("onClick group_multi");
+        addRegex("onClick zoom_out");
+        addRegex("context=MGMapApplication key=FSBeeline.ZoomLevel value=14");
         addRegex(getName()+" stop");
     }
 

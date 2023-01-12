@@ -1,7 +1,9 @@
 package mg.mgmap.application;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 
 import com.jcraft.jsch.ChannelSftp;
@@ -35,7 +37,8 @@ public class Setup {
     private static final String TEST_GROUP = "testgroup.properties";
     private static final String TEST_FILES = "files.properties";
     private static final String TEST_PREFERENCES = "preferences.properties";
-    private static final String TEST_RESULT = "result.properties";
+    private static final String TEST_RESULT_DIR = "results";
+    private static final String TEST_RESULT_SUFFIX = ".properties";
     private static final String TEST_SETUP = "testSetup";
     private static final String TEST_TEMP = "temp";
     private static final String TEST_APP_DIR = "appDir";
@@ -69,7 +72,9 @@ public class Setup {
         File testOff = new File(testSetup, TEST_OFF);
 
         if (testConfig.exists() && !testOff.exists()){
-            testSetup.mkdir();
+            if (testSetup.mkdir()){
+                mgLog.d(testSetup.getAbsolutePath()+" created");
+            }
             new Thread(() -> {
                 try {
                     mgLog.d("preferencesName="+preferencesName);
@@ -97,8 +102,9 @@ public class Setup {
                                 for (ChannelSftp.LsEntry lsEntry : vLsEntries){
                                     if (lsEntry.getFilename().startsWith("testgroup") && lsEntry.getAttrs().isDir()){
                                         SftpATTRS aTestgroup = stat(lsEntry.getFilename()+"/"+TEST_GROUP);
-                                        SftpATTRS aTestResult = stat(lsEntry.getFilename()+"/"+TEST_RESULT);
-                                        if ((aTestgroup != null) && (aTestResult == null)){
+                                        SftpATTRS aTestResultDir = stat(TEST_RESULT_DIR);
+                                        SftpATTRS aTestResult = stat(TEST_RESULT_DIR+"/"+lsEntry.getFilename()+TEST_RESULT_SUFFIX);
+                                        if ((aTestgroup != null) && (aTestResultDir != null) && (aTestResult == null)){
                                             // ok, use this testgroup for setup
                                             testgroup = lsEntry.getFilename();
                                             testMode = true;
@@ -185,7 +191,7 @@ public class Setup {
 
         if (isTestMode()){
             timer = new Handler();
-            timer.postDelayed( testManager, 4000); // wait initial time before starting the tests
+            timer.postDelayed( testManager, 5000); // wait initial time before starting the tests
         }
     }
 
@@ -195,14 +201,17 @@ public class Setup {
             new Thread(() -> {
                 mgMapApplication.getTestControl().runTests(testCases, pTestResults);
                 try {
-                    pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+TEST_RESULT)),"Test Results:");
+                    String testResultFileName = testgroup+TEST_RESULT_SUFFIX;
+                    pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+testResultFileName)),"Test Results:");
                     new Sftp(testConfig) {
                         @Override
                         protected void doCopy() throws SftpException {
                             channelSftp.cd(TEST_DATA);
-                            channelSftp.put(testSetup.getAbsolutePath()+"/"+TEST_TEMP+"/"+TEST_RESULT, testgroup+"/"+TEST_RESULT);
+                            channelSftp.put(testSetup.getAbsolutePath()+"/"+TEST_TEMP+"/"+testResultFileName, TEST_RESULT_DIR+"/"+testResultFileName);
                         }
                     }.copy();
+                    Thread.sleep(3000);
+                    restartApplication();
                 } catch (Exception e) {
                     mgLog.e(e);
                 }
@@ -224,5 +233,14 @@ public class Setup {
     }
     public boolean isTestMode() {
         return testMode;
+    }
+
+    private void restartApplication(){
+        Context ctx = mgMapApplication.getApplicationContext();
+        PackageManager pm = ctx.getPackageManager();
+        Intent intent = pm.getLaunchIntentForPackage(ctx.getPackageName());
+        Intent mainIntent = Intent.makeRestartActivityTask(intent.getComponent());
+        ctx.startActivity(mainIntent);
+        Runtime.getRuntime().exit(0);
     }
 }
