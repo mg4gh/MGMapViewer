@@ -20,10 +20,18 @@ afterEvaluate {
 
     }
 
+    task myclean {
+        assembleRelease.dependsOn( myclean )
+        assembleDebug.dependsOn( myclean )
+        delete "${buildDir}/outputs/apk"
+        delete "${buildDir}/outputs/bundle"
+    }
+
     android.productFlavors.all { flavor ->
         android.buildTypes.all { buildType ->
             def buildTypeCap = ("${buildType.name}").capitalize()
-            def buildVariant = "${flavor.name}"+ buildTypeCap
+            def buildVariant = "${flavor.name}"+ ("${buildType.name}").capitalize()
+
             task "${buildVariant}GenerateSHA"(type: JavaExec, dependsOn: "assemble${buildTypeCap}") {
                 System.out.println("XXXXXX $flavor.name ${buildType.name} " + buildVariant )
                 group = "Execution"
@@ -32,41 +40,7 @@ afterEvaluate {
                 getMainClass().set("mg.mgmap.generic.util.SHA256")
                 args files("${buildDir}/outputs/apk/${flavor.name}/${buildType.name}")
             }
-        }
-    }
-//    task generateReleaseSHA(type: JavaExec, dependsOn: assembleRelease) {
-//        group = "Execution"
-//        description = "Run the main class with JavaExecTask"
-//        classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
-//        getMainClass().set("mg.mgmap.generic.util.SHA256")
-//        args files("${buildDir}/outputs/apk/release")
-//    }
 
-    task myclean {
-        assembleRelease.dependsOn( myclean )
-        assembleDebug.dependsOn( myclean )
-        delete "${buildDir}/outputs/apk"
-    }
-//    task copyReleaseApk(type: Copy, dependsOn: generateReleaseSHA) {
-//        from("$buildDir/outputs/apk/release") {
-//            include '**/*.apk'
-//            include '**/*.apk.sha256'
-//            exclude '**/*unsigned.apk', '**/*unaligned.apk'
-//        }
-//        into '../apk/release'
-//    }
-//    task copyDebugApk(type: Copy, dependsOn: generateDebugSHA) {
-//        from("$buildDir/outputs/apk/debug") {
-//            include '**/*.apk'
-//            include '**/*.apk.sha256'
-//            exclude '**/*unsigned.apk', '**/*unaligned.apk'
-//        }
-//        into '../apk/debug'
-//    }
-
-    android.productFlavors.all { flavor ->
-        android.buildTypes.all { buildType ->
-            def buildVariant = "${flavor.name}"+ ("${buildType.name}").capitalize()
             task "${buildVariant}CopyApk"(type: Copy, dependsOn: "${buildVariant}GenerateSHA") {
                 from("$buildDir/outputs/apk/${flavor.name}/${buildType.name}") {
                     include '**/*.apk'
@@ -86,22 +60,17 @@ afterEvaluate {
         }
     }
 
-//    task zipReleaseApk(type: Zip, dependsOn: copyReleaseApk ){
-//        from("$buildDir/outputs/apk/release") {
-//            exclude '**/*unsigned.apk', '**/*unaligned.apk'
-//        }
-//        archiveName( "apk.zip" )
-//        destinationDirectory = file( "../apk/release")
-//    }
-//    task zipDebugApk(type: Zip, dependsOn: copyDebugApk ){
-//        from("$buildDir/outputs/apk/debug") {
-//            exclude '**/*unsigned.apk', '**/*unaligned.apk'
-//        }
-//        archiveName( "apk.zip" )
-//        destinationDirectory = file( "../apk/debug")
-//    }
 
-    task _mgmapPublish (dependsOn: ['mg4ghDebugZipApk','mg4ghReleaseZipApk', 'downloadMD', 'bundleSoft4mgRelease']){
+    task soft4mgReleaseCopyAab(type: Copy, dependsOn: "bundleSoft4mgRelease") {
+        def versionName = android.applicationVariants.collect {x -> x.properties.versionName}.findAll {y->y.contains("soft4mg-release")}.first()
+        System.out.println("versionName="+versionName)
+        def outputFileName = "${parent.name}-${versionName}.aab"
+        from("$buildDir/outputs/bundle/soft4mgRelease/mgmap-soft4mg-release.aab")
+        into "../aab/"
+        rename ("mgmap-soft4mg-release.aab", "${outputFileName}")
+    }
+
+    task _mgmapPublish (dependsOn: ['mg4ghDebugZipApk','mg4ghReleaseZipApk', 'downloadMD', 'soft4mgReleaseCopyAab']){
         doLast {
             System.out.println( "_mgmapPublish finished" )
         }
@@ -181,8 +150,6 @@ android {
     }
     android.applicationVariants.all { variant ->
         variant.outputs.all { output ->
-//            System.out.println("XXXXXXXY ${variant.name}")
-//            outputFileName = "${parent.name}-${output.baseName}-${variant.versionName}.apk"
             outputFileName = "${parent.name}-${variant.versionName}.apk"
         }
     }
