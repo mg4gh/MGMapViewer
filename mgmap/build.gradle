@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 def versionMajor = "0.9.7"
-def versionSuffix = "pre"
+def versionMajorSuffix = "pre"
 
 static def getDate() {
     return new Date().format('yyyyMMdd_HHmmss')
@@ -13,87 +13,101 @@ afterEvaluate {
     task provideDebugApkOnSshServer(type: JavaExec, dependsOn: assembleDebug) {
         group = "Execution"
         description = "Run the main class with JavaExecTask"
-        classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
+        classpath += files(getBuildDir().toString() + "/intermediates/javac/mg4ghDebug/classes/")
         classpath += files(getProjectDir().toString() +"/libs/jsch-0.1.55.jar")
         getMainClass().set("mg.mgmap.generic.util.SshBuild")
-        args = [ files("$projectDir/../.ssh/config.properties").first(), "apk" , ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/debug/*.apk").first(), files("$buildDir/outputs/apk/debug/*.sha256").first()]
+        args = [ files("$projectDir/../.ssh/config.properties").first(), "apk" , ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/mg4gh/debug/*.apk").first(), files("$buildDir/outputs/apk/mg4gh/debug/*.sha256").first()]
 
     }
 
-    task generateDebugSHA(type: JavaExec, dependsOn: assembleDebug) {
-        group = "Execution"
-        description = "Run the main class with JavaExecTask"
-        classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
-        getMainClass().set("mg.mgmap.generic.util.SHA256")
-        args files("${buildDir}/outputs/apk/debug")
+    android.productFlavors.all { flavor ->
+        android.buildTypes.all { buildType ->
+            def buildTypeCap = ("${buildType.name}").capitalize()
+            def buildVariant = "${flavor.name}"+ buildTypeCap
+            task "${buildVariant}GenerateSHA"(type: JavaExec, dependsOn: "assemble${buildTypeCap}") {
+                System.out.println("XXXXXX $flavor.name ${buildType.name} " + buildVariant )
+                group = "Execution"
+                description = "Run the main class with JavaExecTask"
+                classpath += files(getBuildDir().toString() + "/intermediates/javac/${flavor.name}Debug/classes/")
+                getMainClass().set("mg.mgmap.generic.util.SHA256")
+                args files("${buildDir}/outputs/apk/${flavor.name}/${buildType.name}")
+            }
+        }
     }
-    task generateReleaseSHA(type: JavaExec, dependsOn: assembleRelease) {
-        group = "Execution"
-        description = "Run the main class with JavaExecTask"
-        classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
-        getMainClass().set("mg.mgmap.generic.util.SHA256")
-        args files("${buildDir}/outputs/apk/release")
-    }
-
-
-//     task mylist ()  {
-//         assembleRelease.dependsOn( mylist )
-//         assembleDebug.dependsOn( mylist )
-//         System.out.println("mylist is executed")
-//         PrintWriter out = new PrintWriter( new File("${rootDir}/mgmap/src/main/assets/testcases.list"))
-//         def files =  fileTree("${rootDir}").matching {include "**/src/main/java/**/test/tc*/**"}.files
-//         for (File file : files){
-//             out.println(file.absolutePath
-//                     .replaceAll("\\\\", "/")
-//                     .replaceFirst(".*github/MGMapViewer/mgmap/src/main/java/","")
-//                     .replaceFirst("\\.java","")
-//                     .replaceAll("/", "\\."))
-//         }
-//         out.close()
+//    task generateReleaseSHA(type: JavaExec, dependsOn: assembleRelease) {
+//        group = "Execution"
+//        description = "Run the main class with JavaExecTask"
+//        classpath += files(getBuildDir().toString() + "/intermediates/javac/debug/classes/")
+//        getMainClass().set("mg.mgmap.generic.util.SHA256")
+//        args files("${buildDir}/outputs/apk/release")
 //    }
+
     task myclean {
         assembleRelease.dependsOn( myclean )
         assembleDebug.dependsOn( myclean )
         delete "${buildDir}/outputs/apk"
     }
-    task copyReleaseApk(type: Copy, dependsOn: generateReleaseSHA) {
-        from("$buildDir/outputs/apk/release") {
-            include '**/*.apk'
-            include '**/*.apk.sha256'
-            exclude '**/*unsigned.apk', '**/*unaligned.apk'
+//    task copyReleaseApk(type: Copy, dependsOn: generateReleaseSHA) {
+//        from("$buildDir/outputs/apk/release") {
+//            include '**/*.apk'
+//            include '**/*.apk.sha256'
+//            exclude '**/*unsigned.apk', '**/*unaligned.apk'
+//        }
+//        into '../apk/release'
+//    }
+//    task copyDebugApk(type: Copy, dependsOn: generateDebugSHA) {
+//        from("$buildDir/outputs/apk/debug") {
+//            include '**/*.apk'
+//            include '**/*.apk.sha256'
+//            exclude '**/*unsigned.apk', '**/*unaligned.apk'
+//        }
+//        into '../apk/debug'
+//    }
+
+    android.productFlavors.all { flavor ->
+        android.buildTypes.all { buildType ->
+            def buildVariant = "${flavor.name}"+ ("${buildType.name}").capitalize()
+            task "${buildVariant}CopyApk"(type: Copy, dependsOn: "${buildVariant}GenerateSHA") {
+                from("$buildDir/outputs/apk/${flavor.name}/${buildType.name}") {
+                    include '**/*.apk'
+                    include '**/*.apk.sha256'
+                    exclude '**/*unsigned.apk', '**/*unaligned.apk'
+                }
+                into "../apk/${buildType.name}"
+            }
+
+            task "${buildVariant}ZipApk"(type: Zip, dependsOn: "${buildVariant}CopyApk" ){
+                from("$buildDir/outputs/apk/${flavor.name}/${buildType.name}") {
+                    exclude '**/*unsigned.apk', '**/*unaligned.apk'
+                }
+                archiveName( "apk.zip" )
+                destinationDirectory = file( "../apk/${buildType.name}")
+            }
         }
-        into '../apk/release'
-    }
-    task copyDebugApk(type: Copy, dependsOn: generateDebugSHA) {
-        from("$buildDir/outputs/apk/debug") {
-            include '**/*.apk'
-            include '**/*.apk.sha256'
-            exclude '**/*unsigned.apk', '**/*unaligned.apk'
-        }
-        into '../apk/debug'
-    }
-    task zipReleaseApk(type: Zip, dependsOn: copyReleaseApk ){
-        from("$buildDir/outputs/apk/release") {
-            exclude '**/*unsigned.apk', '**/*unaligned.apk'
-        }
-        archiveName( "apk.zip" )
-        destinationDirectory = file( "../apk/release")
-    }
-    task zipDebugApk(type: Zip, dependsOn: copyDebugApk ){
-        from("$buildDir/outputs/apk/debug") {
-            exclude '**/*unsigned.apk', '**/*unaligned.apk'
-        }
-        archiveName( "apk.zip" )
-        destinationDirectory = file( "../apk/debug")
     }
 
-    task _mgmapPublish (dependsOn: ['zipReleaseApk','zipDebugApk', 'downloadMD']){
+//    task zipReleaseApk(type: Zip, dependsOn: copyReleaseApk ){
+//        from("$buildDir/outputs/apk/release") {
+//            exclude '**/*unsigned.apk', '**/*unaligned.apk'
+//        }
+//        archiveName( "apk.zip" )
+//        destinationDirectory = file( "../apk/release")
+//    }
+//    task zipDebugApk(type: Zip, dependsOn: copyDebugApk ){
+//        from("$buildDir/outputs/apk/debug") {
+//            exclude '**/*unsigned.apk', '**/*unaligned.apk'
+//        }
+//        archiveName( "apk.zip" )
+//        destinationDirectory = file( "../apk/debug")
+//    }
+
+    task _mgmapPublish (dependsOn: ['mg4ghDebugZipApk','mg4ghReleaseZipApk', 'downloadMD', 'bundleSoft4mgRelease']){
         doLast {
             System.out.println( "_mgmapPublish finished" )
         }
     }
 
-    task _mgmapDebugApk (dependsOn: ['generateDebugSHA']){
+    task _mgmapDebugApk (dependsOn: ['mg4ghDebugGenerateSHA']){
         if (new File("./.ssh").exists()){
             dependsOn(provideDebugApkOnSshServer)
         }
@@ -127,15 +141,35 @@ android {
         minSdkVersion 26
         targetSdkVersion 33
         versionCode 1
-        versionName "${versionMajor}-${versionSuffix}-${getDate()}"
+        versionName "${versionMajor}-${versionMajorSuffix}-${getDate()}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            applicationIdSuffix ".rel"
+            versionNameSuffix "-release"
+        }
+        debug {
+            applicationIdSuffix ""
+            versionNameSuffix "-debug"
         }
     }
+    flavorDimensions "githubUser"
+    productFlavors{
+        mg4gh {
+            dimension "githubUser"
+            applicationId "mg.mgmap"
+            versionNameSuffix '-mg4gh'
+        }
+        soft4mg {
+            dimension "githubUser"
+            applicationId "de.soft4mg.mgmap"
+            versionNameSuffix '-soft4mg'
+        }
+    }
+
     compileOptions {
         sourceCompatibility = 1.9
         targetCompatibility = 1.9
@@ -147,11 +181,11 @@ android {
     }
     android.applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            outputFileName = "${parent.name}-${output.baseName}-${variant.versionName}.apk"
-
+//            System.out.println("XXXXXXXY ${variant.name}")
+//            outputFileName = "${parent.name}-${output.baseName}-${variant.versionName}.apk"
+            outputFileName = "${parent.name}-${variant.versionName}.apk"
         }
-
-     }
+    }
 
     sourceSets {
         main {
@@ -230,7 +264,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-//    implementation 'com.jcraft:jsch:0.1.55'
+//    implementation 'com.jcraft:jsch:0.1.55' // copied to libs folder of project -> access during project build
 
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
