@@ -105,7 +105,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         context = this;
         persistenceManager = application.getPersistenceManager();
 
-        prefCache = application.getPrefCache();
+        prefCache = new PrefCache(context);
         prefFilterOn = prefCache.get(R.string.Statistic_pref_FilterOn, false);
 
         prefFilterOn.addObserver((e) -> {
