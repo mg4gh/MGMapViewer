@@ -3,6 +3,8 @@ apply plugin: 'com.android.application'
 def versionMajor = "0.9.7"
 def versionMajorSuffix = "pre"
 
+String outputFileNameBundle
+
 static def getDate() {
     return new Date().format('yyyyMMdd_HHmmss')
 }
@@ -30,10 +32,9 @@ afterEvaluate {
     android.productFlavors.all { flavor ->
         android.buildTypes.all { buildType ->
             def buildTypeCap = ("${buildType.name}").capitalize()
-            def buildVariant = "${flavor.name}"+ ("${buildType.name}").capitalize()
+            def buildVariant = "${flavor.name}${buildTypeCap}"
 
             task "${buildVariant}GenerateSHA"(type: JavaExec, dependsOn: "assemble${buildTypeCap}") {
-                System.out.println("XXXXXX $flavor.name ${buildType.name} " + buildVariant )
                 group = "Execution"
                 description = "Run the main class with JavaExecTask"
                 classpath += files(getBuildDir().toString() + "/intermediates/javac/${flavor.name}Debug/classes/")
@@ -62,12 +63,13 @@ afterEvaluate {
 
 
     task soft4mgReleaseCopyAab(type: Copy, dependsOn: "bundleSoft4mgRelease") {
-        def versionName = android.applicationVariants.collect {x -> x.properties.versionName}.findAll {y->y.contains("soft4mg-release")}.first()
-        System.out.println("versionName="+versionName)
-        def outputFileName = "${parent.name}-${versionName}.aab"
+//        This version of calculation for outputFileNameBundle caused a lot of warnings, therefore replaced by current method via outputFileNameBundle variable
+//        def versionName = android.applicationVariants.collect {x -> x.properties.versionName}.findAll {y->y.contains("soft4mg-release")}.first()
+//        def outputFileNameBundle = "${parent.name}-${versionName}.aab"
+        System.out.println("outputFileNameBundle="+outputFileNameBundle)
         from("$buildDir/outputs/bundle/soft4mgRelease/mgmap-soft4mg-release.aab")
         into "../aab/"
-        rename ("mgmap-soft4mg-release.aab", "${outputFileName}")
+        rename ("mgmap-soft4mg-release.aab", "${outputFileNameBundle}")
     }
 
     task _mgmapPublish (dependsOn: ['mg4ghDebugZipApk','mg4ghReleaseZipApk', 'downloadMD', 'soft4mgReleaseCopyAab']){
@@ -151,6 +153,9 @@ android {
     android.applicationVariants.all { variant ->
         variant.outputs.all { output ->
             outputFileName = "${parent.name}-${variant.versionName}.apk"
+            if ("${variant.versionName}".contains("release")){
+                outputFileNameBundle = "${parent.name}-${variant.versionName}.aab"
+            }
         }
     }
 
@@ -168,7 +173,7 @@ android {
     }
 
     signingConfigs {
-        release {
+        mg4gh {
             keyAlias 'mgm'
             storeFile file('../mgm.jks')
             File propsFile = file('../secure.properties')
@@ -178,7 +183,22 @@ android {
                 storePassword props.getProperty('storePassword')
                 keyPassword props.getProperty('keyPassword')
             }
-
+            // Optional, specify signing versions used
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+        soft4mg {
+            keyAlias 'soft4mg'
+            storeFile file('../../../soft4mg/soft4mg.jks')
+            File propsFile = file('../../../soft4mg/secure.properties')
+            if (propsFile.exists()) {
+                Properties props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                storePassword props.getProperty('storePassword')
+                keyPassword props.getProperty('keyPassword')
+            } else {
+                System.out.println("Failed to read secure props")
+            }
             // Optional, specify signing versions used
             v1SigningEnabled true
             v2SigningEnabled true
@@ -187,7 +207,8 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            productFlavors.mg4gh.signingConfig signingConfigs.mg4gh
+            productFlavors.soft4mg.signingConfig signingConfigs.soft4mg
         }
     }
 
