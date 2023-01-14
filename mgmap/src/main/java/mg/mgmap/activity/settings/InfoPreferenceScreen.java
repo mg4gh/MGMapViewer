@@ -16,13 +16,11 @@ package mg.mgmap.activity.settings;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 
 import mg.mgmap.BuildConfig;
 import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.Pref;
 
 @SuppressWarnings("ConstantConditions")
 public class InfoPreferenceScreen extends MGPreferenceScreen {
@@ -43,21 +41,18 @@ public class InfoPreferenceScreen extends MGPreferenceScreen {
         InfoPreferenceScreen.setBuildNumberSummary(preference);
 
         devCount = 0;
-        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(@NonNull Preference preference) {
-                devCount++;
-                if ((devCount % 7) == 0){
-                    MGMapApplication.getByContext(getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).toggle();
-                    setBuildNumberSummary(preference);
-                }
-                return false;
+        preference.setOnPreferenceClickListener(preference1 -> {
+            devCount++;
+            if ((devCount % 7) == 0){
+                MGMapApplication.getByContext(getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).toggle();
+                setBuildNumberSummary(preference1);
             }
+            return false;
         });
     }
 
     public static void setBuildNumberSummary(Preference preference){
         boolean developer = MGMapApplication.getByContext(preference.getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
-        preference.setSummary(BuildConfig.VERSION_NAME+" ("+ (BuildConfig.DEBUG?"debug":"release")+")"+" "+(developer?"(Developer)":""));
+        preference.setSummary(BuildConfig.VERSION_NAME+" "+(developer?"(Developer)":""));
     }
 }
