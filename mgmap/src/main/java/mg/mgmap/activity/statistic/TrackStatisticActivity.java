@@ -15,9 +15,12 @@
 package mg.mgmap.activity.statistic;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -418,17 +421,21 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     if (trackLogs.size() == 1){
                         TrackLog trackLog = trackLogs.get(0);
                         sendIntent = new Intent(Intent.ACTION_SEND);
-                        sendIntent.putExtra(Intent.EXTRA_STREAM, persistenceManager.getGpxUri(trackLog.getName()));
+                        Uri uri = persistenceManager.getGpxUri(trackLog.getName());
+                        sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                        sendIntent.setClipData(ClipData.newRawUri("", uri));
                         title = "Share "+trackLog.getName()+".gpx to ...";
                     } else {
                         ArrayList<Uri> uris = new ArrayList<>();
-
+                        ClipData clipData = ClipData.newRawUri("", null);
                         for(TrackLog trackLog : trackLogs){
-                            uris.add( persistenceManager.getGpxUri( trackLog.getName() ) );
+                            Uri uri = persistenceManager.getGpxUri(trackLog.getName());
+                            uris.add( uri );
+                            clipData.addItem(new ClipData.Item(uri));
                         }
                         sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                         sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-
+                        sendIntent.setClipData(clipData);
                     }
                     sendIntent.setType("*/*");
                     sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

@@ -267,7 +267,7 @@ public class PersistenceManager {
     public Uri getGpxUri(String filename) {
         try {
             File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
-            return FileProvider.getUriForFile(context, "mg.mgmap.provider", file);
+            return FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
         } catch (Exception e) {
             mgLog.e(e);
         }

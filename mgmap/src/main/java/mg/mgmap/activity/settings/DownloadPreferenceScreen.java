@@ -181,7 +181,6 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
                 intent.setDataAndType(uri, "application/vnd.android.package-archive");
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(intent);
                 return true;
             }
