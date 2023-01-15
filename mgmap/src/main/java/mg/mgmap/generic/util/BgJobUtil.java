@@ -32,24 +32,24 @@ public class BgJobUtil {
 
     public void processConfirmDialog(BgJobGroup bgJobGroup){
         DialogView dialogView = activity.findViewById(R.id.dialog_parent);
-        dialogView
+        dialogView.lock(() -> dialogView
                 .setTitle(bgJobGroup.title)
                 .setMessage(bgJobGroup.getDetails())
                 .setLogPrefix("bgJobGroupConfirm "+bgJobGroup.title)
                 .setPositive("YES", evt -> bgJobGroup.doit())
                 .setNegative("NO", null)
-                .show();
+                .show());
     }
 
     void reportResult(BgJobGroup bgJobGroup){
         DialogView dialogView = activity.findViewById(R.id.dialog_parent);
-        dialogView
+        dialogView.lock(() -> dialogView
                 .setTitle(bgJobGroup.title)
                 .setMessage(bgJobGroup.getResultDetails())
                 .setLogPrefix("bgJobGroupResult "+bgJobGroup.title)
                 .setPositive("OK", evt -> bgJobGroup.onReportResultOk())
                 .setNegative(bgJobGroup.offerRetries ? "Retry" : null, evt -> bgJobGroup.retry())
-                .show();
+                .show());
 
     }
 

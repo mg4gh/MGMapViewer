@@ -57,7 +57,8 @@ public class TrackStatisticFilterDialog {
         table_dialog.addView( new Entry<>(context, "Gain min (m)", filter.prefFilterGainMin, filter.prefFilterGainMinOn ));
         table_dialog.addView( new Entry<>(context, "Gain max (m)", filter.prefFilterGainMax, filter.prefFilterGainMaxOn ));
 
-        ((DialogView)trackStatisticActivity.findViewById(R.id.dialog_parent))
+        DialogView dialogView = trackStatisticActivity.findViewById(R.id.dialog_parent);
+        dialogView.lock(() -> dialogView
                 .setTitle("Filter Options")
                 .setContentView(table_dialog)
                 .setPositive("OK", evt -> {
@@ -70,8 +71,7 @@ public class TrackStatisticFilterDialog {
                     trackStatisticActivity.prefFilterChanged.toggle();
                 })
                 .setNegative("Cancel", evt-> trackStatisticActivity.prefFilterOn.toggle())
-                .show();
-
+                .show());
     }
 
 

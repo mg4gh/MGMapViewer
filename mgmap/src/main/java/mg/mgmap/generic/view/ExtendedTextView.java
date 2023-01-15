@@ -15,6 +15,7 @@
 package mg.mgmap.generic.view;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -48,11 +49,12 @@ public class ExtendedTextView extends AppCompatTextView {
     private String help1 = null, help2 = null, help3 = null, help4 = null;
     private String logName = "";
 
+    int[] loc = new int[2];
     private Object value = null;
     private int availableWidth = 0;
     private String availableText = null;
 //    private final TextPaint availablePaint = new TextPaint();
-    private static ViewPositionHook viewPositionHook = null;
+    private static ClickPositionHook clickPositionHook = null;
 
     public ExtendedTextView(Context context) {
         this(context, null);
@@ -63,12 +65,12 @@ public class ExtendedTextView extends AppCompatTextView {
 //        availablePaint.set( getPaint() );
     }
 
-    public interface ViewPositionHook {
-        void changed(String key, int left, int top, int right, int bottom);
+    public interface ClickPositionHook {
+        void changed(String key, Point locOnScreen);
     }
 
-    public static void setViewPositionHook(ViewPositionHook viewPositionHook) {
-        ExtendedTextView.viewPositionHook = viewPositionHook;
+    public static void setViewPositionHook(ClickPositionHook clickPositionHook) {
+        ExtendedTextView.clickPositionHook = clickPositionHook;
     }
 
     @Override
@@ -78,9 +80,6 @@ public class ExtendedTextView extends AppCompatTextView {
             int newAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - ((getCompoundDrawables()[0] != null) ? (getCompoundDrawablePadding() + getDrawableSize()) : 0);
             if (newAvailableWidth != availableWidth){
                 availableWidth = newAvailableWidth;
-                int[] location = new int[2];
-                getLocationOnScreen(location);
-                Optional.ofNullable(viewPositionHook).ifPresent(vph -> vph.changed(logName,location[0],location[1],location[0]+w,location[1]+h));
                 mgLog.d(logName+":"+getText()+" - "+" available=" + availableWidth);
                 availableText = null; // force recalc text
 //                getPaint().set(availablePaint);
@@ -89,9 +88,23 @@ public class ExtendedTextView extends AppCompatTextView {
         } catch (Exception e) {
             mgLog.e(e);
         }
-        mgLog.v(logName + ":" + getText() + " - " + " w=" + w + " h=" + h + " oldw=" + oldw + " oldh=" + oldh);
-
+        mgLog.v(()-> logName + ":" + getText() + " - " + " w=" + w + " h=" + h + " oldw=" + oldw + " oldh=" + oldh);
     }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        reportClickPosition();
+    }
+
+    // realized as separate method - just in case
+    private void reportClickPosition(){
+        Optional.ofNullable(clickPositionHook).ifPresent(vph -> { // takes only place in testMode
+            getLocationOnScreen(loc);
+            vph.changed(logName,new Point(loc[0] + getWidth()/2, loc[1] + getHeight()/2));
+        });
+    }
+
 
     public ExtendedTextView setName(String logName){
         this.logName = logName;

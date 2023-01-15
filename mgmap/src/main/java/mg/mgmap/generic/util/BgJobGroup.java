@@ -74,7 +74,7 @@ public class BgJobGroup {
         } else {
             errorCounter++;
         }
-        String message = "successCounter="+successCounter+"  errorCounter="+errorCounter+"  jobCounter="+jobCounter;
+        String message = "Title=\""+title+"\" successCounter="+successCounter+"  errorCounter="+errorCounter+"  jobCounter="+jobCounter;
         mgLog.d(message+ ((e==null)?"":" "+e.getMessage()));
         if (successCounter + errorCounter == jobCounter){
             if (groupCallback.groupFinished(this, jobCounter, successCounter, errorCounter)){
@@ -82,7 +82,6 @@ public class BgJobGroup {
             }
             if (title != null){
                 activity.runOnUiThread(this::reportResult);
-//                new Thread(() -> activity.runOnUiThread(this::reportResult)).start();
             } else {
                 groupCallback.afterGroupFinished(this, jobCounter, successCounter, errorCounter);
             }

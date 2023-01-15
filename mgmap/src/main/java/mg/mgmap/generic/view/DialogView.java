@@ -1,7 +1,9 @@
 package mg.mgmap.generic.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -23,6 +25,7 @@ import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
 @SuppressWarnings("unused")
@@ -30,6 +33,7 @@ public class DialogView extends RelativeLayout {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
+    private boolean locked = false;
     private String title = null;
     private View messageView = null;
     private View contentView = null;
@@ -76,6 +80,48 @@ public class DialogView extends RelativeLayout {
         negativeETV = null;
         logPrefix = "";
         KeyboardUtil.hideKeyboard(this);
+        mgLog.i("try unlock "+this.getContext());
+        synchronized (this){
+            locked = false;
+            notifyAll();
+        }
+        mgLog.i("try unlock success "+this.getContext());
+    }
+
+    public void lock(Runnable dialogBuilder){
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            new Thread(() -> lock_int(dialogBuilder)).start();
+        } else {
+            lock_int(dialogBuilder);
+        }
+    }
+
+    private void lock_int(Runnable dialogBuilder) {
+        if (DialogView.this.getContext() instanceof Activity) {
+            Activity activity = (Activity) DialogView.this.getContext();
+
+            while (true){
+                mgLog.i("try lock "+this.getContext());
+                synchronized (this){
+                    if (! locked){
+                        locked = true;
+                        mgLog.i("try lock success "+this.getContext());
+                        activity.runOnUiThread(dialogBuilder);
+                        return;
+                    }
+                    mgLog.i("try lock failed "+this.getContext());
+                    WaitUtil.doWait(this,1000);
+                }
+            }
+
+        } else {
+            mgLog.e("Expect Activity as context, but got "+DialogView.this.getContext().getClass().getName());
+        }
+    }
+
+
+    public boolean isLocked() {
+        return locked;
     }
 
     public String getTitle() {
@@ -128,6 +174,10 @@ public class DialogView extends RelativeLayout {
             neutralETV = createButton(buttonText, logPrefix+"btNeutral", action);
         }
         return this;
+    }
+
+    public String getLogPrefix() {
+        return logPrefix;
     }
 
     public DialogView setLogPrefix(String logPrefix) {

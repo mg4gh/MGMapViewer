@@ -368,7 +368,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         try {
             super.onNewIntent(intent);
             mgLog.i(intent);
-            if (intent != null) {
+            if ((intent != null) && (!intent.getAction().endsWith("DUPLICATE"))){
+                intent.setAction(intent.getAction()+".DUPLICATE");
                 String paramKey = getResources().getString(R.string.activity_param_key);
                 if (intent.hasExtra(paramKey)){
                     String value = intent.getStringExtra(paramKey);

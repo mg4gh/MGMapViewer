@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -61,11 +60,10 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
 
         setup.setTestRunner(this); // dependency injection
         mgMapApplication.registerActivityLifecycleCallbacks(this);
-        ExtendedTextView.setViewPositionHook((key, left, top, right, bottom) -> {
+        ExtendedTextView.setViewPositionHook((key, pt) -> {
             if ((key != null) && (key.length() > 0)){
-                Rect rect = new Rect(left,top,right,bottom);
-                mgLog.d("register key: "+key +" rect="+rect);
-                viewPositionRegistry.put(key, rect);
+                mgLog.d("register key: "+key +" pt="+pt);
+                clickPositionRegistry.put(key, pt);
             }
         });
         TestView.setTestViewHook(new TestView.TestViewHook() {
@@ -202,19 +200,10 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
 
     public TestView currentTestView = null;
 
-    private final SortedMap<String, Rect> viewPositionRegistry = new TreeMap<>();
+    private final SortedMap<String, Point> clickPositionRegistry = new TreeMap<>();
 
-    public Rect getViewPosition(String key){
-        return viewPositionRegistry.get(key);
-    }
     public Point getViewClickPos(String key){
-        Rect rect = viewPositionRegistry.get(key);
-        if (rect != null){
-            int[] loc = new int[2];
-            currentTestView.getLocationOnScreen(loc);
-            return new Point((rect.left+rect.right)/2 - loc[0], (rect.top+rect.bottom)/2 - loc[1]);
-        }
-        return null;
+        return clickPositionRegistry.get(key);
     }
 
 
@@ -245,12 +234,10 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
     public void doClick(){
         final TestView tv = currentTestView;
         if (tv != null){
-            int[] tvLoc = new int[2];
-            tv.getLocationOnScreen(tvLoc);
-            Point screenPos = new Point(currentCursorPos.x + tvLoc[0], currentCursorPos.y + tvLoc[1]);
-            tv.setClickPosition(screenPos);
+            mgLog.i("screen doClick pos "+currentCursorPos);
+            tv.setClickPosition(currentCursorPos);
             setClickVisibility(true);
-            timer.postDelayed(new ScreenClicker(screenPos), 200);
+            timer.postDelayed(new ScreenClicker(currentCursorPos), 200);
             // do the click after 200ms + some time to execute this command
             tv.getActivity().runOnUiThread(() -> {
                 ObjectAnimator animation = ObjectAnimator.ofFloat(tv.getClick(), "scaleX", 2);
@@ -272,20 +259,25 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
     public void animateTo(Point newPosition, int duration){
         TestView tv = currentTestView;
         if (tv != null){
+            int[] tvLoc = new int[2];
+            tv.getLocationOnScreen(tvLoc);
+            Point tvPos = new Point(newPosition.x - tvLoc[0], newPosition.y - tvLoc[1]);
+            mgLog.i("to "+newPosition+" tvPos="+tvPos+" "+tv.getActivity().getClass());
+
             tv.getActivity().runOnUiThread(() -> {
                 {
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(tv.getCursor(), "translationX", newPosition.x);
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(tv.getCursor(), "translationX", newPosition.x-tvLoc[0]);
                     animation.setDuration(duration);
                     animation.start();
-                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.getCursor(), "translationY", newPosition.y);
+                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.getCursor(), "translationY", newPosition.y-tvLoc[1]);
                     animation2.setDuration(duration);
                     animation2.start();
                 }
                 {
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(tv.getClick(), "translationX", newPosition.x);
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(tv.getClick(), "translationX", newPosition.x-tvLoc[0]);
                     animation.setDuration(duration);
                     animation.start();
-                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.getClick(), "translationY", newPosition.y);
+                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(tv.getClick(), "translationY", newPosition.y-tvLoc[1]);
                     animation2.setDuration(duration);
                     animation2.start();
                 }
@@ -361,7 +353,6 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
                 PreferenceGroupAdapter pga = (PreferenceGroupAdapter) ra;
                 @SuppressLint("RestrictedApi") int pIdx = pga.getPreferenceAdapterPosition(key);
 
-
                 RecyclerView.LayoutManager rlm = rv.getLayoutManager();
                 if (rlm instanceof LinearLayoutManager) {
                     LinearLayoutManager llm = (LinearLayoutManager) rlm;
@@ -369,10 +360,8 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
                     View v = llm.getChildAt(pIdx);
                     if (v!=null){
                         int[] loc1 = new int[2];
-                        int[] loc2 = new int[2];
                         v.getLocationOnScreen(loc1);
-                        currentTestView.getLocationOnScreen(loc2);
-                        Point pt = new Point(loc1[0] + v.getWidth() / 2, loc1[1] + v.getHeight() / 2 - loc2[1]);
+                        Point pt = new Point(loc1[0] + v.getWidth() / 2, loc1[1] + v.getHeight() / 2 );
                         mgLog.d(pt);
                         return pt;
                     }

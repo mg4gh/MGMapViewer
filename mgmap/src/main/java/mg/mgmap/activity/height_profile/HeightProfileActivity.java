@@ -117,11 +117,12 @@ public class HeightProfileActivity extends AppCompatActivity {
         createSeries(graph,  application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE, showAscentGraph);
         createSeries(graph,  application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A150, showAscentGraph);
         if ((application.routeTrackLogObservable.getTrackLog() != null) && (!hasElevation(application.routeTrackLogObservable.getTrackLog()))){
-            ((DialogView)findViewById(R.id.dialog_parent))
+            DialogView dialogView = this.findViewById(R.id.dialog_parent);
+            dialogView.lock(() -> dialogView
                     .setTitle("Warning")
                     .setMessage("Download height data to see the height profile of the RouteTrackLog. You can do this via hgt layer!")
                     .setPositive("OK", null)
-                    .show();
+                    .show());
         }
     }
 

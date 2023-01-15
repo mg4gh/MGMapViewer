@@ -137,7 +137,8 @@ public class HintUtil {
                     ll2.addView(tv2);
                 }
 
-                ((DialogView)activity.findViewById(R.id.dialog_parent))
+                DialogView dialogView = activity.findViewById(R.id.dialog_parent);
+                dialogView.lock(() -> dialogView
                         .setTitle(headline)
                         .setContentView(ll)
                         .setLogPrefix(hint.getClass().getSimpleName())
@@ -147,8 +148,7 @@ public class HintUtil {
                             hint.gotItActions.forEach(Runnable::run);
                         })
                         .setNegative( hint.isAllowAbort()?"Abort":null, null)
-                        .show();
-
+                        .show());
                 return true;
             }
         } catch (Exception e) {

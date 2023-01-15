@@ -54,8 +54,8 @@ public class FullscreenUtil {
     }
 
     public static void setFullscreen(Activity activity) {
-        mgLog.i();
         if (activity instanceof MGMapActivity){
+            mgLog.i();
             int newUiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
             newUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
             newUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;

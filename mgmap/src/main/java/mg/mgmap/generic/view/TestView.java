@@ -115,10 +115,10 @@ public class TestView extends RelativeLayout  {
     }
 
     @Override
-    protected void onWindowVisibilityChanged(int visibility) {
-        super.onWindowVisibilityChanged(visibility);
-        mgLog.d(activity.getClass().getSimpleName()+": Visibility="+visibility);
-        if ( (visibility & (View.INVISIBLE | View.GONE)) == 0 ) { // is visible
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        mgLog.d(()-> activity.getClass().getSimpleName()+": hasWindowFocus="+hasWindowFocus);
+        if (hasWindowFocus) { // is visible
             Optional.ofNullable(testViewHook).ifPresent(tvh -> tvh.registerTestView(this));
         } else {
             Optional.ofNullable(testViewHook).ifPresent(tvh -> tvh.unregisterTestView(this));

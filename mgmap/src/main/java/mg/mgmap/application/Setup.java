@@ -77,6 +77,7 @@ public class Setup {
         testConfig = new File(baseDir, TEST_CONFIG);
         File testOff = new File(testSetup, TEST_OFF);
 
+        mgLog.d("testConfig.exists()="+testConfig.exists()+" testOff.exists()="+testOff.exists());
         if (testConfig.exists() && !testOff.exists()){
             if (testSetup.mkdir()){
                 mgLog.d(testSetup.getAbsolutePath()+" created");

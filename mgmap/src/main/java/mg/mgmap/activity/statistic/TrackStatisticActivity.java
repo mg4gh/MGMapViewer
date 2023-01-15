@@ -19,8 +19,6 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -342,7 +340,8 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     };
                     etTrackLogName.setFilters(new InputFilter[] { filter });
 
-                    ((DialogView)findViewById(R.id.dialog_parent))
+                    DialogView dialogView = this.findViewById(R.id.dialog_parent);
+                    dialogView.lock(() -> dialogView
                             .setTitle("Rename Track")
                             .setMessage("Old name: "+trackLog.getName())
                             .setContentView(etTrackLogName)
@@ -370,7 +369,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                                 }
                             })
                             .setNegative("Cancel", null)
-                            .show();
+                            .show());
                 }
             }
         };
@@ -464,7 +463,8 @@ public class TrackStatisticActivity extends AppCompatActivity {
             if (prefDeleteAllowed.getValue()){
                 ArrayList<TrackLog> trackLogs = getSelectedEntries();
                 String msg = getNames(trackLogs, false).toString();
-                ((DialogView)findViewById(R.id.dialog_parent))
+                DialogView dialogView = this.findViewById(R.id.dialog_parent);
+                dialogView.lock(() -> dialogView
                         .setTitle(getResources().getString(R.string.ctx_stat_del_track))
                         .setMessage(msg.substring(1,msg.length()-1))
                         .setPositive("OK", evt -> {
@@ -480,7 +480,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                             TrackStatisticActivity.this.recreate();
                         })
                         .setNegative("Cancel", null)
-                        .show();
+                        .show());
             }
         };
     }
