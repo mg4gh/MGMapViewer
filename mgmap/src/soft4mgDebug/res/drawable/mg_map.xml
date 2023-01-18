@@ -3,6 +3,8 @@
     android:height="24dp"
     android:viewportHeight="48.0"
     android:viewportWidth="48.0">
+
+
     <path
         android:strokeColor="#FF00AA00"
         android:strokeWidth="4"
@@ -28,5 +30,28 @@
             M23,34.5 l0,-7 l2,-1.5 l2,1.5 l0,7 l0,-4 l-4,0
             M31,34.5 l0,-8.5 l3,0 l1,1 l0,2 l-1,1 l-3,0"
         />
+
+    <path
+        android:strokeColor="#FF00AA00"
+        android:strokeWidth=".01"
+        android:fillColor="#00CCDDCC"
+        android:pathData="
+                M24,0.05 m0,0 a1.95,1.95,0 1 0 0.001,0
+                M20,0.45 m0,0 a1.95,1.95,0 1 0 0.001,0
+                M28,0.45 m0,0 a1.95,1.95,0 1 0 0.001,0
+        "
+        />
+
+    <path
+        android:strokeColor="#FF00AA00"
+        android:strokeWidth=".01"
+        android:fillColor="#FFCCDDCC"
+        android:pathData="
+                M28,43.65 m0,0 a1.95,1.95,0 1 0 0.001,0
+                M20,43.65 m0,0 a1.95,1.95,0 1 0 0.001,0
+                M24,44.05 m0,0 a1.95,1.95,0 1 0 0.001,0
+        "
+        />
+
 
 </vector>
