@@ -165,7 +165,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application = (MGMapApplication) getApplication();
         Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(application.getPersistenceManager()));
         //for fullscreen mode
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
         createSharedPreferences();
