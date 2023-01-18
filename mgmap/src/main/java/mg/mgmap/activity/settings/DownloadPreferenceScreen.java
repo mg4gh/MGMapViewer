@@ -80,6 +80,10 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 prefSwLocal.setVisible(false);
             }
         }
+        Preference prefSw = findPreference( getResources().getString(R.string.preferences_dl_sw_key) );
+        assert prefSw != null;
+        //noinspection ConstantConditions
+        prefSw.setVisible(BuildConfig.FLAVOR.equals("mg4gh"));
     }
 
 

@@ -36,6 +36,7 @@
     <string name="preferences_dl_theme_el_title">Download Elevate Theme</string>
     <string name="preferences_dl_theme_el_desc">Download the latest Elevate Theme</string>
 
+    <string name="preferences_dl_sw_key">DldSWKey</string>
     <string name="preferences_dl_sw_title">Download Software</string>
     <string name="preferences_dl_sw_desc">Download new apk from https://github.com/mg4gh/MGMapViewer</string>
 

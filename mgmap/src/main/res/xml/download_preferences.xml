@@ -39,6 +39,7 @@
     </mg.mgmap.activity.settings.PreferenceCategoryEx>
 
     <mg.mgmap.activity.settings.PreferenceCategoryEx
+        app:key="@string/preferences_dl_sw_key"
         app:title="@string/preferences_dl_sw_title"
         app:summary="@string/preferences_dl_sw_desc"
         app:icon="@drawable/github"
