@@ -62,7 +62,7 @@ public class TestControl implements Setup.TestRunner,Application.ActivityLifecyc
         mgMapApplication.registerActivityLifecycleCallbacks(this);
         ExtendedTextView.setViewPositionHook((key, pt) -> {
             if ((key != null) && (key.length() > 0)){
-                mgLog.d("register key: "+key +" pt="+pt);
+                mgLog.v(()->"register key: "+key +" pt="+pt);
                 clickPositionRegistry.put(key, pt);
             }
         });
