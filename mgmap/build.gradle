@@ -1,16 +1,49 @@
 apply plugin: 'com.android.application'
 
-def versionMajor = "0.9.7"
-def versionMajorSuffix = "pre"
+// This code is running during gradle config phase - read mgBuildNbr and mgVersionCode from current ./mgmap/version.properties file
+// Increase values depending on the start parameter (task "_mgmapPublish" is called - or not), but don't write the back to the properties file yet.
+// Saving of these increased values happens only at the end in the "_mgmapPublish" and the "_mgmapDebugApk" task - so effectively only these two task increase these counters
 
+def versionMajor = "0.9.7"
 String outputFileNameBundle
 
+File versionPropsFile = file('version.properties')
+int mgBuildNbr = 1
+int mgVersionCode = 1
+
+Properties versionProps = new Properties()
+try (FileInputStream fis = new FileInputStream(versionPropsFile)){
+    versionProps.load(fis)
+} catch (Exception e){ System.out.println(e.getMessage()) }
+mgBuildNbr = Integer.parseInt( versionProps.getOrDefault('BUILD_NBR', "1") )
+mgVersionCode = Integer.parseInt( versionProps.getOrDefault('VERSION_CODE', "1") )
+System.out.println("Old: buildNbr="+mgBuildNbr+" mgVersionCode="+mgVersionCode)
+if (gradle.properties.get("startParameter").toString().contains("taskRequests=[DefaultTaskExecutionRequest{args=[_mgmapPublish],")) {
+    mgVersionCode++
+    mgBuildNbr = 0 // reset build number when version code is incremented
+} else {
+    mgBuildNbr++
+}
+System.out.println("New: buildNbr="+mgBuildNbr+" mgVersionCode="+mgVersionCode)
+versionProps.put('VERSION_CODE',Integer.toString(mgVersionCode))
+versionProps.put('BUILD_NBR',Integer.toString(mgBuildNbr))
+
+
+// Here are some method definitions
 static def getDate() {
     return new Date().format('yyyyMMdd_HHmmss')
 }
 
-afterEvaluate {
+static void saveVersion(Properties properties, File toFile){
+    try (FileOutputStream fos = new FileOutputStream("${toFile}")) {
+        properties.store(fos, " Automatically updated File - do not edit manually")
+        System.out.println("new version data saved.")
+    } catch (Exception e){ System.out.println(e.getMessage()) }
+}
 
+// Here follow the relevant task definitions
+
+afterEvaluate {
 
     task provideDebugApkOnSshServer(type: JavaExec, dependsOn: assembleDebug) {
         group = "Execution"
@@ -66,14 +99,17 @@ afterEvaluate {
 //        This version of calculation for outputFileNameBundle caused a lot of warnings, therefore replaced by current method via outputFileNameBundle variable
 //        def versionName = android.applicationVariants.collect {x -> x.properties.versionName}.findAll {y->y.contains("soft4mg-release")}.first()
 //        def outputFileNameBundle = "${parent.name}-${versionName}.aab"
-        System.out.println("outputFileNameBundle="+outputFileNameBundle)
-        from("$buildDir/outputs/bundle/soft4mgRelease/mgmap-soft4mg-release.aab")
-        into "../aab/"
-        rename ("mgmap-soft4mg-release.aab", "${outputFileNameBundle}")
+        doFirst {
+            System.out.println("outputFileNameBundle="+outputFileNameBundle)
+            from("$buildDir/outputs/bundle/soft4mgRelease/mgmap-soft4mg-release.aab")
+            into "../aab/"
+            rename ("mgmap-soft4mg-release.aab", "${outputFileNameBundle}")
+        }
     }
 
     task _mgmapPublish (dependsOn: ['mg4ghDebugZipApk','mg4ghReleaseZipApk', 'downloadMD', 'soft4mgReleaseCopyAab']){
         doLast {
+            saveVersion(versionProps, versionPropsFile)
             System.out.println( "_mgmapPublish finished" )
         }
     }
@@ -83,6 +119,7 @@ afterEvaluate {
             dependsOn(provideDebugApkOnSshServer)
         }
         doLast {
+            saveVersion(versionProps, versionPropsFile)
             System.out.println( "_mgmapDebugApk finished" )
         }
     }
@@ -108,11 +145,13 @@ afterEvaluate {
 android {
     compileSdkVersion 33
     defaultConfig {
+        def mgBuildTime = "\"${getDate()}\""
         applicationId "mg.mgmap"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 1
-        versionName "${versionMajor}-${versionMajorSuffix}-${getDate()}"
+        versionCode Integer.parseInt("$mgVersionCode")
+        versionName "${versionMajor}-${mgVersionCode}.${mgBuildNbr}"
+        buildConfigField "String", "BUILD_TIME", "${mgBuildTime}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

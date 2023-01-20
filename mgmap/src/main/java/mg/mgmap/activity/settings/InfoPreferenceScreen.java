@@ -53,6 +53,6 @@ public class InfoPreferenceScreen extends MGPreferenceScreen {
 
     public static void setBuildNumberSummary(Preference preference){
         boolean developer = MGMapApplication.getByContext(preference.getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
-        preference.setSummary(BuildConfig.VERSION_NAME+" "+(developer?"(Developer)":""));
+        preference.setSummary("Version: "+BuildConfig.VERSION_NAME+" "+(developer?"(Developer)":"")+"\nBuild timestamp: "+BuildConfig.BUILD_TIME);
     }
 }
