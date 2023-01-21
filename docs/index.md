@@ -8,6 +8,7 @@ your tracks ... and much more.
 
 Here you can find the [Getting Started](./GettingStarted/GettingStarted.md).
 For the usage please check also the [quick control sections](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md).
+Be aware about the [Filesystem structure](./GettingStarted/FileSystem.md).
 
 # Feature overview
 
