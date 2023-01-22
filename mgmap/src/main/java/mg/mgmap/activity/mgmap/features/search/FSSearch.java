@@ -55,6 +55,7 @@ public class FSSearch extends FeatureService {
     private SearchControlLayer scl = null; // feature control layer to manage feature specific events
 
     private final Pref<Boolean> prefSearchOn = getPref(R.string.FSSearch_qc_searchOn, false);
+    private final Pref<String> prefSearchProvider = getPref(R.string.preference_choose_search_key, "Graphhopper");
     private final Pref<Boolean> prefShowSearchResult = getPref(R.string.FSSearch_qc_showSearchResult, false);
     private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
     private final Pref<Long> prefShowPos = getPref(R.string.FSSearch_pref_SearchPos, NO_POS);
@@ -62,6 +63,8 @@ public class FSSearch extends FeatureService {
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
         prefSearchOn.setValue(false);
+
+
 
         searchView = new SearchView(mmActivity.getApplicationContext(), this);
         searchView.init(mmActivity);
@@ -152,8 +155,7 @@ public class FSSearch extends FeatureService {
         if (targetVisibility){
             if (searchView.getVisibility() == View.INVISIBLE){
                 try {
-                    String sProvider = getSharedPreferences().getString(getResources().getString(R.string.preference_choose_search_key), "Graphhopper");
-                    setSearchProvider( (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+sProvider).newInstance() );
+                    setSearchProvider( (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+prefSearchProvider.getValue()).newInstance() );
                 } catch (Exception e) {
                     mgLog.e(e);
                 }

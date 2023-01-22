@@ -39,13 +39,8 @@ public class SearchProviderListPreference extends ListPreference {
             for (int i=0; i<searchCfgs.length; i++){
                 searchProviders[i] = searchCfgs[i].replaceAll(".cfg$", "");
             }
-            if (searchProviders.length == 0) {
-                searchProviders = new String[]{ "Nominatim" };
-            }
             setEntries(searchProviders);
             setEntryValues(searchProviders);
-
-            setDefaultValue("Nominatim");
 
             setOnPreferenceChangeListener((preference, newValue) -> {
                 mgLog.i("key="+preference.getKey()+" value="+newValue);
