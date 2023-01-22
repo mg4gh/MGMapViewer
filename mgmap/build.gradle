@@ -1,11 +1,18 @@
 apply plugin: 'com.android.application'
 
+String aBuildDate = new Date().format('yyyyMMdd_HHmmss')
+System.out.println("***************************************************************************************************")
+System.out.println("*************************************** ${aBuildDate} *******************************************")
+System.out.println("***************************************************************************************************")
+
+
 // This code is running during gradle config phase - read mgBuildNbr and mgVersionCode from current ./mgmap/version.properties file
 // Increase values depending on the start parameter (task "_mgmapPublish" is called - or not), but don't write the back to the properties file yet.
 // Saving of these increased values happens only at the end in the "_mgmapPublish" and the "_mgmapDebugApk" task - so effectively only these two task increase these counters
 
 def versionMajor = "0.9.7"
 String outputFileNameBundle
+String parentProjectDir = new File("${projectDir}").getParent()
 
 File versionPropsFile = file('version.properties')
 int mgBuildNbr = 1
@@ -30,9 +37,6 @@ versionProps.put('BUILD_NBR',Integer.toString(mgBuildNbr))
 
 
 // Here are some method definitions
-static def getDate() {
-    return new Date().format('yyyyMMdd_HHmmss')
-}
 
 static void saveVersion(Properties properties, File toFile){
     try (FileOutputStream fos = new FileOutputStream("${toFile}")) {
@@ -81,7 +85,7 @@ afterEvaluate {
                     include '**/*.apk.sha256'
                     exclude '**/*unsigned.apk', '**/*unaligned.apk'
                 }
-                into "../apk/${buildType.name}"
+                into "${parentProjectDir}/apk/${buildType.name}"
             }
 
             task "${buildVariant}ZipApk"(type: Zip, dependsOn: "${buildVariant}CopyApk" ){
@@ -89,7 +93,7 @@ afterEvaluate {
                     exclude '**/*unsigned.apk', '**/*unaligned.apk'
                 }
                 archiveName( "apk.zip" )
-                destinationDirectory = file( "../apk/${buildType.name}")
+                destinationDirectory = file( "${parentProjectDir}/apk/${buildType.name}")
             }
         }
     }
@@ -99,12 +103,10 @@ afterEvaluate {
 //        This version of calculation for outputFileNameBundle caused a lot of warnings, therefore replaced by current method via outputFileNameBundle variable
 //        def versionName = android.applicationVariants.collect {x -> x.properties.versionName}.findAll {y->y.contains("soft4mg-release")}.first()
 //        def outputFileNameBundle = "${parent.name}-${versionName}.aab"
-        doFirst {
-            System.out.println("outputFileNameBundle="+outputFileNameBundle)
-            from("$buildDir/outputs/bundle/soft4mgRelease/mgmap-soft4mg-release.aab")
-            into "../aab/"
-            rename ("mgmap-soft4mg-release.aab", "${outputFileNameBundle}")
-        }
+        System.out.println("outputFileNameBundle="+outputFileNameBundle)
+        from("$buildDir/outputs/bundle/soft4mgRelease/mgmap-soft4mg-release.aab")
+        into "${parentProjectDir}/aab"
+        rename ("mgmap-soft4mg-release.aab", "${outputFileNameBundle}")
     }
 
     task _mgmapPublish (dependsOn: ['mg4ghDebugZipApk','mg4ghReleaseZipApk', 'downloadMD', 'soft4mgReleaseCopyAab']){
@@ -145,7 +147,8 @@ afterEvaluate {
 android {
     compileSdkVersion 33
     defaultConfig {
-        def mgBuildTime = "\"${getDate()}\""
+//        def mgBuildTime = "\"${getDate()}\""
+        def mgBuildTime = "\"${aBuildDate}\""
         applicationId "mg.mgmap"
         minSdkVersion 26
         targetSdkVersion 33
