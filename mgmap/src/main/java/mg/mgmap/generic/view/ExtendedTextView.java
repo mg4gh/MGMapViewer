@@ -53,7 +53,6 @@ public class ExtendedTextView extends AppCompatTextView {
     private Object value = null;
     private int availableWidth = 0;
     private String availableText = null;
-//    private final TextPaint availablePaint = new TextPaint();
     private static ClickPositionHook clickPositionHook = null;
 
     public ExtendedTextView(Context context) {
@@ -62,7 +61,6 @@ public class ExtendedTextView extends AppCompatTextView {
 
     public ExtendedTextView(Context context,  AttributeSet attrs) {
         super(context, attrs);
-//        availablePaint.set( getPaint() );
     }
 
     public interface ClickPositionHook {
@@ -80,9 +78,8 @@ public class ExtendedTextView extends AppCompatTextView {
             int newAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - ((getCompoundDrawables()[0] != null) ? (getCompoundDrawablePadding() + getDrawableSize()) : 0);
             if (newAvailableWidth != availableWidth){
                 availableWidth = newAvailableWidth;
-                mgLog.d(logName+":"+getText()+" - "+" available=" + availableWidth);
+                mgLog.v(logName+":"+getText()+" - "+" available=" + availableWidth);
                 availableText = null; // force recalc text
-//                getPaint().set(availablePaint);
                 setValue(value);
             }
         } catch (Exception e) {
