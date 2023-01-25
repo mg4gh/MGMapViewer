@@ -46,8 +46,8 @@ public class ElevationProvider {
     public void setElevation(WriteablePointModel wpm){
         double latitude = wpm.getLat();
         double longitude = wpm.getLon();
-        int iLat = (int)latitude;
-        int iLon = (int)longitude;
+        int iLat = HgtProvider.getLower(latitude);
+        int iLon = HgtProvider.getLower(longitude);
         if (latitude - iLat == 0){
             iLat--;
         }

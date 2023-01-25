@@ -398,8 +398,8 @@ public class FSBB extends FeatureService {
             }
         });
         long downloadSize = 0;
-        for (int latitude = (int)bBox.minLatitude; latitude<(int)bBox.maxLatitude+1; latitude++ ){
-            for (int longitude = (int)bBox.minLongitude; longitude<(int)bBox.maxLongitude+1; longitude++ ){
+        for (int latitude = HgtProvider.getLower(bBox.minLatitude); latitude<HgtProvider.getLower(bBox.maxLatitude)+1; latitude++ ){
+            for (int longitude = HgtProvider.getLower(bBox.minLongitude); longitude<HgtProvider.getLower(bBox.maxLongitude)+1; longitude++ ){
                 String hgtName = hgtProvider.getHgtName(latitude, longitude);
                 if (all || !hgtProvider.hgtIsAvailable(hgtName)){
                     BgJob bgJob = new BgJob(){
@@ -433,8 +433,8 @@ public class FSBB extends FeatureService {
                     return false;
                 }
             });
-            for (int latitude = (int)bBox.minLatitude+1; latitude<(int)bBox.maxLatitude; latitude++ ){
-                for (int longitude = (int)bBox.minLongitude+1; longitude<(int)bBox.maxLongitude; longitude++ ){
+            for (int latitude = HgtProvider.getLower(bBox.minLatitude)+1; latitude<HgtProvider.getLower(bBox.maxLatitude); latitude++ ){
+                for (int longitude = HgtProvider.getLower(bBox.minLongitude)+1; longitude<HgtProvider.getLower(bBox.maxLongitude); longitude++ ){
                     String hgtName = hgtProvider.getHgtName(latitude, longitude);
                     jobGroup.addJob(new BgJob(){
                         @Override

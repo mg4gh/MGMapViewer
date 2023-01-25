@@ -16,6 +16,7 @@ import java.util.Map;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.application.util.HgtProvider;
 
 public class HgtGridView extends Grid {
 
@@ -92,7 +93,7 @@ public class HgtGridView extends Grid {
                     path.lineTo(pixelX2, pixelY2);
                     path.lineTo(pixelX1, pixelY2);
                     path.lineTo(pixelX1, pixelY1);
-                    String hgtName = application.getHgtProvider().getHgtName((int)latitude,(int)longitude);
+                    String hgtName = application.getHgtProvider().getHgtName(HgtProvider.getLower(latitude),HgtProvider.getLower(longitude));
                     canvas.drawPath(path, application.getHgtProvider().hgtIsAvailable(hgtName)?hgtAvail:hgtNotAvail);
                 }
             }

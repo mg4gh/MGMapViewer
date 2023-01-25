@@ -107,7 +107,7 @@ public class HgtProvider {
     }
 
     public String getHgtName(int iLat, int iLon) {
-        return String.format(Locale.GERMANY, "%s%02d%S%03d", (iLat > 0) ? "N" : "S", iLat, (iLon > 0) ? "E" : "W", iLon);
+        return String.format(Locale.GERMANY, "%s%02d%S%03d", (iLat > 0) ? "N" : "S", Math.abs(iLat), (iLon > 0) ? "E" : "W", Math.abs(iLon));
     }
 
 
@@ -123,6 +123,12 @@ public class HgtProvider {
             }
         }
         return buf;
+    }
+
+
+    private final static int shift = 1000;
+    public static int getLower(double d) {
+        return ((int)(d+shift) - shift);
     }
 
 }
