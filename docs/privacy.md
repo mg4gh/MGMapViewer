@@ -2,6 +2,25 @@
 
 # Privacy
 
+This app can be used in two flavors, one flavor ("soft4mg") is intended to be used via the Google play store.
+The second flavor ("mg4gh") reflects the legacy usage with apk installation via github account mg4gh.
+Especially for easy update installations this flavor needs additional permissions.
+
+## Permissions
+
+| Permission            | flavor | justification                                                                                                                                                                                                                                                                                                                                                                                                            |
+|-----------------------|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION | all    | Requested for track recording and for visualization of current position (GPS without recording)                                                                                                                                                                                                                                                                                                                          |
+| ACCESS_BACKGROUND_LOCATION | all    | Requested for track recording (recording continues while using other apps or having the device in your pocket)                                                                                                                                                                                                                                                                                                           |
+| FOREGROUND_SERVICE  | all    | This permission is also necessary for track recording, since otherwise the app would not be able to continiously record the gps positions when operating in the background                                                                                                                                                                                                                                               |
+| ACCESS_WIFI_STATE  | all    | This permission is used to allow backup of tracks on a local SSH server. This becomes only active, if you provide a suiteble configuration for this purpose.                                                                                                                                                                                                                                                             |
+| POST_NOTIFICATIONS  | all    | While running any backgroud service this is made tranparant by a corresponding notification (This can be the location service or a background service to download any map data).                                                                                                                                                                                                                                         |
+| INTERNET  | all    | While all the main functionality of this app is designed to work offline, you need internet access for some features, like initial map download or to use some geocode providers. Details about the data usage via internet can be found in the next section.                                                                                                                                                            |
+| REQUEST_INSTALL_PACKAGES  | mg4gh  | This permission is used only in the mg4gh flavor, not in the soft4mg flavor (play store variant). It is needed to enable an easy updata procedure of the app. In the mg4gh flavor there is a menu item allowing to update to the latest version. Once selected, the latest apk will be downloaded and the install of this apk will be triggered. So there is no other utility/app necessary for the update installation. |
+
+ 
+## Data usage
+
 This app tries to respect your privacy as much as possible. There is **no advertising**. During "normal" operation no data is transferred to any server.
 But there are a few features that need or offer internet access to different servers to match their functionality. So please check these feature with internet connectivity:
 

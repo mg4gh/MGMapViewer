@@ -97,6 +97,9 @@ import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.TopExceptionHandler;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.activity.mgmap.view.MVLayer;
+import mg.mgmap.generic.util.hints.AbstractHint;
+import mg.mgmap.generic.util.hints.HintAccessBackgroundLocation;
+import mg.mgmap.generic.util.hints.HintAccessFineLocation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -528,12 +531,16 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         mgLog.i();
         if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
             mgLog.i();
-            if (Build.VERSION.SDK_INT < 28){
-                Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_CODE);
-            } else {
-                Permissions.request(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, ACCESS_FINE_LOCATION_CODE);
+            if (application.prefGps.getValue()){
+                AbstractHint hint = new HintAccessFineLocation(this).addGotItAction(() -> {
+                    if (Build.VERSION.SDK_INT < 28){
+                        Permissions.request(MGMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_CODE);
+                    } else {
+                        Permissions.request(MGMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.FOREGROUND_SERVICE}, ACCESS_FINE_LOCATION_CODE);
+                    }
+                });
+                application.getHintUtil().showHint(hint);
             }
-
         } else {
             application.startTrackLoggerService(this);
         }
@@ -546,8 +553,16 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 if (Build.VERSION.SDK_INT < 29) {
                     triggerTrackLoggerService();
                 } else {
-                    Permissions.request(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, ACCESS_BACKGROUND_LOCATION);
+                    if (Permissions.check(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION})) {
+                        triggerTrackLoggerService();
+                    } else  {
+                        getMGMapApplication().getHintUtil().showHint(new HintAccessBackgroundLocation(this)
+                                .addGotItAction(()->Permissions.request(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, ACCESS_BACKGROUND_LOCATION)));
+                    }
                 }
+            } else {
+                application.prefGps.setValue(false);
+                application.recordingTrackLogObservable.setTrackLog(null);
             }
         }
         if (requestCode == ACCESS_BACKGROUND_LOCATION) {

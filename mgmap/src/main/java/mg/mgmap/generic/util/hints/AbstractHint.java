@@ -19,6 +19,7 @@ public abstract class AbstractHint implements Runnable{
     Pref<Boolean> prefShowHint;
     protected boolean showOnce = true;
     protected boolean allowAbort = false;
+    protected boolean showAlways = false;
 
     protected PrefCache prefCache;
 
@@ -48,11 +49,12 @@ public abstract class AbstractHint implements Runnable{
     }
 
     public boolean checkHintCondition(){
-        return prefShowHints.getValue() && prefShowHint.getValue();
+        return (prefShowHints.getValue() && prefShowHint.getValue()) || showAlways;
     }
 
-    public void addGotItAction(Runnable gotItAction){
+    public AbstractHint addGotItAction(Runnable gotItAction){
         gotItActions.add(gotItAction);
+        return this;
     }
 
     public boolean isAllowAbort() {

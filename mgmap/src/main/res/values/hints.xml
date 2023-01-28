@@ -4,5 +4,7 @@
     <string name="hintInitialMapDownload">hint_initial_map_download_key</string>
     <string name="hintInitialMapDownload2">hint_initial_map_download2_key</string>
     <string name="hintMapLayerAssignment">hint_map_layer_assignment_key</string>
+    <string name="hintAccessFineLocation">hint_access_fine_location_key</string>
+    <string name="hintAccessBackgroundLocation">hint_access_background_location_key</string>
 
 </resources>
