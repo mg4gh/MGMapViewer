@@ -1,0 +1,4 @@
+The main purpose of this app is visualizing maps and tracks and also track recording. So e.g. I'm recording all my MTB tours and hiking tours with this app. So I can later see when did I do which tour, I can share these tracks with others etc. 
+
+The track recording needs the access to the location in the background, since the recording shell be continued even if the device is in your pocket and you are biking/hiking. Otherwise the app could not serve it's main function.
+This recorded position is only stored locally in apps path on the device, it is only shared if the "share track functionality" is explicitly used or if the files are downloaded via usb cable. 
