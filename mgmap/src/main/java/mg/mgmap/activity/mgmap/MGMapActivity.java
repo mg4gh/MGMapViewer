@@ -51,6 +51,7 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.activity.settings.MainPreferenceScreen;
 import mg.mgmap.activity.settings.MapLayersPreferenceScreen;
 import mg.mgmap.activity.settings.SettingsActivity;
@@ -562,7 +563,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 }
             } else {
                 application.prefGps.setValue(false);
-                application.recordingTrackLogObservable.setTrackLog(null);
+                RecordingTrackLog rtl = application.recordingTrackLogObservable.getTrackLog();
+                if (rtl != null){
+                    rtl.stopTrack(0);
+                    application.recordingTrackLogObservable.setTrackLog(null);
+                }
             }
         }
         if (requestCode == ACCESS_BACKGROUND_LOCATION) {
