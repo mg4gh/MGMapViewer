@@ -14,11 +14,12 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.AbstractTestCase;
 import mg.mgmap.test.TestControl;
 
-public class ZoomIn extends AbstractTestCase {
+@SuppressWarnings("unused")
+public class ZoomInTest extends AbstractTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public ZoomIn(MGMapApplication mgMapApplication, TestControl testControl) {
+    public ZoomInTest(MGMapApplication mgMapApplication, TestControl testControl) {
         super(mgMapApplication, testControl);
     }
 
@@ -61,10 +62,10 @@ public class ZoomIn extends AbstractTestCase {
     @Override
     protected void addRegexs() {
         addRegex(getName()+" start");
-        addRegex("context=MGMapApplication key=FSBeeline.ZoomLevel value=15");
+        addRegex("key=FSBeeline.ZoomLevel value=15");
         addRegex("onClick group_multi");
         addRegex("onClick zoom_in");
-        addRegex("context=MGMapApplication key=FSBeeline.ZoomLevel value=16");
+        addRegex("key=FSBeeline.ZoomLevel value=16");
         addRegex(getName()+" stop");
     }
 
