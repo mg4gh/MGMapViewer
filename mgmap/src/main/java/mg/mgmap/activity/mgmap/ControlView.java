@@ -485,8 +485,8 @@ public class ControlView extends RelativeLayout {
         int helpLength = (int)(displaySize.y * 0.7);
         parent.getLayoutParams().width = helpLength;
         parent.getLayoutParams().height = helpLength;
-        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , (displaySize.x / 7)-dp(1.8f));
-        lp_tv.setMargins(dp(1),dp(0),dp(1),dp(1));
+        LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , (displaySize.x / 7)-dp(1f));
+        lp_tv.setMargins(dp(1),dp(0.75f),dp(1),dp(0.75f));
         tv.setLayoutParams(lp_tv);
         tv.setGravity(Gravity.CENTER_VERTICAL);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
