@@ -454,9 +454,9 @@ public class ControlView extends RelativeLayout {
     public TextView createHelpText1(ViewGroup parent){
         Point displaySize = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(displaySize);
-        int size = (displaySize.x / 7)-dp(1.8f);
+        int size = (displaySize.x / 7)-dp(1f);
 
-        TextView tv = new TextView(parent.getContext());
+        ExtendedTextView tv = new ExtendedTextView(parent.getContext());
         LinearLayout.LayoutParams lp_tv = new LinearLayout.LayoutParams(size, size);
         lp_tv.setMargins(dp(1),dp(1),dp(1),dp(2));
         tv.setLayoutParams(lp_tv);
@@ -474,6 +474,7 @@ public class ControlView extends RelativeLayout {
                 tv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
             }
         });
+        tv.setName("help1");
         return tv;
     }
 

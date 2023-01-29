@@ -126,6 +126,10 @@ public class TestView extends RelativeLayout  {
         }
     }
 
+    public Point getPxSize() {
+        return pxSize;
+    }
+
     public Activity getActivity() {
         return activity;
     }

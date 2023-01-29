@@ -225,6 +225,7 @@ public class FSControl extends FeatureService {
     public void initHelpControl(TextView helpView, String info){
         if ("help1".equals(info)) {
             helpView.setOnClickListener(v -> {
+                mgLog.d("onClick help1");
                 prefHelp.setValue(false);
                 setupTTHideQCS();
             });
