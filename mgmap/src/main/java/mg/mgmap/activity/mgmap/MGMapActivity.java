@@ -219,7 +219,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         WaitUtil.doWait(this.getClass(), 100);
         coView.init(application, this);
-        onNewIntent(getIntent());
+        if (!getIntent().toString().contains(" act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] "))
+            onNewIntent(getIntent());
         // use prefGps and prefRestart from applications prefCache to prevent race conditions during startup phase
         application.prefGps.addObserver((e) -> triggerTrackLoggerService());
         mgLog.d("prefGps="+application.prefGps.getValue()+" prefRestart="+application.prefRestart.getValue() );
