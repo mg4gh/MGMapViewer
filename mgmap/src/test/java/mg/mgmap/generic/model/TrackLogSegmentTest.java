@@ -1,16 +1,15 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-class TrackLogSegmentTest {
+public class TrackLogSegmentTest {
 
     @Test
-    void createTrackLogSegment() {
+    public void createTrackLogSegment() {
         TrackLogSegment segment = new TrackLogSegment(3);
         assertEquals(3,segment.getSegmentIdx());
         assertNotNull(segment.getStatistic());
@@ -20,7 +19,7 @@ class TrackLogSegmentTest {
     }
 
     @Test
-    void addPoint() {
+    public void addPoint() {
         TrackLogSegment segment = new TrackLogSegment(3);
         assertEquals(0, segment.size());
         assertEquals(0,segment.getStatistic().getNumPoints());
@@ -44,14 +43,14 @@ class TrackLogSegmentTest {
     }
 
     @Test
-    void getLastPoint() {
+    public void getLastPoint() {
         TrackLogSegment segment = new TrackLogSegment(3);
         assertEquals(null, segment.getLastPoint());
 
     }
 
     @Test
-    void iterator() {
+    public void iterator() {
         TrackLogSegment segment = new TrackLogSegment(3);
         PointModel pm1 = new PointModelImpl(49.4, 8.6);
         segment.addPoint(pm1);
@@ -68,7 +67,7 @@ class TrackLogSegmentTest {
     }
 
     @Test
-    void setStatistic() {
+    public void setStatistic() {
         TrackLogSegment segment = new TrackLogSegment(3);
         TrackLogStatistic stat = new TrackLogStatistic(5);
         segment.setStatistic(stat);
@@ -76,17 +75,17 @@ class TrackLogSegmentTest {
     }
 
     @Test
-    void getBBox() {
+    public void getBBox() {
         TrackLogSegment segment = new TrackLogSegment(3);
         PointModel pm1 = new PointModelImpl(49.4, 8.6);
         segment.addPoint(pm1);
         PointModel pm2 = new PointModelImpl(49.5, 8.7);
         segment.addPoint(pm2);
-        assertEquals(49.4, segment.getBBox().minLatitude);
+        assertEquals(49.4, segment.getBBox().minLatitude,0);
     }
 
     @Test
-    void recalcStatistic() {
+    public void recalcStatistic() {
         TrackLogSegment segment = new TrackLogSegment(3);
         WriteablePointModel pm1 = new WriteablePointModelImpl(49.4, 8.6);
         segment.addPoint(pm1);

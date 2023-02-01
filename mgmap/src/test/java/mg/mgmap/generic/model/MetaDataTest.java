@@ -1,19 +1,18 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class MetaDataTest {
+public class MetaDataTest {
 
     @Test
-    void testConstants(){
+    public void testConstants(){
         assertEquals(4096, MetaData.BUF_SIZE);
         assertEquals(340, MetaData.POINTS_PER_BUF);
     }
 
     @Test
-    void createMetaData(){
+    public void createMetaData(){
         MetaData metaData = new MetaData();
         assertNotEquals(null, metaData.bBox);
         assertEquals(0, metaData.numPoints);

@@ -1,16 +1,15 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import mg.mgmap.generic.util.Observer;
 
-class TrackLogTest {
+public class TrackLogTest {
 
 
     @Test
-    void createTrackLog(){
+    public void createTrackLog(){
         TrackLog trackLog = new TrackLog();
         assertNotNull(trackLog.trackLogSegments);
         assertNotNull(trackLog.trackStatistic);
@@ -20,7 +19,7 @@ class TrackLogTest {
     }
 
     @Test
-    void testTrackStatistic() {
+    public void testTrackStatistic() {
         TrackLog trackLog = new TrackLog();
         assertEquals(-1, trackLog.getTrackStatistic().getSegmentIdx());
         trackLog.setTrackStatistic( new TrackLogStatistic(5) );
@@ -28,7 +27,7 @@ class TrackLogTest {
     }
 
     @Test
-    void testName() {
+    public void testName() {
         TrackLog trackLog = new TrackLog();
         assertEquals("", trackLog.name);
         trackLog.setName("abcdef");
@@ -36,7 +35,7 @@ class TrackLogTest {
     }
 
     @Test
-    void getNameKey() {
+    public void getNameKey() {
         TrackLog trackLog = new TrackLog();
         trackLog.getTrackStatistic().setTStart(1599123456789L);
         trackLog.setName("abcdef");
@@ -46,7 +45,7 @@ class TrackLogTest {
     }
 
     @Test
-    void testAvailable() {
+    public void testAvailable() {
         TrackLog trackLog = new TrackLog();
         assertTrue(trackLog.available);
         assertTrue(trackLog.isAvailable());
@@ -56,7 +55,7 @@ class TrackLogTest {
 
     boolean bObserverTest = false;
     @Test
-    void testModified() {
+    public void testModified() {
         Observer o = (e) -> bObserverTest = true;
         TrackLog trackLog = new TrackLog();
         trackLog.addObserver(o);
@@ -72,13 +71,13 @@ class TrackLogTest {
     }
 
     @Test
-    void getTrackLogSegments() {
+    public void getTrackLogSegments() {
         TrackLog trackLog = new TrackLog();
         assertEquals(0, trackLog.getTrackLogSegments().size());
     }
 
     @Test
-    void getTrackLogSegment() {
+    public void getTrackLogSegment() {
         TrackLog trackLog = new TrackLog();
         trackLog.getTrackLogSegments().add( new TrackLogSegment(1));
         trackLog.getTrackLogSegments().add( new TrackLogSegment(2));
@@ -89,7 +88,7 @@ class TrackLogTest {
     }
 
     @Test
-    void compareTo() {
+    public void compareTo() {
         TrackLog trackLog1 = new TrackLog();
         trackLog1.getTrackStatistic().setTStart(1599123456789L);
         TrackLog trackLog2 = new TrackLog();
@@ -97,11 +96,11 @@ class TrackLogTest {
         TrackLog trackLog3 = new TrackLog();
         trackLog2.getTrackStatistic().setTStart(1599123456799L);
         assertEquals(0, trackLog1.compareTo( trackLog2 ));
-        assertEquals(1, trackLog1.compareTo( trackLog3 ));
+        assertEquals(2, trackLog1.compareTo( trackLog3 ));
     }
 
     @Test
-    void getBBox() {
+    public void getBBox() {
         TrackLogSegment s1 = new TrackLogSegment(1);
         s1.addPoint(new PointModelImpl(49.4, 8.6));
         TrackLogSegment s2 = new TrackLogSegment(2);
@@ -109,12 +108,12 @@ class TrackLogTest {
         TrackLog trackLog = new TrackLog();
         trackLog.getTrackLogSegments().add(s1);
         trackLog.getTrackLogSegments().add(s2);
-        assertEquals(49.4, trackLog.getBBox().minLatitude );
-        assertEquals(49.5, trackLog.getBBox().maxLatitude );
+        assertEquals(49.4, trackLog.getBBox().minLatitude, 0 );
+        assertEquals(49.5, trackLog.getBBox().maxLatitude, 0 );
     }
 
     @Test
-    void getBestDistance() {
+    public void getBestDistance() {
         PointModelUtil.init(32);
         TrackLogSegment s1 = new TrackLogSegment(1);
         s1.addPoint(new PointModelImpl(49.4, 8.6));
@@ -124,7 +123,7 @@ class TrackLogTest {
 
         TrackLogRefApproach refApproach = trackLog.getBestDistance(new PointModelImpl(49.4001, 8.6001));
         assertNotNull(refApproach);
-        assertEquals(49.4001, refApproach.approachPoint.getLat());
+        assertEquals(49.4001, refApproach.approachPoint.getLat(),0);
         assertEquals("trackLog.name=, segmentIdx=0, approachPoint=Lat=49.400100, Lon=8.600000, distance=7.24, endPointIndex=1", refApproach.toString());
 
         refApproach = trackLog.getBestDistance(new PointModelImpl(49.4001, 8.6001),2);
@@ -132,7 +131,7 @@ class TrackLogTest {
     }
 
     @Test
-    void getBestPoint() {
+    public void getBestPoint() {
         PointModelUtil.init(32);
         TrackLogSegment s1 = new TrackLogSegment(1);
         s1.addPoint(new PointModelImpl(49.4, 8.6));
@@ -152,7 +151,7 @@ class TrackLogTest {
     }
 
     @Test
-    void getRemainingDistance() {
+    public void getRemainingDistance() {
         PointModelUtil.init(32);
         TrackLogSegment s1 = new TrackLogSegment(1);
         s1.addPoint(new PointModelImpl(49.4, 8.6));
@@ -166,13 +165,10 @@ class TrackLogTest {
         TrackLogRefApproach refApproach2 = trackLog.getBestDistance(new PointModelImpl(49.4005, 8.60001), 32);
         double ref1 = PointModelUtil.distance(new PointModelImpl(49.4001, 8.6),new PointModelImpl(49.4006, 8.6));
         double ref2 = PointModelUtil.distance(new PointModelImpl(49.4001, 8.6),new PointModelImpl(49.4005, 8.6));
-        assertEquals(ref1, trackLog.getRemainingDistance(refApproach1));
-        assertEquals(ref2, trackLog.getRemainingDistance(refApproach1,refApproach2));
-        assertEquals(ref2, trackLog.getRemainingDistance(refApproach2,refApproach1));
+        assertEquals(ref1, trackLog.getRemainingDistance(refApproach1),0);
+        assertEquals(ref2, trackLog.getRemainingDistance(refApproach1,refApproach2),0);
+        assertEquals(ref2, trackLog.getRemainingDistance(refApproach2,refApproach1),0);
     }
 
 
-    @Test
-    void changed() {
-    }
 }

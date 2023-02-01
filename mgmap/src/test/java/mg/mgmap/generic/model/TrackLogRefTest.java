@@ -1,21 +1,20 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class TrackLogRefTest {
+public class TrackLogRefTest {
 
 
     @Test
-    void createTrackLogRef1() {
+    public void createTrackLogRef1() {
         TrackLogRef ref = new TrackLogRef();
         assertNull(ref.trackLog);
         assertEquals(-1, ref.segmentIdx);
     }
 
     @Test
-    void createTrackLogRef2() {
+    public void createTrackLogRef2() {
         TrackLog trackLog = new TrackLog();
         TrackLogRef ref = new TrackLogRef(trackLog,3);
         assertEquals(trackLog, ref.trackLog);
@@ -23,7 +22,7 @@ class TrackLogRefTest {
     }
 
     @Test
-    void testTrackLog() {
+    public void testTrackLog() {
         TrackLogRef ref = new TrackLogRef();
         assertNull(ref.trackLog);
 
@@ -34,7 +33,7 @@ class TrackLogRefTest {
     }
 
     @Test
-    void getSegmentIdx() {
+    public void getSegmentIdx() {
         TrackLog trackLog = new TrackLog();
         trackLog.getTrackLogSegments().add( new TrackLogSegment(0));
         trackLog.getTrackLogSegments().add( new TrackLogSegment(1));
@@ -44,7 +43,7 @@ class TrackLogRefTest {
     }
 
     @Test
-    void setSegmentIdx() {
+    public void setSegmentIdx() {
         TrackLogRef ref = new TrackLogRef();
         assertEquals(-1, ref.segmentIdx);
         ref.setSegmentIdx(5);
@@ -53,7 +52,7 @@ class TrackLogRefTest {
     }
 
     @Test
-    void testToString() {
+    public void testToString() {
         TrackLog trackLog = new TrackLog();
         trackLog.setName("abc");
         TrackLogRef ref = new TrackLogRef(trackLog,3);

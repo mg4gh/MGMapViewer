@@ -1,14 +1,13 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class TrackLogRefZoomTest {
+public class TrackLogRefZoomTest {
 
 
     @Test
-    void createTrackLogRefZoom() {
+    public void createTrackLogRefZoom() {
         TrackLog trackLog = new TrackLog();
         TrackLogRefZoom ref = new TrackLogRefZoom(trackLog, 3, true);
         assertEquals(trackLog, ref.trackLog);
@@ -16,7 +15,7 @@ class TrackLogRefZoomTest {
         assertEquals(true, ref.zoomForBB);
     }
     @Test
-    void testZoomForBB() {
+    public void testZoomForBB() {
         TrackLog trackLog = new TrackLog();
         TrackLogRefZoom ref = new TrackLogRefZoom(trackLog, 3, false);
         assertEquals(trackLog, ref.trackLog);

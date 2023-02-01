@@ -1,22 +1,21 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class PointModelTest {
+public class PointModelTest {
 
     @Test
     public void testNoLatLong() {
-        assertEquals(200, PointModel.NO_LAT_LONG);
+        assertEquals(200, PointModel.NO_LAT_LONG,0);
     }
     @Test
     public void testNoEle() {
-        assertEquals(-20000, PointModel.NO_ELE);
+        assertEquals(-20000, PointModel.NO_ELE,0);
     }
     @Test
     public void testNoPres() {
-        assertEquals(0, PointModel.NO_PRES);
+        assertEquals(0, PointModel.NO_PRES,0);
     }
     @Test
     public void testTime() {

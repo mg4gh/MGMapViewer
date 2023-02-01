@@ -1,27 +1,28 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import mg.mgmap.generic.util.basic.NameUtil;
 
-class WriteableTrackLogTest {
+public class WriteableTrackLogTest {
 
 
     @Test
-    void createWriteableTrackLogTest1() {
+    public void createWriteableTrackLogTest1() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
         assertEquals("abcdef", trackLog.name);
         assertEquals(null, trackLog.currentSegment);
     }
     @Test
-    void createWriteableTrackLogTest2() {
+    public void createWriteableTrackLogTest2() {
         WriteableTrackLog trackLog = new WriteableTrackLog();
         assertEquals(null, trackLog.currentSegment);
     }
 
 
     @Test
-    void startTrack1() {
+    public void startTrack1() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
 
         assertEquals(PointModel.NO_TIME, trackLog.trackStatistic.getTStart());
@@ -29,7 +30,7 @@ class WriteableTrackLogTest {
         assertEquals(556644332211L, trackLog.trackStatistic.getTStart());
     }
     @Test
-    void startTrack2() {
+    public void startTrack2() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
 
         assertEquals(PointModel.NO_TIME, trackLog.trackStatistic.getTStart());
@@ -39,7 +40,7 @@ class WriteableTrackLogTest {
     }
 
     @Test
-    void startSegment() {
+    public void startSegment() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
 
         assertEquals(PointModel.NO_TIME, trackLog.trackStatistic.getTStart());
@@ -57,7 +58,7 @@ class WriteableTrackLogTest {
     }
 
     @Test
-    void stopSegment() {
+    public void stopSegment() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
         trackLog.startTrack(556644332211L);
         trackLog.startSegment(556644332233L);
@@ -79,11 +80,11 @@ class WriteableTrackLogTest {
     }
 
     @Test
-    void stopTrack() {
+    public void stopTrack() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
-        trackLog.startTrack(0);
+        trackLog.startTrack(PointModel.NO_TIME);
         assertEquals(PointModel.NO_TIME, trackLog.trackStatistic.getTStart());
-        trackLog.startSegment(0);
+        trackLog.startSegment(PointModel.NO_TIME);
         assertEquals(PointModel.NO_TIME, trackLog.trackStatistic.getTStart());
         WriteablePointModelImpl pm1 = new WriteablePointModelImpl(49.4001, 8.6001);
         pm1.setTimestamp(556644332235L);
@@ -99,9 +100,9 @@ class WriteableTrackLogTest {
     }
 
     @Test
-    void addPoint() {
+    public void addPoint() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
-        trackLog.startTrack(0);
+        trackLog.startTrack(PointModel.NO_TIME);
         assertEquals(PointModel.NO_TIME, trackLog.trackStatistic.getTStart());
         trackLog.startSegment(0);
         WriteablePointModelImpl pm1 = new WriteablePointModelImpl(49.4001, 8.6001);
@@ -116,7 +117,7 @@ class WriteableTrackLogTest {
     }
 
     @Test
-    void remainStatistic() {
+    public void remainStatistic() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
         {
             trackLog.startTrack(0);
@@ -152,9 +153,9 @@ class WriteableTrackLogTest {
     }
 
     @Test
-    void recalcStatistic1() {
+    public void recalcStatistic1() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
-        trackLog.startTrack(0);
+        trackLog.startTrack(PointModel.NO_TIME);
         assertEquals(PointModel.NO_TIME, trackLog.trackStatistic.getTStart());
         trackLog.startSegment(0);
         WriteablePointModelImpl pm1 = new WriteablePointModelImpl(49.4001, 8.6001);
@@ -174,9 +175,9 @@ class WriteableTrackLogTest {
         trackLog.stopTrack(556644332242L);
     }
     @Test
-    void recalcStatistic2() {
+    public void recalcStatistic2() {
         WriteableTrackLog trackLog = new WriteableTrackLog("abcdef");
-        trackLog.startTrack(0);
+        trackLog.startTrack(PointModel.NO_TIME);
         assertEquals(PointModel.NO_TIME, trackLog.trackStatistic.getTStart());
         trackLog.startSegment(0);
         WriteablePointModelImpl pm1 = new WriteablePointModelImpl(49.4001, 8.6001);

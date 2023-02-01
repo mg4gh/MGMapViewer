@@ -1,39 +1,40 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-class BBoxTest {
+public class BBoxTest {
 
 
     @Test
-    void createBBox() {
+    public void createBBox() {
         BBox bBox = new BBox();
-        assertEquals(PointModel.NO_LAT_LONG, bBox.minLatitude);
-        assertEquals(PointModel.NO_LAT_LONG,bBox.minLongitude);
-        assertEquals(-PointModel.NO_LAT_LONG,bBox.maxLatitude);
-        assertEquals(-PointModel.NO_LAT_LONG,bBox.maxLongitude);
+        assertEquals(PointModel.NO_LAT_LONG, bBox.minLatitude,0);
+        assertEquals(PointModel.NO_LAT_LONG,bBox.minLongitude,0);
+        assertEquals(-PointModel.NO_LAT_LONG,bBox.maxLatitude,0);
+        assertEquals(-PointModel.NO_LAT_LONG,bBox.maxLongitude,0);
     }
 
     @Test
-    void clear() {
+    public void clear() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,3));
         bBox.clear();
-        assertEquals(PointModel.NO_LAT_LONG, bBox.minLatitude);
-        assertEquals(PointModel.NO_LAT_LONG,bBox.minLongitude);
-        assertEquals(-PointModel.NO_LAT_LONG,bBox.maxLatitude);
-        assertEquals(-PointModel.NO_LAT_LONG,bBox.maxLongitude);
+        assertEquals(PointModel.NO_LAT_LONG, bBox.minLatitude,0);
+        assertEquals(PointModel.NO_LAT_LONG,bBox.minLongitude,0);
+        assertEquals(-PointModel.NO_LAT_LONG,bBox.maxLatitude,0);
+        assertEquals(-PointModel.NO_LAT_LONG,bBox.maxLongitude,0);
     }
 
     @Test
-    void isInitial() {
+    public void isInitial() {
         BBox bBox = new BBox();
         assertTrue(bBox.isInitial());
         bBox.extend(new PointModelImpl(2,3));
@@ -43,74 +44,74 @@ class BBoxTest {
     }
 
     @Test
-    void extend1() {
+    public void extend1() {
         BBox bBox = new BBox().extend(new PointModelImpl(2,3));
-        assertEquals(2,bBox.minLatitude);
-        assertEquals(3,bBox.minLongitude);
-        assertEquals(2,bBox.maxLatitude);
-        assertEquals(3,bBox.maxLongitude);
+        assertEquals(2,bBox.minLatitude,0);
+        assertEquals(3,bBox.minLongitude,0);
+        assertEquals(2,bBox.maxLatitude,0);
+        assertEquals(3,bBox.maxLongitude,0);
     }
     @Test
-    void extend2() {
+    public void extend2() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new PointModelImpl(4,1));
-        assertEquals(2,bBox.minLatitude);
-        assertEquals(1,bBox.minLongitude);
-        assertEquals(4,bBox.maxLatitude);
-        assertEquals(3,bBox.maxLongitude);
+        assertEquals(2,bBox.minLatitude,0);
+        assertEquals(1,bBox.minLongitude,0);
+        assertEquals(4,bBox.maxLatitude,0);
+        assertEquals(3,bBox.maxLongitude,0);
     }
 
 
     @Test
-    void extend3() {
+    public void extend3() {
         BBox bBox = new BBox();
         bBox.extend(new PointModelImpl(49,8));
         bBox.extend(100); //meter
 
-        assertEquals(48.999102,bBox.minLatitude);
-        assertEquals(7.998631,bBox.minLongitude);
-        assertEquals(49.000898,bBox.maxLatitude);
-        assertEquals(8.001369,bBox.maxLongitude);
+        assertEquals(48.999102,bBox.minLatitude,0);
+        assertEquals(7.998631,bBox.minLongitude,0);
+        assertEquals(49.000898,bBox.maxLatitude,0);
+        assertEquals(8.001369,bBox.maxLongitude,0);
     }
 
     @Test
-    void extend4() {
+    public void extend4() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new LatLong(4,1));
-        assertEquals(2,bBox.minLatitude);
-        assertEquals(1,bBox.minLongitude);
-        assertEquals(4,bBox.maxLatitude);
-        assertEquals(3,bBox.maxLongitude);
+        assertEquals(2,bBox.minLatitude,0);
+        assertEquals(1,bBox.minLongitude,0);
+        assertEquals(4,bBox.maxLatitude,0);
+        assertEquals(3,bBox.maxLongitude,0);
     }
 
     @Test
-    void extend5() {
+    public void extend5() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(4,1))
                 .extend(new BBox().extend(new PointModelImpl(2,3)));
-        assertEquals(2,bBox.minLatitude);
-        assertEquals(1,bBox.minLongitude);
-        assertEquals(4,bBox.maxLatitude);
-        assertEquals(3,bBox.maxLongitude);
+        assertEquals(2,bBox.minLatitude,0);
+        assertEquals(1,bBox.minLongitude,0);
+        assertEquals(4,bBox.maxLatitude,0);
+        assertEquals(3,bBox.maxLongitude,0);
     }
 
     @Test
-    void extend6() {
+    public void extend6() {
         ArrayList<PointModel> pms = new ArrayList<>();
         pms.add( new PointModelImpl(4,5) );
         pms.add( new PointModelImpl(-3,-1) );
         BBox bBox = new BBox().extend(pms);
-        assertEquals(-3,bBox.minLatitude);
-        assertEquals(-1,bBox.minLongitude);
-        assertEquals(4,bBox.maxLatitude);
-        assertEquals(5,bBox.maxLongitude);
+        assertEquals(-3,bBox.minLatitude,0);
+        assertEquals(-1,bBox.minLongitude,0);
+        assertEquals(4,bBox.maxLatitude,0);
+        assertEquals(5,bBox.maxLongitude,0);
     }
 
 
     @Test
-    void intersects1() {
+    public void intersects1() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new PointModelImpl(4,1));
@@ -121,7 +122,7 @@ class BBoxTest {
     }
 
     @Test
-    void intersects2() {
+    public void intersects2() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new PointModelImpl(4,1));
@@ -132,7 +133,7 @@ class BBoxTest {
     }
 
     @Test
-    void intersects3() {
+    public void intersects3() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new PointModelImpl(4,1));
@@ -143,7 +144,7 @@ class BBoxTest {
     }
 
     @Test
-    void intersects4() {
+    public void intersects4() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new PointModelImpl(4,1));
@@ -154,7 +155,7 @@ class BBoxTest {
     }
 
     @Test
-    void contains() {
+    public void contains() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new PointModelImpl(4,1));
@@ -162,7 +163,7 @@ class BBoxTest {
         assertTrue(bBox.contains(3,2));
     }
     @Test
-    void contains1() {
+    public void contains1() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new PointModelImpl(4,1));
@@ -177,7 +178,7 @@ class BBoxTest {
         assertTrue(bBox.contains(3,2));
     }
     @Test
-    void contains2() {
+    public void contains2() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,3))
                 .extend(new PointModelImpl(4,1));
@@ -187,7 +188,7 @@ class BBoxTest {
         assertFalse(bBox1.contains(bBox2));
     }
     @Test
-    void contains3() {
+    public void contains3() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
@@ -197,7 +198,7 @@ class BBoxTest {
         assertTrue(bBox1.contains(bBox2));
     }
     @Test
-    void contains4() {
+    public void contains4() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
@@ -207,7 +208,7 @@ class BBoxTest {
         assertTrue(bBox1.contains(bBox2));
     }
     @Test
-    void contains5() {
+    public void contains5() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
@@ -218,7 +219,7 @@ class BBoxTest {
     }
 
     @Test
-    void contains6() {
+    public void contains6() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
@@ -231,98 +232,99 @@ class BBoxTest {
 
 
     @Test
-    void fromBoundingBox() {
+    public void fromBoundingBox() {
         BoundingBox boundingBox1 = new BoundingBox(3, 2, 5 , 6 );
         BBox bBox = BBox.fromBoundingBox(boundingBox1);
-        assertEquals(3,bBox.minLatitude);
-        assertEquals(2,bBox.minLongitude);
-        assertEquals(5,bBox.maxLatitude);
-        assertEquals(6,bBox.maxLongitude);
+        assertEquals(3,bBox.minLatitude,0);
+        assertEquals(2,bBox.minLongitude,0);
+        assertEquals(5,bBox.maxLatitude,0);
+        assertEquals(6,bBox.maxLongitude,0);
     }
 
     @Test
-    void getCenter() {
+    public void getCenter() {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
         LatLong center = bBox1.getCenter();
-        assertEquals(4,center.latitude);
-        assertEquals(3,center.longitude);
+        assertEquals(4,center.latitude, 0);
+        assertEquals(3,center.longitude, 0);
     }
 
     @Test
-    void clip1() {
+    public void clip1() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
         WriteablePointModel res = new WriteablePointModelImpl();
         bBox.clip(4,3,7,9, res);
-        assertEquals(5,res.getLat());
-        assertEquals(5,res.getLon());
+        assertEquals(5,res.getLat(),0);
+        assertEquals(5,res.getLon(),0);
     }
     @Test
-    void clip2() {
+    public void clip2() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
         WriteablePointModel res = new WriteablePointModelImpl();
         bBox.clip(4,3,12,7, res);
-        assertEquals(6,res.getLat());
-        assertEquals(4,res.getLon());
+        assertEquals(6,res.getLat(),0);
+        assertEquals(4,res.getLon(),0);
     }
     @Test
-    void clip3() {
+    public void clip3() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
         WriteablePointModel res = new WriteablePointModelImpl();
         bBox.clip(4,3,-4,7, res);
-        assertEquals(2,res.getLat());
-        assertEquals(4,res.getLon());
+        assertEquals(2,res.getLat(),0);
+        assertEquals(4,res.getLon(),0);
     }
     @Test
-    void clip4() {
+    public void clip4() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
         WriteablePointModel res = new WriteablePointModelImpl();
         bBox.clip(4,3,-4,-1, res);
-        assertEquals(2,res.getLat());
-        assertEquals(2,res.getLon());
+        assertEquals(2,res.getLat(),0);
+        assertEquals(2,res.getLon(),0);
     }
     @Test
-    void clip5() {
+    public void clip5() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
         WriteablePointModel res = new WriteablePointModelImpl();
         bBox.clip(4,3,-4,-13, res);
-        assertEquals(3,res.getLat());
-        assertEquals(1,res.getLon());
+        assertEquals(3,res.getLat(),0);
+        assertEquals(1,res.getLon(),0);
     }
     @Test
-    void clip6() {
+    public void clip6() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
         WriteablePointModel res = new WriteablePointModelImpl();
         bBox.clip(4,3,12,-13, res);
-        assertEquals(5,res.getLat());
-        assertEquals(1,res.getLon());
+        assertEquals(5,res.getLat(),0);
+        assertEquals(1,res.getLon(),0);
     }
     @Test
-    void clip7() {
+    public void clip7() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
         WriteablePointModel res = new WriteablePointModelImpl();
         bBox.clip(4,3,12,-1, res);
-        assertEquals(6,res.getLat());
-        assertEquals(2,res.getLon());
+        assertEquals(6,res.getLat(),0);
+        assertEquals(2,res.getLon(),0);
     }
 
+    @SuppressWarnings({"IntegerMultiplicationImplicitCastToLong", "PointlessArithmeticExpression"})
     @Test
-    void toByteBuffer() {
+    public void toByteBuffer() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
@@ -338,7 +340,7 @@ class BBoxTest {
     }
 
     @Test
-    void fromByteBuffer() {
+    public void fromByteBuffer() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
@@ -349,14 +351,14 @@ class BBoxTest {
         buf.rewind();
         BBox bBox2 = new BBox();
         bBox2.fromByteBuffer(buf);
-        assertEquals(bBox.minLatitude, bBox2.minLatitude);
-        assertEquals(bBox.maxLatitude, bBox2.maxLatitude);
-        assertEquals(bBox.minLongitude, bBox2.minLongitude);
-        assertEquals(bBox.maxLongitude, bBox2.maxLongitude);
+        assertEquals(bBox.minLatitude, bBox2.minLatitude,0);
+        assertEquals(bBox.maxLatitude, bBox2.maxLatitude,0);
+        assertEquals(bBox.minLongitude, bBox2.minLongitude,0);
+        assertEquals(bBox.maxLongitude, bBox2.maxLongitude,0);
     }
 
     @Test
-    void testToString() {
+    public void testToString() {
         BBox bBox = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));

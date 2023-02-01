@@ -1,122 +1,122 @@
 package mg.mgmap.generic.model;
 
-import org.junit.jupiter.api.Test;
 import org.mapsforge.core.model.LatLong;
 
 import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-class PointModelImplTest {
+public class PointModelImplTest {
 
     @Test
-    void test_createPointModelImpl1(){
+    public void test_createPointModelImpl1(){
         PointModelImpl pmi = new PointModelImpl(49.6084, 8.6051);
         assertEquals(49608400, pmi.la);
         assertEquals( 8605100, pmi.lo);
-        assertEquals( PointModel.NO_ELE, pmi.ele);
+        assertEquals( PointModel.NO_ELE, pmi.ele,0);
     }
 
     @Test
-    void createPointModelImpl2(){
+    public void createPointModelImpl2(){
         PointModelImpl pmi = new PointModelImpl(49.6084136, 8.6051234);
         assertEquals(49608414, pmi.la);
         assertEquals( 8605123, pmi.lo);
-        assertEquals( PointModel.NO_ELE, pmi.ele);
+        assertEquals( PointModel.NO_ELE, pmi.ele,0);
     }
     @Test
-    void createPointModelImpl3(){
+    public void createPointModelImpl3(){
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351);
         assertEquals(49608414, pmi.la);
         assertEquals( 8605124, pmi.lo);
-        assertEquals( PointModel.NO_ELE, pmi.ele);
+        assertEquals( PointModel.NO_ELE, pmi.ele,0);
     }
     @Test
-    void createPointModelImpl4(){
+    public void createPointModelImpl4(){
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         assertEquals(49608414, pmi.la);
         assertEquals( 8605124, pmi.lo);
-        assertEquals( 17.8652f, pmi.ele);
-        assertEquals( 3.1f, pmi.eleAcc);
+        assertEquals( 17.8652f, pmi.ele,0);
+        assertEquals( 3.1f, pmi.eleAcc,0);
     }
 
 
     @Test
-    void createPointModelImpl6(){
+    public void createPointModelImpl6(){
         PointModelImpl pmi = new PointModelImpl();
-        assertEquals(PointModel.NO_LAT_LONG*1000000, pmi.la);
-        assertEquals( PointModel.NO_LAT_LONG*1000000, pmi.lo);
-        assertEquals( PointModel.NO_ELE, pmi.ele);
+        assertEquals(PointModel.NO_LAT_LONG*1000000, pmi.la,0);
+        assertEquals( PointModel.NO_LAT_LONG*1000000, pmi.lo,0);
+        assertEquals( PointModel.NO_ELE, pmi.ele,0);
     }
     @Test
-    void createPointModelImpl7(){
+    public void createPointModelImpl7(){
         PointModelImpl pmi = new PointModelImpl(new LatLong(49.60841449, 8.60512351));
         assertEquals(49608414, pmi.la);
         assertEquals( 8605124, pmi.lo);
-        assertEquals( PointModel.NO_ELE, pmi.ele);
+        assertEquals( PointModel.NO_ELE, pmi.ele,0);
     }
 
 
     @Test
-    void createFromLaLo1() {
+    public void createFromLaLo1() {
         PointModelImpl pmi = PointModelImpl.createFromLaLo(49608414, 8605124);
         assertEquals(49608414, pmi.la);
         assertEquals( 8605124, pmi.lo);
-        assertEquals( PointModel.NO_ELE, pmi.ele);
+        assertEquals( PointModel.NO_ELE, pmi.ele,0);
     }
     @Test
-    void createFromLaLo2() {
+    public void createFromLaLo2() {
         PointModelImpl pmi = PointModelImpl.createFromLaLo((49608414L<<32)+8605124);
         assertEquals(49608414, pmi.la);
         assertEquals( 8605124, pmi.lo);
-        assertEquals( PointModel.NO_ELE, pmi.ele);
+        assertEquals( PointModel.NO_ELE, pmi.ele,0);
     }
 
 
     @Test
-    void getLat() {
+    public void getLat() {
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
-        assertEquals(49.608414, pmi.getLat());
+        assertEquals(49.608414, pmi.getLat(),0);
     }
 
     @Test
-    void getLon() {
+    public void getLon() {
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
-        assertEquals(8.605124, pmi.getLon());
+        assertEquals(8.605124, pmi.getLon(),0);
     }
 
     @Test
-    void getEleA() {
+    public void getEleA() {
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
-        assertEquals(17.8652f, pmi.getEleA());
+        assertEquals(17.8652f, pmi.getEleA(),0);
     }
 
     @Test
-    void getEleD() {
+    public void getEleD() {
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
-        assertEquals(17.8652f, pmi.getEleD());
+        assertEquals(17.8652f, pmi.getEleD(),0);
     }
 
     @Test
-    void getTimestamp() {
+    public void getTimestamp() {
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         assertEquals(PointModel.NO_TIME, pmi.getTimestamp());
     }
 
     @Test
-    void testToString1() {
+    public void testToString1() {
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351);
         assertEquals("Lat=49.608414, Lon=8.605124", pmi.toString());
     }
     @Test
-    void testToString2() {
+    public void testToString2() {
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         assertEquals("Lat=49.608414, Lon=8.605124, Ele=17.9m", pmi.toString());
     }
 
     @Test
-    void toBuf() {
+    public void toBuf() {
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         ByteBuffer buf = ByteBuffer.allocate(12);
         pmi2.toBuf(buf);
@@ -138,7 +138,7 @@ class PointModelImplTest {
     }
 
     @Test
-    void fromBuf() {
+    public void fromBuf() {
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         ByteBuffer buf = ByteBuffer.allocate(12);
         pmi2.toBuf(buf); // is already tested, so we can use it
@@ -147,75 +147,75 @@ class PointModelImplTest {
         pmi.fromBuf(buf);
         assertEquals(49608414, pmi.la);
         assertEquals( 8605124, pmi.lo);
-        assertEquals( 17.8652f, pmi.ele);
+        assertEquals( 17.8652f, pmi.ele,0);
     }
 
     @Test
-    void compareTo1() {
+    public void compareTo1() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         assertEquals(0, pmi1.compareTo(pmi2));
     }
     @Test
-    void compareTo2() {
+    public void compareTo2() {
         PointModelImpl pmi1 = new PointModelImpl(47.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         assertEquals(-1, pmi1.compareTo(pmi2));
     }
     @Test
-    void compareTo3() {
+    public void compareTo3() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 18.8652f, 3.1f);
         assertEquals(0, pmi1.compareTo(pmi2));
     }
 
     @Test
-    void testEquals1() {
+    public void testEquals1() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         assertTrue(pmi1.equals(pmi2));
     }
     @Test
-    void testEquals2() {
+    public void testEquals2() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         assertFalse(pmi1.equals(null));
     }
     @Test
-    void testEquals3() {
+    public void testEquals3() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8653f, 3.1f);
         assertFalse(pmi1.equals(pmi2));
     }
 
     @Test
-    void laMdDiff1() {
+    public void laMdDiff1() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8653f, 3.1f);
         assertEquals(0, pmi1.laMdDiff(pmi2));
     }
     @Test
-    void laMdDiff2() {
+    public void laMdDiff2() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841749, 8.60512351, 17.8653f, 3.1f);
         assertEquals(3, pmi1.laMdDiff(pmi2));
     }
 
     @Test
-    void loMdDiff1() {
+    public void loMdDiff1() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512351, 17.8653f, 3.1f);
         assertEquals(0, pmi1.loMdDiff(pmi2));
     }
     @Test
-    void loMdDiff2() {
+    public void loMdDiff2() {
         PointModelImpl pmi1 = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
         PointModelImpl pmi2 = new PointModelImpl(49.60841449, 8.60512851, 17.8653f, 3.1f);
         assertEquals(5, pmi1.loMdDiff(pmi2));
     }
 
     @Test
-    void getLaLo() {
+    public void getLaLo() {
         long along = ((49608414L<<32)+8605124);
         PointModelImpl pmi = PointModelImpl.createFromLaLo(along);
         assertEquals(along, pmi.getLaLo());

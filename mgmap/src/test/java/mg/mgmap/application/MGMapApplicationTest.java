@@ -1,19 +1,18 @@
 package mg.mgmap.application;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
+import org.junit.Assert;
 
 import mg.mgmap.generic.util.basic.MGLog;
 
 public class MGMapApplicationTest {
 
     @Test
-    void testConstants(){
+    public void testConstants(){
         MGLog.setUnittest(true);
         MGMapApplication application = new MGMapApplication();
-        assertNotNull(application);
-        assertNotNull(application.lastPositionsObservable);
+        Assert.assertNotNull(application);
+        Assert.assertNotNull(application.lastPositionsObservable);
 
     }
 
