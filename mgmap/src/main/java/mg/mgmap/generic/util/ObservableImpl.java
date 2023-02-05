@@ -3,6 +3,7 @@ package mg.mgmap.generic.util;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class ObservableImpl implements Observable{
@@ -48,7 +49,7 @@ public class ObservableImpl implements Observable{
     public void deleteObservers(){
         PropertyChangeListener[] listeners = getPropertyChangeSupport().getPropertyChangeListeners(propertyName);
         for (PropertyChangeListener listener : listeners){
-            getPropertyChangeSupport().removePropertyChangeListener(listener);
+            getPropertyChangeSupport().removePropertyChangeListener(propertyName, listener);
         }
     }
 
