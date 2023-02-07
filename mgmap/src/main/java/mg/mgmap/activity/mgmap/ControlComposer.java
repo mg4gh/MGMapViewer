@@ -107,72 +107,72 @@ public class ControlComposer {
         }
         activity.getFS(FSControl.class).initQcss(qcss);
 
-        createQC(activity, FSControl.class,qcss[0],"group_task",gos.get(1));
-        createQC(activity, FSSearch.class,qcss[0],"group_search",gos.get(2));
+        createQC(activity, FSControl.class,qcss[0],"group_task",gos.get(1)).setId(R.id.menu_task);
+        createQC(activity, FSSearch.class,qcss[0],"group_search",gos.get(2)).setId(R.id.menu_search);
         ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false))
                 .setData(prefEditMarkerTrack,prefRoutingHints,R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4)
-                .setName("group_marker").addActionObserver(gos.get(3));
-        createQC(activity, FSBB.class,qcss[0],"group_bbox",gos.get(4));
-        createQC(activity, FSPosition.class,qcss[0],"group_record",gos.get(5));
+                .setName("group_marker").addActionObserver(gos.get(3)).setId(R.id.menu_marker);
+        createQC(activity, FSBB.class,qcss[0],"group_bbox",gos.get(4)).setId(R.id.menu_bb);
+        createQC(activity, FSPosition.class,qcss[0],"group_record",gos.get(5)).setId(R.id.menu_gps);
         ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false)).setData(R.drawable.group_hide)
-                .setName("group_showHide").addActionObserver(gos.get(6));
-        createQC(activity, FSControl.class,qcss[0],"group_multi",gos.get(7));
+                .setName("group_showHide").addActionObserver(gos.get(6)).setId(R.id.menu_show_hide);
+        createQC(activity, FSControl.class,qcss[0],"group_multi",gos.get(7)).setId(R.id.menu_multi);
 
-        createQC(activity, FSControl.class,qcss[1],"help");
-        createQC(activity, FSControl.class,qcss[1],"settings",gos.get(0));
-        createQC(activity, FSControl.class,qcss[1],"fuSettings",gos.get(0));
-        createQC(activity, FSControl.class,qcss[1],"statistic",gos.get(0));
-        createQC(activity, FSControl.class,qcss[1],"heightProfile",gos.get(0));
-        createQC(activity, FSControl.class,qcss[1],"download",gos.get(0));
-        createQC(activity, FSControl.class,qcss[1],"themes",gos.get(0));
+        createQC(activity, FSControl.class,qcss[1],"help").setId(R.id.mi_task_help);
+        createQC(activity, FSControl.class,qcss[1],"settings",gos.get(0)).setId(R.id.mi_settings);
+        createQC(activity, FSControl.class,qcss[1],"fuSettings",gos.get(0)).setId(R.id.mi_fu_settings);
+        createQC(activity, FSControl.class,qcss[1],"statistic",gos.get(0)).setId(R.id.mi_statistic);
+        createQC(activity, FSControl.class,qcss[1],"heightProfile",gos.get(0)).setId(R.id.mi_height_profile);
+        createQC(activity, FSControl.class,qcss[1],"download",gos.get(0)).setId(R.id.mi_download);
+        createQC(activity, FSControl.class,qcss[1],"themes",gos.get(0)).setId(R.id.mi_themes);
 
-        createQC(activity, FSControl.class,qcss[2],"help");
-        createQC(activity, FSSearch.class,qcss[2],"search",gos.get(0));
-        createQC(activity, FSSearch.class,qcss[2],"searchRes",gos.get(0));
-        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0));
-        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0));
-        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0));
-        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0));
+        createQC(activity, FSControl.class,qcss[2],"help").setId(R.id.mi_search_help);
+        createQC(activity, FSSearch.class,qcss[2],"search",gos.get(0)).setId(R.id.mi_search);
+        createQC(activity, FSSearch.class,qcss[2],"searchRes",gos.get(0)).setId(R.id.mi_search_res);
+        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0)).setId(R.id.mi_search_empty1);
+        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0)).setId(R.id.mi_search_empty2);
+        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0)).setId(R.id.mi_search_empty3);
+        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0)).setId(R.id.mi_search_empty4);
 
-        createQC(activity, FSControl.class,qcss[3],"help");
-        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0));
-        createQC(activity, FSMarker.class,qcss[3],"markerEdit",gos.get(0));
-        createQC(activity, FSRouting.class,qcss[3],"routingHint",gos.get(0));
-        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0));
-        createQC(activity, FSRouting.class,qcss[3],"matching",gos.get(0));
-        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0));
+        createQC(activity, FSControl.class,qcss[3],"help").setId(R.id.mi_marker_help);
+        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty1);
+        createQC(activity, FSMarker.class,qcss[3],"markerEdit",gos.get(0)).setId(R.id.mi_marker_edit);
+        createQC(activity, FSRouting.class,qcss[3],"routingHint",gos.get(0)).setId(R.id.mi_routing_hint);
+        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty2);
+        createQC(activity, FSRouting.class,qcss[3],"matching",gos.get(0)).setId(R.id.mi_map_mathching);
+        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty3);
 
-        createQC(activity, FSControl.class,qcss[4],"help");
-        createQC(activity, FSControl.class,qcss[4],"empty",gos.get(0));
-        createQC(activity, FSBB.class,qcss[4],"loadFromBB",gos.get(0));
-        createQC(activity, FSBB.class,qcss[4],"bbox_on",gos.get(0));
-        createQC(activity, FSBB.class,qcss[4],"TSLoadRemain",gos.get(0));
-        createQC(activity, FSBB.class,qcss[4],"TSLoadAll",gos.get(0));
-        createQC(activity, FSBB.class,qcss[4],"TSDeleteAll",gos.get(0));
+        createQC(activity, FSControl.class,qcss[4],"help").setId(R.id.mi_bb_help);
+        createQC(activity, FSControl.class,qcss[4],"empty",gos.get(0)).setId(R.id.mi_bb_empty1);
+        createQC(activity, FSBB.class,qcss[4],"loadFromBB",gos.get(0)).setId(R.id.mi_load_from_bb);
+        createQC(activity, FSBB.class,qcss[4],"bbox_on",gos.get(0)).setId(R.id.mi_bbox);
+        createQC(activity, FSBB.class,qcss[4],"TSLoadRemain",gos.get(0)).setId(R.id.mi_load_remain);
+        createQC(activity, FSBB.class,qcss[4],"TSLoadAll",gos.get(0)).setId(R.id.mi_load_all);
+        createQC(activity, FSBB.class,qcss[4],"TSDeleteAll",gos.get(0)).setId(R.id.mi_delete_all);
 
-        createQC(activity, FSControl.class,qcss[5],"help");
-        createQC(activity, FSControl.class,qcss[5],"empty",gos.get(0));
-        createQC(activity, FSPosition.class,qcss[5],"center",gos.get(0));
-        createQC(activity, FSPosition.class,qcss[5],"gps",gos.get(0));
-        createQC(activity, FSRecordingTrackLog.class,qcss[5],"track",gos.get(0));
-        createQC(activity, FSRecordingTrackLog.class,qcss[5],"segment",gos.get(0));
-        createQC(activity, FSControl.class,qcss[5],"empty",gos.get(0));
+        createQC(activity, FSControl.class,qcss[5],"help").setId(R.id.mi_gps_help);
+        createQC(activity, FSControl.class,qcss[5],"empty",gos.get(0)).setId(R.id.mi_gps_empty1);
+        createQC(activity, FSPosition.class,qcss[5],"center",gos.get(0)).setId(R.id.mi_gps_center);
+        createQC(activity, FSPosition.class,qcss[5],"gps",gos.get(0)).setId(R.id.mi_gps_toggle);
+        createQC(activity, FSRecordingTrackLog.class,qcss[5],"track",gos.get(0)).setId(R.id.mi_record_track);
+        createQC(activity, FSRecordingTrackLog.class,qcss[5],"segment",gos.get(0)).setId(R.id.mi_record_segment);
+        createQC(activity, FSControl.class,qcss[5],"empty",gos.get(0)).setId(R.id.mi_gps_empty2);
 
-        createQC(activity, FSControl.class,qcss[6],"help");
-        createQC(activity, FSAlpha.class,qcss[6],"alpha_layers",gos.get(0));
-        createQC(activity, FSAlpha.class,qcss[6],"alpha_tracks",gos.get(0));
-        createQC(activity, FSAvailableTrackLogs.class,qcss[6],"hide_stl",gos.get(0));
-        createQC(activity, FSAvailableTrackLogs.class,qcss[6],"hide_atl",gos.get(0));
-        createQC(activity, FSAvailableTrackLogs.class,qcss[6],"hide_all",gos.get(0));
-        createQC(activity, FSMarker.class,qcss[6],"hide_mtl",gos.get(0));
+        createQC(activity, FSControl.class,qcss[6],"help").setId(R.id.mi_sh_help);
+        createQC(activity, FSAlpha.class,qcss[6],"alpha_layers",gos.get(0)).setId(R.id.mi_alpha_layers);
+        createQC(activity, FSAlpha.class,qcss[6],"alpha_tracks",gos.get(0)).setId(R.id.mi_alpha_tracks);
+        createQC(activity, FSAvailableTrackLogs.class,qcss[6],"hide_stl",gos.get(0)).setId(R.id.mi_hide_stl);
+        createQC(activity, FSAvailableTrackLogs.class,qcss[6],"hide_atl",gos.get(0)).setId(R.id.mi_hide_atl);
+        createQC(activity, FSAvailableTrackLogs.class,qcss[6],"hide_all",gos.get(0)).setId(R.id.mi_hide_all);
+        createQC(activity, FSMarker.class,qcss[6],"hide_mtl",gos.get(0)).setId(R.id.mi_hide_mtl);
 
-        createQC(activity, FSControl.class,qcss[7],"help");
-        createQC(activity, FSControl.class,qcss[7],"exit",gos.get(0));
-        createQC(activity, FSControl.class,qcss[7],"empty",gos.get(0));
-        createQC(activity, FSControl.class,qcss[7],"fullscreen",gos.get(0));
-        createQC(activity, FSControl.class,qcss[7],"zoom_in");
-        createQC(activity, FSControl.class,qcss[7],"zoom_out");
-        createQC(activity, FSControl.class,qcss[7],"home",gos.get(0));
+        createQC(activity, FSControl.class,qcss[7],"help").setId(R.id.mi_help_multi);
+        createQC(activity, FSControl.class,qcss[7],"exit",gos.get(0)).setId(R.id.mi_exit);
+        createQC(activity, FSControl.class,qcss[7],"empty",gos.get(0)).setId(R.id.mi_multi_empty1);
+        createQC(activity, FSControl.class,qcss[7],"fullscreen",gos.get(0)).setId(R.id.mi_fullscreen);
+        createQC(activity, FSControl.class,qcss[7],"zoom_in").setId(R.id.mi_zoom_in);
+        createQC(activity, FSControl.class,qcss[7],"zoom_out").setId(R.id.mi_zoom_out);
+        createQC(activity, FSControl.class,qcss[7],"home",gos.get(0)).setId(R.id.mi_home);
     }
 
     @SuppressWarnings({"UnusedReturnValue", "SameParameterValue"})

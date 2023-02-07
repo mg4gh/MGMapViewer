@@ -5,10 +5,11 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import java.util.Map;
+import java.util.TreeSet;
 
 public class BaseConfig {
 
-    public enum Mode { NORMAL, UNIT_TEST, SYSTEM_TEST }
+    public enum Mode { NORMAL, UNIT_TEST, INSTRUMENTATION_TEST, SYSTEM_TEST }
 
     private final String appDirName;
     private final String preferencesName;
@@ -46,8 +47,9 @@ public class BaseConfig {
                 ", preferencesName='" + preferencesName + '\'' +
                 ", #sharedPreferences='" + sharedPreferences.getAll().size() + '\'' +
                 ", mode=" + mode);
-        for (Map.Entry<String, ?> entry :sharedPreferences.getAll().entrySet()){
-            res.append("\n        ").append(entry.getKey()).append("='").append(entry.getValue()).append("'");
+        Map<String, ?> sp = sharedPreferences.getAll();
+        for (String key :new TreeSet<>( sp.keySet())){
+            res.append("\n        ").append(key).append("='").append(sp.get(key)).append("'");
         }
         res.append(" }");
         return res.toString();

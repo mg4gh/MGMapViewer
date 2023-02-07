@@ -1,250 +1,92 @@
 package mg.mgmap.application;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Handler;
-
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.SftpATTRS;
-import com.jcraft.jsch.SftpException;
+import android.content.res.AssetManager;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
-import java.util.Optional;
+import java.nio.file.Files;
 import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Vector;
 
 import mg.mgmap.application.util.PersistenceManager;
-import mg.mgmap.generic.util.Sftp;
-import mg.mgmap.generic.util.WaitUtil;
-import mg.mgmap.generic.util.WiFiUtil;
+import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
 public class Setup {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    static private final Object semaphore = new Object();
+    public static final String WANTED_DEFAULT = "DEFAULT_SETUP";
+    public static final String APP_DIR_DEFAULT = "MGMapViewer";
+    private final MGMapApplication application;
 
-    private static final String TEST_CONFIG = "config.properties";
-    private static final String TEST_OFF = "off";
-    private static final String TEST_DATA = "testData";
-    private static final String TEST_GROUP = "testgroup.properties";
-    private static final String TEST_FILES = "files.properties";
-    private static final String TEST_PREFERENCES = "preferences.properties";
-    private static final String TEST_RESULT_DIR = "results";
-    private static final String TEST_RESULT_SUFFIX = ".properties";
-    private static final String TEST_SETUP = "testSetup";
-    private static final String TEST_TEMP = "temp";
-    private static final String TEST_APP_DIR = "appDir";
-    private static final String TEST_CASES = "tests.properties";
 
-    private static final String DEFAULT_APP_DIR = "MGMapViewer";
-
-    private MGMapApplication mgMapApplication;
-
-    private String sAppDir = "MGMapViewer";
-    private String preferencesName;
-    private SharedPreferences sharedPreferences;
-    private Handler timer = null;
-    private final TreeMap<String, String> testCases = new TreeMap<>();
-    private final Properties pTestResults = new Properties();
-    String testgroup = null;
-    BaseConfig.Mode mode = BaseConfig.Mode.NORMAL;
-    private TestRunner testRunner;
-
-    private File testSetup;
-    private File testConfig;
-
-    public interface TestRunner{
-        void runTests(SortedMap<String, String> testCases, Properties pTestResults);
+    Setup(MGMapApplication application){
+        this.application = application;
     }
 
-    public BaseConfig init(MGMapApplication application){
-        this.mgMapApplication = application;
-        preferencesName = application.getPackageName() + "_preferences";
+    private String current = null;
 
-        mgLog.d("Setup start");
-        File baseDir = application.getExternalFilesDir(null);
-        testSetup = new File(baseDir, TEST_SETUP);
-        testConfig = new File(baseDir, TEST_CONFIG);
-        File testOff = new File(testSetup, TEST_OFF);
+    public synchronized void wantSetup(String wanted, AssetManager assetManager)  {
+        assert (wanted != null);
+        if (wanted.equals(current)) return;
 
-        mgLog.d("testConfig.exists()="+testConfig.exists()+" testOff.exists()="+testOff.exists());
-        if (testConfig.exists() && !testOff.exists()){
-            if (testSetup.mkdir()){
-                mgLog.d(testSetup.getAbsolutePath()+" created");
-            }
-            new Thread(() -> { // network handling has to use a separate worker thread, even if the main thread is waiting for completion
-                try {
-                    mgLog.d("preferencesName="+preferencesName);
-                    mgLog.d("Setup run");
 
-                    new Sftp(testConfig) {
+        try {
 
-                        @Override
-                        protected boolean checkPreconditions() {
-                            mgLog.d("checkPreconditions start");
-                            return (WiFiUtil.checkWLAN(application, props.getProperty(PROP_WIFI)));
-                        }
+            mgLog.d("Setup start: wanted="+wanted);
+            String sAppDir = APP_DIR_DEFAULT;
+            String preferencesName = application.getPackageName() + "_preferences";
+            SharedPreferences sharedPreferences;
+            BaseConfig.Mode mode = BaseConfig.Mode.NORMAL;
 
-                        @SuppressWarnings("ResultOfMethodCallIgnored")
-                        @Override
-                        public void doCopy() throws Exception {
-                            channelSftp.lcd(baseDir.getAbsolutePath());
-                            File testTemp = new File(testSetup, TEST_TEMP);
-                            PersistenceManager.deleteRecursivly(testTemp);
-                            testTemp.mkdir();
+            File baseDir = application.getExternalFilesDir(null);
+            if (wanted.equals(WANTED_DEFAULT)){
+                sharedPreferences = application.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
+            } else {
+                // this code will only be used in instrumentation tests
+                InputStream isTestgroup = assetManager.open(wanted+"/testgroup.properties");
+                Properties pTestgroup = new Properties();
+                pTestgroup.load(isTestgroup);
 
-                            channelSftp.cd(TEST_DATA);
-                            if (channelSftp.pwd().endsWith(TEST_DATA)){
-                                @SuppressWarnings("unchecked") Vector<ChannelSftp.LsEntry> vLsEntries = channelSftp.ls(channelSftp.pwd());
-                                for (ChannelSftp.LsEntry lsEntry : vLsEntries){
-                                    if (lsEntry.getFilename().startsWith("testgroup") && lsEntry.getAttrs().isDir()){
-                                        SftpATTRS aTestgroup = stat(lsEntry.getFilename()+"/"+TEST_GROUP);
-                                        SftpATTRS aTestResultDir = stat(TEST_RESULT_DIR);
-                                        SftpATTRS aTestResult = stat(TEST_RESULT_DIR+"/"+lsEntry.getFilename()+TEST_RESULT_SUFFIX);
-                                        if ((aTestgroup != null) && (aTestResultDir != null) && (aTestResult == null)){
-                                            // ok, use this testgroup for setup
-                                            testgroup = lsEntry.getFilename();
-                                            channelSftp.get(lsEntry.getFilename()+"/"+TEST_GROUP, TEST_SETUP+"/"+TEST_TEMP+"/"+TEST_GROUP);
-                                            Properties pTestgroup = new Properties();
-                                            pTestgroup.load(new FileInputStream(new File(testTemp, TEST_GROUP)));
+                sAppDir = pTestgroup.getProperty("appDir", sAppDir);
+                PersistenceManager.deleteRecursivly(new File(baseDir, sAppDir)); // cleanup filesystem, if not yet empty
+                preferencesName = pTestgroup.getProperty("preferences", preferencesName);
+                sharedPreferences = application.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
+                sharedPreferences.edit().clear().apply(); // cleanup preferences, if not yet empty
 
-                                            sAppDir = pTestgroup.getProperty("appDir", sAppDir);
-                                            preferencesName = pTestgroup.getProperty("preferences", preferencesName);
-                                            boolean cleanup = "true".equalsIgnoreCase(pTestgroup.getProperty("cleanup", ""));
-                                            sharedPreferences = application.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
-
-                                            File appDir = new File(baseDir,sAppDir);
-                                            if (cleanup && !DEFAULT_APP_DIR.equals(sAppDir)){ // never delete MGMapViewer
-                                                PersistenceManager.deleteRecursivly(appDir);
-                                                sharedPreferences.edit().clear().apply();
-                                            }
-
-                                            SftpATTRS aTestfiles = stat(lsEntry.getFilename()+"/"+TEST_FILES);
-                                            if (aTestfiles != null){
-                                                channelSftp.get(lsEntry.getFilename()+"/"+TEST_FILES, TEST_SETUP+"/"+TEST_TEMP+"/"+TEST_FILES);
-                                                Properties pFiles = new Properties();
-                                                pFiles.load(new FileInputStream(new File(testTemp, TEST_FILES)));
-
-                                                for (Object oFilename  : pFiles.keySet()){
-                                                    String lFilename = oFilename.toString();
-                                                    String rFilename = pFiles.getProperty(lFilename);
-                                                    File lParent = new File(baseDir, sAppDir+"/"+lFilename).getParentFile();
-                                                    mgLog.d("copy from="+TEST_APP_DIR+"/"+rFilename+" to "+sAppDir+"/"+lFilename);
-                                                    assert lParent != null;
-                                                    lParent.mkdirs();
-                                                    channelSftp.get(TEST_APP_DIR+"/"+rFilename, sAppDir+"/"+lFilename);
-                                                }
-                                            }
-
-                                            SftpATTRS aTestPreferences = stat(lsEntry.getFilename()+"/"+TEST_PREFERENCES);
-                                            if (aTestPreferences != null){
-                                                channelSftp.get(lsEntry.getFilename()+"/"+TEST_PREFERENCES, TEST_SETUP+"/"+TEST_TEMP+"/"+TEST_PREFERENCES);
-                                                Properties pPreferences = new Properties();
-                                                pPreferences.load(new FileInputStream(new File(testTemp, TEST_PREFERENCES)));
-
-                                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                for (Object oPrefName  : pPreferences.keySet()){
-                                                    editor.putString( oPrefName.toString(), pPreferences.getProperty(oPrefName.toString()));
-                                                }
-                                                editor.apply();
-                                            }
-
-                                            SftpATTRS aTestCases = stat(lsEntry.getFilename()+"/"+TEST_CASES);
-                                            if (aTestCases != null){
-                                                channelSftp.get(lsEntry.getFilename()+"/"+TEST_CASES, TEST_SETUP+"/"+TEST_TEMP+"/"+TEST_CASES);
-                                                Properties pPreferences = new Properties();
-                                                pPreferences.load(new FileInputStream(new File(testTemp, TEST_CASES)));
-                                                for (Object oPrefName  : pPreferences.keySet()) {
-                                                    testCases.put(oPrefName.toString(), pPreferences.getProperty(oPrefName.toString()));
-                                                }
-                                            }
-
-                                            mode = BaseConfig.Mode.SYSTEM_TEST;
-                                            break; // testgroup found -> leave loop
-                                        }
-                                    }
-
-                                }
-                            }
-
-                        }
-
-                    }.copy();
-
-                } catch (Exception e) {
-                    mgLog.e(e);
-                } finally {
-                    synchronized (semaphore){
-                        semaphore.notifyAll(); // initial setup finished -> notify
-                    }
-                }
-            }).start();
-            WaitUtil.doWait(semaphore,60*1000); // wait for initial setup to be finished, at most 60s
-        }
-        sharedPreferences = application.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
-        if (mode == BaseConfig.Mode.SYSTEM_TEST){
-            try {
-                // create TestControl without java dependency
-                Class<?> clazz = Class.forName("mg.mgmap.test.TestControl");
-                Constructor<?> constructor = clazz.getConstructor(MGMapApplication.class, Setup.class);
-                constructor.newInstance(mgMapApplication, this);
-                // this (Handler creation) has to be done on this main thread, not on a worker Thread (as testgroup setup above)
-                timer = new Handler();
-                timer.postDelayed( testManager, 5000); // wait initial time before starting the tests
-            } catch (Exception e) {
-                mgLog.e(e);
-            }
-        }
-        mgLog.d("Setup end"+(testgroup==null?"":": testgroup="+testgroup));
-        return new BaseConfig(sAppDir, preferencesName, sharedPreferences, mode);
-    }
-
-    Runnable testManager = new Runnable() {
-        @Override
-        public void run() {
-            new Thread(() -> {
-                Optional.ofNullable(testRunner).ifPresent(tr -> tr.runTests(testCases, pTestResults));
-                try {
-                    String testResultFileName = testgroup+TEST_RESULT_SUFFIX;
-                    pTestResults.store(new FileOutputStream(new File(testSetup, TEST_TEMP+"/"+testResultFileName)),"Test Results:");
-                    new Sftp(testConfig) {
-                        @Override
-                        protected void doCopy() throws SftpException {
-                            channelSftp.cd(TEST_DATA);
-                            channelSftp.put(testSetup.getAbsolutePath()+"/"+TEST_TEMP+"/"+testResultFileName, TEST_RESULT_DIR+"/"+testResultFileName);
-                        }
-                    }.copy();
-                    Thread.sleep(3000);
-                    restartApplication();
-                } catch (Exception e) {
-                    mgLog.e(e);
+                Properties pFiles = new Properties();
+                pFiles.load(assetManager.open(wanted+"/files.properties"));
+                for (Object oFilename  : pFiles.keySet()){
+                    String lFilename = oFilename.toString();
+                    String rFilename = pFiles.getProperty(lFilename);
+                    File lParent = new File(baseDir, sAppDir+"/"+lFilename).getParentFile();
+                    mgLog.d("copy from assets/appDir/"+rFilename+" to "+sAppDir+"/"+lFilename);
+                    assert lParent != null;
+                    lParent.mkdirs();
+                    IOUtil.copyStreams(assetManager.open("appDir/"+rFilename), Files.newOutputStream(new File(baseDir, sAppDir + "/" + lFilename).toPath()));
                 }
 
-            }).start();
+                Properties pPreferences = new Properties();
+                pPreferences.load(assetManager.open(wanted+"/preferences.properties"));
 
-         }
-    };
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                for (Object oPrefName  : pPreferences.keySet()){
+                    editor.putString( oPrefName.toString(), pPreferences.getProperty(oPrefName.toString()));
+                }
+                editor.apply();
+                mode = BaseConfig.Mode.INSTRUMENTATION_TEST;
+                current = wanted;
+            }
 
-    public void setTestRunner(TestRunner testRunner){
-        this.testRunner = testRunner;
-    }
+            BaseConfig baseConfig =  new BaseConfig(sAppDir, preferencesName, sharedPreferences, mode);
+            mgLog.d("Setup end: wanted="+wanted+" BaseConfig="+baseConfig);
 
-    private void restartApplication(){
-        Context ctx = mgMapApplication.getApplicationContext();
-        PackageManager pm = ctx.getPackageManager();
-        Intent intent = pm.getLaunchIntentForPackage(ctx.getPackageName());
-        Intent mainIntent = Intent.makeRestartActivityTask(intent.getComponent());
-        ctx.startActivity(mainIntent);
-        Runtime.getRuntime().exit(0);
+            application._init(baseConfig);
+        } catch (Exception e) {
+            mgLog.e(e);
+        }
     }
 }

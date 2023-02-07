@@ -157,21 +157,21 @@ public class DialogView extends RelativeLayout {
 
     public DialogView setPositive(String buttonText, Observer action){
         if (buttonText != null) {
-            positiveETV = createButton(buttonText, logPrefix+"btPositive", action);
+            positiveETV = createButton(buttonText, R.id.bt_dialog_positive, logPrefix+"btPositive", action);
             positiveETV.addActionObserver(dismissObserver);
         }
         return this;
     }
     public DialogView setNegative(String buttonText, Observer action){
         if (buttonText != null){
-            negativeETV = createButton(buttonText, logPrefix+"btNegative", action);
+            negativeETV = createButton(buttonText, R.id.bt_dialog_negative, logPrefix+"btNegative", action);
             negativeETV.addActionObserver(dismissObserver);
         }
         return this;
     }
     public DialogView setNeutral(String buttonText, Observer action){
         if (buttonText != null) {
-            neutralETV = createButton(buttonText, logPrefix+"btNeutral", action);
+            neutralETV = createButton(buttonText, R.id.bt_dialog_neutral, logPrefix+"btNeutral", action);
         }
         return this;
     }
@@ -185,7 +185,7 @@ public class DialogView extends RelativeLayout {
         return this;
     }
 
-    protected ExtendedTextView createButton(String text, String logName, Observer observer){
+    protected ExtendedTextView createButton(String text, int viewId, String logName, Observer observer){
         ExtendedTextView etv = new ExtendedTextView(getContext());
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
         buttonParams.setMargins(ControlView.dp(5),ControlView.dp(5),ControlView.dp(5),ControlView.dp(5));
@@ -201,6 +201,7 @@ public class DialogView extends RelativeLayout {
         if (observer != null){
             etv.addActionObserver(observer);
         }
+        etv.setId(viewId);
         etv.setName(logName);
         return etv;
     }

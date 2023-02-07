@@ -2,6 +2,7 @@ package mg.mgmap.application.util;
 
 import android.content.res.AssetManager;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.LruCache;
 
 import java.lang.invoke.MethodHandles;
@@ -28,7 +29,7 @@ public class HgtProvider {
 
     private final Properties hgtSize = new Properties();
 
-    private final Handler timer = new Handler();
+    private final Handler timer;
     private final LruCache<String, byte[]> hgtCache = new LruCache<String, byte[]>(4){
         @Override
         protected void entryRemoved(boolean evicted, String key, byte[] oldValue, byte[] newValue) {
@@ -53,6 +54,7 @@ public class HgtProvider {
         } catch (Exception e){
             mgLog.e(e);
         }
+        timer = new Handler(Looper.getMainLooper());
 
     }
 

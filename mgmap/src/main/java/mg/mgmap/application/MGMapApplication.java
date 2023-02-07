@@ -35,6 +35,7 @@ import mg.mgmap.activity.statistic.TrackStatisticFilter;
 import mg.mgmap.application.util.GpsSupervisorWorker;
 import mg.mgmap.application.util.HgtProvider;
 import mg.mgmap.application.util.NotificationUtil;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.ObservableImpl;
@@ -67,6 +68,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -110,7 +112,8 @@ public class MGMapApplication extends Application {
     public Pref<Boolean> prefGps = null;
 
     private Setup setup;
-    public BaseConfig baseConfig;
+    public BaseConfig baseConfig = null;
+    volatile UUID currentRun = null;
 
     public void startLogging(File logDir){
         try {
@@ -140,11 +143,20 @@ public class MGMapApplication extends Application {
 //        MGLog.logConfig.put("mg.mgmap.test.TestControl", MGLog.Level.VERBOSE);
         mgLog.evaluateLevel();
 
-        setup = new Setup();
-        baseConfig = setup.init(this);
+        setup = new Setup(this);
+        setup.wantSetup(Setup.WANTED_DEFAULT, getAssets());
+    }
+
+    void _init(BaseConfig baseConfig){
+        if (currentRun != null){
+            currentRun = null;
+            cleanup();
+        }
+        currentRun = UUID.randomUUID();
+        this.baseConfig = baseConfig;
+
         persistenceManager = new PersistenceManager(this, baseConfig.getAppDirName());
         startLogging(persistenceManager.getLogDir());
-        mgLog.i(baseConfig);
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
@@ -213,11 +225,15 @@ public class MGMapApplication extends Application {
         // initialize handling of new points from TrackLoggerService
         new Thread(() -> {
             mgLog.i("handle TrackLogPoints: started ");
-            while (true){
+            UUID uuid = currentRun;
+            while (uuid == currentRun){
                 try {
                     PointModel pointModel = logPoints2process.take();
-                    mgLog.i("handle tlp="+pointModel);
+                    if (uuid != currentRun){
+                        break; // leave Thread
+                    }
                     if (pointModel != null){
+                        mgLog.i("handle tlp="+pointModel);
                         if (recordingTrackLogObservable.getTrackLog() != null){
                             recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
                             mgLog.v("handle TrackLogPoints: Processed "+pointModel);
@@ -235,12 +251,16 @@ public class MGMapApplication extends Application {
         new Thread(() -> {
             long TIMEOUT = 10000;
             mgLog.i("logcat supervision: start ");
+            UUID uuid = currentRun;
             int cnt = 0;
             int escalationCnt = 0;
             long lastCheck = System.currentTimeMillis();
-            while (true){
+            while (uuid == currentRun){
                 try {
                     pLogcat.waitFor(TIMEOUT, TimeUnit.MILLISECONDS );
+                    if (uuid != currentRun){
+                        break; // leave Thread
+                    }
                     int ec = pLogcat.exitValue(); // normal execution will result in an IllegalStateException
                     synchronized (MGMapApplication.class){
                         MGMapApplication.class.wait(1000);
@@ -251,8 +271,8 @@ public class MGMapApplication extends Application {
                 } catch (Exception e) {
                     long now = System.currentTimeMillis();
                     if (prefGps.getValue() && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
-                            mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
-                            escalationCnt++;
+                        mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
+                        escalationCnt++;
                     } else {
                         escalationCnt = 0;
                     }
@@ -268,6 +288,26 @@ public class MGMapApplication extends Application {
             }
         }).start();
 
+        mgLog.i("done.");
+    }
+
+    void cleanup(){
+        recordingTrackLogObservable.setTrackLog(null);
+        routeTrackLogObservable.setTrackLog(null);
+        availableTrackLogsObservable.removeAll();
+
+        logPoints2process.add(new PointModelImpl()); // abort Thread for TrackLogPoint handling
+        pLogcat.destroy(); // abort logcat and als Logcat supervision thread
+
+        if (baseConfig != null){
+            if (!baseConfig.getAppDirName().equals(Setup.APP_DIR_DEFAULT)){
+                File appDir = new File(getExternalFilesDir(null),baseConfig.getAppDirName());
+                PersistenceManager.deleteRecursivly(appDir);
+                baseConfig.getSharedPreferences().edit().clear().apply();
+            }
+        }
+        prefCache.cleanup();
+        prefCache = null;
     }
 
     @Override
@@ -445,6 +485,10 @@ public class MGMapApplication extends Application {
 
     public String getPreferencesName() {
         return baseConfig.getPreferencesName();
+    }
+
+    public Setup getSetup() {
+        return setup;
     }
 
     public static MGMapApplication getByContext(Context context){

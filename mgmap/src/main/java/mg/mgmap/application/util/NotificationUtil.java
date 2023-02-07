@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Looper;
 
 import androidx.core.app.NotificationCompat;
 
@@ -24,7 +25,7 @@ public class NotificationUtil {
     private Notification notification = null;
     private final String CHANNEL_ID;
     private final Context context;
-    private final Handler timer = new Handler();
+    private final Handler timer = new Handler(Looper.getMainLooper());
 
     public NotificationUtil(Context context){
         this.context = context;

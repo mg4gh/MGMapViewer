@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="menu_task"  />
+    <item type="id" name="mi_task_help"  />
+    <item type="id" name="mi_settings"  />
+    <item type="id" name="mi_fu_settings"  />
+    <item type="id" name="mi_statistic"  />
+    <item type="id" name="mi_height_profile"  />
+    <item type="id" name="mi_download"  />
+    <item type="id" name="mi_themes"  />
+
+    <item type="id" name="menu_search"  />
+    <item type="id" name="mi_search_help"  />
+    <item type="id" name="mi_search"  />
+    <item type="id" name="mi_search_res"  />
+    <item type="id" name="mi_search_empty1"  />
+    <item type="id" name="mi_search_empty2"  />
+    <item type="id" name="mi_search_empty3"  />
+    <item type="id" name="mi_search_empty4"  />
+
+    <item type="id" name="menu_marker"  />
+    <item type="id" name="mi_marker_help"  />
+    <item type="id" name="mi_marker_empty1"  />
+    <item type="id" name="mi_marker_edit"  />
+    <item type="id" name="mi_routing_hint"  />
+    <item type="id" name="mi_marker_empty2"  />
+    <item type="id" name="mi_map_mathching"  />
+    <item type="id" name="mi_marker_empty3"  />
+
+    <item type="id" name="menu_bb"  />
+    <item type="id" name="mi_bb_help"  />
+    <item type="id" name="mi_bb_empty1"  />
+    <item type="id" name="mi_load_from_bb"  />
+    <item type="id" name="mi_bbox"  />
+    <item type="id" name="mi_load_remain"  />
+    <item type="id" name="mi_load_all"  />
+    <item type="id" name="mi_delete_all"  />
+
+    <item type="id" name="menu_gps"  />
+    <item type="id" name="mi_gps_help"  />
+    <item type="id" name="mi_gps_empty1"  />
+    <item type="id" name="mi_gps_center"  />
+    <item type="id" name="mi_gps_toggle"  />
+    <item type="id" name="mi_record_track"  />
+    <item type="id" name="mi_record_segment"  />
+    <item type="id" name="mi_gps_empty2"  />
+
+    <item type="id" name="menu_show_hide"  />
+    <item type="id" name="mi_sh_help"  />
+    <item type="id" name="mi_alpha_layers"  />
+    <item type="id" name="mi_alpha_tracks"  />
+    <item type="id" name="mi_hide_stl"  />
+    <item type="id" name="mi_hide_atl"  />
+    <item type="id" name="mi_hide_all"  />
+    <item type="id" name="mi_hide_mtl"  />
+
+    <item type="id" name="menu_multi"  />
+    <item type="id" name="mi_help_multi"  />
+    <item type="id" name="mi_exit"  />
+    <item type="id" name="mi_multi_empty1"  />
+    <item type="id" name="mi_fullscreen"  />
+    <item type="id" name="mi_zoom_in"  />
+    <item type="id" name="mi_zoom_out"  />
+    <item type="id" name="mi_home"  />
+
+</resources>

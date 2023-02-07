@@ -116,6 +116,13 @@ public class ExtendedTextView extends AppCompatTextView {
         this.logName = logName;
         return this;
     }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        logName = getResources().getResourceName(id).replaceFirst(".*/","");
+    }
+
     public ExtendedTextView setData(int drId){
         drId1 = drId;
         onChange(null);

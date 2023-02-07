@@ -425,9 +425,8 @@ public class PersistenceManager {
                         deleteRecursivly(f);
                     }
                 }
-            } else {
-                file.delete();
             }
+            file.delete();
         }
     }
 
