@@ -34,7 +34,7 @@ import mg.mgmap.generic.model.PointModelImpl;
 @SuppressWarnings("unused") // usage is via reflection
 public class GeoLatLong extends SearchProvider {
 
-    private boolean autoCenter = true;
+    private boolean autoCenter = false;
 
     private SearchRequest searchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
 
