@@ -1,0 +1,2543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx>
+	<trk>
+		<name>20180803_085631_GPS</name>
+		<desc>start=03.08.2018_08:56:31 duration=2:04:25 totalLength=15991.29 gain=47541 loss=44484 minEle=400364 maxEle=422155 gpsPoints=506</desc>
+		<trkseg>
+			<desc>start=03.08.2018_08:56:31 duration=2:03:36 totalLength=16424.37 gain=47541 loss=44484 minEle=390266 maxEle=433266 gpsPoints=987</desc>
+			<trkpt  lat="47.680812" lon="9.296262">
+				<ele>402.1</ele>
+				<time>2018-08-03T08:56:36</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=5,pressure=972.720,presureAltitude=343.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.680664" lon="9.296622">
+				<ele>402.1</ele>
+				<time>2018-08-03T08:56:44</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=8,pressure=972.720,presureAltitude=343.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.680482" lon="9.296936">
+				<ele>402.1</ele>
+				<time>2018-08-03T08:56:52</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=8,pressure=972.720,presureAltitude=343.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.680364" lon="9.297233">
+				<ele>401.9</ele>
+				<time>2018-08-03T08:57:00</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=11,pressure=972.740,presureAltitude=342.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.680155" lon="9.297496">
+				<ele>401.8</ele>
+				<time>2018-08-03T08:57:08</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=9,pressure=972.750,presureAltitude=342.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.679977" lon="9.297805">
+				<ele>401.9</ele>
+				<time>2018-08-03T08:57:16</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=14,pressure=972.740,presureAltitude=342.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.679779" lon="9.298134">
+				<ele>401.7</ele>
+				<time>2018-08-03T08:57:24</time>
+				<cmt>wgs84altitude=440.0,nmeaAltitude=393.3,accuracy=12,pressure=972.770,presureAltitude=342.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.679679" lon="9.298429">
+				<ele>401.4</ele>
+				<time>2018-08-03T08:57:32</time>
+				<cmt>wgs84altitude=442.0,nmeaAltitude=395.3,accuracy=9,pressure=972.805,presureAltitude=342.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.679577" lon="9.298807">
+				<ele>401.3</ele>
+				<time>2018-08-03T08:57:40</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=12,pressure=972.810,presureAltitude=342.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.679467" lon="9.299204">
+				<ele>401.3</ele>
+				<time>2018-08-03T08:57:48</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=9,pressure=972.810,presureAltitude=342.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.679327" lon="9.299569">
+				<ele>401.3</ele>
+				<time>2018-08-03T08:57:56</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=11,pressure=972.810,presureAltitude=342.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.679184" lon="9.299909">
+				<ele>401.3</ele>
+				<time>2018-08-03T08:58:04</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=14,pressure=972.810,presureAltitude=342.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.679069" lon="9.300306">
+				<ele>401.6</ele>
+				<time>2018-08-03T08:58:12</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=9,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.678954" lon="9.300682">
+				<ele>401.6</ele>
+				<time>2018-08-03T08:58:20</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=8,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.678809" lon="9.301069">
+				<ele>401.6</ele>
+				<time>2018-08-03T08:58:28</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=8,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.678652" lon="9.301414">
+				<ele>401.6</ele>
+				<time>2018-08-03T08:58:36</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=11,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.678525" lon="9.301822">
+				<ele>401.6</ele>
+				<time>2018-08-03T08:58:44</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=15,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.678348" lon="9.302215">
+				<ele>401.6</ele>
+				<time>2018-08-03T08:58:52</time>
+				<cmt>wgs84altitude=444.0,nmeaAltitude=397.3,accuracy=9,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.678105" lon="9.302559">
+				<ele>401.1</ele>
+				<time>2018-08-03T08:59:00</time>
+				<cmt>wgs84altitude=440.0,nmeaAltitude=393.3,accuracy=14,pressure=972.830,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.677908" lon="9.302896">
+				<ele>401.1</ele>
+				<time>2018-08-03T08:59:08</time>
+				<cmt>wgs84altitude=441.0,nmeaAltitude=394.3,accuracy=17,pressure=972.830,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.677767" lon="9.303244">
+				<ele>401.4</ele>
+				<time>2018-08-03T08:59:16</time>
+				<cmt>wgs84altitude=442.0,nmeaAltitude=395.3,accuracy=6,pressure=972.805,presureAltitude=342.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.677583" lon="9.303557">
+				<ele>401.4</ele>
+				<time>2018-08-03T08:59:24</time>
+				<cmt>wgs84altitude=443.0,nmeaAltitude=396.3,accuracy=11,pressure=972.805,presureAltitude=342.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.677372" lon="9.303911">
+				<ele>401.5</ele>
+				<time>2018-08-03T08:59:32</time>
+				<cmt>wgs84altitude=444.0,nmeaAltitude=397.3,accuracy=9,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.677229" lon="9.304335">
+				<ele>401.5</ele>
+				<time>2018-08-03T08:59:40</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=11,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.677172" lon="9.304796">
+				<ele>401.5</ele>
+				<time>2018-08-03T08:59:48</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.677037" lon="9.305201">
+				<ele>401.5</ele>
+				<time>2018-08-03T08:59:56</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=8,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.676915" lon="9.305566">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:00:04</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=9,pressure=972.820,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.676869" lon="9.305981">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:00:12</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=8,pressure=972.820,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.676770" lon="9.306322">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:00:20</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=9,pressure=972.820,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.676663" lon="9.306684">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:00:28</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=9,pressure=972.820,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.676460" lon="9.307026">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:00:36</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=8,pressure=972.820,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.676266" lon="9.307351">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:00:44</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=8,pressure=972.820,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.676042" lon="9.307675">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:00:52</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=12,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.675891" lon="9.307843">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:01:08</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=12,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.674983" lon="9.309162">
+				<ele>401.3</ele>
+				<time>2018-08-03T09:01:28</time>
+				<cmt>wgs84altitude=444.0,nmeaAltitude=397.3,accuracy=9,pressure=972.815,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.674907" lon="9.309482">
+				<ele>401.3</ele>
+				<time>2018-08-03T09:01:34</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=5,pressure=972.815,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.674759" lon="9.309858">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:01:42</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=5,pressure=972.825,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.674577" lon="9.310237">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:01:50</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.825,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.674413" lon="9.310615">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:01:58</time>
+				<cmt>wgs84altitude=442.0,nmeaAltitude=395.3,accuracy=9,pressure=972.825,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.674247" lon="9.310988">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:02:06</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=9,pressure=972.825,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.674118" lon="9.311446">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:02:14</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=8,pressure=972.825,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.674021" lon="9.311842">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:02:22</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=11,pressure=972.825,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673882" lon="9.312226">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:02:30</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=17,pressure=972.825,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673752" lon="9.312655">
+				<ele>401.2</ele>
+				<time>2018-08-03T09:02:38</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=6,pressure=972.825,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673669" lon="9.313049">
+				<ele>400.5</ele>
+				<time>2018-08-03T09:02:46</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=9,pressure=972.910,presureAltitude=341.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.673793" lon="9.313504">
+				<ele>400.5</ele>
+				<time>2018-08-03T09:02:54</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=11,pressure=972.910,presureAltitude=341.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.673974" lon="9.313915">
+				<ele>400.5</ele>
+				<time>2018-08-03T09:03:02</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=9,pressure=972.910,presureAltitude=341.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.674033" lon="9.314328">
+				<ele>400.5</ele>
+				<time>2018-08-03T09:03:10</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=6,pressure=972.910,presureAltitude=341.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.674117" lon="9.314568">
+				<ele>400.5</ele>
+				<time>2018-08-03T09:03:18</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=6,pressure=972.910,presureAltitude=341.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.674274" lon="9.314383">
+				<ele>400.4</ele>
+				<time>2018-08-03T09:03:30</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=12,pressure=972.920,presureAltitude=341.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.674438" lon="9.314239">
+				<ele>400.6</ele>
+				<time>2018-08-03T09:03:38</time>
+				<cmt>wgs84altitude=444.0,nmeaAltitude=397.3,accuracy=11,pressure=972.890,presureAltitude=341.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.674680" lon="9.314223">
+				<ele>401.0</ele>
+				<time>2018-08-03T09:03:54</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.845,presureAltitude=342.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.674909" lon="9.314219">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:04:14</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=5,pressure=972.665,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.675124" lon="9.314233">
+				<ele>403.6</ele>
+				<time>2018-08-03T09:04:26</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=5,pressure=972.545,presureAltitude=344.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.675325" lon="9.314243">
+				<ele>404.2</ele>
+				<time>2018-08-03T09:04:38</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=5,pressure=972.470,presureAltitude=345.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.675530" lon="9.314265">
+				<ele>404.4</ele>
+				<time>2018-08-03T09:04:50</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=5,pressure=972.455,presureAltitude=345.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.675771" lon="9.314275">
+				<ele>405.1</ele>
+				<time>2018-08-03T09:05:03</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=6,pressure=972.375,presureAltitude=346.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.675876" lon="9.314546">
+				<ele>405.1</ele>
+				<time>2018-08-03T09:05:18</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=9,pressure=972.375,presureAltitude=346.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.675766" lon="9.314844">
+				<ele>405.1</ele>
+				<time>2018-08-03T09:05:26</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=8,pressure=972.375,presureAltitude=346.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.675669" lon="9.315220">
+				<ele>407.6</ele>
+				<time>2018-08-03T09:05:34</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=12,pressure=972.080,presureAltitude=348.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.675620" lon="9.315569">
+				<ele>407.6</ele>
+				<time>2018-08-03T09:05:42</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=21,pressure=972.080,presureAltitude=348.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.675551" lon="9.315855">
+				<ele>407.6</ele>
+				<time>2018-08-03T09:05:50</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=5,pressure=972.080,presureAltitude=348.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.675491" lon="9.316183">
+				<ele>408.1</ele>
+				<time>2018-08-03T09:05:58</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=9,pressure=972.020,presureAltitude=349.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.675462" lon="9.317728">
+				<ele>408.7</ele>
+				<time>2018-08-03T09:06:30</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=15,pressure=971.955,presureAltitude=349.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.675415" lon="9.317997">
+				<ele>409.0</ele>
+				<time>2018-08-03T09:06:36</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=5,pressure=971.915,presureAltitude=350.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.675364" lon="9.318385">
+				<ele>409.3</ele>
+				<time>2018-08-03T09:06:44</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=11,pressure=971.880,presureAltitude=350.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.675054" lon="9.318347">
+				<ele>409.1</ele>
+				<time>2018-08-03T09:06:56</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=11,pressure=971.910,presureAltitude=350.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.674876" lon="9.318203">
+				<ele>408.5</ele>
+				<time>2018-08-03T09:07:00</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=18,pressure=971.975,presureAltitude=349.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.674659" lon="9.318402">
+				<ele>407.6</ele>
+				<time>2018-08-03T09:07:04</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=12,pressure=972.075,presureAltitude=348.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.674571" lon="9.318635">
+				<ele>406.8</ele>
+				<time>2018-08-03T09:07:08</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=15,pressure=972.170,presureAltitude=347.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.674472" lon="9.319030">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:07:16</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=8,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.674423" lon="9.319387">
+				<ele>406.4</ele>
+				<time>2018-08-03T09:07:24</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=9,pressure=972.220,presureAltitude=347.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.674345" lon="9.319862">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:07:32</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=9,pressure=972.255,presureAltitude=347.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.674344" lon="9.320270">
+				<ele>405.5</ele>
+				<time>2018-08-03T09:07:40</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=9,pressure=972.320,presureAltitude=346.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.674277" lon="9.320696">
+				<ele>405.4</ele>
+				<time>2018-08-03T09:07:48</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=15,pressure=972.330,presureAltitude=346.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.674224" lon="9.321122">
+				<ele>405.6</ele>
+				<time>2018-08-03T09:07:56</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=14,pressure=972.315,presureAltitude=346.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.674170" lon="9.321544">
+				<ele>405.7</ele>
+				<time>2018-08-03T09:08:04</time>
+				<cmt>wgs84altitude=446.0,nmeaAltitude=399.3,accuracy=11,pressure=972.300,presureAltitude=346.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.674118" lon="9.321923">
+				<ele>406.0</ele>
+				<time>2018-08-03T09:08:12</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=11,pressure=972.265,presureAltitude=346.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.674062" lon="9.322226">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:08:20</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=11,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673987" lon="9.322590">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:08:28</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673978" lon="9.322962">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:08:36</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=8,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673942" lon="9.323348">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:08:44</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673814" lon="9.323780">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:08:52</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=9,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673685" lon="9.324150">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:09:00</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=9,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673582" lon="9.324497">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:09:08</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=9,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673383" lon="9.324793">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:09:16</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=6,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673169" lon="9.325115">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:09:24</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=8,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.673013" lon="9.325463">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:09:32</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=9,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.672831" lon="9.325821">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:09:40</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=9,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.672642" lon="9.326135">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:09:48</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=9,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.672412" lon="9.326426">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:09:56</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=6,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.672183" lon="9.326674">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:10:04</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=8,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.672013" lon="9.326905">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:10:12</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=8,pressure=972.250,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.671796" lon="9.327212">
+				<ele>406.0</ele>
+				<time>2018-08-03T09:10:21</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=8,pressure=972.265,presureAltitude=346.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.671710" lon="9.327456">
+				<ele>406.0</ele>
+				<time>2018-08-03T09:10:24</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=8,pressure=972.265,presureAltitude=346.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.671507" lon="9.327865">
+				<ele>405.1</ele>
+				<time>2018-08-03T09:10:32</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=8,pressure=972.365,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.671327" lon="9.328229">
+				<ele>404.9</ele>
+				<time>2018-08-03T09:10:40</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=9,pressure=972.390,presureAltitude=345.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.671229" lon="9.328528">
+				<ele>404.9</ele>
+				<time>2018-08-03T09:10:48</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=8,pressure=972.390,presureAltitude=345.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.671391" lon="9.328677">
+				<ele>405.8</ele>
+				<time>2018-08-03T09:11:00</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=8,pressure=972.285,presureAltitude=346.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.671677" lon="9.329064">
+				<ele>410.7</ele>
+				<time>2018-08-03T09:11:32</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=15,pressure=971.720,presureAltitude=351.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.671463" lon="9.329315">
+				<ele>411.8</ele>
+				<time>2018-08-03T09:11:42</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=5,pressure=971.590,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.671254" lon="9.329585">
+				<ele>411.8</ele>
+				<time>2018-08-03T09:11:50</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=12,pressure=971.595,presureAltitude=352.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.671225" lon="9.329904">
+				<ele>411.2</ele>
+				<time>2018-08-03T09:11:58</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=14,pressure=971.665,presureAltitude=352.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.671076" lon="9.330077">
+				<ele>410.9</ele>
+				<time>2018-08-03T09:12:02</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=8,pressure=971.695,presureAltitude=351.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.670892" lon="9.330357">
+				<ele>410.6</ele>
+				<time>2018-08-03T09:12:10</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=20,pressure=971.730,presureAltitude=351.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670724" lon="9.330607">
+				<ele>410.7</ele>
+				<time>2018-08-03T09:12:18</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=15,pressure=971.725,presureAltitude=351.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670570" lon="9.330891">
+				<ele>410.9</ele>
+				<time>2018-08-03T09:12:26</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=11,pressure=971.700,presureAltitude=351.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.670473" lon="9.331234">
+				<ele>411.1</ele>
+				<time>2018-08-03T09:12:34</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=9,pressure=971.675,presureAltitude=352.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.670361" lon="9.331559">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:12:42</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=15,pressure=971.650,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.670165" lon="9.331830">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:12:50</time>
+				<cmt>wgs84altitude=442.0,nmeaAltitude=395.3,accuracy=17,pressure=971.655,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.670043" lon="9.332131">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:12:59</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=9,pressure=971.655,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.669915" lon="9.332389">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:13:06</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=9,pressure=971.655,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.669771" lon="9.332656">
+				<ele>411.2</ele>
+				<time>2018-08-03T09:13:14</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=15,pressure=971.660,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.669669" lon="9.332953">
+				<ele>411.2</ele>
+				<time>2018-08-03T09:13:22</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=11,pressure=971.660,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.669564" lon="9.333315">
+				<ele>411.2</ele>
+				<time>2018-08-03T09:13:30</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=12,pressure=971.660,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.669487" lon="9.333640">
+				<ele>411.2</ele>
+				<time>2018-08-03T09:13:38</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=14,pressure=971.660,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.669426" lon="9.334002">
+				<ele>411.9</ele>
+				<time>2018-08-03T09:13:47</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=14,pressure=971.580,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.669257" lon="9.334339">
+				<ele>411.9</ele>
+				<time>2018-08-03T09:13:54</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=17,pressure=971.580,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.669175" lon="9.334678">
+				<ele>412.3</ele>
+				<time>2018-08-03T09:14:06</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=18,pressure=971.535,presureAltitude=353.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.669061" lon="9.335034">
+				<ele>413.2</ele>
+				<time>2018-08-03T09:14:18</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=15,pressure=971.425,presureAltitude=354.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.668987" lon="9.335295">
+				<ele>413.2</ele>
+				<time>2018-08-03T09:14:26</time>
+				<cmt>wgs84altitude=466.0,nmeaAltitude=419.3,accuracy=11,pressure=971.425,presureAltitude=354.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.668927" lon="9.335667">
+				<ele>413.2</ele>
+				<time>2018-08-03T09:14:38</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=9,pressure=971.425,presureAltitude=354.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.668813" lon="9.336019">
+				<ele>415.6</ele>
+				<time>2018-08-03T09:14:50</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=12,pressure=971.155,presureAltitude=356.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.668730" lon="9.336300">
+				<ele>415.7</ele>
+				<time>2018-08-03T09:14:58</time>
+				<cmt>wgs84altitude=466.0,nmeaAltitude=419.3,accuracy=12,pressure=971.135,presureAltitude=356.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.668649" lon="9.336589">
+				<ele>415.8</ele>
+				<time>2018-08-03T09:15:06</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=9,pressure=971.130,presureAltitude=356.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.668584" lon="9.336856">
+				<ele>415.8</ele>
+				<time>2018-08-03T09:15:14</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=8,pressure=971.130,presureAltitude=356.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.668575" lon="9.337254">
+				<ele>415.8</ele>
+				<time>2018-08-03T09:15:26</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=11,pressure=971.130,presureAltitude=356.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.668504" lon="9.337532">
+				<ele>415.8</ele>
+				<time>2018-08-03T09:15:34</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=12,pressure=971.130,presureAltitude=356.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.668404" lon="9.337807">
+				<ele>415.8</ele>
+				<time>2018-08-03T09:15:42</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=14,pressure=971.130,presureAltitude=356.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.668330" lon="9.338070">
+				<ele>418.1</ele>
+				<time>2018-08-03T09:15:50</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=12,pressure=970.865,presureAltitude=359.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.668297" lon="9.338432">
+				<ele>418.1</ele>
+				<time>2018-08-03T09:16:02</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=12,pressure=970.865,presureAltitude=359.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.667990" lon="9.339376">
+				<ele>421.7</ele>
+				<time>2018-08-03T09:16:33</time>
+				<cmt>wgs84altitude=469.0,nmeaAltitude=422.3,accuracy=11,pressure=970.445,presureAltitude=362.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.667870" lon="9.339647">
+				<ele>422.0</ele>
+				<time>2018-08-03T09:16:40</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=5,pressure=970.405,presureAltitude=363.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.667747" lon="9.339932">
+				<ele>422.0</ele>
+				<time>2018-08-03T09:16:48</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=5,pressure=970.405,presureAltitude=363.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.667784" lon="9.340373">
+				<ele>422.2</ele>
+				<time>2018-08-03T09:16:56</time>
+				<cmt>wgs84altitude=468.0,nmeaAltitude=421.3,accuracy=5,pressure=970.390,presureAltitude=363.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667665" lon="9.340736">
+				<ele>422.2</ele>
+				<time>2018-08-03T09:17:04</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=5,pressure=970.390,presureAltitude=363.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667526" lon="9.340972">
+				<ele>422.2</ele>
+				<time>2018-08-03T09:17:12</time>
+				<cmt>wgs84altitude=471.0,nmeaAltitude=424.3,accuracy=6,pressure=970.390,presureAltitude=363.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667425" lon="9.341343">
+				<ele>422.2</ele>
+				<time>2018-08-03T09:17:24</time>
+				<cmt>wgs84altitude=474.0,nmeaAltitude=427.3,accuracy=8,pressure=970.390,presureAltitude=363.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667323" lon="9.341619">
+				<ele>422.2</ele>
+				<time>2018-08-03T09:17:32</time>
+				<cmt>wgs84altitude=476.0,nmeaAltitude=429.3,accuracy=8,pressure=970.390,presureAltitude=363.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667218" lon="9.341947">
+				<ele>422.2</ele>
+				<time>2018-08-03T09:17:40</time>
+				<cmt>wgs84altitude=477.0,nmeaAltitude=430.3,accuracy=6,pressure=970.390,presureAltitude=363.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667096" lon="9.342459">
+				<ele>421.7</ele>
+				<time>2018-08-03T09:17:48</time>
+				<cmt>wgs84altitude=470.0,nmeaAltitude=423.3,accuracy=8,pressure=970.445,presureAltitude=362.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.666988" lon="9.342830">
+				<ele>420.6</ele>
+				<time>2018-08-03T09:17:52</time>
+				<cmt>wgs84altitude=466.0,nmeaAltitude=419.3,accuracy=11,pressure=970.565,presureAltitude=361.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.666861" lon="9.343226">
+				<ele>419.9</ele>
+				<time>2018-08-03T09:17:56</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=9,pressure=970.655,presureAltitude=360.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.666746" lon="9.343476">
+				<ele>419.9</ele>
+				<time>2018-08-03T09:18:00</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=11,pressure=970.655,presureAltitude=360.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.666562" lon="9.343628">
+				<ele>419.9</ele>
+				<time>2018-08-03T09:18:08</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=15,pressure=970.655,presureAltitude=360.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.666526" lon="9.343935">
+				<ele>414.8</ele>
+				<time>2018-08-03T09:18:12</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=14,pressure=971.245,presureAltitude=355.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.666500" lon="9.344291">
+				<ele>414.8</ele>
+				<time>2018-08-03T09:18:17</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=15,pressure=971.245,presureAltitude=355.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.666355" lon="9.344618">
+				<ele>414.8</ele>
+				<time>2018-08-03T09:18:24</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=5,pressure=971.245,presureAltitude=355.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.666291" lon="9.344955">
+				<ele>414.8</ele>
+				<time>2018-08-03T09:18:36</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=8,pressure=971.245,presureAltitude=355.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.666184" lon="9.345254">
+				<ele>414.8</ele>
+				<time>2018-08-03T09:18:48</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=11,pressure=971.240,presureAltitude=355.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.666090" lon="9.345539">
+				<ele>414.8</ele>
+				<time>2018-08-03T09:18:56</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=11,pressure=971.240,presureAltitude=355.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.666029" lon="9.345883">
+				<ele>414.8</ele>
+				<time>2018-08-03T09:19:04</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=6,pressure=971.240,presureAltitude=355.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665972" lon="9.346197">
+				<ele>414.8</ele>
+				<time>2018-08-03T09:19:12</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=9,pressure=971.240,presureAltitude=355.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665926" lon="9.346485">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:19:21</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=9,pressure=971.035,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665865" lon="9.346866">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:19:28</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=6,pressure=971.035,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665811" lon="9.347154">
+				<ele>416.9</ele>
+				<time>2018-08-03T09:19:33</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=5,pressure=971.000,presureAltitude=357.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665782" lon="9.347433">
+				<ele>416.8</ele>
+				<time>2018-08-03T09:19:38</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=5,pressure=971.010,presureAltitude=357.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665731" lon="9.347735">
+				<ele>416.8</ele>
+				<time>2018-08-03T09:19:44</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=6,pressure=971.010,presureAltitude=357.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665664" lon="9.348129">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:19:52</time>
+				<cmt>wgs84altitude=468.0,nmeaAltitude=421.3,accuracy=8,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665646" lon="9.348508">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:20:00</time>
+				<cmt>wgs84altitude=468.0,nmeaAltitude=421.3,accuracy=8,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665587" lon="9.348954">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:20:07</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=6,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665532" lon="9.349310">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:20:15</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=8,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665475" lon="9.349673">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:20:23</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=6,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665431" lon="9.350085">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:20:31</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=6,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665388" lon="9.350511">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:20:39</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=8,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665335" lon="9.350977">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:20:47</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=9,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665261" lon="9.351362">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:20:55</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=9,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665246" lon="9.351629">
+				<ele>416.2</ele>
+				<time>2018-08-03T09:21:04</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=6,pressure=971.085,presureAltitude=357.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665036" lon="9.353051">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:21:35</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=15,pressure=971.030,presureAltitude=357.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.665034" lon="9.353386">
+				<ele>416.8</ele>
+				<time>2018-08-03T09:21:41</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=5,pressure=971.015,presureAltitude=357.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.665016" lon="9.354000">
+				<ele>416.8</ele>
+				<time>2018-08-03T09:21:49</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=5,pressure=971.015,presureAltitude=357.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.665011" lon="9.354360">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:21:53</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=6,pressure=971.040,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.664887" lon="9.354599">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:21:57</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=20,pressure=971.040,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.664889" lon="9.354972">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:22:01</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=12,pressure=971.040,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665002" lon="9.355240">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:22:05</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=8,pressure=971.040,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665044" lon="9.355776">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:22:14</time>
+				<cmt>wgs84altitude=468.0,nmeaAltitude=421.3,accuracy=15,pressure=971.040,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665135" lon="9.356373">
+				<ele>414.6</ele>
+				<time>2018-08-03T09:22:21</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=11,pressure=971.265,presureAltitude=355.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.665162" lon="9.356742">
+				<ele>414.6</ele>
+				<time>2018-08-03T09:22:25</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=11,pressure=971.265,presureAltitude=355.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.665147" lon="9.357262">
+				<ele>412.5</ele>
+				<time>2018-08-03T09:22:33</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=12,pressure=971.510,presureAltitude=353.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.665112" lon="9.357621">
+				<ele>412.5</ele>
+				<time>2018-08-03T09:22:41</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=14,pressure=971.505,presureAltitude=353.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665029" lon="9.357972">
+				<ele>412.9</ele>
+				<time>2018-08-03T09:22:49</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=11,pressure=971.465,presureAltitude=353.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665109" lon="9.358479">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:22:57</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=11,pressure=971.475,presureAltitude=353.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665264" lon="9.358908">
+				<ele>412.0</ele>
+				<time>2018-08-03T09:23:05</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=9,pressure=971.565,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.665415" lon="9.359276">
+				<ele>411.5</ele>
+				<time>2018-08-03T09:23:13</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=5,pressure=971.630,presureAltitude=352.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.665528" lon="9.359676">
+				<ele>411.4</ele>
+				<time>2018-08-03T09:23:21</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=5,pressure=971.640,presureAltitude=352.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.665586" lon="9.360137">
+				<ele>411.4</ele>
+				<time>2018-08-03T09:23:29</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=9,pressure=971.640,presureAltitude=352.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.665591" lon="9.360647">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:23:37</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=9,pressure=971.650,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.665575" lon="9.361115">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:23:45</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=8,pressure=971.650,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.665487" lon="9.361597">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:23:53</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=8,pressure=971.650,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.665388" lon="9.361988">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:24:01</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=8,pressure=971.650,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.665306" lon="9.362414">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:24:09</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=9,pressure=971.650,presureAltitude=352.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.665291" lon="9.362938">
+				<ele>409.6</ele>
+				<time>2018-08-03T09:24:17</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=8,pressure=971.845,presureAltitude=350.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.665339" lon="9.363210">
+				<ele>409.5</ele>
+				<time>2018-08-03T09:24:21</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=11,pressure=971.855,presureAltitude=350.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665302" lon="9.363483">
+				<ele>409.4</ele>
+				<time>2018-08-03T09:24:25</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=11,pressure=971.865,presureAltitude=350.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.665293" lon="9.363960">
+				<ele>408.8</ele>
+				<time>2018-08-03T09:24:33</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=6,pressure=971.935,presureAltitude=349.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665338" lon="9.364536">
+				<ele>407.9</ele>
+				<time>2018-08-03T09:24:41</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=5,pressure=972.045,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665355" lon="9.364806">
+				<ele>407.3</ele>
+				<time>2018-08-03T09:24:45</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=8,pressure=972.110,presureAltitude=348.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.665415" lon="9.365271">
+				<ele>404.2</ele>
+				<time>2018-08-03T09:26:37</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=18,pressure=972.480,presureAltitude=345.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665361" lon="9.365704">
+				<ele>403.5</ele>
+				<time>2018-08-03T09:27:11</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=11,pressure=972.555,presureAltitude=344.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665455" lon="9.366186">
+				<ele>403.0</ele>
+				<time>2018-08-03T09:27:19</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=11,pressure=972.610,presureAltitude=344.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.665513" lon="9.366640">
+				<ele>403.0</ele>
+				<time>2018-08-03T09:27:27</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=9,pressure=972.610,presureAltitude=344.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.665646" lon="9.366996">
+				<ele>403.0</ele>
+				<time>2018-08-03T09:27:35</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=9,pressure=972.610,presureAltitude=344.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.665761" lon="9.367365">
+				<ele>403.5</ele>
+				<time>2018-08-03T09:27:43</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=8,pressure=972.560,presureAltitude=344.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.665824" lon="9.367758">
+				<ele>403.5</ele>
+				<time>2018-08-03T09:27:51</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=6,pressure=972.560,presureAltitude=344.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.665853" lon="9.368167">
+				<ele>403.5</ele>
+				<time>2018-08-03T09:27:59</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=6,pressure=972.560,presureAltitude=344.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.665902" lon="9.368599">
+				<ele>403.5</ele>
+				<time>2018-08-03T09:28:07</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=6,pressure=972.560,presureAltitude=344.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.666058" lon="9.369062">
+				<ele>403.5</ele>
+				<time>2018-08-03T09:28:15</time>
+				<cmt>wgs84altitude=444.0,nmeaAltitude=397.3,accuracy=9,pressure=972.560,presureAltitude=344.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.666198" lon="9.369495">
+				<ele>403.5</ele>
+				<time>2018-08-03T09:28:23</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=12,pressure=972.560,presureAltitude=344.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.666291" lon="9.369913">
+				<ele>403.5</ele>
+				<time>2018-08-03T09:28:31</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=12,pressure=972.560,presureAltitude=344.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.666442" lon="9.370258">
+				<ele>402.3</ele>
+				<time>2018-08-03T09:28:39</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=39,pressure=972.690,presureAltitude=343.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.666469" lon="9.370565">
+				<ele>402.7</ele>
+				<time>2018-08-03T09:28:47</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=5,pressure=972.645,presureAltitude=343.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.666505" lon="9.370891">
+				<ele>402.9</ele>
+				<time>2018-08-03T09:28:55</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=5,pressure=972.625,presureAltitude=343.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.666551" lon="9.371242">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:29:03</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=5,pressure=972.655,presureAltitude=343.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.666603" lon="9.371619">
+				<ele>402.3</ele>
+				<time>2018-08-03T09:29:11</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=6,pressure=972.690,presureAltitude=343.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.666609" lon="9.371974">
+				<ele>402.4</ele>
+				<time>2018-08-03T09:29:19</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=8,pressure=972.685,presureAltitude=343.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.666660" lon="9.372288">
+				<ele>402.9</ele>
+				<time>2018-08-03T09:29:27</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=14,pressure=972.620,presureAltitude=343.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.666766" lon="9.372546">
+				<ele>403.8</ele>
+				<time>2018-08-03T09:29:35</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=12,pressure=972.525,presureAltitude=344.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.666888" lon="9.372821">
+				<ele>404.5</ele>
+				<time>2018-08-03T09:29:43</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=9,pressure=972.435,presureAltitude=345.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.666937" lon="9.373094">
+				<ele>404.9</ele>
+				<time>2018-08-03T09:29:51</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=6,pressure=972.395,presureAltitude=345.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.666948" lon="9.373378">
+				<ele>404.9</ele>
+				<time>2018-08-03T09:29:59</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=11,pressure=972.395,presureAltitude=345.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.666901" lon="9.373666">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:30:07</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=15,pressure=972.255,presureAltitude=347.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.666851" lon="9.374047">
+				<ele>406.1</ele>
+				<time>2018-08-03T09:30:15</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=12,pressure=972.255,presureAltitude=347.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.666747" lon="9.374481">
+				<ele>407.2</ele>
+				<time>2018-08-03T09:30:23</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.130,presureAltitude=348.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666698" lon="9.374884">
+				<ele>407.2</ele>
+				<time>2018-08-03T09:30:31</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=14,pressure=972.130,presureAltitude=348.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666651" lon="9.375460">
+				<ele>407.2</ele>
+				<time>2018-08-03T09:30:39</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=18,pressure=972.130,presureAltitude=348.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666637" lon="9.375794">
+				<ele>407.2</ele>
+				<time>2018-08-03T09:30:43</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=17,pressure=972.130,presureAltitude=348.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666721" lon="9.376284">
+				<ele>407.2</ele>
+				<time>2018-08-03T09:30:51</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=17,pressure=972.130,presureAltitude=348.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666652" lon="9.376782">
+				<ele>407.2</ele>
+				<time>2018-08-03T09:31:00</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=9,pressure=972.130,presureAltitude=348.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666671" lon="9.377222">
+				<ele>407.2</ele>
+				<time>2018-08-03T09:31:07</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=9,pressure=972.130,presureAltitude=348.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666766" lon="9.378887">
+				<ele>406.0</ele>
+				<time>2018-08-03T09:31:38</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=17,pressure=972.265,presureAltitude=346.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.666843" lon="9.379130">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:31:45</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=5,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666896" lon="9.379446">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:31:53</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=5,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666895" lon="9.379786">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:32:01</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=8,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666905" lon="9.380210">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:32:09</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=6,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.666935" lon="9.380612">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:32:17</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=6,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667015" lon="9.381077">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:32:25</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=8,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667070" lon="9.381532">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:32:33</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=8,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667144" lon="9.381934">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:32:41</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=6,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667175" lon="9.382378">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:32:49</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=6,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667228" lon="9.382848">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:32:57</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=6,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667327" lon="9.383302">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:33:05</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=6,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667457" lon="9.383588">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:33:17</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=8,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667635" lon="9.383797">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:33:25</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=6,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.667877" lon="9.383579">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:33:33</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=8,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668061" lon="9.383792">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:33:41</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=9,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668207" lon="9.384214">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:33:49</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=6,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668414" lon="9.384647">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:33:57</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=8,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668550" lon="9.384872">
+				<ele>406.2</ele>
+				<time>2018-08-03T09:34:01</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=9,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668879" lon="9.385367">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:10</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=8,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.669044" lon="9.385630">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:13</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.669158" lon="9.385903">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:17</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=9,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.669367" lon="9.386056">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:21</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=6,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.669597" lon="9.386469">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:29</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=9,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.669730" lon="9.386705">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:33</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=9,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.669957" lon="9.387129">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:41</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=8,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670033" lon="9.387384">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:45</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=11,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670179" lon="9.387812">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:34:53</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=6,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670312" lon="9.388182">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:35:01</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=6,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670415" lon="9.388518">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:35:09</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=9,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670516" lon="9.388848">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:35:17</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=6,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670623" lon="9.389224">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:35:25</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=6,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670709" lon="9.389617">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:35:34</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670827" lon="9.390022">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:35:41</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=9,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.670970" lon="9.390459">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:35:49</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=11,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.671123" lon="9.390896">
+				<ele>405.2</ele>
+				<time>2018-08-03T09:35:57</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=8,pressure=972.360,presureAltitude=346.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.671253" lon="9.391373">
+				<ele>401.8</ele>
+				<time>2018-08-03T09:36:05</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.755,presureAltitude=342.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.671757" lon="9.393249">
+				<ele>401.1</ele>
+				<time>2018-08-03T09:36:41</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=11,pressure=972.830,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.671767" lon="9.393561">
+				<ele>401.1</ele>
+				<time>2018-08-03T09:36:48</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=5,pressure=972.830,presureAltitude=342.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.671791" lon="9.393983">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:36:55</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=8,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.671824" lon="9.394391">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:37:03</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=5,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.671828" lon="9.394823">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:37:11</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=5,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.671795" lon="9.395245">
+				<ele>401.4</ele>
+				<time>2018-08-03T09:37:19</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.795,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.671759" lon="9.395627">
+				<ele>401.5</ele>
+				<time>2018-08-03T09:37:27</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=11,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.671722" lon="9.396058">
+				<ele>401.5</ele>
+				<time>2018-08-03T09:37:35</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=14,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.671680" lon="9.396504">
+				<ele>401.5</ele>
+				<time>2018-08-03T09:37:43</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=14,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.671574" lon="9.396908">
+				<ele>401.5</ele>
+				<time>2018-08-03T09:37:51</time>
+				<cmt>wgs84altitude=446.0,nmeaAltitude=399.3,accuracy=11,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.671460" lon="9.397384">
+				<ele>401.5</ele>
+				<time>2018-08-03T09:37:59</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=9,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.671267" lon="9.397834">
+				<ele>402.7</ele>
+				<time>2018-08-03T09:38:07</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=6,pressure=972.650,presureAltitude=343.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.671113" lon="9.398188">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:38:15</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=5,pressure=972.660,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670968" lon="9.398595">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:38:23</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=5,pressure=972.660,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670806" lon="9.399022">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:38:31</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=8,pressure=972.660,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670628" lon="9.399452">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:38:39</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=9,pressure=972.660,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670483" lon="9.399907">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:38:47</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=9,pressure=972.660,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670429" lon="9.400167">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:38:51</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=11,pressure=972.660,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670314" lon="9.400443">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:38:55</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=11,pressure=972.660,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670216" lon="9.400922">
+				<ele>402.6</ele>
+				<time>2018-08-03T09:39:01</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=6,pressure=972.665,presureAltitude=343.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670140" lon="9.401211">
+				<ele>402.3</ele>
+				<time>2018-08-03T09:39:05</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=11,pressure=972.700,presureAltitude=343.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.670015" lon="9.401625">
+				<ele>401.8</ele>
+				<time>2018-08-03T09:39:14</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=9,pressure=972.755,presureAltitude=342.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.669917" lon="9.402040">
+				<ele>401.8</ele>
+				<time>2018-08-03T09:39:22</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=8,pressure=972.755,presureAltitude=342.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.669780" lon="9.402443">
+				<ele>401.5</ele>
+				<time>2018-08-03T09:39:29</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=8,pressure=972.785,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.669676" lon="9.402924">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:39:38</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=8,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.669634" lon="9.403446">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:39:45</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=12,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.669640" lon="9.403917">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:39:53</time>
+				<cmt>wgs84altitude=440.0,nmeaAltitude=393.3,accuracy=8,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.669680" lon="9.404395">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:40:01</time>
+				<cmt>wgs84altitude=444.0,nmeaAltitude=397.3,accuracy=9,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.669771" lon="9.404875">
+				<ele>400.9</ele>
+				<time>2018-08-03T09:40:09</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=9,pressure=972.855,presureAltitude=341.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.669911" lon="9.405259">
+				<ele>400.9</ele>
+				<time>2018-08-03T09:40:17</time>
+				<cmt>wgs84altitude=446.0,nmeaAltitude=399.3,accuracy=11,pressure=972.855,presureAltitude=341.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.670046" lon="9.405709">
+				<ele>400.9</ele>
+				<time>2018-08-03T09:40:25</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=11,pressure=972.855,presureAltitude=341.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.670144" lon="9.406146">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:40:34</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=9,pressure=972.780,presureAltitude=342.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.670186" lon="9.406584">
+				<ele>401.7</ele>
+				<time>2018-08-03T09:40:41</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=8,pressure=972.765,presureAltitude=342.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670174" lon="9.407008">
+				<ele>401.7</ele>
+				<time>2018-08-03T09:40:49</time>
+				<cmt>wgs84altitude=439.0,nmeaAltitude=392.3,accuracy=8,pressure=972.770,presureAltitude=342.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670189" lon="9.407458">
+				<ele>401.5</ele>
+				<time>2018-08-03T09:40:57</time>
+				<cmt>wgs84altitude=439.0,nmeaAltitude=392.3,accuracy=12,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.670161" lon="9.407722">
+				<ele>401.5</ele>
+				<time>2018-08-03T09:41:01</time>
+				<cmt>wgs84altitude=439.0,nmeaAltitude=392.3,accuracy=12,pressure=972.790,presureAltitude=342.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.670129" lon="9.407996">
+				<ele>401.3</ele>
+				<time>2018-08-03T09:41:05</time>
+				<cmt>wgs84altitude=438.0,nmeaAltitude=391.3,accuracy=9,pressure=972.810,presureAltitude=342.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.670090" lon="9.408263">
+				<ele>401.3</ele>
+				<time>2018-08-03T09:41:09</time>
+				<cmt>wgs84altitude=440.0,nmeaAltitude=393.3,accuracy=9,pressure=972.815,presureAltitude=342.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.670011" lon="9.409718">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:41:44</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=17,pressure=972.775,presureAltitude=342.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.669990" lon="9.410066">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:41:55</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=5,pressure=972.775,presureAltitude=342.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670008" lon="9.410435">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:42:07</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=8,pressure=972.775,presureAltitude=342.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670001" lon="9.410712">
+				<ele>401.6</ele>
+				<time>2018-08-03T09:42:15</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=6,pressure=972.775,presureAltitude=342.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670024" lon="9.411057">
+				<ele>405.7</ele>
+				<time>2018-08-03T09:42:27</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=11,pressure=972.305,presureAltitude=346.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670177" lon="9.411414">
+				<ele>405.7</ele>
+				<time>2018-08-03T09:42:39</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=9,pressure=972.305,presureAltitude=346.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670271" lon="9.411706">
+				<ele>405.7</ele>
+				<time>2018-08-03T09:42:47</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=9,pressure=972.305,presureAltitude=346.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670309" lon="9.412006">
+				<ele>405.7</ele>
+				<time>2018-08-03T09:42:56</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=9,pressure=972.305,presureAltitude=346.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670299" lon="9.412348">
+				<ele>407.6</ele>
+				<time>2018-08-03T09:43:03</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=8,pressure=972.075,presureAltitude=348.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670224" lon="9.412644">
+				<ele>407.6</ele>
+				<time>2018-08-03T09:43:11</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=15,pressure=972.075,presureAltitude=348.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.670178" lon="9.412974">
+				<ele>408.3</ele>
+				<time>2018-08-03T09:43:20</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=8,pressure=972.000,presureAltitude=349.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.670064" lon="9.413374">
+				<ele>408.4</ele>
+				<time>2018-08-03T09:43:27</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=9,pressure=971.990,presureAltitude=349.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.669927" lon="9.413752">
+				<ele>408.4</ele>
+				<time>2018-08-03T09:43:35</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=14,pressure=971.990,presureAltitude=349.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.669829" lon="9.414139">
+				<ele>408.3</ele>
+				<time>2018-08-03T09:43:43</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=8,pressure=971.995,presureAltitude=349.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.669723" lon="9.414427">
+				<ele>408.4</ele>
+				<time>2018-08-03T09:43:51</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=8,pressure=971.990,presureAltitude=349.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.669635" lon="9.414786">
+				<ele>408.3</ele>
+				<time>2018-08-03T09:43:59</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=14,pressure=972.000,presureAltitude=349.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.669562" lon="9.415174">
+				<ele>408.1</ele>
+				<time>2018-08-03T09:44:07</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=17,pressure=972.020,presureAltitude=349.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.669508" lon="9.415583">
+				<ele>407.9</ele>
+				<time>2018-08-03T09:44:15</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=14,pressure=972.040,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.669437" lon="9.415927">
+				<ele>407.8</ele>
+				<time>2018-08-03T09:44:23</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=11,pressure=972.060,presureAltitude=348.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.669325" lon="9.416346">
+				<ele>407.6</ele>
+				<time>2018-08-03T09:44:31</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=9,pressure=972.075,presureAltitude=348.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.669242" lon="9.416774">
+				<ele>407.8</ele>
+				<time>2018-08-03T09:44:39</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=9,pressure=972.060,presureAltitude=348.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.669109" lon="9.417160">
+				<ele>408.0</ele>
+				<time>2018-08-03T09:44:47</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=11,pressure=972.035,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.669036" lon="9.417667">
+				<ele>408.1</ele>
+				<time>2018-08-03T09:44:55</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=17,pressure=972.020,presureAltitude=349.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668931" lon="9.418054">
+				<ele>408.1</ele>
+				<time>2018-08-03T09:45:04</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=11,pressure=972.020,presureAltitude=349.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668910" lon="9.418446">
+				<ele>408.1</ele>
+				<time>2018-08-03T09:45:11</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=11,pressure=972.020,presureAltitude=349.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668832" lon="9.418792">
+				<ele>408.5</ele>
+				<time>2018-08-03T09:45:19</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=9,pressure=971.975,presureAltitude=349.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.668766" lon="9.419245">
+				<ele>408.8</ele>
+				<time>2018-08-03T09:45:27</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=6,pressure=971.935,presureAltitude=349.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.668712" lon="9.419643">
+				<ele>408.5</ele>
+				<time>2018-08-03T09:45:35</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=12,pressure=971.980,presureAltitude=349.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.668642" lon="9.420024">
+				<ele>408.2</ele>
+				<time>2018-08-03T09:45:43</time>
+				<cmt>wgs84altitude=441.0,nmeaAltitude=394.3,accuracy=17,pressure=972.010,presureAltitude=349.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.668558" lon="9.420408">
+				<ele>408.3</ele>
+				<time>2018-08-03T09:45:51</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=5,pressure=971.995,presureAltitude=349.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.668465" lon="9.420762">
+				<ele>408.5</ele>
+				<time>2018-08-03T09:45:59</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=5,pressure=971.970,presureAltitude=349.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.668355" lon="9.421108">
+				<ele>408.8</ele>
+				<time>2018-08-03T09:46:07</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=8,pressure=971.935,presureAltitude=349.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.668298" lon="9.421501">
+				<ele>409.4</ele>
+				<time>2018-08-03T09:46:15</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=6,pressure=971.865,presureAltitude=350.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.667928" lon="9.422522">
+				<ele>411.4</ele>
+				<time>2018-08-03T09:46:46</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=8,pressure=971.640,presureAltitude=352.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.667783" lon="9.422809">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:46:54</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=5,pressure=971.610,presureAltitude=352.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.667631" lon="9.423104">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:47:01</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=5,pressure=971.610,presureAltitude=352.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.667491" lon="9.423381">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:47:09</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=5,pressure=971.610,presureAltitude=352.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.667294" lon="9.423678">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:47:18</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=9,pressure=971.610,presureAltitude=352.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.667068" lon="9.423996">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:47:25</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=11,pressure=971.610,presureAltitude=352.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.666849" lon="9.424332">
+				<ele>411.3</ele>
+				<time>2018-08-03T09:47:33</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=12,pressure=971.645,presureAltitude=352.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.666599" lon="9.424626">
+				<ele>411.0</ele>
+				<time>2018-08-03T09:47:41</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=14,pressure=971.685,presureAltitude=351.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.666348" lon="9.424867">
+				<ele>410.9</ele>
+				<time>2018-08-03T09:47:49</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=12,pressure=971.700,presureAltitude=351.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.666172" lon="9.425046">
+				<ele>411.2</ele>
+				<time>2018-08-03T09:47:57</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=11,pressure=971.665,presureAltitude=352.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665994" lon="9.425198">
+				<ele>411.7</ele>
+				<time>2018-08-03T09:48:05</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=12,pressure=971.605,presureAltitude=352.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.665823" lon="9.425438">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:48:13</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=11,pressure=971.555,presureAltitude=353.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.665598" lon="9.425577">
+				<ele>412.5</ele>
+				<time>2018-08-03T09:48:21</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=18,pressure=971.505,presureAltitude=353.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.665458" lon="9.425835">
+				<ele>412.9</ele>
+				<time>2018-08-03T09:48:29</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=17,pressure=971.465,presureAltitude=353.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.665370" lon="9.426185">
+				<ele>413.5</ele>
+				<time>2018-08-03T09:48:37</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=15,pressure=971.395,presureAltitude=354.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.665232" lon="9.426476">
+				<ele>414.3</ele>
+				<time>2018-08-03T09:48:45</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=6,pressure=971.300,presureAltitude=355.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.665076" lon="9.426735">
+				<ele>414.9</ele>
+				<time>2018-08-03T09:48:53</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=6,pressure=971.235,presureAltitude=355.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.664959" lon="9.427004">
+				<ele>414.9</ele>
+				<time>2018-08-03T09:49:02</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=5,pressure=971.235,presureAltitude=355.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.664881" lon="9.427278">
+				<ele>414.9</ele>
+				<time>2018-08-03T09:49:09</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=6,pressure=971.235,presureAltitude=355.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.664801" lon="9.427562">
+				<ele>414.9</ele>
+				<time>2018-08-03T09:49:17</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=8,pressure=971.235,presureAltitude=355.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.664726" lon="9.427804">
+				<ele>417.8</ele>
+				<time>2018-08-03T09:49:23</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=6,pressure=970.895,presureAltitude=358.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.664624" lon="9.428057">
+				<ele>418.2</ele>
+				<time>2018-08-03T09:49:30</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=5,pressure=970.850,presureAltitude=359.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.664548" lon="9.428302">
+				<ele>418.2</ele>
+				<time>2018-08-03T09:49:37</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=6,pressure=970.850,presureAltitude=359.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.664466" lon="9.428618">
+				<ele>419.3</ele>
+				<time>2018-08-03T09:49:45</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=6,pressure=970.720,presureAltitude=360.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.664383" lon="9.428960">
+				<ele>419.3</ele>
+				<time>2018-08-03T09:49:53</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=5,pressure=970.720,presureAltitude=360.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.664308" lon="9.429331">
+				<ele>419.3</ele>
+				<time>2018-08-03T09:50:01</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=5,pressure=970.720,presureAltitude=360.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.664215" lon="9.429706">
+				<ele>420.0</ele>
+				<time>2018-08-03T09:50:09</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=8,pressure=970.640,presureAltitude=360.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.664120" lon="9.430060">
+				<ele>420.2</ele>
+				<time>2018-08-03T09:50:17</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=8,pressure=970.620,presureAltitude=361.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.664010" lon="9.430466">
+				<ele>420.1</ele>
+				<time>2018-08-03T09:50:25</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=9,pressure=970.630,presureAltitude=361.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.663896" lon="9.430847">
+				<ele>419.6</ele>
+				<time>2018-08-03T09:50:33</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=9,pressure=970.685,presureAltitude=360.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.663737" lon="9.431251">
+				<ele>419.2</ele>
+				<time>2018-08-03T09:50:41</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=11,pressure=970.735,presureAltitude=360.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.663584" lon="9.431695">
+				<ele>419.0</ele>
+				<time>2018-08-03T09:50:49</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=20,pressure=970.755,presureAltitude=360.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.663433" lon="9.431915">
+				<ele>418.8</ele>
+				<time>2018-08-03T09:50:53</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=23,pressure=970.775,presureAltitude=359.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.663290" lon="9.432110">
+				<ele>418.6</ele>
+				<time>2018-08-03T09:50:57</time>
+				<cmt>wgs84altitude=471.0,nmeaAltitude=424.3,accuracy=11,pressure=970.800,presureAltitude=359.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.663012" lon="9.432394">
+				<ele>418.4</ele>
+				<time>2018-08-03T09:51:05</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=15,pressure=970.830,presureAltitude=359.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.662859" lon="9.432549">
+				<ele>418.2</ele>
+				<time>2018-08-03T09:51:09</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=8,pressure=970.850,presureAltitude=359.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.662680" lon="9.432732">
+				<ele>418.0</ele>
+				<time>2018-08-03T09:51:13</time>
+				<cmt>wgs84altitude=466.0,nmeaAltitude=419.3,accuracy=11,pressure=970.875,presureAltitude=358.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.662521" lon="9.432889">
+				<ele>417.7</ele>
+				<time>2018-08-03T09:51:17</time>
+				<cmt>wgs84altitude=466.0,nmeaAltitude=419.3,accuracy=12,pressure=970.905,presureAltitude=358.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.661069" lon="9.434226">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:51:49</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=20,pressure=971.035,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.660812" lon="9.434605">
+				<ele>416.6</ele>
+				<time>2018-08-03T09:51:55</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=12,pressure=971.035,presureAltitude=357.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.660628" lon="9.434782">
+				<ele>414.5</ele>
+				<time>2018-08-03T09:51:59</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=12,pressure=971.280,presureAltitude=355.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.660488" lon="9.434980">
+				<ele>414.5</ele>
+				<time>2018-08-03T09:52:04</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=8,pressure=971.280,presureAltitude=355.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.660342" lon="9.435183">
+				<ele>414.5</ele>
+				<time>2018-08-03T09:52:07</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=8,pressure=971.280,presureAltitude=355.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.660202" lon="9.435481">
+				<ele>414.5</ele>
+				<time>2018-08-03T09:52:11</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=23,pressure=971.280,presureAltitude=355.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.659943" lon="9.435623">
+				<ele>414.5</ele>
+				<time>2018-08-03T09:52:15</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=17,pressure=971.280,presureAltitude=355.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.659829" lon="9.435989">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:52:23</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=12,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.659722" lon="9.436246">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:52:27</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=9,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.659538" lon="9.436719">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:52:35</time>
+				<cmt>wgs84altitude=466.0,nmeaAltitude=419.3,accuracy=12,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.659367" lon="9.437149">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:52:43</time>
+				<cmt>wgs84altitude=467.0,nmeaAltitude=420.3,accuracy=21,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.659484" lon="9.437493">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:52:47</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=14,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.659402" lon="9.437783">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:52:51</time>
+				<cmt>wgs84altitude=465.0,nmeaAltitude=418.3,accuracy=17,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.659262" lon="9.438150">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:53:00</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=23,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.659024" lon="9.438538">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:53:07</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=17,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.658972" lon="9.438991">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:53:16</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=14,pressure=971.610,presureAltitude=352.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.658913" lon="9.439450">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:53:23</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=11,pressure=971.620,presureAltitude=352.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.658925" lon="9.439729">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:53:27</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=6,pressure=971.620,presureAltitude=352.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.658904" lon="9.440182">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:53:35</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=17,pressure=971.620,presureAltitude=352.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.658852" lon="9.440546">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:53:43</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=12,pressure=971.620,presureAltitude=352.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.658860" lon="9.440926">
+				<ele>411.6</ele>
+				<time>2018-08-03T09:53:51</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=8,pressure=971.620,presureAltitude=352.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.658903" lon="9.441363">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:53:59</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=12,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658901" lon="9.441892">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:07</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=14,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658827" lon="9.442188">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:12</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=6,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658818" lon="9.442512">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:15</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=5,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658817" lon="9.442826">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:19</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=5,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658811" lon="9.443108">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:23</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=5,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658803" lon="9.443383">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:27</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=5,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658809" lon="9.443896">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:35</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=5,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658766" lon="9.444311">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:43</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=5,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658739" lon="9.444652">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:51</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=5,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658767" lon="9.444960">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:54:59</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=6,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658725" lon="9.445284">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:55:07</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=9,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658686" lon="9.445587">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:55:15</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=9,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658673" lon="9.445873">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:55:23</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=12,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658597" lon="9.446261">
+				<ele>412.7</ele>
+				<time>2018-08-03T09:55:35</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=12,pressure=971.490,presureAltitude=353.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.658542" lon="9.446623">
+				<ele>412.8</ele>
+				<time>2018-08-03T09:56:03</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=11,pressure=971.480,presureAltitude=353.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.658471" lon="9.446944">
+				<ele>412.4</ele>
+				<time>2018-08-03T09:58:17</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=12,pressure=971.520,presureAltitude=353.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.658436" lon="9.447207">
+				<ele>412.3</ele>
+				<time>2018-08-03T09:58:25</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=12,pressure=971.530,presureAltitude=353.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.658247" lon="9.447097">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:58:33</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=14,pressure=971.560,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658242" lon="9.447445">
+				<ele>411.9</ele>
+				<time>2018-08-03T09:58:41</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=14,pressure=971.585,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.658196" lon="9.447840">
+				<ele>411.8</ele>
+				<time>2018-08-03T09:58:49</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=14,pressure=971.590,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.658117" lon="9.448155">
+				<ele>412.0</ele>
+				<time>2018-08-03T09:58:57</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=8,pressure=971.565,presureAltitude=353.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.658043" lon="9.448513">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:59:05</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=11,pressure=971.555,presureAltitude=353.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.657960" lon="9.448900">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:59:13</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=11,pressure=971.555,presureAltitude=353.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.657866" lon="9.449196">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:59:21</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=14,pressure=971.555,presureAltitude=353.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.657790" lon="9.449611">
+				<ele>412.1</ele>
+				<time>2018-08-03T09:59:29</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=14,pressure=971.555,presureAltitude=353.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.657683" lon="9.449994">
+				<ele>411.9</ele>
+				<time>2018-08-03T09:59:37</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=17,pressure=971.585,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.657573" lon="9.450445">
+				<ele>411.9</ele>
+				<time>2018-08-03T09:59:45</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=9,pressure=971.585,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.657403" lon="9.450871">
+				<ele>411.9</ele>
+				<time>2018-08-03T09:59:53</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=12,pressure=971.585,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.657324" lon="9.451120">
+				<ele>411.9</ele>
+				<time>2018-08-03T09:59:58</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=6,pressure=971.585,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.657197" lon="9.451545">
+				<ele>411.0</ele>
+				<time>2018-08-03T10:00:05</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=9,pressure=971.690,presureAltitude=351.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.657063" lon="9.451912">
+				<ele>411.0</ele>
+				<time>2018-08-03T10:00:13</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=18,pressure=971.690,presureAltitude=351.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.656945" lon="9.452330">
+				<ele>411.0</ele>
+				<time>2018-08-03T10:00:22</time>
+				<cmt>wgs84altitude=469.0,nmeaAltitude=422.3,accuracy=15,pressure=971.690,presureAltitude=351.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.656852" lon="9.452826">
+				<ele>411.0</ele>
+				<time>2018-08-03T10:00:29</time>
+				<cmt>wgs84altitude=471.0,nmeaAltitude=424.3,accuracy=11,pressure=971.690,presureAltitude=351.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.656654" lon="9.453221">
+				<ele>411.1</ele>
+				<time>2018-08-03T10:00:38</time>
+				<cmt>wgs84altitude=472.0,nmeaAltitude=425.3,accuracy=8,pressure=971.675,presureAltitude=352.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.656475" lon="9.453577">
+				<ele>411.1</ele>
+				<time>2018-08-03T10:00:45</time>
+				<cmt>wgs84altitude=470.0,nmeaAltitude=423.3,accuracy=15,pressure=971.675,presureAltitude=352.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.656287" lon="9.453864">
+				<ele>411.2</ele>
+				<time>2018-08-03T10:00:53</time>
+				<cmt>wgs84altitude=470.0,nmeaAltitude=423.3,accuracy=20,pressure=971.665,presureAltitude=352.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.656173" lon="9.454111">
+				<ele>411.2</ele>
+				<time>2018-08-03T10:00:57</time>
+				<cmt>wgs84altitude=468.0,nmeaAltitude=421.3,accuracy=15,pressure=971.665,presureAltitude=352.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.656051" lon="9.454347">
+				<ele>411.2</ele>
+				<time>2018-08-03T10:01:01</time>
+				<cmt>wgs84altitude=468.0,nmeaAltitude=421.3,accuracy=21,pressure=971.665,presureAltitude=352.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.655920" lon="9.454611">
+				<ele>410.2</ele>
+				<time>2018-08-03T10:01:05</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=9,pressure=971.775,presureAltitude=351.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.655800" lon="9.454818">
+				<ele>410.2</ele>
+				<time>2018-08-03T10:01:09</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=14,pressure=971.775,presureAltitude=351.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.655707" lon="9.455082">
+				<ele>410.2</ele>
+				<time>2018-08-03T10:01:13</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=23,pressure=971.775,presureAltitude=351.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.655592" lon="9.455318">
+				<ele>410.2</ele>
+				<time>2018-08-03T10:01:17</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=8,pressure=971.775,presureAltitude=351.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.655477" lon="9.455533">
+				<ele>410.2</ele>
+				<time>2018-08-03T10:01:36</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=5,pressure=971.775,presureAltitude=351.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.654672" lon="9.457132">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:01:52</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=9,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.654576" lon="9.457411">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:01:59</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=5,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.654419" lon="9.457725">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:02:11</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=11,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.654244" lon="9.457963">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:02:19</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=15,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.654106" lon="9.458292">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:02:27</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=14,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.653942" lon="9.458607">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:02:35</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=6,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.653769" lon="9.458928">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:02:43</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=8,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.653569" lon="9.459287">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:02:51</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=8,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.653398" lon="9.459604">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:02:59</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=18,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.653240" lon="9.459919">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:03:07</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=14,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.653135" lon="9.460288">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:03:16</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=12,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.653111" lon="9.460627">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:03:23</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=14,pressure=972.050,presureAltitude=348.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.652903" lon="9.460944">
+				<ele>410.6</ele>
+				<time>2018-08-03T10:03:32</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=6,pressure=971.735,presureAltitude=351.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.652787" lon="9.461168">
+				<ele>410.6</ele>
+				<time>2018-08-03T10:03:39</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=11,pressure=971.735,presureAltitude=351.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.652678" lon="9.461525">
+				<ele>410.6</ele>
+				<time>2018-08-03T10:03:47</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=11,pressure=971.735,presureAltitude=351.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.652563" lon="9.461843">
+				<ele>410.6</ele>
+				<time>2018-08-03T10:03:55</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=9,pressure=971.735,presureAltitude=351.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.652433" lon="9.462147">
+				<ele>412.2</ele>
+				<time>2018-08-03T10:04:11</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=20,pressure=971.540,presureAltitude=353.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.652133" lon="9.462243">
+				<ele>411.8</ele>
+				<time>2018-08-03T10:04:15</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=9,pressure=971.590,presureAltitude=352.8</cmt>
+			</trkpt>
+			<trkpt  lat="47.651939" lon="9.462371">
+				<ele>411.3</ele>
+				<time>2018-08-03T10:04:19</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=8,pressure=971.645,presureAltitude=352.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.651712" lon="9.462455">
+				<ele>410.7</ele>
+				<time>2018-08-03T10:04:23</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=6,pressure=971.725,presureAltitude=351.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.651530" lon="9.462661">
+				<ele>409.7</ele>
+				<time>2018-08-03T10:04:27</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=11,pressure=971.835,presureAltitude=350.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.651429" lon="9.462920">
+				<ele>409.1</ele>
+				<time>2018-08-03T10:04:31</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=18,pressure=971.905,presureAltitude=350.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.651320" lon="9.463142">
+				<ele>408.6</ele>
+				<time>2018-08-03T10:04:35</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=15,pressure=971.960,presureAltitude=349.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.651330" lon="9.463538">
+				<ele>408.3</ele>
+				<time>2018-08-03T10:04:43</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=8,pressure=972.000,presureAltitude=349.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.651339" lon="9.463847">
+				<ele>408.1</ele>
+				<time>2018-08-03T10:04:51</time>
+				<cmt>wgs84altitude=458.0,nmeaAltitude=411.3,accuracy=9,pressure=972.020,presureAltitude=349.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.651072" lon="9.464020">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:05:03</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=9,pressure=972.040,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.650776" lon="9.464160">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:05:11</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=23,pressure=972.040,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.650538" lon="9.464265">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:05:20</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=11,pressure=972.040,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.650590" lon="9.464624">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:05:31</time>
+				<cmt>wgs84altitude=447.0,nmeaAltitude=400.3,accuracy=18,pressure=972.040,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.650683" lon="9.464989">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:05:39</time>
+				<cmt>wgs84altitude=445.0,nmeaAltitude=398.3,accuracy=11,pressure=972.040,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.650708" lon="9.465422">
+				<ele>407.9</ele>
+				<time>2018-08-03T10:05:47</time>
+				<cmt>wgs84altitude=450.0,nmeaAltitude=403.3,accuracy=5,pressure=972.040,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.650744" lon="9.465772">
+				<ele>408.5</ele>
+				<time>2018-08-03T10:17:15</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=6,pressure=971.980,presureAltitude=349.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.650831" lon="9.466085">
+				<ele>408.2</ele>
+				<time>2018-08-03T10:17:23</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=5,pressure=972.010,presureAltitude=349.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.650915" lon="9.466415">
+				<ele>408.0</ele>
+				<time>2018-08-03T10:17:31</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=5,pressure=972.035,presureAltitude=348.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.651057" lon="9.466784">
+				<ele>407.6</ele>
+				<time>2018-08-03T10:17:39</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=6,pressure=972.085,presureAltitude=348.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.651176" lon="9.467161">
+				<ele>407.6</ele>
+				<time>2018-08-03T10:17:47</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=5,pressure=972.085,presureAltitude=348.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.651337" lon="9.467542">
+				<ele>406.8</ele>
+				<time>2018-08-03T10:17:55</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=9,pressure=972.175,presureAltitude=347.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.651489" lon="9.467957">
+				<ele>406.8</ele>
+				<time>2018-08-03T10:18:04</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=18,pressure=972.175,presureAltitude=347.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.651607" lon="9.468374">
+				<ele>406.8</ele>
+				<time>2018-08-03T10:18:11</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=5,pressure=972.175,presureAltitude=347.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.651748" lon="9.468771">
+				<ele>406.8</ele>
+				<time>2018-08-03T10:18:19</time>
+				<cmt>wgs84altitude=451.0,nmeaAltitude=404.3,accuracy=8,pressure=972.175,presureAltitude=347.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.651861" lon="9.469129">
+				<ele>406.8</ele>
+				<time>2018-08-03T10:18:28</time>
+				<cmt>wgs84altitude=453.0,nmeaAltitude=406.3,accuracy=11,pressure=972.175,presureAltitude=347.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.651930" lon="9.469431">
+				<ele>405.3</ele>
+				<time>2018-08-03T10:18:35</time>
+				<cmt>wgs84altitude=457.0,nmeaAltitude=410.3,accuracy=6,pressure=972.345,presureAltitude=346.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.652005" lon="9.469836">
+				<ele>405.3</ele>
+				<time>2018-08-03T10:18:47</time>
+				<cmt>wgs84altitude=456.0,nmeaAltitude=409.3,accuracy=14,pressure=972.345,presureAltitude=346.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.652172" lon="9.470004">
+				<ele>405.3</ele>
+				<time>2018-08-03T10:18:55</time>
+				<cmt>wgs84altitude=460.0,nmeaAltitude=413.3,accuracy=18,pressure=972.345,presureAltitude=346.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.652127" lon="9.471477">
+				<ele>405.3</ele>
+				<time>2018-08-03T10:19:32</time>
+				<cmt>wgs84altitude=463.0,nmeaAltitude=416.3,accuracy=14,pressure=972.345,presureAltitude=346.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.652092" lon="9.471848">
+				<ele>406.5</ele>
+				<time>2018-08-03T10:19:39</time>
+				<cmt>wgs84altitude=464.0,nmeaAltitude=417.3,accuracy=23,pressure=972.210,presureAltitude=347.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.652132" lon="9.472197">
+				<ele>406.5</ele>
+				<time>2018-08-03T10:19:47</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=15,pressure=972.210,presureAltitude=347.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.652048" lon="9.472475">
+				<ele>406.5</ele>
+				<time>2018-08-03T10:19:55</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=15,pressure=972.210,presureAltitude=347.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.652252" lon="9.472847">
+				<ele>406.5</ele>
+				<time>2018-08-03T10:20:12</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=11,pressure=972.210,presureAltitude=347.4</cmt>
+			</trkpt>
+			<trkpt  lat="47.652047" lon="9.473072">
+				<ele>407.0</ele>
+				<time>2018-08-03T10:26:12</time>
+				<cmt>wgs84altitude=459.0,nmeaAltitude=412.3,accuracy=21,pressure=972.150,presureAltitude=347.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.652029" lon="9.473431">
+				<ele>406.9</ele>
+				<time>2018-08-03T10:26:22</time>
+				<cmt>wgs84altitude=455.0,nmeaAltitude=408.3,accuracy=5,pressure=972.160,presureAltitude=347.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.652003" lon="9.473738">
+				<ele>406.9</ele>
+				<time>2018-08-03T10:26:30</time>
+				<cmt>wgs84altitude=454.0,nmeaAltitude=407.3,accuracy=6,pressure=972.160,presureAltitude=347.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.652102" lon="9.475316">
+				<ele>406.7</ele>
+				<time>2018-08-03T10:27:06</time>
+				<cmt>wgs84altitude=480.0,nmeaAltitude=433.3,accuracy=14,pressure=972.180,presureAltitude=347.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.652041" lon="9.475691">
+				<ele>406.5</ele>
+				<time>2018-08-03T10:27:16</time>
+				<cmt>wgs84altitude=468.0,nmeaAltitude=421.3,accuracy=6,pressure=972.205,presureAltitude=347.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.651976" lon="9.476013">
+				<ele>406.4</ele>
+				<time>2018-08-03T10:27:24</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=9,pressure=972.220,presureAltitude=347.3</cmt>
+			</trkpt>
+			<trkpt  lat="47.651930" lon="9.476353">
+				<ele>406.2</ele>
+				<time>2018-08-03T10:27:32</time>
+				<cmt>wgs84altitude=462.0,nmeaAltitude=415.3,accuracy=14,pressure=972.245,presureAltitude=347.1</cmt>
+			</trkpt>
+			<trkpt  lat="47.651879" lon="9.476625">
+				<ele>406.0</ele>
+				<time>2018-08-03T10:27:40</time>
+				<cmt>wgs84altitude=461.0,nmeaAltitude=414.3,accuracy=18,pressure=972.260,presureAltitude=347.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.651820" lon="9.476974">
+				<ele>406.0</ele>
+				<time>2018-08-03T10:27:48</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=6,pressure=972.260,presureAltitude=347.0</cmt>
+			</trkpt>
+			<trkpt  lat="47.651687" lon="9.477155">
+				<ele>406.0</ele>
+				<time>2018-08-03T10:27:56</time>
+				<cmt>wgs84altitude=452.0,nmeaAltitude=405.3,accuracy=6,pressure=972.265,presureAltitude=346.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.651405" lon="9.477385">
+				<ele>405.7</ele>
+				<time>2018-08-03T10:28:04</time>
+				<cmt>wgs84altitude=449.0,nmeaAltitude=402.3,accuracy=9,pressure=972.305,presureAltitude=346.6</cmt>
+			</trkpt>
+			<trkpt  lat="47.651105" lon="9.477662">
+				<ele>405.0</ele>
+				<time>2018-08-03T10:28:12</time>
+				<cmt>wgs84altitude=441.0,nmeaAltitude=394.3,accuracy=11,pressure=972.385,presureAltitude=345.9</cmt>
+			</trkpt>
+			<trkpt  lat="47.650807" lon="9.477914">
+				<ele>404.3</ele>
+				<time>2018-08-03T10:28:20</time>
+				<cmt>wgs84altitude=441.0,nmeaAltitude=394.3,accuracy=18,pressure=972.465,presureAltitude=345.2</cmt>
+			</trkpt>
+			<trkpt  lat="47.650527" lon="9.478110">
+				<ele>403.8</ele>
+				<time>2018-08-03T10:28:28</time>
+				<cmt>wgs84altitude=448.0,nmeaAltitude=401.3,accuracy=9,pressure=972.525,presureAltitude=344.7</cmt>
+			</trkpt>
+			<trkpt  lat="47.650265" lon="9.478385">
+				<ele>403.5</ele>
+				<time>2018-08-03T10:28:37</time>
+				<cmt>wgs84altitude=446.0,nmeaAltitude=399.3,accuracy=11,pressure=972.555,presureAltitude=344.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.650096" lon="9.478638">
+				<ele>403.5</ele>
+				<time>2018-08-03T10:28:44</time>
+				<cmt>wgs84altitude=444.0,nmeaAltitude=397.3,accuracy=11,pressure=972.555,presureAltitude=344.5</cmt>
+			</trkpt>
+			<trkpt  lat="47.649917" lon="9.478816">
+				<ele>403.5</ele>
+				<time>2018-08-03T10:28:56</time>
+				<cmt>wgs84altitude=437.0,nmeaAltitude=390.3,accuracy=11,pressure=972.555,presureAltitude=344.5</cmt>
+			</trkpt>
+		</trkseg>
+		<trkseg>
+			<desc>start=03.08.2018_11:00:13 duration=0:00:43 totalLength=0.00 gain=0 loss=0 minEle=-2147483648 maxEle=-2147483648 gpsPoints=0</desc>
+		</trkseg>
+	</trk>
+</gpx>

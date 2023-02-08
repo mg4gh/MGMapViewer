@@ -1,5 +1,8 @@
 package mg.mgmap.test;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.AssetManager;
@@ -9,6 +12,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.view.View;
 
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
@@ -19,9 +23,13 @@ import org.junit.rules.TestName;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.test.util.ActivitySupervision;
 import mg.mgmap.test.util.LogMatcher;
 import mg.mgmap.R;
@@ -29,6 +37,8 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.TestView;
 import mg.mgmap.test.util.Mouse;
 import mg.mgmap.test.util.PreferenceUtil;
+import mg.mgmap.test.util.TrackStatisticMatcher;
+import mg.mgmap.test.util.ViewCallbackAction;
 
 @SuppressWarnings({"UnusedReturnValue", "unused", "SameParameterValue"})
 public class BaseTestCase {
@@ -118,8 +128,32 @@ public class BaseTestCase {
         return activity;
     }
 
+    protected Point animateToPosAndClick(double latitude, double longitude){
+        Point pos = animateTo(getPoint4PointModel(new PointModelImpl(latitude,longitude)),1000);
+        timer.postDelayed(()->new Thread(()->Mouse.click(currentPos)).start(), 200);
+        animateClick(pos);
+        return pos;
+    }
+
+    protected void swipePos(double latitudeStart, double longitudeStart, double latitudeEnd, double longitudeEnd){
+        Point start = getPoint4PointModel(new PointModelImpl(latitudeStart,longitudeStart));
+        animateTo(start);
+        SystemClock.sleep(300);
+        Point end = getPoint4PointModel(new PointModelImpl(latitudeEnd,longitudeEnd));
+        Point p = new Point();
+        Mouse.swipe(start.x, start.y, end.x, end.y, 1000, 0, (x,y)->{p.x=x;p.y=y;setCursorPos(p);});
+    }
+
+
     protected Point animateToViewAndClick(int viewId){
         Point pos = animateTo(getClickPos(viewId),1000);
+        timer.postDelayed(()->new Thread(()->Mouse.click(currentPos)).start(), 200);
+//        timer.postDelayed(()-> new Thread(() -> onView(withId(viewId)).check(matches(isDisplayed())).perform(ViewActions.click())).start() , 200);
+        animateClick(pos);
+        return pos;
+    }
+    protected Point animateToViewAndClick(View view){
+        Point pos = animateTo(getClickPos(view),1000);
         timer.postDelayed(()->new Thread(()->Mouse.click(currentPos)).start(), 200);
 //        timer.postDelayed(()-> new Thread(() -> onView(withId(viewId)).check(matches(isDisplayed())).perform(ViewActions.click())).start() , 200);
         animateClick(pos);
@@ -135,8 +169,18 @@ public class BaseTestCase {
         return pos;
     }
 
+    protected Point animateToStatAndClick(String nameMatch){
+        AtomicReference<View> viewRef = new AtomicReference<>();
+        onView(withId(R.id.trackStatisticEntries))
+                .perform(RecyclerViewActions.actionOnItem(TrackStatisticMatcher.matchTrack(nameMatch), new ViewCallbackAction(viewRef::set)));
+        return animateToViewAndClick(viewRef.get());
+    }
+
     protected Point getClickPos(int viewId){
         View v = waitForView(View.class, viewId);
+        return getClickPos(v);
+    }
+    protected Point getClickPos(View v){
         int[] loc = new int[2];
         v.getLocationOnScreen(loc);
         return new Point(loc[0]+v.getWidth()/2,loc[1]+v.getHeight()/2);
@@ -232,5 +276,11 @@ public class BaseTestCase {
         testView.setVisibility(clickVisibility? View.VISIBLE:View.INVISIBLE, testView.getClick());
     }
 
+    public Point getPoint4PointModel(PointModel pm) {
+        return activitySupervision.getActivity(MGMapActivity.class).getMapViewUtility().getPoint4PointModel(pm);
+    }
+    public PointModel getPointModel4Point(Point p) {
+        return activitySupervision.getActivity(MGMapActivity.class).getMapViewUtility().getPointModel4Point(p);
+    }
 
 }

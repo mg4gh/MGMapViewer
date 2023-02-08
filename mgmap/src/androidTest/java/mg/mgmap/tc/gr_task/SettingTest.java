@@ -1,19 +1,16 @@
-package mg.mgmap.tc.gr_multi;
+package mg.mgmap.tc.gr_task;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.hamcrest.core.AllOf.allOf;
-
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.espresso.action.ViewActions;
-import static androidx.test.espresso.action.ViewActions.*;
 
 import android.os.SystemClock;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -37,12 +34,12 @@ import mg.mgmap.test.util.PreferenceUtil;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
-public class Mg003Test extends BaseTestCase {
+public class SettingTest extends BaseTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
 
-    public Mg003Test(){
+    public SettingTest(){
         mgLog.i("create");
         mgMapApplication.getSetup().wantSetup("testgroup002", androidTestAssets);
     }

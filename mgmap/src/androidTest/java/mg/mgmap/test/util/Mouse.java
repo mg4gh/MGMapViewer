@@ -9,6 +9,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 public class Mouse {
 
+    public interface SwipeCB{
+        void swipePos(int x, int y);
+    }
+
     public static void click(Point pos){
         long now = SystemClock.uptimeMillis();
         Instrumentation inst = InstrumentationRegistry.getInstrumentation();
@@ -19,7 +23,11 @@ public class Mouse {
         inst.sendPointerSync(event);
     }
 
-    static void swipe(float startX, float startY, float endX, float endY,  long delay) {
+    public static void swipe(float startX, float startY, float endX, float endY,  long delay) {
+        swipe(startX, startY, endX, endY, delay, 2000, null);
+    }
+
+    public static void swipe(float startX, float startY, float endX, float endY,  long delay, long finalDelay, SwipeCB cb) {
         int steps = (int)(delay/20);
         long downTime = SystemClock.uptimeMillis();
         Instrumentation inst = InstrumentationRegistry.getInstrumentation();
@@ -30,10 +38,11 @@ public class Mouse {
         for (int i=0; i<steps; i++){
             event = MotionEvent.obtain(downTime, downTime+(i*delay/steps), MotionEvent.ACTION_MOVE, startX + ((endX - startX)*i)/steps, startY + ((endY - startY)*i)/steps, 0);
             inst.sendPointerSync(event);
+            if (cb != null) cb.swipePos((int)event.getX(), (int)event.getY());
         }
         event = MotionEvent.obtain(downTime, downTime+delay, MotionEvent.ACTION_UP, endX, endY, 0);
         inst.sendPointerSync(event);
-        SystemClock.sleep(2000); //The wait is important to scroll
+        SystemClock.sleep(finalDelay); //The wait is important to scroll
     }
 
     public static void swipeUp(){

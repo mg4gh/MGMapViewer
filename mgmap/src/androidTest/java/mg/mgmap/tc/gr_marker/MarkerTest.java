@@ -1,6 +1,7 @@
-package mg.mgmap.tc.gr_multi;
+package mg.mgmap.tc.gr_marker;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.SystemClock;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -20,16 +21,17 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
-public class Mg002Test extends BaseTestCase {
+public class MarkerTest extends BaseTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public Mg002Test(){
+    public MarkerTest(){
         mgLog.i("create");
         MGMapApplication mgMapApplication = (MGMapApplication)InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         Context ctx = InstrumentationRegistry.getInstrumentation().getContext();
@@ -39,38 +41,44 @@ public class Mg002Test extends BaseTestCase {
     @Rule
     public ActivityScenarioRule<MGMapActivity> activityRule =new ActivityScenarioRule<>(MGMapActivity.class);
 
-    @Test(timeout = 20000)
-    public void _01_zoomIn() {
+    @Test(timeout = 50000)
+    public void _01_marker() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
         mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
+            MapPosition mp = new MapPosition(new LatLong(54.422888,13.448283), (byte) 14);
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
         });
+        setCursorToCenterPos();
         SystemClock.sleep(2000);
 
-        setCursorToCenterPos();
-        addRegex(".*onClick mi_zoom_in.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_zoom_in);
+        addRegex(".*onClick mi_marker_edit.*");
+        animateToViewAndClick(R.id.menu_marker);
+        animateToViewAndClick(R.id.mi_marker_edit);
+
+        animateToPosAndClick(54.420327,13.437579);
+        animateToPosAndClick(54.415861,13.447284);
+        animateToPosAndClick(54.418657,13.456617);
+        animateToPosAndClick(54.424050,13.454930);
+        animateToPosAndClick(54.421417,13.444976);
+        animateToPosAndClick(54.423379,13.433771);
+
+        addRegex(".*Test Statistic: .* totalLength=4315.88 gain=70.9 loss=79.8 minEle=11.1 maxEle=92.1 numPoints=129");
+        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic());
+
+        SystemClock.sleep(5000);
+        swipePos(54.4240,13.454900, 54.421981, 13.450780);
+        SystemClock.sleep(500);
+        addRegex(".*Test Statistic: .* totalLength=3959.18 gain=70.9 loss=79.8 minEle=11.1 maxEle=92.1 numPoints=122");
+        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic());
+
+        SystemClock.sleep(5000);
         animateTo(getCenterPos());
-        SystemClock.sleep(2000);
+        SystemClock.sleep(5000);
         mgLog.i("finished");
     }
 
 
 
-    @Test(timeout = 20000)
-    public void _02_zoomOut() {
-        mgLog.i("started");
-        waitForActivity(MGMapActivity.class);
-        setCursorToCenterPos();
-        addRegex(".*onClick mi_zoom_out.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_zoom_out);
-        animateTo(getCenterPos());
-        SystemClock.sleep(2000);
-        mgLog.i("finished");
-    }
 
 }
