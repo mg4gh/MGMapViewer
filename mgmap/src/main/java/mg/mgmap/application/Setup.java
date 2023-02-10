@@ -23,19 +23,21 @@ public class Setup {
     private final MGMapApplication application;
 
 
-    Setup(MGMapApplication application){
+    Setup(MGMapApplication application) {
         this.application = application;
     }
 
     private String current = null;
 
     public synchronized void wantSetup(String wanted, AssetManager assetManager)  {
+        wantSetup(wanted, assetManager, false);
+    }
+    public synchronized void wantSetup(String wanted, AssetManager assetManager, boolean force)  {
         assert (wanted != null);
-        if (wanted.equals(current)) return;
-
+        if (wanted.equals(current) && !force) return;
 
         try {
-
+            application.cleanup();
             mgLog.d("Setup start: wanted="+wanted);
             String sAppDir = APP_DIR_DEFAULT;
             String preferencesName = application.getPackageName() + "_preferences";

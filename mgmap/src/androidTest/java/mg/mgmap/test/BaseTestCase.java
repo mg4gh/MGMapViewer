@@ -130,7 +130,6 @@ public class BaseTestCase {
 
     protected Point animateToPosAndClick(double latitude, double longitude){
         Point pos = animateTo(getPoint4PointModel(new PointModelImpl(latitude,longitude)),1000);
-        timer.postDelayed(()->new Thread(()->Mouse.click(currentPos)).start(), 200);
         animateClick(pos);
         return pos;
     }
@@ -153,16 +152,13 @@ public class BaseTestCase {
 
 
     protected Point animateToViewAndClick(int viewId){
+        mgLog.i("to "+currentActivity.getResources().getResourceName(viewId));
         Point pos = animateTo(getClickPos(viewId),1000);
-        timer.postDelayed(()->new Thread(()->Mouse.click(currentPos)).start(), 200);
-//        timer.postDelayed(()-> new Thread(() -> onView(withId(viewId)).check(matches(isDisplayed())).perform(ViewActions.click())).start() , 200);
         animateClick(pos);
         return pos;
     }
     protected Point animateToViewAndClick(View view){
         Point pos = animateTo(getClickPos(view),1000);
-        timer.postDelayed(()->new Thread(()->Mouse.click(currentPos)).start(), 200);
-//        timer.postDelayed(()-> new Thread(() -> onView(withId(viewId)).check(matches(isDisplayed())).perform(ViewActions.click())).start() , 200);
         animateClick(pos);
         return pos;
     }
@@ -171,7 +167,6 @@ public class BaseTestCase {
         Point pos = PreferenceUtil.getPreferenceCenter(waitForActivity(SettingsActivity.class),keyId);
         assert (pos != null);
         animateTo(pos, 1000);
-        timer.postDelayed(()->new Thread(()->Mouse.click(currentPos)).start(), 200);
         animateClick(pos);
         return pos;
     }
@@ -262,6 +257,7 @@ public class BaseTestCase {
     protected Point animateClick(Point pos){
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         mgLog.i("pos "+pos);
+        timer.postDelayed(()->new Thread(()->Mouse.click(pos)).start(), 200);
         testView.setClickPosition(pos);
         setClickVisibility(true);
         testView.getActivity().runOnUiThread(() -> {

@@ -63,4 +63,16 @@
     <item type="id" name="mi_zoom_out"  />
     <item type="id" name="mi_home"  />
 
+
+    <item type="id" name="help1_close"  />
+    <item type="id" name="help2_text0"  />
+    <item type="id" name="help2_text1"  />
+    <item type="id" name="help2_text2"  />
+    <item type="id" name="help2_text3"  />
+    <item type="id" name="help2_text4"  />
+    <item type="id" name="help2_text5"  />
+    <item type="id" name="help2_text6"  />
+    <item type="id" name="help3_empty"  />
+
+
 </resources>

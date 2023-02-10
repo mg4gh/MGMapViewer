@@ -17,6 +17,7 @@ package mg.mgmap.application.util;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -417,7 +418,7 @@ public class PersistenceManager {
         }
     }
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void deleteRecursivly(File file) {
+    public static void deleteRecursivly(@NonNull File file) {
         if (file.exists()){
             if (file.isDirectory()){
                 File[] subFiles = file.listFiles();

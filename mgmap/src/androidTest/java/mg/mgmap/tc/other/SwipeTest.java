@@ -1,4 +1,4 @@
-package mg.mgmap.tc.gr_multi;
+package mg.mgmap.tc.other;
 
 import android.os.SystemClock;
 

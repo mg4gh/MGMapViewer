@@ -474,7 +474,6 @@ public class ControlView extends RelativeLayout {
                 tv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
             }
         });
-        tv.setName("help1");
         return tv;
     }
 

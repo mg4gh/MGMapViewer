@@ -186,13 +186,15 @@ public class ControlComposer {
     public void composeHelpControls(MGMapActivity activity, ControlView coView) {
         LinearLayout help = activity.findViewById(R.id.help);
         LinearLayout help1 = coView.createHelpPanel(help, Gravity.CENTER, 0);
-        activity.getFS(FSControl.class).initHelpControl(coView.createHelpText1(help1), "help1");
+
+        activity.getFS(FSControl.class).initHelpControl(coView.createHelpText1(help1), "help1").setId(R.id.help1_close);
         LinearLayout help2 = coView.createHelpPanel(help, Gravity.START, -90);
         for (int i = 0; i < 7; i++) {
-            activity.getFS(FSControl.class).initHelpControl(coView.createHelpText2(help2), "help2");
+            int id = activity.getResources().getIdentifier("help2_text"+i, "id", activity.getPackageName());
+            activity.getFS(FSControl.class).initHelpControl(coView.createHelpText2(help2), "help2").setId(id);
         }
         LinearLayout help3 = coView.createHelpPanel(help, Gravity.START, 0);
-        activity.getFS(FSControl.class).initHelpControl(coView.createHelpText3(help3), "help3");
+        activity.getFS(FSControl.class).initHelpControl(coView.createHelpText3(help3), "help3").setId(R.id.help3_empty);
         help.setVisibility(View.INVISIBLE);
     }
 }

@@ -49,8 +49,8 @@ public class InitTest extends BaseTestCase {
     @Rule
     public ActivityScenarioRule<MGMapActivity> activityRule =new ActivityScenarioRule<>(MGMapActivity.class);
 
-    @Test(timeout = 70000)
-    public void _01_zoomIn() {
+    @Test(timeout = 90000)
+    public void _01_initFromScratch() {
         mgLog.i("started");
         waitForActivity(MGMapActivity.class);
 

@@ -14,13 +14,13 @@
  */
 package mg.mgmap.activity.mgmap.features.control;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 
 import mg.mgmap.activity.height_profile.HeightProfileActivity;
 import mg.mgmap.activity.mgmap.MGMapActivity;
@@ -32,6 +32,7 @@ import mg.mgmap.activity.settings.DownloadPreferenceScreen;
 import mg.mgmap.activity.settings.FurtherPreferenceScreen;
 import mg.mgmap.activity.settings.MainPreferenceScreen;
 import mg.mgmap.activity.settings.SettingsActivity;
+import mg.mgmap.application.BaseConfig;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
@@ -61,7 +62,6 @@ public class FSControl extends FeatureService {
 
     ViewGroup qcsParent = null; // quick controls parent
     ViewGroup[] qcss = null; // quick controls groups (index 0 is menu control group and index 1..7 are seven sub action menus)
-    ArrayList<TextView> helpTexts = new ArrayList<>(); // TextView Instances, which are used to show the help Info
 
 
     Observer homeObserver = (e) -> {
@@ -91,7 +91,9 @@ public class FSControl extends FeatureService {
     };
     Observer exitObserver = (e) -> {
         getActivity().finishAndRemoveTask();
-        System.exit(0);
+        if (getApplication().baseConfig.getMode() == BaseConfig.Mode.NORMAL){
+            System.exit(0);
+        }
     };
     Observer themesObserver = (e) -> {
         MGMapActivity activity = getActivity();
@@ -137,7 +139,8 @@ public class FSControl extends FeatureService {
                     if (qcs.getChildAt(i) instanceof ExtendedTextView) {
                         try {
                             ExtendedTextView etv = (ExtendedTextView) qcs.getChildAt(i);
-                            TextView tv = helpTexts.get(i);
+                            @SuppressLint("DiscouragedApi") int id = activity.getResources().getIdentifier("help2_text"+i, "id", activity.getPackageName());
+                            TextView tv = getActivity().findViewById(id);
                             tv.setText(etv.getHelp());
                         } catch (Exception e) {
                             mgLog.e(e);
@@ -222,16 +225,14 @@ public class FSControl extends FeatureService {
         return etv;
     }
 
-    public void initHelpControl(TextView helpView, String info){
+    public TextView initHelpControl(TextView helpView, String info){
         if ("help1".equals(info)) {
             helpView.setOnClickListener(v -> {
-                mgLog.d("onClick help1");
+                mgLog.d("onClick "+getResources().getResourceName(helpView.getId()).replaceFirst(".*/",""));
                 prefHelp.setValue(false);
-                setupTTHideQCS();
             });
-        } else if ("help2".equals(info)) {
-            helpTexts.add(helpView);
         }
+        return helpView;
     }
 
     @Override
