@@ -15,9 +15,9 @@
 package mg.mgmap.activity.mgmap.view;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -26,13 +26,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.activity.mgmap.ControlView;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 
 public class LabeledSlider extends LinearLayout {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     Context context;
     Pref<Float> prefSlider = null;
@@ -72,7 +75,7 @@ public class LabeledSlider extends LinearLayout {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 prefSlider.setValue( progress/100.0f );
-                Log.d(MGMapApplication.LABEL, NameUtil.context()+" progress="+progress);
+                mgLog.d(" progress="+progress);
             }
         });
 
@@ -126,5 +129,11 @@ public class LabeledSlider extends LinearLayout {
                 " visibility="+prefSliderVisibility.getValue()+
                 " alpha="+prefSlider.getValue()+
                 '}';
+    }
+
+    public Point getThumbPos(int progress){
+        int[] loc = new int[2];
+        seekBar.getLocationOnScreen(loc);
+        return new Point(loc[0] + convertDp(20) + ( (seekBar.getWidth()-convertDp(40))*progress)/100, loc[1] +convertDp(10));
     }
 }

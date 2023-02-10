@@ -74,5 +74,10 @@
     <item type="id" name="help2_text6"  />
     <item type="id" name="help3_empty"  />
 
+    <item type="id" name="slider_map1"  />
+    <item type="id" name="slider_map2"  />
+    <item type="id" name="slider_map3"  />
+    <item type="id" name="slider_map4"  />
+    <item type="id" name="slider_map5"  />
 
 </resources>

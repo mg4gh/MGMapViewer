@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.mgmap;
 
+import android.annotation.SuppressLint;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,8 @@ public class ControlComposer {
             final String key = activity.sharedPreferences.getString(prefKey, "");
             if (activity.getMapLayerFactory().hasAlpha(key)){
                 Pref<Boolean> visibility = new Pref<>("alpha_" + key+"_visibility", true, null);
-                coView.createLabeledSlider(parent).initPrefData(visibility, activity.getPrefCache().get("alpha_" + key, 1.0f), null, key);
+                @SuppressLint("DiscouragedApi") int id = activity.getResources().getIdentifier(prefKey.replace("SelectMap", "slider_map"), "id", activity.getPackageName());
+                coView.createLabeledSlider(parent).initPrefData(visibility, activity.getPrefCache().get("alpha_" + key, 1.0f), null, key).setId(id);
             }
         }
         parent.setVisibility(View.INVISIBLE);
@@ -190,7 +192,7 @@ public class ControlComposer {
         activity.getFS(FSControl.class).initHelpControl(coView.createHelpText1(help1), "help1").setId(R.id.help1_close);
         LinearLayout help2 = coView.createHelpPanel(help, Gravity.START, -90);
         for (int i = 0; i < 7; i++) {
-            int id = activity.getResources().getIdentifier("help2_text"+i, "id", activity.getPackageName());
+            @SuppressLint("DiscouragedApi") int id = activity.getResources().getIdentifier("help2_text"+i, "id", activity.getPackageName());
             activity.getFS(FSControl.class).initHelpControl(coView.createHelpText2(help2), "help2").setId(id);
         }
         LinearLayout help3 = coView.createHelpPanel(help, Gravity.START, 0);
