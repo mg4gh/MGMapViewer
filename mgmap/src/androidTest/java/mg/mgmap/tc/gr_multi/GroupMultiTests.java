@@ -1,13 +1,11 @@
 package mg.mgmap.tc.gr_multi;
 
-import android.content.Context;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 
 import org.junit.Before;
@@ -23,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.test.BaseTestCase;
@@ -38,9 +35,7 @@ public class GroupMultiTests extends BaseTestCase {
 
     public GroupMultiTests(){
         mgLog.i("create");
-        MGMapApplication mgMapApplication = (MGMapApplication)InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        Context ctx = InstrumentationRegistry.getInstrumentation().getContext();
-        mgMapApplication.getSetup().wantSetup("testgroup001", ctx.getAssets(), forceSetup);
+        mgMapApplication.getSetup().wantSetup("testgroup002", androidTestAssets, forceSetup);
         forceSetup = false;
     }
 

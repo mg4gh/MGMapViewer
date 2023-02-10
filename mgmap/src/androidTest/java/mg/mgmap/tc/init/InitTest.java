@@ -7,7 +7,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.core.AllOf.allOf;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.SystemClock;
@@ -15,7 +14,6 @@ import android.os.SystemClock;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -28,7 +26,6 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.settings.SettingsActivity;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
@@ -41,9 +38,7 @@ public class InitTest extends BaseTestCase {
 
     public InitTest(){
         mgLog.i("create");
-        MGMapApplication mgMapApplication = (MGMapApplication)InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        Context ctx = InstrumentationRegistry.getInstrumentation().getContext();
-        mgMapApplication.getSetup().wantSetup("testgroup000", ctx.getAssets());
+        mgMapApplication.getSetup().wantSetup("testgroup000", androidTestAssets, true);
     }
 
     @Rule

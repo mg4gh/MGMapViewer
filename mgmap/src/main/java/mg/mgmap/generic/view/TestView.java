@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -23,14 +22,12 @@ public class TestView extends RelativeLayout  {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private final Point pxSize = new Point(); // size of the TestView in pixel
     private final int[] location = new int[2]; // location on screen - typically 0,0, but on Smartphone with notch e.g. 0,88
 
     private ImageView cursor = null; // ImageView of the animated cursor
     private ImageView click = null; // ImageView for animated click event (let this circle rise)
 
     private Activity activity; // any activity (of this app)
-    private static TestViewHook testViewHook = null;
 
     public TestView(Context context) {
         super(context);
@@ -50,16 +47,6 @@ public class TestView extends RelativeLayout  {
         return click;
     }
 
-    public interface TestViewHook{
-        void registerTestView(TestView testView);
-        void unregisterTestView(TestView testView);
-        void onTestViewLayout(TestView testView);
-    }
-
-    public static void setTestViewHook(TestViewHook testViewHook) {
-        TestView.testViewHook = testViewHook;
-    }
-
     private void init(Context context){
         if (context instanceof Activity) {
             activity = (Activity) context;
@@ -72,10 +59,7 @@ public class TestView extends RelativeLayout  {
     protected void onLayout(boolean changed, int l, int t, int r, int b) { // needed to determine the size of this TestView, but also the location
         super.onLayout(changed, l, t, r, b);
         this.getLocationOnScreen(location);
-        pxSize.x = this.getWidth();
-        pxSize.y = this.getHeight();
-        Optional.ofNullable(testViewHook).ifPresent(tvh -> tvh.onTestViewLayout(this));
-        mgLog.d(" TestView size: " + pxSize +" TestView location: " + location[0] + "," + location[1] + " " + getContext().getClass().getSimpleName());
+        mgLog.d("TestView location: " + location[0] + "," + location[1] + " context=" + getContext().getClass().getSimpleName());
     }
 
     public void setVisibility(int visibility, View view){
@@ -118,16 +102,9 @@ public class TestView extends RelativeLayout  {
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         mgLog.d(()-> activity.getClass().getSimpleName()+": hasWindowFocus="+hasWindowFocus);
-        if (hasWindowFocus) { // is visible
-            Optional.ofNullable(testViewHook).ifPresent(tvh -> tvh.registerTestView(this));
-        } else {
-            Optional.ofNullable(testViewHook).ifPresent(tvh -> tvh.unregisterTestView(this));
+        if (! hasWindowFocus) { // is visible
             click.setVisibility(INVISIBLE);
         }
-    }
-
-    public Point getPxSize() {
-        return pxSize;
     }
 
     public Activity getActivity() {
