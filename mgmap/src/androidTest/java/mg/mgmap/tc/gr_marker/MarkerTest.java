@@ -1,7 +1,6 @@
 package mg.mgmap.tc.gr_marker;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.os.SystemClock;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -21,7 +20,6 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
 
@@ -67,7 +65,7 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic());
 
         SystemClock.sleep(5000);
-        swipePos(54.4240,13.454900, 54.421981, 13.450780);
+        animateSwipeLatLong(54.4240,13.454900, 54.421981, 13.450780);
         SystemClock.sleep(500);
         addRegex(".*Test Statistic: .* totalLength=3959.18 gain=70.9 loss=79.8 minEle=11.1 maxEle=92.1 numPoints=122");
         mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic());

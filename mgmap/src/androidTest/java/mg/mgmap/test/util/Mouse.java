@@ -42,6 +42,7 @@ public class Mouse {
         }
         event = MotionEvent.obtain(downTime, downTime+delay, MotionEvent.ACTION_UP, endX, endY, 0);
         inst.sendPointerSync(event);
+        if (cb != null) cb.swipePos((int)event.getX(), (int)event.getY());
         SystemClock.sleep(finalDelay); //The wait is important to scroll
     }
 

@@ -135,13 +135,20 @@ public class BaseTestCase {
         return pos;
     }
 
-    protected void swipePos(double latitudeStart, double longitudeStart, double latitudeEnd, double longitudeEnd){
+    protected void animateSwipeLatLong(double latitudeStart, double longitudeStart, double latitudeEnd, double longitudeEnd){
         Point start = getPoint4PointModel(new PointModelImpl(latitudeStart,longitudeStart));
+        Point end = getPoint4PointModel(new PointModelImpl(latitudeEnd,longitudeEnd));
+        animateSwipeToPos(start, end);
+    }
+
+    protected Point animateSwipeToPos(Point start, Point end){
         animateTo(start);
         SystemClock.sleep(300);
-        Point end = getPoint4PointModel(new PointModelImpl(latitudeEnd,longitudeEnd));
         Point p = new Point();
-        Mouse.swipe(start.x, start.y, end.x, end.y, 1000, 0, (x,y)->{p.x=x;p.y=y;setCursorPos(p);});
+        setClickVisibility(true);
+        Mouse.swipe(start.x, start.y, end.x, end.y, 1000, 0, (x,y)->{p.x=x;p.y=y;setCursorPos(p);setClickPos(p);});
+        setClickVisibility(false);
+        return end;
     }
 
 
@@ -194,6 +201,13 @@ public class BaseTestCase {
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         testView.setCursorPosition(pos);
         currentPos = pos;
+        return pos;
+    }
+
+    protected Point setClickPos(Point pos){
+        TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
+        mgLog.i("pos "+pos);
+        testView.setClickPosition(pos);
         return pos;
     }
 
