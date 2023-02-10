@@ -33,7 +33,7 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("create");
         MGMapApplication mgMapApplication = (MGMapApplication)InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         Context ctx = InstrumentationRegistry.getInstrumentation().getContext();
-        mgMapApplication.getSetup().wantSetup("testgroup002", ctx.getAssets());
+        mgMapApplication.getSetup().wantSetup("SETUP_002", ctx.getAssets());
     }
 
     @Rule

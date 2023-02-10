@@ -35,7 +35,7 @@ public class GroupMultiTests extends BaseTestCase {
 
     public GroupMultiTests(){
         mgLog.i("create");
-        mgMapApplication.getSetup().wantSetup("testgroup002", androidTestAssets, forceSetup);
+        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets, forceSetup);
         forceSetup = false;
     }
 
