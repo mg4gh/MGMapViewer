@@ -76,11 +76,11 @@ public class ControlComposer {
 
     void composeAlphaSlider2(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.bars2);
-        activity.getFS(FSRecordingTrackLog.class).initLabeledSlider(coView.createLabeledSlider(parent), "rtl");
-        activity.getFS(FSMarker.class).initLabeledSlider(coView.createLabeledSlider(parent), "mtl");
-        activity.getFS(FSRouting.class).initLabeledSlider(coView.createLabeledSlider(parent), "rotl");
-        activity.getFS(FSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider(parent), "stl");
-        activity.getFS(FSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider(parent), "atl");
+        activity.getFS(FSRecordingTrackLog.class).initLabeledSlider(coView.createLabeledSlider(parent), "rtl").setId(R.id.slider_rtl);
+        activity.getFS(FSMarker.class).initLabeledSlider(coView.createLabeledSlider(parent), "mtl").setId(R.id.slider_mtl);
+        activity.getFS(FSRouting.class).initLabeledSlider(coView.createLabeledSlider(parent), "rotl").setId(R.id.slider_rotl);
+        activity.getFS(FSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider(parent), "stl").setId(R.id.slider_stl);
+        activity.getFS(FSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider(parent), "atl").setId(R.id.slider_atl);
         parent.setVisibility(View.INVISIBLE);
     }
 

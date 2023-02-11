@@ -80,4 +80,10 @@
     <item type="id" name="slider_map4"  />
     <item type="id" name="slider_map5"  />
 
+    <item type="id" name="slider_rtl"  />
+    <item type="id" name="slider_mtl"  />
+    <item type="id" name="slider_rotl"  />
+    <item type="id" name="slider_stl"  />
+    <item type="id" name="slider_atl"  />
+
 </resources>
