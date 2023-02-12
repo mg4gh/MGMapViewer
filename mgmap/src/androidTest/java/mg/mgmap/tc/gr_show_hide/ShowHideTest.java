@@ -23,20 +23,21 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
+import mg.mgmap.activity.statistic.TrackStatisticActivity;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
-public class MapSliderTest extends BaseTestCase {
+public class ShowHideTest extends BaseTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private MGMapActivity mgMapActivity;
 
-    public MapSliderTest(){
+    public ShowHideTest(){
         mgLog.i("create");
-        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets);
+        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets, true);
     }
 
     @Rule
@@ -55,6 +56,12 @@ public class MapSliderTest extends BaseTestCase {
         setCursorToCenterPos();
         addRegex(".*onClick mi_alpha_layers.*");
         animateToViewAndClick(R.id.menu_show_hide);
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_layers).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_alpha_tracks).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_stl).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_atl).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_all).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_mtl).isEnabled() );
         animateToViewAndClick(R.id.mi_alpha_layers);
 
         LabeledSlider lsl = waitForView(LabeledSlider.class, R.id.slider_map2);
@@ -89,6 +96,12 @@ public class MapSliderTest extends BaseTestCase {
 
         addRegex(".*onClick mi_alpha_tracks.*");
         animateToViewAndClick(R.id.menu_show_hide);
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_layers).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_tracks).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_stl).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_atl).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_all).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_mtl).isEnabled() );
         animateToViewAndClick(R.id.mi_alpha_tracks);
 
         LabeledSlider lslRotl = waitForView(LabeledSlider.class, R.id.slider_rotl);
@@ -123,6 +136,97 @@ public class MapSliderTest extends BaseTestCase {
         Assert.assertEquals(0f, mgMapActivity.getPrefCache().get("FSMarker.alphaMTL",0f).getValue(), 0.001f);
 
         SystemClock.sleep(5000);
+        mgLog.i("finished");
+    }
+
+    @Test(timeout = 40000)
+    public void _03_hideStlAtlTest() {
+        mgLog.i("started");
+        setCursorToCenterPos();
+
+        SystemClock.sleep(3000); // wait some time to make sure that init meta files is finished
+
+        addRegex(".*onClick mi_statistic.*");
+        animateToViewAndClick(R.id.menu_task);
+        animateToViewAndClick(R.id.mi_statistic);
+        waitForActivity(TrackStatisticActivity.class);
+
+        animateToStatAndClick(".*20221029_122839.*");
+        animateToStatAndClick(".*20221025_095831.*");
+        animateToStatAndClick(".*20221018_104204.*");
+
+        animateToViewAndClick(R.id.stat_mi_show);
+        waitForActivity(MGMapActivity.class);
+        assert (mgMapApplication.availableTrackLogsObservable.availableTrackLogs.size() == 3);
+
+        addRegex(".*onClick mi_hide_stl.*");
+        animateToViewAndClick(R.id.menu_show_hide);
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_layers).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_tracks).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_stl).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_atl).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_all).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_mtl).isEnabled() );
+        animateToViewAndClick(R.id.mi_hide_stl);
+
+        SystemClock.sleep(1000);
+
+        addRegex(".*onClick mi_hide_atl.*");
+        animateToViewAndClick(R.id.menu_show_hide);
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_layers).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_tracks).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_stl).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_atl).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_all).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_mtl).isEnabled() );
+        animateToViewAndClick(R.id.mi_hide_atl);
+
+
+        SystemClock.sleep(3000);
+        mgLog.i("finished");
+    }
+
+    @Test(timeout = 40000)
+    public void _04_hideAllTest() {
+        mgLog.i("started");
+        setCursorToCenterPos();
+
+        SystemClock.sleep(3000); // wait some time to make sure that init meta files is finished
+
+        addRegex(".*onClick mi_statistic.*");
+        animateToViewAndClick(R.id.menu_task);
+        animateToViewAndClick(R.id.mi_statistic);
+        waitForActivity(TrackStatisticActivity.class);
+
+        animateToStatAndClick(".*20221029_122839.*");
+        animateToStatAndClick(".*20221025_095831.*");
+        animateToStatAndClick(".*20221018_104204.*");
+
+        animateToViewAndClick(R.id.stat_mi_show);
+        waitForActivity(MGMapActivity.class);
+        assert (mgMapApplication.availableTrackLogsObservable.availableTrackLogs.size() == 3);
+
+        addRegex(".*onClick mi_hide_all.*");
+        animateToViewAndClick(R.id.menu_show_hide);
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_layers).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_tracks).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_stl).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_atl).isEnabled() );
+        assert(  mgMapActivity.findViewById(R.id.mi_hide_all).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_mtl).isEnabled() );
+        animateToViewAndClick(R.id.mi_hide_all);
+
+        SystemClock.sleep(1000);
+
+        animateToViewAndClick(R.id.menu_show_hide);
+        assert(  mgMapActivity.findViewById(R.id.mi_alpha_layers).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_alpha_tracks).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_stl).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_atl).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_all).isEnabled() );
+        assert( !mgMapActivity.findViewById(R.id.mi_hide_mtl).isEnabled() );
+
+        SystemClock.sleep(3000);
         mgLog.i("finished");
     }
 

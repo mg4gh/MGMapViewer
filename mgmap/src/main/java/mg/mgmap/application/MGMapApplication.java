@@ -294,6 +294,7 @@ public class MGMapApplication extends Application {
             markerTrackLogObservable.setTrackLog(null);
             routeTrackLogObservable.setTrackLog(null);
             availableTrackLogsObservable.removeAll();
+            metaTrackLogs.clear();
 
             logPoints2process.add(new PointModelImpl()); // abort Thread for TrackLogPoint handling
             pLogcat.destroy(); // abort logcat and als Logcat supervision thread

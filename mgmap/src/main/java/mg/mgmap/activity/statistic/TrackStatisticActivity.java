@@ -138,14 +138,14 @@ public class TrackStatisticActivity extends AppCompatActivity {
         ControlView.createQuickControlETV(qcs)
                 .setData(prefFilterOn,R.drawable.filter,R.drawable.filter2)
                 .setPrAction(prefFilterOn)
-                .setName("tsaQcFilter");
+                .setNameAndId(R.id.stat_mi_filter);
         ExtendedTextView etvAll = ControlView.createQuickControlETV(qcs);
         etvAll.setData(prefAllSelected,R.drawable.select_all, R.drawable.select_all2)
-                .setName("tsaQcSelectAll")
+                .setNameAndId(R.id.stat_mi_all)
                 .setOnClickListener(new SelectOCL(visibleEntries, true));
         ExtendedTextView etvNone = ControlView.createQuickControlETV(qcs);
         etvNone.setData(prefNoneSelected,R.drawable.deselect_all,R.drawable.deselect_all2)
-                .setName("tsaQcSelectNone>")
+                .setNameAndId(R.id.none)
                 .setOnClickListener(new SelectOCL(visibleEntries, false));
         qcs.removeView(etvNone);
         prefAllSelected.addObserver((e) -> {
@@ -163,31 +163,31 @@ public class TrackStatisticActivity extends AppCompatActivity {
         });
         ControlView.createQuickControlETV(qcs)
                 .setData(prefEditAllowed,R.drawable.edit,R.drawable.edit2)
-                .setName("tsaQcEdit")
+                .setNameAndId(R.id.stat_mi_edit)
                 .setOnClickListener(createEditOCL());
         ControlView.createQuickControlETV(qcs)
                 .setData(prefNoneSelected,R.drawable.show,R.drawable.show2)
-                .setName("tsaQcShow")
+                .setNameAndId(R.id.stat_mi_show)
                 .setOnClickListener(createShowOCL());
         ControlView.createQuickControlETV(qcs)
                 .setData(prefMarkerAllowed,R.drawable.mtlr_2,R.drawable.mtlr)
-                .setName("tsaQcShowMtlr")
+                .setNameAndId(R.id.stat_mi_marker)
                 .setOnClickListener(createMarkerOCL());
         ControlView.createQuickControlETV(qcs)
                 .setData(prefShareAllowed,R.drawable.share2,R.drawable.share)
-                .setName("tsaQcShare")
+                .setNameAndId(R.id.stat_mi_share)
                 .setOnClickListener(createShareOCL());
         ControlView.createQuickControlETV(qcs)
                 .setData(prefNoneModified,R.drawable.save,R.drawable.save2)
-                .setName("tsaQcSave")
+                .setNameAndId(R.id.stat_mi_save)
                 .setOnClickListener(createSaveOCL());
         ControlView.createQuickControlETV(qcs)
                 .setData(prefDeleteAllowed,R.drawable.delete2,R.drawable.delete)
-                .setName("tsaQcShowDelete")
+                .setNameAndId(R.id.stat_mi_delete)
                 .setOnClickListener(createDeleteOCL());
         ControlView.createQuickControlETV(qcs)
                 .setData(R.drawable.back)
-                .setName("tsaQcBack")
+                .setNameAndId(R.id.stat_mi_back)
                 .setOnClickListener(createBackOCL());
     }
 

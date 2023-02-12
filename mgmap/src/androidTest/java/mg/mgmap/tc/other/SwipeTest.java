@@ -30,7 +30,7 @@ public class SwipeTest extends BaseTestCase {
 
     public SwipeTest(){
         mgLog.i("create");
-        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets);
+        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets, true);
     }
 
     @Rule

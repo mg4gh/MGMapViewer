@@ -86,4 +86,16 @@
     <item type="id" name="slider_stl"  />
     <item type="id" name="slider_atl"  />
 
+    <item type="id" name="stat_mi_filter"  />
+    <item type="id" name="stat_mi_all"  />
+    <item type="id" name="stat_mi_none"  />
+    <item type="id" name="stat_mi_edit"  />
+    <item type="id" name="stat_mi_show"  />
+    <item type="id" name="stat_mi_marker"  />
+    <item type="id" name="stat_mi_share"  />
+    <item type="id" name="stat_mi_save"  />
+    <item type="id" name="stat_mi_delete"  />
+    <item type="id" name="stat_mi_back"  />
+
+
 </resources>
