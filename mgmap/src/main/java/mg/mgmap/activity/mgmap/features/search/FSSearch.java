@@ -142,6 +142,7 @@ public class FSSearch extends FeatureService {
     @Override
     protected void onPause() {
         super.onPause();
+        getTimer().removeCallbacks(ttHideKeyboard);
     }
 
     @Override

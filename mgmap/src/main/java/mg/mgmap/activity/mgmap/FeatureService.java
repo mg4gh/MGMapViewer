@@ -246,7 +246,9 @@ public class FeatureService {
     protected String r(int id){return getResources().getString(id); }
 
     protected void onResume(){ }
-    protected void onPause(){ }
+    protected void onPause(){
+        cancelRefresh();
+    }
     protected void onDestroy(){ }
 
     protected <T> Pref<T> getPref(int id, T defaultValue){

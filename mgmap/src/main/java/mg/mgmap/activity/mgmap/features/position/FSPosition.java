@@ -128,6 +128,7 @@ public class FSPosition extends FeatureService {
     @Override
     protected void onPause() {
         super.onPause();
+        getTimer().removeCallbacks(ttMapMovingOff);
     }
 
     @Override

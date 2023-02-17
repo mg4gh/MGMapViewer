@@ -87,6 +87,7 @@ public class FSBB extends FeatureService {
     private WriteablePointModel p1 = null;
     private WriteablePointModel p2 = null;
     private final Runnable ttHide = () -> prefBboxOn.setValue(false);
+    private final Runnable ttCheckHgt = this::checkHgtAvailability;
     long ttHideTime = 30000;
     private void refreshTTHide(){
         getTimer().removeCallbacks(ttHide);
@@ -135,12 +136,14 @@ public class FSBB extends FeatureService {
         super.onResume();
         prefBboxOn.setValue(false);
         refreshObserver.onChange();
-        getTimer().postDelayed(this::checkHgtAvailability, 100) ;
+        getTimer().postDelayed(ttCheckHgt, 100) ;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        getTimer().removeCallbacks(ttHide);
+        getTimer().removeCallbacks(ttCheckHgt);
     }
 
     @Override

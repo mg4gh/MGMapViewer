@@ -252,6 +252,9 @@ public class FSControl extends FeatureService {
     @Override
     protected void onPause() {
         super.onPause();
+        getTimer().removeCallbacks(hintInitialMapDownload);
+        getTimer().removeCallbacks(ttHideSubQCS);
+        getTimer().removeCallbacks(ttEnableMenuQCS);
     }
 
     @Override

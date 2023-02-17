@@ -131,6 +131,7 @@ public class FSMarker extends FeatureService {
     protected void onPause() {
         unregisterClass(MarkerControlLayer.class);
         super.onPause();
+        getTimer().removeCallbacks(ttHide);
     }
 
     @Override
