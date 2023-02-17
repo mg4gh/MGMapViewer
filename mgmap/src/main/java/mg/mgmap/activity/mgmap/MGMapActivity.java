@@ -23,7 +23,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 
 import android.view.KeyEvent;
 import android.view.Window;
@@ -139,6 +138,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     private MapDataStoreUtil mapDataStoreUtil = null;
     private GGraphTileFactory gGraphTileFactory = null;
+    private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
 
     public MGMapApplication getMGMapApplication(){
         return application;
@@ -276,7 +276,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.lastPositionsObservable.changed();
         application.markerTrackLogObservable.changed();
 
-        new Handler().postDelayed(() -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(), 60*1000);
+        FeatureService.getTimer().postDelayed(ttUploadGpxTrigger, 60*1000);
     }
 
     @Override
@@ -305,6 +305,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 tileDownloadLayer.onPause();
             }
         }
+        FeatureService.getTimer().removeCallbacks(ttUploadGpxTrigger);
         super.onPause();
     }
 

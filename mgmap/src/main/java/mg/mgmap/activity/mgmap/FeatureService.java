@@ -228,7 +228,7 @@ public class FeatureService {
     protected MGMapLayerFactory getMapLayerFactory(){
         return activity.mapLayerFactory;
     }
-    protected Handler getTimer(){
+    protected static Handler getTimer(){
         return timer;
     }
     protected MapViewUtility getMapViewUtility(){
