@@ -230,6 +230,33 @@ public class ShowHideTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
+    @Test(timeout = 40000)
+    public void _05_hideMtlTest() {
+        mgLog.i("started");
+        setCursorToCenterPos();
+
+        addRegex(".*onClick mi_marker_edit.*");
+        animateToViewAndClick(R.id.menu_marker);
+        animateToViewAndClick(R.id.mi_marker_edit);
+
+        animateToPosAndClick(54.323734, 13.359813);
+        animateToPosAndClick(54.311409, 13.346893);
+
+
+        addRegex(".*onClick mi_hide_mtl.*");
+        animateToViewAndClick(R.id.menu_show_hide);
+        assert (mgMapActivity.findViewById(R.id.mi_alpha_layers).isEnabled());
+        assert (mgMapActivity.findViewById(R.id.mi_alpha_tracks).isEnabled());
+        assert (!mgMapActivity.findViewById(R.id.mi_hide_stl).isEnabled());
+        assert (!mgMapActivity.findViewById(R.id.mi_hide_atl).isEnabled());
+        assert (mgMapActivity.findViewById(R.id.mi_hide_all).isEnabled());
+        assert (mgMapActivity.findViewById(R.id.mi_hide_mtl).isEnabled());
+        animateToViewAndClick(R.id.mi_hide_mtl);
+
+        SystemClock.sleep(1000);
+        Assert.assertNull(mgMapApplication.markerTrackLogObservable.getTrackLog() );
+
+    }
 
 
 }

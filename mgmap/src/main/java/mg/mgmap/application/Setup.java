@@ -33,6 +33,7 @@ public class Setup {
         wantSetup(wanted, assetManager, false);
     }
     public synchronized void wantSetup(String wanted, AssetManager assetManager, boolean force)  {
+        mgLog.d("wanted="+wanted);
         assert (wanted != null);
         if (wanted.equals(current) && !force) return;
 

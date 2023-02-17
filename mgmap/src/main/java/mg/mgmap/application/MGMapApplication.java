@@ -148,7 +148,7 @@ public class MGMapApplication extends Application {
     }
 
     void _init(BaseConfig baseConfig){
-        currentRun = UUID.randomUUID();
+
         this.baseConfig = baseConfig;
 
         persistenceManager = new PersistenceManager(this, baseConfig.getAppDirName());
@@ -228,7 +228,7 @@ public class MGMapApplication extends Application {
                     if (uuid != currentRun){
                         break; // leave Thread
                     }
-                    if (pointModel != null){
+                    if ((pointModel != null) && (!pointModel.equals(new PointModelImpl()))){
                         mgLog.i("handle tlp="+pointModel);
                         if (recordingTrackLogObservable.getTrackLog() != null){
                             recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
@@ -289,7 +289,8 @@ public class MGMapApplication extends Application {
 
     void cleanup(){
         if (currentRun != null) {
-            mgLog.i("do cleanup now.");
+            currentRun = UUID.randomUUID();
+            mgLog.i("do cleanup now. "+((currentRun==null)?"":currentRun));
             recordingTrackLogObservable.setTrackLog(null);
             markerTrackLogObservable.setTrackLog(null);
             routeTrackLogObservable.setTrackLog(null);

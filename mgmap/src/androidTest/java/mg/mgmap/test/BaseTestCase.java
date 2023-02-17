@@ -193,6 +193,7 @@ public class BaseTestCase {
     }
 
     protected Point setCursorPos(Point pos ){
+        mgLog.d(pos+" "+ getCenterPos());
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         testView.setCursorPosition(pos);
         currentPos = pos;
@@ -251,9 +252,14 @@ public class BaseTestCase {
         return pos;
     }
 
-    /**
-     * @param pos position on screen
-     */
+    protected Point animateClick(Point pos, Runnable r) {
+        timer.postDelayed(()->new Thread(r).start(), 300);
+        return animateClick(pos);
+    }
+
+        /**
+         * @param pos position on screen
+         */
     protected Point animateClick(Point pos){
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         mgLog.i("pos "+pos);

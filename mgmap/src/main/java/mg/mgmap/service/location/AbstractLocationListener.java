@@ -19,6 +19,7 @@ import android.location.Location;
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
+import mg.mgmap.application.BaseConfig;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogPoint;
@@ -41,13 +42,14 @@ public class AbstractLocationListener {
     protected final GeoidProvider geoidProvider;
     protected final TrackLoggerService trackLoggerService;
     private final PrefCache prefCache;
-
+    private final BaseConfig baseConfig;
 
     AbstractLocationListener(MGMapApplication application, TrackLoggerService trackLoggerService){
         this.trackLoggerService = trackLoggerService;
         elevationProvider = application.getElevationProvider();
         geoidProvider = application.getGeoidProvider();
         prefCache = application.getPrefCache();
+        baseConfig = application.baseConfig;
     }
 
     protected void locationChanged(Location location) {
@@ -66,7 +68,9 @@ public class AbstractLocationListener {
                 heightConsistencyThreshold = 100;
             }
             if ((lp.getNmeaEle() == PointModel.NO_ELE) || (lp.getHgtEle() == PointModel.NO_ELE) || (Math.abs(lp.getNmeaEle() - lp.getHgtEle()) < heightConsistencyThreshold )){
-                trackLoggerService.onNewTrackLogPoint(lp);
+                if (baseConfig.getMode() == BaseConfig.Mode.NORMAL){
+                    trackLoggerService.onNewTrackLogPoint(lp);
+                }
             }
         } else {
             mgLog.w("location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());
