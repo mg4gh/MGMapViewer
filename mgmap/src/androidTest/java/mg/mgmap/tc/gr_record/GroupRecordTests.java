@@ -54,6 +54,7 @@ public class GroupRecordTests extends BaseTestCase {
 
     @Before
     public void initMapPosition(){
+        mgLog.i("init");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
         MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 16);
         mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);

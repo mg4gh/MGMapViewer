@@ -288,28 +288,27 @@ public class MGMapApplication extends Application {
     }
 
     void cleanup(){
-        if (currentRun != null) {
-            currentRun = UUID.randomUUID();
-            mgLog.i("do cleanup now. "+((currentRun==null)?"":currentRun));
-            recordingTrackLogObservable.setTrackLog(null);
-            markerTrackLogObservable.setTrackLog(null);
-            routeTrackLogObservable.setTrackLog(null);
-            availableTrackLogsObservable.removeAll();
-            metaTrackLogs.clear();
+        currentRun = UUID.randomUUID();
+        mgLog.i("do cleanup now. "+((currentRun==null)?"":currentRun));
+        recordingTrackLogObservable.setTrackLog(null);
+        markerTrackLogObservable.setTrackLog(null);
+        routeTrackLogObservable.setTrackLog(null);
+        availableTrackLogsObservable.removeAll();
+        lastPositionsObservable.clear();
+        metaTrackLogs.clear();
 
-            logPoints2process.add(new PointModelImpl()); // abort Thread for TrackLogPoint handling
-            pLogcat.destroy(); // abort logcat and als Logcat supervision thread
+        logPoints2process.add(new PointModelImpl()); // abort Thread for TrackLogPoint handling
+        if (pLogcat != null) pLogcat.destroy(); // abort logcat and als Logcat supervision thread
 
-            if (baseConfig != null){
-                if (!baseConfig.getAppDirName().equals(Setup.APP_DIR_DEFAULT)){
-                    File appDir = new File(getExternalFilesDir(null),baseConfig.getAppDirName());
-                    PersistenceManager.deleteRecursivly(appDir);
-                    baseConfig.getSharedPreferences().edit().clear().apply();
-                }
+        if (baseConfig != null){
+            if (!baseConfig.getAppDirName().equals(Setup.APP_DIR_DEFAULT)){
+                File appDir = new File(getExternalFilesDir(null),baseConfig.getAppDirName());
+                PersistenceManager.deleteRecursivly(appDir);
+                baseConfig.getSharedPreferences().edit().clear().apply();
             }
-            prefCache.cleanup();
-            prefCache = null;
         }
+        if (prefCache != null) prefCache.cleanup();
+        prefCache = null;
     }
 
     @Override
