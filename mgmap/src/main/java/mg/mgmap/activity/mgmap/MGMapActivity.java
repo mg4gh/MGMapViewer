@@ -101,6 +101,7 @@ import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintAccessBackgroundLocation;
 import mg.mgmap.generic.util.hints.HintAccessFineLocation;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.invoke.MethodHandles;
@@ -139,6 +140,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private MapDataStoreUtil mapDataStoreUtil = null;
     private GGraphTileFactory gGraphTileFactory = null;
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
+    private final PropertyChangeListener pclTriggerTrackLoggerService = (e) -> triggerTrackLoggerService();
 
     public MGMapApplication getMGMapApplication(){
         return application;
@@ -222,7 +224,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         if (!getIntent().toString().contains(" act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] "))
             onNewIntent(getIntent());
         // use prefGps and prefRestart from applications prefCache to prevent race conditions during startup phase
-        application.prefGps.addObserver((e) -> triggerTrackLoggerService());
+        application.prefGps.addObserver(pclTriggerTrackLoggerService);
         mgLog.d("prefGps="+application.prefGps.getValue()+" prefRestart="+application.prefRestart.getValue() );
         if (application.prefGps.getValue() && application.prefRestart.getValue()){
             triggerTrackLoggerService(); // restart track logger service after app restart while track recording is on
@@ -325,6 +327,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.markerTrackLogObservable.deleteObservers();
         application.routeTrackLogObservable.deleteObservers();
         application.lastPositionsObservable.deleteObservers();
+
+        application.prefGps.deleteObserver(pclTriggerTrackLoggerService);
 
         mapView.destroyAll();
         mapDataStoreUtil.onDestroy();
