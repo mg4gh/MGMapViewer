@@ -26,45 +26,45 @@ import mg.mgmap.generic.model.TrackLog;
 
 public class TrackStatisticAdapter extends RecyclerView.Adapter<TrackStatisticAdapter.ViewHolder> {
 
-        private final ArrayList<TrackLog> trackLogs;
+    private final ArrayList<TrackLog> trackLogs;
 
-        /** Provide a reference to the type of views that you are using (custom ViewHolder). */
-        public static class ViewHolder extends RecyclerView.ViewHolder {
-            private final TrackStatisticView trackStatisticView;
+    /** Provide a reference to the type of views that you are using (custom ViewHolder). */
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private final TrackStatisticView trackStatisticView;
 
-            public ViewHolder(View view) {
-                super(view);
-                trackStatisticView = (TrackStatisticView) view;
-            }
-
-            public TrackStatisticView getTrackStatisticView() {
-                return trackStatisticView;
-            }
+        public ViewHolder(View view) {
+            super(view);
+            trackStatisticView = (TrackStatisticView) view;
         }
 
-        public TrackStatisticAdapter(ArrayList<TrackLog> trackLogs) {
-            this.trackLogs = trackLogs;
+        public TrackStatisticView getTrackStatisticView() {
+            return trackStatisticView;
         }
+    }
 
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            // Create a new view, which defines the UI of the list item
-            View view = new TrackStatisticView(viewGroup.getContext());
-            return new ViewHolder(view);
-        }
+    public TrackStatisticAdapter(ArrayList<TrackLog> trackLogs) {
+        this.trackLogs = trackLogs;
+    }
 
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
-            // Get element from trackLogs at this position and replace the
-            // contents of the view with that element
-            viewHolder.getTrackStatisticView().bind(trackLogs.get(position));
-        }
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        // Create a new view, which defines the UI of the list item
+        View view = new TrackStatisticView(viewGroup.getContext());
+        return new ViewHolder(view);
+    }
 
-        @Override
-        public int getItemCount() {
-            return trackLogs.size();
-        }
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
+        // Get element from trackLogs at this position and replace the
+        // contents of the view with that element
+        viewHolder.getTrackStatisticView().bind(trackLogs.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return trackLogs.size();
+    }
 
     @Override
     public void onViewRecycled(@NonNull ViewHolder holder) {
