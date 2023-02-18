@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.statistic;
 
+import android.app.Activity;
 import android.os.Handler;
 
 import android.annotation.SuppressLint;
@@ -31,6 +32,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.TextViewCompat;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.R;
@@ -48,7 +50,7 @@ public class TrackStatisticView extends TableLayout {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private final TrackStatisticActivity context;
+    private static ArrayList<TrackStatisticView> boundViews = new ArrayList<>();
     private final MGMapApplication application;
     public TrackLog trackLog = null;
     private final Observer modifiedObserver;
@@ -75,8 +77,7 @@ public class TrackStatisticView extends TableLayout {
 
     public TrackStatisticView(Context context){
         super(context);
-        this.context = (TrackStatisticActivity)context;
-        application = this.context.getMGMapApplication();
+        application = MGMapApplication.getByContext(context);
 
         this.setId(View.generateViewId());
         this.setPadding(0, dp(2),0,0);
@@ -130,7 +131,7 @@ public class TrackStatisticView extends TableLayout {
 
     public void bind(TrackLog trackLog) {
         this.trackLog = trackLog;
-        mgLog.d(trackLog.getName());
+        mgLog.d("bind_data "+trackLog.getName());
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
 
         etvSelected.setName("SEL_"+trackLog.getName());
@@ -161,16 +162,22 @@ public class TrackStatisticView extends TableLayout {
         setOnClickListener(new StatisticClickListener());
         trackLog.getPrefSelected().addObserver(selectedObserver);
 
+        boundViews.add(this);
         hack();
     }
 
     public void unbind(){
         mgLog.i(trackLog.getName());
+        clearReferences();
+        boundViews.remove(this);
+    }
+
+    private void clearReferences(){
+        mgLog.i("unbind_data "+trackLog.getName());
         trackLog.deleteObserver(modifiedObserver);
         trackLog.getPrefSelected().deleteObserver(selectedObserver);
         trackLog = null;
     }
-
 
     public class StatisticClickListener extends ExtendedClickListener {
         @Override
@@ -261,7 +268,7 @@ public class TrackStatisticView extends TableLayout {
         if ((trackLog != null) && (etvName != null)){
             if (trackLog.getName().length() > 26){
                 mgLog.d("hack triggered for "+trackLog.getNameKey());
-                timer.postDelayed(() -> context.runOnUiThread(() -> {
+                timer.postDelayed(() -> ((Activity)getContext()).runOnUiThread(() -> {
                     if (trackLog != null) {
                         mgLog.d("hack executed for "+trackLog.getNameKey());
                         String suffix = etvName.getText().toString().endsWith(" ")?"":" ";
@@ -270,5 +277,14 @@ public class TrackStatisticView extends TableLayout {
                 }), 50);
             }
         }
+    }
+
+    /* cleanup Views that are bound  */
+    public static void cleanup(){
+        for (TrackStatisticView trackStatisticView : boundViews){
+            trackStatisticView.clearReferences();
+        }
+        boundViews.clear();
+        boundViews = null;
     }
 }

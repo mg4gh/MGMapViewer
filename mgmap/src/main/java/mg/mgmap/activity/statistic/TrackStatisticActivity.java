@@ -224,9 +224,13 @@ public class TrackStatisticActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        for (TrackLog trackLog : application.metaTrackLogs.values()) {
+            trackLog.getPrefSelected().deleteObserver(reworkObserver);
+        }
         ViewGroup qcs = findViewById(R.id.ts_qc);
         qcs.removeAllViews();
         prefCache.cleanup();
+        TrackStatisticView.cleanup();
     }
 
 
