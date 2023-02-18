@@ -90,6 +90,13 @@ public class BaseTestCase {
             mgLog.i(this.getClass().getName() + "." + name.getMethodName() + " stop ("+lmLines+")");
         }
         Assert.assertTrue(lm.getResult());
+        activitySupervision.clear();
+
+        mgMapApplication = null;
+        androidTestAssets = null;
+        activitySupervision = null;
+        currentActivity = null;
+        currentPos = null;
     }
 
     protected void addRegex(String regex) {
