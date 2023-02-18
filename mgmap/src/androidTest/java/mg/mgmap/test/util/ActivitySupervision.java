@@ -29,7 +29,6 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
 
     @Override
     public void onActivityStopped(Activity activity) {
-        activityMap.put(activity.getClass().getSimpleName(), activity);
         activityStartedToStopped.remove(activity.getClass().getSimpleName());
         mgLog.v(activity.getClass().getSimpleName()+ " "+activityStartedToStopped);
     }
@@ -51,13 +50,11 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
     }
     @Override
     public void onActivityPaused(Activity activity) {
-        activityMap.put(activity.getClass().getSimpleName(), activity);
         activityResumedToPaused.remove(activity.getClass().getSimpleName());
         mgLog.v(activity.getClass().getSimpleName()+ " "+activityResumedToPaused);
     }
     @Override
     public void onActivityDestroyed(Activity activity) {
-        activityMap.put(activity.getClass().getSimpleName(), activity);
         activityCreatedToDestroyed.remove(activity.getClass().getSimpleName());
         mgLog.v(activity.getClass().getSimpleName()+ " "+activityCreatedToDestroyed);
     }
@@ -78,4 +75,10 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
         return null;
     }
 
+    public void clear(){
+        activityMap.clear();
+        activityResumedToPaused.clear();
+        activityStartedToStopped.clear();
+        activityCreatedToDestroyed.clear();
+    }
 }
