@@ -42,6 +42,7 @@ import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.basic.MGLog;
 
+@SuppressWarnings("IOStreamConstructor")
 public class TileStoreLoader {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -186,6 +187,7 @@ public class TileStoreLoader {
         }
 
         jobGroup.setTitle("Drop Tiles for \""+storeDir.getName()+"\"");
+        mgLog.i("Drop "+numDrops+" tiles in "+jobGroup.size()+" jobs?");
         jobGroup.setConstructed("Drop "+numDrops+" tiles in "+jobGroup.size()+" jobs?");
     }
 }

@@ -39,6 +39,7 @@ import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
+@SuppressWarnings("IOStreamConstructor")
 public class MGTileStoreDB extends MGTileStore {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -247,7 +248,7 @@ public class MGTileStoreDB extends MGTileStore {
     /**
      * Converts Google tile coordinates to TMS Tile coordinates.
      * <p>
-     * Code copied from: http://code.google.com/p/gmap-tile-generator/
+     * Code copied from: h t t p://code.google.com/p/gmap-tile-generator/
      * </p>
      *
      * @param tx
