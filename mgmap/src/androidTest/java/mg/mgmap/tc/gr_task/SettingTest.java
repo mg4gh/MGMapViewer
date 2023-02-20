@@ -10,6 +10,7 @@ import static org.hamcrest.core.AllOf.allOf;
 import android.os.SystemClock;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -41,7 +42,7 @@ public class SettingTest extends BaseTestCase {
 
     public SettingTest(){
         mgLog.i("create");
-        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets, true);
+        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets);
     }
 
     @Rule
@@ -72,7 +73,9 @@ public class SettingTest extends BaseTestCase {
         SystemClock.sleep(2000);
         PreferenceUtil.setPreference(settingsActivity, R.string.preference_choose_theme_key, "Elevate.xml");
 
-        SystemClock.sleep(5000);
+        SystemClock.sleep(2000);
+        Espresso.pressBack();
+        SystemClock.sleep(2000);
         mgLog.i("finished");
     }
 

@@ -38,7 +38,7 @@ public class InitTest extends BaseTestCase {
 
     public InitTest(){
         mgLog.i("create");
-        mgMapApplication.getSetup().wantSetup("SETUP_001", androidTestAssets, true);
+        mgMapApplication.getSetup().wantSetup("SETUP_001", androidTestAssets);
     }
 
     @Rule

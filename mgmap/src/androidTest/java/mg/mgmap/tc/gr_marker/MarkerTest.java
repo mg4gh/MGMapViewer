@@ -17,6 +17,9 @@ import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
+//import leakcanary.AppWatcher;
+//import leakcanary.DetectLeaksAfterTestSuccess;
+
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
@@ -38,11 +41,14 @@ public class MarkerTest extends BaseTestCase {
 
     @Rule
     public ActivityScenarioRule<MGMapActivity> activityRule =new ActivityScenarioRule<>(MGMapActivity.class);
+//    @Rule
+//    public DetectLeaksAfterTestSuccess l = new DetectLeaksAfterTestSuccess();
 
     @Test(timeout = 50000)
     public void _01_marker() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
+//        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
         mgMapActivity.runOnUiThread(() -> {
             MapPosition mp = new MapPosition(new LatLong(54.422888,13.448283), (byte) 14);
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);

@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -37,7 +38,7 @@ public class ShowHideTest extends BaseTestCase {
 
     public ShowHideTest(){
         mgLog.i("create");
-        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets, true);
+        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets);
     }
 
     @Rule
@@ -48,6 +49,12 @@ public class ShowHideTest extends BaseTestCase {
         mgMapActivity = waitForActivity(MGMapActivity.class);
         MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
         mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+        assert mgMapApplication.getPersistenceManager().getAppDir().getName().contains("SETUP_002");
+    }
+
+    @After
+    public void cleanup(){
+        mgMapActivity = null;
     }
 
     @Test(timeout = 20000)

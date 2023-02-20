@@ -17,6 +17,7 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
+    private Application application;
     public SortedMap<String, Activity> activityMap = new TreeMap<>();
     public Set<String> activityCreatedToDestroyed = new TreeSet<>();
     public Set<String> activityStartedToStopped = new TreeSet<>();
@@ -24,6 +25,8 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
 
 
     public ActivitySupervision(Application application){
+        this.application = application;
+        application.unregisterActivityLifecycleCallbacks(this);
         application.registerActivityLifecycleCallbacks(this);
     }
 
@@ -36,7 +39,7 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
     public void onActivityStarted(Activity activity) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityStartedToStopped.add(activity.getClass().getSimpleName());
-        mgLog.v(activity.getClass().getSimpleName()+ " "+activityStartedToStopped);
+        mgLog.d(activity.getClass().getSimpleName()+ " "+activityStartedToStopped);
     }
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
@@ -46,7 +49,7 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
     public void onActivityResumed(Activity activity) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityResumedToPaused.add(activity.getClass().getSimpleName());
-        mgLog.v(activity.getClass().getSimpleName()+ " "+activityResumedToPaused);
+        mgLog.d(activity.getClass().getSimpleName()+ " "+activityResumedToPaused);
     }
     @Override
     public void onActivityPaused(Activity activity) {
@@ -62,7 +65,7 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         activityMap.put(activity.getClass().getSimpleName(), activity);
         activityCreatedToDestroyed.add(activity.getClass().getSimpleName());
-        mgLog.v(activity.getClass().getSimpleName()+ " "+activityCreatedToDestroyed);
+        mgLog.d(activity.getClass().getSimpleName()+ " "+activityCreatedToDestroyed);
     }
 
     @SuppressWarnings("unchecked")
@@ -77,8 +80,11 @@ public class ActivitySupervision implements Application.ActivityLifecycleCallbac
 
     public void clear(){
         activityMap.clear();
+        mgLog.i(activityMap.size());
         activityResumedToPaused.clear();
         activityStartedToStopped.clear();
         activityCreatedToDestroyed.clear();
+        application.unregisterActivityLifecycleCallbacks(this);
+        application = null;
     }
 }

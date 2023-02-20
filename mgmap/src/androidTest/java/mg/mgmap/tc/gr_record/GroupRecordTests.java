@@ -3,8 +3,6 @@ package mg.mgmap.tc.gr_record;
 import android.Manifest;
 import android.graphics.Point;
 import android.os.SystemClock;
-import android.view.AbsSavedState;
-import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -22,15 +20,12 @@ import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
-//import mg.mgmap.Manifest;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.TrackLogPoint;
-import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.test.BaseTestCase;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -39,14 +34,12 @@ public class GroupRecordTests extends BaseTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static boolean forceSetup = true;
-
     @Rule
     public GrantPermissionRule permissionLocation = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     public GroupRecordTests(){
         mgLog.i("create");
-        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets, forceSetup);
+        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets);
     }
 
     @Rule
@@ -209,7 +202,7 @@ public class GroupRecordTests extends BaseTestCase {
         animateAndClick(54.3160, 13.3520, 11.1f, 60.1f, 48.6f, 55.5f);
         animateAndClick(54.3166, 13.3511, 11.1f, 66.1f, 48.6f, 55.5f);
         animateAndClick(54.3171, 13.3521, 11.1f, 72.1f, 48.6f, 55.5f);
-        animateAndClick(54.3180, 13.3520, 11.1f, 73.1f, 48.6f, 55.5f);
+        animateAndClick(54.3180, 13.3520, 11.2f, 73.1f, 48.7f, 55.6f);
         addRegex(".*onClick mi_record_segment.*");
         animateToViewAndClick(R.id.menu_gps);
         animateToViewAndClick(R.id.mi_record_segment);

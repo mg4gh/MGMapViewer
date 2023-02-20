@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.application.MGMapApplicationHelper;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.test.util.ActivitySupervision;
@@ -74,6 +75,7 @@ public class BaseTestCase {
 
     @Before
     public void start() {
+        SystemClock.sleep(1000);
         running = true;
         lm = new LogMatcher(level);
         regexs = new ArrayList<>();
@@ -92,6 +94,7 @@ public class BaseTestCase {
         Assert.assertTrue(lm.getResult());
         activitySupervision.clear();
 
+        MGMapApplicationHelper.cleanup(mgMapApplication);
         mgMapApplication = null;
         androidTestAssets = null;
         activitySupervision = null;

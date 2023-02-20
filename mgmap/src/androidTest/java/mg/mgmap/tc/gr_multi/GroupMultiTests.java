@@ -31,12 +31,9 @@ public class GroupMultiTests extends BaseTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static boolean forceSetup = true;
-
     public GroupMultiTests(){
         mgLog.i("create");
-        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets, forceSetup);
-        forceSetup = false;
+        mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets);
     }
 
     @Rule
