@@ -205,7 +205,11 @@ public class BaseTestCase {
     protected Point setCursorPos(Point pos ){
         mgLog.d(pos+" "+ getCenterPos());
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
-        testView.setCursorPosition(pos);
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            testView.setCursorPosition(pos);
+        } else {
+            currentActivity.runOnUiThread(()->testView.setCursorPosition(pos));
+        }
         currentPos = pos;
         return pos;
     }
@@ -213,7 +217,11 @@ public class BaseTestCase {
     protected Point setClickPos(Point pos){
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         mgLog.i("pos "+pos);
-        testView.setClickPosition(pos);
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            testView.setClickPosition(pos);
+        } else {
+            currentActivity.runOnUiThread(()->testView.setClickPosition(pos));
+        }
         return pos;
     }
 
@@ -274,9 +282,9 @@ public class BaseTestCase {
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         mgLog.i("pos "+pos);
         timer.postDelayed(()->new Thread(()->Mouse.click(pos)).start(), 200);
-        testView.setClickPosition(pos);
-        setClickVisibility(true);
         testView.getActivity().runOnUiThread(() -> {
+            testView.setClickPosition(pos);
+            setClickVisibility(true);
             ObjectAnimator animation = ObjectAnimator.ofFloat(testView.getClick(), "scaleX", 2);
             animation.setDuration(500);                             // ... run the click animation
             animation.start();                                      // but start this immediately
@@ -285,9 +293,11 @@ public class BaseTestCase {
             animation2.start();
         });
         timer.postDelayed(() -> {                               // finally after 600ms the click animation steps
-            setClickVisibility(false);                          // ImageIcon will disappear
-            testView.getClick().setScaleX(1);                              // and the scale will be reset to normal size (1)
-            testView.getClick().setScaleY(1);
+            testView.getActivity().runOnUiThread(() -> {
+                setClickVisibility(false);                          // ImageIcon will disappear
+                testView.getClick().setScaleX(1);                              // and the scale will be reset to normal size (1)
+                testView.getClick().setScaleY(1);
+            });
         },600);
         SystemClock.sleep(800);
         return pos;
