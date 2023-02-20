@@ -280,11 +280,10 @@ configurations {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.preference:preference:1.2.0'
     api 'net.sf.kxml:kxml2:2.3.0'
 
-    implementation 'com.android.support:preference-v7:33.0.0'
     implementation files('libs/commons-net-3.8.0.jar')
     implementation files('libs/javax.json-1.1.2.jar')
     implementation files('libs/javax.json-api-1.1.2.jar')
@@ -302,7 +301,7 @@ dependencies {
     implementation 'org.mapsforge:sqlite-android:0.18.0'
     implementation 'com.caverock:androidsvg:1.4'
 
-    implementation 'androidx.work:work-runtime:2.7.1'
+    implementation 'androidx.work:work-runtime:2.8.0'
 
 //    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
 //    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
@@ -313,7 +312,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.5.1"
-//    implementation "androidx.test.espresso:espresso-idling-resource:3.5.1"
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test:rules:1.5.0'
+
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
+//    androidTestImplementation "com.squareup.leakcanary:leakcanary-android-instrumentation:2.10"
 }
