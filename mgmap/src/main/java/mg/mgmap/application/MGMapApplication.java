@@ -24,6 +24,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
@@ -201,6 +202,7 @@ public class MGMapApplication extends Application {
 
         // initialize Theme and MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(() -> {
+            UUID uuid = currentRun;
             if (persistenceManager.getThemeNames().length == 0){
                 BgJobGroup jobGroup = new BgJobGroup(this, null, null, new BgJobGroupCallback() {
                     @Override
@@ -213,6 +215,9 @@ public class MGMapApplication extends Application {
             }
             ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, elevationProvider);
             for (TrackLog trackLog : metaDataUtil.loadMetaData()){
+                if (uuid != currentRun){
+                    break; // leave Thread
+                }
                 trackStatisticFilter.checkFilter(trackLog);
                 metaTrackLogs.put(trackLog.getNameKey(),trackLog);
             }
@@ -288,14 +293,19 @@ public class MGMapApplication extends Application {
     }
 
     void cleanup(){
+        UUID lastRun = currentRun;
         currentRun = UUID.randomUUID();
-        mgLog.i("do cleanup now. "+((currentRun==null)?"":currentRun));
+        mgLog.i("do cleanup now. lastRun="+lastRun);
         recordingTrackLogObservable.setTrackLog(null);
         markerTrackLogObservable.setTrackLog(null);
         routeTrackLogObservable.setTrackLog(null);
         availableTrackLogsObservable.removeAll();
         lastPositionsObservable.clear();
+        if (lastRun != null){
+            SystemClock.sleep(20);
+        }
         metaTrackLogs.clear();
+        if (hgtProvider != null) hgtProvider.cleanup();
 
         logPoints2process.add(new PointModelImpl()); // abort Thread for TrackLogPoint handling
         if (pLogcat != null) pLogcat.destroy(); // abort logcat and als Logcat supervision thread
@@ -308,15 +318,14 @@ public class MGMapApplication extends Application {
             }
         }
         if (prefCache != null) prefCache.cleanup();
-        prefCache = null;
+        NotificationManagerCompat.from(this).cancelAll();
     }
 
     @Override
     public void onTerminate() {
         mgLog.w("MGMapViewer Application stop");
         try {
-            NotificationManagerCompat.from(this).cancelAll();
-            prefCache.cleanup();
+            cleanup();
         } catch (Exception e) {
             mgLog.e(e);
         }
