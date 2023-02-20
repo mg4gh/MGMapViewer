@@ -27,15 +27,9 @@ public class Setup {
         this.application = application;
     }
 
-    private String current = null;
-
     public synchronized void wantSetup(String wanted, AssetManager assetManager)  {
-        wantSetup(wanted, assetManager, false);
-    }
-    public synchronized void wantSetup(String wanted, AssetManager assetManager, boolean force)  {
         mgLog.d("wanted="+wanted);
         assert (wanted != null);
-        if (wanted.equals(current) && !force) return;
 
         try {
             application.cleanup();
@@ -68,6 +62,7 @@ public class Setup {
                     File lParent = new File(baseDir, sAppDir+"/"+lFilename).getParentFile();
                     mgLog.d("copy from assets/appDir/"+rFilename+" to "+sAppDir+"/"+lFilename);
                     assert lParent != null;
+                    //noinspection ResultOfMethodCallIgnored
                     lParent.mkdirs();
                     IOUtil.copyStreams(assetManager.open("appDir/"+rFilename), Files.newOutputStream(new File(baseDir, sAppDir + "/" + lFilename).toPath()));
                 }
@@ -81,7 +76,6 @@ public class Setup {
                 }
                 editor.apply();
                 mode = BaseConfig.Mode.INSTRUMENTATION_TEST;
-                current = wanted;
             }
 
             BaseConfig baseConfig =  new BaseConfig(sAppDir, preferencesName, sharedPreferences, mode);
