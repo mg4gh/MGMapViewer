@@ -55,6 +55,7 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
         for (Pref<?> pref : prefMap.values()){
             pref.deleteObservers();
         }
+        prefMap.clear();
     }
 
     public <T> Pref<T> get(int keyId, T defaultValue) {
