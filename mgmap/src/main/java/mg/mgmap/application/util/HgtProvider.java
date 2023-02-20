@@ -58,6 +58,11 @@ public class HgtProvider {
 
     }
 
+    public void cleanup(){
+        hgtCache.evictAll();
+        timer.removeCallbacks(ttCheckHgts);
+    }
+
     private boolean hgtExists(String hgtName){
         return hgtSize.containsKey(hgtName);
     }
