@@ -22,6 +22,8 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.generic.util.Observer;
@@ -51,6 +53,10 @@ public class ExtendedTextView extends AppCompatTextView {
     private Object value = null;
     private int availableWidth = 0;
     private String availableText = null;
+    PropertyChangeListener pclPrState1 = null;
+    PropertyChangeListener pclPrState2 = null;
+    PropertyChangeListener pclPrEnabled = null;
+
 
     public ExtendedTextView(Context context) {
         this(context, null);
@@ -112,14 +118,17 @@ public class ExtendedTextView extends AppCompatTextView {
     public ExtendedTextView setData(Pref<Boolean> prState1, int drId1, int drId2){
         return setData(prState1, prState2, drId1, drId2, drId3, drId4);
     }
+
     public ExtendedTextView setData(Pref<Boolean> prState1, Pref<Boolean> prState2, int drId1, int drId2, int drId3, int drId4){
         if (prState1 != null){
             this.prState1 = prState1;
-            prState1.addObserver(e -> onChange(prState1.getKey()));
+            pclPrState1 = (e)->onChange(prState1.getKey());
+            prState1.addObserver(pclPrState1);
         }
         if (prState2 != null){
             this.prState2 = prState2;
-            prState2.addObserver(e -> onChange(prState2.getKey()));
+            pclPrState2 = (e)->onChange(prState2.getKey());
+            prState2.addObserver(pclPrState2);
         }
         this.drId1 = drId1;
         this.drId2 = drId2;
@@ -151,7 +160,8 @@ public class ExtendedTextView extends AppCompatTextView {
     }
     public ExtendedTextView setDisabledData(Pref<Boolean> prEnabled, int drIdDis){
         this.prEnabled = prEnabled;
-        prEnabled.addObserver(e -> { onChange(prEnabled.getKey()); setEnabled(); });
+        pclPrEnabled = (e)->{ onChange(prEnabled.getKey()); setEnabled(); };
+        prEnabled.addObserver(pclPrEnabled);
         this.drIdDis = drIdDis;
         setEnabled();
         onChange("setDisabledData");
@@ -266,6 +276,13 @@ public class ExtendedTextView extends AppCompatTextView {
                 setCompoundDrawables(drawable,null,null,null);
             }
         }
+    }
+
+
+    public void cleanup(){
+        if ((pclPrState1 != null)  && (prState1 != null))  prState1.deleteObserver(pclPrState1);
+        if ((pclPrState2 != null)  && (prState2 != null))  prState2.deleteObserver(pclPrState2);
+        if ((pclPrEnabled != null) && (prEnabled != null)) prEnabled.deleteObserver(pclPrEnabled);
     }
 
 }

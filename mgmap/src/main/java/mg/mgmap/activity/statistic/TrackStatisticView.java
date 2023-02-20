@@ -50,7 +50,7 @@ public class TrackStatisticView extends TableLayout {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static ArrayList<TrackStatisticView> boundViews = new ArrayList<>();
+    private static final ArrayList<TrackStatisticView> boundViews = new ArrayList<>();
     private final MGMapApplication application;
     public TrackLog trackLog = null;
     private final Observer modifiedObserver;
@@ -174,6 +174,7 @@ public class TrackStatisticView extends TableLayout {
 
     private void clearReferences(){
         mgLog.i("unbind_data "+trackLog.getName());
+        etvSelected.cleanup();
         trackLog.deleteObserver(modifiedObserver);
         trackLog.getPrefSelected().deleteObserver(selectedObserver);
         trackLog = null;
@@ -285,6 +286,5 @@ public class TrackStatisticView extends TableLayout {
             trackStatisticView.clearReferences();
         }
         boundViews.clear();
-        boundViews = null;
     }
 }
