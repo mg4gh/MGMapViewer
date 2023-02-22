@@ -439,12 +439,14 @@ public class FSBB extends FeatureService {
             for (int latitude = HgtProvider.getLower(bBox.minLatitude)+1; latitude<HgtProvider.getLower(bBox.maxLatitude); latitude++ ){
                 for (int longitude = HgtProvider.getLower(bBox.minLongitude)+1; longitude<HgtProvider.getLower(bBox.maxLongitude); longitude++ ){
                     String hgtName = hgtProvider.getHgtName(latitude, longitude);
-                    jobGroup.addJob(new BgJob(){
-                        @Override
-                        protected void doJob(){
-                            hgtProvider.dropHgt(hgtName);
-                        }
-                    });
+                    if (hgtProvider.hgtIsAvailable(hgtName)){
+                        jobGroup.addJob(new BgJob(){
+                            @Override
+                            protected void doJob(){
+                                hgtProvider.dropHgt(hgtName);
+                            }
+                        });
+                    }
                 }
             }
             jobGroup.setConstructed("Drop "+jobGroup.size()+" hgt files?");
