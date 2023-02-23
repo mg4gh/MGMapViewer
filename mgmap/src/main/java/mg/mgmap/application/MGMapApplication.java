@@ -31,35 +31,36 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import mg.mgmap.BuildConfig;
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
+import mg.mgmap.application.util.ElevationProvider;
+import mg.mgmap.application.util.ElevationProviderImpl;
+import mg.mgmap.application.util.ExtrasUtil;
+import mg.mgmap.application.util.GeoidProvider;
 import mg.mgmap.application.util.GpsSupervisorWorker;
 import mg.mgmap.application.util.HgtProvider;
+import mg.mgmap.application.util.MetaDataUtil;
 import mg.mgmap.application.util.NotificationUtil;
+import mg.mgmap.application.util.PersistenceManager;
+import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.TrackLog;
+import mg.mgmap.generic.model.TrackLogRef;
+import mg.mgmap.generic.model.WriteableTrackLog;
+import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Observer;
-import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.hints.HintUtil;
-import mg.mgmap.service.bgjob.BgJobService;
-import mg.mgmap.R;
-import mg.mgmap.generic.model.WriteableTrackLog;
-import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.TrackLogRef;
-import mg.mgmap.service.location.TrackLoggerService;
-import mg.mgmap.application.util.ElevationProvider;
-import mg.mgmap.generic.util.BgJob;
-import mg.mgmap.application.util.GeoidProvider;
-import mg.mgmap.generic.util.gpx.GpxExporter;
-import mg.mgmap.application.util.MetaDataUtil;
-import mg.mgmap.application.util.PersistenceManager;
-import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
-import mg.mgmap.generic.model.TrackLog;
-import mg.mgmap.application.util.ExtrasUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
+import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.util.hints.HintUtil;
+import mg.mgmap.generic.util.gpx.GpxExporter;
+import mg.mgmap.service.bgjob.BgJobService;
+import mg.mgmap.service.location.TrackLoggerService;
+import mg.mgmap.R;
 
 import java.io.File;
 import java.io.IOException;
@@ -158,7 +159,7 @@ public class MGMapApplication extends Application {
         prefCache = new PrefCache(this);
 
         hgtProvider = new HgtProvider(persistenceManager, getAssets()); // for hgt file handling
-        elevationProvider = new ElevationProvider(hgtProvider); // for height data handling
+        elevationProvider = new ElevationProviderImpl(hgtProvider); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
         metaDataUtil = new MetaDataUtil(persistenceManager);
         notificationUtil = new NotificationUtil(this);
