@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -21,12 +23,15 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonWriter;
 
 import mg.mgmap.generic.util.basic.MGLog;
 import okhttp3.Call;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class DynamicHandler {
@@ -88,20 +93,30 @@ public class DynamicHandler {
             StringBuilder url = new StringBuilder(cOne.getString("URL"));
             mgLog.i("1 URL="+url);
 
-            JsonObject params = cOne.getJsonObject("Params");
-            if (params != null){
-                for (Map.Entry<String, JsonValue> entry : params.entrySet()){
-                    String k = entry.getKey();
-                    url.append("&").append(kv(k, params.getString(k)));
+            if (type.equals("GET")) {
+                JsonObject params = cOne.getJsonObject("Params");
+                if (params != null){
+                    for (Map.Entry<String, JsonValue> entry : params.entrySet()){
+                        String k = entry.getKey();
+                        url.append("&").append(kv(k, params.getString(k)));
+                    }
                 }
             }
             mgLog.i("2 URL="+url);
 
             Request.Builder requestBuilder = new Request.Builder()
-                    .header("Content-Encoding", "gzip")
                     .url(url.toString());
 
             if (type.equals("POST")){
+                JsonObject params = cOne.getJsonObject("Params");
+                if (params != null){
+                    String sParams = subst(json2String(params));
+                    mgLog.i("sParams="+sParams);
+                    RequestBody body = RequestBody.create(sParams, MediaType.parse("application/json"));
+                    requestBuilder.post(body);
+                }
+
+
                 JsonObject bodyParams = cOne.getJsonObject("BodyReq");
                 if (bodyParams != null){
                     FormBody.Builder fbb = new FormBody.Builder();
@@ -206,34 +221,46 @@ public class DynamicHandler {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public String subst(String value){
-        switch (value) {
-            case "${UUID}":
-                value = UUID.randomUUID().toString();
-                break;
-            case "${NOW}":
-                value = "" + System.currentTimeMillis();
-                break;
-            case "${NOW_1}":
-                value = "" + (System.currentTimeMillis() + 1);
-                break;
-            case "${NOW_T}":
-                value = "" + (System.currentTimeMillis() / 1000);
-                break;
+    public String subst(String orig){
+        int aidx;
+        while ((aidx=orig.indexOf("$")) >= 0){
+            String sub1 = orig.substring(0,aidx);
+            int eidx = orig.indexOf("}", aidx);
+            if (eidx == -1) break;  // unexpected behaviour
+            String value = orig.substring(aidx, eidx+1);
+            String sub3 = orig.substring(eidx+1);
+
+            switch (value) {
+                case "${UUID}":
+                    value = UUID.randomUUID().toString();
+                    break;
+                case "${NOW}":
+                    value = "" + System.currentTimeMillis();
+                    break;
+                case "${NOW_1}":
+                    value = "" + (System.currentTimeMillis() + 1);
+                    break;
+                case "${NOW_T}":
+                    value = "" + (System.currentTimeMillis() / 1000);
+                    break;
+            }
+            if ((value!=null) && value.startsWith("$KV{") && value.endsWith("}")){
+                String varName = value.substring(4,value.length()-1);
+                value = varName+"="+map.get(varName);
+            }
+            if ((value!=null) && value.startsWith("${") && value.endsWith("}")){
+                String varName = value.substring(2,value.length()-1);
+                value = map.get(varName);
+            }
+            if ((value!=null) && value.startsWith("$P{") && value.endsWith("}")){
+                String varName = value.substring(3,value.length()-1);
+                value = props.getProperty(varName);
+            }
+            String orig2 = sub1 + value + sub3;
+            if (orig.equals(orig2)) break;  // unexpected behaviour
+            orig = orig2;
         }
-        if ((value!=null) && value.startsWith("$KV{") && value.endsWith("}")){
-            String varName = value.substring(4,value.length()-1);
-            value = varName+"="+map.get(varName);
-        }
-        if ((value!=null) && value.startsWith("${") && value.endsWith("}")){
-            String varName = value.substring(2,value.length()-1);
-            value = map.get(varName);
-        }
-        if ((value!=null) && value.startsWith("$P{") && value.endsWith("}")){
-            String varName = value.substring(3,value.length()-1);
-            value = props.getProperty(varName);
-        }
-        return value;
+        return orig;
     }
 
     public String kv(String key, String value){
@@ -294,7 +321,7 @@ public class DynamicHandler {
             String line;
             int cnt = 0;
             while ((line = in.readLine()) != null){
-                mgLog.v(String.format("lc=%04d %s", cnt++,line));
+                mgLog.v(String.format(Locale.ENGLISH, "lc=%04d %s", cnt++,line));
                 if (cnt > numLines) return;
             }
 
@@ -304,4 +331,11 @@ public class DynamicHandler {
     }
 
 
+    public String json2String(JsonObject jo){
+        StringWriter sw = new StringWriter();
+        JsonWriter jsonWriter = Json.createWriter(sw);
+        jsonWriter.writeObject(jo);
+        jsonWriter.close();
+        return sw.toString();
+    }
 }
