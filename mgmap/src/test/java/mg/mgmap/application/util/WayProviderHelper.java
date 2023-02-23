@@ -9,11 +9,11 @@ import java.util.List;
 
 import mg.mgmap.generic.util.WayProvider;
 
-public class WayProviderTest implements WayProvider {
+public class WayProviderHelper implements WayProvider {
 
     MapDataStore mds;
 
-    public WayProviderTest(MapDataStore mds){
+    public WayProviderHelper(MapDataStore mds){
         this.mds = mds;
     }
     public List<Way> getWays(Tile tile){

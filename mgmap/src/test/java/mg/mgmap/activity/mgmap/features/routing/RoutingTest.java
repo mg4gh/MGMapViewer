@@ -8,8 +8,8 @@ import org.mapsforge.map.reader.MapFile;
 import java.io.File;
 
 import mg.mgmap.application.util.ElevationProvider;
-import mg.mgmap.application.util.ElevationProviderTestImpl;
-import mg.mgmap.application.util.WayProviderTest;
+import mg.mgmap.application.util.ElevationProviderImplHelper;
+import mg.mgmap.application.util.WayProviderHelper;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -27,12 +27,12 @@ public class RoutingTest {
                 10, // accept long detours in interactive mode
                 1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
 
-        ElevationProvider elevationProvider = new ElevationProviderTestImpl();
+        ElevationProvider elevationProvider = new ElevationProviderImplHelper();
         File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
 
         MapDataStore mds = new MapFile(mapFile, "de");
-        WayProvider wayProvider = new WayProviderTest(mds);
+        WayProvider wayProvider = new WayProviderHelper(mds);
         GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider);
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext);
