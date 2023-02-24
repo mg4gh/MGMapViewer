@@ -50,6 +50,7 @@
 
     <string name="MGMapApplication_pref_Restart">MGMapApplication.Restart</string>
     <string name="MGMapApplication_pref_Developer">MGMapApplication.Developer</string>
+    <string name="MGMapApplication_pref_MetaData_loading">MGMapApplication.MetaDataLoading</string>
 
     <string name="my_rendertheme_menu_key">myrenderthememenu</string>
 

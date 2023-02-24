@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.statistic.TrackStatisticActivity;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
 
@@ -45,6 +46,12 @@ public class StatisticTest extends BaseTestCase {
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
         });
         SystemClock.sleep(2000);
+        Pref<Boolean> metaLoading = mgMapApplication.getPrefCache().get(R.string.MGMapApplication_pref_MetaData_loading, true);
+        int cnt =0;
+        while (metaLoading.getValue()){
+            SystemClock.sleep(200);
+            mgLog.i("wait for finish of metadata loading, cnt="+ cnt++);
+        }
 
         setCursorToCenterPos();
         addRegex(".*onClick mi_statistic.*");

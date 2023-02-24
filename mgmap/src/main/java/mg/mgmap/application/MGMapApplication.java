@@ -204,6 +204,8 @@ public class MGMapApplication extends Application {
         // initialize Theme and MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(() -> {
             UUID uuid = currentRun;
+            Pref<Boolean> metaLoading = prefCache.get(R.string.MGMapApplication_pref_MetaData_loading, true);
+            metaLoading.setValue(true);
             if (persistenceManager.getThemeNames().length == 0){
                 BgJobGroup jobGroup = new BgJobGroup(this, null, null, new BgJobGroupCallback() {
                     @Override
@@ -222,6 +224,7 @@ public class MGMapApplication extends Application {
                 trackStatisticFilter.checkFilter(trackLog);
                 metaTrackLogs.put(trackLog.getNameKey(),trackLog);
             }
+            metaLoading.setValue(false);
         }).start();
 
         // initialize handling of new points from TrackLoggerService

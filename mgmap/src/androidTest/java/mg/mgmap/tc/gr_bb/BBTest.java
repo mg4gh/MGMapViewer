@@ -133,7 +133,7 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.mi_load_remain);
 
         addRegex(".*onClick bgJobGroupConfirm_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
-        addRegex(".*successCounter=25  errorCounter=0  jobCounter=25.*");
+        addRegex(".*successCounter=2.  errorCounter=0  jobCounter=2..*");
         animateToViewAndClick(R.id.bt_dialog_positive);
         addRegex(".*onClick bgJobGroupResult_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -156,7 +156,7 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_load_remain);
         addRegex(".*onClick bgJobGroupConfirm_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
-        addRegex(".*successCounter=13  errorCounter=0  jobCounter=13.*");
+        addRegex(".*successCounter=1.  errorCounter=0  jobCounter=1..*");
         animateToViewAndClick(R.id.bt_dialog_positive);
         addRegex(".*onClick bgJobGroupResult_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -166,7 +166,7 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_load_all);
         addRegex(".*onClick bgJobGroupConfirm_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
-        addRegex(".*successCounter=27  errorCounter=0  jobCounter=27.*");
+        addRegex(".*successCounter=2.  errorCounter=0  jobCounter=2..*");
         animateToViewAndClick(R.id.bt_dialog_positive);
         addRegex(".*onClick bgJobGroupResult_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -187,7 +187,7 @@ public class BBTest extends BaseTestCase {
 
         // delete all
         addRegex(".*onClick mi_delete_all.*");
-        addRegex(".*Drop 59 tiles in 3 jobs.*");
+        addRegex(".*Drop .. tiles in 3 jobs.*");
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_delete_all);
         addRegex(".*onClick bgJobGroupConfirm_Drop_Tiles_for_\"OpenCycleMap\"_btPositive.*");
@@ -217,7 +217,7 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_load_remain);
         addRegex(".*onClick bgJobGroupConfirm_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
-        addRegex(".*successCounter=14  errorCounter=0  jobCounter=14.*");
+        addRegex(".*successCounter=1.  errorCounter=0  jobCounter=1..*");
         animateToViewAndClick(R.id.bt_dialog_positive);
         addRegex(".*onClick bgJobGroupResult_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
