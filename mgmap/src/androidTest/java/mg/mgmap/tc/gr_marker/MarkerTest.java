@@ -180,7 +180,7 @@ public class MarkerTest extends BaseTestCase {
 
 
     @Test(timeout = 50000)
-    public void _02_snap_14() {
+    public void _03_snap_14() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 //        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
@@ -214,7 +214,7 @@ public class MarkerTest extends BaseTestCase {
     }
 
     @Test(timeout = 50000)
-    public void _03_snap_15() {
+    public void _04_snap_15() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 //        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
@@ -248,7 +248,7 @@ public class MarkerTest extends BaseTestCase {
     }
 
     @Test(timeout = 50000)
-    public void _04_snap_16() {
+    public void _05_snap_16() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 //        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
