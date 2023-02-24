@@ -23,6 +23,7 @@ import org.mapsforge.map.model.DisplayModel;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,6 +33,7 @@ import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
 import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -388,10 +390,12 @@ public class FSRouting extends FeatureService {
             mgLog.d("pos="+wpm+" threshold="+threshold);
             TreeSet<ApproachModel> approaches = routingEngine.calcApproaches(wpm, (int)threshold);
             if (approaches.size() > 0){
-                PointModel pos = approaches.first().getApproachNode();
-                mgLog.i("optimize Pos "+wpm+" to "+pos);
+                GNode pos = approaches.first().getApproachNode();
+                mgLog.i("optimize Pos "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm",pos.getNeighbour().getCost()));
                 wpm.setLat(pos.getLat());
                 wpm.setLon(pos.getLon());
+            } else {
+                mgLog.i("optimize Pos "+wpm + " no approach");
             }
         }
 

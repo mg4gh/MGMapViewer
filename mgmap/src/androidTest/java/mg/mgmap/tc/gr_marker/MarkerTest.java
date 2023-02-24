@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
 
@@ -82,6 +83,107 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
+    @Test(timeout = 50000)
+    public void _02_snap_14() {
+        mgLog.i("started");
+        MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
+//        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
+        mgMapActivity.runOnUiThread(() -> {
+            MapPosition mp = new MapPosition(new LatLong(54.354733,13.274653), (byte) 14);
+            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+        });
+        setCursorToCenterPos();
+        SystemClock.sleep(2000);
+
+        addRegex(".*onClick mi_marker_edit.*");
+        animateToViewAndClick(R.id.menu_marker);
+        animateToViewAndClick(R.id.mi_marker_edit);
+
+
+        addRegex(".*optimize Pos Lat=54.355188, Lon=13.272999 to Lat=54.354733, Lon=13.272998, Ele=6.0m dist=50.7m.*");
+        addRegex(".*optimize Pos Lat=54.355642, Lon=13.275995 to Lat=54.354730, Lon=13.275992, Ele=3.4m dist=101.5m.*");
+        addRegex(".*optimize Pos Lat=54.356097, Lon=13.278991 to Lat=54.354727, Lon=13.278987, Ele=3.0m dist=152.5m.*");
+        addRegex(".*optimize Pos Lat=54.356534, Lon=13.281988 no approach.*");
+
+        double disty  = PointModelUtil.latitudeDistance(50.0);
+        double distx = 0.003;
+        for (int i=0; i<4; i++){
+            animateToPosAndClick(54.354732+(i+1)*disty, 13.273+(i)*distx);
+        }
+
+        SystemClock.sleep(1000);
+        animateTo(getCenterPos());
+        SystemClock.sleep(2000);
+        mgLog.i("finished");
+    }
+
+    @Test(timeout = 50000)
+    public void _03_snap_15() {
+        mgLog.i("started");
+        MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
+//        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
+        mgMapActivity.runOnUiThread(() -> {
+            MapPosition mp = new MapPosition(new LatLong(54.354733,13.274653), (byte) 15);
+            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+        });
+        setCursorToCenterPos();
+        SystemClock.sleep(2000);
+
+        addRegex(".*onClick mi_marker_edit.*");
+        animateToViewAndClick(R.id.menu_marker);
+        animateToViewAndClick(R.id.mi_marker_edit);
+
+
+        addRegex(".*optimize Pos Lat=54.355006, Lon=13.272999 to Lat=54.354733, Lon=13.272998, Ele=6.0m dist=30.4m.*");
+        addRegex(".*optimize Pos Lat=54.355279, Lon=13.275995 to Lat=54.354730, Lon=13.275993, Ele=3.4m dist=61.1m.*");
+        addRegex(".*optimize Pos Lat=54.355542, Lon=13.278991 to Lat=54.354727, Lon=13.278989, Ele=3.0m dist=90.7m.*");
+        addRegex(".*optimize Pos Lat=54.355815, Lon=13.281988 no approach.*");
+
+        double disty  = PointModelUtil.latitudeDistance(30.0);
+        double distx = 0.003;
+        for (int i=0; i<4; i++){
+            animateToPosAndClick(54.354732+(i+1)*disty, 13.273+(i)*distx);
+        }
+
+        SystemClock.sleep(1000);
+        animateTo(getCenterPos());
+        SystemClock.sleep(2000);
+        mgLog.i("finished");
+    }
+
+    @Test(timeout = 50000)
+    public void _04_snap_16() {
+        mgLog.i("started");
+        MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
+//        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
+        mgMapActivity.runOnUiThread(() -> {
+            MapPosition mp = new MapPosition(new LatLong(54.354733,13.274653), (byte) 16);
+            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+        });
+        setCursorToCenterPos();
+        SystemClock.sleep(2000);
+
+        addRegex(".*onClick mi_marker_edit.*");
+        animateToViewAndClick(R.id.menu_marker);
+        animateToViewAndClick(R.id.mi_marker_edit);
+
+
+        addRegex(".*optimize Pos Lat=54.354869, Lon=13.272999 to Lat=54.354733, Lon=13.272999, Ele=6.0m dist=15.1m.*");
+        addRegex(".*optimize Pos Lat=54.355001, Lon=13.274497 to Lat=54.354732, Lon=13.274496, Ele=5.0m dist=29.9m.*");
+        addRegex(".*optimize Pos Lat=54.355138, Lon=13.275995 to Lat=54.354730, Lon=13.275994, Ele=3.4m dist=45.4m.*");
+        addRegex(".*optimize Pos Lat=54.355274, Lon=13.277493 no approach.*");
+
+        double disty  = PointModelUtil.latitudeDistance(15.0);
+        double distx = 0.0015;
+        for (int i=0; i<4; i++){
+            animateToPosAndClick(54.354732+(i+1)*disty, 13.273+(i)*distx);
+        }
+
+        SystemClock.sleep(1000);
+        animateTo(getCenterPos());
+        SystemClock.sleep(2000);
+        mgLog.i("finished");
+    }
 
 
 
