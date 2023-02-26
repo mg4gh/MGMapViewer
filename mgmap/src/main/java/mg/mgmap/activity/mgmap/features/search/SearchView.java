@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.mgmap.features.search;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -46,6 +47,7 @@ public class SearchView extends LinearLayout {
     ArrayList<TextView> searchResults = new ArrayList<>();
     private static final int NUM_SEARCH_RESULTS = 5;
 
+    @SuppressLint("DiscouragedApi")
     void init(MGMapActivity activity){
         this.activity = activity;
         setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -55,6 +57,7 @@ public class SearchView extends LinearLayout {
 
 
         searchText = new EditText(context);
+        searchText.setId(R.id.search_edit_text);
         searchText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         searchText.setHint("Search Text");
         searchText.setHintTextColor(CC.getColor(R.color.GRAY100_A150));
@@ -64,6 +67,7 @@ public class SearchView extends LinearLayout {
 
         for (int i=0; i<NUM_SEARCH_RESULTS; i++){
             TextView textView = new TextView(context);
+            textView.setId( this.getResources().getIdentifier("search_result"+(i+1), "id", activity.getPackageName()) );
             LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             llParams.setMargins(5,0,5,5);
             textView.setLayoutParams(llParams);

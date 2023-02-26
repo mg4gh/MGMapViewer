@@ -97,5 +97,11 @@
     <item type="id" name="stat_mi_delete"  />
     <item type="id" name="stat_mi_back"  />
 
+    <item type="id" name="search_edit_text"  />
+    <item type="id" name="search_result1"  />
+    <item type="id" name="search_result2"  />
+    <item type="id" name="search_result3"  />
+    <item type="id" name="search_result4"  />
+    <item type="id" name="search_result5"  />
 
 </resources>
