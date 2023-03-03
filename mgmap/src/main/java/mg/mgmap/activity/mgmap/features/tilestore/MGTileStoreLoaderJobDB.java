@@ -59,7 +59,7 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
             }
         }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        IOUtil.copyStreams(conn.getInputStream() , os);
+        IOUtil.copyStreams(is , os);
         byte[] tileData = os.toByteArray();
 
         mgTileStoreDB.saveTileBytes(tile, tileData, bOld);
