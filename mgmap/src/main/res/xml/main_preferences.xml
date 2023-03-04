@@ -6,6 +6,7 @@
         app:iconSpaceReserved="false"
         >
         <Preference
+            app:key="@string/Layers_pref_chooseMap_key"
             app:title="@string/Layers_pref_chooseMap_title"
             app:summary="@string/Layers_pref_chooseMap_summary"
             app:fragment="mg.mgmap.activity.settings.MapLayersPreferenceScreen"
