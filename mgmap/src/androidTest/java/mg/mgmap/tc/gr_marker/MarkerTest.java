@@ -157,7 +157,7 @@ public class MarkerTest extends BaseTestCase {
         animateSwipeLatLong(54.425327,13.437579, 54.420327,13.437579);
         SystemClock.sleep(1000);
         mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(2471,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        Assert.assertEquals(2470,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
         Assert.assertEquals(3,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateToPosAndClick( 54.420327,13.437579);

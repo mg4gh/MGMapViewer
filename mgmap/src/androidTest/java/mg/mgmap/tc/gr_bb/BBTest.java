@@ -265,7 +265,7 @@ public class BBTest extends BaseTestCase {
         SystemClock.sleep(1000);
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
         mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.3,13.448283), (byte) 7);
+            MapPosition mp = new MapPosition(new LatLong(54.4,13.448283), (byte) 7);
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
         });
         setCursorToCenterPos();
