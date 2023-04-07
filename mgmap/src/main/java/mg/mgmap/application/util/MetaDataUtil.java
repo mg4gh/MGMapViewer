@@ -143,7 +143,8 @@ public class MetaDataUtil {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] b = new byte[MetaData.BUF_SIZE];
             while (in.available() >= b.length){
-                assert (b.length == in.read(b));
+                int inl = in.read(b);
+                assert (b.length == inl);
                 ByteBuffer buf = ByteBuffer.wrap(b);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
                 if (buf.getLong() == MAGIC) break;  //indicates block with first lat,lon,ele values
@@ -152,8 +153,10 @@ public class MetaDataUtil {
             ByteBuffer buf = ByteBuffer.wrap(baos.toByteArray());
             buf.order(ByteOrder.LITTLE_ENDIAN);
 
-            assert( buf.getLong() == MAGIC-1 );
-            assert( buf.getInt() == VERSION );
+            long magic = buf.getLong();
+            assert( magic == MAGIC-1 );
+            int version = buf.getInt();
+            assert( version == VERSION );
 
             trackLog.setTrackStatistic( new TrackLogStatistic().fromByteBuffer(buf).setFrozen(true) );
             int numSegments = buf.getInt();
@@ -212,8 +215,10 @@ public class MetaDataUtil {
                     MetaData metaData = segment.getMetaDatas().get(mIdx);
                     ByteBuffer buf = getNextLaloBuf(in);
                     assert  (buf != null);
-                    assert  ( buf.getShort() == segment.getSegmentIdx() );
-                    assert  ( buf.getShort() == mIdx );
+                    short segIdx = buf.getShort();
+                    assert  ( segIdx == segment.getSegmentIdx() );
+                    short metaIdx = buf.getShort();
+                    assert  ( metaIdx == mIdx );
                     // all checks passed, now read the laloel values
                     for (int pIdx=0; pIdx<metaData.numPoints; pIdx++){
                         PointModelImpl pmi = new PointModelImpl();
@@ -234,7 +239,8 @@ public class MetaDataUtil {
             mgLog.d(in.available());
             while (in.available() >= MetaData.BUF_SIZE){
                 byte[] b = new byte[MetaData.BUF_SIZE];
-                assert (b.length == in.read(b));
+                int inl = in.read(b);
+                assert (b.length == inl);
                 ByteBuffer buf = ByteBuffer.wrap(b);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
 
