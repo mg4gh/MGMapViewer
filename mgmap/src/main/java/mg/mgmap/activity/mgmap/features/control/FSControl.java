@@ -247,6 +247,7 @@ public class FSControl extends FeatureService {
         getControlView().setVerticalOffset( );
 
         getTimer().postDelayed(hintInitialMapDownload, 300);
+        setEnableMenu(true);
     }
 
     @Override
