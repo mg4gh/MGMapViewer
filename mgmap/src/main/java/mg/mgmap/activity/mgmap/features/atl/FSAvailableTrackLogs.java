@@ -169,7 +169,7 @@ public class FSAvailableTrackLogs extends FeatureService {
             }
         }
         prefStlVisibility.setValue((trackLog != null) && (trackLog.getTrackStatistic().getNumPoints() >=2));
-
+        prefStlVisibility.onChange();
     }
 
     private void hideAvailableTrackLogs(){
