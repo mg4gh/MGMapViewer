@@ -4,15 +4,22 @@
 
 
 1. Storage location: The main storage location of this app is  
-   `/<sdcard>/Andorid/data/mg.mgmap/files/MGMapViewer`  
+   `/<sdcard>/Andorid/data/<flavorType>/files/MGMapViewer`  
    where \<sdcard> is not necessarily a real sdcard. It's rather the default external storage location. Often the path is "/storage/emulated/0".
-   Sometimes the term "internal storage" is used. Keep in mind
-   that the uninstall of the app deletes all data!  
+   Sometimes the term "internal storage" or "main storage" is used. 
+   The \<flavorType\> is depending on your installation one of these values
+      - de.soft4mg.mgmap.rel (official playstore variant)
+      - de.soft4mg.mgmap     (debug version of playstore flavor - apk only installable via AndroidStudio)
+      - mg.mamap.rel         (release version of apk from mg4gh github page)
+      - mg.mamap             (debug version of apk from mg4gh github page)
+   
    Remember the storage location, you might need it. Blame Google, if you don't like it :-)
 
-   With each Android version it became more difficult to access this location with a file manager on the device.
-   Meanwhile (Android 13) there is no way to do it on the device. So if you want manually read out data or place a configuration file there, then you need a PC or Laptop and 
-   a USB cable. Then (and only then) you can access all files and folders.
+   Keep in mind that the uninstall of the app deletes this directory including all data!  
+   With each Android version it became more difficult to access this location with a file manager on the device. 
+   Currently (Android 13) you can use "Dateimanager+" and "QuickEdit" (after granting permissions) to manipulate files in this tree. 
+   Alternatively you can access this file system via PC or Laptop and
+   a USB cable. 
 
 
 2. The app creates below the MGMapViewer directory new subdirectories:
