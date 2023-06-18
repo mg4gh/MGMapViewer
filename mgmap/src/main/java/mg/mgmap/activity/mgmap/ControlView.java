@@ -422,8 +422,7 @@ public class ControlView extends RelativeLayout {
         etv.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
                 int paddingHorizontal = Math.max((right-left - etv.getDrawableSize()) / 2, 0);
-                int paddingVertical = Math.max((bottom-top - etv.getDrawableSize()) / 2, 0);
-                etv.setPadding(paddingHorizontal,paddingVertical,paddingHorizontal,paddingVertical);
+                etv.setPadding(paddingHorizontal,etv.getPaddingTop(),paddingHorizontal,etv.getPaddingBottom());
             }
         });
         return etv;
