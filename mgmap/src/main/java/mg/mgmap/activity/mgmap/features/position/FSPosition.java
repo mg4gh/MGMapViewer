@@ -51,6 +51,7 @@ public class FSPosition extends FeatureService {
     private final Pref<Boolean> prefGpsEnabled = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefRefreshMapView = getPref(R.string.FSPosition_pref_RefreshMapView, false);
     private final Pref<Boolean> prefMapMoving = getPref(R.string.FSPosition_pref_MapMoving, false);
+    private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
 
     private ExtendedTextView etvHeight = null;
 
@@ -66,6 +67,7 @@ public class FSPosition extends FeatureService {
         prefGps.addObserver(refreshObserver);
         prefCenter.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
+        prefEditMarkerTrack.addObserver((e) -> setupTTMapMovingOff());
         prefRefreshMapView.addObserver((e) -> refreshMapView());
 
         prefMapMoving.addObserver((e) -> {
@@ -163,7 +165,7 @@ public class FSPosition extends FeatureService {
     }
 
     private void centerCurrentPosition(PointModel pm){
-        if ((pm != null) && prefCenter.getValue() && !prefMapMoving.getValue()) {
+        if ((pm != null) && prefCenter.getValue() && !prefMapMoving.getValue() && !prefEditMarkerTrack.getValue()) {
             IMapViewPosition mvp = getMapView().getModel().mapViewPosition;
             LatLong pos = new LatLong(pm.getLat(), pm.getLon());
             mvp.setMapPosition(new MapPosition(pos, mvp.getZoomLevel()));
