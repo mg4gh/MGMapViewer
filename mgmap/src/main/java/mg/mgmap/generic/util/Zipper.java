@@ -121,9 +121,9 @@ public class Zipper {
             long fileRead = 0;
 
             OutputStream outputStream = null;
+            File extractedFile = new File(extractedZipFilePath, localFileHeader.getFileName());
+            mgLog.v("extractedFile="+extractedFile);
             try {
-                File extractedFile = new File(extractedZipFilePath, localFileHeader.getFileName());
-                mgLog.v("extractedFile="+extractedFile);
 
                 if (localFileHeader.isDirectory()){
                     boolean res = extractedFile.mkdirs();
@@ -146,6 +146,13 @@ public class Zipper {
 
             } catch (Exception e) {
                 mgLog.e(e);
+                try {
+                    if (extractedFile.exists()){
+                        extractedFile.delete();
+                    }
+                } catch (Exception e1){
+                    mgLog.e(e1);
+                }
             } finally {
                 try {
                     if (outputStream != null){
