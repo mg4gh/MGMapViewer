@@ -63,27 +63,35 @@ public class TileStoreLoader {
         init();
 
         jobGroup = new BgJobGroup(application, activity, "", new BgJobGroupCallback() {
+
+            boolean allowRetry = true;
             @Override
             public boolean groupFinished(BgJobGroup bgJobGroup, int total, int success, int fail) {
                 if (success > 0){
                     mgTileStore.purgeCache();
                     activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle(); //after Tile downloads/drops this helps to make downloaded tiles visible
                 }
-                return (fail == total) && (new File(storeDir, "retry.json").exists());
+                mgLog.d("allowRetry="+allowRetry);
+                return (fail == total) && (new File(storeDir, "retry.json").exists()) && allowRetry;
             }
 
             @Override
             public void retry(BgJobGroup jobGroup) {
+                allowRetry = false;
+                mgLog.d("allowRetry="+allowRetry);
                 new Thread(() -> {
                     try {
                         FileInputStream is = new FileInputStream(new File(storeDir, "retry.json"));
                         FileOutputStream os = new FileOutputStream(new File(storeDir, "cookies.json"));
+                        File fProps = new File(storeDir, "param.properties");
+                        File fPropsTxt = new File(storeDir, "param.properties.txt"); // some apps add ".txt" manager during download - clean this up
+                        if (!fProps.exists() && fPropsTxt.exists()) fPropsTxt.renameTo(fProps);
                         Properties props = new Properties();
-                        props.load( new FileInputStream(new File(storeDir, "param.properties")) );
+                        props.load( new FileInputStream(fProps) );
                         if (new DynamicHandler(is, os, props).run()){
                             init();
-                            jobGroup.doit(); // this is the real retry
                         }
+                        jobGroup.doit(); // this is the real retry
                     } catch (Exception e) {
                         mgLog.e(e);
                     }
@@ -98,7 +106,7 @@ public class TileStoreLoader {
         xmlTileSource = new XmlTileSource(config);
 
         File cookies = new File(storeDir, "cookies.json");
-        if (cookies.exists()) {
+        if (cookies.exists() && (cookies.length() > 0)) {
             Map<String, String> cookieMap = new HashMap<>();
 
             JsonArray cAll = null;

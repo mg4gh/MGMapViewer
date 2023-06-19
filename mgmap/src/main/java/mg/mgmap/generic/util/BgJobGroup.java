@@ -77,9 +77,7 @@ public class BgJobGroup {
         String message = "Title=\""+title+"\" successCounter="+successCounter+"  errorCounter="+errorCounter+"  jobCounter="+jobCounter;
         mgLog.d(message+ ((e==null)?"":" "+e.getMessage()));
         if (successCounter + errorCounter == jobCounter){
-            if (groupCallback.groupFinished(this, jobCounter, successCounter, errorCounter)){
-                offerRetries = true;
-            }
+            offerRetries =  groupCallback.groupFinished(this, jobCounter, successCounter, errorCounter);
             if (title != null){
                 activity.runOnUiThread(this::reportResult);
             } else {
