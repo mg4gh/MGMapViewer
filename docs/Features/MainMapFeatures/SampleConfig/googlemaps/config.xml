@@ -1,0 +1,12 @@
+<tilesource>
+	<hostnames>
+		<hostname>mt.google.com</hostname>
+	</hostnames>
+	<port>443</port>
+	<urlPart>/vt/lyrs=m&amp;x={x}&amp;y={y}&amp;z={z}</urlPart>
+	<parallelRequestsLimit>1</parallelRequestsLimit>
+	<protocol>https</protocol>
+	<zoomLevelMin>4</zoomLevelMin>
+	<zoomLevelMax>20</zoomLevelMax>
+	<ttl>8279000</ttl>
+</tilesource>

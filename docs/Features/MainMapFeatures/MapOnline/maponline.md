@@ -5,7 +5,7 @@
 A maponline layer consists of a directory with the name of the layer.
 This is a direct subdirectory of ./MGMapViewer/maps/maponline. Inside of
 this directory there is a description file with the fix name
-`config.xml`. The content of this [file](./config.xml) looks like:
+`config.xml`. The content of such a file looks like:
 
 ```
 <tilesource>
@@ -26,7 +26,11 @@ this directory there is a description file with the fix name
 
 The description contains all data to access an online tile server. In the urlPart definition the {z} means zoom level, {x} the x-tile number and {y} the y-tile number.
 
+The next figure shows an online map based on this configuration example: 
+
 <img src="./maponline_map.png" width="400" />
+
+Here you can find more [samples](../SampleConfig/sampleconfigs.md) for such configuration files.
 
 <small><small>[Back to Index](../../../index.md)</small></small>
  

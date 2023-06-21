@@ -1,0 +1,21 @@
+<tilesource>
+	<hostnames>
+		<hostname>tileserver.4umaps.com</hostname>
+	</hostnames>
+	<port>443</port>
+	<urlPart>/{z}/{x}/{y}.png</urlPart>
+	<parallelRequestsLimit>8</parallelRequestsLimit>
+	<protocol>https</protocol>
+	<zoomLevelMin>6</zoomLevelMin>
+	<zoomLevelMax>15</zoomLevelMax>
+	<ttl>8279000</ttl>
+	<requestProperties>
+		<property key="User-Agent" value="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0" />
+		<property key="User-Upgrade-Insecure-Requests" value="1" />
+		<property key="Accept" value="text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8" />
+		<property key="Accept-Encoding" value="gzip, deflate, br" />
+		<property key="Connection" value="keep-alive" />
+	</requestProperties>
+	<connectTimeout>3000</connectTimeout>
+
+</tilesource>
