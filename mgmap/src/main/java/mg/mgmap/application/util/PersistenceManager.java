@@ -326,12 +326,24 @@ public class PersistenceManager {
         return themesDir;
     }
     public String[] getThemeNames() {
-        return themesDir.list((file, s) -> {
-            if (!s.endsWith(".xml")) return false;
-            return !(new File(file,s).isDirectory());
-        });
+        ArrayList<String> themeNames = new ArrayList<>();
+        getThemeNames(themesDir, themeNames);
+        return themeNames.toArray(new String[0]);
     }
-
+    @SuppressWarnings("ConstantConditions")
+    public void getThemeNames(File dir, ArrayList<String> resList) {
+        for (File f : dir.listFiles()){
+            if (f.isDirectory()){
+                getThemeNames(f, resList);
+            } else {
+                if (f.getName().endsWith(".xml")){
+                    String theme = f.getAbsolutePath().replace(themesDir.getAbsolutePath()+"/","");
+                    mgLog.i("found theme "+theme);
+                    resList.add(theme);
+                }
+            }
+        }
+    }
 
     public File getHgtFile(String hgtName){
         return new File(hgtDir, getHgtFilename(hgtName));

@@ -206,16 +206,33 @@ public class MGMapApplication extends Application {
             UUID uuid = currentRun;
             Pref<Boolean> metaLoading = prefCache.get(R.string.MGMapApplication_pref_MetaData_loading, true);
             metaLoading.setValue(true);
-            if (persistenceManager.getThemeNames().length == 0){
-                BgJobGroup jobGroup = new BgJobGroup(this, null, null, new BgJobGroupCallback() {
-                    @Override
-                    public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
-                        getSharedPreferences().edit().putString(getResources().getString(R.string.preference_choose_theme_key), "Elevate.xml").apply();
+            mgLog.i("Theme Asset handling - started");
+            try {
+                for (String assetName : getAssets().list("")){
+                    if (assetName.matches("Elevate.+\\.zip")){ // assume there is only one Elevate<x.y>.zip in the assets path - otherwise entries should be handled sorted
+                        String assetDir = assetName.replace(".zip", "");
+                        if (!new File(persistenceManager.getThemesDir(), assetDir).exists()){
+                            mgLog.i("Theme Asset handling - install: "+assetName);
+                            BgJobGroup jobGroup = new BgJobGroup(this, null, null, new BgJobGroupCallback() {
+                                @Override
+                                public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                                    if (getSharedPreferences().getString(getResources().getString(R.string.preference_choose_theme_key),"Elevate.xml").endsWith("Elevate.xml")){
+                                        getSharedPreferences().edit().putString(getResources().getString(R.string.preference_choose_theme_key), assetDir+"/Elevate.xml").apply();
+                                    }
+                                }
+                            });
+                            jobGroup.addJob( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets(), assetName, assetDir) );
+                            jobGroup.setConstructed(null);
+
+                        } else {
+                            mgLog.i("Theme Asset handling - already installed: "+assetName);
+                        }
                     }
-                });
-                jobGroup.addJob( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets()) );
-                jobGroup.setConstructed(null);
+                }
+            } catch (IOException e) {
+                mgLog.e(e);
             }
+            mgLog.i("Theme Asset handling - finished");
             ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, elevationProvider);
             for (TrackLog trackLog : metaDataUtil.loadMetaData()){
                 if (uuid != currentRun){
