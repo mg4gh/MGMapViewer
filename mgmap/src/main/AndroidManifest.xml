@@ -74,6 +74,13 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="mf-theme" />
             </intent-filter>
+            <intent-filter>
+                <!-- 22.06.2023 MG: intent-filter for generic zip installation -->
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="mgmap-install" />
+            </intent-filter>
         </activity>
         <activity
             android:name="mg.mgmap.activity.settings.SettingsActivity"
