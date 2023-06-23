@@ -237,14 +237,7 @@ public class FSRouting extends FeatureService {
                 register(dndVisualisationLayer);
             }
         }
-        if (rotl != null){
-            if (prefRouteGL.getValue()){
-                CC.initGlPaints( prefAlphaRotl.getValue() );
-                showTrack(rotl, CC.getAlphaClone(PAINT_STROKE_GL, prefAlphaRotl.getValue()), true, 0);
-            } else {
-                showTrack(rotl, CC.getAlphaClone(PAINT_ROUTE_STROKE, prefAlphaRotl.getValue()), false,0);
-            }
-        }
+        showTrack(rotl,prefRouteGL,PAINT_STROKE_GL,PAINT_ROUTE_STROKE, prefAlphaRotl.getValue(), 0);
         if (mtl != null){
             showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
         }

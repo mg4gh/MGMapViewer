@@ -175,12 +175,7 @@ public class FSRecordingTrackLog extends FeatureService {
 
     private void showRecordingTrackLog(RecordingTrackLog rtl) {
         unregisterAll();
-        if (prefRtlGL.getValue()){
-            CC.initGlPaints( prefAlphaRtl.getValue() );
-            showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL_GL, prefAlphaRtl.getValue()), true);
-        } else {
-            showTrack(rtl, CC.getAlphaClone(PAINT_STROKE_RTL, prefAlphaRtl.getValue()), false);
-        }
+        showTrack(rtl,prefRtlGL,PAINT_STROKE_RTL_GL,PAINT_STROKE_RTL, prefAlphaRtl.getValue(), -1);
         getControlView().setDashboardValue(true, dashboardRtl ,rtl.getTrackStatistic());
         int segIdx = rtl.getNumberOfSegments()-1;
         getControlView().setDashboardValue(segIdx > 0, dashboardRtls,(segIdx>0)?rtl.getTrackLogSegment(segIdx).getStatistic():null);

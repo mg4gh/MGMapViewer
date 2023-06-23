@@ -150,12 +150,7 @@ public class FSAvailableTrackLogs extends FeatureService {
         TrackLog trackLog = available.getSelectedTrackLogRef().getTrackLog();
         if (trackLog!= null){
             assert (available.getAvailableTrackLogs().contains(trackLog));
-            if (prefStlGl.getValue()){
-                CC.initGlPaints( prefAlphaStl.getValue() );
-                showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_STL_GL, prefAlphaStl.getValue()), true);
-            } else {
-                showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_STL, prefAlphaStl.getValue()), false);
-            }
+            showTrack(trackLog,prefStlGl,PAINT_STROKE_STL_GL,PAINT_STROKE_STL, prefAlphaStl.getValue(), -1);
             getControlView().setDashboardValue(true, dashboardStl ,trackLog.getTrackStatistic());
             int segIdx = available.getSelectedTrackLogRef().getSegmentIdx();
             getControlView().setDashboardValue(trackLog.getNumberOfSegments()>1, dashboardStls,(segIdx>=0)?trackLog.getTrackLogSegment(segIdx).getStatistic():null);

@@ -32,6 +32,7 @@ import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
+import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.TrackLog;
@@ -134,6 +135,21 @@ public class FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         etv.setName(info);
         return etv;
+    }
+
+    protected void showTrack(TrackLog trackLog, Pref<Boolean> glPref, Paint glPaint, Paint noGlPaint, float alpha, int pointRadius){
+        if (pointRadius < 0 ) pointRadius = MultiPointView.POINT_RADIUS;
+        if (trackLog != null){
+            if (!trackLog.hasGainLoss()){
+                glPref.setValue(false);
+            }
+            if (glPref.getValue()){
+                CC.initGlPaints( alpha );
+                showTrack(trackLog, CC.getAlphaClone(glPaint, alpha), true, pointRadius );
+            } else {
+                showTrack(trackLog, CC.getAlphaClone(noGlPaint, alpha), false, pointRadius );
+            }
+        }
     }
 
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL){
