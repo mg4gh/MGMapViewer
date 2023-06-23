@@ -57,8 +57,8 @@ public class FSRecordingTrackLog extends FeatureService {
             long timestamp = System.currentTimeMillis();
             if (rtl == null){
                 rtl = new RecordingTrackLog( getPersistenceManager(), true);
-                getApplication().recordingTrackLogObservable.setTrackLog(rtl);
                 rtl.startTrack(timestamp);
+                getApplication().recordingTrackLogObservable.setTrackLog(rtl);
                 rtl.startSegment(timestamp);
                 prefGps.setValue(true);
             } else {
