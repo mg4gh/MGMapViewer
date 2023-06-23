@@ -201,6 +201,9 @@ public class RoutingEngine {
                         }
                     }
                 }
+                if (segment.getStatistic().getNumPoints() == 1){ // indicates that no rout was calculated
+                    routeTrackLog.addPoint(new PointModelImpl(segment.get(0)));
+                }
                 routeTrackLog.stopSegment(0);
             }
             routeTrackLog.stopTrack(0);
