@@ -61,7 +61,7 @@ public class MapViewUtility {
         double pixelYMin = MercatorProjection.latitudeToPixelY(bBox.minLatitude, mapSize);
         double zoomY = -Math.log(Math.abs(pixelYMax - pixelYMin) / dimension.height) / Math.log(2);
         double zoom = Math.floor(Math.min(zoomX, zoomY));
-        byte bzoom = (byte) Math.min(Math.max(zoom, 0), Byte.MAX_VALUE);
+        byte bzoom = (byte) Math.min(Math.max(zoom, 6), 18);
         this.mapView.getModel().mapViewPosition.setMapPosition(new MapPosition(bBox.getCenter(), bzoom));
     }
 
