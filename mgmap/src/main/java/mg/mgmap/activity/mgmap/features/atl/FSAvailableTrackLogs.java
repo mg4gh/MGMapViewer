@@ -168,7 +168,7 @@ public class FSAvailableTrackLogs extends FeatureService {
                 }
             }
         }
-        prefStlVisibility.setValue((trackLog != null) && (trackLog.getTrackStatistic().getNumPoints() >=2));
+        prefStlVisibility.setValue((trackLog != null) && (trackLog.getTrackStatistic().getNumPoints() >=1));
         prefStlVisibility.onChange();
     }
 
