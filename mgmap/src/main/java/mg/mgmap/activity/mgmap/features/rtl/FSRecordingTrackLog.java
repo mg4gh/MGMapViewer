@@ -68,21 +68,26 @@ public class FSRecordingTrackLog extends FeatureService {
                     getApplication().lastPositionsObservable.handlePoint(null);
                 }
                 rtl.stopTrack(timestamp);
-                GpxExporter.export(getPersistenceManager(), rtl);
-                getPersistenceManager().clearRaw();
+                if (rtl.getTrackStatistic().getNumPoints() > 0 ){  // ignore empty tracklog
+                    GpxExporter.export(getPersistenceManager(), rtl);
+                    getPersistenceManager().clearRaw();
 
-                getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
-                getApplication().metaTrackLogs.put(rtl.getNameKey(), rtl);
-                getApplication().recordingTrackLogObservable.setTrackLog(null);
+                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
+                    getApplication().metaTrackLogs.put(rtl.getNameKey(), rtl);
+                    getApplication().recordingTrackLogObservable.setTrackLog(null);
 
-                application.getMetaDataUtil().createMetaData(rtl);
-                application.getMetaDataUtil().writeMetaData(application.getPersistenceManager().openMetaOutput(rtl.getName()), rtl);
-                getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
+                    application.getMetaDataUtil().createMetaData(rtl);
+                    application.getMetaDataUtil().writeMetaData(application.getPersistenceManager().openMetaOutput(rtl.getName()), rtl);
+                    getApplication().availableTrackLogsObservable.availableTrackLogs.add(rtl);
 
-                TrackLogRef selected = new TrackLogRef(rtl,rtl.getNumberOfSegments()-1);
-                getApplication().availableTrackLogsObservable.setSelectedTrackLogRef(selected);
+                    TrackLogRef selected = new TrackLogRef(rtl,rtl.getNumberOfSegments()-1);
+                    getApplication().availableTrackLogsObservable.setSelectedTrackLogRef(selected);
 
-                getPref(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
+                    getPref(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
+                } else {
+                    getPersistenceManager().clearRaw();
+                    getApplication().recordingTrackLogObservable.setTrackLog(null);
+                }
             }
         });
         toggleRecordSegment.addObserver((e) -> {
