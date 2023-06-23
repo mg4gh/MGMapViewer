@@ -28,6 +28,8 @@ public class FSTime extends FeatureService {
     private ExtendedTextView etvTime = null;
     private ExtendedTextView etvBat = null;
     private ExtendedTextView etvJob = null;
+    private int batCnt = 1;
+
 
     public FSTime(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -58,6 +60,7 @@ public class FSTime extends FeatureService {
     @Override
     protected void onResume() {
         super.onResume();
+        batCnt = 1;
         refreshObserver.onChange();
     }
 
@@ -67,7 +70,6 @@ public class FSTime extends FeatureService {
         super.onPause();
     }
 
-    private int batCnt = 1;
 
     @Override
     protected void doRefreshResumedUI() {
