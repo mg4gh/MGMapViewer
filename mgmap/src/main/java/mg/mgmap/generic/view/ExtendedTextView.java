@@ -160,7 +160,7 @@ public class ExtendedTextView extends AppCompatTextView {
     }
     public ExtendedTextView setDisabledData(Pref<Boolean> prEnabled, int drIdDis){
         this.prEnabled = prEnabled;
-        pclPrEnabled = (e)->{ onChange(prEnabled.getKey()); setEnabled(); };
+        pclPrEnabled = (e)->{ setEnabled(); onChange(prEnabled.getKey()); };
         prEnabled.addObserver(pclPrEnabled);
         this.drIdDis = drIdDis;
         setEnabled();
