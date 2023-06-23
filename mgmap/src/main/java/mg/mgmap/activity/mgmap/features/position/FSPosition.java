@@ -52,6 +52,7 @@ public class FSPosition extends FeatureService {
     private final Pref<Boolean> prefRefreshMapView = getPref(R.string.FSPosition_pref_RefreshMapView, false);
     private final Pref<Boolean> prefMapMoving = getPref(R.string.FSPosition_pref_MapMoving, false);
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
+    private final Pref<Boolean> prefBboxOn = getPref(R.string.FSBB_qc_bboxOn, false);
 
     private ExtendedTextView etvHeight = null;
 
@@ -68,6 +69,7 @@ public class FSPosition extends FeatureService {
         prefCenter.addObserver(refreshObserver);
         getApplication().lastPositionsObservable.addObserver(refreshObserver);
         prefEditMarkerTrack.addObserver((e) -> setupTTMapMovingOff());
+        prefBboxOn.addObserver((e) -> setupTTMapMovingOff());
         prefRefreshMapView.addObserver((e) -> refreshMapView());
 
         prefMapMoving.addObserver((e) -> {
@@ -80,7 +82,6 @@ public class FSPosition extends FeatureService {
             @Override
             public void onMoveEvent() {
                 if (prefGps.getValue()){
-                    prefMapMoving.setValue(true);
                     setupTTMapMovingOff();
                 }
             }
@@ -165,7 +166,7 @@ public class FSPosition extends FeatureService {
     }
 
     private void centerCurrentPosition(PointModel pm){
-        if ((pm != null) && prefCenter.getValue() && !prefMapMoving.getValue() && !prefEditMarkerTrack.getValue()) {
+        if ((pm != null) && prefCenter.getValue() && !prefMapMoving.getValue() && !prefEditMarkerTrack.getValue() && !prefBboxOn.getValue()) {
             IMapViewPosition mvp = getMapView().getModel().mapViewPosition;
             LatLong pos = new LatLong(pm.getLat(), pm.getLon());
             mvp.setMapPosition(new MapPosition(pos, mvp.getZoomLevel()));
@@ -179,6 +180,7 @@ public class FSPosition extends FeatureService {
 
     private final Runnable ttMapMovingOff = () -> prefMapMoving.setValue(false);
     private void setupTTMapMovingOff(){
+        prefMapMoving.setValue(true);
         getTimer().removeCallbacks(ttMapMovingOff);
         getTimer().postDelayed(ttMapMovingOff, 7000);
         mgLog.v("setup MapMoving 7000 ");
