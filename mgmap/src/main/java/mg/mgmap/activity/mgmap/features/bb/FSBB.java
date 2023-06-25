@@ -407,7 +407,7 @@ public class FSBB extends FeatureService {
                 if (all || !hgtProvider.hgtIsAvailable(hgtName)){
                     BgJob bgJob = new BgJob(){
                         @Override
-                        protected void doJob(){
+                        protected void doJob() throws Exception{
                             hgtProvider.downloadHgt(hgtName);
                             this.setText("Download "+ hgtName);
                             if (hgtGridView != null){

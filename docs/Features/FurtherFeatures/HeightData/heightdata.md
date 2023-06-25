@@ -38,4 +38,8 @@ The [hgt grid layer](../../MainMapFeatures/MapGrid/hgt.md) provides an easy over
 THe Section [Downloading of missing hgt data](../../MainMapFeatures/MapGrid/hgt.md#download) describes the downlaod of missing hgt data in detail.
 This automatic download is based on the ESA data (see above).
 
+### Developer information
+
+Here is some more information for [developer](./developer.md).
+
 <small><small>[Back to Index](../../../index.md)</small></small>

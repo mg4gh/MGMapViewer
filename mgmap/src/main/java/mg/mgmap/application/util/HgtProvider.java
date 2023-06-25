@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
 
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 import java.util.Properties;
@@ -21,7 +22,7 @@ public class HgtProvider {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public static final String HGT_URL = "http://step.esa.int/auxdata/dem/SRTMGL1/";
+    public static final String HGT_URL = "https://step.esa.int/auxdata/dem/SRTMGL1/";
 
 
     private final PersistenceManager persistenceManager;
@@ -30,7 +31,7 @@ public class HgtProvider {
     private final Properties hgtSize = new Properties();
 
     private final Handler timer;
-    private final LruCache<String, byte[]> hgtCache = new LruCache<String, byte[]>(4){
+    private final LruCache<String, byte[]> hgtCache = new LruCache<>(4){
         @Override
         protected void entryRemoved(boolean evicted, String key, byte[] oldValue, byte[] newValue) {
             super.entryRemoved(evicted, key, oldValue, newValue);
@@ -86,27 +87,41 @@ public class HgtProvider {
     }
 
 
-    public void downloadHgt(String hgtName){ // assume it exists
+    public void downloadHgt(String hgtName) throws Exception{ // assume it exists
+        if (hgtExists(hgtName)){
+            String url = HGT_URL + persistenceManager.getHgtFilename(hgtName);
+            if (!downloadHtFromUrl(url, hgtName)){
+                mgLog.i("Download failed from "+url);
+                mgLog.i("try again with http instead of https ...");
+                if (!downloadHtFromUrl(url.replaceFirst("https","http"), hgtName)){
+                    throw new Exception("Download of hgt failed (see reason above).");
+                }
+            }
+            mgLog.i("successful download for "+hgtName);
+        } else {
+            IOUtil.copyStreams(assetManager.open("empty.hgt"), persistenceManager.openHgtOutput(hgtName));
+        }
+    }
+
+    private boolean downloadHtFromUrl(String url, String hgtName){
         try {
-            if (hgtExists(hgtName)){
-                String url = HGT_URL + persistenceManager.getHgtFilename(hgtName);
-                OkHttpClient client = new OkHttpClient().newBuilder()
-                        .build();
-                Request request = new Request.Builder().url(url).build();
-                Response response = client.newCall(request).execute();
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .build();
+            Request request = new Request.Builder().url(url).build();
+            try (Response response = client.newCall(request).execute()){
                 ResponseBody responseBody = response.body();
                 if (responseBody == null) {
                     mgLog.w("empty response body for download!");
                 } else {
                     if (responseBody.contentLength() < 1000) throw new Exception("Invalid hgt size: "+responseBody.contentLength());
                     IOUtil.copyStreams(responseBody.byteStream(), persistenceManager.openHgtOutput(hgtName));
+                    return true;
                 }
-            } else {
-                IOUtil.copyStreams(assetManager.open("empty.hgt"), persistenceManager.openHgtOutput(hgtName));
             }
         } catch (Exception e) {
             mgLog.e(e);
         }
+        return false;
     }
 
     public void dropHgt(String hgtName){
