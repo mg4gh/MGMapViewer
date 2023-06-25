@@ -1,0 +1,15 @@
+0.9.7-12.0
+- access hgt data server via https (fallback http)
+- reset gain/loss mode of track visualisation, if track  has no gain/loss data
+- limit zoomForBB to zoom range (6..18)
+- make SelectedTrackLog visible for track with numPoints>=1 (was 2)
+- generate from MarkerTrack with length 1 a RouteTrackLog also with length 1 (was 0)
+- fix sequence in disable pcl of etv
+- qfix: track after delete still visible (if delete directly after recording)
+- don't save empty tracks
+- refresh battery value on resume
+- do not centre while bbox mode is on
+- mgmap-install - protocol prefix for generic zip installation
+- adopt to Elevate5.2
+- allow new theme distribution
+- add sapmle config.xml files for Maponline/Mapstore layer
