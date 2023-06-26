@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.Window;
 
@@ -101,6 +102,7 @@ import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintAccessBackgroundLocation;
 import mg.mgmap.generic.util.hints.HintAccessFineLocation;
+import mg.mgmap.generic.util.hints.HintBatteryUsage;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -563,6 +565,15 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         } else {
             application.startTrackLoggerService(this);
+            if (application.prefGps.getValue()){
+                getMGMapApplication().getHintUtil().showHint(new HintBatteryUsage(this)
+                        .addGotItAction(()-> {
+                            Intent intent = new Intent();
+                            intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                            intent.setData(Uri.parse("package:mg.mgmap"));
+                            startActivity(intent);
+                            }));
+            }
         }
     }
 
