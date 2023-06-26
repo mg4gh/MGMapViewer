@@ -1,3 +1,6 @@
+0.9.7-13.0
+- Request ignore battery optimization
+
 0.9.7-12.0
 - access hgt data server via https (fallback http)
 - reset gain/loss mode of track visualisation, if track  has no gain/loss data
