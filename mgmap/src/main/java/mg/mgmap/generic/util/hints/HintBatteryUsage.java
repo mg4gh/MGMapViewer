@@ -21,8 +21,8 @@ public class HintBatteryUsage extends AbstractHint implements Runnable{
     @Override
     public boolean checkHintCondition() {
         PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
-        MGLog.si("ignoreBatteryOptimizations="+pm.isIgnoringBatteryOptimizations("mg.mgmap"));
+        MGLog.si("ignoreBatteryOptimizations="+pm.isIgnoringBatteryOptimizations(activity.getPackageName()));
         return super.checkHintCondition() &&
-                !pm.isIgnoringBatteryOptimizations("mg.mgmap");
+                !pm.isIgnoringBatteryOptimizations(activity.getPackageName());
     }
 }

@@ -570,7 +570,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         .addGotItAction(()-> {
                             Intent intent = new Intent();
                             intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                            intent.setData(Uri.parse("package:mg.mgmap"));
+                            intent.setData(Uri.parse("package:"+getPackageName()));
                             startActivity(intent);
                             }));
             }
