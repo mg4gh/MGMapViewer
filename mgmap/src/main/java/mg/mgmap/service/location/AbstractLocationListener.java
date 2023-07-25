@@ -60,17 +60,18 @@ public class AbstractLocationListener {
             TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
                     location.getAccuracy(), wgs84ele, geoidOffset, wgs84eleAcc);
             elevationProvider.setElevation(lp);
-            double heightConsistencyThreshold;
+            double heightConsistencyThreshold = 100;
             try {
-                heightConsistencyThreshold = Double.parseDouble( prefCache.get(R.string.preferences_height_consistency_check_key, "100").getValue() );
+                heightConsistencyThreshold = Double.parseDouble( prefCache.get(R.string.preferences_height_consistency_check_key,  Double.toString(heightConsistencyThreshold)).getValue() );
             } catch (NumberFormatException e) {
                 mgLog.e(e);
-                heightConsistencyThreshold = 100;
             }
             if ((lp.getNmeaEle() == PointModel.NO_ELE) || (lp.getHgtEle() == PointModel.NO_ELE) || (Math.abs(lp.getNmeaEle() - lp.getHgtEle()) < heightConsistencyThreshold )){
                 if (baseConfig.getMode() == BaseConfig.Mode.NORMAL){
                     trackLoggerService.onNewTrackLogPoint(lp);
                 }
+            } else {
+                mgLog.w("location dropped nmeaEle="+lp.getNmeaEle()+ " hgtEle()="+lp.getHgtEle()+" heightConsistencyThreshold="+heightConsistencyThreshold);
             }
         } else {
             mgLog.w("location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());

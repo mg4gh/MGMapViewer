@@ -73,14 +73,14 @@ public class ExtendedTextView extends AppCompatTextView {
             int newAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - ((getCompoundDrawables()[0] != null) ? (getCompoundDrawablePadding() + getDrawableSize()) : 0);
             if (newAvailableWidth != availableWidth){
                 availableWidth = newAvailableWidth;
-                mgLog.v(logName+":"+getText()+" - "+" available=" + availableWidth);
+                mgLog.v(getLogText()+" - "+" available=" + availableWidth);
                 availableText = null; // force recalc text
                 setValue(value);
             }
         } catch (Exception e) {
             mgLog.e(e);
         }
-        mgLog.v(()-> logName + ":" + getText() + " - " + " w=" + w + " h=" + h + " oldw=" + oldw + " oldh=" + oldh);
+        mgLog.v(()-> getLogText() + " - " + " w=" + w + " h=" + h + " oldw=" + oldw + " oldh=" + oldh);
     }
 
     public ExtendedTextView setName(String logName){
@@ -283,6 +283,10 @@ public class ExtendedTextView extends AppCompatTextView {
         if ((pclPrState1 != null)  && (prState1 != null))  prState1.deleteObserver(pclPrState1);
         if ((pclPrState2 != null)  && (prState2 != null))  prState2.deleteObserver(pclPrState2);
         if ((pclPrEnabled != null) && (prEnabled != null)) prEnabled.deleteObserver(pclPrEnabled);
+    }
+
+    public String getLogText(){
+        return logName + ":" + getText();
     }
 
 }

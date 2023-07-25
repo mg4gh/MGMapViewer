@@ -20,7 +20,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Location Listener for TrackLoggerService
@@ -28,6 +31,7 @@ import mg.mgmap.application.MGMapApplication;
 
 public class GnssLocationListener extends AbstractLocationListener {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private final LocationManager locationManager;
     private final LocationListener locationListener;
 
@@ -40,13 +44,19 @@ public class GnssLocationListener extends AbstractLocationListener {
                 locationChanged(location);
             }
             @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {}
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+                mgLog.i("s="+s+" i="+i);
+            }
 
             @Override
-            public void onProviderEnabled(String s) {}
+            public void onProviderEnabled(String s) {
+                mgLog.i(s);
+            }
 
             @Override
-            public void onProviderDisabled(String s) {}
+            public void onProviderDisabled(String s) {
+                mgLog.i(s);
+            }
         };
     }
 

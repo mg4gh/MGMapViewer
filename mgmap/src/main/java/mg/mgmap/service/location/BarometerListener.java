@@ -104,7 +104,6 @@ class BarometerListener implements SensorEventListener {
     }
 
     void  providePressureData(TrackLogPoint tlp){
-        String logInfo = " ";
         synchronized (pValues){
             if (pValues.size() > 0){
                 double total = 0;
@@ -119,10 +118,10 @@ class BarometerListener implements SensorEventListener {
                 }
                 double accPressure = totalDiff/pValues.size();
                 tlp.setPressureAcc((float)accPressure);
-                logInfo += " avgPressure="+avgPressure+" accPressure="+accPressure+" pValues.size()="+pValues.size();
+                String logInfo = " avgPressure="+avgPressure+" accPressure="+accPressure+" pValues.size()="+pValues.size();
+                mgLog.i(String.format(Locale.ENGLISH," lat=%2.6f lon=%2.6f ",tlp.getLat(), tlp.getLon())+ logInfo);
             }
         }
-        mgLog.i(String.format(Locale.ENGLISH," lat=%2.6f lon=%2.6f ",tlp.getLat(), tlp.getLon())+ logInfo);
     }
 
     @Override

@@ -1,3 +1,8 @@
+- log battery percent
+- don't create log entry in BarometerListener, if there isn't a barometer
+- log entry, if location is dropped due to heightConsistencyThreshold
+- log state changes of GnssLocationListener
+
 0.9.7-14.0
 - fix package name for ignore battery optimization
 

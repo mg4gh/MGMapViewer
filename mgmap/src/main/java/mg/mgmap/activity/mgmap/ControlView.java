@@ -390,6 +390,7 @@ public class ControlView extends RelativeLayout {
     public void setStatusLineValue(ExtendedTextView etv, Object value){
         if (etv != null) {
             if (etv.setValue(value)){
+                mgLog.i(etv.getLogText());
                 reworkStatusLine();
             }
         }
