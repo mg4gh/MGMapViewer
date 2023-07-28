@@ -195,7 +195,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         mapDataStoreUtil = new MapDataStoreUtil().onCreate(mapLayerFactory, sharedPreferences); // includes init of mapLayerKeys with "none"
         String themeKey = getResources().getString(R.string.preference_choose_theme_key);
-        getSharedPreferences().edit().putString(themeKey, sharedPreferences.getString(themeKey, "Elevate.xml") ).apply(); // set default for theme
+        getSharedPreferences().edit().putString(themeKey, sharedPreferences.getString(themeKey, "Elevate5.2/Elevate.xml") ).apply(); // set default for theme
         initSharedPreferencesDone(); // after MapDatastoreUtil creation
         initializePosition(mapView.getModel().mapViewPosition);
         mgLog.i("Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
