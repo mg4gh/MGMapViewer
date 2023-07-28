@@ -37,7 +37,6 @@ import java.util.List;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
  * Base class of the MGMapActivity.
@@ -146,7 +145,11 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
                     saveMapViewModel();
                 }
                 for (TileCache tileCache : tileCaches) {
-                    tileCache.purge();
+                    try {
+                        tileCache.purge();
+                    } catch (Exception e) {
+                        mgLog.e(e);
+                    }
                 }
                 MapViewerBase.this.recreate(); // restart activity
             }, 100);
