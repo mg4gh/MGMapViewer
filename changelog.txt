@@ -1,3 +1,7 @@
+- use speaking names for observables in MGMapApplication
+- log FeatureService that is affected by property change
+- catch exception during cache purge
+- elevate5.2 already as default theme
 - log battery percent
 - don't create log entry in BarometerListener, if there isn't a barometer
 - log entry, if location is dropped due to heightConsistencyThreshold

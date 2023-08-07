@@ -88,8 +88,7 @@ public class FeatureService {
         @Override
         public void propertyChange(PropertyChangeEvent event) {
             last = event.getSource();
-//            mgLog.d("source="+last+" name="+event.getPropertyName()+" old="+event.getOldValue()+" new="+event.getNewValue());
-            mgLog.d("source="+last+" name="+event.getPropertyName());
+            mgLog.d("dest="+FeatureService.this.getClass().getSimpleName()+" source="+last+" name="+event.getPropertyName());
             onUpdate(event);
             onChange();
         }

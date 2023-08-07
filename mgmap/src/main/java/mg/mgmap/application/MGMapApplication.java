@@ -98,9 +98,9 @@ public class MGMapApplication extends Application {
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
-    public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>(true);
-    public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>(false);
-    public final TrackLogObservable<WriteableTrackLog> routeTrackLogObservable = new TrackLogObservable<>(true);
+    public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>("recordingTrackLog",true);
+    public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>("markerTrackLog",false);
+    public final TrackLogObservable<WriteableTrackLog> routeTrackLogObservable = new TrackLogObservable<>("routeTrackLog",true);
     public final TreeMap<String, TrackLog> metaTrackLogs = new TreeMap<>(Collections.reverseOrder());
 
     /** queue for new (unhandled) TrackLogPoint objects */
@@ -355,6 +355,9 @@ public class MGMapApplication extends Application {
 
     public static class LastPositionsObservable extends ObservableImpl {
 
+        public LastPositionsObservable(){
+            super("lastPosition");
+        }
         public PointModel lastGpsPoint = null;
         public PointModel secondLastGpsPoint = null;
 
@@ -373,6 +376,9 @@ public class MGMapApplication extends Application {
     // TODO: Probably it makes sense to split this in a TrackLogObservable for the selected TrackLog and an AvailableTrackLogsObeservable without selected TrackLog information.
     @SuppressWarnings("WeakerAccess")
     public static class AvailableTrackLogsObservable extends ObservableImpl{
+        public AvailableTrackLogsObservable(){
+            super("availableTrackLogs");
+        }
         TrackLogRef noRef = new TrackLogRef(null,-1);
         public TreeSet<TrackLog> availableTrackLogs = new TreeSet<>(Collections.reverseOrder());
         public TrackLogRef selectedTrackLogRef = noRef;
@@ -416,7 +422,8 @@ public class MGMapApplication extends Application {
         T trackLog = null;
         boolean addToMetaTrackLogs;
 
-        public TrackLogObservable(boolean addToMetaTrackLogs){
+        public TrackLogObservable(String observableName, boolean addToMetaTrackLogs){
+            super(observableName);
             this.addToMetaTrackLogs = addToMetaTrackLogs;
         }
 
