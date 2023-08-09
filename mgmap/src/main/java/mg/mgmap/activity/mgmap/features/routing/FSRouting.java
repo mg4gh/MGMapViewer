@@ -342,36 +342,6 @@ public class FSRouting extends FeatureService {
         }
     }
 
-    public class RoutingControlLayer extends MVLayer {
-
-        @Override
-        public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
-            if (!prefEditMarkerTrack.getValue()) return false;
-            if (prefAlphaRotl.getValue() < 0.25f) return false;
-
-            WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-            if (mtl != null){
-                PointModel pmTap = new PointModelImpl(tapLatLong.latitude, tapLatLong.longitude);
-                TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
-                TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl, pmTap, getMapViewUtility().getCloseThreshouldForZoomLevel());
-
-                if ((pointRef == null) && (lineRef != null)){
-                    TrackLogSegment segment = mtl.getTrackLogSegment(lineRef.getSegmentIdx());
-                    int tlpIdx = lineRef.getEndPointIndex();
-                    PointModel mtlp = segment.get(tlpIdx);
-                    RoutePointModel rpm = routingEngine.getRoutePointMap().get(mtlp);
-                    if (rpm != null){
-                        rpm.direct = !rpm.direct;
-                        rpm.directChanged = true;
-                        application.markerTrackLogObservable.changed();
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    }
-
     public class AdvancedMtlSupportProvider implements FSMarker.MtlSupportProvider{
         @Override
         public TrackLogRefApproach getBestDistance(WriteableTrackLog mtl, PointModel pm, double threshold) {

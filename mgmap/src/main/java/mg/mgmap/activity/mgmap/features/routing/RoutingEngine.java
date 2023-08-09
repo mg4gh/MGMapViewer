@@ -128,7 +128,6 @@ public class RoutingEngine {
                                 (PointModelUtil.compareTo(pmLast, approachLast) == 0))
                             bRecalcRoute = false;
                     }
-                    if (current.directChanged) bRecalcRoute = true;
 
                 } catch (Exception e){
                     //routeModel can be null, approachSet can be empty, ...
@@ -136,7 +135,7 @@ public class RoutingEngine {
 
                 if (bRecalcRoute){
                     routeModified = true;
-                    current.newMPM = calcRouting(prev, current, current.direct, current.routingHints, currentRelaxedNodes);
+                    current.newMPM = calcRouting(prev, current, current.routingHints, currentRelaxedNodes);
                 }
             }
         }
@@ -187,7 +186,6 @@ public class RoutingEngine {
                     RoutePointModel rpm = routePointMap.get(segment.get(idx));
                     if (rpm != null){
                         rpm.currentMPM = rpm.newMPM;
-                        rpm.directChanged = false;
                         if (rpm.newMPM != null){
                             rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
                             for (PointModel pm : rpm.newMPM){
@@ -218,11 +216,11 @@ public class RoutingEngine {
     }
 
     MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target) {
-        return calcRouting(source,target,false,null,null);
+        return calcRouting(source,target,null,null);
     }
 
     @SuppressWarnings("ReplaceNullCheck")
-    MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target, boolean direct, Map<PointModel, RoutingHint> hints, ArrayList<PointModel> relaxedNodes){
+    MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target, Map<PointModel, RoutingHint> hints, ArrayList<PointModel> relaxedNodes){
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
         mgLog.d("Start");
@@ -235,7 +233,7 @@ public class RoutingEngine {
         GGraphMulti multi = null;
 
         try {
-            if ((gStart != null) && (gEnd != null) && (distLimit > 0) && !direct){
+            if ((gStart != null) && (gEnd != null) && (distLimit > 0)){
                 BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
                 bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
                 ArrayList<GGraphTile> gGraphTileList = gFactory.getGGraphTileList(bBox);

@@ -36,8 +36,6 @@ public class RoutePointModel {
     MultiPointModelImpl newMPM = null;
     PointModel mtlp;
     double currentDistance = 0;
-    boolean direct = false;
-    boolean directChanged = false;
 
     ArrayList<ApproachModel> approaches;
     ApproachModel selectedApproach;

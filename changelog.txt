@@ -1,3 +1,4 @@
+- remove unused code for direct routing code from RoutingEngine, RoutePointModel and FSRouting
 - reduce strokeIncrease for GL Tracks (too broad on high zoom level)
 - use speaking names for observables in MGMapApplication
 - log FeatureService that is affected by property change
