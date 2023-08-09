@@ -17,12 +17,9 @@ package mg.mgmap.activity.mgmap.features.routing;
 import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
-//import org.mapsforge.core.model.LatLong;
-//import org.mapsforge.core.model.Point;
 import org.mapsforge.map.model.DisplayModel;
 
 import java.lang.invoke.MethodHandles;
-//import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,7 +31,6 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.GNode;
-//import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -52,7 +48,6 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
-//import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.activity.mgmap.view.MultiPointView;
 import mg.mgmap.activity.mgmap.view.PointView;
 
@@ -62,14 +57,11 @@ public class FSRouting extends FeatureService {
 
     private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE_A150, DisplayModel.getDeviceScaleFactor()*5.0f);
     private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE_A150);
-//    private static final Paint PAINT_APPROACH = CC.getStrokePaint(R.color.BLACK, 2);
     private static final Paint PAINT_RELAXED = CC.getStrokePaint(R.color.BLUE, 2);
     private final Paint PAINT_STROKE_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
-//    private static final int ZOOM_LEVEL_APPROACHES_VISIBILITY = 19;
     private static final int ZOOM_LEVEL_RELAXED_VISIBILITY = 17;
 
-//    private final HashMap<ApproachModel, MultiPointView> approachViewMap = new HashMap<>();
     private final RoutingEngine routingEngine;
     private final RoutingContext interactiveRoutingContext = new RoutingContext(
             10000,
@@ -81,7 +73,6 @@ public class FSRouting extends FeatureService {
     private final FSMarker.MtlSupportProvider mtlSupportProvider;
 
     private final Pref<Boolean> prefWayDetails = getPref(R.string.FSGrad_pref_WayDetails_key, false);
-//    private final Pref<Boolean> prefEditMarkerTrack = getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Boolean> prefRouteGL = getPref(R.string.FSRouting_pref_RouteGL, false);
 
@@ -171,8 +162,6 @@ public class FSRouting extends FeatureService {
         };
         prefGps.addObserver(routingHintsEnabledObserver);
         prefMtlVisibility.addObserver(routingHintsEnabledObserver);
-
-//        register(new RoutingControlLayer(), false);
     }
 
     @Override
@@ -244,7 +233,6 @@ public class FSRouting extends FeatureService {
         getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, calcRemainingStatistic(rotl));
 
         checkRelaxedViews(mtl);
-//        checkApproachViews(mtl);
     }
 
     private void updateRouting(){
@@ -290,35 +278,6 @@ public class FSRouting extends FeatureService {
         }
     }
 
-//    private void checkApproachViews(TrackLog mtl){
-//        boolean visibility = ((getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_APPROACHES_VISIBILITY) && (prefWayDetails.getValue()));
-//
-//        for (MultiPointView approachView : approachViewMap.values()){
-//            unregister(approachView,false);
-//        }
-//        approachViewMap.clear();
-//        BBox mapViewBBox = getMapViewUtility().getMapViewBBox();
-//
-//        if ((mtl != null) && (visibility)){
-//            for (TrackLogSegment segment : mtl.getTrackLogSegments()){
-//                for (int tlpIdx = 0; tlpIdx<segment.size(); tlpIdx++){
-//                    RoutePointModel rpm = routingEngine.getRoutePointMap().get(segment.get(tlpIdx));
-//
-//
-//                    if ((rpm != null) && (rpm.getApproaches() != null)){
-//                        for (ApproachModel approach : rpm.getApproaches()){
-//
-//                            if (mapViewBBox.intersects(approach.getBBox())){
-//                                approachViewMap.put(approach,new MultiPointView(approach, PAINT_APPROACH));
-//                                register(approachViewMap.get(approach), false);
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     void optimize(){ // needs to be reworked
         synchronized (routingEngine){
@@ -328,7 +287,6 @@ public class FSRouting extends FeatureService {
             ro.optimize(mtl);
             routingEngine.setRoutingContext( new RoutingContext(1000, true, 3, PointModelUtil.getCloseThreshold()) );
             updateRouting();
-//        application.markerTrackLogObservable.changed();
             routingEngine.setRoutingContext(interactiveRoutingContext);
         }
     }
