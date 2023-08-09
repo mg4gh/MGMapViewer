@@ -163,7 +163,7 @@ public class FeatureService {
         for (int idx = 0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
             MultiPointView layer = (showGL)?new MultiPointGLView(segment, paint):new MultiPointView(segment, paint);
-            if (showGL) layer.setStrokeIncrease(1.5);
+            if (showGL) layer.setStrokeIncrease(1.35);
             layer.setPointRadius(pointRadius);
             layer.setShowIntermediates(showIntermediates);
             register(layer, true);

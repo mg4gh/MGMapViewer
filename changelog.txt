@@ -1,3 +1,4 @@
+- reduce strokeIncrease for GL Tracks (too broad on high zoom level)
 - use speaking names for observables in MGMapApplication
 - log FeatureService that is affected by property change
 - catch exception during cache purge
