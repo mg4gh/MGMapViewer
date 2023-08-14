@@ -134,12 +134,12 @@ public class GroupSerachTests extends BaseTestCase {
         Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(" "), ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
-        Point pSearchResult2 = getClickPos(R.id.search_result2);
+        Point pSearchResult2 = getClickPos(R.id.search_result1);
         animateSwipeToPos(pSearchResult2,pSearchResult2);
 
         PointModel pmCenter = getPointModel4Point(getCenterPos());
-        Assert.assertEquals(54.317866, pmCenter.getLat(), 0.00001);
-        Assert.assertEquals(13.34888, pmCenter.getLon(), 0.00001);
+        Assert.assertEquals(54.317751, pmCenter.getLat(), 0.00001);
+        Assert.assertEquals(13.349125, pmCenter.getLon(), 0.00001);
         SystemClock.sleep(2000);
 
         mgLog.i("finished");
