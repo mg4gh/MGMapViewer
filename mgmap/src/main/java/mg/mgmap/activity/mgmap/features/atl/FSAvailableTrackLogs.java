@@ -141,7 +141,7 @@ public class FSAvailableTrackLogs extends FeatureService {
                     (trackLog != getApplication().recordingTrackLogObservable.getTrackLog()) &&
                     (trackLog != getApplication().markerTrackLogObservable.getTrackLog()) &&
                     (trackLog != getApplication().routeTrackLogObservable.getTrackLog())  ) {
-                showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_ATL, prefAlphaAtl.getValue()), false);
+                showTrack(trackLog, CC.getAlphaClone(PAINT_STROKE_ATL, prefAlphaAtl.getValue()), false, -1);
                 bAtlAlphaVisibility = true;
             }
         }

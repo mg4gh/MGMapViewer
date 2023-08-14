@@ -18,7 +18,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.activity.mgmap.view.DraggingMVLayer;
+import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 
@@ -129,7 +129,7 @@ public class FSMarker extends FeatureService {
 
     @Override
     protected void onPause() {
-        unregisterClass(MarkerControlLayer.class);
+        unregisterAllControl();
         super.onPause();
         getTimer().removeCallbacks(ttHide);
     }
@@ -149,9 +149,9 @@ public class FSMarker extends FeatureService {
             } else {
                 markerTrackLogObservable.changed();
             }
-            register(new MarkerControlLayer(), false);
+            register(new MarkerControlLayer());
         } else {
-            unregisterClass(MarkerControlLayer.class);
+            unregisterAllControl();
         }
     }
 
@@ -192,9 +192,7 @@ public class FSMarker extends FeatureService {
 
 
     private void showHide(WriteableTrackLog mtl){
-        if (!fsLayers.isEmpty()){
-            unregisterAll();
-        }
+        unregisterAll();
         boolean bMtlAlphaVisibility = false;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() >= 1)){
             showTrack(mtl, CC.getAlphaClone(PAINT_STROKE_MTL, prefAlphaMtl.getValue()), false, (int)(DisplayModel.getDeviceScaleFactor()*5.0f), true);
@@ -205,7 +203,7 @@ public class FSMarker extends FeatureService {
 
 
 
-    public class MarkerControlLayer extends DraggingMVLayer<TrackLogRefApproach> {
+    public class MarkerControlLayer extends ControlMVLayer<TrackLogRefApproach> {
 
         @Override
         public boolean onTap(WriteablePointModel pmTap) {

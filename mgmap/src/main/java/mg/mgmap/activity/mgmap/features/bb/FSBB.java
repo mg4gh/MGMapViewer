@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.activity.mgmap.view.DraggingMVLayer;
+import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
@@ -151,7 +151,7 @@ public class FSBB extends FeatureService {
         if (prefBboxOn.getValue()){
             if (bbcl == null){
                 bbcl = new BBControlLayer();
-                register(bbcl, false);
+                register(bbcl);
                 initSquare = true;
                 refreshObserver.onChange();
             } else if (initSquare){
@@ -169,7 +169,7 @@ public class FSBB extends FeatureService {
         prefTSActionsEnabled.setValue(tsOpsAllowed);
     }
 
-    public class BBControlLayer extends DraggingMVLayer<WriteablePointModel>{
+    public class BBControlLayer extends ControlMVLayer<WriteablePointModel> {
 
         private BBControlLayer(){
             changed();
@@ -291,7 +291,7 @@ public class FSBB extends FeatureService {
         p1 = null;
         p2 = null;
         if (bbcl != null){
-            unregister(bbcl, false);
+            unregisterAllControl();
         }
         bbcl = null;
         unregisterAll();
