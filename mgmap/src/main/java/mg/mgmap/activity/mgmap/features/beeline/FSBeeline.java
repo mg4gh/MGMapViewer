@@ -97,7 +97,7 @@ public class FSBeeline extends FeatureService {
     }
 
     private void showHidePositionToCenter(PointModel pm){
-        if (fsLayers.isEmpty() && (pm == null)) return; // default is fast
+        if (fsLayers.layers.isEmpty() && (pm == null)) return; // default is fast
         unregisterAll();
         PointModel pmCenter = new PointModelImpl( getMapView().getModel().mapViewPosition.getCenter() );
         double distance = -1;

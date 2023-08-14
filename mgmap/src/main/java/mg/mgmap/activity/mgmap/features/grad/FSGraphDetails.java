@@ -21,6 +21,7 @@ import org.mapsforge.core.graphics.Paint;
 import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -37,7 +38,6 @@ import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.activity.mgmap.view.BoxView;
-import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.activity.mgmap.view.MultiMultiPointView;
 import mg.mgmap.activity.mgmap.view.MultiPointView;
 
@@ -46,7 +46,7 @@ public class FSGraphDetails extends FeatureService {
     private static final Paint PAINT_GRAD_STROKE =  CC.getStrokePaint(R.color.RED_A150, 3);
     public static final Paint PAINT_GRAD_ALL_STROKE = CC.getStrokePaint(R.color.GRAY100_A150, 3);
 
-    public class GradControlLayer extends MVLayer{
+    public class GradControlLayer extends ControlMVLayer<Object> {
         @Override
         public boolean onTap(WriteablePointModel pmTap) {
             unregisterAll();
@@ -67,13 +67,13 @@ public class FSGraphDetails extends FeatureService {
     protected void onResume() {
         if (prefWayDetails.getValue()){
             controlLayer = new GradControlLayer();
-            register(controlLayer, false);
+            register(controlLayer);
         }
     }
 
     @Override
     protected void onPause() {
-        unregisterClass(GradControlLayer.class);
+        unregisterAllControl();
         unregisterAll();
         controlLayer = null;
     }

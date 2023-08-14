@@ -24,15 +24,17 @@ import androidx.lifecycle.Lifecycle;
 
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.model.common.Observer;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.activity.mgmap.view.ControlMVLayer;
+import mg.mgmap.activity.mgmap.view.MVGroupLayer;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.TrackLog;
@@ -66,13 +68,16 @@ public class FeatureService {
 
     protected final MGMapActivity activity;
     protected final MGMapApplication application;
-    protected ArrayList<Layer> fsLayers = new ArrayList<>();
+    protected GroupLayer fsLayers = new GroupLayer();
+    protected MVGroupLayer fsControlLayers = new MVGroupLayer();
     protected String logName;
 
     public FeatureService(MGMapActivity activity){
         this.activity = activity;
         this.application = activity.application;
         logName = this.getClass().getSimpleName();
+        getMapView().getLayerManager().getLayers().add(fsLayers);
+        getMapView().getLayerManager().getLayers().add(fsControlLayers);
     }
 
     public class RefreshObserver implements Observer, PropertyChangeListener {
@@ -137,7 +142,6 @@ public class FeatureService {
     }
 
     protected void showTrack(TrackLog trackLog, Pref<Boolean> glPref, Paint glPaint, Paint noGlPaint, float alpha, int pointRadius){
-        if (pointRadius < 0 ) pointRadius = MultiPointView.POINT_RADIUS;
         if (trackLog != null){
             if (!trackLog.hasGainLoss()){
                 glPref.setValue(false);
@@ -151,80 +155,68 @@ public class FeatureService {
         }
     }
 
-    protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL){
-        showTrack(trackLog,paint,showGL,MultiPointView.POINT_RADIUS);
-    }
-
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius) {
         showTrack(trackLog,paint,showGL,pointRadius, false);
     }
 
     protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius, boolean showIntermediates){
+        if (pointRadius < 0 ) pointRadius = MultiPointView.POINT_RADIUS;
         for (int idx = 0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
             MultiPointView layer = (showGL)?new MultiPointGLView(segment, paint):new MultiPointView(segment, paint);
             if (showGL) layer.setStrokeIncrease(1.35);
             layer.setPointRadius(pointRadius);
             layer.setShowIntermediates(showIntermediates);
-            register(layer, true);
+            register(layer);
         }
     }
 
-    protected void register(Layer layer){
-        register(layer, true);
-    }
-    protected void register(final Layer layer, final boolean addToFsLayers){
+
+    protected void register(final Layer layer){
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             if (layer instanceof MVLayer) {
                 ((MVLayer) layer).setMapViewUtility(getMapViewUtility());
             }
-            if (addToFsLayers) fsLayers.add(layer);
-            getMapView().getLayerManager().getLayers().add(layer);
-        } else {
-            getActivity().runOnUiThread(() -> register(layer, addToFsLayers));
-        }
-    }
-    protected void unregister(Layer layer){
-        unregister(layer, true);
-    }
-    protected void unregister(final Layer layer, final boolean removeFromFsLayers){
-        if (layer == null) return;
-        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-            if (removeFromFsLayers) fsLayers.remove(layer);
-            getMapView().getLayerManager().getLayers().remove(layer);
-        } else {
-            getActivity().runOnUiThread(() -> unregister(layer, removeFromFsLayers));
-        }
-    }
-    protected <T> void unregisterClass(Class<T> tClass){
-        ArrayList<Layer> layers2Bremoved  = new ArrayList<>();
-        for (Layer layer : getMapView().getLayerManager().getLayers()){
-            if (tClass.isInstance(layer)){
-                layers2Bremoved.add(layer);
+            layer.setDisplayModel(fsLayers.getDisplayModel());
+            mgLog.d("register "+this);
+            synchronized (getMapView().getLayerManager().getLayers()) {
+                if (layer instanceof ControlMVLayer){
+                    fsControlLayers.layers.add(layer);
+                } else {
+                    fsLayers.layers.add(layer);
+                }
+                getMapView().getLayerManager().redrawLayers();
             }
+        } else {
+            getActivity().runOnUiThread(() -> register(layer));
         }
-        for (Layer layer : layers2Bremoved){
-            unregister(layer, false);
-        }
-    }
-
-    protected <T>  void unregisterAll(Class<T> tClass){
-        ArrayList<Layer> removeLayers = null;
-        for (Layer layer : fsLayers){
-            if (tClass.isInstance(layer)){
-                getMapView().getLayerManager().getLayers().remove(layer);
-                if (removeLayers == null) removeLayers = new ArrayList<>();
-                removeLayers.add(layer);
-            }
-        }
-        if (removeLayers != null) fsLayers.removeAll(removeLayers);
     }
 
     protected void unregisterAll(){
-        for (Layer layer : fsLayers){
-            getMapView().getLayerManager().getLayers().remove(layer);
+        if (!fsLayers.layers.isEmpty()){
+            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                mgLog.d("unregister "+this);
+                synchronized (getMapView().getLayerManager().getLayers()) {
+                    fsLayers.layers.clear();
+                    getMapView().getLayerManager().redrawLayers();
+                }
+            } else {
+                getActivity().runOnUiThread(this::unregisterAll);
+            }
         }
-        fsLayers.clear();
+    }
+    protected void unregisterAllControl(){
+        if (!fsControlLayers.layers.isEmpty()){
+            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                mgLog.d("unregister "+this);
+                synchronized (getMapView().getLayerManager().getLayers()){
+                    fsControlLayers.layers.clear();
+                    getMapView().getLayerManager().redrawLayers();
+                }
+            } else {
+                getActivity().runOnUiThread(this::unregisterAllControl);
+            }
+        }
     }
 
     protected MGMapActivity getActivity(){

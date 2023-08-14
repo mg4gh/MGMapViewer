@@ -208,19 +208,20 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider());
 
         featureServices.add(new FSTime(this));
-        featureServices.add(new FSBeeline(this));
-        featureServices.add(new FSPosition(this));
-        featureServices.add(new FSRecordingTrackLog(this));
+        featureServices.add(new FSAlpha(this));
+        featureServices.add(new FSControl(this));
+        featureServices.add(new FSRemainings(this));
+
         featureServices.add(new FSAvailableTrackLogs(this));
         featureServices.add(new FSMarker(this));
         featureServices.add(new FSRouting(this, getFS(FSMarker.class)));
+        featureServices.add(new FSRecordingTrackLog(this));
 
-        featureServices.add(new FSRemainings(this));
-        featureServices.add(new FSBB(this));
         featureServices.add(new FSGraphDetails(this));
         featureServices.add(new FSSearch(this));
-        featureServices.add(new FSAlpha(this));
-        featureServices.add(new FSControl(this));
+        featureServices.add(new FSPosition(this));
+        featureServices.add(new FSBeeline(this));
+        featureServices.add(new FSBB(this));
 
         WaitUtil.doWait(this.getClass(), 100);
         coView.init(application, this);
@@ -282,6 +283,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.markerTrackLogObservable.changed();
 
         FeatureService.getTimer().postDelayed(ttUploadGpxTrigger, 60*1000);
+        application.finishAlarm(); // just in case there is one
     }
 
     @Override

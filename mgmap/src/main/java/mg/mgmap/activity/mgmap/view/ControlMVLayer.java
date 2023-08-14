@@ -14,22 +14,18 @@
  */
 package mg.mgmap.activity.mgmap.view;
 
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.Point;
-
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 
-public abstract class DraggingMVLayer<T> extends MVLayer {
+public abstract class ControlMVLayer<T> extends MVLayer {
 
     private float dragX;
     private float dragY;
     private PointModel dragOrigin = null;
     private T dragObject = null;
 
-    public DraggingMVLayer(){
+    public ControlMVLayer(){
         reset();
     }
 

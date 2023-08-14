@@ -298,9 +298,9 @@ public class MGMapApplication extends Application {
                     } else {
                         escalationCnt = 0;
                     }
-                    if (escalationCnt > 3){
+                    if (escalationCnt > 2){
                         mgLog.w("try to notify user ...");
-                        notificationUtil.notifyAlarm();
+                        notifyAlarm();
                     }
                     if (++cnt % 6 == 0){
                         mgLog.i("logcat supervision: OK. (running "+(cnt/6)+" min)");
@@ -591,5 +591,10 @@ public class MGMapApplication extends Application {
         activeBgJobs.remove(job);
     }
 
-
+    public void notifyAlarm(){
+        notificationUtil.notifyAlarm();
+    }
+    public void finishAlarm(){
+        notificationUtil.finishAlarm();
+    }
 }

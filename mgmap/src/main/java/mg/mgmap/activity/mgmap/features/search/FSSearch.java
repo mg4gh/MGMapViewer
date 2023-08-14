@@ -30,6 +30,7 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.search.provider.Nominatim;
+import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -41,7 +42,6 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.view.ExtendedTextView;
-import mg.mgmap.activity.mgmap.view.MVLayer;
 
 public class FSSearch extends FeatureService {
 
@@ -166,7 +166,7 @@ public class FSSearch extends FeatureService {
                 searchView.requestFocus();
                 showKeyboard();
                 scl = new SearchControlLayer();
-                register(scl, false);
+                register(scl);
                 triggerTTHideKeyboard();
             }
         } else {
@@ -175,13 +175,13 @@ public class FSSearch extends FeatureService {
                 searchView.setVisibility( View.INVISIBLE );
                 searchView.setFocusable(false);
                 searchView.resetSearchResults();
-                unregister(scl, false);
+                unregisterAllControl();
             }
         }
     }
 
 
-    public class SearchControlLayer extends MVLayer {
+    public class SearchControlLayer extends ControlMVLayer<Object> {
 
         @Override
         protected boolean onTap(WriteablePointModel point) {

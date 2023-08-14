@@ -122,6 +122,13 @@
             app:title="@string/FSGrad_pref_WayDetails_title"
             app:iconSpaceReserved="false"
             />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_alarm_ps_key"
+            app:summary="@string/preferences_alarm_ps_desc"
+            app:title="@string/preferences_alarm_ps_title"
+            app:iconSpaceReserved="false"
+            />
         <Preference
             app:summary=""
             app:title=""
