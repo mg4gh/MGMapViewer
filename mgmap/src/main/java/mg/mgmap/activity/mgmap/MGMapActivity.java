@@ -283,6 +283,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.markerTrackLogObservable.changed();
 
         FeatureService.getTimer().postDelayed(ttUploadGpxTrigger, 60*1000);
+        application.finishAlarm(); // just in case there is one
     }
 
     @Override

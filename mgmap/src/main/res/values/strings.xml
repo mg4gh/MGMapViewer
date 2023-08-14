@@ -118,4 +118,8 @@
 
     <string name="unique_work_name">MGMapViewerApp.UniqueWorkName</string>
 
+    <string name="preferences_alarm_ps_key">alarm_power_saving_key</string>
+    <string name="preferences_alarm_ps_title">Power saving Alarm</string>
+    <string name="preferences_alarm_ps_desc">Acoustic alam on potential power saving problem during location service usage. </string>
+
 </resources>

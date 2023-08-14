@@ -1,3 +1,4 @@
+- add acoustic alarm on potential power saving problem during track logger service usage (debug settings)
 - ensure defined view order of ATL/STL, RoTL, RTL
 - remove unused code for ApproachViews
 - remove unused code for direct routing code from RoutingEngine, RoutePointModel and FSRouting
