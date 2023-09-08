@@ -1,3 +1,4 @@
+0.9.7-15.0
 - Track left/on Track Message in TrackInstruction service
 - escalate mediumAwayCnt only, if distance is growing more than 10m
 - use PURPLE instead of PURPLE_A150 for routes (none transparent base color), increase visibility in case of underlying STL
