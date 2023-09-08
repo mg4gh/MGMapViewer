@@ -55,8 +55,8 @@ public class FSRouting extends FeatureService {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE_A150, DisplayModel.getDeviceScaleFactor()*5.0f);
-    private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE_A150);
+    private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE, DisplayModel.getDeviceScaleFactor()*5.0f);
+    private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE);
     private static final Paint PAINT_RELAXED = CC.getStrokePaint(R.color.BLUE, 2);
     private final Paint PAINT_STROKE_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
