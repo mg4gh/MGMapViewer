@@ -14,10 +14,12 @@
  */
 package mg.mgmap.application;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -34,6 +36,7 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
+import mg.mgmap.application.util.ActivityLifecycleAdapter;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImpl;
 import mg.mgmap.application.util.ExtrasUtil;
@@ -275,7 +278,13 @@ public class MGMapApplication extends Application {
             mgLog.i("logcat supervision: start ");
             UUID uuid = currentRun;
             int cnt = 0;
-            int escalationCnt = 0;
+            final int[] escalationCnt = {0};
+            registerActivityLifecycleCallbacks(new ActivityLifecycleAdapter() {
+                @Override
+                public void onActivityResumed(@NonNull Activity activity) {
+                    escalationCnt[0] =  0; // escalation is reset whenever any activity is resumed
+                }
+             });
             long lastCheck = System.currentTimeMillis();
             while (uuid == currentRun){
                 try {
@@ -294,11 +303,11 @@ public class MGMapApplication extends Application {
                     long now = System.currentTimeMillis();
                     if (prefGps.getValue() && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
                         mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
-                        escalationCnt++;
+                        escalationCnt[0]++;
                     } else {
-                        escalationCnt = 0;
+                        escalationCnt[0] = 0;
                     }
-                    if (escalationCnt > 2){
+                    if (escalationCnt[0] > 2){
                         mgLog.w("try to notify user ...");
                         notifyAlarm();
                     }
