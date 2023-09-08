@@ -28,7 +28,6 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
@@ -46,6 +45,7 @@ public class TurningInstructionService {
     private final Pref<Boolean> prefGps;
 
     private int  mediumAwayCnt = 0;
+    private double lastAwayDistance = 0;
     private PointModel lastHintPoint = null;
     private boolean lastHintClose = false;
 
@@ -114,25 +114,33 @@ public class TurningInstructionService {
                     TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(pm, THRESHOLD_FAR);
                     if ((bestMatch != null)){
                         if (bestMatch.getDistance() < THRESHOLD_NEAR){
-                            checkHints(bestMatch);
+                            checkHints(mediumAwayCnt >= 4, bestMatch);
                             mediumAwayCnt = 0;
+                            lastAwayDistance = 0;
                         } else {
                             // not really close
-                            mediumAwayCnt++;
-                            mgLog.i("away="+mediumAwayCnt);
-                            if (mediumAwayCnt <=3){ // don't repeat all the time
-                                StringBuilder text = new StringBuilder();
-                                for (int i=0;i<mediumAwayCnt;i++) text.append("Achtung! ");
-                                int abstand = (int)bestMatch.getDistance();
-                                text.append("Abstand ").append(abstand).append(" Meter");
-                                mgLog.i("away="+mediumAwayCnt+" text="+text);
-                                tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
+                            if (bestMatch.getDistance() > lastAwayDistance+10){
+                                mediumAwayCnt++;
+                                lastAwayDistance = bestMatch.getDistance();
+                                mgLog.i("away="+mediumAwayCnt);
+                                if (mediumAwayCnt <=3){ // don't repeat all the time
+                                    StringBuilder text = new StringBuilder();
+                                    for (int i=0;i<mediumAwayCnt;i++) text.append("Achtung! ");
+                                    int abstand = (int)bestMatch.getDistance();
+                                    text.append("Abstand ").append(abstand).append(" Meter");
+                                    mgLog.i("away="+mediumAwayCnt+" text="+text);
+                                    tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
+                                } else {
+                                    String text = "Track verlassen";
+                                    mgLog.i("away="+mediumAwayCnt+" text="+text);
+                                    tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
+                                }
                             }
                         }
                     } else {
                         mgLog.i("far away");
                         if (mediumAwayCnt <= 3 ){
-                            String text = "Großer Abstand mehr als "+ (THRESHOLD_FAR)+" Meter";
+                            String text = "Großer Abstand, mehr als "+ (THRESHOLD_FAR)+" Meter, Track verlassen";
                             mgLog.i("away="+mediumAwayCnt+" text="+text);
                             tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
                             mediumAwayCnt = 4;
@@ -147,7 +155,7 @@ public class TurningInstructionService {
     }
 
 
-    private void checkHints(TrackLogRefApproach bestMatch){
+    private void checkHints(boolean backOnTrack, TrackLogRefApproach bestMatch){
         int abstand = (int)bestMatch.getDistance();
         StringBuilder text = new StringBuilder();
         mgLog.d("SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
@@ -216,6 +224,9 @@ public class TurningInstructionService {
                 mgLog.d("HINT d="+routeDistance);
             }
             lastPm = pm;
+        }
+        if (backOnTrack){
+            text.insert(0,"on track ");
         }
 
         if (text.length() > 0){

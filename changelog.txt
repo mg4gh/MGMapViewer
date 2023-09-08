@@ -1,3 +1,5 @@
+- Track left/on Track Message in TrackInstruction service
+- escalate mediumAwayCnt only, if distance is growing more than 10m
 - use PURPLE instead of PURPLE_A150 for routes (none transparent base color), increase visibility in case of underlying STL
 - add acoustic alarm on potential power saving problem during track logger service usage (debug settings)
 - ensure defined view order of ATL/STL, RoTL, RTL
