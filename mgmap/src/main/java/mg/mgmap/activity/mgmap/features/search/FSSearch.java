@@ -259,8 +259,8 @@ public class FSSearch extends FeatureService {
                     .setPositive("Locate anyway", evt -> setSearchResult2(pmSearchResult))
                     .setNegative("Cancel",null)
                     .show());
-
-            return;
+        } else {
+            setSearchResult2(pmSearchResult);
         }
     }
     public void setSearchResult2(PointModel pmSearchResult) {
