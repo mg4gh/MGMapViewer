@@ -21,9 +21,6 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import android.content.SharedPreferences;
 import android.os.SystemClock;
@@ -32,7 +29,6 @@ import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import mg.mgmap.BuildConfig;
-import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
@@ -41,7 +37,6 @@ import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImpl;
 import mg.mgmap.application.util.ExtrasUtil;
 import mg.mgmap.application.util.GeoidProvider;
-import mg.mgmap.application.util.GpsSupervisorWorker;
 import mg.mgmap.application.util.HgtProvider;
 import mg.mgmap.application.util.MetaDataUtil;
 import mg.mgmap.application.util.NotificationUtil;
@@ -273,6 +268,7 @@ public class MGMapApplication extends Application {
             }
         }).start();
 
+        // supervise logging and check timing behaviour, escalate if necessary
         new Thread(() -> {
             long TIMEOUT = 10000;
             mgLog.i("logcat supervision: start ");
@@ -301,13 +297,13 @@ public class MGMapApplication extends Application {
                     lastCheck = System.currentTimeMillis();
                 } catch (Exception e) {
                     long now = System.currentTimeMillis();
-                    if (prefGps.getValue() && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
+                    if (prefGps.getValue() && (recordingTrackLogObservable.getTrackLog() != null) && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
                         mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
                         escalationCnt[0]++;
                     } else {
                         escalationCnt[0] = 0;
                     }
-                    if (escalationCnt[0] > 2){
+                    if (escalationCnt[0] > 3){
                         mgLog.w("try to notify user ...");
                         notifyAlarm();
                     }
@@ -472,26 +468,6 @@ public class MGMapApplication extends Application {
         Intent intent = new Intent(context, TrackLoggerService.class);
         this.startForegroundService(intent);
         mgLog.i("prefGps="+prefGps.getValue());
-        triggerGpsSupervisionWorker();
-    }
-
-
-    public void triggerGpsSupervisionWorker(){
-        if (prefGps.getValue()){
-            mgLog.i("trigger OneTimeWorkRequest in 300s for GpsSupervisorWorker!");
-            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(GpsSupervisorWorker.class)
-                    .setInitialDelay(300, TimeUnit.SECONDS).build();
-            String uniqueWokName = getApplicationContext().getString(R.string.unique_work_name);
-            WorkManager.getInstance(this).enqueueUniqueWork(uniqueWokName, ExistingWorkPolicy.REPLACE, oneTimeWorkRequest);
-        }
-    }
-
-    public void checkGpsStatus(){
-        if (prefGps.getValue() && prefRestart.getValue()){ // if GPS is on ans restart flag is still set
-            Intent intent = new Intent(this, MGMapActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            this.startActivity(intent);
-        }
     }
 
     public HgtProvider getHgtProvider() {
