@@ -1,4 +1,5 @@
 0.9.7-
+- graphDetails visibility only on zoom level > 13 (even after zoomIn)
 - battery saving supervision: escalate only on TrackRecording, not on GPS; remove GpsSupervisorWorker
 - TurningInstructionService: onTrack Message after 500m, if there is no other instruction
 0.9.7-15.0

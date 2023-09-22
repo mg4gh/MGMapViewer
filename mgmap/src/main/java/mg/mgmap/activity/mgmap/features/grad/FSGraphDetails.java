@@ -50,17 +50,22 @@ public class FSGraphDetails extends FeatureService {
         @Override
         public boolean onTap(WriteablePointModel pmTap) {
             unregisterAll();
-            if (getMapView().getModel().mapViewPosition.getZoomLevel() <= 13) return false;
-            return (showGraphDetails( pmTap ));
+            boolean res = false;
+            if (verifyGraphDetailsVisibility()) {
+                res = showGraphDetails( pmTap );
+            }
+            return res;
         }
     }
 
     private GradControlLayer controlLayer = null;
 
     private final Pref<Boolean> prefWayDetails = getPref(R.string.FSGrad_pref_WayDetails_key, false);
+    private final Pref<Integer> prefZoomLevel = getPref(R.string.FSBeeline_pref_ZoomLevel, 15);
 
     public FSGraphDetails(MGMapActivity mmActivity) {
         super(mmActivity);
+        prefZoomLevel.addObserver(refreshObserver);
     }
 
     @Override
@@ -78,6 +83,17 @@ public class FSGraphDetails extends FeatureService {
         controlLayer = null;
     }
 
+    @Override
+    protected void doRefreshResumedUI() {
+        if (!verifyGraphDetailsVisibility()){
+            unregisterAll();
+        }
+    }
+
+    // GraphDetails shell be visible as long as zoom level is more than 13
+    private boolean verifyGraphDetailsVisibility(){
+        return prefZoomLevel.getValue() > 13;
+    }
 
     private boolean showGraphDetails(PointModel pmTap){
         if (prefWayDetails.getValue()){
