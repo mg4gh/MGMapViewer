@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
@@ -41,6 +42,7 @@ import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
 
 public class FSSearch extends FeatureService {
@@ -248,8 +250,20 @@ public class FSSearch extends FeatureService {
     public void setSearchResult(PointModel pmSearchResult) {
         if (activity.getMapDataStoreUtil().getMapDataStore(new BBox().extend(pmSearchResult)) == null){
             mgLog.w("outside of map: "+pmSearchResult);
+//            Toast.makeText(getActivity(),"Search result outside map",Toast.LENGTH_LONG).show();
+            DialogView dialogView = activity.findViewById(R.id.dialog_parent);
+            dialogView.lock(() -> dialogView
+                    .setTitle("Warning")
+                    .setMessage("Search result outside mapsforge map")
+                    .setLogPrefix("Search")
+                    .setPositive("Locate anyway", evt -> setSearchResult2(pmSearchResult))
+                    .setNegative("Cancel",null)
+                    .show());
+
             return;
         }
+    }
+    public void setSearchResult2(PointModel pmSearchResult) {
         mgLog.i(pmSearchResult);
         prefShowPos.setValue(pmSearchResult.getLaLo());
         if (prefShowSearchResult.getValue()){
@@ -258,4 +272,5 @@ public class FSSearch extends FeatureService {
             prefShowSearchResult.setValue(true);
         }
     }
+
 }
