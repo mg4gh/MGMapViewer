@@ -48,6 +48,7 @@ public class TurningInstructionService {
     private double lastAwayDistance = 0;
     private PointModel lastHintPoint = null;
     private boolean lastHintClose = false;
+    private TrackLogRefApproach lastHintApproach = null;
 
     private ServiceState serviceState = ServiceState.OFF;
     private TextToSpeech tts = null;
@@ -228,10 +229,16 @@ public class TurningInstructionService {
         if (backOnTrack){
             text.insert(0,"on track ");
         }
+        if (text.length() == 0){
+            if (bestMatch.getTrackLog().getRemainingDistance(lastHintApproach,bestMatch) > 500){
+                text.append("on track");
+            }
+        }
 
         if (text.length() > 0){
             mgLog.i("TTS: "+text);
             tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
+            lastHintApproach = bestMatch;
         }
     }
 
