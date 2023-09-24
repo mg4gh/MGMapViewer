@@ -73,7 +73,6 @@ public class FSSearch extends FeatureService {
         searchView = new SearchView(mmActivity.getApplicationContext(), this);
         searchView.init(mmActivity);
         searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue());
-        prefPosBasedSearch.addObserver(e -> searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue()));
         RelativeLayout mainView = mmActivity.findViewById(R.id.mainView);
         mainView.addView(searchView);
         getControlView().variableVerticalOffsetViews.add(searchView);
@@ -98,7 +97,11 @@ public class FSSearch extends FeatureService {
             }
         });
         searchText.setOnClickListener(v -> triggerTTHideKeyboard());
-        setSearchProvider(new Nominatim());
+
+        prefPosBasedSearch.addObserver(e -> {
+            searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue());
+            doSearch(searchText.getText().toString().trim(), -1);
+        });
 
         Observer showPositionObserver = (e) -> {
             unregisterAll();
