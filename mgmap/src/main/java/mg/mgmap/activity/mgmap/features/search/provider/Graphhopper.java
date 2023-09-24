@@ -120,7 +120,7 @@ public class Graphhopper extends SearchProvider {
                         res += (!fo.containsKey(key))?"":(" "+fo.getString(key));
 
                         if (res.endsWith(",")){
-                            res = res.substring(0,res.length()-2);
+                            res = res.substring(0,res.length()-1);
                         }
 
                         JsonObject jpo =  fo.getJsonObject("point");
