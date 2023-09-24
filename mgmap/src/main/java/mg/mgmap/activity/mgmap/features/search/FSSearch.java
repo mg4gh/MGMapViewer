@@ -62,6 +62,7 @@ public class FSSearch extends FeatureService {
     private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
     private final Pref<Long> prefShowPos = getPref(R.string.FSSearch_pref_SearchPos, NO_POS);
     private final Pref<Boolean> prefPosBasedSearch = getPref(R.string.FSSearch_pref_PosBasedSearch, true);
+    private final Pref<Boolean> prefSearchResultDetails = getPref(R.string.FSSearch_pref_SearchDetails_key, false);
 
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -282,6 +283,9 @@ public class FSSearch extends FeatureService {
 
     public boolean isPosBasedSearch(){
         return prefPosBasedSearch.getValue();
+    }
+    public boolean showSearchDeatils(){
+        return prefSearchResultDetails.getValue();
     }
 
 }

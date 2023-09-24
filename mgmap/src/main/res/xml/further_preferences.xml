@@ -124,6 +124,13 @@
             />
         <SwitchPreference
             app:defaultValue="false"
+            app:key="@string/FSSearch_pref_SearchDetails_key"
+            app:summary="@string/FSSearch_pref_SearchDetails_desc"
+            app:title="@string/FSSearch_pref_SearchDetails_title"
+            app:iconSpaceReserved="false"
+            />
+        <SwitchPreference
+            app:defaultValue="false"
             app:key="@string/preferences_alarm_ps_key"
             app:summary="@string/preferences_alarm_ps_desc"
             app:title="@string/preferences_alarm_ps_title"

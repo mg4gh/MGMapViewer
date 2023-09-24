@@ -111,10 +111,11 @@ public class SearchView extends LinearLayout {
 
                 float scaleFactor = activity.getMapsforgeMapView().getModel().displayModel.getScaleFactor();
                 ZoomOCL ocl = new ZoomOCL(scaleFactor){
+                    { doubleClickTimeout = 300; }
                     private boolean showLong=true;
                     @Override
                     public void onDoubleClick(View view) {
-                        if (sr.longResultText != null){
+                        if (fsSearch.showSearchDeatils() && (sr.longResultText != null)){
                             if (showLong){
                                 tv.setText(sr.longResultText);
                             } else {
