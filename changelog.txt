@@ -1,4 +1,6 @@
 0.9.7-
+- new Feature: Search on current map location can be switched off/on
+  (was always on, but e.g. being in "Heidelberg" searching for "Füssen" failed with position based search.)
 - if search result is outside the mapsforge map(s), show dialog with 'locate anyway'
 - graphDetails visibility only on zoom level > 13 (even after zoomIn)
 - battery saving supervision: escalate only on TrackRecording, not on GPS; remove GpsSupervisorWorker

@@ -61,6 +61,7 @@ public class FSSearch extends FeatureService {
     private final Pref<Boolean> prefShowSearchResult = getPref(R.string.FSSearch_qc_showSearchResult, false);
     private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
     private final Pref<Long> prefShowPos = getPref(R.string.FSSearch_pref_SearchPos, NO_POS);
+    private final Pref<Boolean> prefPosBasedSearch = getPref(R.string.FSSearch_pref_PosBasedSearch, true);
 
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -70,6 +71,8 @@ public class FSSearch extends FeatureService {
 
         searchView = new SearchView(mmActivity.getApplicationContext(), this);
         searchView.init(mmActivity);
+        searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue());
+        prefPosBasedSearch.addObserver(e -> searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue()));
         RelativeLayout mainView = mmActivity.findViewById(R.id.mainView);
         mainView.addView(searchView);
         getControlView().variableVerticalOffsetViews.add(searchView);
@@ -131,6 +134,10 @@ public class FSSearch extends FeatureService {
             etv.setPrAction(prefShowSearchResult);
             etv.setDisabledData(prefShowSearchResultEnabled, R.drawable.search_res3);
             etv.setHelp(r(R.string.FSRecording_qcSearchRes_help)).setHelp(r(R.string.FSRecording_qcSearchRes_help1),r(R.string.FSRecording_qcSearchRes_help2));
+        } else if ("posBasedSearch".equals(info)){
+            etv.setData(prefPosBasedSearch,R.drawable.search_pos2,R.drawable.search_pos1);
+            etv.setPrAction(prefPosBasedSearch);
+            etv.setHelp(r(R.string.FSRecording_qcPosBasedSearch_help)).setHelp(r(R.string.FSRecording_qcPosBasedSearch_help1),r(R.string.FSRecording_qcPosBasedSearch_help2));
         }
         return etv;
     }
@@ -271,6 +278,10 @@ public class FSSearch extends FeatureService {
         } else {
             prefShowSearchResult.setValue(true);
         }
+    }
+
+    public boolean isPosBasedSearch(){
+        return prefPosBasedSearch.getValue();
     }
 
 }

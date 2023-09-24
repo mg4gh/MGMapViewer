@@ -82,6 +82,9 @@ public class Pelias extends SearchProvider {
                 } else {
                     sUrl = String.format(Locale.ENGLISH, "%sautocomplete?api_key=%s&text=%s&size=5&focus.point.lon=%.6f&focus.point.lat=%.6f&boundary.circle.lon=%.6f&boundary.circle.lat=%.6f&boundary.circle.radius=%d",
                             URL_ORS, apiKey, request.text, pm.getLon(), pm.getLat(), pm.getLon(), pm.getLat(), radius);
+                    if (!fsSearch.isPosBasedSearch()){
+                        sUrl = sUrl.replaceFirst("&focus.point.*","");
+                    }
                 }
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
                 URL url = new URL(sUrl);

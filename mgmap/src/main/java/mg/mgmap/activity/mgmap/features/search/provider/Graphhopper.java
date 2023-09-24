@@ -81,6 +81,9 @@ public class Graphhopper extends SearchProvider {
                 } else {
                     sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&limit=5&q=%s",
                             URL_ORS, apiKey, pm.getLat(), pm.getLon(), request.text);
+                    if (!fsSearch.isPosBasedSearch()){
+                        sUrl = sUrl.replaceFirst("point[^&]*&","");
+                    }
                 }
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
 

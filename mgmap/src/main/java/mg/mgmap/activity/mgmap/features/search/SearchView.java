@@ -16,6 +16,7 @@ package mg.mgmap.activity.mgmap.features.search;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import java.util.ArrayList;
 
+import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.util.CC;
@@ -76,6 +80,14 @@ public class SearchView extends LinearLayout {
 
         }
         resetSearchResults();
+    }
+
+    void setPosBasedSearchIcon(boolean posBasedSearch){
+        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), posBasedSearch?R.drawable.search_pos2:R.drawable.search_pos1 , getContext().getTheme());
+        if (drawable != null){
+            drawable.setBounds(0,0, ControlView.dp(16),ControlView.dp(16));
+            searchText.setCompoundDrawables(drawable,null,null,null);
+        }
     }
 
     public SearchView(Context context, AttributeSet attributeSet) {

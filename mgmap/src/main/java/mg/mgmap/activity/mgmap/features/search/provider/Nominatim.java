@@ -78,6 +78,9 @@ public class Nominatim extends SearchProvider {
                     String viewbox= String.format(Locale.ENGLISH, "viewbox=%.6f,%.6f,%.6f,%.6f",bBox.minLongitude,bBox.minLatitude,bBox.maxLongitude, bBox.maxLatitude);
                     sUrl = String.format(Locale.ENGLISH, "%ssearch?q=%s&%s&bounded=1&limit=5&format=geojson",
                             URL_BASE, request.text, viewbox);
+                    if (!fsSearch.isPosBasedSearch()){
+                        sUrl = sUrl.replaceFirst("viewbox[^&]*&","");
+                    }
                 }
                 Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
 

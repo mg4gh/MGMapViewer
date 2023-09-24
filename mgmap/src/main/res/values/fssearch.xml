@@ -3,6 +3,7 @@
     <string name="FSSearch_qc_searchOn">FSSearch.searchOn</string>
     <string name="FSSearch_qc_showSearchResult">FSSearch.showSearchResult</string>
     <string name="FSSearch_pref_SearchPos">FSSearch.searchPos</string>
+    <string name="FSSearch_pref_PosBasedSearch">FSSearch.posBasedSearch</string>
 
     <string name="FSRecording_qcSearch_help">Search mode</string>
     <string name="FSRecording_qcSearch_help1">on tap: Switch search mode on</string>
@@ -11,5 +12,9 @@
     <string name="FSRecording_qcSearchRes_help">Show search result</string>
     <string name="FSRecording_qcSearchRes_help1">on tap: switch on</string>
     <string name="FSRecording_qcSearchRes_help2">on tap: switch off</string>
+
+    <string name="FSRecording_qcPosBasedSearch_help">Position based search (Provider dependent)</string>
+    <string name="FSRecording_qcPosBasedSearch_help1">on tap: switch on</string>
+    <string name="FSRecording_qcPosBasedSearch_help2">on tap: switch off</string>
 
 </resources>
