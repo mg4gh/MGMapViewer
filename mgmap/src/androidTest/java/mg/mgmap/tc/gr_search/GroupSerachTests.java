@@ -85,8 +85,7 @@ public class GroupSerachTests extends BaseTestCase {
         SystemClock.sleep(1000);
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("Garz"), ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
-        Point pSearchResult2 = getClickPos(R.id.search_result2);
-        animateSwipeToPos(pSearchResult2,pSearchResult2);
+        animateToViewAndClick(R.id.search_result2);
 
         PointModel pmCenter = getPointModel4Point(getCenterPos());
         Assert.assertEquals(54.317866, pmCenter.getLat(), 0.00001);
@@ -134,8 +133,7 @@ public class GroupSerachTests extends BaseTestCase {
         Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(" "), ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
-        Point pSearchResult2 = getClickPos(R.id.search_result1);
-        animateSwipeToPos(pSearchResult2,pSearchResult2);
+        animateToViewAndClick(R.id.search_result1);
 
         PointModel pmCenter = getPointModel4Point(getCenterPos());
         Assert.assertEquals(54.317751, pmCenter.getLat(), 0.00001);
@@ -188,8 +186,7 @@ public class GroupSerachTests extends BaseTestCase {
         Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(""), ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
-        Point pSearchResult = getClickPos(R.id.search_result1);
-        animateSwipeToPos(pSearchResult,pSearchResult);
+        animateToViewAndClick(R.id.search_result1);
 
         PointModel pmCenter = getPointModel4Point(getCenterPos());
         Assert.assertEquals(54.317257, pmCenter.getLat(), 0.00001);
@@ -243,8 +240,7 @@ public class GroupSerachTests extends BaseTestCase {
         Assert.assertEquals ("Lat=54.317257, Long=13.348735", waitForView(TextView.class, R.id.search_result1).getText());
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(""), ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
-        Point pSearchResult = getClickPos(R.id.search_result1);
-        animateSwipeToPos(pSearchResult,pSearchResult);
+        animateToViewAndClick(R.id.search_result1);
 
         PointModel pmCenter = getPointModel4Point(getCenterPos());
         Assert.assertEquals(54.317257, pmCenter.getLat(), 0.00001);
