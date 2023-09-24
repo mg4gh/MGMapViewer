@@ -34,6 +34,7 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.activity.mgmap.util.ZoomOCL;
+import mg.mgmap.generic.util.ExtendedClickListener;
 
 public class SearchView extends LinearLayout {
 
@@ -76,6 +77,7 @@ public class SearchView extends LinearLayout {
             llParams.setMargins(5,0,5,5);
             textView.setLayoutParams(llParams);
             this.addView(textView);
+            textView.setMinHeight(ControlView.dp(40));
             searchResults.add(textView);
 
         }
@@ -110,9 +112,17 @@ public class SearchView extends LinearLayout {
                 tv.setBackgroundColor(CC.getColor( R.color.WHITE_A150 ));
 
                 float scaleFactor = activity.getMapsforgeMapView().getModel().displayModel.getScaleFactor();
-                ZoomOCL ocl = new ZoomOCL(scaleFactor){
-                    { doubleClickTimeout = 300; }
+                tv.setOnClickListener( new ExtendedClickListener(){
                     private boolean showLong=true;
+                    @Override
+                    public void onClick(View v) {
+                        doubleClickTimeout = fsSearch.showSearchDeatils()?250:10;
+                        super.onClick(v);
+                    }
+                    @Override
+                    public void onSingleClick(View view) {
+                        fsSearch.setSearchResult(sr.pos);
+                    }
                     @Override
                     public void onDoubleClick(View view) {
                         if (fsSearch.showSearchDeatils() && (sr.longResultText != null)){
@@ -124,12 +134,16 @@ public class SearchView extends LinearLayout {
                             showLong = !showLong;
                         }
                     }
-                };
-                ocl.setToMillis(2500);
-                tv.setOnClickListener(ocl);
-                tv.setOnLongClickListener(v -> {
-                    fsSearch.setSearchResult(sr.pos);
-                    return true;
+                });
+
+                tv.setOnLongClickListener( new View.OnLongClickListener(){
+                    ZoomOCL zoomOCL = new ZoomOCL(scaleFactor);
+                    @Override
+                    public boolean onLongClick(View v) {
+                        zoomOCL.setToMillis(2500);
+                        zoomOCL.onSingleClick(v);
+                        return true;
+                    }
                 });
             } else {
                 resetSearchResult(tv);

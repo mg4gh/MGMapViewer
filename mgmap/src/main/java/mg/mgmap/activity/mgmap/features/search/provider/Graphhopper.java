@@ -61,13 +61,6 @@ public class Graphhopper extends SearchProvider {
 
         if ((request.actionId < 0) && (request.text.length() <=5)) return;
 
-        if (request.text.equals(searchRequest.text) ){
-            if (request.pos.equals(searchRequest.pos)){
-                publishResult(request, searchResults);
-                return;
-            }
-        }
-
         PointModel pm = request.pos;
 
         new Thread(() -> {
