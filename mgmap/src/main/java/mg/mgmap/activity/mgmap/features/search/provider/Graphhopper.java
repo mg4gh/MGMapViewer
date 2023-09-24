@@ -122,6 +122,8 @@ public class Graphhopper extends SearchProvider {
                         if (res.endsWith(",")){
                             res = res.substring(0,res.length()-1);
                         }
+                        key="countrycode";
+                        res += (!fo.containsKey(key))?"":(", "+fo.getString(key));
 
                         JsonObject jpo =  fo.getJsonObject("point");
 

@@ -1,4 +1,5 @@
 0.9.7-
+- Graphhopper shows additionally the country code of search results
 - new Feature: Search on current map location can be switched off/on
   (was always on, but e.g. being in "Heidelberg" searching for "Füssen" failed with position based search.)
 - if search result is outside the mapsforge map(s), show dialog with 'locate anyway'
