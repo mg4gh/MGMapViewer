@@ -1,4 +1,4 @@
-0.9.7-
+0.9.7-16.0
 - FSSearch: change onClick (now locate result) and onLongClick (now enlarge) behaviour
 - Graphhopper: provide search details
 - show search result details as developer pref switchable
