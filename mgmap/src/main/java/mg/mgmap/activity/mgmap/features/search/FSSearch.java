@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
@@ -30,7 +29,6 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.features.search.provider.Nominatim;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
@@ -67,8 +65,7 @@ public class FSSearch extends FeatureService {
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
         prefSearchOn.setValue(false);
-
-
+        setSearchProvider();
 
         searchView = new SearchView(mmActivity.getApplicationContext(), this);
         searchView.init(mmActivity);
@@ -100,7 +97,9 @@ public class FSSearch extends FeatureService {
 
         prefPosBasedSearch.addObserver(e -> {
             searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue());
-            doSearch(searchText.getText().toString().trim(), -1);
+            if (prefSearchOn.getValue()){
+                doSearch(searchText.getText().toString().trim(), -1);
+            }
         });
 
         Observer showPositionObserver = (e) -> {
@@ -168,12 +167,7 @@ public class FSSearch extends FeatureService {
     private void changeVisibility(boolean targetVisibility){
         if (targetVisibility){
             if (searchView.getVisibility() == View.INVISIBLE){
-                try {
-                    setSearchProvider( (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+prefSearchProvider.getValue()).newInstance() );
-                } catch (Exception e) {
-                    mgLog.e(e);
-                }
-
+                setSearchProvider();
                 searchView.setVisibility( View.VISIBLE );
                 searchView.setFocusable(true);
                 searchView.requestFocus();
@@ -219,8 +213,12 @@ public class FSSearch extends FeatureService {
         getTimer().postDelayed(ttHideKeyboard, T_HIDE_KEYBOARD);
     }
 
-    private void setSearchProvider(SearchProvider searchProvider){
-        this.searchProvider = searchProvider;
+    private void setSearchProvider(){
+        try {
+            this.searchProvider = (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+prefSearchProvider.getValue()).newInstance();
+        } catch (Exception e) {
+            mgLog.e(e);
+        }
         searchProvider.init( getActivity(),this, searchView, getSharedPreferences());
     }
 
@@ -284,6 +282,7 @@ public class FSSearch extends FeatureService {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isPosBasedSearch(){
         return prefPosBasedSearch.getValue();
     }
