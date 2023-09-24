@@ -1,4 +1,5 @@
 0.9.7-
+- Graphhopper: provide search details
 - show search result details as developer pref switchable
 - Graphhopper shows additionally the country code of search results
 - new Feature: Search on current map location can be switched off/on

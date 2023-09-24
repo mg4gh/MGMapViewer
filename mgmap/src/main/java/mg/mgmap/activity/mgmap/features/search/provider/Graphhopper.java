@@ -131,7 +131,9 @@ public class Graphhopper extends SearchProvider {
                         double lat = jpo.getJsonNumber("lat").doubleValue();
                         PointModel pm1 = new PointModelImpl(lat,lon);
 
-                        resList.add( new SearchResult(request, res, pm1));
+                        SearchResult sr = new SearchResult(request, res, pm1);
+                        sr.longResultText = fo.toString();
+                        resList.add( sr );
                         Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+res);
                     } catch (Exception e) {
                         Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
