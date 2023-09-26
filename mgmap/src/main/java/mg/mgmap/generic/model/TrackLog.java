@@ -151,6 +151,7 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
     }
 
     public double getRemainingDistance(TrackLogRefApproach ref1, TrackLogRefApproach ref2){
+        if (ref1.segmentIdx != ref2.segmentIdx) return -1;
         if (ref2.getEndPointIndex() < ref1.getEndPointIndex()){
             TrackLogRefApproach ref = ref1;
             ref1 = ref2;
