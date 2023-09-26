@@ -132,9 +132,11 @@ public class TurningInstructionService {
                                     mgLog.i("away="+mediumAwayCnt+" text="+text);
                                     tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
                                 } else {
-                                    String text = "Track verlassen";
-                                    mgLog.i("away="+mediumAwayCnt+" text="+text);
-                                    tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
+                                    if (mediumAwayCnt == 4){
+                                        String text = "Track verlassen";
+                                        mgLog.i("away="+mediumAwayCnt+" text="+text);
+                                        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
+                                    }
                                 }
                             }
                         }
