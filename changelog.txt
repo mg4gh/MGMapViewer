@@ -1,3 +1,6 @@
+0.9.7-17.0
+- fix crash on calc remainings with start and end approach point to different segments
+- fix multiple 'Track verlassen' messages
 0.9.7-16.0
 - FSSearch: change onClick (now locate result) and onLongClick (now enlarge) behaviour
 - Graphhopper: provide search details
