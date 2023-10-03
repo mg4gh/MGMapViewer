@@ -14,9 +14,12 @@
  */
 package mg.mgmap.generic.model;
 
+import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.LaLo;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Stores the data of a single point of a TrackLog.
@@ -219,4 +222,17 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
     public void setPressureEleAcc(float pressureEleAcc) {
         this.pressureEleAcc = pressureEleAcc;
     }
+
+    public String toLongString(){
+        Date date = new Date(getTimestamp());
+        return String.format(Locale.ENGLISH,"%s %s: lat=%.6f,lon=%.6f,nmeaAcc=%.1f, nmeaEle=%.1f,nmeaEleAcc=%.1f, hgtEle=%.1f,hgtEleAcc=%.1f, press=%.3f,pressAcc=%.3f,pressEle=%.1f,pressEleAcc=%.1f",
+                Formatter.SDF1a.format(date),Formatter.SDF3.format(date),
+                getLat(),getLon(),getNmeaAcc(),
+                getNmeaEle(),getNmeaEleAcc(),
+                getHgtEle(),getHgtEleAcc(),
+                getPressure(), getPressureAcc(), getPressureEle(), getPressureEleAcc()
+                );
+
+    }
+
 }

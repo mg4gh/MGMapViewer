@@ -18,16 +18,12 @@ import android.location.Location;
 
 import java.lang.invoke.MethodHandles;
 
-import mg.mgmap.R;
-import mg.mgmap.application.BaseConfig;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.GeoidProvider;
-import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
  * Location Listener for TrackLoggerService
@@ -37,45 +33,24 @@ public class AbstractLocationListener {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    protected static final float ACCURACY_LIMIT = 30.0f; // accuracy limit in meter
     protected final ElevationProvider elevationProvider;
     protected final GeoidProvider geoidProvider;
     protected final TrackLoggerService trackLoggerService;
-    private final PrefCache prefCache;
-    private final BaseConfig baseConfig;
 
     AbstractLocationListener(MGMapApplication application, TrackLoggerService trackLoggerService){
         this.trackLoggerService = trackLoggerService;
         elevationProvider = application.getElevationProvider();
         geoidProvider = application.getGeoidProvider();
-        prefCache = application.getPrefCache();
-        baseConfig = application.baseConfig;
     }
 
     protected void locationChanged(Location location) {
-        if ((location.hasAccuracy()) && (location.getAccuracy() < ACCURACY_LIMIT)){
-            float wgs84eleAcc = location.hasVerticalAccuracy()?location.getVerticalAccuracyMeters(): PointModel.NO_ACC;
-            double wgs84ele = location.hasAltitude()?location.getAltitude():PointModel.NO_ELE;
-            float geoidOffset = (wgs84ele==PointModel.NO_ELE)?0:geoidProvider.getGeoidOffset(location.getLatitude(), location.getLongitude());
-            TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
-                    location.getAccuracy(), wgs84ele, geoidOffset, wgs84eleAcc);
-            elevationProvider.setElevation(lp);
-            double heightConsistencyThreshold = 100;
-            try {
-                heightConsistencyThreshold = Double.parseDouble( prefCache.get(R.string.preferences_height_consistency_check_key,  Double.toString(heightConsistencyThreshold)).getValue() );
-            } catch (NumberFormatException e) {
-                mgLog.e(e);
-            }
-            if ((lp.getNmeaEle() == PointModel.NO_ELE) || (lp.getHgtEle() == PointModel.NO_ELE) || (Math.abs(lp.getNmeaEle() - lp.getHgtEle()) < heightConsistencyThreshold )){
-                if (baseConfig.getMode() == BaseConfig.Mode.NORMAL){
-                    trackLoggerService.onNewTrackLogPoint(lp);
-                }
-            } else {
-                mgLog.w("location dropped nmeaEle="+lp.getNmeaEle()+ " hgtEle()="+lp.getHgtEle()+" heightConsistencyThreshold="+heightConsistencyThreshold);
-            }
-        } else {
-            mgLog.w("location dropped hasacc="+location.hasAccuracy()+ " acc="+location.getAccuracy());
-        }
+        double wgs84ele = (location.hasAltitude() && (location.getAltitude()!=0))?location.getAltitude():PointModel.NO_ELE; // don't trust altitude value of 0
+        float wgs84eleAcc = location.hasVerticalAccuracy()?location.getVerticalAccuracyMeters(): PointModel.NO_ACC;
+        float geoidOffset = (wgs84ele==PointModel.NO_ELE)?0:geoidProvider.getGeoidOffset(location.getLatitude(), location.getLongitude());
+        TrackLogPoint lp = TrackLogPoint.createGpsLogPoint(System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
+                location.getAccuracy(), wgs84ele, geoidOffset, wgs84eleAcc);
+        elevationProvider.setElevation(lp);
+        trackLoggerService.onNewTrackLogPoint(lp);
     }
 
 

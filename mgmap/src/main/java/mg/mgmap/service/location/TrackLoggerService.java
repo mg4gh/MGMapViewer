@@ -30,6 +30,7 @@ import androidx.core.app.NotificationCompat;
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.application.BaseConfig;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.routing.TurningInstructionService;
@@ -51,6 +52,7 @@ public class TrackLoggerService extends Service {
 
     private AbstractLocationListener locationListener = null;
     private BarometerListener barometerListener = null;
+    private TrackLogPointVerifier trackLogPointVerifier = null;
     private TurningInstructionService turningInstructionService = null;
     private boolean active = false;
     private Notification notification = null;
@@ -130,6 +132,7 @@ public class TrackLoggerService extends Service {
             boolean prefFused = prefCache.get(R.string.FSPosition_pref_FusedLocationProvider, false).getValue();
             locationListener = prefFused?new FusedLocationListener(application, this):new GnssLocationListener(application, this);
 
+            trackLogPointVerifier = new TrackLogPointVerifier(application);
             locationListener.activate(4000,20);
             barometerListener.activate();
         } catch (Exception e) {
@@ -148,11 +151,15 @@ public class TrackLoggerService extends Service {
     }
 
     protected void onNewTrackLogPoint(TrackLogPoint lp) {
-        barometerListener.providePressureData(lp);
-        setPressureEle(lp);
-        application.logPoints2process.add(lp);
-        mgLog.v("new TrackLogPoint: "+lp);
-        turningInstructionService.handleNewPoint(lp);
+        if (application.baseConfig.getMode() == BaseConfig.Mode.NORMAL){
+            barometerListener.providePressureData(lp);
+            setPressureEle(lp);
+            if (trackLogPointVerifier.verify(lp)){
+                mgLog.v("new TrackLogPoint: "+lp);
+                application.logPoints2process.add(lp);
+                turningInstructionService.handleNewPoint(lp);
+            }
+        }
     }
 
     @Nullable
