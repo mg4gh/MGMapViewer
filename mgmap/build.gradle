@@ -49,19 +49,20 @@ static void saveVersion(Properties properties, File toFile){
 
 afterEvaluate {
 
-    task provideDebugApkOnSshServer(type: JavaExec, dependsOn: assembleDebug) {
+    tasks.register('provideDebugApkOnSshServer', JavaExec) {
+        dependsOn assembleDebug
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/mg4ghDebug/classes/")
-        classpath += files(getProjectDir().toString() +"/libs/jsch-0.1.55.jar")
+        classpath += files(getProjectDir().toString() + "/libs/jsch-0.1.55.jar")
         getMainClass().set("mg.mgmap.generic.util.SshBuild")
-        args = [ files("$projectDir/../.ssh/config.properties").first(), "apk" , ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/mg4gh/debug/*.apk").first(), files("$buildDir/outputs/apk/mg4gh/debug/*.sha256").first()]
+        args = [files("$projectDir/../.ssh/config.properties").first(), "apk", ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/mg4gh/debug/*.apk").first(), files("$buildDir/outputs/apk/mg4gh/debug/*.sha256").first()]
 
     }
 
-    task myclean {
-        assembleRelease.dependsOn( myclean )
-        assembleDebug.dependsOn( myclean )
+    tasks.register('myclean') {
+        assembleRelease.dependsOn(myclean)
+        assembleDebug.dependsOn(myclean)
         delete "${buildDir}/outputs/apk"
         delete "${buildDir}/outputs/bundle"
     }
@@ -74,7 +75,7 @@ afterEvaluate {
             task "${buildVariant}GenerateSHA"(type: JavaExec, dependsOn: "assemble${buildTypeCap}") {
                 group = "Execution"
                 description = "Run the main class with JavaExecTask"
-                classpath += files(getBuildDir().toString() + "/intermediates/javac/${flavor.name}Debug/classes/")
+                classpath += files(getBuildDir().toString() + "/intermediates/javac/${buildVariant}/classes/")
                 getMainClass().set("mg.mgmap.generic.util.SHA256")
                 args files("${buildDir}/outputs/apk/${flavor.name}/${buildType.name}")
             }
@@ -92,8 +93,10 @@ afterEvaluate {
                 from("$buildDir/outputs/apk/${flavor.name}/${buildType.name}") {
                     exclude '**/*unsigned.apk', '**/*unaligned.apk'
                 }
-                archivesBaseName( "apk.zip" )
                 destinationDirectory = file( "${parentProjectDir}/apk/${buildType.name}")
+                doLast {
+                    ant.move(file: "${parentProjectDir}/apk/${buildType.name}/mgmap.zip", toFile: "${parentProjectDir}/apk/${buildType.name}/apk.zip")
+                }
             }
         }
     }
@@ -145,7 +148,7 @@ afterEvaluate {
 }
 
 android {
-    compileSdkVersion 34
+    compileSdk 34
     defaultConfig {
 //        def mgBuildTime = "\"${getDate()}\""
         def mgBuildTime = "\"${aBuildDate}\""
@@ -282,7 +285,7 @@ configurations {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.preference:preference:1.2.1'
     api 'net.sf.kxml:kxml2:2.3.0'
 
     implementation files('libs/commons-net-3.8.0.jar')
@@ -302,7 +305,7 @@ dependencies {
     implementation 'org.mapsforge:sqlite-android:0.18.0'
     implementation 'com.caverock:androidsvg:1.4'
 
-    implementation 'androidx.work:work-runtime:2.8.0'
+//    implementation 'androidx.work:work-runtime:2.8.0'
 
 //    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
 //    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
