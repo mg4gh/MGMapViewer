@@ -21,7 +21,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
@@ -118,7 +120,9 @@ public class TrackLoggerService extends Service {
 
     protected void activateService(){
         try {
-            startForeground(1, notification);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+            }
             long barometerSmoothingPeriod = 6000; // default value
 
             try {
