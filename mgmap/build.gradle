@@ -92,7 +92,7 @@ afterEvaluate {
                 from("$buildDir/outputs/apk/${flavor.name}/${buildType.name}") {
                     exclude '**/*unsigned.apk', '**/*unaligned.apk'
                 }
-                archiveName( "apk.zip" )
+                archivesBaseName( "apk.zip" )
                 destinationDirectory = file( "${parentProjectDir}/apk/${buildType.name}")
             }
         }
@@ -267,6 +267,7 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+    namespace 'mg.mgmap'
 }
 
 // workaround (to prevent duplicate class error) after update to
