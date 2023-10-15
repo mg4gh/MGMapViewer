@@ -72,7 +72,12 @@ public class Setup {
 
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 for (Object oPrefName  : pPreferences.keySet()){
-                    editor.putString( oPrefName.toString(), pPreferences.getProperty(oPrefName.toString()));
+                    String prefValue = pPreferences.getProperty(oPrefName.toString());
+                    if (prefValue.startsWith("Boolean:")){
+                        editor.putBoolean( oPrefName.toString(), prefValue.equals("Boolean:true"));
+                    } else {
+                        editor.putString( oPrefName.toString(), prefValue);
+                    }
                 }
                 editor.apply();
                 mode = BaseConfig.Mode.INSTRUMENTATION_TEST;
