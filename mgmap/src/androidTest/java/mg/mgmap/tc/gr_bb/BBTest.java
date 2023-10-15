@@ -1,9 +1,7 @@
 package mg.mgmap.tc.gr_bb;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -23,6 +21,9 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.BBox;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -63,25 +64,19 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
         assert prefBboxOn.getValue();
+        PointModelImpl p1_1 = new PointModelImpl(54.427888,13.44128);
+        PointModelImpl p2_1 = new PointModelImpl(54.421888,13.45528);
+        resizeBB(p1_1, p2_1);
 
         addRegex(".*onClick mi_load_from_bb.*");
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_load_from_bb);
         Assert.assertEquals(1, mgMapApplication.availableTrackLogsObservable.availableTrackLogs.size() );
 
-        DisplayMetrics dm = mgMapApplication.getApplicationContext().getResources().getDisplayMetrics();
-        double x1 = dm.widthPixels / 3.0;
-        double x2 = x1 * 2;
-        double y1 = (dm.heightPixels / 2.0) - (x1 / 2);
-        double y2 = (dm.heightPixels / 2.0) + (x1 / 2);
-        int ix1 = (int)x1;
-        int ix2 = (int)x2;
-        int iy1 = (int)y1;
-        int iy2 = (int)y2;
-        Point p1 = new Point(ix1, iy1);
-        Point p2 = new Point(ix2, iy2);
-        animateSwipeToPos(p1,new Point(ix1-100,iy1-100));
-        animateSwipeToPos(p2,new Point(ix2,iy2+300));
+        PointModelImpl p1_2 = new PointModelImpl(54.427888,13.43528);
+        PointModelImpl p2_2 = new PointModelImpl(54.418888,13.45528);
+        animateSwipeLatLong(p1_1, p1_2);
+        animateSwipeLatLong(p2_1, p2_2);
 
         animateTo(getCenterPos());
         animateSwipeToPos(currentPos,currentPos); // animate longClick
@@ -93,8 +88,9 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.mi_bbox);
         assert prefBboxOn.getValue();
 
-        animateSwipeToPos(p1,new Point(ix1-200,iy1-100));
-        animateSwipeToPos(p2,new Point(ix2,iy2+500));
+        PointModelImpl p1_3 = new PointModelImpl(54.427888,13.43528);
+        PointModelImpl p2_3 = new PointModelImpl(54.408888,13.45528);
+        resizeBB(p1_3, p2_3);
 
         addRegex(".*onClick mi_load_from_bb.*");
         animateToViewAndClick(R.id.menu_bb);
@@ -117,8 +113,11 @@ public class BBTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 
+        PointModelImpl p1_1 = new PointModelImpl(54.427888,13.44128);
+        PointModelImpl p2_1 = new PointModelImpl(54.421888,13.45528);
+        BBox bBox =  new BBox().extend(p1_1).extend(p2_1);
         mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.422888,13.448283), (byte) 14);
+            MapPosition mp = new MapPosition(bBox.getCenter(), (byte) 14);
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
         });
         setCursorToCenterPos();
@@ -127,6 +126,7 @@ public class BBTest extends BaseTestCase {
         addRegex(".*onClick mi_bbox.*");
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
+        resizeBB(p1_1, p2_1);
 
         addRegex(".*onClick mi_load_remain.*");
         animateToViewAndClick(R.id.menu_bb);
@@ -143,8 +143,9 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.mi_bbox);
 
         //scroll down
-        Point pCenter = getCenterPos();
-        animateSwipeToPos(pCenter, new Point(pCenter.x, pCenter.y+400));
+        PointModel pc1 = new PointModelImpl(bBox.getCenter());
+        PointModel pc2 = new PointModelImpl(pc1.getLat()-0.008, pc1.getLon());
+        animateSwipeLatLong(pc1, pc2);
 
 
         addRegex(".*onClick mi_bbox.*");
@@ -274,6 +275,9 @@ public class BBTest extends BaseTestCase {
         addRegex(".*onClick mi_bbox.*");
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
+        PointModelImpl p1_1 = new PointModelImpl(54.9,12.7);
+        PointModelImpl p2_1 = new PointModelImpl(54.1,14.3);
+        resizeBB(p1_1, p2_1);
 
         addRegex(".*onClick mi_load_remain.*");
         animateToViewAndClick(R.id.menu_bb);
@@ -284,19 +288,12 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.bt_dialog_positive);
         addRegex(".*onClick bgJobGroupResult_Download_height_data_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
-        // switch bbox off
-        addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
 
-        //scroll down
-        Point pCenter = getCenterPos();
-        animateSwipeToPos(pCenter, new Point(pCenter.x, pCenter.y+100));
-
-
-        addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        // extend bb to load more with load remain
+        PointModelImpl p1_2 = new PointModelImpl(55.3,12.7);
+        PointModelImpl p2_2 = new PointModelImpl(54.1,14.3);
+        animateSwipeLatLong(p1_1, p1_2);
+        animateSwipeLatLong(p2_1, p2_2);
 
         // load partly (only remaining)
         addRegex(".*onClick mi_load_remain.*");
@@ -317,20 +314,12 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.bt_dialog_positive);
         addRegex(".*onClick bgJobGroupResult_Download_height_data_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
-        // switch bbox off
-        addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
 
-        addRegex(".*onClick mi_zoom_out.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_zoom_out);
-        animateToViewAndClick(R.id.mi_zoom_out);
-        SystemClock.sleep(3500);
-
-        addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        // extend bb for delete all
+        PointModelImpl p1_3 = new PointModelImpl(56.1,11.8);
+        PointModelImpl p2_3 = new PointModelImpl(53.8,15.2);
+        animateSwipeLatLong(p1_2, p1_3);
+        animateSwipeLatLong(p2_2, p2_3);
 
         // delete all
         addRegex(".*onClick mi_delete_all.*");
@@ -342,21 +331,9 @@ public class BBTest extends BaseTestCase {
         addRegex(".*onClick bgJobGroupResult_Drop_hgt_files_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
 
-        // switch bbox off
-        addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
-
-
-        addRegex(".*onClick mi_zoom_in.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_zoom_in);
-        animateToViewAndClick(R.id.mi_zoom_in);
-        SystemClock.sleep(3500);
-
-        addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        // reduce bb for load remain
+        animateSwipeLatLong(p1_3, p1_2);
+        animateSwipeLatLong(p2_3, p2_2);
 
         // and now load again to verify that delete was done ...
         addRegex(".*onClick mi_load_remain.*");
