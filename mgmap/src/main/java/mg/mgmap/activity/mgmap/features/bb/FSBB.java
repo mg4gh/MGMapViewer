@@ -14,7 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.features.bb;
 
-import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
@@ -45,7 +44,6 @@ import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
-import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
@@ -239,9 +237,6 @@ public class FSBB extends FeatureService {
                 DisplayMetrics dm = getActivity().getResources().getDisplayMetrics();
                 dimension = new Dimension(dm.widthPixels, dm.heightPixels);
             }
-
-//            DisplayMetrics dm = getApplication().getApplicationContext().getResources().getDisplayMetrics();
-
             double x1 = dimension.width / 3.0;
             double x2 = x1 * 2;
             double y1 = (dimension.height / 2.0) - (x1 / 2);
