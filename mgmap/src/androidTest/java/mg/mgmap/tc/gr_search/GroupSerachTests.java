@@ -2,6 +2,7 @@ package mg.mgmap.tc.gr_search;
 
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.espresso.Espresso;
@@ -65,7 +66,8 @@ public class GroupSerachTests extends BaseTestCase {
 
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("Hunne"));
         SystemClock.sleep(1000);
-        Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
+//        Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
+        Assert.assertEquals(currentActivity.findViewById(R.id.search_result1).getVisibility(), View.INVISIBLE);
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("n"));
         SystemClock.sleep(1000);
         Assert.assertTrue (waitForView(TextView.class, R.id.search_result1).getText().toString().contains("Hunnen"));
@@ -130,7 +132,8 @@ public class GroupSerachTests extends BaseTestCase {
 
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("Hunnenstr 13, Garz"));
         SystemClock.sleep(1000);
-        Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
+        Assert.assertEquals(currentActivity.findViewById(R.id.search_result1).getVisibility(), View.INVISIBLE);
+//        Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(" "), ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
         animateToViewAndClick(R.id.search_result1);
@@ -159,9 +162,7 @@ public class GroupSerachTests extends BaseTestCase {
         animateToViewAndClick(R.id.mi_search);
         SystemClock.sleep(1000);
 
-        // This is really suspicious: with the first lat/lon there is no event onLongPress generated - not yet clear why
-//        Point pSearch = getPoint4PointModel(new PointModelImpl(54.317866, 13.34888));
-        Point pSearch = getPoint4PointModel(new PointModelImpl(54.317257, 13.348735));
+        Point pSearch = getPoint4PointModel(new PointModelImpl(54.317866, 13.34888));
         animateSwipeToPos(pSearch,pSearch); // long click pSearch
 
         Assert.assertTrue (waitForView(TextView.class, R.id.search_result1).getText().toString().matches(".*Hunnenstraße.*Garz.*"));
@@ -185,7 +186,8 @@ public class GroupSerachTests extends BaseTestCase {
 
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("Hunnenstr Garz"));
         SystemClock.sleep(1000);
-        Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
+//        Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
+        Assert.assertEquals(currentActivity.findViewById(R.id.search_result1).getVisibility(), View.INVISIBLE);
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(""), ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
         animateToViewAndClick(R.id.search_result1);
