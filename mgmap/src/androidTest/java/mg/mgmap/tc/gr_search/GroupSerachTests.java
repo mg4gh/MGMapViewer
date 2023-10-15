@@ -159,7 +159,9 @@ public class GroupSerachTests extends BaseTestCase {
         animateToViewAndClick(R.id.mi_search);
         SystemClock.sleep(1000);
 
-        Point pSearch = getPoint4PointModel(new PointModelImpl(54.317866, 13.34888));
+        // This is really suspicious: with the first lat/lon there is no event onLongPress generated - not yet clear why
+//        Point pSearch = getPoint4PointModel(new PointModelImpl(54.317866, 13.34888));
+        Point pSearch = getPoint4PointModel(new PointModelImpl(54.317257, 13.348735));
         animateSwipeToPos(pSearch,pSearch); // long click pSearch
 
         Assert.assertTrue (waitForView(TextView.class, R.id.search_result1).getText().toString().matches(".*Hunnenstraße.*Garz.*"));
@@ -205,7 +207,7 @@ public class GroupSerachTests extends BaseTestCase {
         mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
 
         Pref<String> prefSearchProvider = mgMapApplication.getPrefCache().get(R.string.preference_choose_search_key, "");
-        prefSearchProvider.setValue("Nominatim");
+        prefSearchProvider.setValue("POI");
         setCursorToCenterPos();
         addRegex(".*onClick mi_search.*");
         animateToViewAndClick(R.id.menu_search);

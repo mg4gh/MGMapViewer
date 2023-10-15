@@ -178,7 +178,7 @@ public class FeatureService {
                 ((MVLayer) layer).setMapViewUtility(getMapViewUtility());
             }
             layer.setDisplayModel(fsLayers.getDisplayModel());
-            mgLog.d("register "+this);
+            mgLog.d("register fs="+this.getClass().getSimpleName()+" layer="+layer.getClass().getSimpleName()+" control="+(layer instanceof ControlMVLayer));
             synchronized (getMapView().getLayerManager().getLayers()) {
                 if (layer instanceof ControlMVLayer){
                     fsControlLayers.layers.add(layer);

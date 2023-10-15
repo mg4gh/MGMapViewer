@@ -43,10 +43,11 @@ public class Mouse {
             event = MotionEvent.obtain(downTime, downTime+(2), MotionEvent.ACTION_MOVE, startX , startY , 0);
             inst.sendPointerSync(event);
         }
-        for (int i=0; i<steps; i++){
-            event = MotionEvent.obtain(downTime, downTime+(i*delay/steps), MotionEvent.ACTION_MOVE, startX + ((endX - startX)*i)/steps, startY + ((endY - startY)*i)/steps, 0);
+        for (int i = 1; i < steps; i++) {
+            SystemClock.sleep(delay/steps);
+            event = MotionEvent.obtain(downTime, downTime + (i * delay / steps), MotionEvent.ACTION_MOVE, startX + ((endX - startX) * i) / steps, startY + ((endY - startY) * i) / steps, 0);
             inst.sendPointerSync(event);
-            if (cb != null) cb.swipePos((int)event.getX(), (int)event.getY());
+            if (cb != null) cb.swipePos((int) event.getX(), (int) event.getY());
         }
         event = MotionEvent.obtain(downTime, downTime+delay, MotionEvent.ACTION_UP, endX, endY, 0);
         inst.sendPointerSync(event);
