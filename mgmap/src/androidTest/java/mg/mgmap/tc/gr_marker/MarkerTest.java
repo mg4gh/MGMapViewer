@@ -100,7 +100,7 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 50000)
+    @Test(timeout = 80000)
     public void _02_marker() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);

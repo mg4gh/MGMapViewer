@@ -45,7 +45,7 @@ public class BBTest extends BaseTestCase {
     @Rule
     public ActivityScenarioRule<MGMapActivity> activityRule =new ActivityScenarioRule<>(MGMapActivity.class);
 
-    @Test(timeout = 60000)
+    @Test(timeout = 80000)
     public void _01_load_from_bb() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);

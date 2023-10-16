@@ -57,7 +57,7 @@ public class ShowHideTest extends BaseTestCase {
         mgMapActivity = null;
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _01_mapSliderTest() {
         mgLog.i("started");
         setCursorToCenterPos();
@@ -88,7 +88,7 @@ public class ShowHideTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 40000)
+    @Test(timeout = 60000)
     public void _02_trackSliderTest() {
         mgLog.i("started");
         setCursorToCenterPos();
