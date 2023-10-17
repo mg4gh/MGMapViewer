@@ -49,37 +49,40 @@ static void saveVersion(Properties properties, File toFile){
 
 afterEvaluate {
 
-    task provideDebugApkOnSshServer(type: JavaExec, dependsOn: assembleDebug) {
+    tasks.register('provideDebugApkOnSshServer', JavaExec) {
+        dependsOn assembleDebug
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getBuildDir().toString() + "/intermediates/javac/mg4ghDebug/classes/")
-        classpath += files(getProjectDir().toString() +"/libs/jsch-0.1.55.jar")
+        classpath += files(getProjectDir().toString() + "/libs/jsch-0.1.55.jar")
         getMainClass().set("mg.mgmap.generic.util.SshBuild")
-        args = [ files("$projectDir/../.ssh/config.properties").first(), "apk" , ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/mg4gh/debug/*.apk").first(), files("$buildDir/outputs/apk/mg4gh/debug/*.sha256").first()]
+        args = [files("$projectDir/../.ssh/config.properties").first(), "apk", ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/mg4gh/debug/*.apk").first(), files("$buildDir/outputs/apk/mg4gh/debug/*.sha256").first()]
 
     }
 
-    task myclean {
-        assembleRelease.dependsOn( myclean )
-        assembleDebug.dependsOn( myclean )
+    tasks.register('myclean') {
+        assembleRelease.dependsOn(myclean)
+        assembleDebug.dependsOn(myclean)
         delete "${buildDir}/outputs/apk"
         delete "${buildDir}/outputs/bundle"
     }
 
-    android.productFlavors.all { flavor ->
-        android.buildTypes.all { buildType ->
+    android.productFlavors.configureEach { flavor ->
+        android.buildTypes.configureEach { buildType ->
             def buildTypeCap = ("${buildType.name}").capitalize()
             def buildVariant = "${flavor.name}${buildTypeCap}"
 
-            task "${buildVariant}GenerateSHA"(type: JavaExec, dependsOn: "assemble${buildTypeCap}") {
+            tasks.register("${buildVariant}GenerateSHA", JavaExec) {
+                dependsOn "assemble${buildTypeCap}"
                 group = "Execution"
                 description = "Run the main class with JavaExecTask"
-                classpath += files(getBuildDir().toString() + "/intermediates/javac/${flavor.name}Debug/classes/")
+                classpath += files(getBuildDir().toString() + "/intermediates/javac/${buildVariant}/classes/")
                 getMainClass().set("mg.mgmap.generic.util.SHA256")
                 args files("${buildDir}/outputs/apk/${flavor.name}/${buildType.name}")
             }
 
-            task "${buildVariant}CopyApk"(type: Copy, dependsOn: "${buildVariant}GenerateSHA") {
+            tasks.register("${buildVariant}CopyApk", Copy) {
+                dependsOn "${buildVariant}GenerateSHA"
                 from("$buildDir/outputs/apk/${flavor.name}/${buildType.name}") {
                     include '**/*.apk'
                     include '**/*.apk.sha256'
@@ -88,45 +91,51 @@ afterEvaluate {
                 into "${parentProjectDir}/apk/${buildType.name}"
             }
 
-            task "${buildVariant}ZipApk"(type: Zip, dependsOn: "${buildVariant}CopyApk" ){
+            tasks.register("${buildVariant}ZipApk",Zip) {
+                dependsOn "${buildVariant}CopyApk"
                 from("$buildDir/outputs/apk/${flavor.name}/${buildType.name}") {
                     exclude '**/*unsigned.apk', '**/*unaligned.apk'
                 }
-                archiveName( "apk.zip" )
                 destinationDirectory = file( "${parentProjectDir}/apk/${buildType.name}")
+                doLast {
+                    ant.move(file: "${parentProjectDir}/apk/${buildType.name}/mgmap.zip", toFile: "${parentProjectDir}/apk/${buildType.name}/apk.zip")
+                }
             }
         }
     }
 
 
-    task soft4mgReleaseCopyAab(type: Copy, dependsOn: "bundleSoft4mgRelease") {
+    tasks.register('soft4mgReleaseCopyAab', Copy) {
+        dependsOn "bundleSoft4mgRelease"
 //        This version of calculation for outputFileNameBundle caused a lot of warnings, therefore replaced by current method via outputFileNameBundle variable
 //        def versionName = android.applicationVariants.collect {x -> x.properties.versionName}.findAll {y->y.contains("soft4mg-release")}.first()
 //        def outputFileNameBundle = "${parent.name}-${versionName}.aab"
-        System.out.println("outputFileNameBundle="+outputFileNameBundle)
+        System.out.println("outputFileNameBundle=" + outputFileNameBundle)
         from("$buildDir/outputs/bundle/soft4mgRelease/mgmap-soft4mg-release.aab")
         into "${parentProjectDir}/aab"
-        rename ("mgmap-soft4mg-release.aab", "${outputFileNameBundle}")
+        rename("mgmap-soft4mg-release.aab", "${outputFileNameBundle}")
     }
 
-    task _mgmapPublish (dependsOn: ['mg4ghDebugZipApk','mg4ghReleaseZipApk', 'downloadMD', 'soft4mgReleaseCopyAab']){
+    tasks.register('_mgmapPublish') {
+        dependsOn(['mg4ghDebugZipApk', 'mg4ghReleaseZipApk', 'downloadMD', 'soft4mgReleaseCopyAab'])
         doLast {
             saveVersion(versionProps, versionPropsFile)
-            System.out.println( "_mgmapPublish finished" )
+            System.out.println("_mgmapPublish finished")
         }
     }
 
-    task _mgmapDebugApk (dependsOn: ['mg4ghDebugGenerateSHA']){
-        if (new File("./.ssh").exists()){
+    tasks.register('_mgmapDebugApk') {
+        dependsOn 'mg4ghDebugGenerateSHA'
+        if (new File("./.ssh").exists()) {
             dependsOn(provideDebugApkOnSshServer)
         }
         doLast {
             saveVersion(versionProps, versionPropsFile)
-            System.out.println( "_mgmapDebugApk finished" )
+            System.out.println("_mgmapDebugApk finished")
         }
     }
 
-    task downloadMD(){
+    tasks.register('downloadMD'){
         doFirst { // this prevents running during configuration phase
             System.out.println("regenerate Download.md")
             PrintWriter out = new PrintWriter( new File("${rootDir}/docs/download.md"))
@@ -145,13 +154,12 @@ afterEvaluate {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
     defaultConfig {
-//        def mgBuildTime = "\"${getDate()}\""
         def mgBuildTime = "\"${aBuildDate}\""
         applicationId "mg.mgmap"
         minSdkVersion 26
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode Integer.parseInt("$mgVersionCode")
         versionName "${versionMajor}-${mgVersionCode}.${mgBuildNbr}"
         buildConfigField "String", "BUILD_TIME", "${mgBuildTime}"
@@ -169,7 +177,7 @@ android {
             versionNameSuffix "-debug"
         }
     }
-    flavorDimensions "githubUser"
+    flavorDimensions += "githubUser"
     productFlavors{
         mg4gh {
             dimension "githubUser"
@@ -192,8 +200,8 @@ android {
             excludes += ['META-INF/DEPENDENCIES']
         }
     }
-    android.applicationVariants.all { variant ->
-        variant.outputs.all { output ->
+    android.applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { output ->
             outputFileName = "${parent.name}-${variant.versionName}.apk"
             if ("${variant.versionName}".contains("release")){
                 outputFileNameBundle = "${parent.name}-${variant.versionName}.aab"
@@ -203,11 +211,6 @@ android {
 
     sourceSets {
         main {
-//            manifest.srcFile 'AndroidManifest.xml'
-//            java.srcDirs = ['src/main/java']
-//            resources.srcDirs = ['src']
-//            res.srcDirs = ['res']
-//            assets.srcDirs = ['assets']
             file("${rootDir}/sqlite-android/natives").eachDir() { dir ->
                 jniLibs.srcDirs += "${dir.path}/lib"
             }
@@ -254,41 +257,33 @@ android {
         }
     }
 
-//    testOptions {
-//        unitTests.all {
-//            useJUnitPlatform()
-//            testLogging {
-//                exceptionFormat "full"
-//                events "started", "skipped", "passed", "failed"
-//                showStandardStreams true
-//            }
-//        }
-//    }
     testOptions {
         unitTests.returnDefaultValues = true
     }
+    namespace 'mg.mgmap'
 }
 
 // workaround (to prevent duplicate class error) after update to
 // 'androidx.appcompat:appcompat:1.5.0'
 // which is in conflict with 'androidx.preference:preference:1.2.0'
-configurations {
-    all {
-        exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
-    }
-}
+// 20231017: workaround seems no longer necessary
+//configurations {
+//    all {
+//        exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
+//    }
+//}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.preference:preference:1.2.1'
     api 'net.sf.kxml:kxml2:2.3.0'
 
     implementation files('libs/commons-net-3.8.0.jar')
     implementation files('libs/javax.json-1.1.2.jar')
     implementation files('libs/javax.json-api-1.1.2.jar')
 
-    implementation 'net.lingala.zip4j:zip4j:2.11.1'
+    implementation 'net.lingala.zip4j:zip4j:2.11.5'
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
@@ -296,12 +291,12 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
-    implementation 'org.mapsforge:mapsforge-map-android:0.18.0'
-    implementation 'org.mapsforge:mapsforge-themes:0.18.0'
-    implementation 'org.mapsforge:sqlite-android:0.18.0'
+    implementation 'org.mapsforge:mapsforge-map-android:0.20.0'
+    implementation 'org.mapsforge:mapsforge-themes:0.20.0'
+    implementation 'org.mapsforge:sqlite-android:0.19.0'
     implementation 'com.caverock:androidsvg:1.4'
 
-    implementation 'androidx.work:work-runtime:2.8.0'
+//    implementation 'androidx.work:work-runtime:2.8.0'
 
 //    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
 //    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'

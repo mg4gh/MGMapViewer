@@ -137,7 +137,7 @@ public class SearchView extends LinearLayout {
                 });
 
                 tv.setOnLongClickListener( new View.OnLongClickListener(){
-                    ZoomOCL zoomOCL = new ZoomOCL(scaleFactor);
+                    final ZoomOCL zoomOCL = new ZoomOCL(scaleFactor);
                     @Override
                     public boolean onLongClick(View v) {
                         zoomOCL.setToMillis(2500);
@@ -145,6 +145,7 @@ public class SearchView extends LinearLayout {
                         return true;
                     }
                 });
+                tv.setVisibility(VISIBLE);
             } else {
                 resetSearchResult(tv);
             }
@@ -160,10 +161,7 @@ public class SearchView extends LinearLayout {
     }
 
     void resetSearchResult(TextView tv) {
-        tv.setText("");
-        tv.setTextSize(1);
-        tv.setOnClickListener(null);
-        tv.setBackgroundColor(CC.getColor( R.color.TRANSPARENT ));
+        tv.setVisibility(INVISIBLE);
     }
 
 }

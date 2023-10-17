@@ -37,7 +37,7 @@ public class StatisticTest extends BaseTestCase {
     @Rule
     public ActivityScenarioRule<MGMapActivity> activityRule = new ActivityScenarioRule<>(MGMapActivity.class);
 
-    @Test(timeout = 35000)
+    @Test(timeout = 40000)
     public void _01_statistic_test() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);

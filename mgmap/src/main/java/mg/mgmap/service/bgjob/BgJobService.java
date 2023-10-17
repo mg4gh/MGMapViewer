@@ -19,6 +19,8 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 
@@ -98,7 +100,9 @@ public class BgJobService extends Service {
                 active = true;
                 maxJobs = application.numBgJobs() + numWorkers.get();
                 lastNumBgJobs = maxJobs;
-                startForeground(1, baseNotiBuilder.build());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startForeground(1, baseNotiBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+                }
                 mgLog.i("startForeground() for BgJobService triggered.  ");
 
                 timer = new Handler();

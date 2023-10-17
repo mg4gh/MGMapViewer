@@ -1,9 +1,7 @@
 package mg.mgmap.tc.other;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -23,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
@@ -58,25 +57,14 @@ public class MainScreenTest extends BaseTestCase {
         setCursorToCenterPos();
         SystemClock.sleep(1000);
 
-        DisplayMetrics dm = mgMapApplication.getApplicationContext().getResources().getDisplayMetrics();
-        double x1 = dm.widthPixels / 3.0;
-        double x2 = x1 * 2;
-        double y1 = (dm.heightPixels / 2.0) - (x1 / 2);
-        double y2 = (dm.heightPixels / 2.0) + (x1 / 2);
-        int ix1 = (int)x1;
-        int ix2 = (int)x2;
-        int iy1 = (int)y1;
-        int iy2 = (int)y2;
-        Point p1 = new Point(ix1, iy1);
-        Point p2 = new Point(ix2, iy2);
-
         addRegex(".*onClick mi_bbox.*");
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
         assert prefBboxOn.getValue();
 
-        animateSwipeToPos(p1,new Point(ix1-200,iy1-100));
-        animateSwipeToPos(p2,new Point(ix2,iy2+500));
+        PointModelImpl p1_3 = new PointModelImpl(54.427888,13.43528);
+        PointModelImpl p2_3 = new PointModelImpl(54.408888,13.45528);
+        resizeBB(p1_3, p2_3);
 
         addRegex(".*onClick mi_load_from_bb.*");
         animateToViewAndClick(R.id.menu_bb);
@@ -96,7 +84,7 @@ public class MainScreenTest extends BaseTestCase {
         Assert.assertNotNull(mgMapApplication.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog());
         Assert.assertEquals("20230220_180637_MarkerRoute", mgMapApplication.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog().getName());
 
-        animateToPosAndClick(54.416353,13.437865);
+        animateToPosAndClick(54.416353,13.438265);
         Assert.assertEquals(3, mgMapApplication.availableTrackLogsObservable.availableTrackLogs.size());
         Assert.assertNotNull(mgMapApplication.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog());
         Assert.assertEquals("20230207_060252_MarkerRoute", mgMapApplication.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog().getName());

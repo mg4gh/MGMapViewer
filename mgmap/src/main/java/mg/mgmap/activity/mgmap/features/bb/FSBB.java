@@ -18,6 +18,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.mapsforge.core.model.Dimension;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 
@@ -231,11 +232,15 @@ public class FSBB extends FeatureService {
 
         public boolean initFromScreen(){
             if (topLeftPoint == null) return false;
-            DisplayMetrics dm = getApplication().getApplicationContext().getResources().getDisplayMetrics();
-            double x1 = dm.widthPixels / 3.0;
+            Dimension dimension = getMapView().getModel().mapViewDimension.getDimension();
+            if (dimension == null) {
+                DisplayMetrics dm = getActivity().getResources().getDisplayMetrics();
+                dimension = new Dimension(dm.widthPixels, dm.heightPixels);
+            }
+            double x1 = dimension.width / 3.0;
             double x2 = x1 * 2;
-            double y1 = (dm.heightPixels / 2.0) - (x1 / 2);
-            double y2 = (dm.heightPixels / 2.0) + (x1 / 2);
+            double y1 = (dimension.height / 2.0) - (x1 / 2);
+            double y2 = (dimension.height / 2.0) + (x1 / 2);
             p1 = new WriteablePointModelImpl(y2lat(y1),x2lon(x1));
             p2 = new WriteablePointModelImpl(y2lat(y2),x2lon(x2));
             changed();

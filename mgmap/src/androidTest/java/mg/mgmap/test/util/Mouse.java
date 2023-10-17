@@ -35,10 +35,19 @@ public class Mouse {
         MotionEvent event = MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, startX, startY, 0);
         inst.sendPointerSync(event);
 
-        for (int i=0; i<steps; i++){
-            event = MotionEvent.obtain(downTime, downTime+(i*delay/steps), MotionEvent.ACTION_MOVE, startX + ((endX - startX)*i)/steps, startY + ((endY - startY)*i)/steps, 0);
+        // if mouse motion is too slow, android doesn't do it -> so add some fast motion at the begin
+        // But if start==end, then this should simulate a long click - so don't add some fast motion at the begin
+        if ((startX != endX) || (startY != endY)){
+            event = MotionEvent.obtain(downTime, downTime+(1), MotionEvent.ACTION_MOVE, startX -100, startY -100, 0);
             inst.sendPointerSync(event);
-            if (cb != null) cb.swipePos((int)event.getX(), (int)event.getY());
+            event = MotionEvent.obtain(downTime, downTime+(2), MotionEvent.ACTION_MOVE, startX , startY , 0);
+            inst.sendPointerSync(event);
+        }
+        for (int i = 1; i < steps; i++) {
+            SystemClock.sleep(delay/steps);
+            event = MotionEvent.obtain(downTime, downTime + (i * delay / steps), MotionEvent.ACTION_MOVE, startX + ((endX - startX) * i) / steps, startY + ((endY - startY) * i) / steps, 0);
+            inst.sendPointerSync(event);
+            if (cb != null) cb.swipePos((int) event.getX(), (int) event.getY());
         }
         event = MotionEvent.obtain(downTime, downTime+delay, MotionEvent.ACTION_UP, endX, endY, 0);
         inst.sendPointerSync(event);
