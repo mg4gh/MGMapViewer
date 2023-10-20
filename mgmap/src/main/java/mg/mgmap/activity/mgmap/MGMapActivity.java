@@ -183,7 +183,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         }
         setContentView(R.layout.mgmapactivity);
 
-        CC.setActivity(this);
         PointModelUtil.init(getResources().getInteger(R.integer.CLOSE_THRESHOLD));
 
         mapLayerFactory = new MGMapLayerFactory(this);
@@ -384,6 +383,16 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             super.onNewIntent(intent);
             mgLog.i(intent);
             if ((intent != null)){
+                mgLog.d("intent action="+intent.getAction());
+                mgLog.d("intent categories="+intent.getCategories());
+                mgLog.d("intent scheme="+intent.getScheme());
+                mgLog.d("intent data="+intent.getData());
+                mgLog.d("intent type="+intent.getType());
+                if (intent.getData()!=null)
+                    mgLog.d("intent data.path="+intent.getData().getPath());
+                if (intent.getData()!=null)
+                    mgLog.d("intent data.host="+intent.getData().getHost());
+                mgLog.d("intent flags="+ Integer.toHexString( intent.getFlags() ));
                 if ((intent.getAction() != null) && (intent.getAction().endsWith("DUPLICATE"))){
                     mgLog.i("duplicate intent detected, don't handle.");
                     return;

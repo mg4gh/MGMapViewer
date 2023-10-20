@@ -16,5 +16,6 @@
     <string name="FSControl_qcZoomOut_help">Zoom out</string>
     <string name="FSControl_qcThemes_help">Theme settings screen</string>
     <string name="FSControl_qcHelp_help">Provide this help</string>
+    <string name="FSControl_qcFileMgr_help">Trigger File Manager Activity</string>
 
 </resources>

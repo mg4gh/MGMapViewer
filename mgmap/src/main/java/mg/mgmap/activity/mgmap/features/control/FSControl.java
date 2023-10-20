@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import java.lang.invoke.MethodHandles;
 
+import mg.mgmap.activity.filemgr.FileManagerActivity;
 import mg.mgmap.activity.height_profile.HeightProfileActivity;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
@@ -58,6 +59,7 @@ public class FSControl extends FeatureService {
     private final Pref<Boolean> triggerZoomIn = new Pref<>(false);
     private final Pref<Boolean> triggerZoomOut = new Pref<>(false);
     private final Pref<Boolean> triggerThemes = new Pref<>(false);
+    private final Pref<Boolean> triggerFileMgr = new Pref<>(false);
     private final Pref<Boolean> prefHelp = new Pref<>(false);
 
     ViewGroup qcsParent = null; // quick controls parent
@@ -154,6 +156,10 @@ public class FSControl extends FeatureService {
             getActivity().findViewById(R.id.help).setVisibility(iVis);
             mgLog.d("change help Visibility to "+ prefHelp.getValue());
         });
+        triggerFileMgr.addObserver((Observer) evt -> {
+            Intent intent = new Intent(activity, FileManagerActivity.class);
+            activity.startActivity(intent);
+        });
         hintInitialMapDownload = new HintInitialMapDownload(getActivity());
     }
 
@@ -221,6 +227,10 @@ public class FSControl extends FeatureService {
             etv.setPrAction(prefHelp);
             etv.setData(R.drawable.help);
             etv.setHelp(r(R.string.FSControl_qcHelp_help));
+        } else if ("fileMgr".equals(info)) {
+            etv.setPrAction(triggerFileMgr);
+            etv.setData(R.drawable.file_mgr);
+            etv.setHelp(r(R.string.FSControl_qcFileMgr_help));
         }
         return etv;
     }

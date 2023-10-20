@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
 
     <string name="hintInitialMapDownload">hint_initial_map_download_key</string>
     <string name="hintInitialMapDownload2">hint_initial_map_download2_key</string>
@@ -7,6 +7,7 @@
     <string name="hintAccessFineLocation">hint_access_fine_location_key</string>
     <string name="hintAccessBackgroundLocation">hint_access_background_location_key</string>
     <string name="hintBatteryUsage">hint_battery_usage_key</string>
+    <string name="hintShareReceived">hint_share_received_key</string>
 
     <item type="id" name="bt_dialog_positive"  />
     <item type="id" name="bt_dialog_negative"  />

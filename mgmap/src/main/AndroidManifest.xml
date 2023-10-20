@@ -108,6 +108,24 @@
             android:label="Height Profile"
             android:parentActivityName="mg.mgmap.activity.mgmap.MGMapActivity"
             android:launchMode="singleTask"/>
+        <activity
+            android:name=".activity.filemgr.FileManagerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="File Manager"
+            android:parentActivityName="mg.mgmap.activity.mgmap.MGMapActivity"
+            android:launchMode="singleTask"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name="mg.mgmap.service.location.TrackLoggerService"
