@@ -14,7 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.util;
 
-import android.app.Activity;
 import android.app.Application;
 import android.graphics.Color;
 
@@ -37,10 +36,9 @@ public class CC { // short for ColorConstant
     private static final GraphicFactory GRAPHIC_FACTORY = AndroidGraphicFactory.INSTANCE;
     private static Application application;
 
-    public static void setActivity(Activity activity){
-        CC.application = activity.getApplication();
+    public static void setApplication(Application application){
+        CC.application = application;
     }
-
 
     public static int getColor(int colorId){
         return ContextCompat.getColor(application,colorId);

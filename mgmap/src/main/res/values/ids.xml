@@ -58,6 +58,7 @@
     <item type="id" name="mi_help_multi"  />
     <item type="id" name="mi_exit"  />
     <item type="id" name="mi_multi_empty1"  />
+    <item type="id" name="mi_fileMgr"  />
     <item type="id" name="mi_fullscreen"  />
     <item type="id" name="mi_zoom_in"  />
     <item type="id" name="mi_zoom_out"  />
@@ -96,6 +97,16 @@
     <item type="id" name="stat_mi_save"  />
     <item type="id" name="stat_mi_delete"  />
     <item type="id" name="stat_mi_back"  />
+
+    <item type="id" name="fileMgr_mi_dir_add"  />
+    <item type="id" name="fileMgr_mi_file_add"  />
+    <item type="id" name="fileMgr_mi_edit"  />
+    <item type="id" name="fileMgr_mi_show"  />
+    <item type="id" name="fileMgr_mi_share"  />
+    <item type="id" name="fileMgr_mi_save"  />
+    <item type="id" name="fileMgr_mi_delete"  />
+    <item type="id" name="fileMgr_mi_back"  />
+    <item type="id" name="fileMgr_up"  />
 
     <item type="id" name="search_edit_text"  />
     <item type="id" name="search_result1"  />

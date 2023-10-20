@@ -147,7 +147,9 @@ public class Graphhopper extends SearchProvider {
         if (request.timestamp > searchRequest.timestamp){
             searchRequest = request;
             searchResults = results;
-            searchView.setResList(results);
+            if (searchView != null){
+                searchView.setResList(results);
+            }
         }
     }
 

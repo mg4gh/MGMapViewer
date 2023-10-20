@@ -22,7 +22,6 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 
@@ -92,12 +91,6 @@ public class ExtendedTextView extends AppCompatTextView {
         super.setId(id);
         logName = getResources().getResourceName(id).replaceFirst(".*/","");
         return this;
-    }
-
-    @Override
-    public void setId(int id) {
-        super.setId(id);
-        logName = getResources().getResourceName(id).replaceFirst(".*/","");
     }
 
     public ExtendedTextView setData(int drId){

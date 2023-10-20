@@ -108,7 +108,7 @@ public class PersistenceManager {
         createFileIfNotExists(searchConfigDir, "POI.cfg");
         createFileIfNotExists(searchConfigDir, "Nominatim.cfg");
         createGraphhopperCfgIfNotExists("Graphhopper.cfg");
-        createGraphhopperCfgIfNotExists("GeoLatLong.cfg");
+        createFileIfNotExists(searchConfigDir,"GeoLatLong.cfg");
         apkDir = createIfNotExists(appDir, "apk");
     }
 

@@ -1,12 +1,8 @@
 package mg.mgmap.generic.util.basic;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import mg.mgmap.application.MGMapApplication;
 
 public class IOUtil {
 

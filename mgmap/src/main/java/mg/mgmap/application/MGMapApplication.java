@@ -30,6 +30,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import mg.mgmap.BuildConfig;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
+import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
 import mg.mgmap.application.util.ActivityLifecycleAdapter;
@@ -153,6 +154,7 @@ public class MGMapApplication extends Application {
 
         persistenceManager = new PersistenceManager(this, baseConfig.getAppDirName());
         startLogging(persistenceManager.getLogDir());
+        CC.setApplication(this);
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 

@@ -1,3 +1,4 @@
+- new Feature: File Manager (to open/share/delete Files)
 - new versions of Mapsforge, zip4j
 - fix SearchResultView (replace transparent with invisible elements)
 - fix dimension calculation for BBox

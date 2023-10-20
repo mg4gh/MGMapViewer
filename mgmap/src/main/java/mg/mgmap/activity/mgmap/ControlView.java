@@ -407,10 +407,10 @@ public class ControlView extends RelativeLayout {
     // ********* Quick controls related stuff                                                 **********
     // *************************************************************************************************
 
-    public static ExtendedTextView createQuickControlETV(ViewGroup vgQuickControls) {
-        Context context = vgQuickControls.getContext();
+    public static ExtendedTextView createQuickControlETV(ViewGroup parent) {
+        Context context = parent.getContext();
         ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(36));
-        vgQuickControls.addView(etv);
+        parent.addView(etv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
         int margin = dp(1.5f);
@@ -428,6 +428,24 @@ public class ControlView extends RelativeLayout {
         });
         return etv;
     }
+
+    public static ExtendedTextView createControlETV(ViewGroup parent) {
+        Context context = parent.getContext();
+        ExtendedTextView etv = new ExtendedTextView(context);
+        parent.addView(etv, 0);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+        int margin = dp(2f);
+        params.setMargins(margin,margin,margin,margin);
+        etv.setLayoutParams(params);
+        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
+        etv.setTextColor(CC.getColor(R.color.WHITE));
+
+        etv.setPadding(dp(4), dp(4),dp(4), dp(4));
+        etv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
+        return etv;
+    }
+
 
     public static TableRow createRow(Context context){
         TableRow tableRow = new TableRow(context);
