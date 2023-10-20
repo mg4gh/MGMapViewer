@@ -69,11 +69,12 @@ public class GpxImporter {
                 filename = filePath.replaceFirst(".*/","");
                 is = new FileInputStream(filePath);
             }
+            mgLog.i("Track loaded for " + uri);
+            mgLog.i("Track loaded to " + filename);
             return new GpxImporter(application.getElevationProvider()).parseTrackLog( filename, is);
         } catch (Exception e) {
             mgLog.e(e);
         }
-        mgLog.i("Track loaded for " + uri);
         return null;
     }
 
