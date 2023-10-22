@@ -15,8 +15,8 @@
 package mg.mgmap.activity.mgmap.features.search.provider;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -27,16 +27,16 @@ import mg.mgmap.activity.mgmap.features.search.SearchProvider;
 import mg.mgmap.activity.mgmap.features.search.SearchRequest;
 import mg.mgmap.activity.mgmap.features.search.SearchResult;
 import mg.mgmap.activity.mgmap.features.search.SearchView;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.util.basic.MGLog;
 
 @SuppressWarnings("unused") // usage is via reflection
 public class GeoLatLong extends SearchProvider {
 
-    private boolean autoCenter = false;
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private SearchRequest searchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
+    private boolean autoCenter = false;
 
     @Override
     protected void init(MGMapActivity activity, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences) {
@@ -46,7 +46,7 @@ public class GeoLatLong extends SearchProvider {
             try {
                 autoCenter = Boolean.parseBoolean(sAutoCenter);
             } catch (NumberFormatException e) {
-                Log.e(MGMapApplication.LABEL, e.getMessage());
+                mgLog.e(e);
             }
         }
     }
@@ -77,7 +77,7 @@ public class GeoLatLong extends SearchProvider {
                 try {
                     lat = DegreeUtil.doubleDegree2double(true, words[idx]);
                 } catch (NumberFormatException e1) {
-                    Log.e(MGMapApplication.LABEL, e.getMessage());
+                    mgLog.e(e.getMessage());
                 }
             }
             idx++;
@@ -89,7 +89,7 @@ public class GeoLatLong extends SearchProvider {
                 try {
                     lon = DegreeUtil.doubleDegree2double(false, words[idx]);
                 } catch (NumberFormatException e1) {
-                    Log.e(MGMapApplication.LABEL, e.getMessage());
+                    mgLog.e(e.getMessage());
                 }
             }
             PointModel pm = new PointModelImpl(lat,lon);
@@ -108,14 +108,6 @@ public class GeoLatLong extends SearchProvider {
         results.add( new SearchResult(request, res2, pm));
         String res3 = String.format(Locale.ENGLISH,"Lat=%s, Long=%s", DegreeUtil.double2Degree(true, pm.getLat(), false), DegreeUtil.double2Degree(false, pm.getLon(), false));
         results.add( new SearchResult(request, res3, pm));
-    }
-
-
-    private void publishResult(SearchRequest request, ArrayList<SearchResult> results){
-        if (request.timestamp > searchRequest.timestamp){
-            searchRequest = request;
-            searchView.setResList(results);
-        }
     }
 
 }

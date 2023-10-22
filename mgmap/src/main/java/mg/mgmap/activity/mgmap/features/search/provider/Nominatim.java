@@ -14,10 +14,9 @@
  */
 package mg.mgmap.activity.mgmap.features.search.provider;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -29,42 +28,32 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.features.search.SearchProvider;
 import mg.mgmap.activity.mgmap.features.search.SearchRequest;
 import mg.mgmap.activity.mgmap.features.search.SearchResult;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 
 public class Nominatim extends SearchProvider {
 
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private static final String URL_BASE = "https://nominatim.openstreetmap.org/";
-
-    private SearchRequest searchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
-    private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     @Override
     public void doSearch(SearchRequest request) {
 
         if (request.actionId < 0) return;
 
-        if (request.text.equals(searchRequest.text) ){
-            if (request.pos.equals(searchRequest.pos)){
-                publishResult(request, searchResults);
-                return;
-            }
-        }
-
         PointModel pm = request.pos;
         int radius = 10 << Math.max(0,  12 - request.zoom);
         BBox bBox = new BBox().extend(pm).extend(radius*1000);
         double d1 = PointModelUtil.distance(bBox.maxLatitude, bBox.maxLongitude, bBox.minLatitude, bBox.minLongitude);
         double d2 = PointModelUtil.distance(bBox.maxLatitude, bBox.maxLongitude, bBox.maxLatitude, bBox.minLongitude);
-        Log.i(MGMapApplication.LABEL, NameUtil.context()+" r="+radius+" d1="+d1+" d2="+d2);
+        mgLog.i("r="+radius+" d1="+d1+" d2="+d2);
 
         new Thread(() -> {
             try {
@@ -82,7 +71,7 @@ public class Nominatim extends SearchProvider {
                         sUrl = sUrl.replaceFirst("viewbox[^&]*&","");
                     }
                 }
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
+                mgLog.i("sUrl="+sUrl);
 
                 URL url = new URL(sUrl);
                 URLConnection conn = url.openConnection();
@@ -108,28 +97,19 @@ public class Nominatim extends SearchProvider {
                         String resText = String.format("%s", po.getString("display_name"));
 
                         resList.add( new SearchResult(request, resText, pm1));
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+resText);
+                        mgLog.i("res="+resText);
                     } catch (Exception e) {
-                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                        mgLog.e(e);
                     }
 
                 }
 
                 publishResult(request, resList);
             } catch (IOException e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                mgLog.e(e);
             }
 
         }).start();
-    }
-
-
-    private void publishResult(SearchRequest request, ArrayList<SearchResult> results){
-        if (request.timestamp > searchRequest.timestamp){
-            searchRequest = request;
-            searchResults = results;
-            searchView.setResList(results);
-        }
     }
 
 }

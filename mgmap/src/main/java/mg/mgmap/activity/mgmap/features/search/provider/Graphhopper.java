@@ -15,10 +15,10 @@
 package mg.mgmap.activity.mgmap.features.search.provider;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -31,7 +31,6 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.search.SearchProvider;
 import mg.mgmap.activity.mgmap.features.search.SearchRequest;
@@ -39,16 +38,13 @@ import mg.mgmap.activity.mgmap.features.search.SearchResult;
 import mg.mgmap.activity.mgmap.features.search.SearchView;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class Graphhopper extends SearchProvider {
 
-
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private static final String URL_ORS = "https://graphhopper.com/api/1/geocode?locale=de";
     private String apiKey = "";
-
-    private SearchRequest searchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
-    private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     @Override
     protected void init(MGMapActivity activity, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences) {
@@ -78,7 +74,7 @@ public class Graphhopper extends SearchProvider {
                         sUrl = sUrl.replaceFirst("point[^&]*&","");
                     }
                 }
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+sUrl);
+                mgLog.i("sUrl="+sUrl);
 
                 URL url = new URL(sUrl);
                 URLConnection conn = url.openConnection();
@@ -127,30 +123,19 @@ public class Graphhopper extends SearchProvider {
                         SearchResult sr = new SearchResult(request, res, pm1);
                         sr.longResultText = fo.toString();
                         resList.add( sr );
-                        Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+res);
+                        mgLog.i("res="+res);
                     } catch (Exception e) {
-                        Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                        mgLog.e(e);
                     }
 
                 }
 
                 publishResult(request, resList);
             } catch (IOException e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                mgLog.e(e);
             }
 
         }).start();
-    }
-
-
-    private void publishResult(SearchRequest request, ArrayList<SearchResult> results){
-        if (request.timestamp > searchRequest.timestamp){
-            searchRequest = request;
-            searchResults = results;
-            if (searchView != null){
-                searchView.setResList(results);
-            }
-        }
     }
 
 }

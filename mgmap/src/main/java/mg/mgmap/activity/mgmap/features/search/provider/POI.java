@@ -16,11 +16,11 @@ package mg.mgmap.activity.mgmap.features.search.provider;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.util.Log;
 
 import org.sqlite.database.sqlite.SQLiteDatabase;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -29,17 +29,18 @@ import java.util.TreeSet;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.search.SearchView;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.features.search.SearchProvider;
 import mg.mgmap.activity.mgmap.features.search.SearchRequest;
 import mg.mgmap.activity.mgmap.features.search.SearchResult;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 
 public class POI extends SearchProvider {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     File poiFile = null;
 
@@ -47,16 +48,11 @@ public class POI extends SearchProvider {
         try {
             System.loadLibrary("sqliteX");
         } catch (Throwable t) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(), t);
+            mgLog.e(t);
         }
     }
 
 
-
-
-
-    private SearchRequest lastSearchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
-    private ArrayList<SearchResult> lastSearchResults = new ArrayList<>();
     private PersistenceManager persistenceManager = null;
 
     @Override
@@ -70,14 +66,6 @@ public class POI extends SearchProvider {
     public void doSearch(SearchRequest request) {
 
         if (request.actionId < 0) return;
-
-        if (request.text.equals(lastSearchRequest.text) ){
-            if (request.pos.equals(lastSearchRequest.pos)){
-                publishResult(request, lastSearchResults);
-                return;
-            }
-        }
-
 
         PointModel pm = request.pos;
         BBox bBox;
@@ -128,20 +116,18 @@ public class POI extends SearchProvider {
                 }
 
                 String SELECT_STATEMENT = select + " WHERE ( " +posMatch+textMatch +");";
-//                    String SELECT_STATEMENT = "SELECT * FROM poi_data INNER JOIN poi_index ON poi_data.id=poi_index.id WHERE  (instr(data,\""+request.text+"\"))";
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+SELECT_STATEMENT);
+                mgLog.i(SELECT_STATEMENT);
 
                 Cursor cursor = db.rawQuery(SELECT_STATEMENT, null);
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+" cursor.count="+cursor.getCount());
+                mgLog.i("cursor.count="+cursor.getCount());
                 while (cursor.moveToNext()) {
                     // Column values
                     int id = cursor.getInt(0);
                     String text = cursor.getString(1);
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+id+" "+text);
+                    mgLog.i(id+" "+text);
 
                     subMap.clear();
                     for (String resPart : text.split("\\r")){
-//                            Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+resPart);
                         String[] sub = resPart.split("=");
                         if (sub.length == 2){
                             subMap.put(sub[0],sub[1]);
@@ -197,7 +183,7 @@ public class POI extends SearchProvider {
                     double lat = cursor.getDouble(3);
                     double lon = cursor.getDouble(5);
                     PointModel pos = new PointModelImpl(lat,lon);
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" "+id+" "+pos+" "+res);
+                    mgLog.i(id+" "+pos+" "+res);
 
                     SearchResult sr = new SearchResult(request, res, pos);
                     sr.longResultText = text.replaceAll("\\r"," ");
@@ -211,7 +197,7 @@ public class POI extends SearchProvider {
                 }
                 publishResult(request, res);
             } catch (Exception e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                mgLog.e(e);
             } finally {
                 if (db != null){
                     db.close();
@@ -219,15 +205,6 @@ public class POI extends SearchProvider {
             }
 
         }).start();
-    }
-
-
-    private void publishResult(SearchRequest request, ArrayList<SearchResult> results){
-        if (request.timestamp > lastSearchRequest.timestamp){
-            lastSearchRequest = request;
-            lastSearchResults = results;
-            searchView.setResList(results);
-        }
     }
 
 }

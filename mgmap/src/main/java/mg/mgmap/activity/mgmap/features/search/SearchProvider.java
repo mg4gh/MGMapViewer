@@ -16,10 +16,12 @@ package mg.mgmap.activity.mgmap.features.search;
 
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.util.PersistenceManager;
+import mg.mgmap.generic.model.PointModelImpl;
 
 public abstract class SearchProvider {
 
@@ -27,6 +29,9 @@ public abstract class SearchProvider {
     protected SearchView searchView = null;
     protected FSSearch fsSearch = null;
     protected SharedPreferences preferences = null;
+
+    SearchRequest lastSearchRequest = new SearchRequest("", 0, 0, new PointModelImpl(), 0);
+    ArrayList<SearchResult> lastSearchResults = new ArrayList<>();
 
     protected void init(MGMapActivity activity, FSSearch fsSearch, SearchView searchView, SharedPreferences preferences){
         this.activity = activity;
@@ -45,4 +50,15 @@ public abstract class SearchProvider {
     protected void setSearchText(String text){
         searchView.searchText.setText(text);
     }
+
+    protected void publishResult(SearchRequest request, ArrayList<SearchResult> results){
+        if (request.timestamp > lastSearchRequest.timestamp){
+            lastSearchRequest = request;
+            lastSearchResults = results;
+            if (searchView != null){
+                searchView.setResList(results);
+            }
+        }
+    }
+
 }

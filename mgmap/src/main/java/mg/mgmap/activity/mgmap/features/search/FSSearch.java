@@ -227,7 +227,11 @@ public class FSSearch extends FeatureService {
         triggerTTHideKeyboard();
         mgLog.i("text="+text+" actionId="+actionId+" timestamp="+timestamp);
         PointModel pos = new PointModelImpl( getActivity().getMapViewUtility().getCenter() );
-        searchProvider.doSearch(new SearchRequest(text, actionId, timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
+        if (text.equals(searchProvider.lastSearchRequest.text) && pos.equals(searchProvider.lastSearchRequest.pos)){
+            searchProvider.publishResult(searchProvider.lastSearchRequest, searchProvider.lastSearchResults);
+        } else {
+            searchProvider.doSearch(new SearchRequest(text, actionId, timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
+        }
         if (actionId == EditorInfo.IME_ACTION_GO
                 || actionId == EditorInfo.IME_ACTION_DONE
                 || actionId == EditorInfo.IME_ACTION_NEXT
