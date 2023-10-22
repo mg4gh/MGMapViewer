@@ -15,6 +15,7 @@
 package mg.mgmap.generic.view;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -96,10 +97,13 @@ public class ExtendedTextView extends AppCompatTextView {
     @Override
     public void setId(int id) {
         super.setId(id);
-        String rName = getResources().getResourceName(id);
-        if (rName != null){
-            logName = rName.replaceFirst(".*/","");
+        String rName;
+        try {
+            rName = getResources().getResourceName(id);
+        } catch (Resources.NotFoundException e){
+            rName = "res_"+id;
         }
+        logName = rName.replaceFirst(".*/","");
     }
 
     public ExtendedTextView setData(int drId){
