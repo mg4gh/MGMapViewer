@@ -47,61 +47,6 @@ public class GroupMultiTests extends BaseTestCase {
     }
 
     @Test(timeout = 20000)
-    public void _01_help1_wait_close() {
-        mgLog.i("started");
-        setCursorToCenterPos();
-        addRegex(".*onClick mi_help_multi.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_help_multi);
-        SystemClock.sleep(4000);
-        addRegex(".*onClick help1_close.*");
-        animateToViewAndClick(R.id.help1_close);
-        SystemClock.sleep(1000);
-        mgLog.i("finished");
-    }
-
-    @Test(timeout = 20000)
-    public void _01_help2() {
-        mgLog.i("started");
-        setCursorToCenterPos();
-        addRegex(".*onClick mi_help_multi.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_help_multi);
-
-        animateToViewAndClick(R.id.testview); // nothing happens
-        addRegex(".*onClick mi_multi_empty1.*");
-        animateToViewAndClick(R.id.mi_multi_empty1);
-        SystemClock.sleep(1000);
-        mgLog.i("finished");
-    }
-
-
-    @Test(timeout = 20000)
-    public void _02_exit() {
-        mgLog.i("started");
-        setCursorToCenterPos();
-        addRegex(".*onClick mi_exit.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_exit);
-        SystemClock.sleep(1000);
-        mgLog.i("finished");
-    }
-
-    @Test(timeout = 20000)
-    public void _03_empty() {
-        mgLog.i("started");
-        setCursorToCenterPos();
-        addRegex(".*onClick mi_multi_empty1.*");
-        addRegex(".*context=MGMapActivity key=FSControl.qc_selector value=0.*");
-        animateToViewAndClick(R.id.menu_multi);
-        Point p = animateToViewAndClick(R.id.mi_multi_empty1);
-        addRegex(".*onClick menu_marker.*"); // next click hits marker menu - this proves that previous click on R.id.mi_multi_empty1 directly closed the menu_multi
-        animateClick(p);
-        SystemClock.sleep(1000);
-        mgLog.i("finished");
-    }
-
-    @Test(timeout = 20000)
     public void _04_fullscreen() {
         mgLog.i("started");
         setCursorToCenterPos();

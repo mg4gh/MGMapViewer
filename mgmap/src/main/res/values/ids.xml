@@ -57,7 +57,7 @@
     <item type="id" name="menu_multi"  />
     <item type="id" name="mi_help_multi"  />
     <item type="id" name="mi_exit"  />
-    <item type="id" name="mi_multi_empty1"  />
+<!--    <item type="id" name="mi_multi_empty1"  />-->
     <item type="id" name="mi_fileMgr"  />
     <item type="id" name="mi_fullscreen"  />
     <item type="id" name="mi_zoom_in"  />
