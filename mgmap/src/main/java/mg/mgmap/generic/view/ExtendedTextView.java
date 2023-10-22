@@ -93,6 +93,15 @@ public class ExtendedTextView extends AppCompatTextView {
         return this;
     }
 
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        String rName = getResources().getResourceName(id);
+        if (rName != null){
+            logName = rName.replaceFirst(".*/","");
+        }
+    }
+
     public ExtendedTextView setData(int drId){
         drId1 = drId;
         onChange(null);
