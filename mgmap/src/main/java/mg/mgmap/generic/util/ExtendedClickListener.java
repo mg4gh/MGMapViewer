@@ -15,13 +15,15 @@
 package mg.mgmap.generic.util;
 
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 
-import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
+import java.lang.invoke.MethodHandles;
+
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class ExtendedClickListener implements View.OnClickListener {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final Handler timer = new Handler();
     protected long doubleClickTimeout = 10;
@@ -52,7 +54,7 @@ public class ExtendedClickListener implements View.OnClickListener {
     public void onSingleClick(View view){}
 
     public void onDoubleClick(View view){
-        Log.v(MGMapApplication.LABEL, NameUtil.context()+" double");
+        mgLog.v("double");
         onSingleClick(view);
         onSingleClick(view);
     }

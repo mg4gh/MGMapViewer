@@ -15,13 +15,13 @@
 package mg.mgmap.activity.mgmap.features.bb;
 
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
@@ -29,7 +29,6 @@ import java.util.Map;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.tilestore.MGTileStore;
@@ -44,12 +43,15 @@ import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 
 public class FSBB extends FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final Pref<Boolean> triggerBboxOn = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefBboxOn = getPref(R.string.FSBB_qc_bboxOn, false);
@@ -251,7 +253,7 @@ public class FSBB extends FeatureService {
         protected boolean onLongPress(PointModel pm) {
             if ((p1!= null) && (p2!= null)){
                 BBox bBox = new BBox().extend(p1).extend(p2);
-                Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
+                mgLog.i("bBox="+bBox);
                 if (bBox.contains(pm)){
                     if (loadFromBB(bBox)){
                         prefBboxOn.setValue(false);
@@ -287,7 +289,7 @@ public class FSBB extends FeatureService {
     public void loadFromBB(){
         if ((p1!= null) && (p2!= null)){
             BBox bBox = new BBox().extend(p1).extend(p2);
-            Log.i(MGMapApplication.LABEL, NameUtil.context() + " bBox="+bBox);
+            mgLog.i("bBox="+bBox);
             loadFromBB(bBox);
         }
     }
@@ -335,7 +337,7 @@ public class FSBB extends FeatureService {
                 if ((entry.getValue() instanceof TileRendererLayer) && (!prefAutoDlHgtAsked.getValue().contains("\"" + entry.getKey() + "\""))){
                     prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" \""+entry.getKey()+"\"");
                     BBox bBox = BBox.fromBoundingBox(((TileRendererLayer)entry.getValue()).getMapDataStore().boundingBox());
-                    Log.i(MGMapApplication.LABEL, NameUtil.context()+" layer="+entry.getKey()+" bbox="+bBox);
+                    mgLog.i("layer="+entry.getKey()+" bbox="+bBox);
                     loadHgt(bBox, false, entry.getKey());
                 }
             }
@@ -353,7 +355,7 @@ public class FSBB extends FeatureService {
                 }
 
             } catch (Exception e) {
-                Log.e(MGMapApplication.LABEL, NameUtil.context(), e);
+                mgLog.e(e);
             }
         }
     }

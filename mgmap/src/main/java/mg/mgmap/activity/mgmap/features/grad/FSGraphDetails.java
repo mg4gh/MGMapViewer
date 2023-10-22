@@ -14,15 +14,13 @@
  */
 package mg.mgmap.activity.mgmap.features.grad;
 
-import android.util.Log;
-
 import org.mapsforge.core.graphics.Paint;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.generic.graph.GGraphTile;
@@ -34,7 +32,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.activity.mgmap.util.CC;
-import mg.mgmap.generic.util.basic.NameUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.activity.mgmap.view.BoxView;
@@ -42,6 +40,8 @@ import mg.mgmap.activity.mgmap.view.MultiMultiPointView;
 import mg.mgmap.activity.mgmap.view.MultiPointView;
 
 public class FSGraphDetails extends FeatureService {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final Paint PAINT_GRAD_STROKE =  CC.getStrokePaint(R.color.RED_A150, 3);
     public static final Paint PAINT_GRAD_ALL_STROKE = CC.getStrokePaint(R.color.GRAY100_A150, 3);
@@ -122,7 +122,6 @@ public class FSGraphDetails extends FeatureService {
         GGraphTile bestTile = null;
         WriteablePointModel pmApproach = new TrackLogPoint();
         double bestDistance = closeThreshold;
-//        ArrayList<GGraphTile> tiles = GGraphTile.getGGraphTileList(getActivity().getMapDataStore(bBoxTap), bBoxTap);
         ArrayList<GGraphTile> tiles = getActivity().getGGraphTileFactory().getGGraphTileList(bBoxTap);
 
         for (GGraphTile gGraphTile : tiles){
@@ -165,7 +164,7 @@ public class FSGraphDetails extends FeatureService {
 
             for (GNode node : nodes){
                 multiPointModel.addPoint(node);
-                Log.i(MGMapApplication.LABEL, NameUtil.context()+ " Point "+ node);
+                mgLog.d("Point "+ node);
             }
         }
         return (bestTile==null)?null:bestTile.getTileBBox();

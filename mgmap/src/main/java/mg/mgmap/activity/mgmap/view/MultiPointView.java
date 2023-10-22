@@ -14,8 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.view;
 
-import android.util.Log;
-
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
@@ -24,17 +22,20 @@ import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
  */
 public class MultiPointView extends MVLayer {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     public static final int POINT_RADIUS = 4;
     private static final byte STROKE_MIN_ZOOM = 15;
 
@@ -61,7 +62,7 @@ public class MultiPointView extends MVLayer {
         try {
             drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
         } catch (Exception e) {
-            Log.e(MGMapApplication.LABEL, NameUtil.context(),e);
+            mgLog.e(e);
         }
     }
 

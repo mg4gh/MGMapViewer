@@ -1,7 +1,5 @@
 package mg.mgmap.generic.util;
 
-import android.util.Log;
-
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.generic.util.basic.MGLog;
