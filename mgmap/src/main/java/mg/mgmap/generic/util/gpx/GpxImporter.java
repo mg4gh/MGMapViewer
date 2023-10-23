@@ -14,15 +14,8 @@
  */
 package mg.mgmap.generic.util.gpx;
 
-import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.OpenableColumns;
-
 import org.kxml2.io.KXmlParser;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogSegment;
@@ -33,7 +26,6 @@ import mg.mgmap.generic.util.basic.MGLog;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
@@ -48,35 +40,6 @@ public class GpxImporter {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private static final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
-
-    @SuppressLint("Range")
-    public static TrackLog checkLoadGpx(MGMapApplication application, Uri uri) {
-        try {
-            InputStream is;
-            String filename = "GPX" + System.currentTimeMillis(); // fallback name
-            if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-                ContentResolver contentResolver = application.getContentResolver();
-                try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
-                    if (cursor != null && cursor.moveToFirst()) {
-                        filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                    }
-                }
-
-                is = contentResolver.openInputStream(uri);
-                if (is == null) return null;
-            } else {
-                String filePath = uri.getEncodedPath();
-                filename = filePath.replaceFirst(".*/","");
-                is = new FileInputStream(filePath);
-            }
-            mgLog.i("Track loaded for " + uri);
-            mgLog.i("Track loaded to " + filename);
-            return new GpxImporter(application.getElevationProvider()).parseTrackLog( filename, is);
-        } catch (Exception e) {
-            mgLog.e(e);
-        }
-        return null;
-    }
 
     private final ElevationProvider elevationProvider;
     private final XmlPullParser pullParser = new KXmlParser();

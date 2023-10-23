@@ -15,15 +15,19 @@
 package mg.mgmap.activity.mgmap;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.provider.OpenableColumns;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -79,14 +83,12 @@ import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogRefZoom;
 import mg.mgmap.generic.model.WriteablePointModel;
-import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.GpxSyncUtil;
 import mg.mgmap.generic.util.WaitUtil;
-import mg.mgmap.generic.util.Zipper;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
 import mg.mgmap.activity.mgmap.util.MapDataStoreUtil;
@@ -107,6 +109,7 @@ import mg.mgmap.generic.util.hints.HintBatteryUsage;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.ArrayList;
@@ -251,7 +254,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             alertDialog.create();
             ColorDrawable dialogColor = new ColorDrawable(Color.GRAY);
             dialogColor.setAlpha(0);
-            alertDialog.getWindow().setBackgroundDrawable(dialogColor);
+            if (alertDialog.getWindow() != null){
+                alertDialog.getWindow().setBackgroundDrawable(dialogColor);
+            }
             alertDialog.show();
             new Thread(() -> {
                 try {
@@ -405,73 +410,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     prefCache.get(R.string.activity_param_key, "").setValue(value);
                 }
 
-                if (intent.getType() == null){
-                    Uri uri = intent.getData();
-                    if (uri != null) {
-                        mgLog.i("uri: " + uri);
-                        PersistenceManager pm = application.getPersistenceManager();
-                        if (uri.getScheme().equals("mf-v4-map")){
-                            BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download map", new BgJobGroupCallback() {
-                                @Override
-                                public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
-                                    if (success > 0){
-                                        Intent intent = new Intent(MGMapActivity.this, SettingsActivity.class);
-                                        intent.putExtra("FSControl.info", MapLayersPreferenceScreen.class.getName());
-                                        startActivity(intent);
-                                    }
-                                }
-                            }){
-                                @Override
-                                public String getResultDetails() {
-                                    if (successCounter > 0){
-                                        return super.getDetails() + " finished successful.\n\n Now you can assign this map to a layer";
-                                    } else {
-                                        return super.getResultDetails();
-                                    }
-                                }
-                            };
-                            String sUrl = uri.toString().replaceFirst("mf-v4-map", "https");
-                            bgJobGroup.addJob(OpenAndroMapsUtil.createBgJobsFromIntentUriMap(pm, new URL(sUrl)));
-                            bgJobGroup.setConstructed("Download mapsforge map from "+sUrl);
-                        } else if (uri.getScheme().equals("mf-theme")){
-                            BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download map theme", new BgJobGroupCallback() {
-                                @Override
-                                public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
-                                    if (success > 0) {
-                                        Intent intent = new Intent(MGMapActivity.this, SettingsActivity.class);
-                                        intent.putExtra("FSControl.info", MainPreferenceScreen.class.getName());
-                                        startActivity(intent);
-                                    }
-                                }
-                            }){
-                                @Override
-                                public String getResultDetails() {
-                                    if (successCounter > 0){
-                                        return super.getDetails() + " finished successful.\n\n Now you can select downloaded theme.";
-                                    } else {
-                                        return super.getResultDetails();
-                                    }
-                                }
-                            };
-                            String sUrl = uri.toString().replaceFirst("mf-theme", "https");
-                            bgJobGroup.addJob(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(pm, new URL(sUrl)));
-                            bgJobGroup.setConstructed("Download mapsforge theme from "+sUrl);
-                        } else if (uri.getScheme().equals("mgmap-install")){
-                            BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download and install generic zip archive", new BgJobGroupCallback(){} );
-                            String sUrl = uri.toString().replaceFirst("mgmap-install", "https");
-                            bgJobGroup.addJob( new BgJob() {
-                                @Override
-                                protected void doJob() throws Exception {
-                                    super.doJob();
-                                    Zipper zipper = new Zipper(null);
-                                    zipper.unpack(new URL(sUrl), pm.getAppDir(), null, this);
-                                }
-                            } );
-                            bgJobGroup.setConstructed("Download and install generic zip archive from "+sUrl);
-                        }
-                    }
 
-                } else if (intent.getType().equals("mgmap/showTrack")){
+                Uri uri = intent.getData();
+                mgLog.i("uri: " + uri);
+                PersistenceManager pm = application.getPersistenceManager();
+                if ("mgmap/showTrack".equals(intent.getType())){
                     String stl = intent.getStringExtra("stl");
                     String atl = intent.getStringExtra("atl");
                     List<String> atls = (atl==null)?new ArrayList<>():Arrays.asList( atl.substring(1,atl.length()-1).split(", ") );
@@ -498,8 +441,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         application.availableTrackLogsObservable.changed();
                         getMapViewUtility().zoomForBoundingBox(bBox2show);
                     }
-
-                } else if (intent.getType().equals("mgmap/markTrack")){
+                } else if ("mgmap/markTrack".equals(intent.getType())){
                     String stl = intent.getStringExtra("stl");
                     mgLog.i(intent.getType()+" stl="+stl);
                     if (stl != null){
@@ -532,23 +474,84 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                             getMapViewUtility().zoomForBoundingBox(bBox2show);
                         }
                     }
-
-                } else {
-                    Uri uri = intent.getData();
-                    if (uri != null) {
-                        mgLog.i("uri: " + uri);
-                        if (uri.toString().startsWith("content")){ // assume this is a gpx file
-                            TrackLog trackLog = GpxImporter.checkLoadGpx(application, uri);
-                            if (trackLog != null) {
-                                application.metaTrackLogs.put(trackLog.getNameKey(), trackLog);
-                                application.lastPositionsObservable.clear();
-                                TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
-                                application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
+                } else if ("mf-v4-map".equals(uri.getScheme())){
+                    BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download map", new BgJobGroupCallback() {
+                        @Override
+                        public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                            if (success > 0){
+                                Intent intent = new Intent(MGMapActivity.this, SettingsActivity.class);
+                                intent.putExtra("FSControl.info", MapLayersPreferenceScreen.class.getName());
+                                startActivity(intent);
                             }
                         }
-                    }
-                }
-            }
+                    }){
+                        @Override
+                        public String getResultDetails() {
+                            if (successCounter > 0){
+                                return super.getDetails() + " finished successful.\n\n Now you can assign this map to a layer";
+                            } else {
+                                return super.getResultDetails();
+                            }
+                        }
+                    };
+                    String sUrl = uri.toString().replaceFirst("mf-v4-map", "https");
+                    bgJobGroup.addJob(OpenAndroMapsUtil.createBgJobsFromIntentUriMap(pm, new URL(sUrl)));
+                    bgJobGroup.setConstructed("Download mapsforge map from "+sUrl);
+                } else if ("mf-theme".equals(uri.getScheme())){
+                    BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download map theme", new BgJobGroupCallback() {
+                        @Override
+                        public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                            if (success > 0) {
+                                Intent intent = new Intent(MGMapActivity.this, SettingsActivity.class);
+                                intent.putExtra("FSControl.info", MainPreferenceScreen.class.getName());
+                                startActivity(intent);
+                            }
+                        }
+                    }){
+                        @Override
+                        public String getResultDetails() {
+                            if (successCounter > 0){
+                                return super.getDetails() + " finished successful.\n\n Now you can select downloaded theme.";
+                            } else {
+                                return super.getResultDetails();
+                            }
+                        }
+                    };
+                    String sUrl = uri.toString().replaceFirst("mf-theme", "https");
+                    bgJobGroup.addJob(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(pm, new URL(sUrl)));
+                    bgJobGroup.setConstructed("Download mapsforge theme from "+sUrl);
+                } else if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+                    ContentResolver contentResolver = application.getContentResolver();
+
+                    try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
+                        if (cursor != null && cursor.moveToFirst()) {
+                            @SuppressLint("Range")
+                            String filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                            mgLog.i("found Filename " + filename);
+                            // unfortunately the filename does not necessarily correspond to the name that is found here.
+                            // This implies also, that a check fpr a ".gpx" file is simply not possible. As a consequence
+                            // other files will run into an parse exception ...
+                            try (InputStream is = contentResolver.openInputStream(uri)){
+                                if (is != null) {
+                                    mgLog.i("Track loaded for " + uri);
+                                    mgLog.i("Track loaded to " + filename);
+                                    TrackLog trackLog = new GpxImporter(application.getElevationProvider()).parseTrackLog( filename, is);
+                                    if (trackLog != null) {
+                                        application.metaTrackLogs.put(trackLog.getNameKey(), trackLog);
+                                        application.lastPositionsObservable.clear();
+                                        TrackLogRef refSelected = new TrackLogRefZoom(trackLog, trackLog.getNumberOfSegments() - 1, true);
+                                        application.availableTrackLogsObservable.setSelectedTrackLogRef(refSelected);
+                                    }
+                                } else {
+                                    mgLog.e("InputStream is null");
+                                }
+                            } // try is
+                        } // if (cursor != null && cursor.moveToFirst())
+                    } // try (Cursor cursor = ...
+
+                } // if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme()))
+
+            } // if ((intent != null))
         } catch (Exception e) {
             mgLog.e(e);
         }
@@ -560,6 +563,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private static final int ACCESS_FINE_LOCATION_CODE = 995; // just an id to identify the callback
     private static final int ACCESS_BACKGROUND_LOCATION = 997; // just an id to identify the callback
     /** trigger TrackLoggerService, request permission on demand. */
+    @SuppressLint("BatteryLife")
     public void triggerTrackLoggerService(){
         mgLog.i();
         if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
