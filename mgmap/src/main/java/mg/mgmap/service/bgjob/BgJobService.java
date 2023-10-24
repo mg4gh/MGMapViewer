@@ -102,6 +102,8 @@ public class BgJobService extends Service {
                 lastNumBgJobs = maxJobs;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     startForeground(1, baseNotiBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+                } else {
+                    startForeground(1, baseNotiBuilder.build());
                 }
                 mgLog.i("startForeground() for BgJobService triggered.  ");
 
