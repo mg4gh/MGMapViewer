@@ -44,7 +44,6 @@ import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -284,6 +283,13 @@ public class FSBB extends FeatureService {
 
     public BBox getBBox(){
         return new BBox().extend(p1).extend(p2);
+    }
+
+    public PointModel getP1(){
+        return p1;
+    }
+    public PointModel getP2(){
+        return p2;
     }
 
     public void loadFromBB(){

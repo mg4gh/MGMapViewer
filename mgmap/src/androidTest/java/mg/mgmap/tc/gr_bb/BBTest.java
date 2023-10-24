@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.bb.FSBB;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
@@ -66,7 +67,10 @@ public class BBTest extends BaseTestCase {
         assert prefBboxOn.getValue();
         PointModelImpl p1_1 = new PointModelImpl(54.427888,13.44128);
         PointModelImpl p2_1 = new PointModelImpl(54.421888,13.45528);
-        resizeBB(p1_1, p2_1);
+        FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        animateSwipeLatLong(fsbb.getP1(), p1_1);
+        animateSwipeLatLong(fsbb.getP2(), p2_1);
+
 
         addRegex(".*onClick mi_load_from_bb.*");
         animateToViewAndClick(R.id.menu_bb);
@@ -90,7 +94,8 @@ public class BBTest extends BaseTestCase {
 
         PointModelImpl p1_3 = new PointModelImpl(54.427888,13.43528);
         PointModelImpl p2_3 = new PointModelImpl(54.408888,13.45528);
-        resizeBB(p1_3, p2_3);
+        animateSwipeLatLong(fsbb.getP1(), p1_3);
+        animateSwipeLatLong(fsbb.getP2(), p2_3);
 
         addRegex(".*onClick mi_load_from_bb.*");
         animateToViewAndClick(R.id.menu_bb);
@@ -121,12 +126,14 @@ public class BBTest extends BaseTestCase {
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
         });
         setCursorToCenterPos();
-        SystemClock.sleep(1000);
+        SystemClock.sleep(3000);
 
         addRegex(".*onClick mi_bbox.*");
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
-        resizeBB(p1_1, p2_1);
+        FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        animateSwipeLatLong(fsbb.getP1(), p1_1);
+        animateSwipeLatLong(fsbb.getP2(), p2_1);
 
         addRegex(".*onClick mi_load_remain.*");
         animateToViewAndClick(R.id.menu_bb);
@@ -234,7 +241,7 @@ public class BBTest extends BaseTestCase {
         SystemClock.sleep(1000);
         addRegex(".*recreate MGMapActivity due to key=SelectMap4 value=MAPGRID: hgt*");
         mgMapActivity1.getPrefCache().get(R.string.Layers_pref_chooseMap4_key, "").setValue("MAPGRID: hgt");
-        SystemClock.sleep(1000);
+        SystemClock.sleep(5000);
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
         mgMapActivity.runOnUiThread(() -> {
             MapPosition mp = new MapPosition(new LatLong(54.422888, 13.448283), (byte) 7);
@@ -277,7 +284,9 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.mi_bbox);
         PointModelImpl p1_1 = new PointModelImpl(54.9,12.7);
         PointModelImpl p2_1 = new PointModelImpl(54.1,14.3);
-        resizeBB(p1_1, p2_1);
+        FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        animateSwipeLatLong(fsbb.getP1(), p1_1);
+        animateSwipeLatLong(fsbb.getP2(), p2_1);
 
         addRegex(".*onClick mi_load_remain.*");
         animateToViewAndClick(R.id.menu_bb);

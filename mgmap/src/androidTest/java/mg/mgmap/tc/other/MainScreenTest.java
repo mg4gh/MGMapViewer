@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.bb.FSBB;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.Pref;
@@ -64,7 +65,9 @@ public class MainScreenTest extends BaseTestCase {
 
         PointModelImpl p1_3 = new PointModelImpl(54.427888,13.43528);
         PointModelImpl p2_3 = new PointModelImpl(54.408888,13.45528);
-        resizeBB(p1_3, p2_3);
+        FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        animateSwipeLatLong(fsbb.getP1(), p1_3);
+        animateSwipeLatLong(fsbb.getP2(), p2_3);
 
         addRegex(".*onClick mi_load_from_bb.*");
         animateToViewAndClick(R.id.menu_bb);

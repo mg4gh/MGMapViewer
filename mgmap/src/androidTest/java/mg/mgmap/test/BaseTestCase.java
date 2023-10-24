@@ -10,7 +10,6 @@ import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -21,7 +20,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.mapsforge.core.model.Dimension;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -150,6 +148,15 @@ public class BaseTestCase {
         animateSwipeLatLong(new PointModelImpl(latitudeStart,longitudeStart),new PointModelImpl(latitudeEnd,longitudeEnd));
     }
     protected void animateSwipeLatLong(PointModel pmStart, PointModel pmEnd){
+        // wait if a fing action is in progress
+        PointModel pmCenterOld;
+        PointModel pmCenter = activitySupervision.getActivity(MGMapActivity.class).getMapViewUtility().getCenter();
+        do {
+            SystemClock.sleep(50);
+            pmCenterOld = pmCenter;
+            pmCenter = activitySupervision.getActivity(MGMapActivity.class).getMapViewUtility().getCenter();
+        } while (!pmCenterOld.equals(pmCenter));
+
         Point start = getPoint4PointModel(pmStart);
         Point end = getPoint4PointModel(pmEnd);
         animateSwipeToPos(start, end);
@@ -324,26 +331,4 @@ public class BaseTestCase {
         return activitySupervision.getActivity(MGMapActivity.class).getMapViewUtility().getPointModel4Point(p);
     }
 
-    public void resizeBB(PointModel topLeft, PointModel bottomRight){
-
-        Dimension dimension = activitySupervision.getActivity(MGMapActivity.class).getMapsforgeMapView().getModel().mapViewDimension.getDimension();
-        if (dimension == null) {
-            DisplayMetrics dm = mgMapApplication.getApplicationContext().getResources().getDisplayMetrics();
-            dimension = new Dimension(dm.widthPixels, dm.heightPixels);
-        }
-        double x1 = dimension.width / 3.0;
-        double x2 = x1 * 2;
-        double y1 = (dimension.height / 2.0) - (x1 / 2);
-        double y2 = (dimension.height / 2.0) + (x1 / 2);
-        int ix1 = (int)x1;
-        int ix2 = (int)x2;
-        int iy1 = (int)y1;
-        int iy2 = (int)y2;
-        Point p1 = new Point(ix1, iy1);
-        Point p2 = new Point(ix2, iy2);
-        Point p1new = getPoint4PointModel(topLeft);
-        Point p2new = getPoint4PointModel(bottomRight);
-        animateSwipeToPos(p1,p1new);
-        animateSwipeToPos(p2,p2new);
-    }
 }
