@@ -354,6 +354,7 @@ public class MGMapApplication extends Application {
         mgLog.w("MGMapViewer Application stop");
         try {
             cleanup();
+            CC.setApplication(null);
         } catch (Exception e) {
             mgLog.e(e);
         }
