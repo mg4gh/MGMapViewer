@@ -133,6 +133,7 @@ public class BaseTestCase {
             }
             SystemClock.sleep(100);
         }
+        SystemClock.sleep(1000);
         currentActivity = activity;
         setCursorPos(currentPos);
         return activity;
