@@ -124,11 +124,7 @@ public class ControlView extends RelativeLayout {
             this.application = application;
             this.activity = activity;
             ControlComposer controlComposer = new ControlComposer();
-
             mapView = activity.getMapsforgeMapView();
-            // this is necessary to get the scalbar above the quick controls and the status line
-            mapView.getMapScaleBar().setMarginVertical(dp(65));
-
             prepareEnlargeControl();
 
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
@@ -171,7 +167,7 @@ public class ControlView extends RelativeLayout {
             params.setMargins(0, top,0,bottom);
             view.setLayoutParams(params);
         }
-        mapView.getMapScaleBar().setMarginVertical(bottom + dp(65));
+        mapView.getMapScaleBar().setMarginVertical(bottom + VUtil.QC_HEIGHT*2);
         mapView.getMapScaleBar().redrawScaleBar();
         activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle();
     }
