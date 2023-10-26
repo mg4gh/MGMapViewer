@@ -69,7 +69,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </TableRow>
+			<RelativeLayout
+				android:id="@+id/base3"
+				android:layout_width="match_parent"
+				android:layout_height="48dp"
+				android:layout_alignParentBottom="true"
+				android:layout_alignParentEnd="true" />
         </TableLayout>
+		
+        <RelativeLayout
+            android:id="@+id/base2"
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"

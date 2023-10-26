@@ -51,6 +51,14 @@
             app:title="@string/preferences_display_fullscreen_offset_title"
             app:iconSpaceReserved="false"
             />
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="@string/FSControl_pref_menu_one_line_key"
+            app:summary="@string/FSControl_pref_menu_one_line_desc"
+            app:title="@string/FSControl_pref_menu_one_line_title"
+            app:iconSpaceReserved="false"
+            />
+
 
     </PreferenceCategory>
 

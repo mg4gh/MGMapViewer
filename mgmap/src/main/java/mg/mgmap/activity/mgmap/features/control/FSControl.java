@@ -16,9 +16,14 @@ package mg.mgmap.activity.mgmap.features.control;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.transition.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import java.lang.invoke.MethodHandles;
 
@@ -41,13 +46,21 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintInitialMapDownload;
 import mg.mgmap.generic.view.ExtendedTextView;
+import mg.mgmap.generic.view.VUtil;
 
 public class FSControl extends FeatureService {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+    final static int hMargin  = VUtil.hMargin;
+    final static int vMargin = VUtil.vMargin;
 
-    Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
+
+    private final Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
     private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
+    private final Pref<Boolean> prefMenuOneLine;
+    private final int totalWidth;
+    private final Drawable qcBackground;
+    private final Drawable qcLightBackground;
 
     private final Pref<Boolean> triggerSettings = new Pref<>(false);
     private final Pref<Boolean> triggerFuSettings = new Pref<>(false);
@@ -62,8 +75,7 @@ public class FSControl extends FeatureService {
     private final Pref<Boolean> triggerFileMgr = new Pref<>(false);
     private final Pref<Boolean> prefHelp = new Pref<>(false);
 
-    ViewGroup qcsParent = null; // quick controls parent
-    ViewGroup[] qcss = null; // quick controls groups (index 0 is menu control group and index 1..7 are seven sub action menus)
+    private ViewGroup[] qcss = null; // quick controls groups (index 0 is menu control group and index 1..7 are seven sub action menus)
 
 
     Observer homeObserver = (e) -> {
@@ -111,11 +123,21 @@ public class FSControl extends FeatureService {
     public FSControl(MGMapActivity activity){
         super(activity);
 
+        totalWidth = getActivity().getResources().getDisplayMetrics().widthPixels;
+        qcBackground = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape, activity.getTheme());
+        qcLightBackground = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape_mu, activity.getTheme());
+
         ttRefreshTime = 10;
         prefFullscreen.addObserver((e) -> {
             FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue());
             getControlView().setVerticalOffset( );
         });
+        prefMenuOneLine = getPref(R.string.FSControl_pref_menu_one_line_key, false);
+        RelativeLayout base2 = activity.findViewById(R.id.base2);
+        prefMenuOneLine.addObserver(evt -> base2.getLayoutParams().height = (prefMenuOneLine.getValue()?1:2) * VUtil.QC_HEIGHT );
+        prefMenuOneLine.changed();
+
+
         triggerHome.addObserver(homeObserver);
         prefQcs.addObserver(refreshObserver);
         triggerSettings.addObserver(settingsPrefObserver);
@@ -248,14 +270,15 @@ public class FSControl extends FeatureService {
     @Override
     protected void onResume() {
         super.onResume();
-        if (qcsParent == null){
-            qcsParent = getActivity().findViewById(R.id.base);
-        }
         prefQcs.setValue(0);
         prefFullscreen.onChange();
         refreshObserver.onChange();
         getControlView().setVerticalOffset( );
 
+        // move menu items to deflated position
+        for (int i=1; i<8; i++){
+            new MenuDeflater(i).start();
+        }
         getTimer().postDelayed(hintInitialMapDownload, 300);
         setEnableMenu(true);
     }
@@ -267,6 +290,7 @@ public class FSControl extends FeatureService {
         getTimer().removeCallbacks(ttHideSubQCS);
         getTimer().removeCallbacks(ttEnableMenuQCS);
     }
+
 
     @Override
     protected void doRefreshResumedUI() {
@@ -300,16 +324,16 @@ public class FSControl extends FeatureService {
     }
 
     void setQCVisibility(){
-        for (int idx=0; idx<8; idx++){
+        for (int idx=0; idx<qcss.length; idx++){
             ViewGroup qcs = qcss[idx];
             if (prefQcs.getValue() == idx){ // should be visible
-                if (qcs.getParent() == null){ // but is not yet visible
-                    qcsParent.addView(qcs);
+                if (qcs.getVisibility() == View.INVISIBLE){ // but is not yet visible
+                    new MenuInflater(idx).start();
                 }
             } else { // should not be visible
-                if (qcs.getParent() != null){ // ... but is visible
-                    qcsParent.removeView(qcs);
-                    if (idx > 0){
+                if (qcs.getVisibility() == View.VISIBLE){ // but is visible
+                    if (idx > 0){ // menu row is kept visible always
+                        new MenuDeflater(idx).start();
                         prefHelp.setValue(false);
                         cancelTTHideQCS();
                     }
@@ -318,6 +342,86 @@ public class FSControl extends FeatureService {
         }
         if ((prefQcs.getValue() > 0) && (!prefHelp.getValue())){
             setupTTHideQCS();
+        }
+        if (prefQcs.getValue() == 0){
+            getTimer().postDelayed(ttEnableMenuQCS, 500);
+        }
+    }
+
+
+    private class MenuInflater implements Runnable{
+        private final int idx;
+        private final ViewGroup qcs;
+        public MenuInflater(int idx){
+            this.idx = idx;
+            qcs = qcss[idx];
+        }
+        public void start(){
+            // first set menu item group visible
+            qcs.setVisibility(View.VISIBLE);
+            getTimer().postDelayed(this, 80);
+        }
+        @Override
+        public void run() {
+            activity.runOnUiThread(() -> {
+                // animate menu item inflation
+                TransitionManager.beginDelayedTransition(qcs);
+                int max = qcs.getChildCount();
+                for (int j=0; j<max; j++){
+                    View view = qcs.getChildAt(j);
+                    RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(VUtil.getX4QC(totalWidth,1,max)-2*hMargin, VUtil.QC_HEIGHT-2*vMargin);
+                    rlp.setMargins(VUtil.getX4QC(totalWidth,j,max)+hMargin,vMargin,hMargin,vMargin);
+                    view.setLayoutParams(rlp);
+                }
+                if (idx > 0){
+                    for (int i=0; i<qcss[0].getChildCount(); i++){
+                        if (prefMenuOneLine.getValue()) {
+                            // hide menus, if just one line
+                            qcss[0].getChildAt(i).setVisibility(View.INVISIBLE);
+                        } else { // two Line
+                            if ((i + 1) != idx) {
+                                // enlight (not pressed) menus
+                                qcss[0].getChildAt(i).setBackground(qcLightBackground);
+                                qcss[0].getChildAt(i).setEnabled(false);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private class MenuDeflater implements Runnable{
+        private final int idx;
+        private final ViewGroup qcs;
+        public MenuDeflater(int idx){
+            this.idx = idx;
+            qcs = qcss[idx];
+        }
+        public void start(){
+            // animate menu item deflation
+            TransitionManager.beginDelayedTransition(qcs);
+            int max = qcs.getChildCount();
+            for (int j=0; j<max; j++){
+                View view = qcs.getChildAt(j);
+                RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(VUtil.getX4QC(totalWidth,1,max)-2*hMargin, VUtil.QC_HEIGHT-2*vMargin);
+                rlp.setMargins(VUtil.getX4QC(totalWidth,idx-1,max)+hMargin,(prefMenuOneLine.getValue()?0:VUtil.QC_HEIGHT) + hMargin,hMargin,vMargin);
+                view.setLayoutParams(rlp);
+            }
+            getTimer().postDelayed(this, 250);
+        }
+        @Override
+        public void run() {
+            activity.runOnUiThread(() -> {
+                // hide menu item group
+                qcs.setVisibility(View.INVISIBLE);
+
+                for (int i=0; i<qcss[0].getChildCount(); i++){
+                    // reset intensity and visibility of menus
+                    qcss[0].getChildAt(i).setVisibility(View.VISIBLE);
+                    qcss[0].getChildAt(i).setBackground(qcBackground);
+                }
+            });
         }
     }
 

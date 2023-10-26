@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import mg.mgmap.activity.mgmap.util.CC;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -81,6 +82,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         mapView.getMapScaleBar().setVisible(true);
         mapView.setBuiltInZoomControls(false);
         setMapScaleBar();
+        mapView.getModel().displayModel.setBackgroundColor(CC.getColor(R.color.GRAY240));
     }
 
     private void saveMapViewModel(){

@@ -34,7 +34,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
@@ -50,6 +49,7 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
+import mg.mgmap.generic.view.VUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -135,15 +135,15 @@ public class TrackStatisticActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefFilterOn,R.drawable.filter,R.drawable.filter2)
                 .setPrAction(prefFilterOn)
                 .setNameAndId(R.id.stat_mi_filter);
-        ExtendedTextView etvAll = ControlView.createQuickControlETV(qcs);
+        ExtendedTextView etvAll = VUtil.createQuickControlETV(qcs,true);
         etvAll.setData(prefAllSelected,R.drawable.select_all, R.drawable.select_all2)
                 .setNameAndId(R.id.stat_mi_all)
                 .setOnClickListener(new SelectOCL(visibleEntries, true));
-        ExtendedTextView etvNone = ControlView.createQuickControlETV(qcs);
+        ExtendedTextView etvNone = VUtil.createQuickControlETV(qcs,true);
         etvNone.setData(prefNoneSelected,R.drawable.deselect_all,R.drawable.deselect_all2)
                 .setNameAndId(R.id.none)
                 .setOnClickListener(new SelectOCL(visibleEntries, false));
@@ -161,31 +161,31 @@ public class TrackStatisticActivity extends AppCompatActivity {
                 }
             }
         });
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefEditAllowed,R.drawable.edit,R.drawable.edit2)
                 .setNameAndId(R.id.stat_mi_edit)
                 .setOnClickListener(createEditOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefNoneSelected,R.drawable.show,R.drawable.show2)
                 .setNameAndId(R.id.stat_mi_show)
                 .setOnClickListener(createShowOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefMarkerAllowed,R.drawable.mtlr_2,R.drawable.mtlr)
                 .setNameAndId(R.id.stat_mi_marker)
                 .setOnClickListener(createMarkerOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefShareAllowed,R.drawable.share2,R.drawable.share)
                 .setNameAndId(R.id.stat_mi_share)
                 .setOnClickListener(createShareOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefNoneModified,R.drawable.save,R.drawable.save2)
                 .setNameAndId(R.id.stat_mi_save)
                 .setOnClickListener(createSaveOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefDeleteAllowed,R.drawable.delete2,R.drawable.delete)
                 .setNameAndId(R.id.stat_mi_delete)
                 .setOnClickListener(createDeleteOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(R.drawable.back)
                 .setNameAndId(R.id.stat_mi_back)
                 .setOnClickListener(createBackOCL());

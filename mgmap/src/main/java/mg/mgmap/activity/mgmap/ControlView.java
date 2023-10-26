@@ -52,6 +52,7 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
+import mg.mgmap.generic.view.VUtil;
 
 /**
  * The control view is the parent container view object. So it is the parent for
@@ -407,51 +408,7 @@ public class ControlView extends RelativeLayout {
     // ********* Quick controls related stuff                                                 **********
     // *************************************************************************************************
 
-    public static ExtendedTextView createQuickControlETV(ViewGroup parent) {
-        Context context = parent.getContext();
-        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(36));
-        parent.addView(etv);
-
-        TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
-        int margin = dp(1.5f);
-        params.setMargins(margin,margin,margin,margin);
-        params.weight = 20;
-        etv.setLayoutParams(params);
-
-        etv.setPadding(0, dp(4),0, dp(4));
-        etv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
-        etv.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-            if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
-                int paddingHorizontal = Math.max((right-left - etv.getDrawableSize()) / 2, 0);
-                etv.setPadding(paddingHorizontal,etv.getPaddingTop(),paddingHorizontal,etv.getPaddingBottom());
-            }
-        });
-        return etv;
-    }
-
-    public static ExtendedTextView createControlETV(ViewGroup parent) {
-        Context context = parent.getContext();
-        ExtendedTextView etv = new ExtendedTextView(context);
-        parent.addView(etv, 0);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-        int margin = dp(2f);
-        params.setMargins(margin,margin,margin,margin);
-        etv.setLayoutParams(params);
-        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
-        etv.setTextColor(CC.getColor(R.color.WHITE));
-
-        etv.setPadding(dp(4), dp(4),dp(4), dp(4));
-        etv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
-        return etv;
-    }
-
-
-    public static TableRow createRow(Context context){
-        TableRow tableRow = new TableRow(context);
-        tableRow.setLayoutParams(new TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        return tableRow;
-    }
+    // moved to VUtil, since it is also used in other activities
 
 
     // *************************************************************************************************
@@ -518,7 +475,7 @@ public class ControlView extends RelativeLayout {
     public TextView createHelpText3(ViewGroup parent){
         TextView tv = new TextView(parent.getContext());
         TableRow.LayoutParams lp_tv3 = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp_tv3.height=dp(48);
+        lp_tv3.height= VUtil.QC_HEIGHT * 2;
         tv.setLayoutParams(lp_tv3);
         tv.setText(" ");
         parent.addView(tv);

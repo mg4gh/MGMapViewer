@@ -62,6 +62,7 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.hints.HintShareReceived;
 import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
+import mg.mgmap.generic.view.VUtil;
 
 
 public class FileManagerActivity extends AppCompatActivity {
@@ -135,7 +136,7 @@ public class FileManagerActivity extends AppCompatActivity {
             File dir = fPwd;
             while ((dir!=null) && !dir.equals(fAppPwd.getParentFile())){
                 final File fDir = dir;
-                ExtendedTextView etv = ControlView.createControlETV(headline);
+                ExtendedTextView etv = VUtil.createControlETV(headline);
                 etv.setId(View.generateViewId());
                 etv.setText(dir.getName());
                 etv.setOnClickListener(v -> prefPwd.setValue(fDir.getAbsolutePath()));
@@ -179,7 +180,7 @@ public class FileManagerActivity extends AppCompatActivity {
 
         LinearLayout headUp = findViewById(R.id.fileMgrHeadUp);
 
-        ControlView.createQuickControlETV(headUp)
+        VUtil.createQuickControlETV(headUp, true)
                 .setData(R.drawable.file_mgr_up)
                 .setNameAndId(R.id.fileMgr_up)
                 .setOnClickListener(v -> {
@@ -192,38 +193,38 @@ public class FileManagerActivity extends AppCompatActivity {
 
 
         ViewGroup qcs = findViewById(R.id.ts_qc);
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(R.drawable.file_mgr_dir)
                 .setNameAndId(R.id.fileMgr_mi_dir_add)
                 .setOnClickListener(createAddDirOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(R.drawable.file_mgr_file)
                 .setNameAndId(R.id.fileMgr_mi_file_add)
                 .setOnClickListener(createAddFileOCL());
 
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefEditEnabled,R.drawable.edit,R.drawable.edit2)
                 .setNameAndId(R.id.fileMgr_mi_edit)
                 .setOnClickListener(createEditOCL());
 
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefOpenEnabled,R.drawable.show2,R.drawable.show)
                 .setNameAndId(R.id.fileMgr_mi_show)
                 .setOnClickListener(createOpenOCL());
 
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefShareEnabled,R.drawable.share2,R.drawable.share)
                 .setNameAndId(R.id.stat_mi_share)
                 .setOnClickListener(createShareOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefSaveEnabled,R.drawable.save2,R.drawable.save)
                 .setNameAndId(R.id.stat_mi_save)
                 .setOnClickListener(createSaveOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefDeleteEnabled,R.drawable.delete2,R.drawable.delete)
                 .setNameAndId(R.id.stat_mi_delete)
                 .setOnClickListener(createDeleteOCL());
-        ControlView.createQuickControlETV(qcs)
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(R.drawable.back)
                 .setNameAndId(R.id.stat_mi_back)
                 .setOnClickListener(createBackOCL());

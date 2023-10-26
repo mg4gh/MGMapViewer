@@ -39,6 +39,7 @@ import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
+import mg.mgmap.generic.view.VUtil;
 
 public class ControlComposer {
 
@@ -100,23 +101,30 @@ public class ControlComposer {
         Pref<Boolean> prefRoutingHints = activity.getPrefCache().get(R.string.FSRouting_qc_RoutingHint, false);
         Pref<Integer> prefQcs = activity.getPrefCache().get(R.string.FSControl_qc_selector, 0);
 
-        ViewGroup[] qcss = new ViewGroup[8];
+
+        ViewGroup[] qcss = new ViewGroup[8]; // menu group + 7 menu item groups
+
         ArrayList<Observer> gos = new ArrayList<>();
         for (int idx=0; idx<qcss.length; idx++){
-            qcss[idx] = ControlView.createRow(coView.getContext());
+            qcss[idx] = VUtil.createQCRow(coView.getContext());
             final int iidx = idx;
-            gos.add((e) -> prefQcs.setValue(iidx));
+            // if menu qc is pressed, then inflate - except this is already inflated, then deflate
+            gos.add((e) -> prefQcs.setValue( (prefQcs.getValue()== iidx)?0:iidx ));
+            // menus are plced in base3 while menu items are placed in base2
+            ViewGroup qcsParent = activity.findViewById((idx==0)?R.id.base3:R.id.base2);
+            qcsParent.addView(qcss[idx]);
+            qcss[idx].setVisibility(View.INVISIBLE);
         }
         activity.getFS(FSControl.class).initQcss(qcss);
 
         createQC(activity, FSControl.class,qcss[0],"group_task",gos.get(1)).setId(R.id.menu_task);
         createQC(activity, FSSearch.class,qcss[0],"group_search",gos.get(2)).setId(R.id.menu_search);
-        ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false))
+        VUtil.createQuickControlETV(qcss[0],false).setPrAction(new Pref<>(false))
                 .setData(prefEditMarkerTrack,prefRoutingHints,R.drawable.group_marker1, R.drawable.group_marker2, R.drawable.group_marker3, R.drawable.group_marker4)
                 .setName("group_marker").addActionObserver(gos.get(3)).setId(R.id.menu_marker);
         createQC(activity, FSBB.class,qcss[0],"group_bbox",gos.get(4)).setId(R.id.menu_bb);
         createQC(activity, FSPosition.class,qcss[0],"group_record",gos.get(5)).setId(R.id.menu_gps);
-        ControlView.createQuickControlETV(qcss[0]).setPrAction(new Pref<>(false)).setData(R.drawable.group_hide)
+        VUtil.createQuickControlETV(qcss[0],false).setPrAction(new Pref<>(false)).setData(R.drawable.group_hide)
                 .setName("group_showHide").addActionObserver(gos.get(6)).setId(R.id.menu_show_hide);
         createQC(activity, FSControl.class,qcss[0],"group_multi",gos.get(7)).setId(R.id.menu_multi);
 
@@ -182,7 +190,7 @@ public class ControlComposer {
         return createQC(activity,clazz,viewGroup,info,null);
     }
     private ExtendedTextView createQC(MGMapActivity activity, Class<? extends FeatureService> clazz, ViewGroup viewGroup, String info, Observer grObserver){
-        return activity.getFS(clazz).initQuickControl(ControlView.createQuickControlETV(viewGroup), info).addActionObserver(grObserver);
+        return activity.getFS(clazz).initQuickControl(VUtil.createQuickControlETV(viewGroup,false), info).addActionObserver(grObserver);
     }
 
     public void composeHelpControls(MGMapActivity activity, ControlView coView) {

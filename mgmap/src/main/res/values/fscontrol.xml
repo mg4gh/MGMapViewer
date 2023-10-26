@@ -18,4 +18,7 @@
     <string name="FSControl_qcHelp_help">Provide this help</string>
     <string name="FSControl_qcFileMgr_help">Trigger File Manager Activity</string>
 
+    <string name="FSControl_pref_menu_one_line_key">FSControl.menuOneLine</string>
+    <string name="FSControl_pref_menu_one_line_title">Menu in one line</string>
+    <string name="FSControl_pref_menu_one_line_desc">Show menus and menu items in the same line (default is two lines)</string>
 </resources>

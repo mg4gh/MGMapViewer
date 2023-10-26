@@ -1,3 +1,4 @@
+- new Feature: optional two line menu
 - fix Crash on recreate MGMapActivity while search is on
 - new Feature: File Manager (to open/share/delete Files)
 - new versions of Mapsforge, zip4j
