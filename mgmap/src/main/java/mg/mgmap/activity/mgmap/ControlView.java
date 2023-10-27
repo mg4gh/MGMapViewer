@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.DisplayModel;
 
 import java.lang.invoke.MethodHandles;
@@ -79,8 +78,6 @@ public class ControlView extends RelativeLayout {
     ArrayList<ViewGroup> dashboardEntries = new ArrayList<>();
     /** Parent of the dashboard entries. */
     ViewGroup dashboard;
-    /** Reference to the MapView object - some controls change properties of the mapView */
-    MapView mapView = null;
 
 
     /** parent object for status line */
@@ -124,7 +121,6 @@ public class ControlView extends RelativeLayout {
             this.application = application;
             this.activity = activity;
             ControlComposer controlComposer = new ControlComposer();
-            mapView = activity.getMapsforgeMapView();
             prepareEnlargeControl();
 
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
@@ -167,8 +163,8 @@ public class ControlView extends RelativeLayout {
             params.setMargins(0, top,0,bottom);
             view.setLayoutParams(params);
         }
-        mapView.getMapScaleBar().setMarginVertical(bottom + VUtil.QC_HEIGHT*2);
-        mapView.getMapScaleBar().redrawScaleBar();
+        getActivity().getMapViewUtility().setScaleBarVMargin(bottom + dp(VUtil.QC_HEIGHT_DP*1.5f));
+        getActivity().getMapViewUtility().setScaleBarColor((0xFF808080));
         activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle();
     }
 

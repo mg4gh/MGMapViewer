@@ -373,12 +373,13 @@ public class FSControl extends FeatureService {
                     rlp.setMargins(VUtil.getX4QC(totalWidth,j,max)+hMargin,vMargin,hMargin,vMargin);
                     view.setLayoutParams(rlp);
                 }
-                if (idx > 0){
+                if (idx > 0){ // show submenu
                     for (int i=0; i<qcss[0].getChildCount(); i++){
                         if (prefMenuOneLine.getValue()) {
                             // hide menus, if just one line
                             qcss[0].getChildAt(i).setVisibility(View.INVISIBLE);
                         } else { // two Line
+                            getMapViewUtility().setScaleBarVisibility(false);
                             if ((i + 1) != idx) {
                                 // enlight (not pressed) menus
                                 qcss[0].getChildAt(i).setBackground(qcLightBackground);
@@ -415,6 +416,7 @@ public class FSControl extends FeatureService {
             activity.runOnUiThread(() -> {
                 // hide menu item group
                 qcs.setVisibility(View.INVISIBLE);
+                getMapViewUtility().setScaleBarVisibility(true);
 
                 for (int i=0; i<qcss[0].getChildCount(); i++){
                     // reset intensity and visibility of menus

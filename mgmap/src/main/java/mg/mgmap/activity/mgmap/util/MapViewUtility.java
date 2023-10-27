@@ -24,6 +24,7 @@ import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
@@ -139,5 +140,21 @@ public class MapViewUtility {
         double lon = MercatorProjection.pixelXToLongitude(MercatorProjection.longitudeToPixelX(mapViewPosition.getCenter().getLongitude(), mapSize) - dimension.width / 2.0 + p.x - loc[0], mapSize);
         double lat = MercatorProjection.pixelYToLatitude(MercatorProjection.latitudeToPixelY(mapViewPosition.getCenter().getLatitude(), mapSize) - dimension.height / 2.0 + p.y - loc[1], mapSize);
         return new PointModelImpl(lat, lon);
+    }
+
+    public void setScaleBarVMargin(int vMargin){
+        mapView.getMapScaleBar().setMarginVertical(vMargin);
+        mapView.getMapScaleBar().redrawScaleBar();
+    }
+    public void setScaleBarColor(int color){
+        if (mapView.getMapScaleBar() instanceof DefaultMapScaleBar) {
+            DefaultMapScaleBar mapScaleBar = (DefaultMapScaleBar) mapView.getMapScaleBar();
+            mapScaleBar.setColor(color);
+            mapView.getMapScaleBar().redrawScaleBar();
+        }
+    }
+    public void setScaleBarVisibility(boolean visibility){
+        mapView.getMapScaleBar().setVisible(visibility);
+        mapView.invalidate();
     }
 }
