@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -503,9 +504,12 @@ public class FileManagerActivity extends AppCompatActivity {
                     etContent.requestFocus();
                     KeyboardUtil.showKeyboard(etContent);
                 });
+                etContent.setBackgroundColor(0x00000000);
+                etContent.setInputType(etContent.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
                 final HorizontalScrollView hsv = new HorizontalScrollView(this);
                 hsv.addView(etContent);
+                hsv.setMinimumHeight(VUtil.dp(250));
                 final ScrollView svEditText = new ScrollView(this);
                 svEditText.addView(hsv);
                 LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, VUtil.dp(250));
@@ -619,7 +623,7 @@ public class FileManagerActivity extends AppCompatActivity {
 //                String msg = getNames(trackLogs, false).toString();
                 DialogView dialogView = this.findViewById(R.id.dialog_parent);
                 dialogView.lock(() -> dialogView
-                        .setTitle(getResources().getString(R.string.ctx_stat_del_track))
+                        .setTitle("Delete")
                         .setMessage(msg)
                         .setPositive("OK", evt -> {
                             mgLog.i("confirm delete for list \""+msg+"\"");
