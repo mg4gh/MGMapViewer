@@ -13,7 +13,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceDialogFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroupAdapter;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.invoke.MethodHandles;
@@ -69,19 +68,14 @@ public class PreferenceUtil {
             if (ra instanceof PreferenceGroupAdapter) {
                 PreferenceGroupAdapter pga = (PreferenceGroupAdapter) ra;
                 @SuppressLint("RestrictedApi") int pIdx = pga.getPreferenceAdapterPosition(key);
-
-                RecyclerView.LayoutManager rlm = rv.getLayoutManager();
-                if (rlm instanceof LinearLayoutManager) {
-                    LinearLayoutManager llm = (LinearLayoutManager) rlm;
-
-                    View v = llm.getChildAt(pIdx);
-                    if (v!=null){
-                        int[] loc1 = new int[2];
-                        v.getLocationOnScreen(loc1);
-                        Point pt = new Point(loc1[0] + v.getWidth() / 2, loc1[1] + v.getHeight() / 2 );
-                        mgLog.d(pt);
-                        return pt;
-                    }
+                RecyclerView.ViewHolder vh = rv.findViewHolderForAdapterPosition(pIdx);
+                if (vh != null){
+                    View v = vh.itemView;
+                    int[] loc1 = new int[2];
+                    v.getLocationOnScreen(loc1);
+                    Point pt = new Point(loc1[0] + v.getWidth() / 2, loc1[1] + v.getHeight() / 2 );
+                    mgLog.d(pt);
+                    return pt;
                 }
             }
         }

@@ -83,8 +83,10 @@ public class HelpTests extends BaseTestCase {
         addRegex(".*context=MGMapActivity key=FSControl.qc_selector value=0.*");
         animateToViewAndClick(R.id.menu_search);
         Point p = animateToViewAndClick(R.id.mi_search_empty2);
-        addRegex(".*onClick menu_gps.*"); // next click hits marker menu - this proves that previous click on R.id.mi_multi_empty1 directly closed the menu_multi
-        animateClick(p);
+        addRegex(".*onClick menu_gps.*"); // next click hits gps menu - this proves that previous click on R.id.mi_search_empty2 directly closed the menu_search
+        Point pGps = getClickPos(R.id.menu_gps);
+        animateTo(pGps, 100);
+        animateClick(pGps);
         SystemClock.sleep(1000);
         mgLog.i("finished");
     }

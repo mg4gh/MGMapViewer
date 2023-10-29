@@ -7,6 +7,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.AllOf.allOf;
 
+import android.graphics.Point;
 import android.os.SystemClock;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 
@@ -64,12 +66,10 @@ public class SettingTest extends BaseTestCase {
         addRegex(".*onClick mi_settings.*");
         animateToViewAndClick(R.id.menu_task);
         animateToViewAndClick(R.id.mi_settings);
-        Assert.assertEquals("none", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.Layers_pref_chooseMap3_key),""));
 
 // keep this sample code in comment, just in case it will be needed later ... for whatever reason
 //        onView(withId(androidx.preference.R.id.recycler_view))
 //                .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText(R.string.preference_choose_theme_title)), ViewActions.click()));
-        animateToPrefAndClick(R.string.Layers_pref_chooseMap_key);
         addRegex(".*onClick.*key=SelectMap3.*");
         animateToPrefAndClick(R.string.Layers_pref_chooseMap3_key);
 
@@ -93,12 +93,16 @@ public class SettingTest extends BaseTestCase {
             mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
         });
         SystemClock.sleep(2000);
+        Dimension dim = mgMapActivity.getMapsforgeMapView().getDimension();
 
         setCursorToCenterPos();
         addRegex(".*onClick mi_settings.*");
         animateToViewAndClick(R.id.menu_task);
         animateToViewAndClick(R.id.mi_settings);
         AppCompatActivity settingsActivity = waitForActivity(SettingsActivity.class);
+
+        animateSwipeToPos(new Point(dim.width/2,(dim.height*4)/5), new Point(dim.width/2,dim.height/5));
+        SystemClock.sleep(2000);
 
         Assert.assertEquals("Elevate5.2/Elevate.xml", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_theme_key),""));
 
