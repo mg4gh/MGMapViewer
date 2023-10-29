@@ -15,6 +15,7 @@
 package mg.mgmap.activity.filemgr;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -26,11 +27,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.text.InputFilter;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +42,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
@@ -266,7 +271,9 @@ public class FileManagerActivity extends AppCompatActivity {
                     shareUris.addAll(intentUris);
                 }
             }
-            application.getHintUtil().showHint( new HintShareReceived(this, shareUris.size()) );
+            if (shareUris.size() > 0){
+                application.getHintUtil().showHint( new HintShareReceived(this, shareUris.size()) );
+            }
 
         }
     }
@@ -436,21 +443,93 @@ public class FileManagerActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_VIEW );
         Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
 //                    intent.setDataAndType(uri,"*/*");
-        intent.setData(uri);
+        if (file.getName().endsWith(".gpx")){
+            intent.setDataAndType(uri,"text/gpx");
+        } else if (file.getName().endsWith(".xml")){
+            intent.setDataAndType(uri,"text/xml");
+        } else if (file.getName().endsWith(".json")){
+            intent.setDataAndType(uri,"text/json");
+        } else if (file.getName().endsWith(".properties")){
+            intent.setDataAndType(uri,"text/properties");
+        } else if (file.getName().endsWith(".txt")){
+            intent.setDataAndType(uri,"text/txt");
+        } else if (file.getName().endsWith(".cfg")){
+            intent.setDataAndType(uri,"text/cfg");
+        } else {
+            intent.setData(uri);
+        }
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 | Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
         );
-        startActivity(intent);
-        mgLog.d("intent action="+intent.getAction());
-        mgLog.d("intent categories="+intent.getCategories());
-        mgLog.d("intent scheme="+intent.getScheme());
-        mgLog.d("intent data="+intent.getData());
-        mgLog.d("intent type="+intent.getType());
-        mgLog.d("intent flags="+ Integer.toHexString( intent.getFlags() ));
-    }
 
+        boolean tinyEditorUsable = ((intent.getType()!=null) && (intent.getType().startsWith("text")) && (file.length() < 10000));
+        boolean tryTinyEditor = tinyEditorUsable && prefCache.get(R.string.preferences_fileMgr_preferIntEditor_key, true).getValue();
+
+        if (!tryTinyEditor){
+            mgLog.d("intent action="+intent.getAction());
+            mgLog.d("intent categories="+intent.getCategories());
+            mgLog.d("intent scheme="+intent.getScheme());
+            mgLog.d("intent data="+intent.getData());
+            mgLog.d("intent type="+intent.getType());
+            mgLog.d("intent flags="+ Integer.toHexString( intent.getFlags() ));
+            mgLog.i(intent);
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                mgLog.e(e.getMessage());
+                tryTinyEditor = tinyEditorUsable;
+            }
+        }
+
+        if (tryTinyEditor){
+            try (FileInputStream fis = new FileInputStream(file)){
+                byte[] buf = new byte[fis.available()];
+                int length = fis.read(buf);
+                String oldString = new String(buf,0,length);
+                String editTitle = "MGMapViewer tiny editor";
+                String editMessage = "Edit "+file.getName();
+
+                mgLog.i("editTitle="+editTitle+" oldString="+oldString);
+                final EditText etContent = new EditText(this);
+                etContent.setGravity(Gravity.TOP | Gravity.START);
+
+                final HorizontalScrollView hsv = new HorizontalScrollView(this);
+                hsv.addView(etContent);
+                final ScrollView svEditText = new ScrollView(this);
+                svEditText.addView(hsv);
+                svEditText.setHorizontalScrollBarEnabled(true);
+                LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, VUtil.dp(250));
+                svEditText.setLayoutParams(llParams);
+                svEditText.setBackgroundColor(0xFFFFFFFF);
+                etContent.setBackgroundColor(0xFFFFFFFF);
+
+                etContent.setText(oldString);
+                etContent.requestFocus();
+
+                DialogView dialogView = this.findViewById(R.id.dialog_parent);
+                dialogView.lock(() -> dialogView
+                        .setTitle(editTitle)
+                        .setMessage(editMessage)
+                        .setContentView(svEditText)
+                        .setPositive("Save", evt -> {
+                            String newString = etContent.getText().toString();
+                            mgLog.i("editTitle="+editTitle+" newString="+newString);
+                            try (FileOutputStream fos = new FileOutputStream(file)){
+                                fos.write(newString.getBytes());
+                            } catch (IOException e){
+                                mgLog.e(e);
+                            }
+                        })
+                        .setNegative("Cancel", null)
+                        .show());
+
+            } catch (IOException e){
+                mgLog.e(e);
+            }
+        } // tryTinyEditor
+    }
 
     private View.OnClickListener createShareOCL(){
         return v -> {

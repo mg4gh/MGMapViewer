@@ -102,6 +102,11 @@
     <string name="preferences_gnss_fused_title">Used google fused location provider</string>
     <string name="preferences_gnss_fused_desc">Use the google fused location provider instead of the pure GNSS location provider</string>
 
+    <string name="preferences_cat_fileMgr_title">File manager settings</string>
+    <string name="preferences_fileMgr_preferIntEditor_key">FileMgr.preferInternalEditor</string>
+    <string name="preferences_fileMgr_preferIntEditor_title">Prefer internal editor</string>
+    <string name="preferences_fileMgr_preferIntEditor_desc">Prefer internal tiny editor to edit small Files.</string>
+
     <string name="preferences_doc_main_key">DocMain</string>
     <string name="preferences_doc_main_title">Documentation</string>
     <string name="preferences_doc_main_desc">Go to the github.io main documentation page.</string>

@@ -136,7 +136,7 @@ public class DialogView extends RelativeLayout {
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
         tv.setTypeface(null, Typeface.BOLD);
         tv.setText(title);
-        tv.setPadding(defaultPadding,defaultPadding,defaultPadding,defaultPadding);
+        tv.setPadding(defaultPadding,defaultPadding/2,defaultPadding,defaultPadding/2);
         tv.setGravity(Gravity.START);
         return tv;
     }
@@ -149,7 +149,7 @@ public class DialogView extends RelativeLayout {
         TextView tv = new TextView(getContext());
         tv.setLayoutParams(new LinearLayout.LayoutParams(-2, -2));
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        tv.setPadding(defaultPadding,defaultPadding,defaultPadding,defaultPadding);
+        tv.setPadding(defaultPadding,defaultPadding/2,defaultPadding,defaultPadding/2);
         tv.setText(text);
         this.messageView = tv;
         return this;
@@ -188,7 +188,7 @@ public class DialogView extends RelativeLayout {
     protected ExtendedTextView createButton(String text, int viewId, String logName, Observer observer){
         ExtendedTextView etv = new ExtendedTextView(getContext());
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-        buttonParams.setMargins(ControlView.dp(5),ControlView.dp(5),ControlView.dp(5),ControlView.dp(5));
+        buttonParams.setMargins(ControlView.dp(5),0,ControlView.dp(5),ControlView.dp(5));
         etv.setLayoutParams(buttonParams);
         etv.setPadding(defaultPadding*2,defaultPadding,defaultPadding*2,defaultPadding);
         etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
@@ -209,13 +209,13 @@ public class DialogView extends RelativeLayout {
     public DialogView show(){
         LinearLayout llDialog = new LinearLayout(getContext());
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(ControlView.dp(20),ControlView.dp(20),ControlView.dp(20),ControlView.dp(20));
+        params.setMargins(defaultPadding*2,defaultPadding,defaultPadding*2,defaultPadding);
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
         llDialog.setLayoutParams(params);
 
         llDialog.setOrientation(LinearLayout.VERTICAL);
-        llDialog.setPadding(defaultPadding,defaultPadding,defaultPadding,defaultPadding);
-        llDialog.setBackgroundColor(0xFFFFFFFF);
+        llDialog.setPadding(defaultPadding,defaultPadding/2,defaultPadding,defaultPadding/2);
+        llDialog.setBackgroundColor(0xFFF8F8F8);
 
         llDialog.addView(createTitleView());
         if (messageView != null){

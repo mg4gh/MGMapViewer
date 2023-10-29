@@ -118,6 +118,20 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:title="@string/preferences_cat_fileMgr_title"
+        app:iconSpaceReserved="false"
+        >
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="@string/preferences_fileMgr_preferIntEditor_key"
+            app:summary="@string/preferences_fileMgr_preferIntEditor_desc"
+            app:title="@string/preferences_fileMgr_preferIntEditor_title"
+            app:iconSpaceReserved="false"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:key="@string/preferences_developer_settings_key"
         app:title="@string/preferences_cat_dev_title"
         app:iconSpaceReserved="false"
