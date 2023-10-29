@@ -18,27 +18,61 @@ import android.os.Bundle;
 
 import androidx.preference.Preference;
 
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import mg.mgmap.BuildConfig;
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.MGMapLayerFactory;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.PrefCache;
+import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
 
 public class MainPreferenceScreen extends MGPreferenceScreen {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
         setPreferencesFromResource(R.xml.main_preferences, rootKey);
+
+        try {
+            MGMapApplication application = (MGMapApplication) requireActivity().getApplication();
+            PrefCache prefCache = application.getPrefCache();
+            List<String> mapKeys = MGMapLayerFactory.getMapLayerKeys(getContext()).stream().map(key->prefCache.get(key,"").getValue()).collect(Collectors.toList());
+            application.getHintUtil().showHint( new HintMapLayerAssignment(getActivity(), mapKeys) );
+        } catch (Exception e) {
+            mgLog.e(e);
+        }
+
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onResume() {
         super.onResume();
         setBrowseIntent(R.string.preferences_doc_main_key, R.string.url_doc_main);
 
-        Preference preference = findPreference(getResources().getString(R.string.preferences_version_key));
-        assert preference != null;
-        InfoPreferenceScreen.setBuildNumberSummary(preference);
+        Preference prefHeadline = findPreference(getResources().getString(R.string.preferences_headline_version_key));
+        assert prefHeadline != null;
+        prefHeadline.setTitle("MGMapViewer "+ BuildConfig.VERSION_NAME);
 
+        Preference prefVersion = findPreference(getResources().getString(R.string.preferences_info_version_key));
+        assert prefVersion != null;
+        InfoPreferenceScreen.setBuildNumberSummary(prefVersion);
+
+        boolean developer = MGMapApplication.getByContext(getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
+        int[] develeperPrefIds = new int[]{R.string.FSSearch_pref_SearchDetails_key,R.string.preferences_alarm_ps_key,R.string.FSGrad_pref_WayDetails_key};
+        for (int prefId : develeperPrefIds){
+            Preference preference = findPreference(getResources().getString(prefId));
+            if (preference != null){
+                preference.setVisible(developer);
+            }
+        }
     }
 
 }

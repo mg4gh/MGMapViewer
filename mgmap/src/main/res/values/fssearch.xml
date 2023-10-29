@@ -18,6 +18,6 @@
     <string name="FSRecording_qcPosBasedSearch_help2">on tap: switch off</string>
 
     <string name="FSSearch_pref_SearchDetails_key">FSSearch.searchDetails</string>
-    <string name="FSSearch_pref_SearchDetails_title">Search details</string>
+    <string name="FSSearch_pref_SearchDetails_title">Search details (developer)</string>
     <string name="FSSearch_pref_SearchDetails_desc">Visualize search details on double click</string>
 </resources>

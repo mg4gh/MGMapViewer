@@ -35,7 +35,6 @@ import mg.mgmap.R;
 import mg.mgmap.activity.theme.ThemeSettings;
 import mg.mgmap.activity.statistic.TrackStatisticActivity;
 import mg.mgmap.activity.settings.DownloadPreferenceScreen;
-import mg.mgmap.activity.settings.FurtherPreferenceScreen;
 import mg.mgmap.activity.settings.MainPreferenceScreen;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.BaseConfig;
@@ -63,7 +62,6 @@ public class FSControl extends FeatureService {
     private final Drawable qcLightBackground;
 
     private final Pref<Boolean> triggerSettings = new Pref<>(false);
-    private final Pref<Boolean> triggerFuSettings = new Pref<>(false);
     private final Pref<Boolean> triggerStatistic = new Pref<>(false);
     private final Pref<Boolean> triggerHeightProfile = new Pref<>(false);
     private final Pref<Boolean> triggerDownload = new Pref<>(false);
@@ -88,7 +86,6 @@ public class FSControl extends FeatureService {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, SettingsActivity.class);
         String prefScreenClass = MainPreferenceScreen.class.getName();
-        if (e.getSource() == triggerFuSettings) prefScreenClass = FurtherPreferenceScreen.class.getName();
         if (e.getSource() == triggerDownload) prefScreenClass = DownloadPreferenceScreen.class.getName();
         intent.putExtra("FSControl.info", prefScreenClass);
         activity.startActivity(intent);
@@ -141,7 +138,6 @@ public class FSControl extends FeatureService {
         triggerHome.addObserver(homeObserver);
         prefQcs.addObserver(refreshObserver);
         triggerSettings.addObserver(settingsPrefObserver);
-        triggerFuSettings.addObserver(settingsPrefObserver);
         triggerDownload.addObserver(settingsPrefObserver);
         triggerStatistic.addObserver(statisticObserver);
         triggerHeightProfile.addObserver(heightProfileObserver);
@@ -206,10 +202,6 @@ public class FSControl extends FeatureService {
             etv.setPrAction(triggerSettings);
             etv.setData(R.drawable.settings);
             etv.setHelp(r(R.string.FSControl_qcSettings_help));
-        } else if ("fuSettings".equals(info)) {
-            etv.setPrAction(triggerFuSettings);
-            etv.setData(R.drawable.settings_fu);
-            etv.setHelp(r(R.string.FSControl_qcFuSettings_help));
         } else if ("home".equals(info)) {
             etv.setPrAction(triggerHome);
             etv.setData(R.drawable.home);

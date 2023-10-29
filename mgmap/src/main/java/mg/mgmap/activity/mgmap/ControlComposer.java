@@ -130,7 +130,7 @@ public class ControlComposer {
 
         createQC(activity, FSControl.class,qcss[1],"help").setId(R.id.mi_task_help);
         createQC(activity, FSControl.class,qcss[1],"settings",gos.get(0)).setId(R.id.mi_settings);
-        createQC(activity, FSControl.class,qcss[1],"fuSettings",gos.get(0)).setId(R.id.mi_fu_settings);
+        createQC(activity, FSControl.class,qcss[1],"fileMgr",gos.get(0)).setId(R.id.mi_fileMgr);
         createQC(activity, FSControl.class,qcss[1],"statistic",gos.get(0)).setId(R.id.mi_statistic);
         createQC(activity, FSControl.class,qcss[1],"heightProfile",gos.get(0)).setId(R.id.mi_height_profile);
         createQC(activity, FSControl.class,qcss[1],"download",gos.get(0)).setId(R.id.mi_download);
@@ -178,7 +178,7 @@ public class ControlComposer {
 
         createQC(activity, FSControl.class,qcss[7],"help").setId(R.id.mi_help_multi);
         createQC(activity, FSControl.class,qcss[7],"exit",gos.get(0)).setId(R.id.mi_exit);
-        createQC(activity, FSControl.class,qcss[7],"fileMgr",gos.get(0)).setId(R.id.mi_fileMgr);
+        createQC(activity, FSControl.class,qcss[7],"empty",gos.get(0)).setId(R.id.mi_multi_empty1);
         createQC(activity, FSControl.class,qcss[7],"fullscreen",gos.get(0)).setId(R.id.mi_fullscreen);
         createQC(activity, FSControl.class,qcss[7],"zoom_in").setId(R.id.mi_zoom_in);
         createQC(activity, FSControl.class,qcss[7],"zoom_out").setId(R.id.mi_zoom_out);

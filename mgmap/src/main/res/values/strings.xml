@@ -55,8 +55,6 @@
 
     <string name="my_rendertheme_menu_key">myrenderthememenu</string>
 
-    <string name="preferences_cat_settings_key">Settings</string>
-    <string name="preferences_cat_actions_key">Actions</string>
     <string name="preferences_cat_info_key">Infos</string>
 
     <string name="preference_theme_changed">PrefThemeChanged</string>
@@ -65,14 +63,13 @@
     <string name="preference_choose_search_key">SelectSearchProvider</string>
     <string name="preference_choose_search_title">Select Search Provider</string>
 
-    <string name="preferences_screen_further_title">Further Settings</string>
-    <string name="preferences_screen_further_desc">Further Mapsforge, Gain/Loss and Developer Settings</string>
-
     <string name="preferences_hints_key">pref_hints_key</string>
     <string name="preferences_hints_title">Hints</string>
     <string name="preferences_hints_desc">Show hints as popup dialog.</string>
 
 
+    <string name="preferences_cat_mapLayer_title">Map layer settings</string>
+    <string name="preferences_cat_search_title">Search settings</string>
     <string name="preferences_cat_disp_title">Display settings</string>
     <string name="preferences_cat_gl_title">Gain/Loss settings</string>
     <string name="preferences_cat_dev_title">Developer settings</string>
@@ -102,20 +99,21 @@
     <string name="preferences_gnss_fused_title">Used google fused location provider</string>
     <string name="preferences_gnss_fused_desc">Use the google fused location provider instead of the pure GNSS location provider</string>
 
+    <string name="preferences_cat_behaviour_title">Behaviour settings</string>
     <string name="preferences_cat_fileMgr_title">File manager settings</string>
     <string name="preferences_fileMgr_preferIntEditor_key">FileMgr.preferInternalEditor</string>
-    <string name="preferences_fileMgr_preferIntEditor_title">Prefer internal editor</string>
+    <string name="preferences_fileMgr_preferIntEditor_title">Editor</string>
     <string name="preferences_fileMgr_preferIntEditor_desc">Prefer internal tiny editor to edit small Files.</string>
 
     <string name="preferences_doc_main_key">DocMain</string>
     <string name="preferences_doc_main_title">Documentation</string>
     <string name="preferences_doc_main_desc">Go to the github.io main documentation page.</string>
 
-    <string name="preferences_version_key">versionKey</string>
-    <string name="preferences_version_title">MGMapViewer Info</string>
-    <string name="preferences_version_desc">Detail version information</string>
+    <string name="preferences_headline_version_key">Pref.headline_versionKey</string>
+    <string name="preferences_info_version_key">versionKey2</string>
+    <string name="preferences_info_version_title">MGMapViewer Info</string>
+    <string name="preferences_info_version_desc">Detail version information</string>
     <string name="preferences_build_number_key">build_number_key</string>
-    <string name="preferences_developer_settings_key">build_number_key</string>
 
 
     <string name="activity_param_key">mg.mgmap.args</string>
@@ -125,7 +123,7 @@
     <string name="unique_work_name">MGMapViewerApp.UniqueWorkName</string>
 
     <string name="preferences_alarm_ps_key">alarm_power_saving_key</string>
-    <string name="preferences_alarm_ps_title">Power saving Alarm</string>
+    <string name="preferences_alarm_ps_title">Power saving Alarm (developer)</string>
     <string name="preferences_alarm_ps_desc">Acoustic alam on potential power saving problem during location service usage. </string>
 
 </resources>

@@ -1,23 +1,40 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        app:title="@string/preferences_cat_settings_key"
+        app:key="@string/preferences_headline_version_key"
+        app:iconSpaceReserved="false"
+        />
+    <PreferenceCategory
+        app:title="@string/preferences_cat_mapLayer_title"
+        app:iconSpaceReserved="false" >
+
+        <mg.mgmap.activity.settings.MapLayerListPreference
+            android:key="@string/Layers_pref_chooseMap1_key"
+            android:title="@string/Layers_pref_chooseMap1_title"
+            app:iconSpaceReserved="false" />
+        <mg.mgmap.activity.settings.MapLayerListPreference
+            android:key="@string/Layers_pref_chooseMap2_key"
+            android:title="@string/Layers_pref_chooseMap2_title"
+            app:iconSpaceReserved="false" />
+        <mg.mgmap.activity.settings.MapLayerListPreference
+            android:key="@string/Layers_pref_chooseMap3_key"
+            android:title="@string/Layers_pref_chooseMap3_title"
+            app:iconSpaceReserved="false" />
+        <mg.mgmap.activity.settings.MapLayerListPreference
+            android:key="@string/Layers_pref_chooseMap4_key"
+            android:title="@string/Layers_pref_chooseMap4_title"
+            app:iconSpaceReserved="false" />
+        <mg.mgmap.activity.settings.MapLayerListPreference
+            android:key="@string/Layers_pref_chooseMap5_key"
+            android:title="@string/Layers_pref_chooseMap5_title"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/preferences_cat_search_title"
         app:iconSpaceReserved="false"
         >
-        <Preference
-            app:key="@string/Layers_pref_chooseMap_key"
-            app:title="@string/Layers_pref_chooseMap_title"
-            app:summary="@string/Layers_pref_chooseMap_summary"
-            app:fragment="mg.mgmap.activity.settings.MapLayersPreferenceScreen"
-            app:iconSpaceReserved="false"
-            />
-
-        <mg.mgmap.activity.settings.ThemeListPreference
-            app:key="@string/preference_choose_theme_key"
-            app:title="@string/preference_choose_theme_title"
-            app:iconSpaceReserved="false"
-            />
 
         <mg.mgmap.activity.settings.SearchProviderListPreference
             app:key="@string/preference_choose_search_key"
@@ -25,28 +42,162 @@
             app:iconSpaceReserved="false"
             />
 
-        <Preference
-            app:title="@string/preferences_screen_further_title"
-            app:summary="@string/preferences_screen_further_desc"
-            app:fragment="mg.mgmap.activity.settings.FurtherPreferenceScreen"
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/FSSearch_pref_SearchDetails_key"
+            app:summary="@string/FSSearch_pref_SearchDetails_desc"
+            app:title="@string/FSSearch_pref_SearchDetails_title"
             app:iconSpaceReserved="false"
             />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="@string/preferences_cat_actions_key"
+        app:title="@string/preferences_cat_disp_title"
         app:iconSpaceReserved="false"
-        app:allowDividerAbove="true"
         >
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="@string/FSControl_pref_menu_one_line_key"
+            app:summary="@string/FSControl_pref_menu_one_line_desc"
+            app:title="@string/FSControl_pref_menu_one_line_title"
+            app:iconSpaceReserved="false"
+            />
+        <EditTextPreference
+            app:defaultValue="-1"
+            app:key="@string/preferences_display_fullscreen_offset_key"
+            app:dialogTitle="@string/preferences_display_fullscreen_offset_title"
+            app:dialogMessage="@string/preferences_display_fullscreen_offset_desc"
+            android:inputType="number"
+            app:summary="@string/preferences_display_fullscreen_offset_desc"
+            app:title="@string/preferences_display_fullscreen_offset_title"
+            app:iconSpaceReserved="false"
+            />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/FSGrad_pref_WayDetails_key"
+            app:summary="@string/FSGrad_pref_WayDetails_desc"
+            app:title="@string/FSGrad_pref_WayDetails_title"
+            app:iconSpaceReserved="false"
+            />
+    </PreferenceCategory>
 
-        <Preference
-            app:title="@string/preferences_screen_download"
-            app:summary="@string/preferences_screen_desc_download"
-            app:fragment="mg.mgmap.activity.settings.DownloadPreferenceScreen"
+
+    <PreferenceCategory
+        app:title="@string/preferences_mapsforge_title"
+        app:iconSpaceReserved="false"
+        >
+        <mg.mgmap.activity.settings.ThemeListPreference
+            app:key="@string/preference_choose_theme_key"
+            app:title="@string/preference_choose_theme_title"
             app:iconSpaceReserved="false"
             />
 
+        <ListPreference
+            app:defaultValue="1.0"
+            app:entries="@array/pref_scale_entries"
+            app:entryValues="@array/pref_scale_values"
+            app:key="@string/preferences_scale_key"
+            app:negativeButtonText="@string/cancelbutton"
+            app:summary="@string/preferences_scale_desc"
+            app:title="@string/preferences_scale"
+            app:iconSpaceReserved="false"
+            />
+        <ListPreference
+            app:defaultValue="metric"
+            app:entries="@array/pref_scalebar_entries"
+            app:entryValues="@array/pref_scalebar_values"
+            app:key="scalebar"
+            app:negativeButtonText="@string/cancelbutton"
+            app:summary="@string/preferences_scalebar_desc"
+            app:title="@string/preferences_scalebar"
+            app:iconSpaceReserved="false"
+            />
+        <ListPreference
+            app:defaultValue="de"
+            app:entries="@array/pref_language_selection_entries"
+            app:entryValues="@array/pref_language_selection_values"
+            app:key="language_selection"
+            app:negativeButtonText="@string/cancelbutton"
+            app:summary="@string/preferences_language_desc"
+            app:title="@string/preferences_language"
+            app:iconSpaceReserved="false"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/preferences_cat_gl_title"
+        app:iconSpaceReserved="false"
+        >
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="@string/FSBB_pref_autoDlHgt_key"
+            app:summary="@string/FSBB_pref_autoDlHgt_desc"
+            app:title="@string/FSBB_pref_autoDlHgt_title"
+            app:iconSpaceReserved="false"
+            />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_hprof_gl_key"
+            app:summary="@string/preferences_hprof_gl_desc"
+            app:title="@string/preferences_hprof_gl_title"
+            app:iconSpaceReserved="false"
+            />
+        <EditTextPreference
+            app:defaultValue="6000"
+            app:key="@string/preferences_pressure_smoothing_gl_key"
+            app:dialogTitle="@string/preferences_pressure_smoothing_gl_title"
+            app:dialogMessage="@string/preferences_pressure_smoothing_gl_desc2"
+            android:inputType="number"
+            app:summary="@string/preferences_pressure_smoothing_gl_desc"
+            app:title="@string/preferences_pressure_smoothing_gl_title"
+            app:iconSpaceReserved="false"
+            />
+        <EditTextPreference
+            app:defaultValue="100"
+            app:key="@string/preferences_height_consistency_check_key"
+            app:dialogTitle="@string/preferences_height_consistency_check_title"
+            app:dialogMessage="@string/preferences_height_consistency_check_desc2"
+            android:inputType="number"
+            app:summary="@string/preferences_height_consistency_check_desc"
+            app:title="@string/preferences_height_consistency_check_title"
+            app:iconSpaceReserved="false"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/preferences_cat_gnss_title"
+        app:iconSpaceReserved="false"
+        >
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/FSPosition_pref_FusedLocationProvider"
+            app:summary="@string/preferences_gnss_fused_desc"
+            app:title="@string/preferences_gnss_fused_title"
+            app:iconSpaceReserved="false"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/preferences_cat_behaviour_title"
+        app:iconSpaceReserved="false"
+        >
+        <SwitchPreference
+            app:defaultValue="true"
+            app:key="@string/preferences_fileMgr_preferIntEditor_key"
+            app:summary="@string/preferences_fileMgr_preferIntEditor_desc"
+            app:title="@string/preferences_fileMgr_preferIntEditor_title"
+            app:iconSpaceReserved="false"
+            />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_alarm_ps_key"
+            app:summary="@string/preferences_alarm_ps_desc"
+            app:title="@string/preferences_alarm_ps_title"
+            app:iconSpaceReserved="false"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -55,6 +206,13 @@
         app:allowDividerAbove="true"
         >
 
+        <Preference
+            app:key="@string/preferences_info_version_key"
+            app:summary="@string/preferences_info_version_desc"
+            app:title="@string/preferences_info_version_title"
+            app:fragment="mg.mgmap.activity.settings.InfoPreferenceScreen"
+            app:iconSpaceReserved="false"
+            />
         <Preference
             app:key="@string/preferences_doc_main_key"
             app:title="@string/preferences_doc_main_title"
@@ -70,13 +228,7 @@
             app:defaultValue="true"
             />
 
-        <Preference
-            app:key="@string/preferences_version_key"
-            app:summary="@string/preferences_version_desc"
-            app:title="@string/preferences_version_title"
-            app:fragment="mg.mgmap.activity.settings.InfoPreferenceScreen"
-            app:iconSpaceReserved="false"
-            />
+
         <Preference
             app:summary=""
             app:title=""

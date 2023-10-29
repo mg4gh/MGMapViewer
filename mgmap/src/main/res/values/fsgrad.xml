@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="FSGrad_pref_WayDetails_key">FSGrad.wayDetails</string>
-    <string name="FSGrad_pref_WayDetails_title">Way details</string>
+    <string name="FSGrad_pref_WayDetails_title">Way details (developer)</string>
     <string name="FSGrad_pref_WayDetails_desc">Visualize way details of a taped way</string>
 
 </resources>

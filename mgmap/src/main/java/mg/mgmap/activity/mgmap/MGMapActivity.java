@@ -57,7 +57,6 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.activity.settings.MainPreferenceScreen;
-import mg.mgmap.activity.settings.MapLayersPreferenceScreen;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
@@ -480,7 +479,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
                             if (success > 0){
                                 Intent intent = new Intent(MGMapActivity.this, SettingsActivity.class);
-                                intent.putExtra("FSControl.info", MapLayersPreferenceScreen.class.getName());
+                                intent.putExtra("FSControl.info", MainPreferenceScreen.class.getName());
                                 startActivity(intent);
                             }
                         }

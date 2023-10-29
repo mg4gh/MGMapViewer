@@ -466,9 +466,10 @@ public class ControlView extends RelativeLayout {
 
     public TextView createHelpText3(ViewGroup parent){
         TextView tv = new TextView(parent.getContext());
-        TableRow.LayoutParams lp_tv3 = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp_tv3.height= VUtil.QC_HEIGHT * 2;
-        tv.setLayoutParams(lp_tv3);
+        Pref<Boolean> prefMenuOneLine = activity.getPrefCache().get(R.string.FSControl_pref_menu_one_line_key, false);
+        prefMenuOneLine.addObserver(evt ->
+                tv.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (prefMenuOneLine.getValue()?1:2) * VUtil.QC_HEIGHT)) );
+        prefMenuOneLine.changed();
         tv.setText(" ");
         parent.addView(tv);
         return tv;
