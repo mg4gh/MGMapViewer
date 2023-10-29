@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.text.InputFilter;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -59,6 +60,7 @@ import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.FullscreenUtil;
+import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
@@ -439,6 +441,7 @@ public class FileManagerActivity extends AppCompatActivity {
         };
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void openFile(File file){
         Intent intent = new Intent(Intent.ACTION_VIEW );
         Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
@@ -494,19 +497,31 @@ public class FileManagerActivity extends AppCompatActivity {
                 mgLog.i("editTitle="+editTitle+" oldString="+oldString);
                 final EditText etContent = new EditText(this);
                 etContent.setGravity(Gravity.TOP | Gravity.START);
+                etContent.setOnClickListener(v -> {
+                    mgLog.i("etContent clicked");
+                    etContent.setFocusable(true);
+                    etContent.requestFocus();
+                    KeyboardUtil.showKeyboard(etContent);
+                });
 
                 final HorizontalScrollView hsv = new HorizontalScrollView(this);
                 hsv.addView(etContent);
                 final ScrollView svEditText = new ScrollView(this);
                 svEditText.addView(hsv);
-                svEditText.setHorizontalScrollBarEnabled(true);
                 LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, VUtil.dp(250));
                 svEditText.setLayoutParams(llParams);
                 svEditText.setBackgroundColor(0xFFFFFFFF);
-                etContent.setBackgroundColor(0xFFFFFFFF);
-
                 etContent.setText(oldString);
                 etContent.requestFocus();
+
+                View.OnTouchListener mScrollViewTouchListener = (v, event) -> {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        etContent.performClick();
+                    }
+                    return false;
+                };
+                hsv.setOnTouchListener(mScrollViewTouchListener);
+                svEditText.setOnTouchListener(mScrollViewTouchListener);
 
                 DialogView dialogView = this.findViewById(R.id.dialog_parent);
                 dialogView.lock(() -> dialogView
