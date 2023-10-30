@@ -2,6 +2,6 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:key="@string/my_rendertheme_menu_key"
-        android:title="Themes"
+        android:title="Theme settings"
         app:iconSpaceReserved="false" />
 </PreferenceScreen>

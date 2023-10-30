@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -95,7 +96,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     public static class ThemeSettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.mypreferences, rootKey);
+            setPreferencesFromResource(R.xml.theme_preferences, rootKey);
         }
         @NonNull
         @Override
@@ -189,7 +190,9 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
             selection = renderthemeOptions.getLayer(renderthemeOptions.getDefaultValue()).getId();
         }
         // the new Android style is to display information here, not instruction
-        baseLayerPreference.setSummary(renderthemeOptions.getLayer(selection).getTitle(language));
+        baseLayerPreference.setTitle("Select main theme ...");
+        String themeTitle = renderthemeOptions.getLayer(selection).getTitle(language);
+        baseLayerPreference.setSummary(Html.fromHtml("<font color='black'><b><big>" +  themeTitle + "</big></b></font>", 0));
 
         for (XmlRenderThemeStyleLayer overlay : this.renderthemeOptions.getLayer(selection).getOverlays()) {
             CheckBoxPreference checkbox = new CheckBoxPreference(this);
