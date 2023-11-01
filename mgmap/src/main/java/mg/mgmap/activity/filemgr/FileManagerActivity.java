@@ -50,11 +50,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.ControlView;
@@ -324,7 +326,7 @@ public class FileManagerActivity extends AppCompatActivity {
             return true;
         });
         view.getEtvName().setOnClickListener(v -> {
-            if (getSelectedEntries().size() > 0){
+            if (getSelectedEntries(null).size() > 0){
                 model.getSelected().toggle();
             } else if (model.getFile().isDirectory()){
                 prefPwd.setValue(model.getFile().getAbsolutePath());
@@ -342,23 +344,48 @@ public class FileManagerActivity extends AppCompatActivity {
 
 
     private void reworkState(){
-        ArrayList<FileManagerEntryModel> selectedEntries = getSelectedEntries();
+        boolean[] flags = new boolean[8];
+        ArrayList<FileManagerEntryModel> selectedEntries = getSelectedEntries(flags);
 
         prefSelectAllEnabled.setValue(selectedEntries.size() < allEntries.size());
         prefSelectNoneEnabled.setValue(selectedEntries.size() > 0);
         prefEditEnabled.setValue(selectedEntries.size() == 1);
-        prefOpenEnabled.setValue((selectedEntries.size() == 1) && (selectedEntries.get(0).getFile().isFile()));
-        prefShareEnabled.setValue(selectedEntries.size() > 0);
+        prefOpenEnabled.setValue((selectedEntries.size() == 1) && (flags[0]));
+        prefShareEnabled.setValue((selectedEntries.size()) > 0 && (flags[0]));
         prefSaveEnabled.setValue(shareUris.size() > 0);
-        prefDeleteEnabled.setValue(selectedEntries.size() > 0);
+        prefDeleteEnabled.setValue((selectedEntries.size() > 0) && (!flags[2]));
         prefBackEnabled.setValue(true);
     }
 
-    ArrayList<FileManagerEntryModel> getSelectedEntries(){
+    /**
+     * @param flags
+     *          0 - true, if all files
+     *          1 - true, if all directories
+     *          2 - true, contains at least one not empty subdirectory
+     * @return selected entries
+     */
+    ArrayList<FileManagerEntryModel> getSelectedEntries(boolean[] flags){
+        if (flags != null){
+            flags[0] = true;
+            flags[1] = true;
+            flags[2] = false;
+        }
         ArrayList<FileManagerEntryModel> list = new ArrayList<>();
         for (FileManagerEntryModel fileManagerEntryModel : allEntries){
             if (fileManagerEntryModel.isSelected()){
                 list.add(fileManagerEntryModel);
+                if (flags != null){
+                    if (fileManagerEntryModel.getFile().isDirectory()){
+                        flags[0] = false;
+                        try (Stream<Path> subDirEntries = Files.list(fileManagerEntryModel.getFile().toPath())){
+                            flags[2] |= subDirEntries.iterator().hasNext();
+                        } catch (IOException ioException){
+                            mgLog.e(ioException);
+                        }
+                    } else {
+                        flags[1] = false;
+                    }
+                }
             }
         }
         return list;
@@ -375,7 +402,7 @@ public class FileManagerActivity extends AppCompatActivity {
     private View.OnClickListener createEditOCL(){
         return v -> {
             if (prefEditEnabled.getValue()){
-                final ArrayList<FileManagerEntryModel> entries = getSelectedEntries();
+                final ArrayList<FileManagerEntryModel> entries = getSelectedEntries(null);
                 if (entries.size() == 1){
                     File oldFile = entries.get(0).getFile();
                     editFile(oldFile.getParentFile(), oldFile, false);
@@ -432,7 +459,7 @@ public class FileManagerActivity extends AppCompatActivity {
 
     private View.OnClickListener createOpenOCL(){
         return v -> {
-            ArrayList<FileManagerEntryModel> models = getSelectedEntries();
+            ArrayList<FileManagerEntryModel> models = getSelectedEntries(null);
             if (models.size() == 1){
                 File file = models.get(0).getFile();
                 if (!file.isDirectory()){
@@ -553,7 +580,7 @@ public class FileManagerActivity extends AppCompatActivity {
     private View.OnClickListener createShareOCL(){
         return v -> {
             if (prefShareEnabled.getValue()){
-                ArrayList<FileManagerEntryModel> entries = getSelectedEntries();
+                ArrayList<FileManagerEntryModel> entries = getSelectedEntries(null);
                 if (entries.size() > 0){
                     Intent sendIntent;
                     String title = "Share ...";
@@ -618,7 +645,7 @@ public class FileManagerActivity extends AppCompatActivity {
     private View.OnClickListener createDeleteOCL(){
         return v -> {
             if (prefDeleteEnabled.getValue()){
-                ArrayList<FileManagerEntryModel> entries = getSelectedEntries();
+                ArrayList<FileManagerEntryModel> entries = getSelectedEntries(null);
                 String msg = entries.stream().map(e->(e.getFile().getName()+"\n")).collect(Collectors.joining());
 //                String msg = getNames(trackLogs, false).toString();
                 DialogView dialogView = this.findViewById(R.id.dialog_parent);
