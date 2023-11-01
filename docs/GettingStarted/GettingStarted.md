@@ -32,8 +32,8 @@
    <img src="./07_DownloadMap_Cofirm.png" width="200" />&nbsp;
    <img src="./08_DownloadMap_Result.png" width="200" />&nbsp;
 
-5. After the "OK" on the map download results the app opens automatically the map layer assignment screen and the 
-   map layer assignment hint. Read the instruction and follow it. Click on <span style="color:gray">*Select map layer 2*</span> and then select the 
+5. After the "OK" on the map download results the app opens automatically the settings screen with the map layer assignment and the 
+   corresponding hint. Read the instruction and follow it. Click on <span style="color:gray">*Select map layer 2*</span> and then select the 
    <span style="color:gray">*MAPSFORGE: Berlin_oam.osm.map*</span> entry. Now this map is assigned to layer 2. Use the Android
    <span style="color:gray">*Back*</span> button to go back the the main activity.
 
@@ -48,15 +48,6 @@
    <img src="./15_MapBerlin_finished.png" width="200" />&nbsp;
 
    Congratulations! - the first map is visible.
-
-
-7. Power Saving: If you are using track recording on Android&nbsp;10, then it is recommended to switch on the option "Ausgenommen vom Energiesparen" for this app.
-   On a LG device with Android&nbsp;10 you can reach this Option via
-      - "Einstellungen / Akku / Ausgenommen vom Energiesparen" or
-      - "Einstellungen / Apps & Benachrichtigungen / Besonderer Zugang / Ausgenommen vom Energiesparen".
-
-   Otherwise it might happen, that Android is killing the
-   background service and the track recording will only continue after the next usage of the app.
 
 
 <small><small>[Back to Index](../index.md)</small></small>

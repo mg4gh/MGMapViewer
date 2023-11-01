@@ -48,9 +48,9 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Status line](Features/FurtherFeatures/Statusline/status.md): show some state information in the status line
 - [Quick controls](Features/FurtherFeatures/QuickControl/qcs_mgmapactivity.md) of MGMapActivity: these quick controls allow to control most frequently used features
 - [Turning instructions](./Features/FurtherFeatures/RoutingHints/hints.md) basic voice output (currently only german) based on the route calculation
-- [SshSync](Features/FurtherFeatures/SshSync/sshsync.md): synchronize your gpx files with a configured path on a ssh server in your local net.
-- [Software update](Features/FurtherFeatures/SoftwareUpdate/softwareUpdate.md): Update your software
-
+- [SshSync](./Features/FurtherFeatures/SshSync/sshsync.md): synchronize your gpx files with a configured path on a ssh server in your local net.
+- [Software update](./Features/FurtherFeatures/SoftwareUpdate/softwareUpdate.md): Update your software
+- [file manager](./Features/FurtherFeatures/FileManager/filemanager.md): show, edit, share and delete files
 
 ### Developer features
 There [application design document](./more/add.pdf) provides an extensive description documentation. Additionally these pages are available:
@@ -58,7 +58,6 @@ There [application design document](./more/add.pdf) provides an extensive descri
   - based on a mapsforge map 
   - includes the tile border
   - highlights a taped graph segment
-- [approaches](./Features/DeveloperFeatures/Approach/approach.md) of marker points to ways as the basis of routing
 - [developer documentation](./Features/DeveloperFeatures/Developer/developer.md) provides more information for developers.
 
 # Download latest apk

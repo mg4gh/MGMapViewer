@@ -26,7 +26,7 @@ There are different options for the download of the hgt data:
 - From **ESA**
   - Simply go to http://step.esa.int/auxdata/dem/SRTMGL1/ , all files like "N54E014.SRTMGL1.hgt.zip" are available for HTTP download.
 
-Place these downloaded hgt files as they are in the directory "./MGMapViewer/hgt" (do **not** unzip them).
+Place these downloaded hgt files as they are in the directory "MGMapViewer/hgt" (do **not** unzip them).
 
 So this folder might look like this:  
 <img src="./HgtFolder2.jpg" width="400" />

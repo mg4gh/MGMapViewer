@@ -3,16 +3,26 @@
 ## Further Features: quick controls of MGMapActivity (main activity)
 
 The MGMapActivity (main activity) provides seven quick control buttons, where each of them represents a menu button.
-Whenever you tap on of them, the corresponding submenu will be shown, so you will see a set of action buttons instead.
-If you don't use one of them, the buttons switch back after 3 seconds to the normal menu. If you tap on an action button,
-then the corresponding action is executed and the buttons switch also back to the menu. These new quick controls
-allow the full control with single tap actions. All submenus with action buttons provide on the
-left side a help action button. If you tap on this button, you'll get an explanation for all button and what happens, if
-you tap on it.
+this looks like:
 
-While the menu buttons rather represent the current state, the action button express what happens, if you tap them.
-So e.g. the menu for "recording" actions shows a red circle, if GPS is switched on. The action button to toggle this
-behaviour shows a red circle, when the GPS is switched off and you can switch it on with a tap on this button.
+   <img src="./01_menu.png" width="200" />&nbsp;
+
+Whenever you tap on one of them (e.g. menu task <img src="../../../icons/group_task.svg" width="24"/>), the corresponding 
+submenu will be shown, and you will see a set of action buttons. Depending on the display setting "Menu in one line" 
+(default false) you get the menu items in the line above or in the same line:
+
+   <img src="./02_menu_items.png" width="200" />&nbsp;
+   <img src="./03_menu_items.png" width="200" />&nbsp;
+
+If you don't use any menu item, the buttons switch back after 3 seconds to the normal menu. If you tap on a menu item,
+then the corresponding action is executed and the buttons switch also back to the menu. 
+All submenus with menu items provide on the
+left side a help button. If you tap on this button, you'll get an explanation for all button and what happens, if
+you tap on it. In this case the menu items and the help stay visible until you press further butons.
+
+While the menu buttons represent the current state, the menu item button express what happens, if you tap them.
+So e.g. the menu for "recording" actions shows a red circle, if GPS is switched on. If you open this menu, the track
+recording menu item provides a white circle, since you switch recording off, if you press this menu item.
 
 #### Main menu quick controls
 
@@ -53,6 +63,8 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
 	<li>search mode<br/><img src="../../../icons/group_search1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_search2.svg" width="32px" height="32px"></li>
 	<li>show search result mode<br/><img src="../../../icons/group_search1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_search3.svg" width="32px" height="32px"></li>
+	<li>Location based search mode is visible as icon in front of the search text<br/>
+	        <img src="../../../icons/search_pos1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/search_pos2.svg" width="32px" height="32px"></li>
 </ul></td>
 <td style="padding:5px;vertical-align:top"><ul style="padding-left:10px">
 	<li>marker edit mode<br/><img src="../../../icons/group_marker1.svg" width="32px" height="32px">&nbsp;<img src="../../../icons/group_marker2.svg" width="32px" height="32px"></li>
@@ -76,27 +88,27 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 	<th></th>
     <th style="text-align:center">Help</th>
     <th style="text-align:center">Settings</th>
-    <th style="text-align:center">Further settings</th>
+    <th style="text-align:center">File manager</th>
     <th style="text-align:center">Statistic</th>
     <th style="text-align:center">Height profile</th>
     <th style="text-align:center">Download</th>
     <th style="text-align:center">Themes</th>
 </tr>
 <tr>
-<td width="6%" style="padding:5px;vertical-align:top">Action<br/>icon</td>
+<td width="6%" style="padding:5px;vertical-align:top">Menu<br/>item<br/>icon</td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/settings.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/settings_fu.svg" width="60px" height="60px"></td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/file_mgr.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/statistik.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/height_profile.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/download.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/themes.svg" width="60px" height="60px"></td>
 </tr>
 <tr>
-	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
+	<td style="padding:5px;vertical-align:top">Menu<br/>item<br/>functions</td>
     <td style="padding:5px;vertical-align:top">Provide help</td>
     <td style="padding:5px;vertical-align:top">Start settings activity with main preference screen</td>
-    <td style="padding:5px;vertical-align:top">Start settings activity with further preference screen</td>
+    <td style="padding:5px;vertical-align:top">Start file manager activity</td>
     <td style="padding:5px;vertical-align:top">Start statistic activity</td>
     <td style="padding:5px;vertical-align:top">Start height profile activity</td>
     <td style="padding:5px;vertical-align:top">Start settings activity with download preference screen</td>
@@ -113,23 +125,23 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
     <th style="text-align:center">Help</th>
     <th style="text-align:center">Search mode</th>
     <th style="text-align:center">Show search result mode</th>
-    <th style="text-align:center"></th>
+    <th style="text-align:center">Location based search</th>
     <th style="text-align:center"></th>
     <th style="text-align:center"></th>
     <th style="text-align:center"></th>
 </tr>
 <tr>
-<td width="6%"  style="padding:5px;vertical-align:top">Action<br/>icon</td>
+<td width="6%"  style="padding:5px;vertical-align:top">Menu<br/>item<br/>icon</td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/help.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/search.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/search_res1.svg" width="60px" height="60px"></td>
-<td width="12%" style="text-align:center; min-width:90px"> </td>
+<td width="12%" style="text-align:center; min-width:90px"><img src="../../../icons/search_pos1.svg" width="60px" height="60px"></td>
 <td width="12%" style="text-align:center; min-width:90px"> </td>
 <td width="12%" style="text-align:center; min-width:90px"> </td>
 <td width="12%" style="text-align:center; min-width:90px"> </td>
 </tr>
 <tr>
-	<td style="padding:5px;vertical-align:top">Action<br/>functions</td>
+	<td style="padding:5px;vertical-align:top">Menu<br/>item<br/>functions</td>
     <td style="padding:5px;vertical-align:top">Provide help</td>
     <td style="padding:5px;vertical-align:top">
 		<table style="padding:0px;border:none">
@@ -144,7 +156,12 @@ behaviour shows a red circle, when the GPS is switched off and you can switch it
 			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_res3.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Disabled</td></tr>
 		</table>
 	</td>
-    <td></td>
+    <td style="padding:5px;vertical-align:top">
+		<table style="padding:0px;border:none">
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_pos2.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch on</td></tr>
+			<tr><td width="30%" style="padding:5px;vertical-align:top;border:none"><img style="text-align:center;min-width:32px" src="../../../icons/search_pos1.svg" width="32px" height="32px"></td><td width="70%" style="padding:5px;vertical-align:top;border:none">Switch off</td></tr>
+		</table>
+	</td>
     <td></td>
     <td></td>
     <td></td>

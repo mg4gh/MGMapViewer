@@ -4,7 +4,7 @@
 The term tile store or offline tile store will be also used for this kind of store.
 
 A mapstore layer consists of a directory with the name of the layer.
-This is a direct subdirectory of ./MGMapViewer/maps/mapstores. 
+This is a direct subdirectory of MGMapViewer/maps/mapstores. 
 
 In a mapstore all tiles are stored in a single sqlite database file, which has the file extension ".mbtiles".
 The format definition is available via [github](https://github.com/mapbox/mbtiles-spec). If you have a prefilled database file, place it in the store directory.

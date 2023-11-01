@@ -53,7 +53,7 @@ With <img src="../../../icons/back.svg" width="24"/> you go back to the main act
 <img src="./RE3.png" width="250" />&nbsp;
 
 
-The export of a route track generates a .gpx file in the directory ./MGMapViewer/track/gpx.
+The save action of a route track generates a .gpx file in the directory MGMapViewer/track/gpx.
 The filename has the structure \<date>_\<time>_MarkerRoute.gpx. This gpx file contains the
 track points from the calculated route. But additionally it contains the points used for route
 calculation as way points.

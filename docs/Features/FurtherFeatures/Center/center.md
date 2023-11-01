@@ -43,4 +43,7 @@ As soon as the time expires, the last gps position is put to the center again.
 There is also the option to tap in the center of the screen (as marked with the beeline feature). In this case the map is
 moved to the last gps position immediately.
 
+There is another exception. If you want to create a route while you are recording, then you want to stay with the map in the area where you are planing
+and you don't want that the map is centered to your current position. Therefrore as long as the route edit mode is switched on, the automatic center funcion is disabled. 
+
 <small><small>[Back to Index](../../../index.md)</small></small>

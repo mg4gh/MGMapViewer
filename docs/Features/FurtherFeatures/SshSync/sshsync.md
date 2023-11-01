@@ -39,8 +39,8 @@ username=pi
 targetPrefix=mgmap_test/
 wlanSSID="AndroidWifi"
 ```
-This configuration file has to be named "sync.cfg" in the ./MGMapViewer/config folder of the device. The keyfile with the
-private key will be placed in the ./MGMapViewer/config/token subdirectory, where the name has to match the configured value (e.g. id_rsa).
+This configuration file has to be named "sync.cfg" in the MGMapViewer/config folder of the device. The keyfile with the
+private key will be placed in the MGMapViewer/config/token subdirectory, where the name has to match the configured value (e.g. id_rsa).
 
 
 

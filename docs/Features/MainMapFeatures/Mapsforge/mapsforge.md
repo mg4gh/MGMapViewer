@@ -5,7 +5,7 @@
 Typically you will download mapsforge compliant maps from [openandromaps](https://www.openandromaps.org/). 
 But you can create these maps also with the software from the [mapsforge](https://github.com/mapsforge/mapsforge) library.
 
-A mapsforge map is a ".map" file. This file has to be placed in the directory "./MGMapViewer/maps/mapsforge/"
+A mapsforge map is a ".map" file. This file has to be placed in the directory "MGMapViewer/maps/mapsforge/"
 
 Here is an example of such a map: 
 

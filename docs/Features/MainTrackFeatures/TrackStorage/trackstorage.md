@@ -2,7 +2,7 @@
 
 ## Main Track Feature: track storage
 
-Tracks will be stored in ".gpx" format in the directory "./MGMapViewer/track/gpx/". 
+Tracks will be stored in ".gpx" format in the directory "MGMapViewer/track/gpx/". 
 A real world example is [this](./20210101_121925_GPS.gpx).
 
 The following picture shows a subset of this:
@@ -16,12 +16,12 @@ But there are a couple more information available, which is placed in the commen
 be compliant to the .gpx format.
 
 After recording of a track the corresponding .gpx file will be automatically generated and stored 
-in the directory "./MGMapViewer/track/gpx/". Alternatively you can place gpx files manually in this
+in the directory "MGMapViewer/track/gpx/". Alternatively you can place gpx files manually in this
 directory. To do this remember the  [file system structure](../../../GettingStarted/FileSystem.md).
 
 
 Beside the ".gpx" format there is a second file format ".meta", which is stored consequently in the
-directory "./MGMapViewer/track/meta/". After track recording such a meta file is also generated 
+directory "MGMapViewer/track/meta/". After track recording such a meta file is also generated 
 automatically. But there is also a check at startup of the app, if there are gpx files without 
 corresponding meta files. If so, then these meta files will be generated too.
 These meta files are binary files with information about the bounding box around the track.

@@ -20,11 +20,15 @@
    Currently (Android 13) you can use "Dateimanager+" and "QuickEdit" (after granting permissions) to manipulate files in this tree. 
    Alternatively you can access this file system via PC or Laptop and
    a USB cable. 
+   
+   Update: With Android 14 the access becomes again more restrictive. The above mentioned apps still work, when the MGMapViewer app is running.
+   The good news is: There is a new feature [file manager](../Features/FurtherFeatures/FileManager/filemanager.md). It allows you to show, edit,
+   share and delete all files as needed.
 
 
 2. The app creates below the MGMapViewer directory new subdirectories:
 ```
- ./MGMapViewer/apk/                          // to store downloaded apk
+   MGMapViewer/apk/                          // to store downloaded apk
               /config/                       // configuration data
                      /search/                // search configuration data
               /hgt/                          // store hgt height data files
