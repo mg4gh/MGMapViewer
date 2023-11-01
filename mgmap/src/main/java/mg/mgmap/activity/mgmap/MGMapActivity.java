@@ -88,6 +88,7 @@ import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.GpxSyncUtil;
 import mg.mgmap.generic.util.WaitUtil;
+import mg.mgmap.generic.util.Zipper;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
 import mg.mgmap.activity.mgmap.util.MapDataStoreUtil;
@@ -519,6 +520,18 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     String sUrl = uri.toString().replaceFirst("mf-theme", "https");
                     bgJobGroup.addJob(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(pm, new URL(sUrl)));
                     bgJobGroup.setConstructed("Download mapsforge theme from "+sUrl);
+                } else if ("mgmap-install".equals(uri.getScheme())){
+                    BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download and install generic zip archive", new BgJobGroupCallback(){} );
+                    String sUrl = uri.toString().replaceFirst("mgmap-install", "https");
+                    bgJobGroup.addJob( new BgJob() {
+                        @Override
+                        protected void doJob() throws Exception {
+                            super.doJob();
+                            Zipper zipper = new Zipper(null);
+                            zipper.unpack(new URL(sUrl), pm.getAppDir(), null, this);
+                        }
+                    } );
+                    bgJobGroup.setConstructed("Download and install generic zip archive from "+sUrl);
                 } else if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
                     ContentResolver contentResolver = application.getContentResolver();
 
