@@ -59,7 +59,7 @@
 
     <string name="preference_theme_changed">PrefThemeChanged</string>
     <string name="preference_choose_theme_key">SelectTheme</string>
-    <string name="preference_choose_theme_title">Select theme</string>
+    <string name="preference_choose_theme_title">Select theme definition</string>
     <string name="preference_choose_search_key">SelectSearchProvider</string>
     <string name="preference_choose_search_title">Select Search Provider</string>
 

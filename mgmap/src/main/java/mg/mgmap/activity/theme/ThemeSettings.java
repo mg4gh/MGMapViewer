@@ -190,7 +190,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
             selection = renderthemeOptions.getLayer(renderthemeOptions.getDefaultValue()).getId();
         }
         // the new Android style is to display information here, not instruction
-        baseLayerPreference.setTitle("Select main theme ...");
+        baseLayerPreference.setTitle("Select theme ...");
         String themeTitle = renderthemeOptions.getLayer(selection).getTitle(language);
         baseLayerPreference.setSummary(Html.fromHtml("<font color='black'><b><big>" +  themeTitle + "</big></b></font>", 0));
 
