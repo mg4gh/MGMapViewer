@@ -65,7 +65,11 @@ public class CC { // short for ColorConstant
 
     public static int getColor(int colorId){
         Integer color = colorMap.get(colorId);
-        return (color==null)?0:color;
+        if (color == null){
+            mgLog.w(String.format("color resource not found: 0x%08X",colorId));
+            color = 0;
+        }
+        return color;
     }
 
     public static Paint getStrokePaint(int colorId, float width){
