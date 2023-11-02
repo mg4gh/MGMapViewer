@@ -215,8 +215,13 @@ public class GpxImporter {
             }
             eventType = pullParser.next();
         } while (eventType != XmlPullParser.END_DOCUMENT);
-        assert trackLog != null;
-        trackLog.setModified(true);
+        if (trackLog != null){
+            if (trackLog.getNumberOfSegments() == 0){
+                trackLog = null;
+            } else {
+                trackLog.setModified(true);
+            }
+        }
         return trackLog;
     }
 

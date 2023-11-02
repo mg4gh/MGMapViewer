@@ -43,9 +43,11 @@ public class ExtrasUtil {
                 mgLog.i("Create meta file for "+name );
                 try (InputStream gpxIs = persistenceManager.openGpxInput(name)){
                     TrackLog trackLog = new GpxImporter(elevationProvider).parseTrackLog(name, gpxIs);
-                    metaDataUtil.createMetaData(trackLog);
-                    try (FileOutputStream metaFos = persistenceManager.openMetaOutput(name)){
-                        metaDataUtil.writeMetaData(metaFos, trackLog);
+                    if (trackLog != null){
+                        metaDataUtil.createMetaData(trackLog);
+                        try (FileOutputStream metaFos = persistenceManager.openMetaOutput(name)){
+                            metaDataUtil.writeMetaData(metaFos, trackLog);
+                        }
                     }
                 }  catch (Exception e){ mgLog.e(e); }
             }
