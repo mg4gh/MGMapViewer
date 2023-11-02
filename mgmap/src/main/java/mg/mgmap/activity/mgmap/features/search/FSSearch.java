@@ -98,7 +98,7 @@ public class FSSearch extends FeatureService {
         prefPosBasedSearch.addObserver(e -> {
             searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue());
             if (prefSearchOn.getValue()){
-                doSearch(searchText.getText().toString().trim(), -1);
+                doSearch(searchText.getText().toString().trim(), EditorInfo.IME_ACTION_SEARCH);
             }
         });
 
@@ -227,11 +227,7 @@ public class FSSearch extends FeatureService {
         triggerTTHideKeyboard();
         mgLog.i("text="+text+" actionId="+actionId+" timestamp="+timestamp);
         PointModel pos = new PointModelImpl( getActivity().getMapViewUtility().getCenter() );
-        if (text.equals(searchProvider.lastSearchRequest.text) && pos.equals(searchProvider.lastSearchRequest.pos)){
-            searchProvider.publishResult(searchProvider.lastSearchRequest, searchProvider.lastSearchResults);
-        } else {
-            searchProvider.doSearch(new SearchRequest(text, actionId, timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
-        }
+        searchProvider.doSearch(new SearchRequest(text, actionId, timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
         if (actionId == EditorInfo.IME_ACTION_GO
                 || actionId == EditorInfo.IME_ACTION_DONE
                 || actionId == EditorInfo.IME_ACTION_NEXT
