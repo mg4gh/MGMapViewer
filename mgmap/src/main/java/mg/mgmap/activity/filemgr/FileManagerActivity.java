@@ -628,7 +628,13 @@ public class FileManagerActivity extends AppCompatActivity {
                                     String filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                                     String size = cursor.getString(cursor.getColumnIndex(OpenableColumns.SIZE));
                                     mgLog.i("filename=" + filename + " size=" + size);
-                                    IOUtil.copyStreams(is, Files.newOutputStream(Paths.get(prefPwd.getValue(),filename)));
+                                    File fNew = new File(fDir, filename);
+                                    if (fNew.exists()){
+                                        mgLog.w("File already exists: " + fNew.getAbsolutePath());
+                                        Toast.makeText(this, filename+" already exists",Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        IOUtil.copyStreams(is, Files.newOutputStream(Paths.get(prefPwd.getValue(),filename)));
+                                    }
                                 }
                             }
                         }
