@@ -94,10 +94,12 @@ public class Nominatim extends SearchProvider {
                         PointModel pm1 = new PointModelImpl(lat,lon);
 
                         JsonObject po = fo.getJsonObject("properties");
-                        String resText = String.format("%s", po.getString("display_name"));
+                        String res = String.format("%s", po.getString("display_name"));
 
-                        resList.add( new SearchResult(request, resText, pm1));
-                        mgLog.i("res="+resText);
+                        SearchResult sr = new SearchResult(request, res, pm1);
+                        sr.longResultText = fo.toString();
+                        resList.add( sr );
+                        mgLog.i("res="+res);
                     } catch (Exception e) {
                         mgLog.e(e);
                     }
