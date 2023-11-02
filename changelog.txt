@@ -1,3 +1,4 @@
+- refactor CC handling, avoid static reference to context
 - merge setting and further settings; add fileMgr to task menu
 - new Feature: tiny editor for small files
 - new Feature: optional two line menu
