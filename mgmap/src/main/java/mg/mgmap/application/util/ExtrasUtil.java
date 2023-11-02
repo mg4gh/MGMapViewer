@@ -14,6 +14,8 @@
  */
 package mg.mgmap.application.util;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +41,13 @@ public class ExtrasUtil {
 
             for (String name : newGpxNames){
                 mgLog.i("Create meta file for "+name );
-                TrackLog trackLog = new GpxImporter(elevationProvider).parseTrackLog(name, persistenceManager.openGpxInput(name));
-                metaDataUtil.createMetaData(trackLog);
-                metaDataUtil.writeMetaData(persistenceManager.openMetaOutput(name), trackLog);
+                try (InputStream gpxIs = persistenceManager.openGpxInput(name)){
+                    TrackLog trackLog = new GpxImporter(elevationProvider).parseTrackLog(name, gpxIs);
+                    metaDataUtil.createMetaData(trackLog);
+                    try (FileOutputStream metaFos = persistenceManager.openMetaOutput(name)){
+                        metaDataUtil.writeMetaData(metaFos, trackLog);
+                    }
+                }  catch (Exception e){ mgLog.e(e); }
             }
             for (String name : metaNames){
                 mgLog.i("Delete meta file for "+name);
