@@ -277,8 +277,9 @@ public class MGMapApplication extends Application {
                 @Override
                 public void onActivityResumed(@NonNull Activity activity) {
                     escalationCnt[0] =  0; // escalation is reset whenever any activity is resumed
+                    finishAlarm();
                 }
-             });
+            });
             long lastCheck = System.currentTimeMillis();
             while (uuid == currentRun){
                 try {
@@ -296,7 +297,7 @@ public class MGMapApplication extends Application {
                 } catch (Exception e) {
                     long now = System.currentTimeMillis();
                     if (prefGps.getValue() && (recordingTrackLogObservable.getTrackLog() != null) && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
-                        mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now+" - is there an energy saving problem ?");
+                        mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now);
                         escalationCnt[0]++;
                     } else {
                         escalationCnt[0] = 0;
