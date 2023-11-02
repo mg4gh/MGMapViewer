@@ -68,7 +68,7 @@ The quick controls provide follwoing functions:
     <td>always</td>
     <td>go back to the previous activity</td>	
   </tr>
-<table>
+</table>
 
 
 <small><small>[Back to Index](../../../index.md)</small></small>
