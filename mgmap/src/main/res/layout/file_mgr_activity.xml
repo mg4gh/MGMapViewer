@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:orientation="horizontal"
-            android:background="@color/GRAY200"
+            android:background="@color/CC_GRAY200"
             android:baselineAligned="false">
 
             <HorizontalScrollView
@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="@color/GRAY200"
+            android:background="@color/CC_GRAY200"
             >
 
         </androidx.recyclerview.widget.RecyclerView>
@@ -58,7 +58,7 @@
         android:layout_height="40dp"
         android:id="@+id/ts_qc"
         android:orientation="horizontal"
-        android:background="@color/GRAY200"
+        android:background="@color/CC_GRAY200"
         android:layout_alignParentBottom="true"
         >
     </LinearLayout>

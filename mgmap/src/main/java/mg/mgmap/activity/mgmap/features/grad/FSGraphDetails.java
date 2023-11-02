@@ -43,8 +43,8 @@ public class FSGraphDetails extends FeatureService {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static final Paint PAINT_GRAD_STROKE =  CC.getStrokePaint(R.color.RED_A150, 3);
-    public static final Paint PAINT_GRAD_ALL_STROKE = CC.getStrokePaint(R.color.GRAY100_A150, 3);
+    private static final Paint PAINT_GRAD_STROKE =  CC.getStrokePaint(R.color.CC_RED_A150, 3);
+    public static final Paint PAINT_GRAD_ALL_STROKE = CC.getStrokePaint(R.color.CC_GRAY100_A150, 3);
 
     public class GradControlLayer extends ControlMVLayer<Object> {
         @Override

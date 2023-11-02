@@ -142,7 +142,7 @@ public class FileManagerEntryView extends LinearLayout {
         if (drawable != null) drawable.setBounds(0, 0, etv.getDrawableSize(), etv.getDrawableSize());
         etv.setCompoundDrawables(null,null,null,null);
         etv.setText("");
-        etv.setTextColor(getContext().getColor(R.color.WHITE));
+        etv.setTextColor(getContext().getColor(R.color.CC_WHITE));
         etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         etv.setMaxLines(1);
         return etv;
@@ -163,7 +163,7 @@ public class FileManagerEntryView extends LinearLayout {
 
 
     private int getColorIdForTrackLog(FileManagerEntryModel fileManagerEntryModel){
-        return fileManagerEntryModel.isSelected()?R.color.GRAY100_A150:R.color.GRAY100_A100;
+        return fileManagerEntryModel.isSelected()?R.color.CC_GRAY100_A150 :R.color.CC_GRAY100_A100;
     }
 
 

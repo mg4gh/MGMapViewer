@@ -15,6 +15,8 @@
 package mg.mgmap.activity.mgmap.util;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.core.content.ContextCompat;
@@ -24,9 +26,12 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Utility for ColorConstants.
@@ -38,6 +43,7 @@ public class CC { // short for ColorConstant
 
     public static void setApplication(Application application){
         CC.application = application;
+        test(application);
     }
 
     public static int getColor(int colorId){
@@ -153,5 +159,24 @@ public class CC { // short for ColorConstant
 
     public static int floatAlpha2int(float fAlpha){
         return (int)(fAlpha*255);
+    }
+
+
+    static void test(Context context){
+        if (context != null) {
+            try {
+                Field[] fields = Class.forName(context.getPackageName()+".R$color").getDeclaredFields();
+                for(Field field : fields) {
+                    String colorName = field.getName();
+                    int colorId = field.getInt(null);
+                    int color = context.getResources().getColor(colorId);
+                    MGLog.si("xxtest "+ colorName + " => " + colorId + " => " + color);
+                }
+            } catch (Exception e) {
+                MGLog.se(e);
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 }

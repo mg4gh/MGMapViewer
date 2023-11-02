@@ -23,8 +23,8 @@ import mg.mgmap.activity.mgmap.view.PointView;
 
 public class PointViewSearch extends PointView {
 
-    private static final Paint PAINT_MARKER_FILL = CC.getFillPaint(R.color.ORANGE_A50);
-    private static final Paint PAINT_MARKER_STROKE = CC.getStrokePaint(R.color.ORANGE, 2);
+    private static final Paint PAINT_MARKER_FILL = CC.getFillPaint(R.color.CC_ORANGE_A50);
+    private static final Paint PAINT_MARKER_STROKE = CC.getStrokePaint(R.color.CC_ORANGE, 2);
 
     public PointViewSearch(PointModel pointModel){
         super(pointModel, PAINT_MARKER_STROKE, PAINT_MARKER_FILL);

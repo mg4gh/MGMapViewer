@@ -40,10 +40,10 @@ public class FSPosition extends FeatureService {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static final Paint PAINT_FIX2_FILL = CC.getFillPaint(R.color.RED_A50);
-    private static final Paint PAINT_FIX2_STROKE = CC.getStrokePaint(R.color.RED, 5);
-    private static final Paint PAINT_ACC_FILL = CC.getFillPaint(R.color.BLUE_A50);
-    private static final Paint PAINT_ACC_STROKE = CC.getStrokePaint(R.color.BLUE_A150, 5);
+    private static final Paint PAINT_FIX2_FILL = CC.getFillPaint(R.color.CC_RED_A50);
+    private static final Paint PAINT_FIX2_STROKE = CC.getStrokePaint(R.color.CC_RED, 5);
+    private static final Paint PAINT_ACC_FILL = CC.getFillPaint(R.color.CC_BLUE_A50);
+    private static final Paint PAINT_ACC_STROKE = CC.getStrokePaint(R.color.CC_BLUE_A150, 5);
 
     private final Pref<Boolean> prefAppRestart = getPref(R.string.MGMapApplication_pref_Restart, false);
     private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_pref_Center, true);

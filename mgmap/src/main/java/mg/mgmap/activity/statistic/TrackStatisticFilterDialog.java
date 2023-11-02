@@ -46,7 +46,7 @@ public class TrackStatisticFilterDialog {
 
         TableLayout table_dialog = new TableLayout(context);
         table_dialog.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-        table_dialog.setBackgroundColor(context.getColor(R.color.GRAY200));
+        table_dialog.setBackgroundColor(context.getColor(R.color.CC_GRAY200));
         table_dialog.setPadding(dp2,dp2,dp2,dp2);
 
         table_dialog.addView( new Entry<>(context, "Name Part(s)", filter.prefFilterNamePart, filter.prefFilterNamePartOn ));
@@ -85,10 +85,10 @@ public class TrackStatisticFilterDialog {
         tv.setGravity(Gravity.CENTER);
         tv.setPadding(5, 5, 5, 5);
         tv.setText(text);
-        tv.setTextColor(parent.getContext().getColor(R.color.BLACK));
+        tv.setTextColor(parent.getContext().getColor(R.color.CC_BLACK));
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         parent.addView(tv);
-        tv.setBackgroundColor(parent.getContext().getColor(R.color.GRAY240));
+        tv.setBackgroundColor(parent.getContext().getColor(R.color.CC_GRAY240));
         return tv;
     }
 
@@ -102,10 +102,10 @@ public class TrackStatisticFilterDialog {
         et.setLayoutParams(params);
         et.setGravity(Gravity.CENTER);
         et.setPadding(5, 5, 5, 5);
-        et.setTextColor(parent.getContext().getColor(R.color.BLACK));
+        et.setTextColor(parent.getContext().getColor(R.color.CC_BLACK));
         et.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         parent.addView(et);
-        et.setBackgroundColor(parent.getContext().getColor(R.color.GRAY240));
+        et.setBackgroundColor(parent.getContext().getColor(R.color.CC_GRAY240));
         return et;
     }
 
@@ -118,7 +118,7 @@ public class TrackStatisticFilterDialog {
         cb.setLayoutParams(params);
         cb.setGravity(Gravity.CENTER);
         cb.setPadding(5, 5, 5, 5);
-        cb.setBackgroundColor(parent.getContext().getColor(R.color.GRAY240));
+        cb.setBackgroundColor(parent.getContext().getColor(R.color.CC_GRAY240));
         cb.setChecked(pref.getValue());
         parent.addView(cb);
         return cb;
@@ -141,7 +141,7 @@ public class TrackStatisticFilterDialog {
             this.prefOn = prefOn;
 
             setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
-            setBackgroundColor(context.getColor(R.color.GRAY200));
+            setBackgroundColor(context.getColor(R.color.CC_GRAY200));
 
             createTextView(this, name, 20);
             epPref = createEditPref(this, pref, 20);
@@ -155,7 +155,7 @@ public class TrackStatisticFilterDialog {
 
         private void visualizeChecked(boolean checked){
             epPref.setEnabled(checked);
-            epPref.setTextColor(context.getColor(checked?R.color.BLACK: R.color.GRAY100_A100));
+            epPref.setTextColor(context.getColor(checked?R.color.CC_BLACK : R.color.CC_GRAY100_A100));
         }
 
         private void confirm(){

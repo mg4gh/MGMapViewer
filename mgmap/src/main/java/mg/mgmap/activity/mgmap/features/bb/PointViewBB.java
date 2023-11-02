@@ -23,8 +23,8 @@ import mg.mgmap.activity.mgmap.view.PointView;
 
 public class PointViewBB extends PointView {
 
-    private static final Paint PAINT_MARKER_FILL = CC.getFillPaint(R.color.BLUE100_A100);
-    private static final Paint PAINT_MARKER_STROKE = CC.getStrokePaint(R.color.BLUE_A150, 2);
+    private static final Paint PAINT_MARKER_FILL = CC.getFillPaint(R.color.CC_BLUE100_A100);
+    private static final Paint PAINT_MARKER_STROKE = CC.getStrokePaint(R.color.CC_BLUE_A150, 2);
 
     public PointViewBB(PointModel pointModel){
         super(pointModel, PAINT_MARKER_STROKE, PAINT_MARKER_FILL);

@@ -50,7 +50,7 @@ public class FSMarker extends FeatureService {
 
     private static final long TT_HIDE_TIME = 60000;
 
-    private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
+    private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.CC_PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
     private final Pref<Boolean> toggleEditMarkerTrack =  new Pref<>(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
@@ -97,7 +97,7 @@ public class FSMarker extends FeatureService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("mtl".equals(info)) {
-            lsl.initPrefData(prefMtlVisibility, prefAlphaMtl, CC.getColor(R.color.PINK), "MarkerTrackLog");
+            lsl.initPrefData(prefMtlVisibility, prefAlphaMtl, CC.getColor(R.color.CC_PINK), "MarkerTrackLog");
         }
         return lsl;
     }

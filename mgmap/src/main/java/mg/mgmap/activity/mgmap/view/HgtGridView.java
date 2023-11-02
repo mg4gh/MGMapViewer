@@ -51,7 +51,7 @@ public class HgtGridView extends Grid {
         hgtAvail.setStyle(Style.FILL);
 
         hgtNotAvail = graphicFactory.createPaint();
-        hgtNotAvail.setColor(CC.getColor(R.color.RED));
+        hgtNotAvail.setColor(CC.getColor(R.color.CC_RED));
         hgtNotAvail.setStyle(Style.FILL);
 
     }
@@ -59,8 +59,8 @@ public class HgtGridView extends Grid {
     public void setAlpha(float alpha){
         alpha = Math.max(0, Math.min(1, alpha));
         super.setAlpha(alpha);
-        hgtAvail.setColor(CC.addAlpha(CC.getColor(R.color.GREEN), alpha));
-        hgtNotAvail.setColor(CC.addAlpha(CC.getColor(R.color.RED), alpha));
+        hgtAvail.setColor(CC.addAlpha(CC.getColor(R.color.CC_GREEN), alpha));
+        hgtNotAvail.setColor(CC.addAlpha(CC.getColor(R.color.CC_RED), alpha));
     }
 
 

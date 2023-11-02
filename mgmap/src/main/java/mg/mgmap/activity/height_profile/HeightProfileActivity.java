@@ -113,9 +113,9 @@ public class HeightProfileActivity extends AppCompatActivity {
         graph.getViewport().setScrollableY(true);
 
         MGMapApplication application = (MGMapApplication)getApplication();
-        createSeries(graph,  application.recordingTrackLogObservable.getTrackLog(), R.color.RED, showAscentGraph);
-        createSeries(graph,  application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.BLUE, showAscentGraph);
-        createSeries(graph,  application.routeTrackLogObservable.getTrackLog(), R.color.PURPLE_A150, showAscentGraph);
+        createSeries(graph,  application.recordingTrackLogObservable.getTrackLog(), R.color.CC_RED, showAscentGraph);
+        createSeries(graph,  application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), R.color.CC_BLUE, showAscentGraph);
+        createSeries(graph,  application.routeTrackLogObservable.getTrackLog(), R.color.CC_PURPLE_A150, showAscentGraph);
         if ((application.routeTrackLogObservable.getTrackLog() != null) && (!hasElevation(application.routeTrackLogObservable.getTrackLog()))){
             DialogView dialogView = this.findViewById(R.id.dialog_parent);
             dialogView.lock(() -> dialogView

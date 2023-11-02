@@ -23,7 +23,7 @@ import mg.mgmap.activity.mgmap.view.BoxView;
 
 public class BoxViewBB extends BoxView{
 
-    private static final Paint PAINT_BOX_STROKE = CC.getStrokePaint(R.color.BLUE_A150, 4);
+    private static final Paint PAINT_BOX_STROKE = CC.getStrokePaint(R.color.CC_BLUE_A150, 4);
 
     public BoxViewBB(BBox model){
         super(model, PAINT_BOX_STROKE);

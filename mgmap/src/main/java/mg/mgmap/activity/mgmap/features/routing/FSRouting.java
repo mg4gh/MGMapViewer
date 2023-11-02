@@ -55,10 +55,10 @@ public class FSRouting extends FeatureService {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.PURPLE, DisplayModel.getDeviceScaleFactor()*5.0f);
-    private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.PURPLE);
-    private static final Paint PAINT_RELAXED = CC.getStrokePaint(R.color.BLUE, 2);
-    private final Paint PAINT_STROKE_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
+    private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.CC_PURPLE, DisplayModel.getDeviceScaleFactor()*5.0f);
+    private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.CC_PURPLE);
+    private static final Paint PAINT_RELAXED = CC.getStrokePaint(R.color.CC_BLUE, 2);
+    private final Paint PAINT_STROKE_GL = CC.getStrokePaint(R.color.CC_GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
     private static final int ZOOM_LEVEL_RELAXED_VISIBILITY = 17;
 
@@ -167,7 +167,7 @@ public class FSRouting extends FeatureService {
     @Override
     public ViewGroup initDashboard(ViewGroup dvg, String info) {
         super.initDashboard(dvg,info);
-        getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.PURPLE_A100);
+        getControlView().setViewGroupColors(dvg, R.color.CC_WHITE, R.color.CC_PURPLE_A100);
         dashboardRoute = dvg;
         return dvg;
     }
@@ -175,7 +175,7 @@ public class FSRouting extends FeatureService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("rotl".equals(info)) {
-            lsl.initPrefData(prefMtlVisibility, prefAlphaRotl, CC.getColor(R.color.PURPLE), "RouteTrackLog");
+            lsl.initPrefData(prefMtlVisibility, prefAlphaRotl, CC.getColor(R.color.CC_PURPLE), "RouteTrackLog");
         }
         return lsl;
     }
@@ -371,7 +371,7 @@ public class FSRouting extends FeatureService {
         if (checkMtlpMovementPoint(mtlp, wpm)){
             MultiPointModelImpl mpmi = new MultiPointModelImpl();
             mpmi.addPoint(mtlp).addPoint(wpm);
-            Paint paint = CC.getStrokePaint(R.color.BLACK_A150, 3);
+            Paint paint = CC.getStrokePaint(R.color.CC_BLACK_A150, 3);
             dndVisualisationLayer = new MultiPointView(mpmi, paint);
             if (triggerRefresh){
                 long saveTTRefreshTime = ttRefreshTime;

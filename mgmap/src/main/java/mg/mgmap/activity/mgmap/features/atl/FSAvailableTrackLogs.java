@@ -34,9 +34,9 @@ import mg.mgmap.activity.mgmap.view.LabeledSlider;
 
 public class FSAvailableTrackLogs extends FeatureService {
 
-    private final Paint PAINT_STROKE_ATL = CC.getStrokePaint(R.color.GREEN, getMapViewUtility().getTrackWidth());
-    private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.BLUE, getMapViewUtility().getTrackWidth());
-    private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
+    private final Paint PAINT_STROKE_ATL = CC.getStrokePaint(R.color.CC_GREEN, getMapViewUtility().getTrackWidth());
+    private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.CC_BLUE, getMapViewUtility().getTrackWidth());
+    private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.CC_GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
     private final Pref<Boolean> prefStlGl = getPref(R.string.FSATL_pref_stlGl, false);
     private final Pref<Float> prefAlphaStl = getPref(R.string.FSATL_pref_alphaSTL, 1.0f);
@@ -73,7 +73,7 @@ public class FSAvailableTrackLogs extends FeatureService {
     @Override
     public ViewGroup initDashboard(ViewGroup dvg, String info) {
         super.initDashboard(dvg,info);
-        getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.BLUE100_A100);
+        getControlView().setViewGroupColors(dvg, R.color.CC_WHITE, R.color.CC_BLUE100_A100);
         if ("stl".equals(info)) {
             dashboardStl = dvg;
         }
@@ -86,10 +86,10 @@ public class FSAvailableTrackLogs extends FeatureService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("stl".equals(info)) {
-            lsl.initPrefData(prefStlVisibility, prefAlphaStl, CC.getColor(R.color.BLUE), "SelectedTrackLog");
+            lsl.initPrefData(prefStlVisibility, prefAlphaStl, CC.getColor(R.color.CC_BLUE), "SelectedTrackLog");
         }
         if ("atl".equals(info)) {
-            lsl.initPrefData(prefAtlVisibility, prefAlphaAtl, CC.getColor(R.color.GREEN), "AvailableTrackLog");
+            lsl.initPrefData(prefAtlVisibility, prefAlphaAtl, CC.getColor(R.color.CC_GREEN), "AvailableTrackLog");
         }
         return lsl;
     }

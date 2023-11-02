@@ -208,7 +208,7 @@ public class TrackStatisticView extends TableLayout {
         if (drawable != null) drawable.setBounds(0, 0, etv.getDrawableSize(), etv.getDrawableSize());
         etv.setCompoundDrawables(null,null,null,null);
         etv.setText("");
-        etv.setTextColor(getContext().getColor(R.color.WHITE));
+        etv.setTextColor(getContext().getColor(R.color.CC_WHITE));
 //        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         etv.setMaxLines(1);
         return etv;
@@ -231,21 +231,21 @@ public class TrackStatisticView extends TableLayout {
 
     private int getColorIdForTrackLog(TrackLog trackLog){
         if (trackLog == application.recordingTrackLogObservable.getTrackLog()){
-            return trackLog.isSelected()?R.color.RED100_A150:R.color.RED100_A100;
+            return trackLog.isSelected()?R.color.CC_RED100_A150 :R.color.CC_RED100_A100;
         }
         if (trackLog == application.routeTrackLogObservable.getTrackLog()){
-            return trackLog.isSelected()?R.color.PURPLE_A150:R.color.PURPLE_A100;
+            return trackLog.isSelected()?R.color.CC_PURPLE_A150 :R.color.CC_PURPLE_A100;
         }
         if (trackLog == application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog()){
-            return trackLog.isSelected()?R.color.BLUE150_A150:R.color.BLUE100_A100;
+            return trackLog.isSelected()?R.color.CC_BLUE150_A150 :R.color.CC_BLUE100_A100;
         }
         if (application.availableTrackLogsObservable.availableTrackLogs.contains( trackLog )){
-            return trackLog.isSelected()?R.color.GREEN150_A150:R.color.GREEN100_A100;
+            return trackLog.isSelected()?R.color.CC_GREEN150_A150 :R.color.CC_GREEN100_A100;
         }
         if (application.metaTrackLogs.containsValue( trackLog )){
-            return trackLog.isSelected()?R.color.GRAY100_A150:R.color.GRAY100_A100;
+            return trackLog.isSelected()?R.color.CC_GRAY100_A150 :R.color.CC_GRAY100_A100;
         }
-        return trackLog.isSelected()?R.color.BLUE150_A150:R.color.BLUE100_A100; // should not occur
+        return trackLog.isSelected()?R.color.CC_BLUE150_A150 :R.color.CC_BLUE100_A100; // should not occur
     }
 
 

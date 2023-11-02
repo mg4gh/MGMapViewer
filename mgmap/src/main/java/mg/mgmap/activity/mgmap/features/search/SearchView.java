@@ -65,7 +65,7 @@ public class SearchView extends LinearLayout {
         searchText.setId(R.id.search_edit_text);
         searchText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         searchText.setHint("Search Text");
-        searchText.setHintTextColor(CC.getColor(R.color.GRAY100_A150));
+        searchText.setHintTextColor(CC.getColor(R.color.CC_GRAY100_A150));
         searchText.setSingleLine(true);
         searchText.setSelectAllOnFocus(true);
         this.addView(searchText);
@@ -109,7 +109,7 @@ public class SearchView extends LinearLayout {
                 SearchResult sr = srs.get(i);
                 tv.setText(sr.resultText);
                 tv.setTextSize(20);
-                tv.setBackgroundColor(CC.getColor( R.color.WHITE_A150 ));
+                tv.setBackgroundColor(CC.getColor( R.color.CC_WHITE_A150));
 
                 float scaleFactor = activity.getMapsforgeMapView().getModel().displayModel.getScaleFactor();
                 tv.setOnClickListener( new ExtendedClickListener(){

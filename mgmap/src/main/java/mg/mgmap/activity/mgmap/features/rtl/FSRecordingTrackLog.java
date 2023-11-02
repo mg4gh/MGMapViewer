@@ -30,8 +30,8 @@ import mg.mgmap.activity.mgmap.view.LabeledSlider;
 
 public class FSRecordingTrackLog extends FeatureService {
 
-    private final Paint PAINT_STROKE_RTL = CC.getStrokePaint(R.color.RED, getMapViewUtility().getTrackWidth());
-    private final Paint PAINT_STROKE_RTL_GL = CC.getStrokePaint(R.color.GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
+    private final Paint PAINT_STROKE_RTL = CC.getStrokePaint(R.color.CC_RED, getMapViewUtility().getTrackWidth());
+    private final Paint PAINT_STROKE_RTL_GL = CC.getStrokePaint(R.color.CC_GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
     private ViewGroup dashboardRtl = null;
     private ViewGroup dashboardRtls = null;
@@ -113,7 +113,7 @@ public class FSRecordingTrackLog extends FeatureService {
     @Override
     public ViewGroup initDashboard(ViewGroup dvg, String info) {
         super.initDashboard(dvg,info);
-        getControlView().setViewGroupColors(dvg, R.color.WHITE, R.color.RED100_A100);
+        getControlView().setViewGroupColors(dvg, R.color.CC_WHITE, R.color.CC_RED100_A100);
         if ("rtl".equals(info)) {
             dashboardRtl = dvg;
         }
@@ -126,7 +126,7 @@ public class FSRecordingTrackLog extends FeatureService {
     @Override
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info) {
         if ("rtl".equals(info)) {
-            lsl.initPrefData(prefRtlVisibility, prefAlphaRtl, CC.getColor(R.color.RED), "RecordingTrackLog");
+            lsl.initPrefData(prefRtlVisibility, prefAlphaRtl, CC.getColor(R.color.CC_RED), "RecordingTrackLog");
         }
         return lsl;
     }

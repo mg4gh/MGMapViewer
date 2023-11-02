@@ -19,7 +19,7 @@
         android:layout_height="40dp"
         android:id="@+id/ts_qc"
         android:orientation="horizontal"
-        android:background="@color/GRAY100_A100"
+        android:background="@color/CC_GRAY100_A100"
         android:layout_alignParentBottom="true"
         >
     </LinearLayout>

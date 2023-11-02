@@ -67,7 +67,7 @@ public class VUtil {
         params.setMargins(margin,margin,margin,margin);
         etv.setLayoutParams(params);
         etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
-        etv.setTextColor(CC.getColor(R.color.WHITE));
+        etv.setTextColor(CC.getColor(R.color.CC_WHITE));
 
         etv.setPadding(dp(4), dp(4),dp(4), dp(4));
         etv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));

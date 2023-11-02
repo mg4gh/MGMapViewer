@@ -114,10 +114,10 @@ public class Grid extends Layer {
         this.displayModel = displayModel;
         this.spacingConfig = spacingConfig;
 
-        this.lineBackColor = CC.getColor(R.color.WHITE);
-        this.lineFrontColor = CC.getColor(R.color.BLUE);
-        this.textBackColor = CC.getColor(R.color.WHITE);
-        this.textFrontColor = CC.getColor(R.color.BLUE);
+        this.lineBackColor = CC.getColor(R.color.CC_WHITE);
+        this.lineFrontColor = CC.getColor(R.color.CC_BLUE);
+        this.textBackColor = CC.getColor(R.color.CC_WHITE);
+        this.textFrontColor = CC.getColor(R.color.CC_BLUE);
         this.lineBack = createLineBack(graphicFactory, displayModel);
         this.lineFront = createLineFront(graphicFactory, displayModel);
         this.textBack = createTextBack(graphicFactory, displayModel);

@@ -82,7 +82,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         mapView.getMapScaleBar().setVisible(true);
         mapView.setBuiltInZoomControls(false);
         setMapScaleBar();
-        mapView.getModel().displayModel.setBackgroundColor(CC.getColor(R.color.GRAY240));
+        mapView.getModel().displayModel.setBackgroundColor(CC.getColor(R.color.CC_GRAY240));
     }
 
     private void saveMapViewModel(){

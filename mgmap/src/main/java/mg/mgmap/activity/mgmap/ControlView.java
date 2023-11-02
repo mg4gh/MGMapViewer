@@ -360,8 +360,8 @@ public class ControlView extends RelativeLayout {
         etv.setText("");
         etv.setLines(1);
 //        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        etv.setTextColor(CC.getColor(R.color.BLACK));
-        etv.setBackgroundColor(CC.getColor(R.color.WHITE_A150));
+        etv.setTextColor(CC.getColor(R.color.CC_BLACK));
+        etv.setBackgroundColor(CC.getColor(R.color.CC_WHITE_A150));
         return etv;
     }
 
@@ -458,7 +458,7 @@ public class ControlView extends RelativeLayout {
         tv.setGravity(Gravity.CENTER_VERTICAL);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
         tv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
-        tv.setTextColor(CC.getColor(R.color.WHITE));
+        tv.setTextColor(CC.getColor(R.color.CC_WHITE));
         tv.setPadding(dp(16),0,dp(8),0);
         parent.addView(tv);
         return tv;
