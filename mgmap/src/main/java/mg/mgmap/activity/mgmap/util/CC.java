@@ -14,9 +14,7 @@
  */
 package mg.mgmap.activity.mgmap.util;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.core.content.ContextCompat;
@@ -26,6 +24,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,16 +37,35 @@ import mg.mgmap.generic.util.basic.MGLog;
  */
 public class CC { // short for ColorConstant
 
-    private static final GraphicFactory GRAPHIC_FACTORY = AndroidGraphicFactory.INSTANCE;
-    private static Application application;
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public static void setApplication(Application application){
-        CC.application = application;
-        test(application);
+    private static final GraphicFactory GRAPHIC_FACTORY = AndroidGraphicFactory.INSTANCE;
+    private static final Map<Integer, Integer> colorMap = new HashMap<>();
+
+    public static void init(Context context){
+        if (context != null) {
+            try {
+                Field[] fields = Class.forName(context.getPackageName()+".R$color").getDeclaredFields();
+                for(Field field : fields) {
+                    String colorName = field.getName();
+                    if (colorName.startsWith("CC_")){
+                        int colorId = field.getInt(null);
+                        int color = ContextCompat.getColor(context, colorId);
+                        colorMap.put(colorId, color);
+                        mgLog.d(String.format("colorName=%s colorID=%08X color=%08X",colorName,colorId, color));
+                    }
+                }
+            } catch (Exception e) {
+                mgLog.e(e);
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 
     public static int getColor(int colorId){
-        return ContextCompat.getColor(application,colorId);
+        Integer color = colorMap.get(colorId);
+        return (color==null)?0:color;
     }
 
     public static Paint getStrokePaint(int colorId, float width){
@@ -161,22 +179,4 @@ public class CC { // short for ColorConstant
         return (int)(fAlpha*255);
     }
 
-
-    static void test(Context context){
-        if (context != null) {
-            try {
-                Field[] fields = Class.forName(context.getPackageName()+".R$color").getDeclaredFields();
-                for(Field field : fields) {
-                    String colorName = field.getName();
-                    int colorId = field.getInt(null);
-                    int color = context.getResources().getColor(colorId);
-                    MGLog.si("xxtest "+ colorName + " => " + colorId + " => " + color);
-                }
-            } catch (Exception e) {
-                MGLog.se(e);
-                throw new RuntimeException(e);
-            }
-
-        }
-    }
 }

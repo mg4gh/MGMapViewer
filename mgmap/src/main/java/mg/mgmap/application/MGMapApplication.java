@@ -154,7 +154,7 @@ public class MGMapApplication extends Application {
 
         persistenceManager = new PersistenceManager(this, baseConfig.getAppDirName());
         startLogging(persistenceManager.getLogDir());
-        CC.setApplication(this);
+        CC.init(this);
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
@@ -354,7 +354,6 @@ public class MGMapApplication extends Application {
         mgLog.w("MGMapViewer Application stop");
         try {
             cleanup();
-            CC.setApplication(null);
         } catch (Exception e) {
             mgLog.e(e);
         }
