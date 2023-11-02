@@ -190,11 +190,14 @@ public class MetaDataUtil {
         }
     }
 
-    public ArrayList<TrackLog> loadMetaData(){
+    public ArrayList<TrackLog> loadMetaData(ArrayList<String> metaNames){
         ArrayList<TrackLog> trackLogs = new ArrayList<>();
         mgLog.i("loading meta files started");
 
-        for (String name : persistenceManager.getMetaNames()){
+        if (metaNames == null){
+            metaNames = persistenceManager.getMetaNames();
+        }
+        for (String name : metaNames){
             final TrackLog trackLog = new TrackLog();
             trackLog.setName(name);
             readMetaData(persistenceManager.openMetaInput(name), trackLog);

@@ -208,6 +208,7 @@ public class MGMapApplication extends Application {
             metaLoading.setValue(true);
             mgLog.i("Theme Asset handling - started");
             try {
+                //noinspection DataFlowIssue
                 for (String assetName : getAssets().list("")){
                     if (assetName.matches("Elevate.+\\.zip")){ // assume there is only one Elevate<x.y>.zip in the assets path - otherwise entries should be handled sorted
                         String assetDir = assetName.replace(".zip", "");
@@ -233,13 +234,8 @@ public class MGMapApplication extends Application {
                 mgLog.e(e);
             }
             mgLog.i("Theme Asset handling - finished");
-            ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, elevationProvider);
-            for (TrackLog trackLog : metaDataUtil.loadMetaData()){
-                if (uuid != currentRun){
-                    break; // leave Thread
-                }
-                trackStatisticFilter.checkFilter(trackLog);
-                metaTrackLogs.put(trackLog.getNameKey(),trackLog);
+            if (uuid == currentRun) {
+                checkCreateLoadMetaData(false);
             }
             metaLoading.setValue(false);
         }).start();
@@ -318,6 +314,14 @@ public class MGMapApplication extends Application {
         }).start();
 
         mgLog.i("done.");
+    }
+
+    public void checkCreateLoadMetaData(boolean onlyNew){
+        ArrayList<String> newNames = ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, elevationProvider);
+        for (TrackLog trackLog : metaDataUtil.loadMetaData(onlyNew?newNames:null)){
+            trackStatisticFilter.checkFilter(trackLog);
+            metaTrackLogs.put(trackLog.getNameKey(),trackLog);
+        }
     }
 
     void cleanup(){

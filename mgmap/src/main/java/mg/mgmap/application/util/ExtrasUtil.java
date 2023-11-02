@@ -29,13 +29,13 @@ public class ExtrasUtil {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public static void checkCreateMeta(PersistenceManager persistenceManager, MetaDataUtil metaDataUtil, ElevationProvider elevationProvider){
+    public static ArrayList<String> checkCreateMeta(PersistenceManager persistenceManager, MetaDataUtil metaDataUtil, ElevationProvider elevationProvider){
         mgLog.i();
         try {
             List<String> gpxNames = persistenceManager.getGpxNames();
             List<String> metaNames = persistenceManager.getMetaNames();
 
-            List<String> newGpxNames = new ArrayList<>(gpxNames); // create  meta files for new gpx
+            ArrayList<String> newGpxNames = new ArrayList<>(gpxNames); // create  meta files for new gpx
             newGpxNames.removeAll(metaNames);
             metaNames.removeAll(gpxNames); // remove meta files without corresponding gpx
 
@@ -55,8 +55,10 @@ public class ExtrasUtil {
                 mgLog.i("Delete meta file for "+name);
                 persistenceManager.deleteTrack(name);
             }
+            return newGpxNames;
         } catch (Exception e) {
             mgLog.e(e);
         }
+        return new ArrayList<>();
     }
 }

@@ -643,6 +643,9 @@ public class FileManagerActivity extends AppCompatActivity {
                     mgLog.e(e);
                 }
             }
+            if (fDir.getAbsolutePath().startsWith( application.getPersistenceManager().getTrackGpxDir().getAbsolutePath())){ // fDir equals or is subPath of gpx dir
+                new Thread(() -> application.checkCreateLoadMetaData(true)).start();
+            }
             prefPwd.changed();
 
         };
