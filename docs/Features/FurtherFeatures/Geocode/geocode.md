@@ -3,7 +3,7 @@
 ## Further Features: geocode
  
 The feature "Geocode" provides the ability to search 
-- a location (lat,lon) by name and
+- a location (lat,lon) by name (with and without a given base location) and
 - an entity (address/street/amenity/POI) by a given location.
 
 So obviously there is the need of a kind of database to support this feature.
@@ -30,20 +30,25 @@ For each geocode provider there has to be a corresponding <ProviderName>.cfg fil
 So if you want to be able to use all of them, you need the files 
 
 ```
-   ./MGMapViewer/config/search/Graphhopper.cfg 
+     MGMapViewer/config/search/Graphhopper.cfg 
                               /Nominatim.cfg
                               /Pelias.cfg
                               /POI.cfg
                               /GeoLatLong.cfg
 ```
 
-### General Usage
+### State visualisation
+
+There are three states related to the geocode feature:
+- search mode on/off (switched on, if the search menu shows <img src="../../../icons/group_search2.svg" width="24"/> or  <img src="../../../icons/group_search4.svg" width="24"/>)
+- location based serach (switched on, if the icon in front of the search text is <img src="../../../icons/search_pos2.svg" width="24"/> 
+- show search result mode (switched on, if the search menu shows <img src="../../../icons/group_search3.svg" width="24"/> or  <img src="../../../icons/group_search4.svg" width="24"/>)
+
+
+## General Usage
 
 The usage will be explained with the nominatim geocode provider.
 
-There are two states related to the geocode feature:
-- search mode
-- show search result mode
 
 Switch on the search mode with <img src="../../../icons/group_search1.svg" width="24"/> + <img src="../../../icons/search1b.svg" width="24"/>.
 
@@ -63,11 +68,11 @@ upto 5 search results will be shown.
 Please notice, that the state of the search quick control changed from <img src="../../../icons/group_search1.svg" width="24"/>
 to <img src="../../../icons/group_search2.svg" width="24"/>, which reflects, that the search mode is switched on.
 
-A short tap to a search result will temporary enlarge the result (just for the case you don't have the glasses with you).
+A long tap on a search result will temporary enlarge the result (just for the case you don't have the glasses with you).
 
 <img src="./use4.png" width="300" />&nbsp;
 
-A long tap to a search result jump to the objects position. The "show search result mode" is automatically switched on.
+A short tap on a search result jump to the objects position. The "show search result mode" is automatically switched on.
 This means, that the map will be centered to the position of the object. This search result position will be highlighted with an orange circle.
  
 <img src="./use5.png" width="300" />&nbsp;
@@ -79,7 +84,7 @@ If the keyboard is shown and you decide to abort your search, then you cannot di
 quick controls are hidden due to the soft keyboard. Then you can either trigger a (senseless) search via ok button to get rid of the keyboard or you can just
 wait 10s. Then the keyboard will disappear automatically. Once you tap again on the input text field, the keyboard is shown again.
 
-Now we want to switch off the search mode with <img src="../../../icons/group_search4.svg" width="24"/> + <img src="../../../icons/search.svg" width="24"/>.
+Switch off the search mode with <img src="../../../icons/group_search4.svg" width="24"/> + <img src="../../../icons/search.svg" width="24"/>.
 
 <img src="./use6.png" width="300" />&nbsp;
 
@@ -102,6 +107,22 @@ switch on again the "show search result mode" (<img src="../../../icons/group_se
 In this case you'll get again the orange circle and the map will be aligned to this position.
 
 
+#### Forward search - location based and none location based
+
+You may have noticed the <img src="../../../icons/search_pos2.svg" width="24"/> icon in front of the search text. As the state visualisation chapter explains, 
+this reflects that the location based search is switched on.
+
+Now we want to see the difference between location based seach and none location based search. For this purpose the current map position is Heidelberg and
+we enter the search term "Stuttgart". With the nominatim search provider we only get one result, the "Haus Stuttgart" in Heidelberg, but we do not see the
+town Stuttgart as a result. 
+
+<img src="./use7.png" width="300" />&nbsp;
+
+But if we switch off location based search (with <img src="../../../icons/group_search2.svg" width="24"/> + <img src="../../../icons/search_pos1.svg" width="24"/>),
+then the result is changing and the city of stuttgart is provied as a result. Please notice also the state change in the icon in front of the search text.
+
+<img src="./use8.png" width="300" />&nbsp;
+  
 
 #### Reverse Search
 
