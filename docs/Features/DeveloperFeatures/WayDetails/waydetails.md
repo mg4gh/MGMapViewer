@@ -1,6 +1,6 @@
 <small><small>[Back to Index](../../../index.md)</small></small>
 
-## Developer Features: way data
+## Developer Features: way details
 
 This feature supports development of the
 [routing](../../MainTrackFeatures/Routing/routing.md) feature. The basis of the routing algorithm is a graph. 
@@ -9,7 +9,11 @@ routing process caused the problem. To distinguish these cases it is necessary t
 graph data. So how to investigate a special situation, where routing doesn't provide the desired result.
 For this purpose it is possible to visualize the way raw data from the tiles.
 
-Use  <img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/settings_fu.svg" width="24"/> and switch on <span style="color:gray">*Way details*</span>.
+Make sure that you have enabled [developer](../Developer/developer.md) mode. 
+
+Use <img src="../../../icons/group_task.svg" width="24"/> + <img src="../../../icons/settings.svg" width="24"/>
+to open the main settings preference screen. Scroll down to the <span style="color:gray">*Display settings*</span>
+preference catecory and switch on <span style="color:gray">*Way details*</span>.
 
 When you go back to the map, then the *way details* mode is enabled: If you tap to the marked position, you get following result:
 

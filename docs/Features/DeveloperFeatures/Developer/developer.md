@@ -1,20 +1,26 @@
 <small><small>[Back to Index](../../../index.md)</small></small>
 
-## Developer Features: developer documentation
+## Developer Features: How to become a developer
 
-This is in fact not a feature of the software, this is rather the entry point for more developer documentation.
+Press <img src="../../../icons/group_task.svg" width="24"/> and <img src="../../../icons/settings.svg" width="24"/> to open the settings preference screen.
+Scroll down and tap on <span style="color:gray">*MGMapViewer Info*</span>. 
 
-It consists of:
-- the [view model](./ViewModel.md)
-- the [main class model](./MainClassModel.md) of the app
-- the [data model](./Model.md) for tracks (the model part form the Model-View-Control architecture for tracks
-- the [graph model](./graph.md) as the basis for the route calculation
+<img src="./01_dev.png" width="270" />&nbsp;
+<img src="./02_dev.png" width="270" />&nbsp;
 
-The UML class models are created with Visual Paradigm Community Edition. 
-The project file of the model is available [here](../../../more/mgmap.vpp).
+Now tap seven times on <span style="color:gray">*Build number*</span>.
 
-The view model is created with Libre Office, the source file is available [here](../../../more/ViewModel.odg).  
+<img src="./03_dev.png" width="270" />&nbsp;
 
-The JavaDoc of the source code is available [here](https://mg4gh.github.io/MGMapViewer/javadoc/index.html).
+That's it: Now you are a developer: 
+
+<img src="./04_dev.png" width="270" />&nbsp;
+
+Go back to the main setting preference screen. Also here the <span style="color:gray">*MGMapViewer Info*</span> entry reflects this state.
+Additionally you will see some more settings marked as <span style="color:gray">*developer*</span>. These setting allow to activate the developer features.
+
+<img src="./05_dev.png" width="270" />&nbsp;
+
+You can switch off this developer mode exactly in the same way: Tap again seven times on the <span style="color:gray">*Build number*</span> in the info preference screen. 
 
 <small><small>[Back to Index](../../../index.md)</small></small>

@@ -54,11 +54,14 @@ Each feature contains a link to the corresponding detailed feature description.
 
 ### Developer features
 There [application design document](./more/add.pdf) provides an extensive description documentation. Additionally these pages are available:
+- [developer](./Features/DeveloperFeatures/Developer/developer.md): howto become developer
 - [Way details](./Features/DeveloperFeatures/WayDetails/waydetails.md) shows the ways of a tile 
   - based on a mapsforge map 
   - includes the tile border
   - highlights a taped graph segment
-- [developer documentation](./Features/DeveloperFeatures/Developer/developer.md) provides more information for developers.
+- [search details](./Features/DeveloperFeatures/SearchDetails/searchdetails.md): provide search details
+- [power saving alarm](./Features/DeveloperFeatures/PowerSavingAlarm/powersaving.md): trigger an acustic alarm in case of a potential power saving problem
+- [developer documentation](./Features/DeveloperFeatures/DeveloperDocumentation/developer.md) provides more information for developers
 
 # Download latest apk
 Here you can [download](./download.md) latest apk.

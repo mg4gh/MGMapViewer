@@ -20,16 +20,55 @@ All other tap actions on an entry toggle its selection state.
 The file manager headline allows to go one level up <img src="../../../icons/file_mgr_up.svg" width="24"/> or to jump to an explicit parent directory.
 
 The quick controls provide follwoing functions:
-| Quick control icon | enabled | Quick control Funtion |
-| --- | --- | --- |
-| <img src="../../../icons/file_mgr_dir.svg" width="24"/> | always  | create a new subdirectory |
-| <img src="../../../icons/file_mgr_file.svg" width="24"/> | always  | create a new file in the current directory |
-| <img src="../../../icons/edit2.svg" width="24"/> | one file or directory is seleceted | edit the file or directory name |
-| <img src="../../../icons/show.svg" width="24"/> | one file is seleceted | open the file (same as single tap) |
-| <img src="../../../icons/share.svg" width="24"/> | one or more files are selected | share the selected files |
-| <img src="../../../icons/save.svg" width="24"/> | MGMapViewer was selected as a share target | save the (via share received) files to the current directory (so first navigate to the desired target directory, then use the save) |
-| <img src="../../../icons/delete.svg" width="24"/> | one or more files and empty directories are selected | delete the selected files and directories |
-| <img src="../../../icons/back.svg" width="24"/> | alwasy | go back to the main activity |
+<table>
+  <tr>
+    <th>Quick control icon</th>
+    <th>Quick control enabled condition</th>
+    <th>Quick control Funtion</th>
+  </tr>
+  <tr>
+    <td><img src="../../../icons/file_mgr_dir.svg" width="24"/></td> 
+    <td>always</td>
+    <td>create a new subdirectory</td>	
+  </tr>
+  <tr>
+    <td><img src="../../../icons/file_mgr_file.svg" width="24"/></td> 
+    <td>always</td>
+    <td>create a new file in the current directory</td>	
+  </tr>
+  <tr>
+    <td><img src="../../../icons/edit2.svg" width="24"/></td> 
+    <td>one file or directory is seleceted</td>
+    <td>edit the file or directory name</td>	
+  </tr>
+  <tr>
+    <td><img src="../../../icons/show.svg" width="24"/></td> 
+    <td>one file is seleceted</td>
+    <td>open the file (same as single tap)</td>	
+  </tr>
+  
+  
+  <tr>
+    <td><img src="../../../icons/share.svg" width="24"/></td> 
+    <td>one or more files are selected</td>
+    <td>share the selected files</td>	
+  </tr>
+  <tr>
+    <td><img src="../../../icons/save.svg" width="24"/></td> 
+    <td>MGMapViewer was selected as a share target</td>
+    <td>save the (via share received) files to the current directory (so first navigate to the desired target directory, then use the save)</td>	
+  </tr>
+  <tr>
+    <td><img src="../../../icons/delete.svg" width="24"/></td> 
+    <td>one or more files and empty directories are selected</td>
+    <td>delete the selected files and directories</td>	
+  </tr>
+  <tr>
+    <td><img src="../../../icons/back.svg" width="24"/></td> 
+    <td>always</td>
+    <td>go back to the previous activity</td>	
+  </tr>
+<table>
 
 
 <small><small>[Back to Index](../../../index.md)</small></small>
