@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.util.ZoomOCL;
 import mg.mgmap.generic.util.ExtendedClickListener;
 

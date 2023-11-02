@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.HgtProvider;
 

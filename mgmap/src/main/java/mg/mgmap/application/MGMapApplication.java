@@ -30,7 +30,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import mg.mgmap.BuildConfig;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
 import mg.mgmap.application.util.ActivityLifecycleAdapter;

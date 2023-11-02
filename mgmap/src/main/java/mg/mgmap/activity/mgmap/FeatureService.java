@@ -32,7 +32,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.MVGroupLayer;
 import mg.mgmap.application.MGMapApplication;

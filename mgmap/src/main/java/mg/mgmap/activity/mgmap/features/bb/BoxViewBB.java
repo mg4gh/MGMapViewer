@@ -18,7 +18,7 @@ import org.mapsforge.core.graphics.Paint;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.model.BBox;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.view.BoxView;
 
 public class BoxViewBB extends BoxView{

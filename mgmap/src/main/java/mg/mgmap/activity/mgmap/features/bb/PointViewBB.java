@@ -18,7 +18,7 @@ import org.mapsforge.core.graphics.Paint;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.view.PointView;
 
 public class PointViewBB extends PointView {

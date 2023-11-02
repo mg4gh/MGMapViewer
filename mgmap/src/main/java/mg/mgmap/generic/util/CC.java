@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.activity.mgmap.util;
+package mg.mgmap.generic.util;
 
 import android.content.Context;
 import android.graphics.Color;

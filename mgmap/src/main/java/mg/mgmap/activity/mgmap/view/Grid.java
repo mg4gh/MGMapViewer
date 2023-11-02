@@ -30,7 +30,7 @@ import java.text.DecimalFormat;
 import java.util.Map;
 
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 
 /**
  * The Grid layer draws a geographical grid.

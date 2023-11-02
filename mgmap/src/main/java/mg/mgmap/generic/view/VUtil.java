@@ -11,7 +11,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.mapsforge.map.model.DisplayModel;
 
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 
 public class VUtil {
 

@@ -44,7 +44,7 @@ import java.util.Objects;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.TrackLogStatistic;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.util.EnlargeControl;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;

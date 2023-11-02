@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.activity.mgmap.util.CC;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.model.PointModelUtil;
 
 /** This view draws a track (segment) via its MultiPointModel. The special thing here is, that the
