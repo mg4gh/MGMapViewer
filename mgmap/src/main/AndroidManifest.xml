@@ -39,23 +39,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <intent-filter>
-                <!-- 23.10.2018 MG: intent-filter for files must have host tag, then it filters on pathPattern (not only on mimeType) -->
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+<!--            <intent-filter>-->
+<!--                &lt;!&ndash; 23.10.2018 MG: intent-filter for files must have host tag, then it filters on pathPattern (not only on mimeType) &ndash;&gt;-->
+<!--                &lt;!&ndash; 02.11.2023 MG: seems like this entry isn't needed anymore &ndash;&gt;-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
 
-                <data android:host="*" />
-                <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\.gpx" />
-                <data android:scheme="content" />
-            </intent-filter>
+<!--                <data android:host="*" />-->
+<!--                <data android:mimeType="*/*" />-->
+<!--                <data android:pathPattern=".*\.gpx" />-->
+<!--                <data android:scheme="content" />-->
+<!--            </intent-filter>-->
             <intent-filter>
                 <!-- 23.10.2018 MG: intent-filter for email appendix must not have host tag, then it filters on mimeType -->
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
+<!--                <data android:mimeType="application/*" />-->
                 <data android:mimeType="application/octet-stream" />
                 <data android:mimeType="application/gpx" />
                 <data android:mimeType="application/gpx+xml" />
