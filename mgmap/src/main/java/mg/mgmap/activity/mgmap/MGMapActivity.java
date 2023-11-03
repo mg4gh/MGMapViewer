@@ -29,8 +29,12 @@ import android.os.Bundle;
 
 import android.provider.OpenableColumns;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 
 
 import androidx.annotation.NonNull;
@@ -85,6 +89,7 @@ import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.GpxSyncUtil;
 import mg.mgmap.generic.util.WaitUtil;
@@ -523,17 +528,28 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     bgJobGroup.addJob(OpenAndroMapsUtil.createBgJobsFromIntentUriTheme(pm, new URL(sUrl)));
                     bgJobGroup.setConstructed("Download mapsforge theme from "+sUrl);
                 } else if ("mgmap-install".equals(uri.getScheme())){
-                    BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download and install generic zip archive", new BgJobGroupCallback(){} );
+                    final EditText etPassword = new androidx.appcompat.widget.AppCompatEditText(MGMapActivity.this);
+                    BgJobGroupCallback bgJobGroupCallback = new BgJobGroupCallback() {
+                        @Override
+                        public View getContentView() {
+                            etPassword.setHint("Password (optional)");
+                            etPassword.setHintTextColor(CC.getColor(R.color.CC_GRAY200));
+                            etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                            return etPassword;
+                        }
+                    };
+                    BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Install zip archive", bgJobGroupCallback );
                     String sUrl = uri.toString().replaceFirst("mgmap-install", "https");
                     bgJobGroup.addJob( new BgJob() {
                         @Override
                         protected void doJob() throws Exception {
                             super.doJob();
-                            Zipper zipper = new Zipper(null);
+                            Editable edPassword = etPassword.getText();
+                            Zipper zipper = new Zipper(edPassword==null?null:edPassword.toString());
                             zipper.unpack(new URL(sUrl), pm.getAppDir(), null, this);
                         }
                     } );
-                    bgJobGroup.setConstructed("Download and install generic zip archive from "+sUrl);
+                    bgJobGroup.setConstructed("Download and install "+sUrl);
                 } else if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
                     ContentResolver contentResolver = application.getContentResolver();
 

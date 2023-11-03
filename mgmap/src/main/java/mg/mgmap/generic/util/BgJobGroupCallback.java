@@ -1,5 +1,7 @@
 package mg.mgmap.generic.util;
 
+import android.view.View;
+
 public interface BgJobGroupCallback {
 
     default boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail){ // return true, if retry shall be offered
@@ -10,5 +12,9 @@ public interface BgJobGroupCallback {
 
     default void retry(BgJobGroup jobGroup) {
         jobGroup.doit();
+    }
+
+    default View getContentView(){
+        return null;
     }
 }

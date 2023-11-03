@@ -35,6 +35,7 @@ public class BgJobUtil {
         dialogView.lock(() -> dialogView
                 .setTitle(bgJobGroup.title)
                 .setMessage(bgJobGroup.getDetails())
+                .setContentView(bgJobGroup.groupCallback.getContentView())
                 .setLogPrefix("bgJobGroupConfirm "+bgJobGroup.title)
                 .setPositive("YES", evt -> bgJobGroup.doit())
                 .setNegative("NO", null)
