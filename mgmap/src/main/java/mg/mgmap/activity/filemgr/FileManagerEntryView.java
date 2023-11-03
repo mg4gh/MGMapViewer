@@ -17,23 +17,21 @@ package mg.mgmap.activity.filemgr;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.core.content.res.ResourcesCompat;
-
+import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.ControlView;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -49,7 +47,13 @@ public class FileManagerEntryView extends LinearLayout {
     private final Observer selectedObserver;
 
     private final ExtendedTextView etvSelected;
-    public final ExtendedTextView etvName;
+    private final ExtendedTextView etvName;
+    private final ExtendedTextView etvSize;
+    private final ExtendedTextView etvTimestamp;
+
+    private final LinearLayout llRight;
+    private final LinearLayout llBottom;
+
 
 
     private int dp(float dp){
@@ -61,20 +65,81 @@ public class FileManagerEntryView extends LinearLayout {
     public FileManagerEntryView(Context context){
         super(context);
 
-        this.setId(View.generateViewId());
-        this.setOrientation(VERTICAL);
-        this.setPadding(0, dp(2),0,0);
-        this.setLayoutParams(new LinearLayout.LayoutParams(-1,-2));
-
-        LinearLayout llEntry = new LinearLayout(context);
-        llEntry.setOrientation(HORIZONTAL);
-        llEntry.setLayoutParams(new LayoutParams(-1, -2));
-
-        this.addView(llEntry);
-        etvSelected = createETV(llEntry,10).setFormat(Formatter.FormatType.FORMAT_STRING).setData(R.drawable.select_off,R.drawable.select_on);
-        etvName = createETV(llEntry,90).setFormat(Formatter.FormatType.FORMAT_STRING);
-        etvName.setMaxLines(5);
-
+        {
+            this.setId(View.generateViewId());
+            this.setOrientation(HORIZONTAL);
+            this.setPadding(0, dp(2),0,0);
+            this.setLayoutParams(new LinearLayout.LayoutParams(-1,-2));
+        }
+        {
+            etvSelected = new ExtendedTextView(context);
+            LinearLayout.LayoutParams lpSelected = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+            lpSelected.setMargins(dp(0.8f),dp(0.8f),dp(0.8f),dp(0.8f));
+            lpSelected.weight = 10;
+            etvSelected.setLayoutParams(lpSelected);
+            etvSelected.setPadding(dp(6.0f),dp(3.0f),dp(6.0f),dp(0.0f));
+            etvSelected.setData(R.drawable.select_off,R.drawable.select_on);
+            etvSelected.setDrawableSize(dp(24));
+            etvSelected.setCompoundDrawablePadding(dp(6.0f));
+            this.addView(etvSelected);
+        }
+        {
+            llRight = new LinearLayout(context);
+            llRight.setOrientation(VERTICAL);
+            LinearLayout.LayoutParams lpRight =  new LinearLayout.LayoutParams( 0, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lpRight.weight = 90;
+            llRight.setLayoutParams(lpRight);
+            this.addView(llRight);
+        }
+        {
+            etvName = new ExtendedTextView(context);
+            LinearLayout.LayoutParams lpName = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lpName.setMargins(dp(0.8f),dp(0.8f),dp(0.8f),0);
+            etvName.setLayoutParams(lpName);
+            etvName.setPadding(dp(6.0f),dp(5.0f),dp(6.0f),dp(0.0f));
+            etvName.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+            etvName.setFormat(Formatter.FormatType.FORMAT_STRING);
+            etvName.setGravity(Gravity.START);
+            etvName.setMaxLines(5);
+            etvName.setTextColor(CC.getColor(R.color.CC_WHITE));
+            etvName.setDrawableSize(dp(24));
+            etvName.setCompoundDrawablePadding( dp(6.0f));
+            llRight.addView(etvName);
+        }
+        {
+            llBottom = new LinearLayout(context);
+            llBottom.setOrientation(HORIZONTAL);
+            llBottom.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+            llRight.addView(llBottom);
+        }
+        {
+            etvSize = new ExtendedTextView(context);
+            LinearLayout.LayoutParams lpSize = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lpSize.weight = 50;
+            lpSize.setMargins(dp(0.8f),0,0,dp(0.8f));
+            etvSize.setLayoutParams(lpSize);
+            etvSize.setPadding(dp(36.0f),dp(0.0f),dp(6.0f),dp(3.0f));
+            etvSize.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            etvSize.setFormat(Formatter.FormatType.FORMAT_FILE_SIZE);
+            etvSize.setGravity(Gravity.START);
+            etvSize.setLines(1);
+            etvSize.setTextColor(CC.getColor(R.color.CC_WHITE));
+            llBottom.addView(etvSize);
+        }
+        {
+            etvTimestamp = new ExtendedTextView(context);
+            LinearLayout.LayoutParams lpTimestamp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lpTimestamp.weight = 50;
+            lpTimestamp.setMargins(0,0,dp(0.8f),dp(0.8f));
+            etvTimestamp.setLayoutParams(lpTimestamp);
+            etvTimestamp.setPadding(dp(6.0f),dp(0.0f),dp(6.0f),dp(3.0f));
+            etvTimestamp.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            etvTimestamp.setFormat(Formatter.FormatType.FORMAT_FILE_TS);
+            etvTimestamp.setGravity(Gravity.END);
+            etvTimestamp.setLines(1);
+            etvTimestamp.setTextColor(CC.getColor(R.color.CC_WHITE));
+            llBottom.addView(etvTimestamp);
+        }
 
         selectedObserver = (e) -> {
             FileManagerEntryModel model = fileManagerEntryModel; // concurrent Thread may set fileManagerEntryModel to null
@@ -96,6 +161,17 @@ public class FileManagerEntryView extends LinearLayout {
         etvName.setValue(name);
         etvName.setData(fileManagerEntryModel.getFile().isDirectory()?R.drawable.file_mgr_dir:R.drawable.file_mgr_file);
 
+        File file = fileManagerEntryModel.getFile();
+        if (file.isDirectory()){
+            etvSize.setFormat(Formatter.FormatType.FORMAT_FILE_SIZE_DIR);
+            String[] dirEntries = file.list();
+            etvSize.setValue( (long)(dirEntries==null?0:dirEntries.length));
+        } else {
+            etvSize.setFormat(Formatter.FormatType.FORMAT_FILE_SIZE);
+            etvSize.setValue( file.length() );
+        }
+        etvTimestamp.setValue( file.lastModified() );
+
         setViewtreeColor(FileManagerEntryView.this, getColorIdForTrackLog(fileManagerEntryModel));
         fileManagerEntryModel.getSelected().addObserver(selectedObserver);
         boundViews.add(this);
@@ -115,38 +191,14 @@ public class FileManagerEntryView extends LinearLayout {
         etvSelected.cleanup();
         etvSelected.setOnClickListener(null);
         etvSelected.setOnLongClickListener(null);
-        etvName.setOnClickListener(null);
-        etvName.setOnLongClickListener(null);
+        llRight.setOnClickListener(null);
+        llRight.setOnLongClickListener(null);
         fileManagerEntryModel.getSelected().setValue(false);
         fileManagerEntryModel = null;
         setOnClickListener(null);     // OCL created during bind in FileManagerEntryAdapter/FileManagerActivity
         setOnLongClickListener(null); // OCL created during bind in FileManagerEntryAdapter/FileManagerActivity
     }
 
-
-    public ExtendedTextView createETV(ViewGroup viewGroup, float weight) {
-        ExtendedTextView etv = new ExtendedTextView(getContext()).setDrawableSize(dp(24)); // Need activity context for Theme.AppCompat (Otherwise we get error messages)
-        viewGroup.addView(etv);
-
-        TableRow.LayoutParams params = new TableRow.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT);
-        int margin = dp(0.8f);
-        params.setMargins(margin,margin,margin,margin);
-        params.weight = weight;
-        etv.setLayoutParams(params);
-
-        int padding = dp(6.0f);
-        etv.setPadding(padding, padding, padding, padding);
-        int drawablePadding = dp(6.0f);
-        etv.setCompoundDrawablePadding(drawablePadding);
-        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.quick2, getContext().getTheme());
-        if (drawable != null) drawable.setBounds(0, 0, etv.getDrawableSize(), etv.getDrawableSize());
-        etv.setCompoundDrawables(null,null,null,null);
-        etv.setText("");
-        etv.setTextColor(getContext().getColor(R.color.CC_WHITE));
-        etv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        etv.setMaxLines(1);
-        return etv;
-    }
 
     private void setViewtreeColor(View view, int colorId){
         if (view instanceof TextView){
@@ -205,7 +257,7 @@ public class FileManagerEntryView extends LinearLayout {
         return etvSelected;
     }
 
-    public ExtendedTextView getEtvName() {
-        return etvName;
+    public LinearLayout getLlRight() {
+        return llRight;
     }
 }

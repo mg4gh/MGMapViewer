@@ -315,7 +315,7 @@ public class FileManagerActivity extends AppCompatActivity {
 
 
     void bind(FileManagerEntryView view, FileManagerEntryModel model){
-        view.getEtvName().setOnLongClickListener(v -> {
+        view.getLlRight().setOnLongClickListener(v -> {
             model.getSelected().toggle();
             reworkObserver.propertyChange(null);
             return true;
@@ -325,7 +325,7 @@ public class FileManagerActivity extends AppCompatActivity {
             reworkObserver.propertyChange(null);
             return true;
         });
-        view.getEtvName().setOnClickListener(v -> {
+        view.getLlRight().setOnClickListener(v -> {
             if (getSelectedEntries(null).size() > 0){
                 model.getSelected().toggle();
             } else if (model.getFile().isDirectory()){

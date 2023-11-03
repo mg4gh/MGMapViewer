@@ -30,7 +30,7 @@ public class Formatter {
     public static final SimpleDateFormat SDF2 = new SimpleDateFormat("HH:mm", Locale.GERMANY);
     public static final SimpleDateFormat SDF3 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.GERMANY);
 
-    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DATE, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING, FORMAT_TIMESTAMP}
+    public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DATE, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING, FORMAT_TIMESTAMP, FORMAT_FILE_SIZE, FORMAT_FILE_SIZE_DIR, FORMAT_FILE_TS}
 
     private final FormatType formatType;
 
@@ -148,7 +148,7 @@ public class Formatter {
                 }
                 text = String.format(Locale.ENGLISH, heightFormat, height);
             }
-         } else if (formatType == FormatType.FORMAT_STRING) {
+        } else if (formatType == FormatType.FORMAT_STRING) {
             text = value.toString();
         } else if (formatType == FormatType.FORMAT_DURATION) {
             long duration = (Long) value;
@@ -165,6 +165,29 @@ public class Formatter {
             if ("".equals(text)) {
                 text = String.format(Locale.ENGLISH, "%d:%02d", hours, minutes);
             }
+        } else if (formatType == FormatType.FORMAT_FILE_SIZE) {
+            long size = (Long) value;
+            if (size > 1000000000){
+                text = String.format(Locale.ENGLISH,"%.1f GB",size/1000000000.0);
+            } else if (size > 1000000){
+                text = String.format(Locale.ENGLISH,"%.1f MB",size/1000000.0);
+            } else if (size > 1000){
+                text = String.format(Locale.ENGLISH,"%.1f KB",size/1000.0);
+            } else {
+                text = size+" B";
+            }
+        } else if (formatType == FormatType.FORMAT_FILE_SIZE_DIR) {
+            long size = (Long) value;
+            if (size == 0){
+                text = "empty";
+            } else if (size == 1){
+                text = "1 entry";
+            } else {
+                text = size+" entries";
+            }
+        } else if (formatType == FormatType.FORMAT_FILE_TS) {
+            long timestamp = (Long) value;
+            text = SDF1b.format(timestamp)+" "+SDF2.format(timestamp);
         }
         return text;
     }
