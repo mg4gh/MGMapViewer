@@ -14,9 +14,11 @@
  */
 package mg.mgmap.generic.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Looper;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 
@@ -279,7 +281,13 @@ public class ExtendedTextView extends AppCompatTextView {
             Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drId, getContext().getTheme());
             if (drawable != null){
                 drawable.setBounds(0,0,drawableSize,drawableSize);
-                setCompoundDrawables(drawable,null,null,null);
+                if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                    setCompoundDrawables(drawable, null, null, null);
+                } else {
+                    Activity activity = (Activity) this.getContext();
+                    activity.runOnUiThread(() -> setCompoundDrawables(drawable, null, null, null));
+                    mgLog.d("was here: "+logName);
+                }
             }
         }
     }
