@@ -238,7 +238,13 @@ public class ExtendedTextView extends AppCompatTextView {
             String newText = Formatter.format(formatType, value, getPaint() /*availablePaint*/, availableWidth*getMaxLines());
             if (!newText.equals(availableText)){
                 mgLog.d(logName+":"+newText /*+ " availableWidth="+availableWidth +" textSize="+getTextSize()*/);
-                setText( newText );
+                if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                    setText( newText );
+                } else {
+                    mgLog.d("need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
+                    Activity activity = (Activity) this.getContext();
+                    activity.runOnUiThread(() -> setText( newText ));
+                }
                 availableText = newText;
                 onChange("onSetValue: "+newText);
                 return true;
@@ -284,9 +290,9 @@ public class ExtendedTextView extends AppCompatTextView {
                 if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
                     setCompoundDrawables(drawable, null, null, null);
                 } else {
+                    mgLog.d("need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
                     Activity activity = (Activity) this.getContext();
                     activity.runOnUiThread(() -> setCompoundDrawables(drawable, null, null, null));
-                    mgLog.d("was here: "+logName);
                 }
             }
         }
