@@ -149,6 +149,6 @@ This is a list of [allowed patterns](https://developer.android.com/guide/compone
 - geo:latitude,longitude?z=zoom [geo:49.406953,8.678815?z=15](geo:49.406953,8.678815?z=15) Kirchstr. 16, 69115 Heidelberg + zoom=15
 - geo:0,0?q=lat,lng(label)  <a href="geo:0,0?q=49.406953,8.678815(Krichstr 16)">geo:0,0?q=49.406953,8.678815(Krichstr 16)</a>
 - geo:0,0?q=my+street+address [geo:0,0?q=Kirchstr+16+Heidelberg](geo:0,0?q=Kirchstr+16+Heidelberg)
-- geo:0,0?q=my+street+address [geo:0,0?q=Kirchstr 16 Heidelberg](geo:0,0?q=Kirchstr 16 Heidelberg)
+- geo:0,0?q=my+street+address <a href="geo:0,0?q=Kirchstr 16 Heidelberg">geo:0,0?q=Kirchstr 16 Heidelberg</a>
 
 <small><small>[Back to Index](../../../index.md)</small></small>
