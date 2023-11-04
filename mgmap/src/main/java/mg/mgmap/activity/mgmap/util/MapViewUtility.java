@@ -36,6 +36,8 @@ import mg.mgmap.generic.model.PointModelUtil;
  */
 public class MapViewUtility {
 
+    public static final byte ZOOM_LEVEL_MIN = 1;
+    public static final byte ZOOM_LEVEL_MAX = 24;
     public static final float DEFAULT_TRACK_WIDTH = 4;
 
     final private Context context;
@@ -100,9 +102,12 @@ public class MapViewUtility {
         return DEFAULT_TRACK_WIDTH * mapView.getModel().displayModel.getScaleFactor();
     }
 
-    public void setMapViewPosition(PointModel pm) {
+    public void setMapViewPosition(PointModel pm, byte zoom) {
         IMapViewPosition imvp = this.mapView.getModel().mapViewPosition;
         imvp.setCenter(new LatLong(pm.getLat(), pm.getLon()));
+        if ((ZOOM_LEVEL_MIN <= zoom) && (zoom <= ZOOM_LEVEL_MAX)){
+            imvp.setZoomLevel(zoom);
+        }
     }
 
 

@@ -550,7 +550,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         }
                     } );
                     bgJobGroup.setConstructed("Download and install "+sUrl);
-                } else if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+                } else if ("geo".equals(uri.getScheme())){
+                    String sUri = Uri.decode(uri.toString());
+                    getFS(FSSearch.class).processGeoIntent(sUri);
+                } else if ("content".equals(uri.getScheme())) {
                     ContentResolver contentResolver = application.getContentResolver();
 
                     try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
@@ -671,8 +674,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 mvp.setMapPosition(new MapPosition(new LatLong(49.4057, 8.6789), (byte)15));
             }
         }
-        mvp.setZoomLevelMax(ZOOM_LEVEL_MAX);
-        mvp.setZoomLevelMin(ZOOM_LEVEL_MIN);
+        mvp.setZoomLevelMax(MapViewUtility.ZOOM_LEVEL_MAX);
+        mvp.setZoomLevelMin(MapViewUtility.ZOOM_LEVEL_MIN);
     }
 
 

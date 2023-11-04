@@ -2,7 +2,7 @@
 <resources>
     <string name="FSSearch_qc_searchOn">FSSearch.searchOn</string>
     <string name="FSSearch_qc_showSearchResult">FSSearch.showSearchResult</string>
-    <string name="FSSearch_pref_SearchPos">FSSearch.searchPos</string>
+    <string name="FSSearch_pref_SearchPos2">FSSearch.searchPos2</string>
     <string name="FSSearch_pref_PosBasedSearch">FSSearch.posBasedSearch</string>
 
     <string name="FSRecording_qcSearch_help">Search mode</string>

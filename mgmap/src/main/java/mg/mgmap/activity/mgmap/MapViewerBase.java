@@ -70,10 +70,6 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         this.tileCaches.add(tileCache);
     }
 
-
-    protected static final byte ZOOM_LEVEL_MIN = 1;
-    protected static final byte ZOOM_LEVEL_MAX = 24;
-
     /** MGMapViewer use exactly one mapView object, which is initialized here */
     protected void initMapView() {
         mapView = findViewById(R.id.mapView);

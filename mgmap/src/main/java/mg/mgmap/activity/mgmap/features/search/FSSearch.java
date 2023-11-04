@@ -25,6 +25,8 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 
 import java.lang.invoke.MethodHandles;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
@@ -39,7 +41,6 @@ import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
-import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
 
@@ -48,7 +49,6 @@ public class FSSearch extends FeatureService {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final long T_HIDE_KEYBOARD = 10000; // in ms => 10s
-    private static final long NO_POS = PointModelUtil.NO_POS; // default invalid position for prefShowPos
 
     private final SearchView searchView;
     private SearchProvider searchProvider = null;
@@ -58,7 +58,7 @@ public class FSSearch extends FeatureService {
     private final Pref<String> prefSearchProvider = getPref(R.string.preference_choose_search_key, "Graphhopper");
     private final Pref<Boolean> prefShowSearchResult = getPref(R.string.FSSearch_qc_showSearchResult, false);
     private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
-    private final Pref<Long> prefShowPos = getPref(R.string.FSSearch_pref_SearchPos, NO_POS);
+    private final Pref<String> prefSearchPos = getPref(R.string.FSSearch_pref_SearchPos2, "");
     private final Pref<Boolean> prefPosBasedSearch = getPref(R.string.FSSearch_pref_PosBasedSearch, true);
     private final Pref<Boolean> prefSearchResultDetails = getPref(R.string.FSSearch_pref_SearchDetails_key, false);
 
@@ -109,16 +109,16 @@ public class FSSearch extends FeatureService {
             }
         };
         prefShowSearchResult.addObserver(showPositionObserver);
-        prefShowPos.addObserver(showPositionObserver);
+        prefSearchPos.addObserver(showPositionObserver);
 
-        prefShowPos.addObserver((e) -> prefShowSearchResultEnabled.setValue(prefShowPos.getValue() != NO_POS));
+        prefSearchPos.addObserver((e) -> prefShowSearchResultEnabled.setValue(!prefSearchPos.getValue().equals("")));
 
         if (getPref(R.string.MGMapApplication_pref_Restart, true).getValue()){
             prefShowSearchResult.setValue(false);
-            prefShowPos.setValue(NO_POS);
+            prefSearchPos.setValue("");
         }
         prefSearchOn.addObserver(refreshObserver);
-        prefShowPos.onChange();
+        prefSearchPos.onChange();
         prefShowSearchResult.onChange();
     }
 
@@ -238,13 +238,13 @@ public class FSSearch extends FeatureService {
     }
 
     void showSearchPos(){
-        long lalo = prefShowPos.getValue();
-        if ((lalo != 0) && (lalo != NO_POS)){
-            PointModel pos = PointModelImpl.createFromLaLo(lalo);
-            mgLog.i(pos);
-            getMapViewUtility().setMapViewPosition(pos);
-            register(new PointViewSearch(pos).setRadius(10));
-            register(new PointViewSearch(pos).setRadius(1));
+        String sSearchPos = prefSearchPos.getValue();
+        mgLog.i(sSearchPos);
+        SearchPos searchPos = SearchPos.fromJsonString(sSearchPos);
+        if ((searchPos != null) && (searchPos.getLat() != PointModel.NO_LAT_LONG) && (searchPos.getLon() != PointModel.NO_LAT_LONG)){
+            getMapViewUtility().setMapViewPosition(searchPos,searchPos.getZoom());
+            register(new PointViewSearch(searchPos).setRadius(10));
+            register(new PointViewSearch(searchPos).setRadius(1));
         }
     }
 
@@ -257,29 +257,32 @@ public class FSSearch extends FeatureService {
     }
 
     public void setSearchResult(PointModel pmSearchResult) {
-        if (activity.getMapDataStoreUtil().getMapDataStore(new BBox().extend(pmSearchResult)) == null){
-            mgLog.w("outside of map: "+pmSearchResult);
-//            Toast.makeText(getActivity(),"Search result outside map",Toast.LENGTH_LONG).show();
+        setSearchResult(new SearchPos(pmSearchResult));
+    }
+    public void setSearchResult(SearchPos spSearchResult) {
+        if (activity.getMapDataStoreUtil().getMapDataStore(new BBox().extend(spSearchResult)) == null){
+            mgLog.w("outside of map: "+spSearchResult);
             DialogView dialogView = activity.findViewById(R.id.dialog_parent);
             dialogView.lock(() -> dialogView
                     .setTitle("Warning")
                     .setMessage("Search result outside mapsforge map")
                     .setLogPrefix("Search")
-                    .setPositive("Locate anyway", evt -> setSearchResult2(pmSearchResult))
+                    .setPositive("Locate anyway", evt -> setSearchResult2(spSearchResult))
                     .setNegative("Cancel",null)
                     .show());
         } else {
-            setSearchResult2(pmSearchResult);
+            setSearchResult2(spSearchResult);
         }
     }
-    public void setSearchResult2(PointModel pmSearchResult) {
-        mgLog.i(pmSearchResult);
-        prefShowPos.setValue(pmSearchResult.getLaLo());
-        if (prefShowSearchResult.getValue()){
-            prefShowSearchResult.onChange(); // even if result is already shown, this triggers to center the result
+    public void setSearchResult2(SearchPos spSearchResult) {
+        mgLog.i(spSearchResult);
+        String sSearchResult = spSearchResult.toJsonString();
+        if (prefSearchPos.getValue().equals(sSearchResult)){
+            prefSearchPos.onChange();
         } else {
-            prefShowSearchResult.setValue(true);
+            prefSearchPos.setValue(sSearchResult);
         }
+        prefShowSearchResult.setValue(true);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -288,6 +291,68 @@ public class FSSearch extends FeatureService {
     }
     public boolean showSearchDeatils(){
         return prefSearchResultDetails.getValue();
+    }
+
+
+    /** @noinspection DataFlowIssue, RegExpRedundantEscape */
+    public void processGeoIntent(String sUri){
+        mgLog.i("sUri="+sUri);
+
+        // possible patterns are (according to https://developer.android.com/guide/components/intents-common#java)
+        // geo:latitude,longitude
+        // geo:latitude,longitude?z=zoom
+        // geo:0,0?q=lat,lng(label)
+        // geo:0,0?q=my+street+address
+
+        String d = "(\\-?\\d*\\.?\\d+)";
+        Pattern p1 = Pattern.compile("geo:"+d+","+d);
+        Pattern p2 = Pattern.compile("geo:"+d+","+d+"\\?z=([12]?[0-9])");
+        Pattern p3 = Pattern.compile("geo:0,0\\?q="+d+","+d+"\\(([^\\)]+)\\)");
+        Pattern p4 = Pattern.compile("geo:0,0\\?q=(.*)");
+
+        double lat = PointModel.NO_LAT_LONG;
+        double lon = PointModel.NO_LAT_LONG;
+        byte zoom = 0; // no zoom
+        String label = "";
+        String qString = null;
+        Matcher m = p1.matcher(sUri);
+        if (m.matches()){
+            lat = Double.parseDouble(m.group(1));
+            lon = Double.parseDouble(m.group(2));
+        } else {
+            m = p2.matcher(sUri);
+            if (m.matches()){
+                lat = Double.parseDouble(m.group(1));
+                lon = Double.parseDouble(m.group(2));
+                zoom = Byte.parseByte(m.group(3));
+                zoom = (byte)Math.max(Math.min(zoom, 22), 6);
+            } else {
+                m = p3.matcher(sUri);
+                if (m.matches()){
+                    lat = Double.parseDouble(m.group(1));
+                    lon = Double.parseDouble(m.group(2));
+                    label = m.group(3);
+                } else {
+                    m = p4.matcher(sUri);
+                    if (m.matches()){
+                        qString = m.group(1);
+                    }
+                }
+            }
+        }
+        if ((lat != PointModel.NO_LAT_LONG) && (lon != PointModel.NO_LAT_LONG)){
+            SearchPos searchPos = new SearchPos(lat,lon);
+            searchPos.setZoom(zoom);
+            searchPos.setLabel(label);
+            setSearchResult(searchPos);
+        } else {
+            if (qString != null){
+                prefPosBasedSearch.setValue(false);
+                setSearchProvider();
+                searchView.searchText.setText(qString);
+                searchProvider.doSearch(new SearchRequest(qString,EditorInfo.IME_ACTION_SEND, System.currentTimeMillis(), new PointModelImpl(),0 ));
+            }
+        }
     }
 
 }

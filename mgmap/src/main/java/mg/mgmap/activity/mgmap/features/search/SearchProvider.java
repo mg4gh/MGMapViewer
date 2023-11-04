@@ -58,6 +58,11 @@ public abstract class SearchProvider {
             if (searchView != null){
                 searchView.setResList(results);
             }
+            if (request.pos.equals(new PointModelImpl())){ // request from geo intent
+                if (results.size() > 0){
+                    fsSearch.setSearchResult(results.get(0).pos);
+                }
+            }
         }
     }
 
