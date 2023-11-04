@@ -121,7 +121,8 @@ public class Pref<T> extends ObservableImpl  {
         }
         if (changeSharedPrefs){
             setSharedPreference(t);
-        } else {
+        }
+        {
             if (! value.equals(t)){
                 value = t;
                 onChange();
