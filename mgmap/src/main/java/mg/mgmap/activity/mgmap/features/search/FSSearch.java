@@ -243,7 +243,7 @@ public class FSSearch extends FeatureService {
         SearchPos searchPos = SearchPos.fromJsonString(sSearchPos);
         if ((searchPos != null) && (searchPos.getLat() != PointModel.NO_LAT_LONG) && (searchPos.getLon() != PointModel.NO_LAT_LONG)){
             getMapViewUtility().setMapViewPosition(searchPos,searchPos.getZoom());
-            register(new PointViewSearch(searchPos).setRadius(10));
+            register(new PointViewSearch(searchPos).setRadius(10).setText(searchPos.label));
             register(new PointViewSearch(searchPos).setRadius(1));
         }
     }

@@ -15,13 +15,17 @@
 package mg.mgmap.activity.mgmap.view;
 
 import org.mapsforge.core.graphics.Canvas;
+import org.mapsforge.core.graphics.FontFamily;
+import org.mapsforge.core.graphics.FontStyle;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.model.Rectangle;
 import org.mapsforge.core.util.MercatorProjection;
 
+import mg.mgmap.R;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.util.CC;
 
 public class PointView extends MVLayer {
 
@@ -33,6 +37,9 @@ public class PointView extends MVLayer {
     private float radius = 4;
     private float radiusIncrease = 1;
 
+    private String text; // optional Text description
+    private Paint paintText;
+    private Paint paintTextBg;
 
     public PointView(PointModel model, Paint paintStroke){
         this.model = model;
@@ -68,6 +75,15 @@ public class PointView extends MVLayer {
         if (this.paintFill != null) {
             canvas.drawCircle(pixelX, pixelY, radiusInPixel, this.paintFill);
         }
+
+
+        if ((text != null) && (text.length() > 0)){
+            int textSize = getTextSize(radiusInPixel);
+            paintText.setTextSize(textSize);
+            paintTextBg.setTextSize(textSize);
+            canvas.drawText(text, pixelX+radiusInPixel+textSize/4, pixelY+textSize/3, paintTextBg);
+            canvas.drawText(text, pixelX+radiusInPixel+textSize/4, pixelY+textSize/3, paintText);
+        }
     }
 
     protected float getScale(byte zoomLevel){
@@ -98,4 +114,23 @@ public class PointView extends MVLayer {
         return this;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public PointView setText(String text) {
+        this.text = text;
+        if (paintText == null){
+            paintText = CC.getFillPaint(R.color.CC_WHITE);
+            paintText.setColor(paintStroke.getColor());
+            paintText.setTypeface(FontFamily.DEFAULT, FontStyle.BOLD);
+            paintTextBg = CC.getStrokePaint(R.color.CC_WHITE, 4);
+            paintTextBg.setTypeface(FontFamily.DEFAULT, FontStyle.BOLD);
+        }
+        return this;
+    }
+
+    protected int getTextSize(int radiusInPixel){
+        return radiusInPixel+radiusInPixel/3;
+    }
 }
