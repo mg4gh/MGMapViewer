@@ -145,10 +145,12 @@ The number and the quality of the search results may vary drastically between di
 There is one more aspect related to this featue: Android allows to use "geo" intents: 
 This is a list of [allowed patterns](https://developer.android.com/guide/components/intents-common#java) explained on examples:
 
-- geo:latitude,longitude [geo:49.406953,8.678815](geo:49.406953,8.678815) Kirchstr. 16, 69115 Heidelberg
-- geo:latitude,longitude?z=zoom [geo:49.406953,8.678815?z=15](geo:49.406953,8.678815?z=15) Kirchstr. 16, 69115 Heidelberg + zoom=15
-- geo:0,0?q=lat,lng(label)  <a href="geo:0,0?q=49.406953,8.678815(Krichstr 16)">geo:0,0?q=49.406953,8.678815(Krichstr 16)</a>
-- geo:0,0?q=my+street+address [geo:0,0?q=Kirchstr+16+Heidelberg](geo:0,0?q=Kirchstr+16+Heidelberg)
-- geo:0,0?q=my+street+address <a href="geo:0,0?q=Kirchstr 16 Heidelberg">geo:0,0?q=Kirchstr 16 Heidelberg</a>
+The examples point all to the coordinates lat=49.406953 andlon=8.678815, which is the address "Kirchstr. 16, 69115 Heidelberg"
+<table>
+<tr><td>geo:latitude,longitude</td><td>[geo:49.406953,8.678815](geo:49.406953,8.678815)</td></tr>
+<tr><td>geo:latitude,longitude?z=zoom</td><td>[geo:49.406953,8.678815?z=15](geo:49.406953,8.678815?z=15)</td></tr> 
+<tr><td>geo:0,0?q=lat,lng(label)</td><td><a href="geo:0,0?q=49.406953,8.678815(Kulturfenster)">geo:0,0?q=49.406953,8.678815(Kulturfenster)</a></td></tr>
+<tr><td>geo:0,0?q=my+street+address<br/>geo:0,0?q=my street address</td>
+  <td>[geo:0,0?q=Kirchstr+16+Heidelberg](geo:0,0?q=Kirchstr+16+Heidelberg)<br/><a href="geo:0,0?q=Kirchstr 16 Heidelberg">geo:0,0?q=Kirchstr 16 Heidelberg</a></td></tr>
 
 <small><small>[Back to Index](../../../index.md)</small></small>
