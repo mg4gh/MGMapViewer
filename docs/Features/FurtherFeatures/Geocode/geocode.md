@@ -147,10 +147,10 @@ This is a list of [allowed patterns](https://developer.android.com/guide/compone
 
 The examples point all to the coordinates lat=49.406953 andlon=8.678815, which is the address "Kirchstr. 16, 69115 Heidelberg"
 <table>
-<tr><td>geo:latitude,longitude</td><td>[geo:49.406953,8.678815](geo:49.406953,8.678815)</td></tr>
-<tr><td>geo:latitude,longitude?z=zoom</td><td>[geo:49.406953,8.678815?z=15](geo:49.406953,8.678815?z=15)</td></tr> 
+<tr><td>geo:latitude,longitude</td><td><a href="geo:49.406953,8.678815">geo:49.406953,8.678815</a></td></tr>
+<tr><td>geo:latitude,longitude?z=zoom</td><td><a href="geo:49.406953,8.678815?z=15">geo:49.406953,8.678815?z=15</a></td></tr> 
 <tr><td>geo:0,0?q=lat,lng(label)</td><td><a href="geo:0,0?q=49.406953,8.678815(Kulturfenster)">geo:0,0?q=49.406953,8.678815(Kulturfenster)</a></td></tr>
 <tr><td>geo:0,0?q=my+street+address<br/>geo:0,0?q=my street address</td>
-  <td>[geo:0,0?q=Kirchstr+16+Heidelberg](geo:0,0?q=Kirchstr+16+Heidelberg)<br/><a href="geo:0,0?q=Kirchstr 16 Heidelberg">geo:0,0?q=Kirchstr 16 Heidelberg</a></td></tr>
+  <td><a href="geo:0,0?q=Kirchstr+16+Heidelberg">geo:0,0?q=Kirchstr+16+Heidelberg</a><br/><a href="geo:0,0?q=Kirchstr 16 Heidelberg">geo:0,0?q=Kirchstr 16 Heidelberg</a></td></tr>
 
 <small><small>[Back to Index](../../../index.md)</small></small>

@@ -20,10 +20,9 @@ import android.util.DisplayMetrics;
 
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 
 import mg.mgmap.generic.model.BBox;
@@ -65,7 +64,8 @@ public class MapViewUtility {
         double zoomY = -Math.log(Math.abs(pixelYMax - pixelYMin) / dimension.height) / Math.log(2);
         double zoom = Math.floor(Math.min(zoomX, zoomY));
         byte bzoom = (byte) Math.min(Math.max(zoom, 6), 18);
-        this.mapView.getModel().mapViewPosition.setMapPosition(new MapPosition(bBox.getCenter(), bzoom));
+        setCenter(bBox.getCenter());
+        this.mapView.getModel().mapViewPosition.setZoomLevel(bzoom);
     }
 
     public double getCloseThreshouldForZoomLevel() {
@@ -97,19 +97,18 @@ public class MapViewUtility {
     public PointModel getCenter() {
         return new PointModelImpl(this.mapView.getModel().mapViewPosition.getCenter());
     }
+    public void setCenter(PointModel pm){
+        this.mapView.getModel().mapViewPosition.setCenter(new LatLong(pm.getLat(),pm.getLon()));
+    }
 
     public float getTrackWidth() {
         return DEFAULT_TRACK_WIDTH * mapView.getModel().displayModel.getScaleFactor();
     }
 
-    public void setMapViewPosition(PointModel pm, byte zoom) {
-        IMapViewPosition imvp = this.mapView.getModel().mapViewPosition;
-        imvp.setCenter(new LatLong(pm.getLat(), pm.getLon()));
-        if ((ZOOM_LEVEL_MIN <= zoom) && (zoom <= ZOOM_LEVEL_MAX)){
-            imvp.setZoomLevel(zoom);
-        }
+    public static PointModel getMapDataStoreCenter(MapDataStore mds){
+        LatLong startPos = mds.startPosition();
+        return new PointModelImpl(startPos.getLatitude(), startPos.getLongitude());
     }
-
 
     public Point getPoint4PointModel(PointModel pm) {
         int[] loc = new int[2];
@@ -121,10 +120,10 @@ public class MapViewUtility {
             dimension = new Dimension(dm.widthPixels, dm.heightPixels);
         }
 
-        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
-        long mapSize = MercatorProjection.getMapSize(mapViewPosition.getZoomLevel(), tileSize);
-        double dx = MercatorProjection.longitudeToPixelX(pm.getLon(), mapSize) - MercatorProjection.longitudeToPixelX(mapViewPosition.getCenter().getLongitude(), mapSize) + dimension.width / 2.0;
-        double dy = MercatorProjection.latitudeToPixelY(pm.getLat(), mapSize) - MercatorProjection.latitudeToPixelY(mapViewPosition.getCenter().getLatitude(), mapSize) + dimension.height / 2.0;
+        PointModel pmCenter = getCenter();
+        long mapSize = MercatorProjection.getMapSize(mapView.getModel().mapViewPosition.getZoomLevel(), tileSize);
+        double dx = MercatorProjection.longitudeToPixelX(pm.getLon(), mapSize) - MercatorProjection.longitudeToPixelX(pmCenter.getLon(), mapSize) + dimension.width / 2.0;
+        double dy = MercatorProjection.latitudeToPixelY(pm.getLat(), mapSize) - MercatorProjection.latitudeToPixelY(pmCenter.getLat(), mapSize) + dimension.height / 2.0;
         return new Point((int) dx + loc[0], (int) dy + loc[1]);
     }
 
@@ -138,12 +137,10 @@ public class MapViewUtility {
             dimension = new Dimension(dm.widthPixels, dm.heightPixels);
         }
 
-        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
-        long mapSize = MercatorProjection.getMapSize(mapViewPosition.getZoomLevel(), tileSize);
-
-
-        double lon = MercatorProjection.pixelXToLongitude(MercatorProjection.longitudeToPixelX(mapViewPosition.getCenter().getLongitude(), mapSize) - dimension.width / 2.0 + p.x - loc[0], mapSize);
-        double lat = MercatorProjection.pixelYToLatitude(MercatorProjection.latitudeToPixelY(mapViewPosition.getCenter().getLatitude(), mapSize) - dimension.height / 2.0 + p.y - loc[1], mapSize);
+        PointModel pmCenter = getCenter();
+        long mapSize = MercatorProjection.getMapSize(mapView.getModel().mapViewPosition.getZoomLevel(), tileSize);
+        double lon = MercatorProjection.pixelXToLongitude(MercatorProjection.longitudeToPixelX(pmCenter.getLon(), mapSize) - dimension.width / 2.0 + p.x - loc[0], mapSize);
+        double lat = MercatorProjection.pixelYToLatitude(MercatorProjection.latitudeToPixelY(pmCenter.getLat(), mapSize) - dimension.height / 2.0 + p.y - loc[1], mapSize);
         return new PointModelImpl(lat, lon);
     }
 

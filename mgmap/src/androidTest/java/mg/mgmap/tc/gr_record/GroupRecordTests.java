@@ -15,8 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
@@ -49,8 +47,7 @@ public class GroupRecordTests extends BaseTestCase {
     public void initMapPosition(){
         mgLog.i("init");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 16);
-        mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+        initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 16);
     }
 
     @Test(timeout = 90000)

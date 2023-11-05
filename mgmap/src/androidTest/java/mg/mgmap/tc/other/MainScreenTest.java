@@ -13,8 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
@@ -51,10 +49,7 @@ public class MainScreenTest extends BaseTestCase {
         Pref<Boolean> prefBboxOn = mgMapActivity.getPrefCache().get(R.string.FSBB_qc_bboxOn, false);
         assert !prefBboxOn.getValue();
 
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.422888,13.448283), (byte) 14);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.422888,13.448283),(byte) 14));
         setCursorToCenterPos();
         SystemClock.sleep(1000);
 

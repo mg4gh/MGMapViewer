@@ -49,8 +49,7 @@ public class GroupSerachTests extends BaseTestCase {
     @Before
     public void initMapPosition(){
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-        mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+        initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
     }
 
     @Test(timeout = 40000)

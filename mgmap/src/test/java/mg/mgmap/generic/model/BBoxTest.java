@@ -246,9 +246,9 @@ public class BBoxTest {
         BBox bBox1 = new BBox()
                 .extend(new PointModelImpl(2,5))
                 .extend(new PointModelImpl(6,1));
-        LatLong center = bBox1.getCenter();
-        assertEquals(4,center.latitude, 0);
-        assertEquals(3,center.longitude, 0);
+        PointModel center = bBox1.getCenter();
+        assertEquals(4,center.getLat(), 0);
+        assertEquals(3,center.getLon(), 0);
     }
 
     @Test

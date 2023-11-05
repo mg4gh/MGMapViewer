@@ -13,8 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
@@ -54,10 +52,7 @@ public class BBTest extends BaseTestCase {
         Pref<Boolean> prefBboxOn = mgMapActivity.getPrefCache().get(R.string.FSBB_qc_bboxOn, false);
         assert !prefBboxOn.getValue();
 
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.422888,13.448283), (byte) 14);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.422888,13.448283),(byte) 14));
         setCursorToCenterPos();
         SystemClock.sleep(1000);
 
@@ -122,8 +117,8 @@ public class BBTest extends BaseTestCase {
         PointModelImpl p2_1 = new PointModelImpl(54.421888,13.45528);
         BBox bBox =  new BBox().extend(p1_1).extend(p2_1);
         mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(bBox.getCenter(), (byte) 14);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+            mgMapActivity.getMapViewUtility().setCenter(bBox.getCenter());
+            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setZoomLevel((byte) 14);
         });
         setCursorToCenterPos();
         SystemClock.sleep(3000);
@@ -243,10 +238,7 @@ public class BBTest extends BaseTestCase {
         mgMapActivity1.getPrefCache().get(R.string.Layers_pref_chooseMap4_key, "").setValue("MAPGRID: hgt");
         SystemClock.sleep(5000);
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.422888, 13.448283), (byte) 7);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.422888,13.448283),(byte) 7));
         setCursorToCenterPos();
 
         addRegex(".*onClick mi_bbox.*");
@@ -272,10 +264,7 @@ public class BBTest extends BaseTestCase {
         mgMapActivity1.getPrefCache().get(R.string.Layers_pref_chooseMap3_key, "").setValue("MAPGRID: hgt");
         SystemClock.sleep(1000);
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.4,13.448283), (byte) 7);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.4,13.448283),(byte) 7));
         setCursorToCenterPos();
         SystemClock.sleep(1000);
 

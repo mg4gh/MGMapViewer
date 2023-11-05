@@ -13,8 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
@@ -24,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -52,10 +51,7 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 //        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.422888,13.448283), (byte) 14);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.422888,13.448283),(byte) 14));
         setCursorToCenterPos();
         SystemClock.sleep(2000);
 
@@ -105,10 +101,7 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 //        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.422888,13.448283), (byte) 14);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.422888,13.448283),(byte) 14));
         setCursorToCenterPos();
         SystemClock.sleep(2000);
 
@@ -184,10 +177,7 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 //        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.354733,13.274653), (byte) 14);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.354733,13.274653),(byte) 14));
         setCursorToCenterPos();
         SystemClock.sleep(2000);
 
@@ -218,10 +208,7 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 //        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.354733,13.274653), (byte) 15);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.354733,13.274653),(byte) 15));
         setCursorToCenterPos();
         SystemClock.sleep(2000);
 
@@ -252,10 +239,7 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
 //        AppWatcher.INSTANCE.getObjectWatcher().expectWeaklyReachable(mgMapActivity, "mgMapActivityObject");
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.354733,13.274653), (byte) 16);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.354733,13.274653),(byte) 16));
         setCursorToCenterPos();
         SystemClock.sleep(2000);
 

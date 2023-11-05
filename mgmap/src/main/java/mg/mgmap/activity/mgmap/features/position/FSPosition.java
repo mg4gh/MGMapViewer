@@ -15,9 +15,6 @@
 package mg.mgmap.activity.mgmap.features.position;
 
 import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.view.InputListener;
 
 import java.lang.invoke.MethodHandles;
@@ -167,15 +164,13 @@ public class FSPosition extends FeatureService {
 
     private void centerCurrentPosition(PointModel pm){
         if ((pm != null) && prefCenter.getValue() && !prefMapMoving.getValue() && !prefEditMarkerTrack.getValue() && !prefBboxOn.getValue()) {
-            IMapViewPosition mvp = getMapView().getModel().mapViewPosition;
-            LatLong pos = new LatLong(pm.getLat(), pm.getLon());
-            mvp.setMapPosition(new MapPosition(pos, mvp.getZoomLevel()));
+            getMapViewUtility().setCenter(pm);
         }
     }
 
     public void refreshMapView(){
-        IMapViewPosition mvp = getMapView().getModel().mapViewPosition;
-        mvp.setMapPosition(new MapPosition(mvp.getCenter(), mvp.getZoomLevel()));
+        PointModel pm = getMapViewUtility().getCenter();
+        getMapViewUtility().setCenter(pm);
     }
 
     private final Runnable ttMapMovingOff = () -> prefMapMoving.setValue(false);

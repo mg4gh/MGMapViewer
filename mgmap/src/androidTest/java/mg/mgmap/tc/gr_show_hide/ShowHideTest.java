@@ -16,8 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
@@ -25,6 +23,7 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
 import mg.mgmap.activity.statistic.TrackStatisticActivity;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
 
@@ -47,9 +46,7 @@ public class ShowHideTest extends BaseTestCase {
     @Before
     public void initMapPosition(){
         mgMapActivity = waitForActivity(MGMapActivity.class);
-        MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-        mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        assert mgMapApplication.getPersistenceManager().getAppDir().getName().contains("SETUP_002");
+        initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
     }
 
     @After

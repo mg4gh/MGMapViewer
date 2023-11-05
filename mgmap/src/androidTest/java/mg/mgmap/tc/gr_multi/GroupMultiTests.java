@@ -1,6 +1,5 @@
 package mg.mgmap.tc.gr_multi;
 
-import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.View;
 
@@ -21,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.test.BaseTestCase;
@@ -42,8 +42,7 @@ public class GroupMultiTests extends BaseTestCase {
     @Before
     public void initMapPosition(){
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-        mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+        initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
     }
 
     @Test(timeout = 20000)
@@ -74,10 +73,7 @@ public class GroupMultiTests extends BaseTestCase {
     public void _05_zoomIn() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15));
         SystemClock.sleep(2000);
 
         setCursorToCenterPos();

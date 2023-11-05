@@ -11,14 +11,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.statistic.TrackStatisticActivity;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
@@ -41,10 +40,7 @@ public class StatisticTest extends BaseTestCase {
     public void _01_statistic_test() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.315814, 13.351981), (byte) 15);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15));
         SystemClock.sleep(2000);
         Pref<Boolean> metaLoading = mgMapApplication.getPrefCache().get(R.string.MGMapApplication_pref_MetaData_loading, true);
         int cnt =0;

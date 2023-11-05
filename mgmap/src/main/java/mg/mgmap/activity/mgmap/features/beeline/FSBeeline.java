@@ -24,7 +24,6 @@ import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -99,7 +98,7 @@ public class FSBeeline extends FeatureService {
     private void showHidePositionToCenter(PointModel pm){
         if (fsLayers.layers.isEmpty() && (pm == null)) return; // default is fast
         unregisterAll();
-        PointModel pmCenter = new PointModelImpl( getMapView().getModel().mapViewPosition.getCenter() );
+        PointModel pmCenter = getMapViewUtility().getCenter();
         double distance = -1;
         if (pm != null){
             double beelineDistance = PointModelUtil.distance(pm, pmCenter);

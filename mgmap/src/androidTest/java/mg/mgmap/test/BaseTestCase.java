@@ -102,6 +102,11 @@ public class BaseTestCase {
         currentPos = null;
     }
 
+    protected void initPos(MGMapActivity mgMapActivity, PointModel pm, byte zoom){
+        mgMapActivity.getMapViewUtility().setCenter(pm);
+        mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setZoomLevel(zoom);
+    }
+
     protected void addRegex(String regex) {
         regexs.add(regex);
     }

@@ -40,8 +40,6 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
@@ -204,14 +202,14 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         String themeKey = getResources().getString(R.string.preference_choose_theme_key);
         getSharedPreferences().edit().putString(themeKey, sharedPreferences.getString(themeKey, "Elevate5.2/Elevate.xml") ).apply(); // set default for theme
         initSharedPreferencesDone(); // after MapDatastoreUtil creation
-        initializePosition(mapView.getModel().mapViewPosition);
+        mapViewUtility = new MapViewUtility(this, mapView);
+        initializePosition();
         mgLog.i("Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         coView = getControlView();
-        mapViewUtility = new MapViewUtility(this, mapView);
         gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider());
 
         featureServices.add(new FSTime(this));
@@ -664,14 +662,16 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
      * 2.) else take the first Mapsforge Map (in the sequece of map layers) and take the startPosition+startZoom from this
      * 3.) else take a hardcoded fix position in Heidelberg :-)
      */
-    protected void initializePosition(IMapViewPosition mvp) {
-        LatLong center = mvp.getCenter();
-        if (mapDataStoreUtil.getMapDataStore(new BBox().extend(new PointModelImpl(center))) == null){
+    protected void initializePosition() {
+        IMapViewPosition mvp = mapView.getModel().mapViewPosition;
+        if (mapDataStoreUtil.getMapDataStore(new BBox().extend(mapViewUtility.getCenter())) == null){ // current position is no inside any Mapsforge Map layer
             MapDataStore mds = mapDataStoreUtil.getMapDataStore();
-            if (mds != null){
-                mvp.setMapPosition(new MapPosition(mds.startPosition(), mds.startZoomLevel()));
+            if (mds != null){ // is there any mapsforge layer
+                mapViewUtility.setCenter(MapViewUtility.getMapDataStoreCenter(mds));
+                mvp.setZoomLevel(mds.startZoomLevel());
             } else {
-                mvp.setMapPosition(new MapPosition(new LatLong(49.4057, 8.6789), (byte)15));
+                mapViewUtility.setCenter(new PointModelImpl(49.4057, 8.6789));
+                mvp.setZoomLevel((byte)15);
             }
         }
         mvp.setZoomLevelMax(MapViewUtility.ZOOM_LEVEL_MAX);

@@ -115,8 +115,8 @@ public class BBox {
                 extend(boundingBox.maxLatitude, boundingBox.maxLongitude);
     }
 
-    public LatLong getCenter(){
-        return new LatLong( (maxLatitude+minLatitude)/2, (maxLongitude+minLongitude)/2);
+    public PointModel getCenter(){
+        return new PointModelImpl( (maxLatitude+minLatitude)/2, (maxLongitude+minLongitude)/2);
     }
 
     /**
@@ -155,6 +155,7 @@ public class BBox {
         buf.putInt(LaLo.d2md(minLongitude));
         buf.putInt(LaLo.d2md(maxLongitude));
     }
+    /** @noinspection UnusedReturnValue*/
     public BBox fromByteBuffer(ByteBuffer buf){
         minLatitude = LaLo.md2d(buf.getInt());
         maxLatitude = LaLo.md2d(buf.getInt());

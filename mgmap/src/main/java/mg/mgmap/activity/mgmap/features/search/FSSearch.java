@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.util.MapViewUtility;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
@@ -242,7 +243,11 @@ public class FSSearch extends FeatureService {
         mgLog.i(sSearchPos);
         SearchPos searchPos = SearchPos.fromJsonString(sSearchPos);
         if ((searchPos != null) && (searchPos.getLat() != PointModel.NO_LAT_LONG) && (searchPos.getLon() != PointModel.NO_LAT_LONG)){
-            getMapViewUtility().setMapViewPosition(searchPos,searchPos.getZoom());
+            getMapViewUtility().setCenter(searchPos);
+            byte zoom = searchPos.getZoom();
+            if ((MapViewUtility.ZOOM_LEVEL_MIN <= zoom) && (zoom <= MapViewUtility.ZOOM_LEVEL_MAX)){
+                getMapView().getModel().mapViewPosition.setZoomLevel(zoom);
+            }
             register(new PointViewSearch(searchPos).setRadius(10).setText(searchPos.label));
             register(new PointViewSearch(searchPos).setRadius(1));
         }

@@ -2,7 +2,6 @@ package mg.mgmap.tc.gr_search;
 
 import android.graphics.Point;
 import android.os.SystemClock;
-import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -13,15 +12,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.test.BaseTestCase;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -41,8 +38,7 @@ public class HelpTests extends BaseTestCase {
     @Before
     public void initMapPosition(){
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-        mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+        initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
     }
 
     @Test(timeout = 20000)
@@ -82,7 +78,7 @@ public class HelpTests extends BaseTestCase {
         addRegex(".*onClick mi_search_empty2.*");
         addRegex(".*context=MGMapActivity key=FSControl.qc_selector value=0.*");
         animateToViewAndClick(R.id.menu_search);
-        Point p = animateToViewAndClick(R.id.mi_search_empty2);
+        animateToViewAndClick(R.id.mi_search_empty2);
         addRegex(".*onClick menu_gps.*"); // next click hits gps menu - this proves that previous click on R.id.mi_search_empty2 directly closed the menu_search
         Point pGps = getClickPos(R.id.menu_gps);
         animateTo(pGps, 100);

@@ -24,14 +24,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mapsforge.core.model.Dimension;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
 
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.settings.SettingsActivity;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.test.BaseTestCase;
 import mg.mgmap.test.util.PreferenceUtil;
@@ -57,8 +56,7 @@ public class SettingTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
         mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+            initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
         });
         SystemClock.sleep(2000);
 
@@ -89,8 +87,7 @@ public class SettingTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
         mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
+            initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
         });
         SystemClock.sleep(2000);
         Dimension dim = mgMapActivity.getMapsforgeMapView().getDimension();
@@ -126,10 +123,7 @@ public class SettingTest extends BaseTestCase {
     public void _03_settings_search() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        mgMapActivity.runOnUiThread(() -> {
-            MapPosition mp = new MapPosition(new LatLong(54.315814,13.351981), (byte) 15);
-            mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15));
         SystemClock.sleep(2000);
 
         setCursorToCenterPos();
