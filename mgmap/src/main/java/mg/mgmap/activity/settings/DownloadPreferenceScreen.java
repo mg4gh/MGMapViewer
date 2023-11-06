@@ -84,6 +84,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
         assert prefSw != null;
         //noinspection ConstantConditions
         prefSw.setVisible(BuildConfig.FLAVOR.equals("mg4gh"));
+        prefSw.setSummary("Current Version: "+ BuildConfig.VERSION_NAME);
     }
 
 
