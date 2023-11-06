@@ -118,7 +118,7 @@ public class MGMapApplication extends Application {
 
     public void startLogging(File logDir){
         try {
-            String cmd = "logcat *:"+(BuildConfig.DEBUG?"d":"i")+" mg.mgmap:E -f "+logDir.getAbsolutePath()+"/log.txt -r 10000 -n10";
+            String cmd = "logcat *:"+(BuildConfig.DEBUG?"d":"i")+" mg.mgmap:E -f "+logDir.getAbsolutePath()+"/log.txt -r 1000 -n20";
             mgLog.i("Start Logging: "+cmd);
             pLogcat = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
