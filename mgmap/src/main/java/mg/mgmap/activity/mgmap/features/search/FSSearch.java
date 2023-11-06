@@ -323,11 +323,13 @@ public class FSSearch extends FeatureService {
         String qString = null;
         Matcher m = p1.matcher(sUri);
         if (m.matches()){
+            mgLog.i("p1 matched");
             lat = Double.parseDouble(m.group(1));
             lon = Double.parseDouble(m.group(2));
         } else {
             m = p2.matcher(sUri);
             if (m.matches()){
+                mgLog.i("p2 matched");
                 lat = Double.parseDouble(m.group(1));
                 lon = Double.parseDouble(m.group(2));
                 zoom = Byte.parseByte(m.group(3));
@@ -335,12 +337,16 @@ public class FSSearch extends FeatureService {
             } else {
                 m = p3.matcher(sUri);
                 if (m.matches()){
+                    mgLog.i("p3 matched");
                     lat = Double.parseDouble(m.group(3));
                     lon = Double.parseDouble(m.group(4));
-                    label = (m.groupCount()>=6)?m.group(6):null;
+                    if ((m.groupCount()>=6) && (m.group(6)!=null)){
+                        label = m.group(6);
+                    }
                 } else {
                     m = p4.matcher(sUri);
                     if (m.matches()){
+                        mgLog.i("p4 matched");
                         qString = m.group(1);
                     }
                 }
