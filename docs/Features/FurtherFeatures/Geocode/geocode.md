@@ -152,5 +152,6 @@ The examples point all to the coordinates lat=49.406953 andlon=8.678815, which i
 <tr><td>geo:0,0?q=lat,lng(label)</td><td><a href="geo:0,0?q=49.406953,8.678815(Kulturfenster)">geo:0,0?q=49.406953,8.678815(Kulturfenster)</a></td></tr>
 <tr><td>geo:0,0?q=my+street+address<br/>geo:0,0?q=my street address</td>
   <td><a href="geo:0,0?q=Kirchstr+16+Heidelberg">geo:0,0?q=Kirchstr+16+Heidelberg</a><br/><a href="geo:0,0?q=Kirchstr 16 Heidelberg">geo:0,0?q=Kirchstr 16 Heidelberg</a></td></tr>
-
+<tr><td>geo:0,0?q=lat,lng(label)</td><td><a href="geo:49.406953,8.678815?q=49.406953,8.678815">geo:49.406953,8.678815?q=49.406953,8.678815</a></td></tr>
+</table>
 <small><small>[Back to Index](../../../index.md)</small></small>

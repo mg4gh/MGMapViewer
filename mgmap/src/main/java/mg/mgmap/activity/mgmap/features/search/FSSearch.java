@@ -312,7 +312,8 @@ public class FSSearch extends FeatureService {
         String d = "(\\-?\\d*\\.?\\d+)";
         Pattern p1 = Pattern.compile("geo:"+d+","+d);
         Pattern p2 = Pattern.compile("geo:"+d+","+d+"\\?z=([12]?[0-9])");
-        Pattern p3 = Pattern.compile("geo:0,0\\?q="+d+","+d+"\\(([^\\)]+)\\)");
+        Pattern p3 = Pattern.compile("geo:"+d+","+d+"\\?q="+d+","+d+"(\\(([^\\)]+)\\))?");
+//        Pattern p3 = Pattern.compile("geo:0,0\\?q="+d+","+d+"\\(([^\\)]+)\\)");
         Pattern p4 = Pattern.compile("geo:0,0\\?q=(.*)");
 
         double lat = PointModel.NO_LAT_LONG;
@@ -334,9 +335,9 @@ public class FSSearch extends FeatureService {
             } else {
                 m = p3.matcher(sUri);
                 if (m.matches()){
-                    lat = Double.parseDouble(m.group(1));
-                    lon = Double.parseDouble(m.group(2));
-                    label = m.group(3);
+                    lat = Double.parseDouble(m.group(3));
+                    lon = Double.parseDouble(m.group(4));
+                    label = (m.groupCount()>=6)?m.group(6):null;
                 } else {
                     m = p4.matcher(sUri);
                     if (m.matches()){
