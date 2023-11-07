@@ -55,6 +55,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
         setEditTextPreferenceNumeric(R.string.preferences_display_fullscreen_offset_key);
         setEditTextPreferenceNumeric(R.string.preferences_pressure_smoothing_gl_key);
         setEditTextPreferenceNumeric(R.string.preferences_height_consistency_check_key);
+        setEditTextPreferenceNumeric(R.string.FSControl_pref_menu_animation_timeout_key);
     }
 
     EditTextPreference.OnBindEditTextListener etNumberFormatter = editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER);

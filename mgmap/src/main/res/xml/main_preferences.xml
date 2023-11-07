@@ -64,6 +64,15 @@
             app:iconSpaceReserved="false"
             />
         <EditTextPreference
+            app:key="@string/FSControl_pref_menu_animation_timeout_key"
+            app:dialogTitle="@string/FSControl_pref_menu_animation_timeout_title"
+            app:dialogMessage="@string/FSControl_pref_menu_animation_timeout_desc2"
+            android:inputType="number"
+            app:summary="@string/FSControl_pref_menu_animation_timeout_desc1"
+            app:title="@string/FSControl_pref_menu_animation_timeout_title"
+            app:iconSpaceReserved="false"
+            />
+        <EditTextPreference
             app:defaultValue="-1"
             app:key="@string/preferences_display_fullscreen_offset_key"
             app:dialogTitle="@string/preferences_display_fullscreen_offset_title"

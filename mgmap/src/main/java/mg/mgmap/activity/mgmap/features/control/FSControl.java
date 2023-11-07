@@ -52,11 +52,13 @@ public class FSControl extends FeatureService {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     final static int hMargin  = VUtil.hMargin;
     final static int vMargin = VUtil.vMargin;
+    private static final int ANIMATION_TIMEOUT_DEFAULT = 250;
 
 
     private final Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
     private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
     private final Pref<Boolean> prefMenuOneLine;
+    private final Pref<String> prefMenuAnimationTimeout;
     private final int totalWidth;
     private final Drawable qcBackground;
     private final Drawable qcLightBackground;
@@ -133,6 +135,7 @@ public class FSControl extends FeatureService {
         RelativeLayout base2 = activity.findViewById(R.id.base2);
         prefMenuOneLine.addObserver(evt -> base2.getLayoutParams().height = (prefMenuOneLine.getValue()?1:2) * VUtil.QC_HEIGHT );
         prefMenuOneLine.changed();
+        prefMenuAnimationTimeout = getPref(R.string.FSControl_pref_menu_animation_timeout_key, ""+ANIMATION_TIMEOUT_DEFAULT);
 
 
         triggerHome.addObserver(homeObserver);
@@ -339,6 +342,18 @@ public class FSControl extends FeatureService {
         }
     }
 
+    private int getMenuAnimationTimeout(){
+        int res = ANIMATION_TIMEOUT_DEFAULT;
+        try {
+            res = Integer.parseInt(prefMenuAnimationTimeout.getValue());
+        } catch (NumberFormatException e) {
+            mgLog.e(e.getMessage());
+            prefMenuAnimationTimeout.setValue(""+ANIMATION_TIMEOUT_DEFAULT);
+        }
+        res = Math.min(res, ANIMATION_TIMEOUT_DEFAULT*2); //limit to 2*prefMenuAnimationTimeout
+        return res;
+    }
+
 
     private class MenuInflater implements Runnable{
         private final int idx;
@@ -350,36 +365,37 @@ public class FSControl extends FeatureService {
         public void start(){
             // first set menu item group visible
             qcs.setVisibility(View.VISIBLE);
-            getTimer().postDelayed(this, 80);
-        }
-        @Override
-        public void run() {
-            activity.runOnUiThread(() -> {
-                // animate menu item inflation
-                TransitionManager.beginDelayedTransition(qcs);
-                int max = qcs.getChildCount();
-                for (int j=0; j<max; j++){
-                    View view = qcs.getChildAt(j);
-                    RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(VUtil.getX4QC(totalWidth,1,max)-2*hMargin, VUtil.QC_HEIGHT-2*vMargin);
-                    rlp.setMargins(VUtil.getX4QC(totalWidth,j,max)+hMargin,vMargin,hMargin,vMargin);
-                    view.setLayoutParams(rlp);
-                }
-                if (idx > 0){ // show submenu
-                    for (int i=0; i<qcss[0].getChildCount(); i++){
-                        if (prefMenuOneLine.getValue()) {
-                            // hide menus, if just one line
-                            qcss[0].getChildAt(i).setVisibility(View.INVISIBLE);
-                        } else { // two Line
-                            getMapViewUtility().setScaleBarVisibility(false);
-                            if ((i + 1) != idx) {
-                                // enlight (not pressed) menus
-                                qcss[0].getChildAt(i).setBackground(qcLightBackground);
-                                qcss[0].getChildAt(i).setEnabled(false);
-                            }
+
+            // animate menu item inflation
+            TransitionManager.beginDelayedTransition(qcs);
+            int max = qcs.getChildCount();
+            for (int j=0; j<max; j++){
+                View view = qcs.getChildAt(j);
+                RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(VUtil.getX4QC(totalWidth,1,max)-2*hMargin, VUtil.QC_HEIGHT-2*vMargin);
+                rlp.setMargins(VUtil.getX4QC(totalWidth,j,max)+hMargin,vMargin,hMargin,vMargin);
+                view.setLayoutParams(rlp);
+            }
+            if (idx > 0){ // show submenu
+                for (int i=0; i<qcss[0].getChildCount(); i++){
+                    if (prefMenuOneLine.getValue()) {
+                        // hide menus, if just one line
+                        qcss[0].getChildAt(i).setVisibility(View.INVISIBLE);
+                    } else { // two Line
+                        getMapViewUtility().setScaleBarVisibility(false);
+                        if ((i + 1) != idx) {
+                            // enlight (not pressed) menus
+                            qcss[0].getChildAt(i).setBackground(qcLightBackground);
+                            qcss[0].getChildAt(i).setEnabled(false);
                         }
                     }
                 }
-            });
+            }
+            getTimer().postDelayed(this, getMenuAnimationTimeout());
+
+        }
+        @Override
+        public void run() {
+            activity.runOnUiThread(() -> TransitionManager.endTransitions(qcs));
         }
     }
 
@@ -400,7 +416,7 @@ public class FSControl extends FeatureService {
                 rlp.setMargins(VUtil.getX4QC(totalWidth,idx-1,max)+hMargin,(prefMenuOneLine.getValue()?0:VUtil.QC_HEIGHT) + hMargin,hMargin,vMargin);
                 view.setLayoutParams(rlp);
             }
-            getTimer().postDelayed(this, 250);
+            getTimer().postDelayed(this,getMenuAnimationTimeout());
         }
         @Override
         public void run() {
