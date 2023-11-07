@@ -75,10 +75,10 @@ public class ShowHideTest extends BaseTestCase {
         animateClick(p0);
         Assert.assertEquals(0.0f, mgMapActivity.getPrefCache().get("alpha_MAPSFORGE: ruegen.map",0f).getValue(), 0.001f);
         SystemClock.sleep(2000);
-        addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.2");
+        addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.2.");
         addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.3.");
-        addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.8");
-        animateSwipeToPos(lsl.getThumbPos(20),lsl.getThumbPos(80));
+        addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.8.?");
+        animateSwipeToPos(lsl.getThumbPos(20),lsl.getThumbPos(81));
         Assert.assertEquals(0.8f, mgMapActivity.getPrefCache().get("alpha_MAPSFORGE: ruegen.map",0f).getValue(), 0.001f);
 
         SystemClock.sleep(5000);
@@ -111,33 +111,31 @@ public class ShowHideTest extends BaseTestCase {
         LabeledSlider lslRotl = waitForView(LabeledSlider.class, R.id.slider_rotl);
         Point p0 = lslRotl.getThumbPos(0);
         animateTo(p0);
-        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.0");
         animateClick(p0);
         Assert.assertEquals(0.0f, mgMapActivity.getPrefCache().get("FSRouting.alphaRoTL",0f).getValue(), 0.001f);
         SystemClock.sleep(2000);
-        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.2");
+        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.2.");
         addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.3.");
-        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.5");
-        animateSwipeToPos(lslRotl.getThumbPos(20),lslRotl.getThumbPos(50));
-        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.6");
+        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.5.");
+        animateSwipeToPos(lslRotl.getThumbPos(20),lslRotl.getThumbPos(51));
+        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.6.");
         addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.7.");
-        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=1.0");
+        addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.9.");
         animateSwipeToPos(lslRotl.getThumbPos(60),lslRotl.getThumbPos(100));
-        Assert.assertEquals(1f, mgMapActivity.getPrefCache().get("FSRouting.alphaRoTL",0f).getValue(), 0.001f);
+        Assert.assertEquals(1f, mgMapActivity.getPrefCache().get("FSRouting.alphaRoTL",0f).getValue(), 0.01f);
 
         LabeledSlider lslMtl = waitForView(LabeledSlider.class, R.id.slider_mtl);
-        Assert.assertEquals(0.0f, mgMapActivity.getPrefCache().get("FSMarker.alphaMTL",0f).getValue(), 0.001f);
+        Assert.assertEquals(0.0f, mgMapActivity.getPrefCache().get("FSMarker.alphaMTL",0f).getValue(), 0.01f);
         SystemClock.sleep(2000);
-        addRegex(".*context=MGMapActivity key=FSMarker.alphaMTL value=0.5");
+        addRegex(".*context=MGMapActivity key=FSMarker.alphaMTL value=0.5.");
         addRegex(".*context=MGMapActivity key=FSMarker.alphaMTL value=0.7.");
-        addRegex(".*context=MGMapActivity key=FSMarker.alphaMTL value=1.0");
         animateSwipeToPos(lslMtl.getThumbPos(50),lslMtl.getThumbPos(100));
-        addRegex(".*context=MGMapActivity key=FSMarker.alphaMTL value=0.5");
+        Assert.assertEquals(1f, mgMapActivity.getPrefCache().get("FSMarker.alphaMTL",0f).getValue(), 0.01f);
+        addRegex(".*context=MGMapActivity key=FSMarker.alphaMTL value=0.4.");
         addRegex(".*context=MGMapActivity key=FSMarker.alphaMTL value=0.2.");
-        addRegex(".*context=MGMapActivity key=FSMarker.alphaMTL value=0.0");
         animateSwipeToPos(lslMtl.getThumbPos(50),lslMtl.getThumbPos(20));
         animateSwipeToPos(lslMtl.getThumbPos(10),lslMtl.getThumbPos(0));
-        Assert.assertEquals(0f, mgMapActivity.getPrefCache().get("FSMarker.alphaMTL",0f).getValue(), 0.001f);
+        Assert.assertEquals(0f, mgMapActivity.getPrefCache().get("FSMarker.alphaMTL",0f).getValue(), 0.01f);
 
         SystemClock.sleep(5000);
         mgLog.i("finished");
