@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.View;
@@ -532,6 +533,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         public View getContentView() {
                             etPassword.setHint("Password (optional)");
                             etPassword.setHintTextColor(CC.getColor(R.color.CC_GRAY200));
+                            etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
                             etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
                             return etPassword;
                         }
