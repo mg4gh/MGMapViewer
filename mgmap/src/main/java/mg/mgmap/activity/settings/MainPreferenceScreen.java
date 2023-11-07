@@ -16,6 +16,7 @@ package mg.mgmap.activity.settings;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
@@ -51,6 +52,18 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
             mgLog.e(e);
         }
 
+        setEditTextPreferenceNumeric(R.string.preferences_display_fullscreen_offset_key);
+        setEditTextPreferenceNumeric(R.string.preferences_pressure_smoothing_gl_key);
+        setEditTextPreferenceNumeric(R.string.preferences_height_consistency_check_key);
+    }
+
+    EditTextPreference.OnBindEditTextListener etNumberFormatter = editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+    private void setEditTextPreferenceNumeric(int rid){
+        EditTextPreference pref = findPreference(getResources().getString(rid));
+        if (pref != null){
+            pref.setOnBindEditTextListener(etNumberFormatter);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
