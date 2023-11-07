@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -149,15 +150,21 @@ public class ControlView extends RelativeLayout {
     public void setVerticalOffset(){
         initSystemBarHeight(activity);
         boolean fullscreen =  activity.getPrefCache().get(R.string.FSControl_qcFullscreenOn, true).getValue();
-        int top = statusBarHeight;
-        if ( fullscreen ){ // is fullscreen
-            try{
-                top = Integer.parseInt(prefVerticalFullscreenOffset.getValue());
-            } catch (NumberFormatException e) {
-                mgLog.e(e);
+        int top = 0, bottom = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            top = statusBarHeight;
+            if (fullscreen){
+                try{
+                    top = Integer.parseInt(prefVerticalFullscreenOffset.getValue());
+                } catch (NumberFormatException e) {
+                    mgLog.e(e.getMessage());
+                    mgLog.w("Reset prefVerticalFullscreenOffset to default "+statusBarHeight);
+                    prefVerticalFullscreenOffset.setValue(""+statusBarHeight);
+                }
+            } else{
+                bottom = navigationBarHeight;
             }
         }
-        int bottom = ControlView.dp(2)+(fullscreen?0:navigationBarHeight);
         for (View view : variableVerticalOffsetViews){
             RelativeLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, top,0,bottom);

@@ -265,7 +265,6 @@ public class FSControl extends FeatureService {
         prefQcs.setValue(0);
         prefFullscreen.onChange();
         refreshObserver.onChange();
-        getControlView().setVerticalOffset( );
 
         // move menu items to deflated position
         for (int i=1; i<8; i++){

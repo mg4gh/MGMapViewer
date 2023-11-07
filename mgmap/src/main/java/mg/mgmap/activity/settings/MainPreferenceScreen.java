@@ -14,8 +14,10 @@
  */
 package mg.mgmap.activity.settings;
 
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 
 import java.lang.invoke.MethodHandles;
@@ -60,6 +62,9 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
         Preference prefHeadline = findPreference(getResources().getString(R.string.preferences_headline_version_key));
         assert prefHeadline != null;
         prefHeadline.setTitle("MGMapViewer "+ BuildConfig.VERSION_NAME);
+
+        EditTextPreference prefDisplayFullscreenOffset = findPreference(getResources().getString(R.string.preferences_display_fullscreen_offset_key));
+        prefDisplayFullscreenOffset.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R);
 
         Preference prefVersion = findPreference(getResources().getString(R.string.preferences_info_version_key));
         assert prefVersion != null;
