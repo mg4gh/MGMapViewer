@@ -317,7 +317,8 @@ public class BaseTestCase {
                 testView.getClick().setScaleY(1);
             });
         },600);
-        SystemClock.sleep(800);
+        SystemClock.sleep(1000);
+        mgLog.i("pos "+pos);
         return pos;
     }
 

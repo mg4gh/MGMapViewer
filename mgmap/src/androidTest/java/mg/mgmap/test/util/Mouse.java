@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import mg.mgmap.generic.util.basic.MGLog;
+
 public class Mouse {
 
     public interface SwipeCB{
@@ -21,6 +23,7 @@ public class Mouse {
         inst.sendPointerSync(event);
         event = MotionEvent.obtain(now, now, MotionEvent.ACTION_UP, pos.x, pos.y, 0);
         inst.sendPointerSync(event);
+        MGLog.si("clicked "+pos);
     }
 
     public static void swipe(float startX, float startY, float endX, float endY,  long delay) {
