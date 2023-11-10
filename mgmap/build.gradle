@@ -10,7 +10,7 @@ System.out.println("************************************************************
 // Increase values depending on the start parameter (task "_mgmapPublish" is called - or not), but don't write the back to the properties file yet.
 // Saving of these increased values happens only at the end in the "_mgmapPublish" and the "_mgmapDebugApk" task - so effectively only these two task increase these counters
 
-def versionMajor = "0.9.7"
+def versionMajor = "0.9.8"
 String outputFileNameBundle
 String parentProjectDir = new File("${projectDir}").getParent()
 

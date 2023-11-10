@@ -2,6 +2,7 @@
 
     <PreferenceCategory
         app:key="@string/preferences_headline_version_key"
+        app:summary="More info ..."
         app:iconSpaceReserved="false"
         />
     <PreferenceCategory
