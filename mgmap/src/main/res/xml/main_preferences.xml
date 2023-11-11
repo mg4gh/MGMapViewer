@@ -1,8 +1,8 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
+    <Preference
         app:key="@string/preferences_headline_version_key"
-        app:summary="More info ..."
+        app:summary="Version info ..."
         app:iconSpaceReserved="false"
         />
     <PreferenceCategory
