@@ -1,6 +1,7 @@
 package mg.mgmap.generic.util.hints;
 
 import android.app.Activity;
+import android.text.SpannableString;
 
 import java.util.ArrayList;
 
@@ -46,6 +47,10 @@ public abstract class AbstractHint implements Runnable{
 
     public String getText(){
         return spanText;
+    }
+
+    public boolean noticeSpannableString(SpannableString spannableString){
+        return false;
     }
 
     public boolean checkHintCondition(){

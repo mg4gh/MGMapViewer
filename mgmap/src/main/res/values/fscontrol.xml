@@ -26,4 +26,5 @@
     <string name="FSControl_pref_menu_animation_timeout_title">Menu animation timeout</string>
     <string name="FSControl_pref_menu_animation_timeout_desc1">Abort menu animation after this time</string>
     <string name="FSControl_pref_menu_animation_timeout_desc2">Timeout for menu animation in ms (Default 250ms). A value of 0 means no animation.</string>
+    <string name="FSControl_pref_version_key">FSControl.prefVersionKey</string>
 </resources>

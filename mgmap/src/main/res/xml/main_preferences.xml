@@ -2,7 +2,7 @@
 
     <Preference
         app:key="@string/preferences_headline_version_key"
-        app:summary="Version info ..."
+        app:summary="@string/preferences_headline_version_desc"
         app:iconSpaceReserved="false"
         />
     <PreferenceCategory
@@ -221,12 +221,6 @@
             app:summary="@string/preferences_info_version_desc"
             app:title="@string/preferences_info_version_title"
             app:fragment="mg.mgmap.activity.settings.InfoPreferenceScreen"
-            app:iconSpaceReserved="false"
-            />
-        <Preference
-            app:key="@string/preferences_doc_main_key"
-            app:title="@string/preferences_doc_main_title"
-            app:summary="@string/preferences_doc_main_desc"
             app:iconSpaceReserved="false"
             />
 

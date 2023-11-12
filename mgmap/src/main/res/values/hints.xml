@@ -8,6 +8,7 @@
     <string name="hintAccessBackgroundLocation">hint_access_background_location_key</string>
     <string name="hintBatteryUsage">hint_battery_usage_key</string>
     <string name="hintShareReceived">hint_share_received_key</string>
+    <string name="hintVersion">hint_version_key</string>
 
     <item type="id" name="bt_dialog_positive"  />
     <item type="id" name="bt_dialog_negative"  />

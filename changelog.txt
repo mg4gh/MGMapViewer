@@ -1,13 +1,27 @@
+- prevent keyboard from showing password
+- limit EditTextPreferences with numeric values to the InputType.TYPE_CLASS_NUMBER
+- fix top/bottom margin for Android API<30
+- encapsulate LatLong usage in MapViewUtility
+- show search label on geo request with label
+- fix potential UIThread problem in ETV for setText
+- fix update problem for pref from sharedPreferences
+- allow password secured zip installation via mgmap-install
+- rework docs to current state
+- improve awareness for main theme setting
+- fix startForground for Android <Q, introduced with Android14 changes
 - refactor CC handling, avoid static reference to context
+- refactor onNewIntent in MGMapActivity; remove intent handling from GpxImporter
 - merge setting and further settings; add fileMgr to task menu
 - new Feature: tiny editor for small files
-- new Feature: optional two line menu
+- new Feature: optional two line menu, adopt scalebar
+- sample map configs with mgmap-install
+- cleanup usage og android.util.Log, replace with MGLog
 - fix Crash on recreate MGMapActivity while search is on
-- new Feature: File Manager (to open/share/delete Files)
+- new Feature: File Manager (to create/rename/open/share/receive via share/delete Files)
 - new versions of Mapsforge, zip4j
 - fix SearchResultView (replace transparent with invisible elements)
 - fix dimension calculation for BBox
-- gradle 8.1.2 (and rework new build warnings)
+- gradle 8.1.2 (and rework new build warnings), Android Studio Giraffe | 2022.3.1 Patch 2
 - Android 14 minimal changes
 - improved TrackLogPoint verification
 0.9.7-17.0

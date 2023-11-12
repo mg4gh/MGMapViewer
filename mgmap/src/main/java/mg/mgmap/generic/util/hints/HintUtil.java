@@ -7,6 +7,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ImageSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -86,6 +87,9 @@ public class HintUtil {
                     ImageSpan image = new ImageSpan(layerDrawable);
                     string.setSpan(image, pos, pos2 + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     pos = pos2;
+                }
+                if (hint.noticeSpannableString(string)){
+                    tv.setMovementMethod(LinkMovementMethod.getInstance());
                 }
                 tv.setText(string);
                 ll.addView(tv);

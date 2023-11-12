@@ -44,6 +44,7 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintInitialMapDownload;
+import mg.mgmap.generic.util.hints.HintVersion;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.generic.view.VUtil;
 
@@ -118,6 +119,7 @@ public class FSControl extends FeatureService {
     };
 
     AbstractHint hintInitialMapDownload;
+    AbstractHint hintVersion;
 
     public FSControl(MGMapActivity activity){
         super(activity);
@@ -182,6 +184,11 @@ public class FSControl extends FeatureService {
             activity.startActivity(intent);
         });
         hintInitialMapDownload = new HintInitialMapDownload(getActivity());
+        Runnable rSetVersion = () -> getPref(R.string.FSControl_pref_version_key, "").setValue(HintVersion.currentVersion());
+        if (hintInitialMapDownload.checkHintCondition()){
+            rSetVersion.run();
+        }
+        hintVersion = new HintVersion(getActivity()).addGotItAction(rSetVersion);
     }
 
     public void initQcss(ViewGroup[] qcss){
@@ -274,6 +281,7 @@ public class FSControl extends FeatureService {
             new MenuDeflater(i).start();
         }
         getTimer().postDelayed(hintInitialMapDownload, 300);
+        getTimer().postDelayed(hintVersion, 500);
         setEnableMenu(true);
     }
 
@@ -281,6 +289,7 @@ public class FSControl extends FeatureService {
     protected void onPause() {
         super.onPause();
         getTimer().removeCallbacks(hintInitialMapDownload);
+        getTimer().removeCallbacks(hintVersion);
         getTimer().removeCallbacks(ttHideSubQCS);
         getTimer().removeCallbacks(ttEnableMenuQCS);
     }

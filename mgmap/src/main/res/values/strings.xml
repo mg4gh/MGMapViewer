@@ -105,11 +105,8 @@
     <string name="preferences_fileMgr_preferIntEditor_title">Editor</string>
     <string name="preferences_fileMgr_preferIntEditor_desc">Prefer internal tiny editor to edit small Files.</string>
 
-    <string name="preferences_doc_main_key">DocMain</string>
-    <string name="preferences_doc_main_title">Documentation</string>
-    <string name="preferences_doc_main_desc">Go to the github.io main documentation page.</string>
-
     <string name="preferences_headline_version_key">Pref.headline_versionKey</string>
+    <string name="preferences_headline_version_desc">Documentation on github.io …</string>
     <string name="preferences_info_version_key">versionKey2</string>
     <string name="preferences_info_version_title">MGMapViewer Info</string>
     <string name="preferences_info_version_desc">Detail version information</string>

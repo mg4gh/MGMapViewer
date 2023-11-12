@@ -14,8 +14,6 @@
  */
 package mg.mgmap.activity.settings;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -73,13 +71,11 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
     @Override
     public void onResume() {
         super.onResume();
-        setBrowseIntent(R.string.preferences_doc_main_key, R.string.url_doc_main);
 
         Preference prefHeadline = findPreference(getResources().getString(R.string.preferences_headline_version_key));
         assert prefHeadline != null;
         prefHeadline.setTitle("MGMapViewer "+ BuildConfig.VERSION_NAME);
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse( "https://mg4gh.github.io/MGMapViewer/version/version_"+BuildConfig.VERSION_NAME.replaceFirst("-.*","") ));
-        setIntent(R.string.preferences_headline_version_key, browserIntent, null);
+        setBrowseIntent(R.string.preferences_headline_version_key, R.string.url_doc_main);
 
         EditTextPreference prefDisplayFullscreenOffset = findPreference(getResources().getString(R.string.preferences_display_fullscreen_offset_key));
         prefDisplayFullscreenOffset.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R);
