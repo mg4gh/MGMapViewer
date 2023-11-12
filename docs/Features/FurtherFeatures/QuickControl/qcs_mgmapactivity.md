@@ -2,6 +2,8 @@
 
 ## Further Features: quick controls of MGMapActivity (main activity)
 
+#### Two line menu
+
 The MGMapActivity (main activity) provides seven quick control buttons, where each of them represents a menu button.
 this looks like:
 
