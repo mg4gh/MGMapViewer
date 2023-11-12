@@ -142,7 +142,10 @@ The number and the quality of the search results may vary drastically between di
 
 #### Geo Intents
 
-There is one more aspect related to this featue: Android allows to use "geo" intents: 
+Do you have the address of a friend stored in your device? Go to this contact and tap on the address - select MGMapViewer as the app to open with.
+And (hopefully) you see this place on your phone. How does this work?  Read this chapter ... If it fails, continue reading till the end of the chapter.
+ 
+Android allows to use "geo" intents: 
 This is a list of [allowed patterns](https://developer.android.com/guide/components/intents-common#java) explained on examples:
 
 The examples point all to the coordinates lat=49.406953 andlon=8.678815, which is the address "Kirchstr. 16, 69115 Heidelberg"
@@ -155,6 +158,12 @@ The examples point all to the coordinates lat=49.406953 andlon=8.678815, which i
 <tr><td>geo:lat,lng?q=lat,lng<br/>
   used by WhatsApp</td><td><a href="geo:49.406953,8.678815?q=49.406953,8.678815">geo:49.406953,8.678815?q=49.406953,8.678815</a></td></tr>
 </table>
+
+The search for the address of a contact is based on the address text. If you switch on Search after tapping on the address, you'll get the address as offered
+as search text, since it was the last search text that was used. If this search text finds no result, then the search cannot visualize any result. If the first 
+search result points to a different place then expected, then the search result will show this point. <br/>
+**Attention:** For address search it is highly recommended to switch of location based search 
+(with <img src="../../../icons/group_search2.svg" width="24"/> + <img src="../../../icons/search_pos1.svg" width="24"/>).
 
 
 <small><small>[Back to Index](../../../index.md)</small></small>
