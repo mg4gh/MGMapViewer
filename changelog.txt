@@ -1,3 +1,4 @@
+0.9.8-19.0
 - prevent keyboard from showing password
 - limit EditTextPreferences with numeric values to the InputType.TYPE_CLASS_NUMBER
 - fix top/bottom margin for Android API<30
