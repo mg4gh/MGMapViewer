@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import mg.mgmap.R;
 import mg.mgmap.generic.util.basic.MGLog;
 
 /**
@@ -45,16 +46,51 @@ public class CC { // short for ColorConstant
     public static void init(Context context){
         if (context != null) {
             try {
-                Field[] fields = Class.forName(context.getPackageName()+".R$color").getDeclaredFields();
-                for(Field field : fields) {
-                    String colorName = field.getName();
-                    if (colorName.startsWith("CC_")){
-                        int colorId = field.getInt(null);
-                        int color = ContextCompat.getColor(context, colorId);
-                        colorMap.put(colorId, color);
-                        mgLog.d(String.format("colorName=%s colorID=%08X color=%08X",colorName,colorId, color));
-                    }
-                }
+//                Field[] fields = Class.forName(context.getPackageName()+".R$color").getDeclaredFields();
+//                for(Field field : fields) {
+//                    String colorName = field.getName();
+//                    if (colorName.startsWith("CC_")){
+//                        int colorId = field.getInt(null);
+//                        int color = ContextCompat.getColor(context, colorId);
+//                        colorMap.put(colorId, color);
+//                        mgLog.d(String.format("colorName=%s colorID=%08X color=%08X",colorName,colorId, color));
+//                    }
+//                }
+
+
+                colorMap.put(R.color.CC_BLACK, context.getColor(R.color.CC_BLACK));
+                colorMap.put(R.color.CC_BLACK_A150, context.getColor(R.color.CC_BLACK_A150));
+                colorMap.put(R.color.CC_BLACK_A20, context.getColor(R.color.CC_BLACK_A20));
+                colorMap.put(R.color.CC_WHITE, context.getColor(R.color.CC_WHITE));
+                colorMap.put(R.color.CC_WHITE_A150, context.getColor(R.color.CC_WHITE_A150));
+                colorMap.put(R.color.CC_WHITE_A100, context.getColor(R.color.CC_WHITE_A100));
+                colorMap.put(R.color.CC_RED, context.getColor(R.color.CC_RED));
+                colorMap.put(R.color.CC_RED_A50, context.getColor(R.color.CC_RED_A50));
+                colorMap.put(R.color.CC_RED_A150, context.getColor(R.color.CC_RED_A150));
+                colorMap.put(R.color.CC_RED100_A100, context.getColor(R.color.CC_RED100_A100));
+                colorMap.put(R.color.CC_RED100_A150, context.getColor(R.color.CC_RED100_A150));
+                colorMap.put(R.color.CC_GREEN, context.getColor(R.color.CC_GREEN));
+                colorMap.put(R.color.CC_GREEN100_A100, context.getColor(R.color.CC_GREEN100_A100));
+                colorMap.put(R.color.CC_GREEN150_A150, context.getColor(R.color.CC_GREEN150_A150));
+                colorMap.put(R.color.CC_ORANGE_A50, context.getColor(R.color.CC_ORANGE_A50));
+                colorMap.put(R.color.CC_ORANGE, context.getColor(R.color.CC_ORANGE));
+                colorMap.put(R.color.CC_GRAY200, context.getColor(R.color.CC_GRAY200));
+                colorMap.put(R.color.CC_GRAY240, context.getColor(R.color.CC_GRAY240));
+                colorMap.put(R.color.CC_GRAY200_A150, context.getColor(R.color.CC_GRAY200_A150));
+                colorMap.put(R.color.CC_GRAY100_A100, context.getColor(R.color.CC_GRAY100_A100));
+                colorMap.put(R.color.CC_GRAY100_A150, context.getColor(R.color.CC_GRAY100_A150));
+                colorMap.put(R.color.CC_BLUE, context.getColor(R.color.CC_BLUE));
+                colorMap.put(R.color.CC_BLUE_A50, context.getColor(R.color.CC_BLUE_A50));
+                colorMap.put(R.color.CC_BLUE_A150, context.getColor(R.color.CC_BLUE_A150));
+                colorMap.put(R.color.CC_BLUE100_A100, context.getColor(R.color.CC_BLUE100_A100));
+                colorMap.put(R.color.CC_BLUE150_A150, context.getColor(R.color.CC_BLUE150_A150));
+                colorMap.put(R.color.CC_PURPLE, context.getColor(R.color.CC_PURPLE));
+                colorMap.put(R.color.CC_PURPLE_A100, context.getColor(R.color.CC_PURPLE_A100));
+                colorMap.put(R.color.CC_PURPLE_A150, context.getColor(R.color.CC_PURPLE_A150));
+                colorMap.put(R.color.CC_PINK, context.getColor(R.color.CC_PINK));
+
+
+
             } catch (Exception e) {
                 mgLog.e(e);
                 throw new RuntimeException(e);
