@@ -1,3 +1,5 @@
+0.9.8-20.0
+- fix crash on startup of release version (due to colorMap setup via reflection)
 0.9.8-19.0
 - prevent keyboard from showing password
 - limit EditTextPreferences with numeric values to the InputType.TYPE_CLASS_NUMBER
