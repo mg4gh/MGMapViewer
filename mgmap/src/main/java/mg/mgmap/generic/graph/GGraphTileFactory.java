@@ -24,6 +24,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -48,6 +49,7 @@ public class GGraphTileFactory {
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
     private LinkedHashMap<Long, GGraphTile> cache = null;
+    private RoutingProfile routingProfile = null;
 
     public GGraphTileFactory(){}
 
@@ -74,6 +76,13 @@ public class GGraphTileFactory {
         cache = null;
     }
 
+    public void setRoutingProfile(RoutingProfile routingProfile) {
+        if (this.routingProfile != routingProfile){
+            mgLog.i("profile changed to: "+routingProfile.getId());
+            this.routingProfile = routingProfile;
+            cache.clear(); // since the routing profile changes to GGraphTile instances, the cache has to be cleared
+        }
+    }
 
     public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){
         ArrayList<GGraphTile> tileList = new ArrayList<>();
@@ -128,7 +137,7 @@ public class GGraphTileFactory {
             for (Way way : wayProvider.getWays(tile)) {
                 if (wayProvider.isHighway(way)){
 
-                    gGraphTile.addLatLongs( way.latLongs[0]);
+                    gGraphTile.addLatLongs( routingProfile, way, way.latLongs[0]);
 
                     // now setup rawWays
                     MultiPointModelImpl mpm = new MultiPointModelImpl();

@@ -20,5 +20,12 @@
 
     <string name="FSRouting_qcMapMatching_Help">Route optimization (map matching)</string>
 
+    <string name="FSRouting_pref_currentRoutingProfile">FSRouting.currentRoutingProfile</string>
+
+    <string name="preferences_cat_routing_title">Routing settings</string>
+    <string name="preferences_routingProfile_key">pref_routingProfile_key</string>
+    <string name="preferences_routingProfile_title">Routing profile</string>
+    <string name="preferences_routingProfile_desc">Use alternative routing profiles</string>
+
 
 </resources>

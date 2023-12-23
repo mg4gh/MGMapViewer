@@ -32,6 +32,7 @@ import mg.mgmap.activity.mgmap.features.alpha.FSAlpha;
 import mg.mgmap.activity.mgmap.features.bb.FSBB;
 import mg.mgmap.activity.mgmap.features.position.FSPosition;
 import mg.mgmap.activity.mgmap.features.remainings.FSRemainings;
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
@@ -60,6 +61,14 @@ public class ControlComposer {
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_DURATION).setData(R.drawable.duration);
         coView.dashboardEntries.add(dashboardEntry);
         return dashboardEntry;
+    }
+
+    void composeRoutingProfileButtons(MGMapActivity activity, ControlView coView){
+        ViewGroup parent = activity.findViewById(R.id.routingProfiles);
+        for (RoutingProfile routingProfile : activity.getMGMapApplication().getRoutingProfileManager().getRoutingProfiles()){
+            activity.getFS(FSRouting.class).initRoutingProfile(coView.createRoutingProfileETV(parent), routingProfile).setId(View.generateViewId());
+        }
+        parent.setVisibility(View.INVISIBLE);
     }
 
     void composeAlphaSlider(MGMapActivity activity, ControlView coView){

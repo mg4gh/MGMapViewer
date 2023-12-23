@@ -14,6 +14,7 @@
  */
 package mg.mgmap.activity.mgmap.features.routing;
 
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
@@ -25,6 +26,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -83,6 +85,9 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefMapMatching = new Pref<>(false);
     private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
     private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
+    private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
+    private final String defaultRoutingProfileId = RoutingProfile.constructId(ShortestDistance.class);
+    private final Pref<String> prefRoutingProfileId = getPref(R.string.FSRouting_pref_currentRoutingProfile, defaultRoutingProfileId);
 
     private ViewGroup dashboardRoute = null;
     private final AtomicInteger refreshRequired = new AtomicInteger(0);
@@ -162,6 +167,27 @@ public class FSRouting extends FeatureService {
         };
         prefGps.addObserver(routingHintsEnabledObserver);
         prefMtlVisibility.addObserver(routingHintsEnabledObserver);
+
+        Pref<Boolean> prefUseRoutingProfiles = getPref(R.string.preferences_routingProfile_key, false);
+        prefUseRoutingProfiles.addObserver(evt -> {
+            mgLog.d("reset to defaultRoutingProfileId");
+            prefRoutingProfileId.setValue(defaultRoutingProfileId);
+        });
+        prefEditMarkerTrack.addObserver(evt -> getActivity().findViewById(R.id.routingProfiles).setVisibility((prefUseRoutingProfiles.getValue() && prefEditMarkerTrack.getValue())?View.VISIBLE:View.INVISIBLE));
+        prefRoutingProfileId.addObserver(evt -> {
+            // we need to change profile, but not as long as the routingEngine is busy ... and in a separate Thread, since it may take some time
+            getTimer().postDelayed(() -> {
+                synchronized (routingEngine){
+                    RoutingProfileManager routingProfileManager = application.getRoutingProfileManager();
+                    routingProfileManager.setCurrentRoutingProfile(prefRoutingProfileId.getValue());
+                    activity.getGGraphTileFactory().setRoutingProfile(routingProfileManager.getCurrentRoutingProfile());
+                    routingEngine.routePointMap.clear();
+                    routingEngine.routePointMap2.clear();
+                    refreshRequired.incrementAndGet();
+                }
+            },1);
+        } );
+        prefRoutingProfileId.changed();
     }
 
     @Override
@@ -170,6 +196,12 @@ public class FSRouting extends FeatureService {
         getControlView().setViewGroupColors(dvg, R.color.CC_WHITE, R.color.CC_PURPLE_A100);
         dashboardRoute = dvg;
         return dvg;
+    }
+
+    public ExtendedTextView initRoutingProfile(ExtendedTextView etv, RoutingProfile routingProfile){
+        super.initQuickControl(etv,routingProfile.getId());
+        routingProfile.initETV(etv,prefRoutingProfileId);
+        return etv;
     }
 
     @Override
@@ -213,6 +245,7 @@ public class FSRouting extends FeatureService {
         synchronized (FSRouting.this){
             FSRouting.this.notifyAll();
         }
+        prefRoutingProfileId.deleteObservers();
     }
 
     @Override

@@ -136,6 +136,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:title="@string/preferences_cat_routing_title"
+        app:iconSpaceReserved="false"
+        >
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_routingProfile_key"
+            app:summary="@string/preferences_routingProfile_desc"
+            app:title="@string/preferences_routingProfile_title"
+            app:iconSpaceReserved="false"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:title="@string/preferences_cat_gl_title"
         app:iconSpaceReserved="false"
         >

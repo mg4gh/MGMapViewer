@@ -131,6 +131,8 @@ public class ControlView extends RelativeLayout {
             variableVerticalOffsetViews.add(this);
             prefVerticalFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_fullscreen_offset_key, ""+statusBarHeight);
 
+            controlComposer.composeRoutingProfileButtons(activity, this);
+
             controlComposer.composeAlphaSlider(activity,this);
             controlComposer.composeAlphaSlider2(activity,this);
             registerSliderObserver(); // do this after the init call, which set the visibility prefs
@@ -289,6 +291,35 @@ public class ControlView extends RelativeLayout {
             ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
             ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.getDuration());
         }
+    }
+
+    // *************************************************************************************************
+    // ********* Routing Profile Button related stuff                                         **********
+    // *************************************************************************************************
+
+
+    public ExtendedTextView createRoutingProfileETV(ViewGroup parent) {
+        Context context = parent.getContext();
+        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(36));
+        parent.addView(etv);
+
+        int hMargin  = dp(5f);
+        int vMargin = dp(5);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+        params.setMargins(hMargin,vMargin,hMargin,vMargin);
+        params.weight = 20;
+        etv.setLayoutParams(params);
+
+        etv.setPadding(8, dp(4),8, dp(4));
+        etv.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.shape, context.getTheme()));
+        etv.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if ((left != oldLeft) || (top != oldTop) || (right != oldRight) || (bottom != oldBottom)){
+                int paddingHorizontal = Math.max((right-left - etv.getDrawableSize()) / 2, 0);
+                etv.setPadding(paddingHorizontal,etv.getPaddingTop(),paddingHorizontal,etv.getPaddingBottom());
+            }
+        });
+        return etv;
     }
 
     // *************************************************************************************************
