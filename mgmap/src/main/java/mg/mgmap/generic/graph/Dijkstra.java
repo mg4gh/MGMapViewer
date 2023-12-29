@@ -72,7 +72,7 @@ public class Dijkstra {
                 GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();
-                    double currentCost = ref.getCost() + neighbour.getCost(); // calc cost on current relaxed path
+                    double currentCost = ref.getCost() + neighbour.getCost(node); // calc cost on current relaxed path
                     // create new prioQueue entry, if there is currently none or if the current relaxted path has better cost
                     GNodeRef neighbourRef = neighbourNode.getNodeRef();
                     if ((neighbourRef == null) || (currentCost < neighbourRef.getCost() )){

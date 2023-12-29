@@ -21,12 +21,18 @@ package mg.mgmap.generic.graph;
 public class GNeighbour{
 
     private final GNode neighbourNode;
-    private final double cost;
+    private double cost;
     private GNeighbour nextNeighbour = null;
+    private GEnv env;
 
     public GNeighbour(GNode neighbourNode, double cost){
         this.neighbourNode = neighbourNode;
         this.cost = cost;
+    }
+    public GNeighbour(GNode neighbourNode, GEnv env){
+        this.neighbourNode = neighbourNode;
+        this.env = env;
+        this.cost = -1;
     }
 
 
@@ -35,6 +41,13 @@ public class GNeighbour{
     }
 
     public double getCost() {
+        assert cost >= 0;
+        return cost;
+    }
+    public double getCost(GNode node) {
+        if (cost < 0){
+            cost = env.getCost(node, this);
+        }
         return cost;
     }
 
