@@ -21,12 +21,15 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB;
 import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
+import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -48,6 +51,7 @@ import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.gpx.GpxExporter;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
 import mg.mgmap.activity.mgmap.view.MultiPointView;
@@ -88,6 +92,9 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     private final String defaultRoutingProfileId = RoutingProfile.constructId(ShortestDistance.class);
     private final Pref<String> prefRoutingProfileId = getPref(R.string.FSRouting_pref_currentRoutingProfile, defaultRoutingProfileId);
+    private final ArrayList<RoutingProfile> routingProfiles = new ArrayList<>();
+    private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
+
 
     private ViewGroup dashboardRoute = null;
     private final AtomicInteger refreshRequired = new AtomicInteger(0);
@@ -95,10 +102,10 @@ public class FSRouting extends FeatureService {
     private final MGMapApplication application;
     private MultiPointView dndVisualisationLayer = null;
 
-    public FSRouting(MGMapActivity mmActivity, FSMarker fsMarker) {
-        super(mmActivity);
+    public FSRouting(MGMapActivity mgActivity, FSMarker fsMarker) {
+        super(mgActivity);
         application = getApplication();
-        routingEngine = new RoutingEngine(mmActivity.getGGraphTileFactory(), interactiveRoutingContext);
+        routingEngine = new RoutingEngine(mgActivity.getGGraphTileFactory(), interactiveRoutingContext);
         ttRefreshTime = 50;
         mtlSupportProvider = new AdvancedMtlSupportProvider();
         fsMarker.mtlSupportProvider = mtlSupportProvider;
@@ -143,6 +150,15 @@ public class FSRouting extends FeatureService {
         }).start();
 
         application.markerTrackLogObservable.addObserver((e) -> {
+            TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+            if ((mtl != null) && (mtl.getRoutingProfileId() != null) && ( !prefRoutingProfileId.getValue().equals(mtl.getRoutingProfileId()) )){
+                mgLog.d("mtl doesn't match prefRoutingProfileId");
+                TrackLog rotl = application.routeTrackLogObservable.getTrackLog();
+                if ((rotl == null) || (rotl.getReferencedTrackLog() != mtl)){
+                    mgLog.d("set prefRoutingProfileId to mtl value: "+mtl.getRoutingProfileId());
+                    prefRoutingProfileId.setValue(mtl.getRoutingProfileId());
+                }
+            }
             refreshRequired.incrementAndGet(); // refresh route calculation is required
             mgLog.d("set refreshRequired");
             synchronized (FSRouting.this){
@@ -174,20 +190,35 @@ public class FSRouting extends FeatureService {
             prefRoutingProfileId.setValue(defaultRoutingProfileId);
         });
         prefEditMarkerTrack.addObserver(evt -> getActivity().findViewById(R.id.routingProfiles).setVisibility((prefUseRoutingProfiles.getValue() && prefEditMarkerTrack.getValue())?View.VISIBLE:View.INVISIBLE));
+        routingProfiles.add(new ShortestDistance(mgActivity));
+        routingProfiles.add(new MTB(mgActivity));
+        routingProfiles.add(new TrekkingBike(mgActivity));
         prefRoutingProfileId.addObserver(evt -> {
-            // we need to change profile, but not as long as the routingEngine is busy ... and in a separate Thread, since it may take some time
-            getTimer().postDelayed(() -> {
-                synchronized (routingEngine){
-                    RoutingProfileManager routingProfileManager = application.getRoutingProfileManager();
-                    routingProfileManager.setCurrentRoutingProfile(prefRoutingProfileId.getValue());
-                    activity.getGGraphTileFactory().setRoutingProfile(routingProfileManager.getCurrentRoutingProfile());
-                    routingEngine.routePointMap.clear();
-                    routingEngine.routePointMap2.clear();
-                    refreshRequired.incrementAndGet();
+            String id = prefRoutingProfileId.getValue();
+            for (RoutingProfile routingProfile : routingProfiles){
+                if (routingProfile.getId().equals(id)){
+                    getTimer().postDelayed(() -> {
+                        synchronized (routingEngine){
+                            if (activity.getGGraphTileFactory().setRoutingProfile(routingProfile)){
+                                routingEngine.routePointMap.clear();
+                                routingEngine.routePointMap2.clear();
+                                refreshRequired.incrementAndGet();
+                            }
+                        }
+                    },1);
+                    break;
                 }
-            },1);
+            }
         } );
         prefRoutingProfileId.changed();
+        application.routeTrackLogObservable.addObserver((e) -> {
+            TrackLog rotl = application.routeTrackLogObservable.getTrackLog();
+            prefRouteSavable.setValue((rotl != null) && rotl.isModified() );
+        });
+    }
+
+    public ArrayList<RoutingProfile> getRoutingProfiles() {
+        return routingProfiles;
     }
 
     @Override
@@ -225,6 +256,16 @@ public class FSRouting extends FeatureService {
             etv.setPrAction(prefRoutingHints);
             etv.setDisabledData(prefRoutingHintsEnabled, R.drawable.routing_hints_dis);
             etv.setHelp(r(R.string.FSRouting_qcRoutingHint_Help)).setHelp(r(R.string.FSRouting_qcRoutingHint_Help1),r(R.string.FSRouting_qcRoutingHint_Help2));
+        } else if ("routingSave".equals(info)){
+            etv.setData(R.drawable.save);
+            etv.setOnClickListener(v -> {
+                TrackLog trackLog = application.routeTrackLogObservable.getTrackLog();
+                mgLog.i("save "+trackLog.getName());
+                GpxExporter.export(application.getPersistenceManager(), trackLog);
+                application.getMetaDataUtil().createMetaData(trackLog);
+            });
+            etv.setDisabledData(prefRouteSavable, R.drawable.save2);
+            etv.setHelp("save marker track with route");
         }
         return etv;
     }
@@ -274,6 +315,7 @@ public class FSRouting extends FeatureService {
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
             mgLog.d("Start");
             synchronized (routingEngine){
+                mtl.setRoutingProfileId(prefRoutingProfileId.getValue());
                 rotl = routingEngine.updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
             }
             mgLog.d("End");

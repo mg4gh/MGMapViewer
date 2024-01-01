@@ -76,12 +76,14 @@ public class GGraphTileFactory {
         cache = null;
     }
 
-    public void setRoutingProfile(RoutingProfile routingProfile) {
+    public boolean setRoutingProfile(RoutingProfile routingProfile) {
         if (this.routingProfile != routingProfile){
             mgLog.i("profile changed to: "+routingProfile.getId());
             this.routingProfile = routingProfile;
             cache.clear(); // since the routing profile changes to GGraphTile instances, the cache has to be cleared
+            return true;
         }
+        return false;
     }
 
     public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){

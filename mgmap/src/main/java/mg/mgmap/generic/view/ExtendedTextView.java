@@ -224,7 +224,13 @@ public class ExtendedTextView extends AppCompatTextView {
     }
 
     private void setEnabled(){
-        setEnabled((prEnabled!=null)?prEnabled.getValue():true);
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            setEnabled((prEnabled!=null)?prEnabled.getValue():true);
+        } else {
+            mgLog.d("need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
+            Activity activity = (Activity) this.getContext();
+            activity.runOnUiThread(this::setEnabled);
+        }
     }
 
     public ExtendedTextView setFormat(Formatter.FormatType formatType){

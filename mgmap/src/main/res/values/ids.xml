@@ -20,6 +20,7 @@
 
     <item type="id" name="menu_marker"  />
     <item type="id" name="mi_marker_help"  />
+    <item type="id" name="mi_routing_save"  />
     <item type="id" name="mi_marker_empty1"  />
     <item type="id" name="mi_marker_edit"  />
     <item type="id" name="mi_routing_hint"  />

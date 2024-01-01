@@ -29,7 +29,6 @@ import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import mg.mgmap.BuildConfig;
-import mg.mgmap.activity.mgmap.features.routing.RoutingProfileManager;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
@@ -95,7 +94,6 @@ public class MGMapApplication extends Application {
     private NotificationUtil notificationUtil;
     private TrackStatisticFilter trackStatisticFilter;
     private HintUtil hintUtil;
-    private RoutingProfileManager routingProfileManager;
 
     public final LastPositionsObservable lastPositionsObservable = new LastPositionsObservable();
     public final AvailableTrackLogsObservable availableTrackLogsObservable = new AvailableTrackLogsObservable();
@@ -167,7 +165,6 @@ public class MGMapApplication extends Application {
         notificationUtil = new NotificationUtil(this);
         trackStatisticFilter = new TrackStatisticFilter(prefCache);
         hintUtil = new HintUtil();
-        routingProfileManager = new RoutingProfileManager(this);
 
         prefRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
         prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
@@ -506,10 +503,6 @@ public class MGMapApplication extends Application {
 
     public HintUtil getHintUtil() {
         return hintUtil;
-    }
-
-    public RoutingProfileManager getRoutingProfileManager() {
-        return routingProfileManager;
     }
 
     public PrefCache getPrefCache(){

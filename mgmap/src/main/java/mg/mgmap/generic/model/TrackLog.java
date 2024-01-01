@@ -33,6 +33,7 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
     protected TrackLog referencedTrackLog = null;
     protected boolean filterMatched = true;
     protected Pref<Boolean> prefSelected = new Pref<>(Boolean.FALSE);
+    protected String routingProfileId = null;
 
     public TrackLogStatistic getTrackStatistic() {
         return trackStatistic;
@@ -180,5 +181,16 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
     }
     public boolean isSelected(){
         return prefSelected.getValue();
+    }
+
+    public String getRoutingProfileId() {
+        return routingProfileId;
+    }
+
+    public void setRoutingProfileId(String routingProfileId) {
+        if (!routingProfileId.equals(this.routingProfileId)){
+            this.routingProfileId = routingProfileId;
+            this.setModified(true);
+        }
     }
 }

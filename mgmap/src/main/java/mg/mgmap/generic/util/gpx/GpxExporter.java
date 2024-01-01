@@ -14,14 +14,12 @@
  */
 package mg.mgmap.generic.util.gpx;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
@@ -52,6 +50,11 @@ public class GpxExporter {
                     TrackLog refTL = trackLog.getReferencedTrackLog();
                     if ((refTL != null) && (refTL.getNumberOfSegments() == 1)){ // supposed to be a route - export also the base MarkerTrackPoints
                         pw.println("\t\t<keywords>MGMarkerRoute</keywords>");
+                        if (refTL.getRoutingProfileId() != null){
+                            pw.println("\t\t<extensions>");
+                            pw.println("\t\t\t<routingProfile id=\""+refTL.getRoutingProfileId()+"\" />");
+                            pw.println("\t\t</extensions>");
+                        }
                         pw.println("\t</metadata>");
                         TrackLogSegment segment = refTL.getTrackLogSegment(0);
                         for (PointModel pm : segment){

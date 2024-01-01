@@ -65,7 +65,7 @@ public class ControlComposer {
 
     void composeRoutingProfileButtons(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.routingProfiles);
-        for (RoutingProfile routingProfile : activity.getMGMapApplication().getRoutingProfileManager().getRoutingProfiles()){
+        for (RoutingProfile routingProfile : activity.getFS(FSRouting.class).getRoutingProfiles()){
             activity.getFS(FSRouting.class).initRoutingProfile(coView.createRoutingProfileETV(parent), routingProfile).setId(View.generateViewId());
         }
         parent.setVisibility(View.INVISIBLE);
@@ -154,7 +154,7 @@ public class ControlComposer {
         createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0)).setId(R.id.mi_search_empty4);
 
         createQC(activity, FSControl.class,qcss[3],"help").setId(R.id.mi_marker_help);
-        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty1);
+        createQC(activity, FSRouting.class,qcss[3],"routingSave",gos.get(0)).setId(R.id.mi_routing_save);
         createQC(activity, FSMarker.class,qcss[3],"markerEdit",gos.get(0)).setId(R.id.mi_marker_edit);
         createQC(activity, FSRouting.class,qcss[3],"routingHint",gos.get(0)).setId(R.id.mi_routing_hint);
         createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty2);

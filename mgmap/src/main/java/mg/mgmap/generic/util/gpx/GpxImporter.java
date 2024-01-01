@@ -99,6 +99,13 @@ public class GpxImporter {
                         referencedTrackLog.getTrackLogSegment(0).addPoint(tlp);
                     }
                 }
+                if ("routingProfile".equals(qName)) {
+                    String rp = getStringAttribute("id");
+                    if ((trackLog != null) && (trackLog.getReferencedTrackLog() != null) && (rp != null)){
+                        trackLog.getReferencedTrackLog().setRoutingProfileId(rp);
+                    }
+                }
+
                 text = null;
 
             } else if (eventType == XmlPullParser.END_TAG) {
