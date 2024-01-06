@@ -120,7 +120,7 @@ public class Dijkstra {
     }
 
 
-    double heuristic(GNode node){
+    protected double heuristic(GNode node){
         return 0;
     }
 

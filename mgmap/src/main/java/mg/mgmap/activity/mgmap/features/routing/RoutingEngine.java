@@ -229,7 +229,8 @@ public class RoutingEngine {
         GNode gEnd = target.getApproachNode();
         mgLog.i("start "+gStart+" end "+gEnd);
 
-        double distLimit = acceptedRouteDistance(source.mtlp, target.mtlp);
+        double distLimit = gFactory.getRoutingProfile().acceptedRouteDistance(this,source.mtlp, target.mtlp);
+//        double distLimit = acceptedRouteDistance(source.mtlp, target.mtlp);
         GGraphMulti multi = null;
 
         try {
@@ -241,8 +242,8 @@ public class RoutingEngine {
                 multi.createOverlaysForApproach( gFactory.validateApproachModel(source.selectedApproach) );
                 multi.createOverlaysForApproach( gFactory.validateApproachModel(target.selectedApproach) );
 
-                // perform an AStar on this graph
-                AStar aStar = new AStar(multi);
+                // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
+                AStar aStar = new ProfiledAStar(multi, gFactory.getRoutingProfile());
                 for (GNodeRef gnr : aStar.perform(gStart, gEnd, distLimit, relaxedNodes)){
                     mpm.addPoint(gnr.getNode() );
                 }
@@ -386,7 +387,7 @@ public class RoutingEngine {
         return approaches;
     }
 
-    private double acceptedRouteDistance(PointModel pmStart, PointModel pmEnd){
+    double acceptedRouteDistance(PointModel pmStart, PointModel pmEnd){
         double distance = PointModelUtil.distance(pmStart,pmEnd);
         double res = 0;
         if (distance < routingContext.maxRoutingDistance){ // otherwise it will take too long

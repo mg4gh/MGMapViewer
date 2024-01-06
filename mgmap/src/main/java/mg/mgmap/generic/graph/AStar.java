@@ -27,7 +27,7 @@ public class AStar extends Dijkstra {
     }
 
     @Override
-    double heuristic(GNode node) {
+    protected double heuristic(GNode node) {
         return PointModelUtil.distance(node, target) * 0.999;
     }
 

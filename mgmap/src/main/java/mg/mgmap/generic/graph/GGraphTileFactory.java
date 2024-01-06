@@ -76,6 +76,10 @@ public class GGraphTileFactory {
         cache = null;
     }
 
+    public RoutingProfile getRoutingProfile() {
+        return routingProfile;
+    }
+
     public boolean setRoutingProfile(RoutingProfile routingProfile) {
         if (this.routingProfile != routingProfile){
             mgLog.i("profile changed to: "+routingProfile.getId());

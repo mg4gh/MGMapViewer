@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mg.mgmap.generic.graph.GNode;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
 
@@ -42,6 +44,13 @@ public abstract class RoutingProfile {
 
     abstract protected int getIconIdActive();
     abstract protected int getIconIdInactive();
+
+    protected double acceptedRouteDistance(RoutingEngine routingEngine, PointModel pmStart, PointModel pmEnd){
+        return routingEngine.acceptedRouteDistance(pmStart, pmEnd);
+    }
+    protected double heuristic(GNode node, GNode target){
+        return PointModelUtil.distance(node, target) * 0.999;
+    }
 
 
     void initETV(ExtendedTextView etv, Pref<String> prefCurrentRoutingProfileId){
