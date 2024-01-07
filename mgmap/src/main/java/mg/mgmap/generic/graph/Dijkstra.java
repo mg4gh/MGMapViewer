@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.graph;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +39,8 @@ public class Dijkstra {
     private int cntRelaxed = 0;
     private int cntSettled = 0;
     private int resultPathLength = 0;
+
+    private double resultPathCosts;
 
 
     public Dijkstra(GGraph graph) {
@@ -108,6 +112,7 @@ public class Dijkstra {
         ArrayList<GNodeRef> resultPath = new ArrayList<>();
         if ((target != null) && (target.getNodeRef() != null)){
             ref = target.getNodeRef();
+            resultPathCosts = ref.getCost();
             while (ref.getPredecessor() != null){
                 resultPath.add(0, ref);
                 ref = ref.getPredecessor().getNodeRef();
@@ -138,7 +143,7 @@ public class Dijkstra {
         } else if (target.getNodeRef() == null) {
             res += "no path found";
         } else {
-            res += "traget path found - hop count "+resultPathLength;
+            res += "target path found - hop count "+resultPathLength + ", path costs: " + resultPathCosts;
         }
         return res;
     }

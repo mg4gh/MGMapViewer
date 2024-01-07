@@ -10,14 +10,16 @@ import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.model.PointModelUtil;
 
 public class TrekkingBike extends RoutingProfile {
-
+    private final VertDistCost mVertDistCost = new VertDistCost(2, 0.15);
     public TrekkingBike(Context context) {
         super(context);
     }
 
     @Override
     public double getCost(Way way, GNode node1, GNode node2){
-        return PointModelUtil.distance(node1, node2);
+        double dist = PointModelUtil.distance(node1, node2);
+        double vertDist = node2.getEleD() - node1.getEleD();
+        return dist + mVertDistCost.getVertDistCosts(dist,vertDist);
     }
 
 
