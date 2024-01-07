@@ -7,6 +7,7 @@ import org.mapsforge.map.reader.MapFile;
 
 import java.io.File;
 
+import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImplHelper;
 import mg.mgmap.application.util.WayProviderHelper;
@@ -34,6 +35,7 @@ public class RoutingTest {
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
         GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider);
+        gGraphTileFactory.setRoutingProfile(new ShortestDistance());
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext);
 

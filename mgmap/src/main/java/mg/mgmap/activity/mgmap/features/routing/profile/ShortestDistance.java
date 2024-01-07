@@ -1,7 +1,5 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-import android.content.Context;
-
 import org.mapsforge.map.datastore.Way;
 
 import mg.mgmap.R;
@@ -11,10 +9,6 @@ import mg.mgmap.generic.model.PointModelUtil;
 
 public class ShortestDistance extends RoutingProfile {
 
-
-    public ShortestDistance(Context context) {
-        super(context);
-    }
 
     GNode lastNode1 = null;
     GNode lastNode2 = null;

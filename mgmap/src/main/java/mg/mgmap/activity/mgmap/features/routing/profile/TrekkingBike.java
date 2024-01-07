@@ -1,7 +1,5 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-import android.content.Context;
-
 import org.mapsforge.map.datastore.Way;
 
 import mg.mgmap.R;
@@ -10,10 +8,6 @@ import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.model.PointModelUtil;
 
 public class TrekkingBike extends RoutingProfile {
-
-    public TrekkingBike(Context context) {
-        super(context);
-    }
 
     @Override
     public double getCost(Way way, GNode node1, GNode node2){

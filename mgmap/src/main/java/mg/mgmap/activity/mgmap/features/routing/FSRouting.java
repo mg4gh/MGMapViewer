@@ -190,9 +190,9 @@ public class FSRouting extends FeatureService {
             prefRoutingProfileId.setValue(defaultRoutingProfileId);
         });
         prefEditMarkerTrack.addObserver(evt -> getActivity().findViewById(R.id.routingProfiles).setVisibility((prefUseRoutingProfiles.getValue() && prefEditMarkerTrack.getValue())?View.VISIBLE:View.INVISIBLE));
-        routingProfiles.add(new ShortestDistance(mgActivity));
-        routingProfiles.add(new MTB(mgActivity));
-        routingProfiles.add(new TrekkingBike(mgActivity));
+        routingProfiles.add(new ShortestDistance());
+        routingProfiles.add(new MTB());
+        routingProfiles.add(new TrekkingBike());
         prefRoutingProfileId.addObserver(evt -> {
             String id = prefRoutingProfileId.getValue();
             for (RoutingProfile routingProfile : routingProfiles){

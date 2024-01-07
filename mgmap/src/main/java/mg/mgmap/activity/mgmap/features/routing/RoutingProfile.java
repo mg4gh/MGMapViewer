@@ -1,7 +1,5 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
-import android.content.Context;
-
 import org.mapsforge.map.datastore.Way;
 
 import java.util.HashMap;
@@ -15,12 +13,10 @@ import mg.mgmap.generic.view.ExtendedTextView;
 
 public abstract class RoutingProfile {
 
-    Context context;
     protected String ID;
     protected Map<String, String> parameters = new HashMap<>();
 
-    public RoutingProfile(Context context){
-        this.context = context;
+    public RoutingProfile(){
         ID = constructId(this.getClass());
     }
 
