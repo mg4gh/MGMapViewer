@@ -2,9 +2,9 @@ package mg.mgmap.activity.mgmap.features.routing;
 
 public class RoutingContext {
 
-    int maxRoutingDistance;
+    public int maxRoutingDistance;
     boolean snap2Way;
-    int maxRouteLengthFactor;
+    public int maxRouteLengthFactor;
     int approachLimit;
 
     public RoutingContext(int maxRoutingDistance, boolean snap2Way, int maxRouteLengthFactor, int approachLimit) {

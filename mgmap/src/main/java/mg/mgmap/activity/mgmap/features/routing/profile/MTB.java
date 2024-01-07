@@ -105,8 +105,5 @@ public class MTB extends RoutingProfileTagEval {
         return R.drawable.rp_mtb2;
     }
 
-    public double getHeuristicCost(double dist, double vertDist){
-        return dist + mVertDistCost.getVertDistCosts(dist,vertDist);
-    }
 
 }
