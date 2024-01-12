@@ -78,12 +78,6 @@ public class GGraphTile extends GGraph {
         node2.addNeighbour(new GNeighbour(node1, env ));
     }
 
-    void addSegment(GNode node1, GNode node2){ // these segments are only connectors, default cost is sufficient
-        double cost = PointModelUtil.distance(node1, node2);
-        node1.addNeighbour(new GNeighbour(node2, cost));
-        node2.addNeighbour(new GNeighbour(node1, cost));
-    }
-
     public GNode getNode(double latitude, double longitude){
         return getAddNode(latitude, longitude, false);
     }

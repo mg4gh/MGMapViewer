@@ -14,6 +14,7 @@
  */
 package mg.mgmap.generic.graph;
 
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -33,8 +34,10 @@ public class GGraphMulti extends GGraph {
 
     private final ArrayList<GGraphTile> gGraphTiles = new ArrayList<>();
     ArrayList<GOverlayNeighbour> overlayNeighbours = new ArrayList<>(); // used for neighbour tile connections and for approaches
+    final GEnv gEnv;
 
-    public GGraphMulti(ArrayList<GGraphTile> gGraphTiles){
+    public GGraphMulti(RoutingProfile routingProfile, ArrayList<GGraphTile> gGraphTiles){
+        gEnv = new GEnv(routingProfile);
         for (GGraphTile gGraphTile : gGraphTiles){
             connectGGraphTile(gGraphTile);
         }
@@ -122,7 +125,7 @@ public class GGraphMulti extends GGraph {
         for (GNode node1 : borderNodes1){
             for (GNode node2 : borderNodes2){
                 if ( (horizontal?Math.abs( node1.getLat() - node2.getLat() ):Math.abs( node1.getLon() - node2.getLon() )) <= threshold){ //distance less than 0.5m -> connect nodes
-                    connect(node1, node2);
+                    connect(gEnv, node1, node2);
                     remainingNodes1.remove(node1);
                     remainingNodes2.remove(node2);
                 }
@@ -144,7 +147,7 @@ public class GGraphMulti extends GGraph {
                         if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approchPoint,0)) continue; // approach not found try next ponits
                         if (PointModelUtil.distance(approchPoint,node2) > CONNECT_THRESHOLD_METER) continue;
                         mgLog.d(()->"OK, connect: node1 " + node1 + " node1neighbour " + node1Neighbour + " node2 " + node2 + " node2neighbour " + node2Neighbour);
-                        connect(node1Neighbour, node2Neighbour);
+                        connect(gEnv, node1Neighbour, node2Neighbour);
                         stillRemainingNodes1.remove(node1);
                         stillRemainingNodes2.remove(node2);
                     }
@@ -161,15 +164,15 @@ public class GGraphMulti extends GGraph {
         }
     }
 
-    private void connect(GNode node1, GNode node2){
-        double cost = PointModelUtil.distance(node1, node2)+0.001;
-        addNextNeighbour(node1,getLastNeighbour(node1),new GNeighbour(node2,cost));
-        addNextNeighbour(node2,getLastNeighbour(node2),new GNeighbour(node1,cost));
+    private void connect(GEnv gEnv, GNode node1, GNode node2){
+//        double cost = PointModelUtil.distance(node1, node2)+0.001;
+        addNextNeighbour(node1,getLastNeighbour(node1),new GNeighbour(node2,gEnv));
+        addNextNeighbour(node2,getLastNeighbour(node2),new GNeighbour(node1,gEnv));
     }
 
-    public void createOverlaysForApproach(ApproachModel approach){
+    public void createOverlaysForApproach(GEnv gEnv, ApproachModel approach){
         super.getNodes().add(approach.getApproachNode()); // take super.getNodes() to get the node list of the multi graph
-        connect(approach.getNode1(), approach.getApproachNode());
-        connect(approach.getNode2(), approach.getApproachNode());
+        connect(gEnv, approach.getNode1(), approach.getApproachNode());
+        connect(gEnv, approach.getNode2(), approach.getApproachNode());
     }
 }

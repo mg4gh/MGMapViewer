@@ -59,4 +59,7 @@ public class GNeighbour{
         this.nextNeighbour = nextNeighbour;
     }
 
+    public GEnv getGEnv() {
+        return env;
+    }
 }

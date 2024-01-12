@@ -164,6 +164,7 @@ public class GGraphTileFactory {
 //            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
             //all highwas are in the map ... try to correct data ...
             ArrayList<GNode> nodes = gGraphTile.getNodes();
+            GEnv gEnv = new GEnv(routingProfile);
             for (int iIdx=0; iIdx<nodes.size(); iIdx++){
                 GNode iNode = nodes.get(iIdx);
                 int iNeighbours = iNode.countNeighbours();
@@ -199,11 +200,11 @@ public class GGraphTileFactory {
 
                     int nNeighbours = nNode.countNeighbours();
                     if ((iNeighbours == 1) && (nNeighbours == 1)) { // 1:1 connect -> no routing hint problem
-                        gGraphTile.addSegment(iNode, nNode);
+                        gGraphTile.addSegment(gEnv,iNode, nNode);
                         continue;
                     }
                     if (isBorderPoint(gGraphTile.tbBox, nNode) || isBorderPoint(gGraphTile.tbBox, iNode)) { // border points must be kept for MultiTiles; accept potential routing hint problem
-                        gGraphTile.addSegment(iNode, nNode);
+                        gGraphTile.addSegment(gEnv,iNode, nNode);
                         continue;
                     }
                     if ((iNeighbours == 2) && (nNeighbours == 1)) { // 2:1 connect -> might give routing hint problem
@@ -215,7 +216,7 @@ public class GGraphTileFactory {
                         continue;
                     }
                     // else (n:m) accept routing hint issue
-                    gGraphTile.addSegment(iNode, nNode);
+                    gGraphTile.addSegment(gEnv,iNode, nNode);
 
                 }
             }
@@ -237,7 +238,7 @@ public class GGraphTileFactory {
             nextNeighbour = nextNeighbour.getNextNeighbour();
             // remove nNode as a Neighbour
             nextNeighbour.getNeighbourNode().removeNeighbourNode(nNode);
-            graph.addSegment(iNode, nextNeighbour.getNeighbourNode());
+            graph.addSegment(nextNeighbour.getGEnv(),iNode, nextNeighbour.getNeighbourNode());
         }
         graph.getNodes().remove(nNode);
     }

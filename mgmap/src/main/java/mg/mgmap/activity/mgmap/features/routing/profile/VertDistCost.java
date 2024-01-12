@@ -1,7 +1,5 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-import android.util.Log;
-
 public class VertDistCost {
     private final double mBaseCosts; // base costs in m per hm uphill;
     private final double mMaxOptSlope; //  up to this slope base Costs
@@ -28,7 +26,7 @@ public class VertDistCost {
 
     }
 
-    protected double getVertDistCosts(double dist, double vertDist) {
+    public double getVertDistCosts(double dist, double vertDist) {
         double vertCost;
         double slope = vertDist / dist;
         if (slope > 0) {
@@ -49,5 +47,13 @@ public class VertDistCost {
             }
         }
         return vertCost;
+    }
+
+    public double getVertDistHeuristic(double vertDist){
+        double vertHeuristic = 0;
+        if (vertDist > 0){
+            vertHeuristic = vertDist * mBaseCosts;
+        }
+        return vertHeuristic;
     }
 }

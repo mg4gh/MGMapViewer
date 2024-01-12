@@ -23,6 +23,7 @@ import java.util.TreeSet;
 
 import mg.mgmap.generic.graph.AStar;
 import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.GEnv;
 import mg.mgmap.generic.graph.GGraphMulti;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
@@ -229,7 +230,9 @@ public class RoutingEngine {
         GNode gEnd = target.getApproachNode();
         mgLog.i("start "+gStart+" end "+gEnd);
 
-        double distLimit = gFactory.getRoutingProfile().acceptedRouteDistance(this,source.mtlp, target.mtlp);
+        RoutingProfile routingProfile = gFactory.getRoutingProfile();
+        GEnv gEnv = new GEnv(routingProfile);
+        double distLimit = routingProfile.acceptedRouteDistance(this,source.mtlp, target.mtlp);
 //        double distLimit = acceptedRouteDistance(source.mtlp, target.mtlp);
         GGraphMulti multi = null;
 
@@ -238,9 +241,9 @@ public class RoutingEngine {
                 BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
                 bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
                 ArrayList<GGraphTile> gGraphTileList = gFactory.getGGraphTileList(bBox);
-                multi = new GGraphMulti(gGraphTileList);
-                multi.createOverlaysForApproach( gFactory.validateApproachModel(source.selectedApproach) );
-                multi.createOverlaysForApproach( gFactory.validateApproachModel(target.selectedApproach) );
+                multi = new GGraphMulti(gFactory.getRoutingProfile(), gGraphTileList);
+                multi.createOverlaysForApproach( gEnv, gFactory.validateApproachModel(source.selectedApproach) );
+                multi.createOverlaysForApproach( gEnv, gFactory.validateApproachModel(target.selectedApproach) );
 
                 // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
                 AStar aStar = new ProfiledAStar(multi, gFactory.getRoutingProfile());
@@ -342,7 +345,7 @@ public class RoutingEngine {
         WriteablePointModel pmApproach = new TrackLogPoint();
 
         ArrayList<GGraphTile> tiles = gFactory.getGGraphTileList(mtlpBBox);
-        GGraphMulti multi = new GGraphMulti(tiles);
+        GGraphMulti multi = new GGraphMulti(gFactory.getRoutingProfile(), tiles);
         for (GGraphTile gGraphTile : tiles){
             for (GNode node : gGraphTile.getNodes()) {
 

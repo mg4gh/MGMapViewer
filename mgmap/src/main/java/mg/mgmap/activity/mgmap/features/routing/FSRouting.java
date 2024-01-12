@@ -64,9 +64,10 @@ public class FSRouting extends FeatureService {
     private static final Paint PAINT_ROUTE_STROKE = CC.getStrokePaint(R.color.CC_PURPLE, DisplayModel.getDeviceScaleFactor()*5.0f);
     private static final Paint PAINT_ROUTE_STROKE2 = CC.getFillPaint(R.color.CC_PURPLE);
     private static final Paint PAINT_RELAXED = CC.getStrokePaint(R.color.CC_BLUE, 2);
+    private static final Paint PAINT_RELAXED2 = CC.getStrokePaint(R.color.CC_GREEN, 2);
     private final Paint PAINT_STROKE_GL = CC.getStrokePaint(R.color.CC_GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
-    private static final int ZOOM_LEVEL_RELAXED_VISIBILITY = 17;
+    private static final int ZOOM_LEVEL_RELAXED_VISIBILITY = 16;
 
     private final RoutingEngine routingEngine;
     private final RoutingContext interactiveRoutingContext = new RoutingContext(
@@ -346,8 +347,10 @@ public class FSRouting extends FeatureService {
     private void checkRelaxedViews(TrackLog mtl){
         if ((mtl != null) && prefWayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY){
             if (mtl.getTrackStatistic().getNumPoints() >= 2){
-                for (PointModel pm : routingEngine.getCurrentRelaxedNodes()){
-                    register( new PointView(pm, PAINT_RELAXED));
+                synchronized (routingEngine){
+                    for (PointModel pm : routingEngine.getCurrentRelaxedNodes()){
+                        register( new PointView(pm, ((GNode)pm).getNodeRef().isSetteled()?PAINT_RELAXED:PAINT_RELAXED2 ));
+                    }
                 }
             }
         }

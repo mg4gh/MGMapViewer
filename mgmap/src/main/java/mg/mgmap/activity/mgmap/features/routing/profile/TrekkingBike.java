@@ -11,7 +11,13 @@ public class TrekkingBike extends RoutingProfile {
 
     @Override
     public double getCost(Way way, GNode node1, GNode node2){
-        return PointModelUtil.distance(node1, node2);
+        double distance = PointModelUtil.distance(node1, node2);
+        double vDistance = node2.getEleD() - node1.getEleD();
+
+        if (vDistance > 0){
+            return distance + vDistance*10;
+        }
+        return distance;
     }
 
 

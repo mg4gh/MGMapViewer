@@ -18,6 +18,7 @@ import org.mapsforge.core.graphics.Paint;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
@@ -26,6 +27,7 @@ import mg.mgmap.R;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GNeighbour;
 import mg.mgmap.generic.graph.GNode;
+import mg.mgmap.generic.graph.GNodeRef;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
@@ -164,7 +166,8 @@ public class FSGraphDetails extends FeatureService {
 
             for (GNode node : nodes){
                 multiPointModel.addPoint(node);
-                mgLog.d("Point "+ node);
+                GNodeRef ref = node.getNodeRef();
+                mgLog.d(()-> "Point "+ node + ((ref != null)?String.format(Locale.ENGLISH, " setteled=%b cost=%.2f heuristic=%.2f hcost=%.2f",ref.isSetteled(),ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost()):""));
             }
         }
         return (bestTile==null)?null:bestTile.getTileBBox();
