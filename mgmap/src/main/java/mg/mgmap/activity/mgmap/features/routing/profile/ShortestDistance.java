@@ -18,7 +18,7 @@ public class ShortestDistance extends RoutingProfile {
         if ((node1==lastNode2) && (node2==lastNode1)) return lastCost;
         lastNode1 = node1;
         lastNode2 = node2;
-        lastCost = PointModelUtil.distance(node1, node2);
+        lastCost = PointModelUtil.distance(node1, node2)+0.0001;
         return lastCost;
 
 
