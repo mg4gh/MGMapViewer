@@ -83,7 +83,7 @@ public class RouteOptimizer {
         for (int idx=startIdx+1; idx < endIdx; idx++){
             RoutePointModel rpm = routingEngine.getVerifyRoutePointModel( segment.get(idx) );
             for (ApproachModel approachModel : rpm.getApproaches()) {
-                gFactory.validateApproachModel(approachModel); // renew node1 and node2, if GGraphTile was newly setup due to cache effect
+                routingEngine.validateApproachModel(approachModel); // renew node1 and node2, if GGraphTile was newly setup due to cache effect
             }
 
             double optimalDist = lastDist + PointModelUtil.distance(lastRPM.mtlp, rpm.mtlp);
@@ -94,7 +94,7 @@ public class RouteOptimizer {
                 rbBox.clear();
                 if (rpm.approachBBox.intersects( rbBox.extend(route.get(rIdx)).extend(route.get(rIdx-1))  )){ // ok, it might give a route match
                     for (ApproachModel approachModel : rpm.getApproaches()){
-                        gFactory.validateApproachModel(approachModel); // renew node1 and node2, if GGraphTile was newly setup due to cache effect
+                        routingEngine.validateApproachModel(approachModel); // renew node1 and node2, if GGraphTile was newly setup due to cache effect
                         if (((approachModel.getNode1() == route.get(rIdx)) && (approachModel.getNode2() == route.get(rIdx-1))) ||
                             ((approachModel.getNode2() == route.get(rIdx)) && (approachModel.getNode1() == route.get(rIdx-1))))   {
                             double currentDist = rdist[rIdx-1]+PointModelUtil.distance(route.get(rIdx-1),approachModel.getApproachNode());

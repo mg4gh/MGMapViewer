@@ -23,16 +23,16 @@ public class GNeighbour{
     private final GNode neighbourNode;
     private double cost;
     private GNeighbour nextNeighbour = null;
-    private GEnv env;
+    private WayAttributs wayAttributs = null;
 
     public GNeighbour(GNode neighbourNode, double cost){
         this.neighbourNode = neighbourNode;
         this.cost = cost;
     }
-    public GNeighbour(GNode neighbourNode, GEnv env){
+    public GNeighbour(GNode neighbourNode, WayAttributs wayAttributs){
         this.neighbourNode = neighbourNode;
-        this.env = env;
-        this.cost = -1;
+        this.wayAttributs = wayAttributs;
+        resetCost();
     }
 
 
@@ -41,14 +41,13 @@ public class GNeighbour{
     }
 
     public double getCost() {
-        assert cost >= 0;
         return cost;
     }
-    public double getCost(GNode node) {
-        if (cost < 0){
-            cost = env.getCost(node, this);
-        }
-        return cost;
+    void resetCost(){
+        cost = -1;
+    }
+    public void setCost(double cost){
+        this.cost = cost;
     }
 
     public GNeighbour getNextNeighbour() {
@@ -59,7 +58,7 @@ public class GNeighbour{
         this.nextNeighbour = nextNeighbour;
     }
 
-    public GEnv getGEnv() {
-        return env;
+    public WayAttributs getWayAttributs() {
+        return wayAttributs;
     }
 }

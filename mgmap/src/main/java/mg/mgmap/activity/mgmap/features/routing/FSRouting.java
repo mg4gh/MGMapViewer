@@ -35,7 +35,10 @@ import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
 import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.GGraphTile;
+import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.graph.GNode;
+import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -70,6 +73,7 @@ public class FSRouting extends FeatureService {
     private static final int ZOOM_LEVEL_RELAXED_VISIBILITY = 16;
 
     private final RoutingEngine routingEngine;
+    private final GGraphTileFactory gFactory;
     private final RoutingContext interactiveRoutingContext = new RoutingContext(
             10000,
             false, // no extra snap, since FSMarker snaps point zoom level dependent
@@ -103,10 +107,11 @@ public class FSRouting extends FeatureService {
     private final MGMapApplication application;
     private MultiPointView dndVisualisationLayer = null;
 
-    public FSRouting(MGMapActivity mgActivity, FSMarker fsMarker) {
+    public FSRouting(MGMapActivity mgActivity, FSMarker fsMarker, GGraphTileFactory gFactory) {
         super(mgActivity);
+        this.gFactory = gFactory;
         application = getApplication();
-        routingEngine = new RoutingEngine(mgActivity.getGGraphTileFactory(), interactiveRoutingContext);
+        routingEngine = new RoutingEngine(gFactory, interactiveRoutingContext);
         ttRefreshTime = 50;
         mtlSupportProvider = new AdvancedMtlSupportProvider();
         fsMarker.mtlSupportProvider = mtlSupportProvider;
@@ -199,12 +204,8 @@ public class FSRouting extends FeatureService {
             for (RoutingProfile routingProfile : routingProfiles){
                 if (routingProfile.getId().equals(id)){
                     getTimer().postDelayed(() -> {
-                        synchronized (routingEngine){
-                            if (activity.getGGraphTileFactory().setRoutingProfile(routingProfile)){
-                                routingEngine.routePointMap.clear();
-                                routingEngine.routePointMap2.clear();
-                                refreshRequired.incrementAndGet();
-                            }
+                        if (routingEngine.setRoutingProfile(routingProfile)){
+                            application.markerTrackLogObservable.changed();
                         }
                     },1);
                     break;
@@ -216,6 +217,10 @@ public class FSRouting extends FeatureService {
             TrackLog rotl = application.routeTrackLogObservable.getTrackLog();
             prefRouteSavable.setValue((rotl != null) && rotl.isModified() );
         });
+    }
+
+    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
+        return routingEngine.getGGraphTileList(bBox);
     }
 
     public ArrayList<RoutingProfile> getRoutingProfiles() {
@@ -315,11 +320,10 @@ public class FSRouting extends FeatureService {
         WriteableTrackLog rotl = null;
         if ((mtl != null) && (mtl.getTrackStatistic().getNumPoints() > 0)){
             mgLog.d("Start");
-            synchronized (routingEngine){
-                mtl.setRoutingProfileId(prefRoutingProfileId.getValue());
-                rotl = routingEngine.updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
-            }
-            mgLog.d("End");
+            long tStart = System.currentTimeMillis();
+            rotl = routingEngine.updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
+            mtl.setRoutingProfileId(prefRoutingProfileId.getValue());
+            mgLog.d("End duration="+(System.currentTimeMillis()-tStart)+"ms");
         }
         application.routeTrackLogObservable.setTrackLog(rotl);
         refreshObserver.onChange(); // trigger visualization
@@ -361,7 +365,7 @@ public class FSRouting extends FeatureService {
         synchronized (routingEngine){
             routingEngine.setRoutingContext( new RoutingContext(1000, false, 10, PointModelUtil.getCloseThreshold()) );
             WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-            RouteOptimizer ro = new RouteOptimizer(getActivity().getGGraphTileFactory(), routingEngine);
+            RouteOptimizer ro = new RouteOptimizer(gFactory, routingEngine);
             ro.optimize(mtl);
             routingEngine.setRoutingContext( new RoutingContext(1000, true, 3, PointModelUtil.getCloseThreshold()) );
             updateRouting();
@@ -372,7 +376,7 @@ public class FSRouting extends FeatureService {
     public void optimize2(TrackLog trackLog){
         synchronized (routingEngine){
             routingEngine.setRoutingContext( new RoutingContext(10000, true, 3, PointModelUtil.getCloseThreshold()) );
-            RouteOptimizer2 ro = new RouteOptimizer2(getActivity().getGGraphTileFactory(), routingEngine);
+            RouteOptimizer2 ro = new RouteOptimizer2(gFactory, routingEngine);
             ro.optimize(trackLog);
             routingEngine.setRoutingContext(interactiveRoutingContext);
         }

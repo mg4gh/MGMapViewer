@@ -2,10 +2,8 @@ package mg.mgmap.activity.mgmap.features.routing;
 
 import org.mapsforge.map.datastore.Way;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import mg.mgmap.generic.graph.GNode;
+import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
@@ -13,11 +11,10 @@ import mg.mgmap.generic.view.ExtendedTextView;
 
 public abstract class RoutingProfile {
 
-    protected String ID;
-    protected Map<String, String> parameters = new HashMap<>();
+    protected String id;
 
     public RoutingProfile(){
-        ID = constructId(this.getClass());
+        id = constructId(this.getClass());
     }
 
     public static String constructId(Class<?> clazz){
@@ -25,34 +22,51 @@ public abstract class RoutingProfile {
     }
 
     public String getId(){
-        return ID;
+        return id;
     }
 
-    public Map<String, String> getParameters(){
-        return parameters;
+    public WayAttributs getWayAttributes(Way way){
+        return new WayAttributs();
     }
 
-    public void setParameter(String name, String value){
-        parameters.put(name,value);
+    public double getCost(WayAttributs wayAttributs, GNode node1, GNode node2){
+        double distance = PointModelUtil.distance(node1, node2);
+        float verticalDistance = node2.getEleD() - node1.getEleD();
+        return getCost(wayAttributs, distance, verticalDistance);
+    }
+    protected abstract double getCost(WayAttributs wayAttributs, double distance, float verticalDistance);
+
+    public double heuristic(GNode node, GNode target){
+        double distance = PointModelUtil.distance(node, target);
+        float verticalDistance = target.getEleD() - node.getEleD();
+        return heuristic(distance, verticalDistance);
+    }
+    protected double heuristic(double distance, float verticalDistance){
+        return distance*0.999;
     }
 
-    public abstract double getCost(Way way, GNode node1, GNode node2);
+    protected double acceptedRouteDistance(RoutingEngine routingEngine, PointModel pmStart, PointModel pmEnd){
+        double distance = PointModelUtil.distance(pmStart, pmEnd);
+        float verticalDistance = pmEnd.getEleD() - pmStart.getEleD();
+        return acceptedRouteDistance(routingEngine, distance, verticalDistance);
+    }
+    protected double acceptedRouteDistance(RoutingEngine routingEngine, double distance, float verticalDistance){
+        double res = 0;
+        if (distance < routingEngine.getRoutingContext().maxBeelineDistance){ // otherwise it will take too long
+            res = routingEngine.getRoutingContext().maxRouteLengthFactor * heuristic(distance,verticalDistance) + 2 * PointModelUtil.getCloseThreshold();
+        }
+        return res;
+    }
+
 
     abstract protected int getIconIdActive();
     abstract protected int getIconIdInactive();
 
-    protected double acceptedRouteDistance(RoutingEngine routingEngine, PointModel pmStart, PointModel pmEnd){
-        return routingEngine.acceptedRouteDistance(pmStart, pmEnd);
-    }
-    protected double heuristic(GNode node, GNode target){
-        return PointModelUtil.distance(node, target) * 0.999;
-    }
-
 
     void initETV(ExtendedTextView etv, Pref<String> prefCurrentRoutingProfileId){
-        Pref<Boolean> rpState = new Pref<>(ID.equals(prefCurrentRoutingProfileId.getValue()));
-        prefCurrentRoutingProfileId.addObserver(evt -> rpState.setValue( ID.equals(prefCurrentRoutingProfileId.getValue()) ));
+        Pref<Boolean> rpState = new Pref<>(id.equals(prefCurrentRoutingProfileId.getValue()));
+        prefCurrentRoutingProfileId.addObserver(evt -> rpState.setValue( id.equals(prefCurrentRoutingProfileId.getValue()) ));
         etv.setData(rpState, getIconIdInactive(), getIconIdActive());
-        etv.setOnClickListener(v -> prefCurrentRoutingProfileId.setValue(ID));
+        etv.setOnClickListener(v -> prefCurrentRoutingProfileId.setValue(id));
     }
 }

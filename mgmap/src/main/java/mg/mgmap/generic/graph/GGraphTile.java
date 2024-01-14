@@ -48,7 +48,7 @@ public class GGraphTile extends GGraph {
         tbBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
     }
 
-    void addLatLongs(GEnv env, LatLong[] latLongs){
+    void addLatLongs(WayAttributs wayAttributs, LatLong[] latLongs){
         for (int i=1; i<latLongs.length; i++){
             double lat1 = PointModelUtil.roundMD(latLongs[i-1].latitude);
             double lon1 = PointModelUtil.roundMD(latLongs[i-1].longitude);
@@ -62,20 +62,20 @@ public class GGraphTile extends GGraph {
             lat1 = clipRes.getLat();
             lon1 = clipRes.getLon();
             if (tbBox.contains(lat1, lon1) && tbBox.contains(lat2, lon2)){
-                addSegment(env, lat1, lon1 ,lat2, lon2);
+                addSegment(wayAttributs, lat1, lon1 ,lat2, lon2);
             }
         }
     }
 
-    void addSegment(GEnv env, double lat1, double long1, double lat2, double long2){
+    void addSegment(WayAttributs wayAttributs, double lat1, double long1, double lat2, double long2){
         GNode node1 = getAddNode( lat1, long1);
         GNode node2 = getAddNode( lat2, long2);
-        addSegment(env, node1, node2);
+        addSegment(wayAttributs, node1, node2);
     }
 
-    void addSegment(GEnv env, GNode node1, GNode node2){
-        node1.addNeighbour(new GNeighbour(node2, env ));
-        node2.addNeighbour(new GNeighbour(node1, env ));
+    void addSegment(WayAttributs wayAttributs, GNode node1, GNode node2){
+        node1.addNeighbour(new GNeighbour(node2, wayAttributs ));
+        node2.addNeighbour(new GNeighbour(node1, wayAttributs ));
     }
 
     public GNode getNode(double latitude, double longitude){

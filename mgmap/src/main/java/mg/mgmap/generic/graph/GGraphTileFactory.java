@@ -49,7 +49,8 @@ public class GGraphTileFactory {
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
     private LinkedHashMap<Long, GGraphTile> cache = null;
-    private RoutingProfile routingProfile = null;
+//    private RoutingProfile routingProfile = null;
+    static final WayAttributs defaultWayAttributes = new WayAttributs();
 
     public GGraphTileFactory(){}
 
@@ -76,21 +77,18 @@ public class GGraphTileFactory {
         cache = null;
     }
 
-    public RoutingProfile getRoutingProfile() {
-        return routingProfile;
-    }
-
-    public boolean setRoutingProfile(RoutingProfile routingProfile) {
-        if (this.routingProfile != routingProfile){
-            mgLog.i("profile changed to: "+routingProfile.getId());
-            this.routingProfile = routingProfile;
-            cache.clear(); // since the routing profile changes to GGraphTile instances, the cache has to be cleared
-            return true;
+    public void resetCosts(){
+        for (GGraphTile graph : cache.values()){
+             for (GNode node : graph.getNodes()){
+                 GNeighbour neighbour = node.getNeighbour();
+                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null) {
+                    neighbour.resetCost();
+                 }
+             }
         }
-        return false;
     }
 
-    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){
+    public ArrayList<GGraphTile> getGGraphTileList(RoutingProfile routingProfile, BBox bBox){
         ArrayList<GGraphTile> tileList = new ArrayList<>();
         try {
             long mapSize = MercatorProjection.getMapSize(ZOOM_LEVEL, TILE_SIZE);
@@ -105,7 +103,7 @@ public class GGraphTileFactory {
             if (totalTiles < CACHE_LIMIT){
                 for (int tileX = tileXMin; tileX <= tileXMax; tileX++) {
                     for (int tileY = tileYMin; tileY <= tileYMax; tileY++) {
-                        GGraphTile graph = getGGraphTile(tileX,tileY);
+                        GGraphTile graph = getGGraphTile(routingProfile, tileX,tileY);
                         tileList.add(graph);
                     }
                 }
@@ -118,8 +116,8 @@ public class GGraphTileFactory {
         return tileList;
     }
 
-    public ApproachModel validateApproachModel(ApproachModel am){
-        GGraphTile gGraphTile = getGGraphTile(am.getTileX(), am.getTileY());
+    public ApproachModel validateApproachModel(RoutingProfile routingProfile, ApproachModel am){
+        GGraphTile gGraphTile = getGGraphTile(routingProfile, am.getTileX(), am.getTileY());
         am.setNode1( gGraphTile.getNode(am.getNode1().getLat(),am.getNode1().getLon()) );
         am.setNode2( gGraphTile.getNode(am.getNode2().getLat(),am.getNode2().getLon()) );
         if (am.getNode1() == null) mgLog.e("node1==null ->rework failed");
@@ -132,7 +130,7 @@ public class GGraphTileFactory {
     }
 
     @SuppressWarnings("CommentedOutCode")
-    private GGraphTile getGGraphTile(int tileX, int tileY){
+    private GGraphTile getGGraphTile(RoutingProfile routingProfile, int tileX, int tileY){
         long key = getKey(tileX,tileY);
 
         GGraphTile gGraphTile = cache.get(key);
@@ -143,7 +141,8 @@ public class GGraphTileFactory {
             for (Way way : wayProvider.getWays(tile)) {
                 if (wayProvider.isHighway(way)){
 
-                    gGraphTile.addLatLongs( new GEnv(way,routingProfile), way.latLongs[0]);
+                    WayAttributs wayAttributs = routingProfile.getWayAttributes(way);
+                    gGraphTile.addLatLongs( wayAttributs, way.latLongs[0]);
 
                     // now setup rawWays
                     MultiPointModelImpl mpm = new MultiPointModelImpl();
@@ -162,9 +161,8 @@ public class GGraphTileFactory {
             int latThreshold = LaLo.d2md( PointModelUtil.latitudeDistance(GGraph.CONNECT_THRESHOLD_METER) );
             int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(GGraph.CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
 //            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
-            //all highwas are in the map ... try to correct data ...
+            //all highways are in the map ... try to correct data ...
             ArrayList<GNode> nodes = gGraphTile.getNodes();
-            GEnv gEnv = new GEnv(routingProfile);
             for (int iIdx=0; iIdx<nodes.size(); iIdx++){
                 GNode iNode = nodes.get(iIdx);
                 int iNeighbours = iNode.countNeighbours();
@@ -200,11 +198,11 @@ public class GGraphTileFactory {
 
                     int nNeighbours = nNode.countNeighbours();
                     if ((iNeighbours == 1) && (nNeighbours == 1)) { // 1:1 connect -> no routing hint problem
-                        gGraphTile.addSegment(gEnv,iNode, nNode);
+                        gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
                         continue;
                     }
                     if (isBorderPoint(gGraphTile.tbBox, nNode) || isBorderPoint(gGraphTile.tbBox, iNode)) { // border points must be kept for MultiTiles; accept potential routing hint problem
-                        gGraphTile.addSegment(gEnv,iNode, nNode);
+                        gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
                         continue;
                     }
                     if ((iNeighbours == 2) && (nNeighbours == 1)) { // 2:1 connect -> might give routing hint problem
@@ -216,7 +214,7 @@ public class GGraphTileFactory {
                         continue;
                     }
                     // else (n:m) accept routing hint issue
-                    gGraphTile.addSegment(gEnv,iNode, nNode);
+                    gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
 
                 }
             }
@@ -238,7 +236,7 @@ public class GGraphTileFactory {
             nextNeighbour = nextNeighbour.getNextNeighbour();
             // remove nNode as a Neighbour
             nextNeighbour.getNeighbourNode().removeNeighbourNode(nNode);
-            graph.addSegment(nextNeighbour.getGEnv(),iNode, nextNeighbour.getNeighbourNode());
+            graph.addSegment(nextNeighbour.getWayAttributs(),iNode, nextNeighbour.getNeighbourNode());
         }
         graph.getNodes().remove(nNode);
     }

@@ -168,9 +168,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     public PrefCache getPrefCache(){
         return prefCache;
     }
-    public GGraphTileFactory getGGraphTileFactory() {
-        return gGraphTileFactory;
-    }
     public MapDataStoreUtil getMapDataStoreUtil() {
         return mapDataStoreUtil;
     }
@@ -220,7 +217,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         featureServices.add(new FSAvailableTrackLogs(this));
         featureServices.add(new FSMarker(this));
-        featureServices.add(new FSRouting(this, getFS(FSMarker.class)));
+        featureServices.add(new FSRouting(this, getFS(FSMarker.class), gGraphTileFactory));
         featureServices.add(new FSRecordingTrackLog(this));
 
         featureServices.add(new FSGraphDetails(this));

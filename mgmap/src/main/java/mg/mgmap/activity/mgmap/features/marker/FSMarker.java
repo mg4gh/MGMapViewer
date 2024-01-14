@@ -160,7 +160,9 @@ public class FSMarker extends FeatureService {
         String name = trackLog.getName();
         name = name.endsWith("_MarkerTrack")?name:(name+"_MarkerTrack");
         WriteableTrackLog mtl = new WriteableTrackLog(name);
-        mtl.setRoutingProfileId(trackLog.getRoutingProfileId());
+        if (trackLog.getRoutingProfileId() != null){
+            mtl.setRoutingProfileId(trackLog.getRoutingProfileId());
+        }
         mtl.startTrack(trackLog.getTrackStatistic().getTStart());
         for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
             mtl.startSegment(segment.getStatistic().getTStart());

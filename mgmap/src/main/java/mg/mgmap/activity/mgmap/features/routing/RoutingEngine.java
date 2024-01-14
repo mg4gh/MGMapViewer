@@ -23,7 +23,6 @@ import java.util.TreeSet;
 
 import mg.mgmap.generic.graph.AStar;
 import mg.mgmap.generic.graph.ApproachModel;
-import mg.mgmap.generic.graph.GEnv;
 import mg.mgmap.generic.graph.GGraphMulti;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
@@ -53,6 +52,7 @@ public class RoutingEngine {
     HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private final ArrayList<PointModel> currentRelaxedNodes = new ArrayList<>();
     private RoutingContext routingContext;
+    RoutingProfile routingProfile;
 
     public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext){
         this.gFactory = gFactory;
@@ -67,6 +67,24 @@ public class RoutingEngine {
         for (RoutePointModel rpm : routePointMap.values()){ // invalidate Approaches
             rpm.resetApproaches();
         }
+    }
+
+    synchronized boolean setRoutingProfile(RoutingProfile routingProfile){
+        if (this.routingProfile != routingProfile){
+            mgLog.i("profile changed to: "+routingProfile.getId());
+            this.routingProfile = routingProfile;
+            gFactory.resetCosts();
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
+        return gFactory.getGGraphTileList(routingProfile,bBox);
+    }
+
+    public ApproachModel validateApproachModel(ApproachModel am) {
+        return gFactory.validateApproachModel(routingProfile, am);
     }
 
     RoutePointModel getRoutePointModel(PointModel pm){
@@ -105,7 +123,7 @@ public class RoutingEngine {
         return rpm;
     }
 
-    WriteableTrackLog updateRouting2(TrackLog mtl, WriteableTrackLog rotl){
+    synchronized WriteableTrackLog updateRouting2(TrackLog mtl, WriteableTrackLog rotl){
         boolean routeModified = false;
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
@@ -120,14 +138,16 @@ public class RoutingEngine {
 
                 boolean bRecalcRoute = true;
                 try {
-                    if ((prev.getApproach() != null) && (current.getApproach() != null)) {
-                        PointModel pmFirst = current.currentMPM.get(0);
-                        PointModel pmLast = current.currentMPM.get(current.currentMPM.size() - 1);
-                        PointModel approachFirst = prev.getApproach().getApproachNode();
-                        PointModel approachLast = current.getApproach().getApproachNode();
-                        if ((PointModelUtil.compareTo(pmFirst, approachFirst) == 0) &&
-                                (PointModelUtil.compareTo(pmLast, approachLast) == 0))
-                            bRecalcRoute = false;
+                    if (routingProfile.getId().equals(mtl.getRoutingProfileId())){
+                        if ((prev.getApproach() != null) && (current.getApproach() != null)) {
+                            PointModel pmFirst = current.currentMPM.get(0);
+                            PointModel pmLast = current.currentMPM.get(current.currentMPM.size() - 1);
+                            PointModel approachFirst = prev.getApproach().getApproachNode();
+                            PointModel approachLast = current.getApproach().getApproachNode();
+                            if ((PointModelUtil.compareTo(pmFirst, approachFirst) == 0) &&
+                                    (PointModelUtil.compareTo(pmLast, approachLast) == 0))
+                                bRecalcRoute = false;
+                        }
                     }
 
                 } catch (Exception e){
@@ -230,8 +250,6 @@ public class RoutingEngine {
         GNode gEnd = target.getApproachNode();
         mgLog.i("start "+gStart+" end "+gEnd);
 
-        RoutingProfile routingProfile = gFactory.getRoutingProfile();
-        GEnv gEnv = new GEnv(routingProfile);
         double distLimit = routingProfile.acceptedRouteDistance(this,source.mtlp, target.mtlp);
 //        double distLimit = acceptedRouteDistance(source.mtlp, target.mtlp);
         GGraphMulti multi = null;
@@ -240,13 +258,12 @@ public class RoutingEngine {
             if ((gStart != null) && (gEnd != null) && (distLimit > 0)){
                 BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
                 bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
-                ArrayList<GGraphTile> gGraphTileList = gFactory.getGGraphTileList(bBox);
-                multi = new GGraphMulti(gFactory.getRoutingProfile(), gGraphTileList);
-                multi.createOverlaysForApproach( gEnv, gFactory.validateApproachModel(source.selectedApproach) );
-                multi.createOverlaysForApproach( gEnv, gFactory.validateApproachModel(target.selectedApproach) );
+                multi = new GGraphMulti(getGGraphTileList(bBox));
+                multi.createOverlaysForApproach(validateApproachModel(source.selectedApproach));
+                multi.createOverlaysForApproach(validateApproachModel(target.selectedApproach));
 
                 // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
-                AStar aStar = new ProfiledAStar(multi, gFactory.getRoutingProfile());
+                AStar aStar = new AStar(multi, routingProfile);
                 for (GNodeRef gnr : aStar.perform(gStart, gEnd, distLimit, relaxedNodes)){
                     mpm.addPoint(gnr.getNode() );
                 }
@@ -344,8 +361,8 @@ public class RoutingEngine {
         TreeSet<ApproachModel> approaches = new TreeSet<>();
         WriteablePointModel pmApproach = new TrackLogPoint();
 
-        ArrayList<GGraphTile> tiles = gFactory.getGGraphTileList(mtlpBBox);
-        GGraphMulti multi = new GGraphMulti(gFactory.getRoutingProfile(), tiles);
+        ArrayList<GGraphTile> tiles = getGGraphTileList(mtlpBBox);
+        GGraphMulti multi = new GGraphMulti(tiles);
         for (GGraphTile gGraphTile : tiles){
             for (GNode node : gGraphTile.getNodes()) {
 
@@ -386,17 +403,9 @@ public class RoutingEngine {
                 }
             }
         }
-        approaches.removeAll(dropApproaches);
+//        approaches.removeAll(dropApproaches);
+        dropApproaches.forEach(approaches::remove); // seems to have better performance
         return approaches;
-    }
-
-    double acceptedRouteDistance(PointModel pmStart, PointModel pmEnd){
-        double distance = PointModelUtil.distance(pmStart,pmEnd);
-        double res = 0;
-        if (distance < routingContext.maxRoutingDistance){ // otherwise it will take too long
-            res = Math.min (routingContext.maxRouteLengthFactor * PointModelUtil.distance(pmStart,pmEnd) + 2 * PointModelUtil.getCloseThreshold(), routingContext.maxRoutingDistance);
-        }
-        return res;
     }
 
     public HashMap<PointModel, RoutePointModel> getRoutePointMap() {

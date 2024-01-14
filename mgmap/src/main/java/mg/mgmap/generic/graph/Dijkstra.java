@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
 
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -32,6 +33,7 @@ public class Dijkstra {
 
     private final List<GNode> nodes;
     protected final GGraph graph;
+    protected final RoutingProfile routingProfile;
 
     private TreeSet<GNodeRef> prioQueue = null;
     protected GNode target = null;
@@ -43,9 +45,10 @@ public class Dijkstra {
     private int resultPathLength = 0;
 
 
-    public Dijkstra(GGraph graph) {
+    public Dijkstra(GGraph graph, RoutingProfile routingProfile) {
         nodes = graph.getNodes();
         this.graph = graph;
+        this.routingProfile = routingProfile;
     }
 
 
@@ -79,7 +82,12 @@ public class Dijkstra {
                 GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();
-                    double currentCost = ref.getCost() + neighbour.getCost(node); // calc cost on current relaxed path
+                    double costToNeighbour = neighbour.getCost();
+                    if (costToNeighbour < 0){
+                        costToNeighbour = routingProfile.getCost(neighbour.getWayAttributs(), node, neighbourNode);
+                        neighbour.setCost(costToNeighbour);
+                    }
+                    double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path
                     // create new prioQueue entry, if there is currently none or if the current relaxted path has better cost
                     GNodeRef neighbourRef = neighbourNode.getNodeRef();
                     if ((neighbourRef == null) || (currentCost < neighbourRef.getCost() )){

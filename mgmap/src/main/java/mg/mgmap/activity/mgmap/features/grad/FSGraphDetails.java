@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -124,7 +125,7 @@ public class FSGraphDetails extends FeatureService {
         GGraphTile bestTile = null;
         WriteablePointModel pmApproach = new TrackLogPoint();
         double bestDistance = closeThreshold;
-        ArrayList<GGraphTile> tiles = getActivity().getGGraphTileFactory().getGGraphTileList(bBoxTap);
+        ArrayList<GGraphTile> tiles = getActivity().getFS(FSRouting.class).getGGraphTileList(bBoxTap);
 
         for (GGraphTile gGraphTile : tiles){
             if (gGraphTile.getTileBBox().contains(pmTap)){

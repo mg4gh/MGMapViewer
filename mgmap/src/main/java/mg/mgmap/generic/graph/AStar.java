@@ -14,21 +14,20 @@
  */
 package mg.mgmap.generic.graph;
 
-import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 
 /**
- * Implementation of the AStar routing algorithm. This is basically identical to the Dijkstra algorithm, except that the heuristic function is based on the linear distance to the target.
+ * Implementation of the AStar routing algorithm. This is basically identical to the Dijkstra algorithm, except that the heuristic function that is delegated to the routingProfile.
  */
-
 public class AStar extends Dijkstra {
 
-    public AStar(GGraph graph) {
-        super(graph);
+    public AStar(GGraph graph, RoutingProfile routingProfile) {
+        super(graph, routingProfile);
     }
 
     @Override
     protected double heuristic(GNode node) {
-        return PointModelUtil.distance(node, target) * 0.999;
+        return routingProfile.heuristic(node,target);
     }
 
 }
