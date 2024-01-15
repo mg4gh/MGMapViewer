@@ -1,53 +1,12 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-import android.content.Context;
-
 import org.mapsforge.map.datastore.Way;
 
-import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.features.routing.RoutingContext;
-import mg.mgmap.activity.mgmap.features.routing.RoutingEngine;
-import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
-import mg.mgmap.generic.graph.GNode;
-import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.PointModelUtil;
-
-public class MTB_TEST1 extends RoutingProfileTagEval {
+public class WayTagEvalMTB extends WayTagEval{
 
     private Way mWay;
 
-    private final VertDistCost mVertDistCost = new VertDistCost(3, 3);
-
-
-    private double distance(PointModel start, PointModel target){
-        double dist = PointModelUtil.distance(start, target)+0.0001;
-        double vertDist = target.getEleD() - start.getEleD();
-        return ( dist + mVertDistCost.getVertDistCosts(dist,vertDist) );
-    }
-
-
-    @Override
-    public double getCost(Way way, GNode node1, GNode node2){
-//        setWayCosts(way);
-        return distance(node1,node2);
-    }
-
-    protected double heuristic(GNode node, GNode target){
-        double dist = PointModelUtil.distance(node, target);
-        double vertDist = target.getEleD() - node.getEleD();
-        return mVertDistCost.getHeuristic(dist,vertDist) * 0.999;
-    }
-
-    protected double acceptedRouteDistance(RoutingEngine routingEngine, PointModel pmStart, PointModel pmEnd){
-        double distance = distance(pmStart,pmEnd);
-        double res = 0;
-        RoutingContext routingContext = routingEngine.getRoutingContext();
-        if (distance < routingContext.maxRoutingDistance){ // otherwise it will take too long
-            res = Math.min (routingContext.maxRouteLengthFactor * distance + 2 * PointModelUtil.getCloseThreshold(), routingContext.maxRoutingDistance);
-        }
-        return res;
-    }
-    private void setWayCosts(Way way){
+    void calcFactors(Way way) {
         if (mWay != way) {
             mWay = way;
             setWayTags(way);
@@ -98,36 +57,19 @@ public class MTB_TEST1 extends RoutingProfileTagEval {
                     mGenCostFactor = 4;
 //                setFixUpDistParameter(8);
 //                setFixDownDistParameter(8);
-                } else if ("footway".equals(highway) ) {
-                    if ( "bic_yes".equals(bicycle) )
+                } else if ("footway".equals(highway)) {
+                    if ("bic_yes".equals(bicycle))
                         mGenCostFactor = 1;
                     else
                         mGenCostFactor = 4;
-                }
-                else if ("bic_no".equals(bicycle))
+                } else if ("bic_no".equals(bicycle))
                     mGenCostFactor = 4;
                 else
                     mGenCostFactor = 1;
             } else
                 mGenCostFactor = 10;
 
-            mGenCostFactor = Math.max( mGenCostFactor * mMultCostFactor, 1);
+            mGenCostFactor = Math.max(mGenCostFactor * mMultCostFactor, 1);
         }
-
     }
-
-
-
-
-    @Override
-    protected int getIconIdActive() {
-        return R.drawable.rp_mtb1;
-    }
-
-    @Override
-    protected int getIconIdInactive() {
-        return R.drawable.rp_mtb2;
-    }
-
-
 }
