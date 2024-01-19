@@ -1,11 +1,9 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-import android.util.Log;
-
 public class VertDistCost {
     private final double mBaseCosts; // base costs in m per hm uphill;
     private final double mMaxOptSlope; //  up to this slope base Costs
-    private final double mAddCosts  = 11.111111111; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
+    private final double mAddCosts  = 10; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
     private final double mMaxSlope = 3.0 ; // Maximal Slope up to which additional costs increase costs per hm
 
     private final double downfactor = 1.8;
@@ -25,6 +23,7 @@ public class VertDistCost {
             default:
                 mBaseCosts = 4.0;
         }
+
     }
 
     public double getVertDistCosts(double dist, double vertDist) {
@@ -33,22 +32,20 @@ public class VertDistCost {
         if (slope > 0) {
             if (slope <= mMaxOptSlope)
                 vertCost = vertDist * mBaseCosts;
-            else // if (slope <= mMaxSlope)
+            else if (slope <= mMaxSlope)
                 vertCost = vertDist * mBaseCosts * ( 1 + (slope - mMaxOptSlope) * mAddCosts);
-//            else {
-//                vertCost = vertDist * mBaseCosts * ( 1 + (mMaxSlope - mMaxOptSlope) * mAddCosts);
-//            }
+            else {
+                vertCost = vertDist * mBaseCosts * ( 1 + (mMaxSlope - mMaxOptSlope) * mAddCosts);
+            }
         } else {
             if (slope <= mMaxOptSlope * downfactor)
                 vertCost = 0.0;
-            else // if (slope <= mMaxSlope * downfactor)
+            else if (slope <= mMaxSlope * downfactor)
                 vertCost = vertDist * mBaseCosts * (slope - downfactor*mMaxOptSlope) * mAddCosts;
-//            else {
-//                vertCost = vertDist * mBaseCosts * (mMaxSlope - downfactor*mMaxOptSlope) * mAddCosts;
-//            }
+            else {
+                vertCost = vertDist * mBaseCosts * (mMaxSlope - downfactor*mMaxOptSlope) * mAddCosts;
+            }
         }
-
-//        Log.d("VertDist","dist:" + dist + " vertDist:" + vertDist + " slope:" + slope + " cost:" + vertCost);
         return vertCost;
     }
 

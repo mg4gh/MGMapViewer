@@ -10,16 +10,15 @@ public class MTB extends RoutingProfile {
 
     private final VertDistCost mVertDistCost = new VertDistCost(2, 0.15);
 
-/*    @Override
+    @Override
     public WayAttributs getWayAttributes(Way way) {
         return new WayAttributes4Profile(way);
-    } */
+    }
 
     @Override
     protected double getCost(WayAttributs wayAttributs, double distance, float verticalDistance) {
-//        double genCostFactor = (wayAttributs instanceof WayAttributes4Profile) ? ((WayAttributes4Profile) wayAttributs).getGenCostFactor() : 1;
-        double genCostFactor = 1;
-        return (distance + mVertDistCost.getVertDistCosts(distance, verticalDistance)) * genCostFactor + 0.0001;
+        double genCostFactor = (wayAttributs instanceof WayAttributes4Profile)?((WayAttributes4Profile) wayAttributs).getGenCostFactor():1;
+        return ( distance + mVertDistCost.getVertDistCosts(distance,verticalDistance) ) * genCostFactor + 0.0001;
     }
 
     @Override
@@ -36,5 +35,4 @@ public class MTB extends RoutingProfile {
     protected int getIconIdInactive() {
         return R.drawable.rp_mtb2;
     }
-}
-
+}q
