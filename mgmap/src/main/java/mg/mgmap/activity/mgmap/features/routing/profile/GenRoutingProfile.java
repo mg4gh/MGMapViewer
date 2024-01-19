@@ -22,8 +22,8 @@ public abstract class GenRoutingProfile extends RoutingProfile {
         mUpSlopeLimit = abs(upSlopeLimit); //mathematically not required, but only in this way meaningful. Uphill means additional costs.
         if (upSlopeFactor < 1 ) upSlopeFactor = 1; // required. Otherwise heuristic no longer correct
         mUpAddCosts = upSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
-        mDnCosts      = -abs(dnCosts); // required. Otherwise heuristic no longer correct
-        mDnSlopeLimit = dnSlopeLimit; //can be positive if costs of downhill route should be smaller than distance. If negative, costs are higher than distance.
+        mDnCosts      = dnCosts; // required. Otherwise heuristic no longer correct
+        mDnSlopeLimit = dnSlopeLimit;
         if (dnSlopeFactor < 1 ) dnSlopeFactor = 1; // required. Otherwise heuristic no longer correct
         mDnAddCosts = dnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
     }
@@ -31,6 +31,7 @@ public abstract class GenRoutingProfile extends RoutingProfile {
 
     @Override
     public final double getCost(WayAttributs wayAttributs, double dist, float vertDist) {
+        if (dist == 0.0 ) return 0.0001;
         double costs;
         if ( wayAttributs instanceof WayAttributs)
             costs = calcCosts(dist, vertDist,
@@ -44,23 +45,25 @@ public abstract class GenRoutingProfile extends RoutingProfile {
                     * wayTagEval.mGenCostFactor;
         }
 //        Log.d("Genrouting","costFactor:" + mWayTagEval.mGenCostFactor + "  dist:" +dist + "  vertDist" + vertDist + "  cost:" + costs + "***");
-        return costs;
+        return costs + 0.0001;
     }
 
 
     protected final double calcCosts(double dist, double vertDist, double upCosts, double upSlopeLimit, double upAddCosts,double dnCosts, double dnSlopeLimit, double dnAddCosts ){
         double slope = vertDist / dist;
+        double cost;
         if (slope > 0) {
             if (slope <= upSlopeLimit)
-                return dist + vertDist * upCosts;
+                cost = dist + vertDist * upCosts;
             else
-                return dist + vertDist * ( upCosts + (slope - upSlopeLimit) * upAddCosts);
+                cost = dist + vertDist * ( upCosts + (slope - upSlopeLimit) * upAddCosts);
         } else {
             if (slope >= dnSlopeLimit)
-                return dist + vertDist * dnCosts;
+               cost = dist + vertDist * dnCosts;
             else
                 return dist + vertDist * ( dnCosts + (slope - dnSlopeLimit) * dnAddCosts);
         }
+        return cost;
     }
 
     /* derivation of the heuristic only for positive slope values, so target is uphill (for negative in principle the same, but a bit more cumbersome )
@@ -96,15 +99,15 @@ public abstract class GenRoutingProfile extends RoutingProfile {
         double heuristic;
         double slope = vertDist / dist;
         if (slope >= 0){
- //           if (slope <= mUpSlopeLimit)
+           if (slope <= mUpSlopeLimit)
                 heuristic = dist + vertDist * mUpCosts;
-//            else
-//                heuristic = vertDist/ mUpSlopeLimit + vertDist * mUpCosts; // vertDist/mMaxOptUpSlope is the distance to the target if slope = mMaxOptUpSlope!
+           else
+                heuristic = vertDist/ mUpSlopeLimit + vertDist * mUpCosts; // vertDist/mMaxOptUpSlope is the distance to the target if slope = mMaxOptUpSlope!
         } else {
-//            if (slope >= mDnSlopeLimit)
+            if (slope >= mDnSlopeLimit)
                 heuristic = dist + vertDist * mDnCosts;
-//            else
-//                heuristic = vertDist/ mDnSlopeLimit + vertDist * mDnCosts; // => heuristic strictly >= 0 => 1/mMaxOptDownSlope + mBaseDownCosts > 0 =>  1/mMaxOptDownSlope > -mBaseDownCosts => -1/mMaxOptDownSlope > mBaseDownCosts
+            else
+                heuristic = vertDist/ mDnSlopeLimit + vertDist * mDnCosts; // => heuristic strictly >= 0 => 1/mMaxOptDownSlope + mBaseDownCosts > 0 =>  1/mMaxOptDownSlope > -mBaseDownCosts => -1/mMaxOptDownSlope > mBaseDownCosts
         }
         return heuristic * 0.999;
     }

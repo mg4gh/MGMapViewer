@@ -8,7 +8,7 @@ import mg.mgmap.generic.graph.WayAttributs;
 public class MTB_TEST3 extends GenRoutingProfile {
 
     public MTB_TEST3( ) {
-        super(6.0, 0.2, 2, 0, -0.25, 2);
+        super(8.0, 0.15, 2, 0, -0.27, 2);
     }
     public WayAttributs getWayAttributes(Way way){
         return new WayTagEvalMTB(way,this);
