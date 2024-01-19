@@ -35,4 +35,4 @@ public class MTB extends RoutingProfile {
     protected int getIconIdInactive() {
         return R.drawable.rp_mtb2;
     }
-}q
+}
