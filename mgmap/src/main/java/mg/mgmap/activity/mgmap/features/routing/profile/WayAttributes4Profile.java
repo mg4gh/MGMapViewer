@@ -4,12 +4,13 @@ import org.mapsforge.core.model.Tag;
 import org.mapsforge.map.datastore.Way;
 
 import mg.mgmap.generic.graph.WayAttributs;
-
+/** test implementation: To be deleted
+ */
 public class WayAttributes4Profile extends WayAttributs {
 
 
     protected double mGenCostFactor;
-    protected double mMultCostFactor;
+    protected double mMultCostFactor = 1;
 
     public WayAttributes4Profile(Way way){
         boolean accessable = false;

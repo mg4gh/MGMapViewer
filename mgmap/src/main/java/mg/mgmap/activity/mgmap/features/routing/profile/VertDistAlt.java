@@ -1,5 +1,6 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
-
+/** old implementation: To be deleted
+ */
 import static java.lang.Math.abs;
 
 import android.util.Log;
@@ -34,12 +35,11 @@ public class VertDistAlt {
                 vertCost = vertDist * ( mUpCosts + (slope - mUpSlopeLimit) * mUpAddCosts);
         } else {
 //            vertCost = vertDist * mDnCosts;
-
             if (slope >= mDnSlopeLimit)
                 vertCost = vertDist * mDnCosts;
             else {
                 vertCost = vertDist * (mDnCosts + (slope - mDnSlopeLimit) * mDnAddCosts);
-                Log.e("VertDistAlt","dist:" + dist + " vertDist:" + vertDist + " slope:" + slope + " cost:" + vertCost + "+++");
+ //               Log.e("VertDistAlt","dist:" + dist + " vertDist:" + vertDist + " slope:" + slope + " cost:" + vertCost + "+++");
             }
         }
 //        Log.d("VertDistAlt","dist:" + dist + " vertDist:" + vertDist + " slope:" + slope + " VDcost:" + vertCost + "+++");

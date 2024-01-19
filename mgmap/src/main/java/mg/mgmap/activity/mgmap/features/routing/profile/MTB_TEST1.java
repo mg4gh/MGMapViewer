@@ -7,7 +7,8 @@ import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class MTB_TEST1 extends RoutingProfile {
-
+    /** implementation based on temp test class VertDistAlt: After final Test Implementation needs to be exchanged.
+     */
     private final VertDistAlt mVertDistCost = new VertDistAlt( );
 
 /*    @Override

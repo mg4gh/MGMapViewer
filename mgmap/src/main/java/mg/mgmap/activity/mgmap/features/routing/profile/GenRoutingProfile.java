@@ -13,19 +13,25 @@ public abstract class GenRoutingProfile extends RoutingProfile {
     protected final double mDnCosts;// base costs in m per hm uphill;
     protected final double mUpSlopeLimit; //  up to this slope base Costs
     protected final double mDnSlopeLimit;
+    protected final double mUpSlopeFactor;
+    protected final double mDnSlopeFactor;
     protected final double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
     protected final double mDnAddCosts;
+
 
 
     protected GenRoutingProfile(double upCosts, double upSlopeLimit, double upSlopeFactor, double dnCosts, double dnSlopeLimit, double dnSlopeFactor ){
         mUpCosts      = abs(upCosts); // required. Otherwise heuristic no longer correct
         mUpSlopeLimit = abs(upSlopeLimit); //mathematically not required, but only in this way meaningful. Uphill means additional costs.
         if (upSlopeFactor < 1 ) upSlopeFactor = 1; // required. Otherwise heuristic no longer correct
-        mUpAddCosts = upSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
+        mUpSlopeFactor = upSlopeFactor;
+        mUpAddCosts = mUpSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
         mDnCosts      = dnCosts; // required. Otherwise heuristic no longer correct
         mDnSlopeLimit = dnSlopeLimit;
-        if (dnSlopeFactor < 1 ) dnSlopeFactor = 1; // required. Otherwise heuristic no longer correct
-        mDnAddCosts = dnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
+        if (dnSlopeFactor < 1 ) dnSlopeFactor = 1;
+        mDnSlopeFactor = dnSlopeFactor;
+        // required. Otherwise heuristic no longer correct
+        mDnAddCosts = mDnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
     }
 
 
@@ -33,7 +39,8 @@ public abstract class GenRoutingProfile extends RoutingProfile {
     public final double getCost(WayAttributs wayAttributs, double dist, float vertDist) {
         if (dist == 0.0 ) return 0.0001;
         double costs;
-        if ( wayAttributs instanceof WayAttributs)
+//        Log.d("Genrouting", "class" + wayAttributs.getClass().getName() + " " + wayAttributs );
+        if ( !(wayAttributs instanceof WayTagEval))
             costs = calcCosts(dist, vertDist,
                     mUpCosts,mUpSlopeLimit,mUpAddCosts,
                     mDnCosts,mDnSlopeLimit,mDnAddCosts);
@@ -43,8 +50,10 @@ public abstract class GenRoutingProfile extends RoutingProfile {
                     wayTagEval.mUpCosts, wayTagEval.mUpSlopeLimit, wayTagEval.mUpAddCosts,
                     wayTagEval.mDnCosts, wayTagEval.mDnSlopeLimit, wayTagEval.mDnAddCosts)
                     * wayTagEval.mGenCostFactor;
+//            if (wayTagEval.mGenCostFactor > 1 )
+//              Log.e("traget path","costFactor:" + wayTagEval.mGenCostFactor + "  dist:" +dist + "  vertDist" + vertDist + "  cost:" + costs + "***");
         }
-//        Log.d("Genrouting","costFactor:" + mWayTagEval.mGenCostFactor + "  dist:" +dist + "  vertDist" + vertDist + "  cost:" + costs + "***");
+
         return costs + 0.0001;
     }
 
