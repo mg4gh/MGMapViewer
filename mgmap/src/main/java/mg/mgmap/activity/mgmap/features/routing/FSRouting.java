@@ -28,6 +28,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_TEST1;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_TEST2;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_TEST3;
 import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.MGMapApplication;
@@ -198,6 +201,9 @@ public class FSRouting extends FeatureService {
         prefEditMarkerTrack.addObserver(evt -> getActivity().findViewById(R.id.routingProfiles).setVisibility((prefUseRoutingProfiles.getValue() && prefEditMarkerTrack.getValue())?View.VISIBLE:View.INVISIBLE));
         routingProfiles.add(new ShortestDistance());
         routingProfiles.add(new MTB());
+        routingProfiles.add(new MTB_TEST1());
+        routingProfiles.add(new MTB_TEST2());
+        routingProfiles.add(new MTB_TEST3());
         routingProfiles.add(new TrekkingBike());
         prefRoutingProfileId.addObserver(evt -> {
             String id = prefRoutingProfileId.getValue();
