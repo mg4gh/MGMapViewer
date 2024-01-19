@@ -82,7 +82,11 @@ public class GGraphTileFactory {
              for (GNode node : graph.getNodes()){
                  GNeighbour neighbour = node.getNeighbour();
                  while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null) {
-                    neighbour.resetCost();
+                     neighbour.resetCost();
+                     WayAttributs wayAttributs = neighbour.getWayAttributs();
+                     if (wayAttributs != null) {
+                         wayAttributs.routingProfileChanged = true;
+                     }
                  }
              }
         }
