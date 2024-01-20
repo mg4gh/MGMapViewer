@@ -257,7 +257,7 @@ public class RoutingEngine {
         try {
             if ((gStart != null) && (gEnd != null) && (distLimit > 0)){
                 BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
-                bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
+                bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() + 800 ) );
                 multi = new GGraphMulti(getGGraphTileList(bBox));
                 multi.createOverlaysForApproach(validateApproachModel(source.selectedApproach));
                 multi.createOverlaysForApproach(validateApproachModel(target.selectedApproach));

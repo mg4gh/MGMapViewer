@@ -26,8 +26,8 @@ public abstract class GenRoutingProfile extends RoutingProfile {
         if (upSlopeFactor < 1 ) upSlopeFactor = 1; // required. Otherwise heuristic no longer correct
         mUpSlopeFactor = upSlopeFactor;
         mUpAddCosts = mUpSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
-        mDnCosts      = dnCosts; // required. Otherwise heuristic no longer correct
-        mDnSlopeLimit = dnSlopeLimit;
+        mDnCosts      = dnCosts;
+        mDnSlopeLimit = -abs(dnSlopeLimit);
         if (dnSlopeFactor < 1 ) dnSlopeFactor = 1;
         mDnSlopeFactor = dnSlopeFactor;
         // required. Otherwise heuristic no longer correct
@@ -37,7 +37,7 @@ public abstract class GenRoutingProfile extends RoutingProfile {
 
     @Override
     public final double getCost(WayAttributs wayAttributs, double dist, float vertDist) {
-        if (dist == 0.0 ) return 0.0001;
+        if (dist <= 0.0000001 ) return 0.0001;
         double costs;
 //        Log.d("Genrouting", "class" + wayAttributs.getClass().getName() + " " + wayAttributs );
         if ( !(wayAttributs instanceof WayTagEval))
@@ -60,6 +60,7 @@ public abstract class GenRoutingProfile extends RoutingProfile {
 
     protected final double calcCosts(double dist, double vertDist, double upCosts, double upSlopeLimit, double upAddCosts,double dnCosts, double dnSlopeLimit, double dnAddCosts ){
         double slope = vertDist / dist;
+        if ( abs(slope) > 10 ) Log.e("GenRoutingProfile","Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         double cost;
         if (slope > 0) {
             if (slope <= upSlopeLimit)
@@ -105,8 +106,12 @@ public abstract class GenRoutingProfile extends RoutingProfile {
     */
 
     protected final double heuristic(double dist, float vertDist){
+        if (dist <= 0.0000001 ) {
+            return 0.0;
+        }
         double heuristic;
         double slope = vertDist / dist;
+        if ( abs(slope) > 10 ) Log.e("GenRoutingProfile","Suspicious Slope in heuristic. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         if (slope >= 0){
            if (slope <= mUpSlopeLimit)
                 heuristic = dist + vertDist * mUpCosts;
