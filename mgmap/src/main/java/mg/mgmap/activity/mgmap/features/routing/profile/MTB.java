@@ -1,14 +1,10 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-import org.mapsforge.map.datastore.Way;
-
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
-import mg.mgmap.generic.graph.WayAttributs;
 
 public class MTB extends GenRoutingProfile {
     public MTB( ) {
-        super(new ProfileCostCalculator(8.0, 0.10, 3, 0, -0.27, 2));
+        super(new CostCalculatorForProfile(8.0, 0.10, 3, 0, -0.27, 2));
     }
 
     @Override

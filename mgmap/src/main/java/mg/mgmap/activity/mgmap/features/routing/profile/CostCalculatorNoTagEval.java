@@ -2,14 +2,14 @@ package mg.mgmap.activity.mgmap.features.routing.profile;
 
 public class CostCalculatorNoTagEval extends CostCalculator {
 
-    private ProfileCostCalculator mProfileCostCalculator;
-    public CostCalculatorNoTagEval(ProfileCostCalculator profile) {
+    private CostCalculatorForProfile mCostCalculatorForProfile;
+    public CostCalculatorNoTagEval(CostCalculatorForProfile profile) {
         super();
-        mProfileCostCalculator = profile;
+        mCostCalculatorForProfile = profile;
 //        if (genCostFactor > 1) Log.e("Genrouting","genCostFactor" + genCostFactor + " " + this );
     }
 
     protected double calcCosts( double dist, double vertDist){
-        return mProfileCostCalculator.calcCosts(dist,vertDist);
+        return mCostCalculatorForProfile.calcCosts(dist,vertDist);
     }
 }

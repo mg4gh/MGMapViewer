@@ -9,11 +9,11 @@ import mg.mgmap.generic.graph.WayAttributs;
 
 public abstract class GenRoutingProfile extends RoutingProfile {
 
-    protected ProfileCostCalculator mProfileCostCalculator;
+    protected CostCalculatorForProfile mCostCalculatorForProfile;
 
 
-    protected GenRoutingProfile(ProfileCostCalculator profileCostCalculator){
-       mProfileCostCalculator = profileCostCalculator;
+    protected GenRoutingProfile(CostCalculatorForProfile costCalculatorForProfile){
+       mCostCalculatorForProfile = costCalculatorForProfile;
     }
 
     public final WayAttributs getWayAttributes(Way way){
@@ -24,7 +24,7 @@ public abstract class GenRoutingProfile extends RoutingProfile {
     public void refreshWayAttributes(WayAttributs wayAttributs) {
         if (wayAttributs instanceof WayTagEval ) {
             WayTagEval wayTagEval = (WayTagEval) wayAttributs;
-            wayTagEval.mCostCalculator = new CostCalculatorNoTagEval(mProfileCostCalculator);        }
+            wayTagEval.mCostCalculator = new CostCalculatorNoTagEval(mCostCalculatorForProfile);        }
     }
 
     @Override
@@ -32,7 +32,7 @@ public abstract class GenRoutingProfile extends RoutingProfile {
 //        Log.d("Genrouting", "class" + wayAttributs.getClass().getName() + " " + wayAttributs );
         double costs;
         if ( !(wayAttributs instanceof WayTagEval))
-            costs = mProfileCostCalculator.calcCosts(dist, vertDist);
+            costs = mCostCalculatorForProfile.calcCosts(dist, vertDist);
         else {
             WayTagEval wayTagEval = (WayTagEval) wayAttributs;
             costs = wayTagEval.mCostCalculator.calcCosts(dist, vertDist);
@@ -46,7 +46,7 @@ public abstract class GenRoutingProfile extends RoutingProfile {
 
 
     protected final double heuristic(double dist, float vertDist){
-      return mProfileCostCalculator.heuristic(dist,vertDist);
+      return mCostCalculatorForProfile.heuristic(dist,vertDist);
     }
 
     /* Any modified cost function must be larger or equal to the base cost function, which is the foundation for the heuristic. Used to verify/correct cost factors derived from way tags */

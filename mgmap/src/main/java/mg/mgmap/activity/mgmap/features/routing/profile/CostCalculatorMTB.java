@@ -2,7 +2,7 @@ package mg.mgmap.activity.mgmap.features.routing.profile;
 
 public class CostCalculatorMTB extends TwoPieceFuncCostCalculator {
     double mGenCostFactor = 1.0;
-    public CostCalculatorMTB(WayTagEval wayTagEval, ProfileCostCalculator profile) {
+    public CostCalculatorMTB(WayTagEval wayTagEval, CostCalculatorForProfile profile) {
         super();
         double multCostFactor = 1.0;
         double upSlopeFactor = profile.mUpSlopeFactor;
