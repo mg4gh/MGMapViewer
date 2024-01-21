@@ -1,14 +1,11 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
-import mg.mgmap.generic.graph.WayAttributs;
 
-public class ShortestDistance extends RoutingProfile {
+public class ShortestDistance extends GenRoutingProfile {
 
-    @Override
-    protected double getCost(WayAttributs wayAttributs, double distance, float verticalDistance) {
-        return distance+0.0001;
+    public ShortestDistance( ) {
+        super(new CostCalculatorShortestDist());
     }
 
     @Override

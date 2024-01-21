@@ -9,10 +9,10 @@ import mg.mgmap.generic.graph.WayAttributs;
 
 public abstract class GenRoutingProfile extends RoutingProfile {
 
-    protected CostCalculatorForProfile mCostCalculatorForProfile;
+    protected IfCostCalcHeuristic mCostCalculatorForProfile;
 
 
-    protected GenRoutingProfile(CostCalculatorForProfile costCalculatorForProfile){
+    protected GenRoutingProfile(IfCostCalcHeuristic costCalculatorForProfile){
        mCostCalculatorForProfile = costCalculatorForProfile;
     }
 
@@ -20,11 +20,12 @@ public abstract class GenRoutingProfile extends RoutingProfile {
         return new WayTagEval(way);
     }
 
-    // default implementation, if CostCalculator does not evaluate tags.
+    // Intended to be overwritten. Default implementation, if Cost Calculator does not have to evaluate tags, simply use the same calculator as for profile.
     public void refreshWayAttributes(WayAttributs wayAttributs) {
         if (wayAttributs instanceof WayTagEval ) {
             WayTagEval wayTagEval = (WayTagEval) wayAttributs;
-            wayTagEval.mCostCalculator = new CostCalculatorNoTagEval(mCostCalculatorForProfile);        }
+            wayTagEval.setCostCalculator(mCostCalculatorForProfile);
+        }
     }
 
     @Override
@@ -35,7 +36,7 @@ public abstract class GenRoutingProfile extends RoutingProfile {
             costs = mCostCalculatorForProfile.calcCosts(dist, vertDist);
         else {
             WayTagEval wayTagEval = (WayTagEval) wayAttributs;
-            costs = wayTagEval.mCostCalculator.calcCosts(dist, vertDist);
+            costs = wayTagEval.getCostCalculator().calcCosts(dist, vertDist);
 //            if (wayTagEval.mGenCostFactor > 1 )
 //              Log.e("traget path","costFactor:" + wayTagEval.mGenCostFactor + "  dist:" +dist + "  vertDist" + vertDist + "  cost:" + costs + "***");
         }
