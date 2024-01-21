@@ -6,32 +6,9 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.WayAttributs;
 
-public class MTB extends RoutingProfile {
-    /** old implementation: After final Test Implementation needs to be exchanged.
-     */
-    private final VertDistCost mVertDistCost = new VertDistCost(2, 0.15);
-
-    @Override
-    public WayAttributs getWayAttributes(Way way) {
-        return new WayAttributes4MTB(way);
-    }
-
-    @Override
-    public void refreshWayAttributes(WayAttributs wayAttributs) {
-        if (wayAttributs instanceof WayAttributes4MTB) {
-            ((WayAttributes4MTB) wayAttributs).calcCostFactors();
-        }
-    }
-
-    @Override
-    protected double getCost(WayAttributs wayAttributs, double distance, float verticalDistance) {
-        double genCostFactor = (wayAttributs instanceof WayAttributes4MTB)?((WayAttributes4MTB) wayAttributs).getGenCostFactor():1;
-        return ( distance + mVertDistCost.getVertDistCosts(distance,verticalDistance) ) * genCostFactor + 0.0001;
-    }
-
-    @Override
-    protected double heuristic(double distance, float verticalDistance) {
-        return (distance + mVertDistCost.getVertDistHeuristic(verticalDistance)) * 0.999;
+public class MTB extends GenRoutingProfile {
+    public MTB( ) {
+        super(new ProfileCostCalculator(8.0, 0.10, 3, 0, -0.27, 2));
     }
 
     @Override
