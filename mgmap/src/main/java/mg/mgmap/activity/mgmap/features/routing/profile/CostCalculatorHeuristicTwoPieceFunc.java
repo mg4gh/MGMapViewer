@@ -7,9 +7,10 @@ import android.util.Log;
 public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceFunc implements IfCostCalcHeuristic {
     protected double mUpSlopeFactor;
     protected double mDnSlopeFactor;
-    protected CostCalculatorHeuristicTwoPieceFunc(double upCosts, double upSlopeLimit, double upSlopeFactor, double dnCosts, double dnSlopeLimit, double dnSlopeFactor) {
-        mUpCosts      = abs(upCosts); // required. Otherwise heuristic no longer correct
+    protected CostCalculatorHeuristicTwoPieceFunc( double upSlopeLimit, double dnCosts, double dnSlopeLimit, double dnSlopeFactor) {
         mUpSlopeLimit = abs(upSlopeLimit); //mathematically not required, but only in this way meaningful. Uphill means additional costs.
+        mUpCosts      = 0.8/mUpSlopeLimit; // required. Otherwise heuristic no longer correct
+        double upSlopeFactor = 0.9/Math.sqrt(mUpSlopeLimit);
         if (upSlopeFactor < 1 ) upSlopeFactor = 1; // required. Otherwise heuristic no longer correct
         mUpAddCosts = upSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
         mDnCosts      = dnCosts;

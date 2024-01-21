@@ -1,8 +1,8 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-public class CostCalculatorMTBTwoPieceFunc extends CostCalculatorTwoPieceFunc {
+public class CostCalculatorMTB_Old extends CostCalculatorTwoPieceFunc {
     double mGenCostFactor = 1.0;
-    public CostCalculatorMTBTwoPieceFunc(WayTagEval wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile) {
+    public CostCalculatorMTB_Old(WayTagEval wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile) {
         super();
 
         double multCostFactor = 1.0;
@@ -80,7 +80,7 @@ public class CostCalculatorMTBTwoPieceFunc extends CostCalculatorTwoPieceFunc {
 //        if (genCostFactor > 1) Log.e("Genrouting","genCostFactor" + genCostFactor + " " + this );
     }
 
-    public double calcCosts( double dist, double vertDist){
+    public double calcCosts(double dist, float vertDist){
         return super.calcCosts(dist, vertDist) * mGenCostFactor;
     }
 }

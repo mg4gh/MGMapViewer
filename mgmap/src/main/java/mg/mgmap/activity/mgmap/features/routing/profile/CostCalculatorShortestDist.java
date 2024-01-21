@@ -7,7 +7,7 @@ public class CostCalculatorShortestDist implements IfCostCalcHeuristic{
     }
 
     @Override
-    public double calcCosts(double dist, double verDist) {
+    public double calcCosts(double dist, float verDist) {
         return dist + 0.0001;
     }
 }

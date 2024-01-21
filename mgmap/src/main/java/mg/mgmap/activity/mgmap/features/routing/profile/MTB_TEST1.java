@@ -4,7 +4,7 @@ import mg.mgmap.R;
 
 public class MTB_TEST1 extends GenRoutingProfile {
     public MTB_TEST1( ) {
-        super(new CostCalculatorHeuristicTwoPieceFunc(8.0, 0.10, 3, 0, -0.27, 2));
+        super(new CostCalculatorHeuristicTwoPieceFunc( 0.1,  0, -0.27, 2));
     }
 
     @Override

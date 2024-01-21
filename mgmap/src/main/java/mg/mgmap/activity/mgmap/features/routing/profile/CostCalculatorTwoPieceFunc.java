@@ -14,7 +14,7 @@ public abstract class CostCalculatorTwoPieceFunc implements IfCostCalculator {
     protected double mDnAddCosts;
 
 
-    public double calcCosts(double dist, double vertDist){
+    public double calcCosts(double dist, float vertDist){
         if (dist <= 0.0000001 ) {
             return 0.0001;
         }
