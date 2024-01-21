@@ -41,7 +41,7 @@ public class GNodeRef implements Comparable<GNodeRef>{
 
     public int compareTo(@NonNull GNodeRef gNodeRef) {
         if (getHeuristicCost() == gNodeRef.getHeuristicCost()){
-            return PointModelUtil.compareTo(node, gNodeRef.getNode());
+            return Integer.compare(hashCode(), gNodeRef.hashCode());
         }
         if (getHeuristicCost() < gNodeRef.getHeuristicCost()){
             return -1;

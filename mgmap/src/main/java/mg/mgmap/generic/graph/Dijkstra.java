@@ -92,6 +92,9 @@ public class Dijkstra {
                         neighbourRef = new GNodeRef(neighbourNode,currentCost,ref.getNode(),neighbour, heuristic(neighbourNode));
                         neighbourNode.setNodeRef(neighbourRef);
                         prioQueue.add(neighbourRef);
+                        if (neighbourRef.getHeuristicCost() < ref.getHeuristicCost()){
+                            mgLog.e("Inconsistency detected");
+                        }
                     }
                 }
                 ref.setSettled(true);
