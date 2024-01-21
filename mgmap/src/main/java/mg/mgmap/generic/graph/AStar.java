@@ -21,7 +21,7 @@ import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
  */
 public class AStar extends Dijkstra {
 
-    public AStar(GGraph graph, RoutingProfile routingProfile) {
+    public AStar(GGraphMulti graph, RoutingProfile routingProfile) {
         super(graph, routingProfile);
     }
 

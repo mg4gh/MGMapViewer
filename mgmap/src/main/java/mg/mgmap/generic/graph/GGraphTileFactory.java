@@ -38,18 +38,17 @@ public class GGraphTileFactory {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private final int CACHE_LIMIT = 1000;
+    final static int CACHE_LIMIT = 1000;
     private final byte ZOOM_LEVEL = 15;
     private final int TILE_SIZE = 256;
 
-    private static long getKey(int tileX,int tileY){
-        return ((long) tileX <<32) + tileY;
+    static int getKey(int tileX,int tileY){
+        return ( tileX <<16) + tileY;
     }
 
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
-    private LinkedHashMap<Long, GGraphTile> cache = null;
-//    private RoutingProfile routingProfile = null;
+    private LinkedHashMap<Integer, GGraphTile> cache = null;
     static final WayAttributs defaultWayAttributes = new WayAttributs();
 
     public GGraphTileFactory(){}
@@ -60,7 +59,7 @@ public class GGraphTileFactory {
 
         cache = new LinkedHashMap<>(100, 0.6f, true) {
             @Override
-            protected boolean removeEldestEntry(Entry<Long, GGraphTile> eldest) {
+            protected boolean removeEldestEntry(Entry<Integer, GGraphTile> eldest) {
                 boolean bRes = (size() > CACHE_LIMIT);
                 if (bRes) {
                     GGraphTile old = eldest.getValue();
@@ -134,8 +133,8 @@ public class GGraphTileFactory {
     }
 
     @SuppressWarnings("CommentedOutCode")
-    private GGraphTile getGGraphTile(RoutingProfile routingProfile, int tileX, int tileY){
-        long key = getKey(tileX,tileY);
+    public GGraphTile getGGraphTile(RoutingProfile routingProfile, int tileX, int tileY){
+        int key = getKey(tileX,tileY);
 
         GGraphTile gGraphTile = cache.get(key);
         if (gGraphTile == null){

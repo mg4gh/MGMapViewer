@@ -30,6 +30,13 @@ public class GNode extends PointModelImpl {
     // for Routing algorithms
     private GNodeRef nodeRef = null;
 
+    int tileIdx;
+    byte borderNode = 0;
+    public static final byte BORDER_NODE_WEST  = 0x08;
+    public static final byte BORDER_NODE_NORTH = 0x04;
+    public static final byte BORDER_NODE_EAST  = 0x02;
+    public static final byte BORDER_NODE_SOUTH = 0x01;
+
     public GNode(double latitude, double longitude, float ele, float eleAcc, double cost){
         super(latitude, longitude, ele, eleAcc);
         this.neighbour = new GNeighbour(this, cost);
