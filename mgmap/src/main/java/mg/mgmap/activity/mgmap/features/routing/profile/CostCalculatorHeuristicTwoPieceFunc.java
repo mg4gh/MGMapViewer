@@ -4,37 +4,24 @@ import static java.lang.Math.abs;
 
 import android.util.Log;
 
-public abstract class TwoPieceFuncCostCalculator extends CostCalculator {
-
-    protected double mUpCosts;
-    protected double mDnCosts;// base costs in m per hm uphill;
-    protected double mUpSlopeLimit; //  up to this slope base Costs
-    protected double mDnSlopeLimit;
-    protected double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
-    protected double mDnAddCosts;
-
-
-    protected double calcCosts(double dist, double vertDist){
-        if (dist <= 0.0000001 ) {
-            return 0.0001;
-        }
-        double slope = vertDist / dist;
-        if ( abs(vertDist) <= 0.000001 ) Log.e("GenRoutingProfile","Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
-        double cost;
-        if (slope > 0) {
-            if (slope <= mUpSlopeLimit)
-                cost = dist + vertDist * mUpCosts;
-            else
-                cost = dist + vertDist * ( mUpCosts + (slope - mUpSlopeLimit) * mUpAddCosts);
-        } else {
-            if (slope >= mDnSlopeLimit)
-                cost = dist + vertDist * mDnCosts;
-            else
-                return dist + vertDist * ( mDnCosts + (slope - mDnSlopeLimit) * mDnAddCosts);
-        }
-        return cost + 0.0001;
+public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceFunc implements IfCostCalcHeuristic {
+    protected double mUpSlopeFactor;
+    protected double mDnSlopeFactor;
+    protected CostCalculatorHeuristicTwoPieceFunc(double upCosts, double upSlopeLimit, double upSlopeFactor, double dnCosts, double dnSlopeLimit, double dnSlopeFactor) {
+        mUpCosts      = abs(upCosts); // required. Otherwise heuristic no longer correct
+        mUpSlopeLimit = abs(upSlopeLimit); //mathematically not required, but only in this way meaningful. Uphill means additional costs.
+        if (upSlopeFactor < 1 ) upSlopeFactor = 1; // required. Otherwise heuristic no longer correct
+        mUpAddCosts = upSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
+        mDnCosts      = dnCosts;
+        mDnSlopeLimit = -abs(dnSlopeLimit);
+        if (dnSlopeFactor < 1 ) dnSlopeFactor = 1;
+        // required. Otherwise heuristic no longer correct
+        mDnAddCosts = dnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
+        mUpSlopeFactor = upSlopeFactor;
+        mDnSlopeFactor = dnSlopeFactor;
     }
-        /* derivation of the heuristic only for positive slope values, so target is uphill (for negative in principle the same, but a bit more cumbersome )
+
+           /* derivation of the heuristic only for positive slope values, so target is uphill (for negative in principle the same, but a bit more cumbersome )
     In general heuristic must always be smaller than the actual costs independent of the route taken to the target. Any route on any hypothetical surface can be taken,
     so basically any route in the three dimensional space. For the vertical direction the solution is trivial, since with the given cost function any route which includes up- and downhill
     will be more expensive than a route that is monotonously uphill. So I omit the formal derivation. For the horizontal component this is not that obvious, since cost function is designed in way
@@ -63,7 +50,7 @@ public abstract class TwoPieceFuncCostCalculator extends CostCalculator {
     In this case heuristic would be actually dependant on upAddCosts and the slope of the optimal route would be larger than upSlopeLimit.
     */
 
-    protected final double heuristic(double dist, float vertDist){
+    public double heuristic(double dist, float vertDist){
         if (dist <= 0.0000001 ) {
             return 0.0;
         }
@@ -83,5 +70,6 @@ public abstract class TwoPieceFuncCostCalculator extends CostCalculator {
         }
         return heuristic * 0.999;
     }
+
 
 }

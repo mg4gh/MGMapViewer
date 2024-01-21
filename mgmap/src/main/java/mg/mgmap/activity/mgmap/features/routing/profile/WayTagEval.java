@@ -17,7 +17,10 @@ public class WayTagEval extends WayAttributs {
     protected String trail_visibility = null;
     protected String tracktype = null;
     protected String network = null;
-    protected CostCalculator mCostCalculator;
+
+
+
+    private IfCostCalculator mCostCalculator;
 
 
     public WayTagEval(Way way) {
@@ -57,5 +60,11 @@ public class WayTagEval extends WayAttributs {
             accessable = false;
         }
     }
+    public IfCostCalculator getCostCalculator() {
+        return mCostCalculator;
+    }
 
+    public void setCostCalculator(IfCostCalculator mCostCalculator) {
+        this.mCostCalculator = mCostCalculator;
+    }
 }
