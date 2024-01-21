@@ -13,12 +13,19 @@ public class MTB extends RoutingProfile {
 
     @Override
     public WayAttributs getWayAttributes(Way way) {
-        return new WayAttributes4Profile(way);
+        return new WayAttributes4MTB(way);
+    }
+
+    @Override
+    public void refreshWayAttributes(WayAttributs wayAttributs) {
+        if (wayAttributs instanceof WayAttributes4MTB) {
+            ((WayAttributes4MTB) wayAttributs).calcCostFactors();
+        }
     }
 
     @Override
     protected double getCost(WayAttributs wayAttributs, double distance, float verticalDistance) {
-        double genCostFactor = (wayAttributs instanceof WayAttributes4Profile)?((WayAttributes4Profile) wayAttributs).getGenCostFactor():1;
+        double genCostFactor = (wayAttributs instanceof WayAttributes4MTB)?((WayAttributes4MTB) wayAttributs).getGenCostFactor():1;
         return ( distance + mVertDistCost.getVertDistCosts(distance,verticalDistance) ) * genCostFactor + 0.0001;
     }
 

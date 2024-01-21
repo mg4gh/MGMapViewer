@@ -10,9 +10,9 @@ public class MTB_TEST3 extends GenRoutingProfile {
     public MTB_TEST3( ) {
         super(8.0, 0.10, 3, 0, -0.27, 2);
     }
-/*    public WayAttributs getWayAttributes(Way way){
-        return new WayTagEvalMTB(way,this);
-   } */
+    public WayAttributs getWayAttributes(Way way){
+        return new WayTagEvalMTB(way);
+   }
     @Override
     protected int getIconIdActive() {
         return R.drawable.rp_mtb1;

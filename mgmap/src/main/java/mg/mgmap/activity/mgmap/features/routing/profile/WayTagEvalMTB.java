@@ -7,57 +7,15 @@ import org.mapsforge.map.datastore.Way;
 
 public class WayTagEvalMTB extends WayTagEval {
 
-    public WayTagEvalMTB(Way way, GenRoutingProfile profile){
-        double multCostFactor = 1.0;
-        double upSlopeFactor = profile.mUpSlopeFactor;
-        double dnSlopeFactor = profile.mDnSlopeFactor;
-        boolean accessable = false;
-        String highway = null;
-        String bicycle = null;
-        String access = null;
-        String cycleway = null;
-        String surface = null;
-        String mtbscale = null;
-        String trail_visibility = null;
-        String tracktype = null;
-        String network = null;
 
-        for (Tag tag : way.tags) {
-            switch (tag.key) {
-                case "highway":
-                    accessable = true;
-                    highway = tag.value;
-                    break;
-                case "surface":
-                    surface = tag.value;
-                    break;
-                case "tracktype":
-                    tracktype = tag.value;
-                    break;
-                case "network":
-                    network = tag.value;
-                    break;
-                case "bicycle":
-                    bicycle = tag.value;
-                    break;
-                case "cycleway":
-                case "cycleway_lane":
-                    cycleway = tag.value;
-                    break;
-                case "access":
-                    access = tag.value;
-                    break;
-                case "mtb_scale":
-                    mtbscale = tag.value;
-                    break;
-            }
-        }
-        if (accessable && ("private".equals(bicycle) || "private".equals(access) ||
-                "motorway".equals(highway) || "trunk".equals(highway))){
-            accessable = false;
-        }
+    public WayTagEvalMTB(Way way) {
+        super(way);
+    }
 
-
+    public void calcCostFactors(GenRoutingProfile profile){
+            double multCostFactor = 1.0;
+            double upSlopeFactor = profile.mUpSlopeFactor;
+            double dnSlopeFactor = profile.mDnSlopeFactor;
         if (accessable) {
             if ("path".equals(highway)) {
                 if (mtbscale != null) {

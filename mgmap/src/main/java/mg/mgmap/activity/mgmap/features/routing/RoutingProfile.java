@@ -29,7 +29,13 @@ public abstract class RoutingProfile {
         return new WayAttributs();
     }
 
+    public void refreshWayAttributes(WayAttributs wayAttributs){}
+
     public double getCost(WayAttributs wayAttributs, GNode node1, GNode node2){
+        if ((wayAttributs!=null) && (wayAttributs.routingProfileChanged)){
+            refreshWayAttributes(wayAttributs);
+            wayAttributs.routingProfileChanged = false;
+        }
         double distance = PointModelUtil.distance(node1, node2);
         float verticalDistance = node2.getEleD() - node1.getEleD();
         return getCost(wayAttributs, distance, verticalDistance);

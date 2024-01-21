@@ -35,6 +35,13 @@ public abstract class GenRoutingProfile extends RoutingProfile {
     }
 
 
+    public void refreshWayAttributes(WayAttributs wayAttributs) {
+        if (wayAttributs instanceof WayTagEval ) {
+            ((WayTagEval) wayAttributs).calcCostFactors(this);
+        }
+    }
+
+
     @Override
     public final double getCost(WayAttributs wayAttributs, double dist, float vertDist) {
         if (dist <= 0.0000001 ) return 0.0001;
