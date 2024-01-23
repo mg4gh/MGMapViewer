@@ -68,13 +68,13 @@ public class GNode extends PointModelImpl {
         return cnt;
     }
 
-    boolean hasNeighbour(GNode oNode){
+    public GNeighbour getNeighbour(GNode oNode){
         GNeighbour nextNeighbour = this.neighbour;
         while (nextNeighbour.getNextNeighbour() != null) {
             nextNeighbour = nextNeighbour.getNextNeighbour();
-            if (nextNeighbour.getNeighbourNode() == oNode) return true;
+            if (nextNeighbour.getNeighbourNode() == oNode) return nextNeighbour;
         }
-        return false;
+        return null;
     }
 
     public GNodeRef getNodeRef() {

@@ -174,7 +174,7 @@ public class GGraphTileFactory {
                         continue; // goto next mIdx
                     if (PointModelUtil.distance(iNode, nNode) > GGraph.CONNECT_THRESHOLD_METER)
                         continue;
-                    if (iNode.hasNeighbour(nNode))
+                    if (iNode.getNeighbour(nNode)!=null)
                         continue; // is already neighbour
 
 //This doesn't work well for routing hints
