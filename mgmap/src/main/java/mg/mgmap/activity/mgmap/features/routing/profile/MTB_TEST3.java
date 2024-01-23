@@ -1,21 +1,23 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.WayAttributs;
 
-public class MTB_TEST3 extends GenRoutingProfile {
+public class MTB_TEST3 extends RoutingProfile {
 
     public MTB_TEST3( ) {
-        super(new CostCalculatorHeuristicTwoPieceFunc(8.0, 0.10, 3, 0, -0.27, 2));
+//        super(new CostCalculatorHeuristicTwoPieceFunc(8.0, 0.10, 3, 0, -0.27, 2));
+        super(new CostCalculator4Profile(8.0, 0.10, 3, 0, -0.27, 2));
     }
 
-    public void refreshWayAttributes(WayAttributs wayAttributs) {
-        if (wayAttributs instanceof WayTagEval ) {
-            WayTagEval wayTagEval = (WayTagEval) wayAttributs;
-            wayTagEval.setCostCalculator(new CostCalculatorMTBTwoPieceFunc(wayTagEval, (CostCalculatorHeuristicTwoPieceFunc) mCostCalculatorForProfile));
-        }
-    }
     @Override
+    protected CostCalculator getCostCalculator(CostCalculator profileCalculator, WayAttributs wayAttributs) {
+        return new CostCalculator4ProfileWay(profileCalculator, wayAttributs);
+    }
+
+     @Override
     protected int getIconIdActive() {
         return R.drawable.rp_mtb1;
     }

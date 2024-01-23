@@ -76,7 +76,7 @@ public class Dijkstra {
             if (ref.getNode().getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
 
                 GNode node = ref.getNode();
-                graph.preNodeRelax(routingProfile, node); // add lazy expansion of GGraphMulti
+                graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
                 GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();

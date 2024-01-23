@@ -1,7 +1,9 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-public class CostCalculatorSimple implements IfCostCalcHeuristic {
-    private double mVertDistCostFactor;
+import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
+
+public class CostCalculatorSimple implements IfCostCalcHeuristic, CostCalculator {
+    private final double mVertDistCostFactor;
 
     protected CostCalculatorSimple(double vertDistCostFactor){
         mVertDistCostFactor = vertDistCostFactor;

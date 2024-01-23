@@ -1,8 +1,9 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 
-public class MTB_TEST2 extends GenRoutingProfile {
+public class MTB_TEST2 extends RoutingProfile {
     public MTB_TEST2( ) {
         super(new CostCalculatorHeuristicTwoPieceFunc(8.0, 0.12, 3, 0, -0.27, 2));
     }

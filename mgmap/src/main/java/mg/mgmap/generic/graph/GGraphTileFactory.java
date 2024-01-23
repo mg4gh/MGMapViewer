@@ -24,7 +24,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -49,7 +48,6 @@ public class GGraphTileFactory {
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
     private LinkedHashMap<Integer, GGraphTile> cache = null;
-    static final WayAttributs defaultWayAttributes = new WayAttributs();
 
     public GGraphTileFactory(){}
 
@@ -84,14 +82,14 @@ public class GGraphTileFactory {
                      neighbour.resetCost();
                      WayAttributs wayAttributs = neighbour.getWayAttributs();
                      if (wayAttributs != null) {
-                         wayAttributs.routingProfileChanged = true;
+                         wayAttributs.setDerivedData(null);
                      }
                  }
              }
         }
     }
 
-    public ArrayList<GGraphTile> getGGraphTileList(RoutingProfile routingProfile, BBox bBox){
+    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){
         ArrayList<GGraphTile> tileList = new ArrayList<>();
         try {
             long mapSize = MercatorProjection.getMapSize(ZOOM_LEVEL, TILE_SIZE);
@@ -106,7 +104,7 @@ public class GGraphTileFactory {
             if (totalTiles < CACHE_LIMIT){
                 for (int tileX = tileXMin; tileX <= tileXMax; tileX++) {
                     for (int tileY = tileYMin; tileY <= tileYMax; tileY++) {
-                        GGraphTile graph = getGGraphTile(routingProfile, tileX,tileY);
+                        GGraphTile graph = getGGraphTile(tileX,tileY);
                         tileList.add(graph);
                     }
                 }
@@ -119,8 +117,8 @@ public class GGraphTileFactory {
         return tileList;
     }
 
-    public ApproachModel validateApproachModel(RoutingProfile routingProfile, ApproachModel am){
-        GGraphTile gGraphTile = getGGraphTile(routingProfile, am.getTileX(), am.getTileY());
+    public ApproachModel validateApproachModel(ApproachModel am){
+        GGraphTile gGraphTile = getGGraphTile(am.getTileX(), am.getTileY());
         am.setNode1( gGraphTile.getNode(am.getNode1().getLat(),am.getNode1().getLon()) );
         am.setNode2( gGraphTile.getNode(am.getNode2().getLat(),am.getNode2().getLon()) );
         if (am.getNode1() == null) mgLog.e("node1==null ->rework failed");
@@ -133,7 +131,7 @@ public class GGraphTileFactory {
     }
 
     @SuppressWarnings("CommentedOutCode")
-    public GGraphTile getGGraphTile(RoutingProfile routingProfile, int tileX, int tileY){
+    public GGraphTile getGGraphTile(int tileX, int tileY){
         int key = getKey(tileX,tileY);
 
         GGraphTile gGraphTile = cache.get(key);
@@ -144,7 +142,7 @@ public class GGraphTileFactory {
             for (Way way : wayProvider.getWays(tile)) {
                 if (wayProvider.isHighway(way)){
 
-                    WayAttributs wayAttributs = routingProfile.getWayAttributes(way);
+                    WayAttributs wayAttributs = new WayAttributs(way);
                     gGraphTile.addLatLongs( wayAttributs, way.latLongs[0]);
 
                     // now setup rawWays
@@ -201,11 +199,11 @@ public class GGraphTileFactory {
 
                     int nNeighbours = nNode.countNeighbours();
                     if ((iNeighbours == 1) && (nNeighbours == 1)) { // 1:1 connect -> no routing hint problem
-                        gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
+                        gGraphTile.addSegment(null,iNode, nNode);
                         continue;
                     }
                     if (isBorderPoint(gGraphTile.tbBox, nNode) || isBorderPoint(gGraphTile.tbBox, iNode)) { // border points must be kept for MultiTiles; accept potential routing hint problem
-                        gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
+                        gGraphTile.addSegment(null,iNode, nNode);
                         continue;
                     }
                     if ((iNeighbours == 2) && (nNeighbours == 1)) { // 2:1 connect -> might give routing hint problem
@@ -217,7 +215,7 @@ public class GGraphTileFactory {
                         continue;
                     }
                     // else (n:m) accept routing hint issue
-                    gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
+                    gGraphTile.addSegment(null,iNode, nNode);
 
                 }
             }

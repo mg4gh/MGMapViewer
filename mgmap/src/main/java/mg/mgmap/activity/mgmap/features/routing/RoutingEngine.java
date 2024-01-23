@@ -80,11 +80,11 @@ public class RoutingEngine {
     }
 
     public synchronized ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
-        return gFactory.getGGraphTileList(routingProfile,bBox);
+        return gFactory.getGGraphTileList(bBox);
     }
 
     public ApproachModel validateApproachModel(ApproachModel am) {
-        return gFactory.validateApproachModel(routingProfile, am);
+        return gFactory.validateApproachModel(am);
     }
 
     RoutePointModel getRoutePointModel(PointModel pm){

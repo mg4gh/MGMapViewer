@@ -1,15 +1,17 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
+import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
 
-public class CostCalculatorMTBTwoPieceFunc extends CostCalculatorTwoPieceFunc {
-    double mGenCostFactor = 1.0;
-    public CostCalculatorMTBTwoPieceFunc(WayAttributs wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile) {
-        super();
+public class CostCalculator4ProfileWay implements CostCalculator {
 
+    double mGenCostFactor = 1.0;
+    CostCalculator profileCalculator;
+
+    public CostCalculator4ProfileWay(CostCalculator profileCalculator, WayAttributs wayTagEval){
+        this.profileCalculator = profileCalculator;
         double multCostFactor = 1.0;
-        double upSlopeFactor = profile.mUpSlopeFactor;
-        double dnSlopeFactor = profile.mDnSlopeFactor;
+
         if (wayTagEval.accessable) {
             if ("path".equals(wayTagEval.highway)) {
                 if (wayTagEval.mtbscale != null) {
@@ -71,18 +73,18 @@ public class CostCalculatorMTBTwoPieceFunc extends CostCalculatorTwoPieceFunc {
             mGenCostFactor = 10;
 
         mGenCostFactor = Math.max( mGenCostFactor * multCostFactor, 1);
-        mUpCosts = profile.mUpCosts;
-        mDnCosts = profile.mDnCosts ;// base costs in m per hm uphill;
-        mUpSlopeLimit = profile.mUpSlopeLimit; //  up to this slope base Costs
-        mDnSlopeLimit = profile.mDnSlopeLimit;
-        mUpAddCosts = profile.mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
-        mDnAddCosts = profile.mDnAddCosts;
-
 
 //        if (genCostFactor > 1) Log.e("Genrouting","genCostFactor" + genCostFactor + " " + this );
+
     }
 
-    public double calcCosts( double dist, double vertDist){
-        return super.calcCosts(dist, vertDist) * mGenCostFactor;
+    @Override
+    public double calcCosts(double dist, double vertDist) {
+        return profileCalculator.calcCosts(dist, vertDist) * mGenCostFactor;
+    }
+
+    @Override
+    public double heuristic(double dist, float vertDist) {
+        return profileCalculator.heuristic(dist, vertDist);
     }
 }

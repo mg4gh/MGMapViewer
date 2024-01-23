@@ -14,7 +14,6 @@
  */
 package mg.mgmap.generic.graph;
 
-import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -86,23 +85,23 @@ public class GGraphMulti extends GGraph {
         overlayNeighbours.add(new GOverlayNeighbour(node, neighbour, nextNeighbour));
     }
 
-    void preNodeRelax(RoutingProfile routingProfile, GNode node){
+    void preNodeRelax(GNode node){
         if ((node.borderNode != 0) && (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)){ // add lazy expansion of GGraphMulti
             GGraphTile gGraphTile = gGraphTileMap.get(node.tileIdx);
             assert(gGraphTile != null);
-            checkGGraphTileNeighbour(routingProfile,node,GNode.BORDER_NODE_WEST, gGraphTile.getTileX()-1, gGraphTile.getTileY());
-            checkGGraphTileNeighbour(routingProfile,node,GNode.BORDER_NODE_NORTH, gGraphTile.getTileX(), gGraphTile.getTileY()-1);
-            checkGGraphTileNeighbour(routingProfile,node,GNode.BORDER_NODE_EAST, gGraphTile.getTileX()+1, gGraphTile.getTileY());
-            checkGGraphTileNeighbour(routingProfile,node,GNode.BORDER_NODE_SOUTH, gGraphTile.getTileX(), gGraphTile.getTileY()+1);
+            checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST, gGraphTile.getTileX()-1, gGraphTile.getTileY());
+            checkGGraphTileNeighbour(node,GNode.BORDER_NODE_NORTH, gGraphTile.getTileX(), gGraphTile.getTileY()-1);
+            checkGGraphTileNeighbour(node,GNode.BORDER_NODE_EAST, gGraphTile.getTileX()+1, gGraphTile.getTileY());
+            checkGGraphTileNeighbour(node,GNode.BORDER_NODE_SOUTH, gGraphTile.getTileX(), gGraphTile.getTileY()+1);
         }
     }
 
-    private void checkGGraphTileNeighbour(RoutingProfile routingProfile, GNode node, byte border, int tileX, int tileY){
+    private void checkGGraphTileNeighbour(GNode node, byte border, int tileX, int tileY){
         if ( (node.borderNode & border) != 0 ){
             Integer neighbourIdx = GGraphTileFactory.getKey(tileX, tileY);
             GGraphTile gGraphTileNeighbour = gGraphTileMap.get(neighbourIdx);
             if (gGraphTileNeighbour == null){
-                gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(routingProfile, tileX, tileY);
+                gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileX, tileY);
                 gGraphTileMap.put(neighbourIdx, gGraphTileNeighbour);
                 gGraphTileNeighbour.resetNodeRefs();
                 connectGGraphTile(gGraphTileNeighbour);
@@ -184,8 +183,8 @@ public class GGraphMulti extends GGraph {
 
     private void connect(GNode node1, GNode node2){
 //        double cost = PointModelUtil.distance(node1, node2)+0.001;
-        addNextNeighbour(node1,getLastNeighbour(node1),new GNeighbour(node2,GGraphTileFactory.defaultWayAttributes));
-        addNextNeighbour(node2,getLastNeighbour(node2),new GNeighbour(node1,GGraphTileFactory.defaultWayAttributes));
+        addNextNeighbour(node1,getLastNeighbour(node1),new GNeighbour(node2,null));
+        addNextNeighbour(node2,getLastNeighbour(node2),new GNeighbour(node1,null));
     }
 
     public void createOverlaysForApproach(ApproachModel approach){

@@ -1,8 +1,9 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 
-public class ShortestDistance extends GenRoutingProfile {
+public class ShortestDistance extends RoutingProfile {
 
     public ShortestDistance( ) {
         super(new CostCalculatorShortestDist());

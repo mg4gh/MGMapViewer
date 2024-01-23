@@ -1,6 +1,8 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-public class CostCalculatorShortestDist implements IfCostCalcHeuristic{
+import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
+
+public class CostCalculatorShortestDist implements IfCostCalcHeuristic, CostCalculator {
     @Override
     public double heuristic(double dist, float vertDist) {
         return dist * 0.999;
