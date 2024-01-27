@@ -250,21 +250,17 @@ public class RoutingEngine {
         GNode gEnd = target.getApproachNode();
         mgLog.i("start "+gStart+" end "+gEnd);
 
-//        double distLimit = routingProfile.acceptedRouteDistance(this,source.mtlp, target.mtlp);
-//        double distLimit = 1000000; // no limit
-        double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(source.getMtlp(),target.getMtlp()) + 500);
         GGraphMulti multi = null;
 
         try {
-            if ((gStart != null) && (gEnd != null) && (distLimit > 0)){
-                BBox bBox = new BBox().extend(source.mtlp);
+            if ((gStart != null) && (gEnd != null)){
+                BBox bBox = new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold());
                 multi = new GGraphMulti(gFactory, getGGraphTileList(bBox));
 
-//                BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
-//                bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
-//                multi = new GGraphMulti(gFactory, getGGraphTileList(bBox));
                 multi.createOverlaysForApproach(validateApproachModel(source.selectedApproach));
                 multi.createOverlaysForApproach(validateApproachModel(target.selectedApproach));
+
+                double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
                 // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
                 AStar aStar = new AStar(multi, routingProfile);
