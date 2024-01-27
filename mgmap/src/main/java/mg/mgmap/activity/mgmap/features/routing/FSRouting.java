@@ -78,7 +78,7 @@ public class FSRouting extends FeatureService {
     private final RoutingEngine routingEngine;
     private final GGraphTileFactory gFactory;
     private final RoutingContext interactiveRoutingContext = new RoutingContext(
-            10000,
+            1000000, // no limit
             false, // no extra snap, since FSMarker snaps point zoom level dependent
             10, // accept long detours in interactive mode
             1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
