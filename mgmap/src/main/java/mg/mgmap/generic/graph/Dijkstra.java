@@ -31,8 +31,7 @@ public class Dijkstra {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private final List<GNode> nodes;
-    protected final GGraph graph;
+    protected final GGraphMulti graph;
     protected final RoutingProfile routingProfile;
 
     private TreeSet<GNodeRef> prioQueue = null;
@@ -44,9 +43,7 @@ public class Dijkstra {
     private int cntSettled = 0;
     private int resultPathLength = 0;
 
-
-    public Dijkstra(GGraph graph, RoutingProfile routingProfile) {
-        nodes = graph.getNodes();
+    public Dijkstra(GGraphMulti graph, RoutingProfile routingProfile) {
         this.graph = graph;
         this.routingProfile = routingProfile;
     }
@@ -75,10 +72,11 @@ public class Dijkstra {
         }
 
         GNodeRef ref = prioQueue.first();
-        while ((ref != null) && (ref.getNode() != target) && (ref.getCost() <= costLimit)){ // abort  if target reached of if there are no more nodes to settle
+        while ((ref != null) && (ref.getNode() != target) && (ref.getHeuristicCost() <= costLimit)){ // abort  if target reached of if there are no more nodes to settle
             if (ref.getNode().getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
 
                 GNode node = ref.getNode();
+                graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
                 GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();
@@ -94,6 +92,9 @@ public class Dijkstra {
                         neighbourRef = new GNodeRef(neighbourNode,currentCost,ref.getNode(),neighbour, heuristic(neighbourNode));
                         neighbourNode.setNodeRef(neighbourRef);
                         prioQueue.add(neighbourRef);
+                        if (neighbourRef.getHeuristicCost() < ref.getHeuristicCost()){
+                            mgLog.e("Inconsistency detected");
+                        }
                     }
                 }
                 ref.setSettled(true);
@@ -107,7 +108,7 @@ public class Dijkstra {
         cntRelaxed = 0;
         cntSettled = 0;
         resultPathLength = 0;
-        for (GNode node : nodes){
+        for (GNode node : graph.getNodes()){
             if (node.getNeighbour() != null){
                 cntTotal++;
                 if (node.getNodeRef() != null){
@@ -140,14 +141,14 @@ public class Dijkstra {
     }
 
     private void resetNodeRefs(){
-        for (GNode node : nodes){
+        for (GNode node : graph.getNodes()){
             node.setNodeRef(null);
         }
     }
 
     public String getResult(){
         String res = "\n";
-        res += String.format(Locale.GERMAN, "%s  nodes: %d graphNodes: %d, relaxed: %d, settled: %d, duration %dms\n",this.getClass().getSimpleName(),nodes.size(),cntTotal,cntRelaxed, cntSettled, duration);
+        res += String.format(Locale.GERMAN, "%s  tiles: %d, graphNodes: %d, relaxed: %d, settled: %d, duration %dms\n",this.getClass().getSimpleName(),graph.getTileCount(), cntTotal,cntRelaxed, cntSettled, duration);
         if (target == null){
             res += "No search for target path.";
         } else if (target.getNodeRef() == null) {

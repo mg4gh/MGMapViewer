@@ -24,7 +24,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -38,19 +37,17 @@ public class GGraphTileFactory {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private final int CACHE_LIMIT = 1000;
+    final static int CACHE_LIMIT = 1000;
     private final byte ZOOM_LEVEL = 15;
     private final int TILE_SIZE = 256;
 
-    private static long getKey(int tileX,int tileY){
-        return ((long) tileX <<32) + tileY;
+    static int getKey(int tileX,int tileY){
+        return ( tileX <<16) + tileY;
     }
 
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
-    private LinkedHashMap<Long, GGraphTile> cache = null;
-//    private RoutingProfile routingProfile = null;
-    static final WayAttributs defaultWayAttributes = new WayAttributs();
+    private LinkedHashMap<Integer, GGraphTile> cache = null;
 
     public GGraphTileFactory(){}
 
@@ -60,7 +57,7 @@ public class GGraphTileFactory {
 
         cache = new LinkedHashMap<>(100, 0.6f, true) {
             @Override
-            protected boolean removeEldestEntry(Entry<Long, GGraphTile> eldest) {
+            protected boolean removeEldestEntry(Entry<Integer, GGraphTile> eldest) {
                 boolean bRes = (size() > CACHE_LIMIT);
                 if (bRes) {
                     GGraphTile old = eldest.getValue();
@@ -85,14 +82,14 @@ public class GGraphTileFactory {
                      neighbour.resetCost();
                      WayAttributs wayAttributs = neighbour.getWayAttributs();
                      if (wayAttributs != null) {
-                         wayAttributs.routingProfileChanged = true;
+                         wayAttributs.setDerivedData(null);
                      }
                  }
              }
         }
     }
 
-    public ArrayList<GGraphTile> getGGraphTileList(RoutingProfile routingProfile, BBox bBox){
+    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){
         ArrayList<GGraphTile> tileList = new ArrayList<>();
         try {
             long mapSize = MercatorProjection.getMapSize(ZOOM_LEVEL, TILE_SIZE);
@@ -107,7 +104,7 @@ public class GGraphTileFactory {
             if (totalTiles < CACHE_LIMIT){
                 for (int tileX = tileXMin; tileX <= tileXMax; tileX++) {
                     for (int tileY = tileYMin; tileY <= tileYMax; tileY++) {
-                        GGraphTile graph = getGGraphTile(routingProfile, tileX,tileY);
+                        GGraphTile graph = getGGraphTile(tileX,tileY);
                         tileList.add(graph);
                     }
                 }
@@ -120,8 +117,8 @@ public class GGraphTileFactory {
         return tileList;
     }
 
-    public ApproachModel validateApproachModel(RoutingProfile routingProfile, ApproachModel am){
-        GGraphTile gGraphTile = getGGraphTile(routingProfile, am.getTileX(), am.getTileY());
+    public ApproachModel validateApproachModel(ApproachModel am){
+        GGraphTile gGraphTile = getGGraphTile(am.getTileX(), am.getTileY());
         am.setNode1( gGraphTile.getNode(am.getNode1().getLat(),am.getNode1().getLon()) );
         am.setNode2( gGraphTile.getNode(am.getNode2().getLat(),am.getNode2().getLon()) );
         if (am.getNode1() == null) mgLog.e("node1==null ->rework failed");
@@ -134,8 +131,8 @@ public class GGraphTileFactory {
     }
 
     @SuppressWarnings("CommentedOutCode")
-    private GGraphTile getGGraphTile(RoutingProfile routingProfile, int tileX, int tileY){
-        long key = getKey(tileX,tileY);
+    public GGraphTile getGGraphTile(int tileX, int tileY){
+        int key = getKey(tileX,tileY);
 
         GGraphTile gGraphTile = cache.get(key);
         if (gGraphTile == null){
@@ -145,7 +142,7 @@ public class GGraphTileFactory {
             for (Way way : wayProvider.getWays(tile)) {
                 if (wayProvider.isHighway(way)){
 
-                    WayAttributs wayAttributs = routingProfile.getWayAttributes(way);
+                    WayAttributs wayAttributs = new WayAttributs(way);
                     gGraphTile.addLatLongs( wayAttributs, way.latLongs[0]);
 
                     // now setup rawWays
@@ -177,7 +174,7 @@ public class GGraphTileFactory {
                         continue; // goto next mIdx
                     if (PointModelUtil.distance(iNode, nNode) > GGraph.CONNECT_THRESHOLD_METER)
                         continue;
-                    if (iNode.hasNeighbour(nNode))
+                    if (iNode.getNeighbour(nNode)!=null)
                         continue; // is already neighbour
 
 //This doesn't work well for routing hints
@@ -202,11 +199,11 @@ public class GGraphTileFactory {
 
                     int nNeighbours = nNode.countNeighbours();
                     if ((iNeighbours == 1) && (nNeighbours == 1)) { // 1:1 connect -> no routing hint problem
-                        gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
+                        gGraphTile.addSegment(null,iNode, nNode);
                         continue;
                     }
                     if (isBorderPoint(gGraphTile.tbBox, nNode) || isBorderPoint(gGraphTile.tbBox, iNode)) { // border points must be kept for MultiTiles; accept potential routing hint problem
-                        gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
+                        gGraphTile.addSegment(null,iNode, nNode);
                         continue;
                     }
                     if ((iNeighbours == 2) && (nNeighbours == 1)) { // 2:1 connect -> might give routing hint problem
@@ -218,7 +215,7 @@ public class GGraphTileFactory {
                         continue;
                     }
                     // else (n:m) accept routing hint issue
-                    gGraphTile.addSegment(defaultWayAttributes,iNode, nNode);
+                    gGraphTile.addSegment(null,iNode, nNode);
 
                 }
             }

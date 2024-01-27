@@ -1,10 +1,23 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
-public class CostCalculatorMTB_Old extends CostCalculatorTwoPieceFunc {
-    double mGenCostFactor = 1.0;
-    public CostCalculatorMTB_Old(WayTagEval wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile) {
-        super();
+import static java.lang.Math.abs;
 
+import android.util.Log;
+
+import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
+import mg.mgmap.generic.graph.WayAttributs;
+
+public class CostCalculatorMTB_Old extends CostCalculatorTwoPieceFunc implements CostCalculator {
+    double mGenCostFactor = 1.0;
+    protected double mUpCosts;
+    protected double mDnCosts;// base costs in m per hm uphill;
+    protected double mUpSlopeLimit; //  up to this slope base Costs
+    protected double mDnSlopeLimit;
+    protected double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
+    protected double mDnAddCosts;
+    private CostCalculatorHeuristicTwoPieceFunc mProfileCalculator;
+    public CostCalculatorMTB_Old(WayAttributs wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile) {
+        mProfileCalculator = profile;
         double multCostFactor = 1.0;
         double upSlopeFactor = profile.mUpSlopeFactor;
         double dnSlopeFactor = profile.mDnSlopeFactor;
@@ -81,6 +94,13 @@ public class CostCalculatorMTB_Old extends CostCalculatorTwoPieceFunc {
     }
 
     public double calcCosts(double dist, float vertDist){
-        return super.calcCosts(dist, vertDist) * mGenCostFactor;
+        return mProfileCalculator.calcCosts(dist, vertDist)*mGenCostFactor;
+        }
+
+    @Override
+    public double heuristic(double dist, float vertDist) {
+        return mProfileCalculator.heuristic(dist, vertDist);
     }
+
 }
+

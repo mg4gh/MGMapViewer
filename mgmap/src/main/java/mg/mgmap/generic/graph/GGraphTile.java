@@ -38,6 +38,7 @@ public class GGraphTile extends GGraph {
 
     private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
     final Tile tile;
+    final int tileIdx;
     final BBox tbBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
@@ -45,6 +46,7 @@ public class GGraphTile extends GGraph {
     GGraphTile(ElevationProvider elevationProvider, Tile tile){
         this.elevationProvider = elevationProvider;
         this.tile = tile;
+        this.tileIdx = GGraphTileFactory.getKey(getTileX(),getTileY());
         tbBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
     }
 
@@ -106,6 +108,11 @@ public class GGraphTile extends GGraph {
                 hgtTemp.setLon(longitude);
                 elevationProvider.setElevation(hgtTemp);
                 GNode node = new GNode(latitude, longitude, hgtTemp.getEleA(), hgtTemp.getEleAcc(), 0);
+                if (longitude == tbBox.minLongitude) node.borderNode |= GNode.BORDER_NODE_WEST;
+                if (longitude == tbBox.maxLongitude) node.borderNode |= GNode.BORDER_NODE_EAST;
+                if (latitude == tbBox.minLatitude)  node.borderNode |= GNode.BORDER_NODE_SOUTH;
+                if (latitude == tbBox.maxLatitude)  node.borderNode |= GNode.BORDER_NODE_NORTH;
+                node.tileIdx = tileIdx;
                 getNodes().add(high, node);
                 return node;
             } else {
@@ -137,6 +144,12 @@ public class GGraphTile extends GGraph {
     }
     public int getTileY(){
         return tile.tileY;
+    }
+
+    void resetNodeRefs(){
+        for (GNode node : getNodes()){
+            node.setNodeRef(null);
+        }
     }
 
     @NonNull

@@ -4,8 +4,16 @@ import static java.lang.Math.abs;
 
 import android.util.Log;
 
-public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceFunc implements IfCostCalcHeuristic {
+import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 
+public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceFunc implements CostCalculator {
+
+    protected double mUpCosts;
+    protected double mDnCosts;// base costs in m per hm uphill;
+    protected double mUpSlopeLimit; //  up to this slope base Costs
+    protected double mDnSlopeLimit;
+    protected double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
+    protected double mDnAddCosts;
 
     protected double mUpSlopeFactor;
     protected double mDnSlopeFactor;
@@ -22,6 +30,27 @@ public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceF
         // required. Otherwise heuristic no longer correct
         mDnAddCosts = dnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
         mDnSlopeFactor = dnSlopeFactor;
+    }
+
+    public double calcCosts(double dist, float vertDist){
+        if (dist <= 0.0000001 ) {
+            return 0.0001;
+        }
+        double slope = vertDist / dist;
+        if ( abs(slope) >= 10 ) Log.e("CostCalculatorTwoPieceFunc","Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
+        double cost;
+        if (slope >= 0) {
+            if (slope <= mUpSlopeLimit)
+                cost = dist + vertDist * mUpCosts;
+            else
+                cost = dist + vertDist * ( mUpCosts + (slope - mUpSlopeLimit) * mUpAddCosts);
+        } else {
+            if (slope >= mDnSlopeLimit)
+                cost = dist + vertDist * mDnCosts;
+            else
+                return dist + vertDist * ( mDnCosts + (slope - mDnSlopeLimit) * mDnAddCosts);
+        }
+        return cost + 0.0001;
     }
 
            /* derivation of the heuristic only for positive slope values, so target is uphill (for negative in principle the same, but a bit more cumbersome )
@@ -59,8 +88,7 @@ public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceF
         }
         double heuristic;
         double slope = vertDist / dist;
-        if ( abs(slope) >= 10 )
-            Log.e("Heuristic","Suspicious Slope in heuristic. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
+        if ( abs(vertDist) <= 0.000001 ) Log.e("GenRoutingProfile","Suspicious Slope in heuristic. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         if (slope >= 0){
             if (slope <= mUpSlopeLimit)
                 heuristic = dist + vertDist * mUpCosts;

@@ -4,13 +4,22 @@ import static java.lang.Math.abs;
 
 import android.util.Log;
 
-public class CostCalculatorMTB extends CostCalculatorTwoPieceFunc{
-    static double fbs = 0.5;
+import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
+import mg.mgmap.generic.graph.WayAttributs;
 
+public class CostCalculatorMTB extends CostCalculatorTwoPieceFunc implements CostCalculator {
+    static double fbs = 0.5;
+    protected double mUpCosts;
+    protected double mDnCosts;// base costs in m per hm uphill;
+    protected double mUpSlopeLimit; //  up to this slope base Costs
+    protected double mDnSlopeLimit;
+    protected double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
+    protected double mDnAddCosts;
     double mUpCosts2;
     double mSlopeShift;
-    public CostCalculatorMTB(WayTagEval wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile, double pathSlopeShift, double fbs) {
-        super();
+    private CostCalculatorHeuristicTwoPieceFunc mProfileCalculator;
+    public CostCalculatorMTB(WayAttributs wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile, double pathSlopeShift, double fbs) {
+        mProfileCalculator = profile;
         double upSlopeFactor = 1;
         double dnSlopeFactor = profile.mDnSlopeFactor;
         if ("path".equals(wayTagEval.highway)) {
@@ -59,6 +68,11 @@ public class CostCalculatorMTB extends CostCalculatorTwoPieceFunc{
                 return dist + vertDist * ( mDnCosts + (slope - mDnSlopeLimit) * mDnAddCosts);
         }
         return cost + 0.0001;
+    }
+
+    @Override
+    public double heuristic(double dist, float vertDist) {
+        return mProfileCalculator.heuristic(dist, vertDist);
     }
 
 }

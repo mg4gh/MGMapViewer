@@ -1,10 +1,7 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
-import org.mapsforge.map.datastore.Way;
-
 import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.graph.WayAttributs;
-import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -12,8 +9,10 @@ import mg.mgmap.generic.view.ExtendedTextView;
 public abstract class RoutingProfile {
 
     protected String id;
+    protected CostCalculator costCalculator;
 
-    public RoutingProfile(){
+    public RoutingProfile(CostCalculator costCalculator){
+        this.costCalculator = costCalculator;
         id = constructId(this.getClass());
     }
 
@@ -25,22 +24,25 @@ public abstract class RoutingProfile {
         return id;
     }
 
-    public WayAttributs getWayAttributes(Way way){
-        return new WayAttributs();
+    protected CostCalculator getCostCalculator(CostCalculator profileCalculator, WayAttributs wayAttributs){
+        return profileCalculator; // default is no way specific calculator
     }
 
-    public void refreshWayAttributes(WayAttributs wayAttributs){}
-
     public double getCost(WayAttributs wayAttributs, GNode node1, GNode node2){
-        if ((wayAttributs!=null) && (wayAttributs.routingProfileChanged)){
-            refreshWayAttributes(wayAttributs);
-            wayAttributs.routingProfileChanged = false;
+        if ((wayAttributs!=null) && (wayAttributs.getDerivedData()==null)){
+            wayAttributs.setDerivedData( getCostCalculator(costCalculator, wayAttributs));
         }
         double distance = PointModelUtil.distance(node1, node2);
         float verticalDistance = node2.getEleD() - node1.getEleD();
         return getCost(wayAttributs, distance, verticalDistance);
     }
-    protected abstract double getCost(WayAttributs wayAttributs, double distance, float verticalDistance);
+    protected double getCost(WayAttributs wayAttributs, double distance, float verticalDistance){
+        CostCalculator calculator = this.costCalculator;
+        if ((wayAttributs != null) && (wayAttributs.getDerivedData() instanceof CostCalculator)){
+            calculator = ((CostCalculator)wayAttributs.getDerivedData());
+        }
+        return calculator.calcCosts(distance, verticalDistance);
+    }
 
     public double heuristic(GNode node, GNode target){
         double distance = PointModelUtil.distance(node, target);
@@ -48,21 +50,9 @@ public abstract class RoutingProfile {
         return heuristic(distance, verticalDistance);
     }
     protected double heuristic(double distance, float verticalDistance){
-        return distance*0.999;
+        return costCalculator.heuristic(distance,verticalDistance);
     }
 
-    protected double acceptedRouteDistance(RoutingEngine routingEngine, PointModel pmStart, PointModel pmEnd){
-        double distance = PointModelUtil.distance(pmStart, pmEnd);
-        float verticalDistance = pmEnd.getEleD() - pmStart.getEleD();
-        return acceptedRouteDistance(routingEngine, distance, verticalDistance);
-    }
-    protected double acceptedRouteDistance(RoutingEngine routingEngine, double distance, float verticalDistance){
-        double res = 0;
-        if (distance < routingEngine.getRoutingContext().maxBeelineDistance){ // otherwise it will take too long
-            res = routingEngine.getRoutingContext().maxRouteLengthFactor * heuristic(distance,verticalDistance) + 2 * PointModelUtil.getCloseThreshold();
-        }
-        return res;
-    }
 
 
     abstract protected int getIconIdActive();

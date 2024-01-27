@@ -80,11 +80,11 @@ public class RoutingEngine {
     }
 
     public synchronized ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
-        return gFactory.getGGraphTileList(routingProfile,bBox);
+        return gFactory.getGGraphTileList(bBox);
     }
 
     public ApproachModel validateApproachModel(ApproachModel am) {
-        return gFactory.validateApproachModel(routingProfile, am);
+        return gFactory.validateApproachModel(am);
     }
 
     RoutePointModel getRoutePointModel(PointModel pm){
@@ -250,15 +250,19 @@ public class RoutingEngine {
         GNode gEnd = target.getApproachNode();
         mgLog.i("start "+gStart+" end "+gEnd);
 
-        double distLimit = routingProfile.acceptedRouteDistance(this,source.mtlp, target.mtlp);
+//        double distLimit = routingProfile.acceptedRouteDistance(this,source.mtlp, target.mtlp);
+        double distLimit = 1000000; // no limit
 //        double distLimit = acceptedRouteDistance(source.mtlp, target.mtlp);
         GGraphMulti multi = null;
 
         try {
             if ((gStart != null) && (gEnd != null) && (distLimit > 0)){
-                BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
-                bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() + 800 ) );
-                multi = new GGraphMulti(getGGraphTileList(bBox));
+                BBox bBox = new BBox().extend(source.mtlp);
+                multi = new GGraphMulti(gFactory, getGGraphTileList(bBox));
+
+//                BBox bBox = new BBox().extend(source.mtlp).extend(target.mtlp);
+//                bBox.extend( Math.max(PointModelUtil.getCloseThreshold(), PointModelUtil.distance(source.mtlp,target.mtlp)*0.7 + 2*PointModelUtil.getCloseThreshold() ) );
+//                multi = new GGraphMulti(gFactory, getGGraphTileList(bBox));
                 multi.createOverlaysForApproach(validateApproachModel(source.selectedApproach));
                 multi.createOverlaysForApproach(validateApproachModel(target.selectedApproach));
 
@@ -362,7 +366,7 @@ public class RoutingEngine {
         WriteablePointModel pmApproach = new TrackLogPoint();
 
         ArrayList<GGraphTile> tiles = getGGraphTileList(mtlpBBox);
-        GGraphMulti multi = new GGraphMulti(tiles);
+        GGraphMulti multi = new GGraphMulti(gFactory, tiles);
         for (GGraphTile gGraphTile : tiles){
             for (GNode node : gGraphTile.getNodes()) {
 
@@ -374,7 +378,7 @@ public class RoutingEngine {
                         boolean bIntersects = mtlpBBox.intersects(bBoxPart);
                         if (bIntersects){ // ok, is candidate for close
                             if (PointModelUtil.findApproach(pointModel, node, neighbourNode, pmApproach , closeThreshold)) {
-                                double distance = PointModelUtil.distance(pointModel, pmApproach);
+                                double distance = PointModelUtil.distance(pointModel, pmApproach)+0.0001;
                                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
                                     gFactory.getElevationProvider().setElevation(pmApproach);
                                     GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEleA(), pmApproach.getEleAcc(), distance); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
