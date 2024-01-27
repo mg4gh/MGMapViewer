@@ -99,10 +99,8 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
         }
 
         Pref<Boolean> prefUseRoutingProfiles = prefCache.get(R.string.preferences_routingProfile_key, false);
-        prefUseRoutingProfiles.addObserver((Observer) evt -> {
-            Preference pRoutingProfiles = findPreference(getResources().getString(R.string.FSRouting_routing_profiles_menu_key));
-            pRoutingProfiles.setEnabled(prefUseRoutingProfiles.getValue());
-        });
+        Preference pRoutingProfiles = findPreference(getResources().getString(R.string.FSRouting_routing_profiles_menu_key));
+        prefUseRoutingProfiles.addObserver((Observer) evt -> pRoutingProfiles.setEnabled(prefUseRoutingProfiles.getValue()) );
         prefUseRoutingProfiles.onChange();
     }
 
