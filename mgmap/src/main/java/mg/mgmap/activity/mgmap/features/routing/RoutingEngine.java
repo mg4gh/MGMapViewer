@@ -252,7 +252,7 @@ public class RoutingEngine {
 
 //        double distLimit = routingProfile.acceptedRouteDistance(this,source.mtlp, target.mtlp);
 //        double distLimit = 1000000; // no limit
-        double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart,gEnd) + 500);
+        double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(source.getMtlp(),target.getMtlp()) + 500);
         GGraphMulti multi = null;
 
         try {
