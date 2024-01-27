@@ -55,6 +55,7 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.gpx.GpxExporter;
@@ -74,6 +75,12 @@ public class FSRouting extends FeatureService {
     private final Paint PAINT_STROKE_GL = CC.getStrokePaint(R.color.CC_GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
     private static final int ZOOM_LEVEL_RELAXED_VISIBILITY = 16;
+
+    private static ArrayList<RoutingProfile> definedRoutingProfiles = null;
+
+    public static ArrayList<RoutingProfile> getDefinedRoutingProfiles(){
+        return definedRoutingProfiles;
+    }
 
     private final RoutingEngine routingEngine;
     private final GGraphTileFactory gFactory;
@@ -100,7 +107,7 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     private final String defaultRoutingProfileId = RoutingProfile.constructId(ShortestDistance.class);
     private final Pref<String> prefRoutingProfileId = getPref(R.string.FSRouting_pref_currentRoutingProfile, defaultRoutingProfileId);
-    private final ArrayList<RoutingProfile> routingProfiles = new ArrayList<>();
+    private final ArrayList<ExtendedTextView> profileETVs = new ArrayList<>();
     private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
 
 
@@ -109,6 +116,7 @@ public class FSRouting extends FeatureService {
     private boolean runRouteCalcThread = true;
     private final MGMapApplication application;
     private MultiPointView dndVisualisationLayer = null;
+    private final PrefCache prefCache;
 
     public FSRouting(MGMapActivity mgActivity, FSMarker fsMarker, GGraphTileFactory gFactory) {
         super(mgActivity);
@@ -198,18 +206,35 @@ public class FSRouting extends FeatureService {
             mgLog.d("reset to defaultRoutingProfileId");
             prefRoutingProfileId.setValue(defaultRoutingProfileId);
         });
-        prefEditMarkerTrack.addObserver(evt -> getActivity().findViewById(R.id.routingProfiles).setVisibility((prefUseRoutingProfiles.getValue() && prefEditMarkerTrack.getValue())?View.VISIBLE:View.INVISIBLE));
-        routingProfiles.add(new ShortestDistance());
-        routingProfiles.add(new MTB());
-        routingProfiles.add(new MTB_TEST1());
-        routingProfiles.add(new MTB_TEST2());
-        routingProfiles.add(new MTB_TEST3());
-        routingProfiles.add(new TrekkingBike());
+        prefCache = getActivity().getPrefCache();
+        prefEditMarkerTrack.addObserver(evt -> {
+            if (prefUseRoutingProfiles.getValue() && prefEditMarkerTrack.getValue()){
+                ViewGroup parent = activity.findViewById(R.id.routingProfiles);
+                parent.removeAllViews();
+                for (int i=0; i<definedRoutingProfiles.size(); i++){
+                    RoutingProfile routingProfile = definedRoutingProfiles.get(i);
+                    ExtendedTextView etvRoutingProfile = profileETVs.get(i); // number should correspond
+                    if (prefCache.get(routingProfile.getId(), false).getValue()){ // all entries are already in cache, so default is irrelevant
+                         parent.addView(etvRoutingProfile);
+                    }
+                }
+            }
+            getActivity().findViewById(R.id.routingProfiles).setVisibility((prefUseRoutingProfiles.getValue() && prefEditMarkerTrack.getValue())?View.VISIBLE:View.INVISIBLE);
+        });
+        definedRoutingProfiles = new ArrayList<>();
+        addDefinedRoutingProfile(prefCache, new ShortestDistance(), true);
+        addDefinedRoutingProfile(prefCache, new MTB(), true);
+        addDefinedRoutingProfile(prefCache, new MTB_TEST1(), false);
+        addDefinedRoutingProfile(prefCache, new MTB_TEST2(), false);
+        addDefinedRoutingProfile(prefCache, new MTB_TEST3(), true);
+        addDefinedRoutingProfile(prefCache, new TrekkingBike(), true);
+
         prefRoutingProfileId.addObserver(evt -> {
             String id = prefRoutingProfileId.getValue();
-            for (RoutingProfile routingProfile : routingProfiles){
+            for (RoutingProfile routingProfile : definedRoutingProfiles){
                 if (routingProfile.getId().equals(id)){
                     getTimer().postDelayed(() -> {
+                        prefCache.get(routingProfile.getId(),false).setValue(true); // whatever the visibility was, set it to true
                         if (routingEngine.setRoutingProfile(routingProfile)){
                             application.markerTrackLogObservable.changed();
                         }
@@ -225,12 +250,13 @@ public class FSRouting extends FeatureService {
         });
     }
 
-    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
-        return routingEngine.getGGraphTileList(bBox);
+    private void addDefinedRoutingProfile(PrefCache prefCache, RoutingProfile routingProfile, boolean defaultVisibility){
+        definedRoutingProfiles.add(routingProfile);
+        prefCache.get(routingProfile.getId(), defaultVisibility);
     }
 
-    public ArrayList<RoutingProfile> getRoutingProfiles() {
-        return routingProfiles;
+    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
+        return routingEngine.getGGraphTileList(bBox);
     }
 
     @Override
@@ -244,6 +270,7 @@ public class FSRouting extends FeatureService {
     public ExtendedTextView initRoutingProfile(ExtendedTextView etv, RoutingProfile routingProfile){
         super.initQuickControl(etv,routingProfile.getId());
         routingProfile.initETV(etv,prefRoutingProfileId);
+        profileETVs.add(etv);
         return etv;
     }
 

@@ -2,6 +2,7 @@ package mg.mgmap.activity.mgmap.features.routing;
 
 import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.graph.WayAttributs;
+import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -44,7 +45,7 @@ public abstract class RoutingProfile {
         return calculator.calcCosts(distance, verticalDistance);
     }
 
-    public double heuristic(GNode node, GNode target){
+    public double heuristic(PointModel node, PointModel target){
         double distance = PointModelUtil.distance(node, target);
         float verticalDistance = target.getEleD() - node.getEleD();
         return heuristic(distance, verticalDistance);
@@ -55,7 +56,7 @@ public abstract class RoutingProfile {
 
 
 
-    abstract protected int getIconIdActive();
+    abstract public int getIconIdActive();
     abstract protected int getIconIdInactive();
 
 
@@ -64,5 +65,6 @@ public abstract class RoutingProfile {
         prefCurrentRoutingProfileId.addObserver(evt -> rpState.setValue( id.equals(prefCurrentRoutingProfileId.getValue()) ));
         etv.setData(rpState, getIconIdInactive(), getIconIdActive());
         etv.setOnClickListener(v -> prefCurrentRoutingProfileId.setValue(id));
+        etv.setName(prefCurrentRoutingProfileId.getKey());
     }
 }

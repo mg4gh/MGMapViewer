@@ -10,7 +10,7 @@ public class ShortestDistance extends RoutingProfile {
     }
 
     @Override
-    protected int getIconIdActive() {
+    public int getIconIdActive() {
         return R.drawable.rp_shortest_path1;
     }
 

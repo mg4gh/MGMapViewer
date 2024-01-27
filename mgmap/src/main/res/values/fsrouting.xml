@@ -28,4 +28,6 @@
     <string name="preferences_routingProfile_desc">Use alternative routing profiles</string>
 
 
+    <string name="FSRouting_routing_profiles_menu_key">RoutingProfilesMenuKey</string>
+    <string name="FSRouting_routing_profiles_menu_tile">Select visible routing profiles</string>
 </resources>

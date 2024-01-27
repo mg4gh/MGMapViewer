@@ -146,6 +146,13 @@
             app:title="@string/preferences_routingProfile_title"
             app:iconSpaceReserved="false"
             />
+
+        <Preference
+            app:key="@string/FSRouting_routing_profiles_menu_key"
+            app:title="@string/FSRouting_routing_profiles_menu_tile"
+            app:fragment="mg.mgmap.activity.settings.RoutingProfileSelectionPreferenceScreen"
+            app:iconSpaceReserved="false"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory

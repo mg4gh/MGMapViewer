@@ -20,7 +20,9 @@ import android.text.InputType;
 
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 
+import java.beans.PropertyChangeEvent;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +31,8 @@ import mg.mgmap.BuildConfig;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapLayerFactory;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
@@ -36,6 +40,7 @@ import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
 public class MainPreferenceScreen extends MGPreferenceScreen {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+    private PrefCache prefCache;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -45,7 +50,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
 
         try {
             MGMapApplication application = (MGMapApplication) requireActivity().getApplication();
-            PrefCache prefCache = application.getPrefCache();
+            prefCache = application.getPrefCache();
             List<String> mapKeys = MGMapLayerFactory.getMapLayerKeys(getContext()).stream().map(key->prefCache.get(key,"").getValue()).collect(Collectors.toList());
             application.getHintUtil().showHint( new HintMapLayerAssignment(getActivity(), mapKeys) );
         } catch (Exception e) {
@@ -92,6 +97,13 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
                 preference.setVisible(developer);
             }
         }
+
+        Pref<Boolean> prefUseRoutingProfiles = prefCache.get(R.string.preferences_routingProfile_key, false);
+        prefUseRoutingProfiles.addObserver((Observer) evt -> {
+            Preference pRoutingProfiles = findPreference(getResources().getString(R.string.FSRouting_routing_profiles_menu_key));
+            pRoutingProfiles.setEnabled(prefUseRoutingProfiles.getValue());
+        });
+        prefUseRoutingProfiles.onChange();
     }
 
 }

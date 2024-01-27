@@ -14,7 +14,7 @@ public class TrekkingBike extends RoutingProfile {
         return new CostCalculatorTreckingBike(wayAttributs, (CostCalculatorHeuristicTwoPieceFunc) profileCalculator);
     }
     @Override
-    protected int getIconIdActive() {
+    public int getIconIdActive() {
         return R.drawable.rp_trekking1;
     }
     @Override

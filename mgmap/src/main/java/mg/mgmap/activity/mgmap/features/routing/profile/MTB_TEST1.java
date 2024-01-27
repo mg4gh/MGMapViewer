@@ -15,7 +15,7 @@ public class MTB_TEST1 extends RoutingProfile {
     }
 
     @Override
-    protected int getIconIdActive() {
+    public int getIconIdActive() {
         return R.drawable.rp_mtb1;
     }
 
