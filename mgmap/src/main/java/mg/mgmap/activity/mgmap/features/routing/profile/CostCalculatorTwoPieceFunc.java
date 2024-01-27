@@ -5,7 +5,8 @@ import static java.lang.Math.abs;
 import android.util.Log;
 
 public abstract class CostCalculatorTwoPieceFunc implements IfCostCalculator {
-
+    protected static double fb = 0.8; // upCosts = upLimit / fb
+    protected static double fa = 3.0; // upAddCosts = fa / ( upLimit * upLimit)
     protected double mUpCosts;
     protected double mDnCosts;// base costs in m per hm uphill;
     protected double mUpSlopeLimit; //  up to this slope base Costs
@@ -19,9 +20,9 @@ public abstract class CostCalculatorTwoPieceFunc implements IfCostCalculator {
             return 0.0001;
         }
         double slope = vertDist / dist;
-        if ( abs(vertDist) <= 0.000001 ) Log.e("GenRoutingProfile","Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
+        if ( abs(slope) >= 10 ) Log.e("CostCalculatorTwoPieceFunc","Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         double cost;
-        if (slope > 0) {
+        if (slope >= 0) {
             if (slope <= mUpSlopeLimit)
                 cost = dist + vertDist * mUpCosts;
             else

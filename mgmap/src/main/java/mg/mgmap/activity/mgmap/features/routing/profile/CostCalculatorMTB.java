@@ -1,76 +1,64 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
+import static java.lang.Math.abs;
+
+import android.util.Log;
+
 public class CostCalculatorMTB extends CostCalculatorTwoPieceFunc{
-    double mDistCostFactor = 1.0;
-    public CostCalculatorMTB(WayTagEval wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile) {
+    static double fbs = 0.5;
+
+    double mUpCosts2;
+    double mSlopeShift;
+    public CostCalculatorMTB(WayTagEval wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile, double pathSlopeShift, double fbs) {
         super();
-
-        double slopeShift = 1.0;
-        double multCostFactor = 1.0;
-        double upSlopeFactor = profile.mUpSlopeFactor;
+        double upSlopeFactor = 1;
         double dnSlopeFactor = profile.mDnSlopeFactor;
-        if (wayTagEval.accessable) {
-            if ("path".equals(wayTagEval.highway)) {
-                 if (wayTagEval.trail_visibility != null) {
-                    switch (wayTagEval.trail_visibility) {
-                        case "bad":
-                            multCostFactor = 1.5;
-                            break;
-                        case "horrible":
-                        case "no":
-                            multCostFactor = 2;
-                            break;
-                    }
-                }
-            } else if ("track".equals(wayTagEval.highway)) {
-                mDistCostFactor = 1;
-                slopeShift = 1.5;
-                mDistCostFactor = slopeShift;
-            } else if ("primary".equals(wayTagEval.highway)) {
-                if ("bic_no".equals(wayTagEval.bicycle))
-                    wayTagEval.accessable = false;
-                else if (wayTagEval.cycleway != null)
-                    mDistCostFactor = 1.5;
-                else
-                    mDistCostFactor = 2;
-            } else if ("secondary".equals(wayTagEval.highway)) {
-                if (wayTagEval.cycleway != null)
-                    mDistCostFactor = 1.5;
-                else
-                    mDistCostFactor = 2;
-            } else if ("tertiary".equals(wayTagEval.highway)) {
-                mDistCostFactor = 1.5;
-            } else if ("steps".equals(wayTagEval.highway)) {
-                mDistCostFactor = 8;
-//                setFixUpDistParameter(8);
-//                setFixDownDistParameter(8);
-            } else if ("footway".equals(wayTagEval.highway) ) {
-                if ( "bic_yes".equals(wayTagEval.bicycle) )
-                    mDistCostFactor = 1;
-                else
-                    mDistCostFactor = 1;
-            }
-            else if ("bic_no".equals(wayTagEval.bicycle))
-                mDistCostFactor = 1;
-            else
-                mDistCostFactor = 1;
+        if ("path".equals(wayTagEval.highway)) {
+            mUpSlopeLimit = profile.mUpSlopeLimit * fbs;
+            mUpCosts = fb/mUpSlopeLimit;
+            mUpCosts2 = mUpCosts;
+            upSlopeFactor = fa;
+            mSlopeShift = 1.0;
+        } else { //if ("track".equals(wayTagEval.highway)){
+            mUpSlopeLimit = profile.mUpSlopeLimit;
+            mUpCosts = profile.mUpCosts; // * ( ( 1- slopeShift)/(profile.mUpCosts*profile.mUpSlopeLimit) + 1);
+            mUpCosts2 = mUpCosts*(1 - pathSlopeShift/fb);//mUpCosts*(1 + (1 - ( mSlopeShift + 1))/fb);
+            upSlopeFactor = ( fa + (1-fa)/fb*pathSlopeShift);
+            mSlopeShift = pathSlopeShift + 1.0;
         }
-        if (wayTagEval.accessable) mDistCostFactor = 10;
 
-        mDistCostFactor = Math.max( mDistCostFactor * multCostFactor, 1);
-        mUpCosts = profile.mUpCosts * ( ( 1- slopeShift)/(profile.mUpCosts*profile.mUpSlopeLimit) + 1);
         mDnCosts = profile.mDnCosts ;// base costs in m per hm uphill;
-        mUpSlopeLimit = profile.mUpSlopeLimit; //  up to this slope base Costs
         mDnSlopeLimit = profile.mDnSlopeLimit;
+        if (upSlopeFactor <1) upSlopeFactor = 1;
         mUpAddCosts = upSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
         mDnAddCosts = dnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
 
+/*        for ( float vd = 0.0f; vd < 0.3f; vd = vd+0.001f){
+            Log.d("CostCalcMTB", "slopeShift:" + mSlopeShift + " vertDist:" + vd + " Cost:" + calcCosts(1.0,vd));
+        } */
 
 //        if (genCostFactor > 1) Log.e("Genrouting","genCostFactor" + genCostFactor + " " + this );
     }
 
     public double calcCosts(double dist, float vertDist){
-        return super.calcCosts( dist*mDistCostFactor, vertDist);
+        if (dist <= 0.0000001 ) {
+            return 0.0001;
+        }
+        double slope = vertDist / dist;
+        if ( abs(slope) >=  10.0 ) Log.e("CostCalcMTB","Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
+        double cost;
+        if (slope >= 0) {
+            if (slope <= mUpSlopeLimit)
+                cost = dist*mSlopeShift + vertDist * mUpCosts2;
+            else
+                cost = dist + vertDist * ( mUpCosts + (slope - mUpSlopeLimit) * mUpAddCosts);
+        } else {
+            if (slope >= mDnSlopeLimit)
+                cost = dist + vertDist * mDnCosts;
+            else
+                return dist + vertDist * ( mDnCosts + (slope - mDnSlopeLimit) * mDnAddCosts);
+        }
+        return cost + 0.0001;
     }
 
 }

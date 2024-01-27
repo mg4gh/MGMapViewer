@@ -1,10 +1,19 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import mg.mgmap.R;
+import mg.mgmap.generic.graph.WayAttributs;
 
 public class MTB_TEST2 extends GenRoutingProfile {
     public MTB_TEST2( ) {
         super(new CostCalculatorHeuristicTwoPieceFunc(0.13,  0, -0.27, 2));
+    }
+
+
+    public void refreshWayAttributes(WayAttributs wayAttributs) {
+        if (wayAttributs instanceof WayTagEval ) {
+            WayTagEval wayTagEval = (WayTagEval) wayAttributs;
+            wayTagEval.setCostCalculator(new CostCalculatorMTB(wayTagEval, (CostCalculatorHeuristicTwoPieceFunc) mCostCalculatorForProfile, 0.4,0.95));
+        }
     }
 
     @Override

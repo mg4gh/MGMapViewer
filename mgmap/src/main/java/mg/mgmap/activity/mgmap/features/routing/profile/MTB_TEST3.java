@@ -6,15 +6,15 @@ import mg.mgmap.generic.graph.WayAttributs;
 public class MTB_TEST3 extends GenRoutingProfile {
 
     public MTB_TEST3( ) {
-        super(new CostCalculatorHeuristicTwoPieceFunc(0.17, 0, -0.27, 2));
+        super(new CostCalculatorHeuristicTwoPieceFunc(0.13, 0, -0.27, 2));
     }
 
-/*    public void refreshWayAttributes(WayAttributs wayAttributs) {
+    public void refreshWayAttributes(WayAttributs wayAttributs) {
         if (wayAttributs instanceof WayTagEval ) {
             WayTagEval wayTagEval = (WayTagEval) wayAttributs;
-            wayTagEval.setCostCalculator(new CostCalculatorMTB_Old(wayTagEval, (CostCalculatorHeuristicTwoPieceFunc) mCostCalculatorForProfile));
+            wayTagEval.setCostCalculator(new CostCalculatorMTB(wayTagEval, (CostCalculatorHeuristicTwoPieceFunc) mCostCalculatorForProfile, 0.4,1.0));
         }
-    } */
+    }
     @Override
     protected int getIconIdActive() {
         return R.drawable.rp_mtb1;
