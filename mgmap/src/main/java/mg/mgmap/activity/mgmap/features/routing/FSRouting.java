@@ -27,10 +27,15 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.activity.mgmap.features.routing.profile.MTB;
-import mg.mgmap.activity.mgmap.features.routing.profile.MTB_TEST1;
-import mg.mgmap.activity.mgmap.features.routing.profile.MTB_TEST2;
-import mg.mgmap.activity.mgmap.features.routing.profile.MTB_TEST3;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S1;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S2;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S3;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S1;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S2;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S3;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K3S1;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K3S2;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K3S3;
 import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.MGMapApplication;
@@ -223,10 +228,15 @@ public class FSRouting extends FeatureService {
         });
         definedRoutingProfiles = new ArrayList<>();
         addDefinedRoutingProfile(prefCache, new ShortestDistance(), true);
-        addDefinedRoutingProfile(prefCache, new MTB(), true);
-        addDefinedRoutingProfile(prefCache, new MTB_TEST1(), false);
-        addDefinedRoutingProfile(prefCache, new MTB_TEST2(), false);
-        addDefinedRoutingProfile(prefCache, new MTB_TEST3(), true);
+        addDefinedRoutingProfile(prefCache, new MTB_K1S1(), true);
+        addDefinedRoutingProfile(prefCache, new MTB_K1S2(), false);
+        addDefinedRoutingProfile(prefCache, new MTB_K1S3(), false);
+        addDefinedRoutingProfile(prefCache, new MTB_K2S1(), false);
+        addDefinedRoutingProfile(prefCache, new MTB_K2S2(), true);
+        addDefinedRoutingProfile(prefCache, new MTB_K2S3(), false);
+        addDefinedRoutingProfile(prefCache, new MTB_K3S1(), false);
+        addDefinedRoutingProfile(prefCache, new MTB_K3S2(), false);
+        addDefinedRoutingProfile(prefCache, new MTB_K3S3(), true);
         addDefinedRoutingProfile(prefCache, new TrekkingBike(), true);
 
         prefRoutingProfileId.addObserver(evt -> {

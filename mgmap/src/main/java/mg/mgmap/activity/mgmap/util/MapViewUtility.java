@@ -73,7 +73,7 @@ public class MapViewUtility {
         double closeThresholdForZoomLevel = PointModelUtil.getCloseThreshold();
         closeThresholdForZoomLevel = closeThresholdForZoomLevel / (1 << 9);
         closeThresholdForZoomLevel = closeThresholdForZoomLevel * (1 << (25 - currentZoomLevel));
-        return Math.min(700,  closeThresholdForZoomLevel * 1.5);
+        return Math.min(500,  closeThresholdForZoomLevel * 1.5);
     }
 
     public boolean isClose(double distance) {
