@@ -68,16 +68,16 @@ public class MapViewUtility {
         this.mapView.getModel().mapViewPosition.setZoomLevel(bzoom);
     }
 
-    public double getCloseThreshouldForZoomLevel() {
+    public double getCloseThresholdForZoomLevel() {
         int currentZoomLevel = this.mapView.getModel().mapViewPosition.getZoomLevel();
-        double closeThreshouldForZoomLevel = PointModelUtil.getCloseThreshold();
-        closeThreshouldForZoomLevel = closeThreshouldForZoomLevel / (1 << 9);
-        closeThreshouldForZoomLevel = closeThreshouldForZoomLevel * (1 << (25 - currentZoomLevel));
-        return closeThreshouldForZoomLevel * 1.5;
+        double closeThresholdForZoomLevel = PointModelUtil.getCloseThreshold();
+        closeThresholdForZoomLevel = closeThresholdForZoomLevel / (1 << 9);
+        closeThresholdForZoomLevel = closeThresholdForZoomLevel * (1 << (25 - currentZoomLevel));
+        return Math.min(700,  closeThresholdForZoomLevel * 1.5);
     }
 
     public boolean isClose(double distance) {
-        return distance < getCloseThreshouldForZoomLevel();
+        return distance < getCloseThresholdForZoomLevel();
     }
 
 

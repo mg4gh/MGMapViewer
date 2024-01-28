@@ -293,7 +293,7 @@ public class FSMarker extends FeatureService {
 
 
     private double getRadiusForMarkerActions(){
-        return getMapViewUtility().getCloseThreshouldForZoomLevel();
+        return getMapViewUtility().getCloseThresholdForZoomLevel();
     }
 
     private void moveMarkerPoint(TrackLog mtl, int segIdx, int tlpIdx, WriteablePointModel pos){

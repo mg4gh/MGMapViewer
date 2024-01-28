@@ -793,7 +793,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
     public TrackLogRefApproach selectCloseTrack(PointModel pmTap) {
-        TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1,getMapViewUtility().getCloseThreshouldForZoomLevel());
+        TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1,getMapViewUtility().getCloseThresholdForZoomLevel());
         for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
             TrackLogRefApproach currentMatch = trackLog.getBestDistance(pmTap,bestMatch.getDistance());
             if (currentMatch != null){

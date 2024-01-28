@@ -503,7 +503,7 @@ public class FSRouting extends FeatureService {
         if ((rpm != null) && (rpm.currentMPM != null)){
             PointModel last = rpm.currentMPM.get(rpm.currentMPM.size() - 1);
             if ((last != null) && (mtlp != null)){
-                if (PointModelUtil.distance(last, mtlp) > getMapViewUtility().getCloseThreshouldForZoomLevel()/3){
+                if (PointModelUtil.distance(last, mtlp) > getMapViewUtility().getCloseThresholdForZoomLevel()/3){
                     currentRoutingPos.setLat(last.getLat());
                     currentRoutingPos.setLon(last.getLon());
                     return true;
