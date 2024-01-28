@@ -40,6 +40,7 @@ public class GGraphMulti extends GGraph {
         this.gGraphTileFactory = gGraphTileFactory;
         for (GGraphTile gGraphTile : gGraphTiles){
             gGraphTileMap.put(GGraphTileFactory.getKey(gGraphTile.tile.tileX,gGraphTile.tile.tileY), gGraphTile);
+            connectGGraphTile(gGraphTile);
         }
     }
 
