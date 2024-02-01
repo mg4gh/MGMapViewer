@@ -85,6 +85,7 @@ public class FSMarker extends FeatureService {
         };
         triggerHideMtl.addObserver(hideMarkerTrackObserver);
         triggerHideAll.addObserver(hideMarkerTrackObserver);
+        prefEditMarkerTrack.setValue(false);
     }
 
     private final Runnable ttHide = () -> prefEditMarkerTrack.setValue(false);
