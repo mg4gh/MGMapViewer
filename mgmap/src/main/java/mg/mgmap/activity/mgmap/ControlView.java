@@ -321,7 +321,6 @@ public class ControlView extends RelativeLayout {
             }
         };
         etv.setDrawableSize(dp(36));
-        parent.addView(etv);
 
         int hMargin  = dp(5f);
         int vMargin = dp(5);

@@ -221,9 +221,9 @@ public class FSRouting extends FeatureService {
         });
         prefCache = getActivity().getPrefCache();
         prefEditMarkerTrack.addObserver(evt -> {
+            ViewGroup parent = activity.findViewById(R.id.routingProfiles);
+            parent.removeAllViews();
             if (prefUseRoutingProfiles.getValue() && prefEditMarkerTrack.getValue()){
-                ViewGroup parent = activity.findViewById(R.id.routingProfiles);
-                parent.removeAllViews();
                 for (int i=0; i<definedRoutingProfiles.size(); i++){
                     RoutingProfile routingProfile = definedRoutingProfiles.get(i);
                     ExtendedTextView etvRoutingProfile = profileETVs.get(i); // number should correspond
