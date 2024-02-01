@@ -20,9 +20,7 @@ import android.text.InputType;
 
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 
-import java.beans.PropertyChangeEvent;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,7 +88,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
         InfoPreferenceScreen.setBuildNumberSummary(prefVersion);
 
         boolean developer = MGMapApplication.getByContext(getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
-        int[] develeperPrefIds = new int[]{R.string.FSSearch_pref_SearchDetails_key,R.string.preferences_alarm_ps_key,R.string.FSGrad_pref_WayDetails_key};
+        int[] develeperPrefIds = new int[]{R.string.FSSearch_pref_SearchDetails_key,R.string.preferences_alarm_ps_key,R.string.FSGrad_pref_WayDetails_key,R.string.FSRouting_routing_category_key};
         for (int prefId : develeperPrefIds){
             Preference preference = findPreference(getResources().getString(prefId));
             if (preference != null){

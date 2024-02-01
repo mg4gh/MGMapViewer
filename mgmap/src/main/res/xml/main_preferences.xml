@@ -136,6 +136,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:key="@string/FSRouting_routing_category_key"
         app:title="@string/preferences_cat_routing_title"
         app:iconSpaceReserved="false"
         >
