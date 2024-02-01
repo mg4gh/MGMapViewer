@@ -58,6 +58,7 @@ import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
+import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.PrefCache;
@@ -112,6 +113,7 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     private final String defaultRoutingProfileId = RoutingProfile.constructId(ShortestDistance.class);
     private final Pref<String> prefRoutingProfileId = getPref(R.string.FSRouting_pref_currentRoutingProfile, defaultRoutingProfileId);
+    private final Pref<Boolean> prefCalcRouteInProgress = getPref(R.string.FSRouting_pref_calcRouteInProgress, false);
     private final ArrayList<ExtendedTextView> profileETVs = new ArrayList<>();
     private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
 
@@ -134,10 +136,14 @@ public class FSRouting extends FeatureService {
         prefMapMatching.addObserver((e) -> {
             TrackLog selectedTrackLog = getApplication().availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
             if (selectedTrackLog != null){
-                synchronized (routingEngine){
-                    fsMarker.createMarkerTrackLog(selectedTrackLog);
-                    optimize();
-                }
+                prepareOptimize();
+                application.addBgJob (new BgJob(){
+                    @Override
+                    protected void doJob() {
+                        fsMarker.createMarkerTrackLog(selectedTrackLog);
+                        optimize();
+                    }
+                });
             }
         });
         new Thread(() -> {
@@ -152,7 +158,9 @@ public class FSRouting extends FeatureService {
                         if (lastRefreshRequired == refreshRequired.get()){ // no further refreshRequest within the last 100ms -> start calculation
                             refreshRequired.set(0);
                             lastRefreshRequired = 0;
+                            prefCalcRouteInProgress.setValue(true);
                             updateRouting();
+                            prefCalcRouteInProgress.setValue(false);
                         } else {
                             lastRefreshRequired = refreshRequired.get(); // save current value of refreshRequired -> enable detection of further changes in next loop cycle
                         }
@@ -253,6 +261,7 @@ public class FSRouting extends FeatureService {
                 }
             }
         } );
+        prefCalcRouteInProgress.setValue(false);
         prefRoutingProfileId.changed();
         application.routeTrackLogObservable.addObserver((e) -> {
             TrackLog rotl = application.routeTrackLogObservable.getTrackLog();
@@ -279,7 +288,7 @@ public class FSRouting extends FeatureService {
 
     public ExtendedTextView initRoutingProfile(ExtendedTextView etv, RoutingProfile routingProfile){
         super.initQuickControl(etv,routingProfile.getId());
-        routingProfile.initETV(etv,prefRoutingProfileId);
+        routingProfile.initETV(etv,prefRoutingProfileId,prefCalcRouteInProgress);
         profileETVs.add(etv);
         return etv;
     }
@@ -365,7 +374,7 @@ public class FSRouting extends FeatureService {
             mgLog.d("Start");
             long tStart = System.currentTimeMillis();
             rotl = routingEngine.updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
-            mtl.setRoutingProfileId(prefRoutingProfileId.getValue());
+//            mtl.setRoutingProfileId(prefRoutingProfileId.getValue());
             mgLog.d("End duration="+(System.currentTimeMillis()-tStart)+"ms");
         }
         application.routeTrackLogObservable.setTrackLog(rotl);
@@ -406,6 +415,7 @@ public class FSRouting extends FeatureService {
 
     void optimize(){ // needs to be reworked
         synchronized (routingEngine){
+            prefCalcRouteInProgress.setValue(true);
             routingEngine.setRoutingContext( new RoutingContext(1000, false, 10, PointModelUtil.getCloseThreshold()) );
             WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
             RouteOptimizer ro = new RouteOptimizer(gFactory, routingEngine);
@@ -413,15 +423,18 @@ public class FSRouting extends FeatureService {
             routingEngine.setRoutingContext( new RoutingContext(1000, true, 3, PointModelUtil.getCloseThreshold()) );
             updateRouting();
             routingEngine.setRoutingContext(interactiveRoutingContext);
+            prefCalcRouteInProgress.setValue(false);
         }
     }
 
     public void optimize2(TrackLog trackLog){
         synchronized (routingEngine){
+            prefCalcRouteInProgress.setValue(true);
             routingEngine.setRoutingContext( new RoutingContext(10000, true, 3, PointModelUtil.getCloseThreshold()) );
             RouteOptimizer2 ro = new RouteOptimizer2(gFactory, routingEngine);
             ro.optimize(trackLog);
             routingEngine.setRoutingContext(interactiveRoutingContext);
+            prefCalcRouteInProgress.setValue(false);
         }
     }
 
@@ -521,5 +534,10 @@ public class FSRouting extends FeatureService {
             }
         }
         return false;
+    }
+
+    public void prepareOptimize(){
+        prefRoutingProfileId.setValue(defaultRoutingProfileId);
+        prefEditMarkerTrack.setValue(true);
     }
 }

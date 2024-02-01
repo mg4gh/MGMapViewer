@@ -11,13 +11,16 @@ public class ShortestDistance extends RoutingProfile {
 
     @Override
     public int getIconIdActive() {
-        return R.drawable.rp_shortest_path1;
+        return R.drawable.rp_shortest_path_a;
     }
 
     @Override
     protected int getIconIdInactive() {
-        return R.drawable.rp_shortest_path2;
+        return R.drawable.rp_shortest_path_i;
     }
 
-
+    @Override
+    protected int getIconIdCalculating() {
+        return R.drawable.rp_shortest_path_c;
+    }
 }

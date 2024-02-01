@@ -26,4 +26,8 @@ public class MTB_K3S2 extends RoutingProfile {
     protected int getIconIdInactive() {
         return R.drawable.rp_mtb_k3s2_i;
     }
+    protected int getIconIdCalculating() {
+        return R.drawable.rp_mtb_k3s2_c;
+    }
+
 }

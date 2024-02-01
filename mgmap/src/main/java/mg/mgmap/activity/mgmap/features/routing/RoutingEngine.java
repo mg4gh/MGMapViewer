@@ -125,6 +125,8 @@ public class RoutingEngine {
 
     synchronized WriteableTrackLog updateRouting2(TrackLog mtl, WriteableTrackLog rotl){
         boolean routeModified = false;
+        boolean routingProfileChanged = routingProfile.getId().equals(mtl.getRoutingProfileId());
+        mtl.setRoutingProfileId(routingProfile.getId());
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
             if (segment.size() < 1) continue;
@@ -138,7 +140,7 @@ public class RoutingEngine {
 
                 boolean bRecalcRoute = true;
                 try {
-                    if (routingProfile.getId().equals(mtl.getRoutingProfileId())){
+                    if (routingProfileChanged){
                         if ((prev.getApproach() != null) && (current.getApproach() != null)) {
                             PointModel pmFirst = current.currentMPM.get(0);
                             PointModel pmLast = current.currentMPM.get(current.currentMPM.size() - 1);

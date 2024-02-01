@@ -59,11 +59,14 @@ public abstract class RoutingProfile {
     abstract public int getIconIdActive();
     abstract protected int getIconIdInactive();
 
+    protected int getIconIdCalculating(){
+        return getIconIdActive();
+    }
 
-    void initETV(ExtendedTextView etv, Pref<String> prefCurrentRoutingProfileId){
+    protected void initETV(ExtendedTextView etv, Pref<String> prefCurrentRoutingProfileId, Pref<Boolean> prefCalcRoutingInProgress){
         Pref<Boolean> rpState = new Pref<>(id.equals(prefCurrentRoutingProfileId.getValue()));
         prefCurrentRoutingProfileId.addObserver(evt -> rpState.setValue( id.equals(prefCurrentRoutingProfileId.getValue()) ));
-        etv.setData(rpState, getIconIdInactive(), getIconIdActive());
+        etv.setData(rpState, prefCalcRoutingInProgress, getIconIdInactive(), getIconIdActive(), getIconIdInactive(), getIconIdCalculating());
         etv.setOnClickListener(v -> prefCurrentRoutingProfileId.setValue(id));
         etv.setName(prefCurrentRoutingProfileId.getKey());
     }

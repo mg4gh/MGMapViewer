@@ -15,10 +15,14 @@ public class TrekkingBike extends RoutingProfile {
     }
     @Override
     public int getIconIdActive() {
-        return R.drawable.rp_trekking1;
+        return R.drawable.rp_trekking_a;
     }
     @Override
     protected int getIconIdInactive() {
-        return R.drawable.rp_trekking2;
+        return R.drawable.rp_trekking_i;
     }
+    protected int getIconIdCalculating() {
+        return R.drawable.rp_trekking_c;
+    }
+
 }

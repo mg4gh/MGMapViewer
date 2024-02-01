@@ -20,6 +20,8 @@ import android.content.Context;
 
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -300,7 +302,25 @@ public class ControlView extends RelativeLayout {
 
     public ExtendedTextView createRoutingProfileETV(ViewGroup parent) {
         Context context = parent.getContext();
-        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(36));
+        ExtendedTextView etv = new ExtendedTextView(context){
+            @Override
+            protected void onDrawableChanged(Drawable oldDrawable,Drawable newDrawable) {
+                if (oldDrawable instanceof Animatable2) {
+                    ((Animatable) oldDrawable).stop();
+                }
+                if (newDrawable instanceof Animatable2) {
+                    Animatable2 an2 = (Animatable2) newDrawable;
+                    an2.start();
+                    an2.registerAnimationCallback(new Animatable2.AnimationCallback() {
+                        @Override
+                        public void onAnimationEnd(Drawable drawable) {
+                            an2.start();
+                        }
+                    });
+                }
+            }
+        };
+        etv.setDrawableSize(dp(36));
         parent.addView(etv);
 
         int hMargin  = dp(5f);

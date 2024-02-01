@@ -268,6 +268,7 @@ public class ExtendedTextView extends AppCompatTextView {
     }
 
     private void onChange(String reason){
+        if (getParent() == null) return;
         if (reason != null) {
             mgLog.v(" n="+logName+" "+((prState1==null)?"":prState1.toString())+" "+((prState2==null)?"":prState2.toString())+" reason="+reason);
         }
@@ -288,15 +289,18 @@ public class ExtendedTextView extends AppCompatTextView {
             }
         }
         if (drId == 0){
+            onDrawableChanged(getCompoundDrawables()[0], null);
             setCompoundDrawables(null,null,null,null);
         } else {
             Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drId, getContext().getTheme());
             if (drawable != null){
                 drawable.setBounds(0,0,drawableSize,drawableSize);
                 if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                    onDrawableChanged(getCompoundDrawables()[0], drawable);
                     setCompoundDrawables(drawable, null, null, null);
                 } else {
                     mgLog.d("need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
+                    onDrawableChanged(getCompoundDrawables()[0], drawable);
                     Activity activity = (Activity) this.getContext();
                     activity.runOnUiThread(() -> setCompoundDrawables(drawable, null, null, null));
                 }
@@ -304,6 +308,7 @@ public class ExtendedTextView extends AppCompatTextView {
         }
     }
 
+    protected void onDrawableChanged(Drawable oldDrawable, Drawable newDrawable){}
 
     public void cleanup(){
         if ((pclPrState1 != null)  && (prState1 != null))  prState1.deleteObserver(pclPrState1);

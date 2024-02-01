@@ -121,7 +121,6 @@ public class FSMarker extends FeatureService {
     @Override
     protected void onResume() {
         super.onResume();
-        prefEditMarkerTrack.setValue(false);
         if (markerTrackLogObservable.getTrackLog() != null){
             refreshObserver.onChange();
         }
@@ -129,6 +128,7 @@ public class FSMarker extends FeatureService {
 
     @Override
     protected void onPause() {
+        prefEditMarkerTrack.setValue(false);
         unregisterAllControl();
         super.onPause();
         getTimer().removeCallbacks(ttHide);

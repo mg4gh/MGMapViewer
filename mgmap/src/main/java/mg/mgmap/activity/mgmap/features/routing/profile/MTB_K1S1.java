@@ -23,4 +23,8 @@ public class MTB_K1S1 extends RoutingProfile {
     protected int getIconIdInactive() {
         return R.drawable.rp_mtb_k1s1_i;
     }
+    @Override
+    protected int getIconIdCalculating() {
+        return R.drawable.rp_mtb_k1s1_c;
+    }
 }
