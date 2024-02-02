@@ -192,6 +192,18 @@ public class PointModelUtil {
         return scale * (valMax - valMin) + valMin ;
     }
 
+    public static void interpolateELe(PointModel pm1, PointModel pm2, WriteablePointModel wpm){
+        if (compareTo(pm1,pm2) == 0){
+            wpm.setEle(pm1.getEleA());
+        } else {
+            if (Math.abs(pm2.getLon() - pm1.getLon()) > Math.abs(pm2.getLat() - pm1.getLat())){ // interpolate based on longitude
+                wpm.setEle( (float) interpolate(pm1.getLon(), pm2.getLon(), pm1.getEleA(), pm2.getEleA(), wpm.getLon()) );
+            } else { // interpolate based on latitude
+                wpm.setEle( (float) interpolate(pm1.getLat(), pm2.getLat(), pm1.getEleA(), pm2.getEleA(), wpm.getLat()) );
+            }
+        }
+    }
+
 
 
     /**
