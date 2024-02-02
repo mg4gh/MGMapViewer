@@ -8,7 +8,6 @@ import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class CostCalculatorMTB extends CostCalculatorTwoPieceFunc implements CostCalculator {
-    static double fbs = 0.5;
     protected double mUpCosts;
     protected double mDnCosts;// base costs in m per hm uphill;
     protected double mUpSlopeLimit; //  up to this slope base Costs
@@ -18,23 +17,48 @@ public class CostCalculatorMTB extends CostCalculatorTwoPieceFunc implements Cos
     double mUpCosts2;
     double mSlopeShift;
     private CostCalculatorHeuristicTwoPieceFunc mProfileCalculator;
-    public CostCalculatorMTB(WayAttributs wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile, double pathSlopeShift, double fbs) {
+    public CostCalculatorMTB(WayAttributs wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile,  double pful, double pfud ,double pfus,double tful, double tfud ,double tfus) {
         mProfileCalculator = profile;
         double upSlopeFactor = 1;
+        double fud;
+        double ful;
+        double fus;
         double dnSlopeFactor = profile.mDnSlopeFactor;
+        double mtbscale = 0;
         if ("path".equals(wayTagEval.highway)) {
-            mUpSlopeLimit = profile.mUpSlopeLimit * fbs;
-            mUpCosts = fb/mUpSlopeLimit;
-            mUpCosts2 = mUpCosts;
-            upSlopeFactor = fa;
-            mSlopeShift = 1.0;
+            if (wayTagEval.mtbscaleUp != null) {
+                switch (wayTagEval.mtbscaleUp) {
+                    case "mtbu_0": mtbscale = 0; break;
+                    case "mtbu_1": mtbscale = 1; break;
+                    case "mtbu_2": mtbscale = 2; break;
+                    case "mtbu_3": mtbscale = 3; break;
+                    case "mtbu_4": mtbscale = 4; break;
+                    default:       mtbscale = 5;
+                }
+            } else if (wayTagEval.mtbscale != null) {
+                switch (wayTagEval.mtbscale ) {
+                    case "mtbs_0": mtbscale = 1; break;
+                    case "mtbs_1": mtbscale = 2; break;
+                    case "mtbs_2": mtbscale = 3; break;
+                    case "mtbs_3": mtbscale = 4; break;
+                    default:       mtbscale = 5;
+                };
+            } else
+                mtbscale = 3;
+           fud = pfud;
+           ful =  Math.min(1,Math.pow(pful,mProfileCalculator.mKlevel-mtbscale) / mProfileCalculator.mKlevel);
+           fus = Math.pow(pfus, mtbscale - mProfileCalculator.mKlevel) * 3;
         } else { //if ("track".equals(wayTagEval.highway)){
-            mUpSlopeLimit = profile.mUpSlopeLimit;
-            mUpCosts = profile.mUpCosts; // * ( ( 1- slopeShift)/(profile.mUpCosts*profile.mUpSlopeLimit) + 1);
-            mUpCosts2 = mUpCosts*(1 - pathSlopeShift/fb);//mUpCosts*(1 + (1 - ( mSlopeShift + 1))/fb);
-            upSlopeFactor = ( fa + (1-fa)/fb*pathSlopeShift);
-            mSlopeShift = pathSlopeShift + 1.0;
+           fud = tfud;
+           ful = tful;
+           fus = tfus * 2;
         }
+
+        mUpSlopeLimit = profile.mUpSlopeLimit * ful;
+        mUpCosts = fb/mUpSlopeLimit;
+        mUpCosts2 = (fb-fud*fb)/mUpSlopeLimit;
+        upSlopeFactor = 1 + fus;
+        mSlopeShift = fud*fb + 1.0;;
 
         mDnCosts = profile.mDnCosts ;// base costs in m per hm uphill;
         mDnSlopeLimit = profile.mDnSlopeLimit;

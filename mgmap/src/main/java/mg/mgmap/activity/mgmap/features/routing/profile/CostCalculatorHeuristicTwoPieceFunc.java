@@ -17,8 +17,11 @@ public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceF
 
     protected double mUpSlopeFactor;
     protected double mDnSlopeFactor;
-    protected CostCalculatorHeuristicTwoPieceFunc( double upSlopeLimit, double dnCosts, double dnSlopeLimit, double dnSlopeFactor) {
-        mUpSlopeLimit = abs(upSlopeLimit); //mathematically not required, but only in this way meaningful. Uphill means additional costs.
+    protected double mKlevel;
+
+    protected CostCalculatorHeuristicTwoPieceFunc( double klevel, double dnCosts, double dnSlopeLimit, double dnSlopeFactor) {
+        mKlevel = klevel;
+        mUpSlopeLimit = ref_ul * Math.pow(base_ul,klevel); //mathematically not required, but only in this way meaningful. Uphill means additional costs.
         mUpCosts      = fb/mUpSlopeLimit; // required. Otherwise heuristic no longer correct
 //        double upSlopeFactor = fa; //0.9/Math.sqrt(mUpSlopeLimit);
 //        if (upSlopeFactor < 1 ) upSlopeFactor = 1; // required. Otherwise heuristic no longer correct
@@ -88,7 +91,7 @@ public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceF
         }
         double heuristic;
         double slope = vertDist / dist;
-        if ( abs(vertDist) <= 0.000001 ) Log.e("GenRoutingProfile","Suspicious Slope in heuristic. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
+        if ( abs(slope) >= 10 ) Log.e("CostCalculatorTwoPieceFunc","Suspicious Slope in heuristic. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         if (slope >= 0){
             if (slope <= mUpSlopeLimit)
                 heuristic = dist + vertDist * mUpCosts;

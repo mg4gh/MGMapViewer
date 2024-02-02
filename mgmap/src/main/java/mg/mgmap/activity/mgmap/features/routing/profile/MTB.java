@@ -6,7 +6,7 @@ import mg.mgmap.generic.graph.WayAttributs;
 
 public class MTB extends RoutingProfile {
     public MTB( ) {
-        super(new CostCalculatorHeuristicTwoPieceFunc( 0.13, 0, -0.27, 2));
+        super(new CostCalculatorHeuristicTwoPieceFunc( 1, 0, -0.27, 2));
     }
 
 /*    public void refreshWayAttributes(WayAttributs wayAttributs) {
