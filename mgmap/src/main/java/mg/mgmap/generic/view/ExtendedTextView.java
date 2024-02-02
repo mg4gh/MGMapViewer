@@ -44,6 +44,7 @@ public class ExtendedTextView extends AppCompatTextView {
 
     private int drId1=0,drId2=0,drId3=0,drId4=0;
     private int drIdDis=0;
+    private int currentDrId = 0;
 
     private Formatter.FormatType formatType = Formatter.FormatType.FORMAT_STRING;
     private int drawableSize = 0;
@@ -292,18 +293,23 @@ public class ExtendedTextView extends AppCompatTextView {
             onDrawableChanged(getCompoundDrawables()[0], null);
             setCompoundDrawables(null,null,null,null);
         } else {
-            Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drId, getContext().getTheme());
-            if (drawable != null){
-                drawable.setBounds(0,0,drawableSize,drawableSize);
-                if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-                    onDrawableChanged(getCompoundDrawables()[0], drawable);
-                    setCompoundDrawables(drawable, null, null, null);
-                } else {
-                    mgLog.d("need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
-                    onDrawableChanged(getCompoundDrawables()[0], drawable);
-                    Activity activity = (Activity) this.getContext();
-                    activity.runOnUiThread(() -> setCompoundDrawables(drawable, null, null, null));
+            if (drId != currentDrId){
+                currentDrId = drId;
+                Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), drId, getContext().getTheme());
+                if (drawable != null){
+                    drawable.setBounds(0,0,drawableSize,drawableSize);
+                    if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                        onDrawableChanged(getCompoundDrawables()[0], drawable);
+                        setCompoundDrawables(drawable, null, null, null);
+                    } else {
+                        mgLog.d("need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
+                        onDrawableChanged(getCompoundDrawables()[0], drawable);
+                        Activity activity = (Activity) this.getContext();
+                        activity.runOnUiThread(() -> setCompoundDrawables(drawable, null, null, null));
+                    }
                 }
+            } else {
+                mgLog.d("unchanged");
             }
         }
     }
