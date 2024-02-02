@@ -21,7 +21,7 @@ public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceF
 
     protected CostCalculatorHeuristicTwoPieceFunc( double klevel, double dnCosts, double dnSlopeLimit, double dnSlopeFactor) {
         mKlevel = klevel;
-        mUpSlopeLimit = ref_ul * Math.pow(base_ul,klevel); //mathematically not required, but only in this way meaningful. Uphill means additional costs.
+        mUpSlopeLimit = ref_ul * Math.pow(base_ul,klevel);
         mUpCosts      = fb/mUpSlopeLimit; // required. Otherwise heuristic no longer correct
 //        double upSlopeFactor = fa; //0.9/Math.sqrt(mUpSlopeLimit);
 //        if (upSlopeFactor < 1 ) upSlopeFactor = 1; // required. Otherwise heuristic no longer correct

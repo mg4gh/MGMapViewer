@@ -458,15 +458,14 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                                     getFS(FSMarker.class).createMarkerTrackLog(selectedTrackLog);
                                 } else {
                                     selectedTrackLog = aTrackLog;
+                                    getFS(FSRouting.class).prepareOptimize();
                                     TrackLogRef selectedRef = new TrackLogRef(selectedTrackLog, -1);
                                     application.availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
                                     application.addBgJob (new BgJob(){
                                         @Override
                                         protected void doJob() {
-                                            synchronized (getFS(FSRouting.class)){ // prevents that the Routing calculation thread is working
-                                                getFS(FSMarker.class).createMarkerTrackLog(aTrackLog);
-                                                getFS(FSRouting.class).optimize2(application.markerTrackLogObservable.getTrackLog());
-                                            }
+                                            getFS(FSMarker.class).createMarkerTrackLog(aTrackLog);
+                                            getFS(FSRouting.class).optimize2(application.markerTrackLogObservable.getTrackLog());
                                         }
                                     });
                                 }
@@ -793,7 +792,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
     public TrackLogRefApproach selectCloseTrack(PointModel pmTap) {
-        TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1,getMapViewUtility().getCloseThreshouldForZoomLevel());
+        TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1,getMapViewUtility().getCloseThresholdForZoomLevel());
         for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
             TrackLogRefApproach currentMatch = trackLog.getBestDistance(pmTap,bestMatch.getDistance());
             if (currentMatch != null){

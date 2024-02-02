@@ -24,34 +24,36 @@ public class CostCalculatorMTB extends CostCalculatorTwoPieceFunc implements Cos
         double ful;
         double fus;
         double dnSlopeFactor = profile.mDnSlopeFactor;
-        double mtbscale = 0;
+        double mtbUp = -1;
         if ("path".equals(wayTagEval.highway)) {
             if (wayTagEval.mtbscaleUp != null) {
                 switch (wayTagEval.mtbscaleUp) {
-                    case "mtbu_0": mtbscale = 0; break;
-                    case "mtbu_1": mtbscale = 1; break;
-                    case "mtbu_2": mtbscale = 2; break;
-                    case "mtbu_3": mtbscale = 3; break;
-                    case "mtbu_4": mtbscale = 4; break;
-                    default:       mtbscale = 5;
+                    case "mtbu_0": mtbUp = 0; break;
+                    case "mtbu_1": mtbUp = 1; break;
+                    case "mtbu_2": mtbUp = 2; break;
+                    case "mtbu_3": mtbUp = 3; break;
+                    case "mtbu_4": mtbUp = 4; break;
+                    default:       mtbUp = 5;
                 }
             } else if (wayTagEval.mtbscale != null) {
                 switch (wayTagEval.mtbscale ) {
-                    case "mtbs_0": mtbscale = 1; break;
-                    case "mtbs_1": mtbscale = 2; break;
-                    case "mtbs_2": mtbscale = 3; break;
-                    case "mtbs_3": mtbscale = 4; break;
-                    default:       mtbscale = 5;
-                };
-            } else
-                mtbscale = 3;
-           fud = pfud;
-           ful =  Math.min(1,Math.pow(pful,mProfileCalculator.mKlevel-mtbscale) / mProfileCalculator.mKlevel);
-           fus = Math.pow(pfus, mtbscale - mProfileCalculator.mKlevel) * 3;
+                    case "mtbs_0": mtbUp = 1; break;
+                    case "mtbs_1": mtbUp = 2; break;
+                    case "mtbs_2": mtbUp = 3; break;
+                    case "mtbs_3": mtbUp = 4; break;
+                    default:       mtbUp = 5;
+                }
+            } else {
+                mtbUp = mProfileCalculator.mKlevel + 2;
+            }
+            double deltaLevel = mProfileCalculator.mKlevel - mtbUp;
+            fud = 0;
+            ful = Math.min(1, Math.pow(pful, deltaLevel));
+            fus = Math.pow(pfus, -deltaLevel-1) * ( fa - 1 );
         } else { //if ("track".equals(wayTagEval.highway)){
            fud = tfud;
            ful = tful;
-           fus = tfus * 2;
+           fus = tfus;
         }
 
         mUpSlopeLimit = profile.mUpSlopeLimit * ful;

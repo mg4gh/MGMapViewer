@@ -75,6 +75,7 @@ public class GGraphTileFactory {
     }
 
     public void resetCosts(){
+//        if (cache == null) return; // cache==null probably occurred due to onDestroy after
         for (GGraphTile graph : cache.values()){
              for (GNode node : graph.getNodes()){
                  GNeighbour neighbour = node.getNeighbour();

@@ -206,7 +206,7 @@ public class FSBB extends FeatureService {
                 dp2 = PointModelUtil.distance(p2, pmStart);
             }
 
-            double close = getMapViewUtility().getCloseThreshouldForZoomLevel();
+            double close = getMapViewUtility().getCloseThresholdForZoomLevel();
             if ((dp1 < close) && (dp2 > close)){
                 setDragObject(p1);
             }

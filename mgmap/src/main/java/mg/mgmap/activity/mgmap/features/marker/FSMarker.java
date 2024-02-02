@@ -85,6 +85,7 @@ public class FSMarker extends FeatureService {
         };
         triggerHideMtl.addObserver(hideMarkerTrackObserver);
         triggerHideAll.addObserver(hideMarkerTrackObserver);
+        prefEditMarkerTrack.setValue(false);
     }
 
     private final Runnable ttHide = () -> prefEditMarkerTrack.setValue(false);
@@ -121,7 +122,6 @@ public class FSMarker extends FeatureService {
     @Override
     protected void onResume() {
         super.onResume();
-        prefEditMarkerTrack.setValue(false);
         if (markerTrackLogObservable.getTrackLog() != null){
             refreshObserver.onChange();
         }
@@ -129,6 +129,7 @@ public class FSMarker extends FeatureService {
 
     @Override
     protected void onPause() {
+        prefEditMarkerTrack.setValue(false);
         unregisterAllControl();
         super.onPause();
         getTimer().removeCallbacks(ttHide);
@@ -293,7 +294,7 @@ public class FSMarker extends FeatureService {
 
 
     private double getRadiusForMarkerActions(){
-        return getMapViewUtility().getCloseThreshouldForZoomLevel();
+        return getMapViewUtility().getCloseThresholdForZoomLevel();
     }
 
     private void moveMarkerPoint(TrackLog mtl, int segIdx, int tlpIdx, WriteablePointModel pos){

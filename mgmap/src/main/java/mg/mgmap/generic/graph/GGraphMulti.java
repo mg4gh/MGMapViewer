@@ -40,6 +40,7 @@ public class GGraphMulti extends GGraph {
         this.gGraphTileFactory = gGraphTileFactory;
         for (GGraphTile gGraphTile : gGraphTiles){
             gGraphTileMap.put(GGraphTileFactory.getKey(gGraphTile.tile.tileX,gGraphTile.tile.tileY), gGraphTile);
+            connectGGraphTile(gGraphTile);
         }
     }
 
@@ -88,7 +89,7 @@ public class GGraphMulti extends GGraph {
     void preNodeRelax(GNode node){
         if ((node.borderNode != 0) && (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)){ // add lazy expansion of GGraphMulti
             GGraphTile gGraphTile = gGraphTileMap.get(node.tileIdx);
-            assert(gGraphTile != null);
+            assert(gGraphTile != null) : "Node tileIdx="+node.tileIdx+" "+(node.tileIdx>>16)+" "+(node.tileIdx & 0xFFFF)+" "+gGraphTileMap.size()+" "+node.borderNode;
             checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST, gGraphTile.getTileX()-1, gGraphTile.getTileY());
             checkGGraphTileNeighbour(node,GNode.BORDER_NODE_NORTH, gGraphTile.getTileX(), gGraphTile.getTileY()-1);
             checkGGraphTileNeighbour(node,GNode.BORDER_NODE_EAST, gGraphTile.getTileX()+1, gGraphTile.getTileY());

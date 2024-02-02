@@ -29,6 +29,8 @@ import mg.mgmap.BuildConfig;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.MGMapLayerFactory;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
@@ -36,6 +38,7 @@ import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
 public class MainPreferenceScreen extends MGPreferenceScreen {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+    private PrefCache prefCache;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -45,7 +48,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
 
         try {
             MGMapApplication application = (MGMapApplication) requireActivity().getApplication();
-            PrefCache prefCache = application.getPrefCache();
+            prefCache = application.getPrefCache();
             List<String> mapKeys = MGMapLayerFactory.getMapLayerKeys(getContext()).stream().map(key->prefCache.get(key,"").getValue()).collect(Collectors.toList());
             application.getHintUtil().showHint( new HintMapLayerAssignment(getActivity(), mapKeys) );
         } catch (Exception e) {
@@ -85,13 +88,18 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
         InfoPreferenceScreen.setBuildNumberSummary(prefVersion);
 
         boolean developer = MGMapApplication.getByContext(getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
-        int[] develeperPrefIds = new int[]{R.string.FSSearch_pref_SearchDetails_key,R.string.preferences_alarm_ps_key,R.string.FSGrad_pref_WayDetails_key};
+        int[] develeperPrefIds = new int[]{R.string.FSSearch_pref_SearchDetails_key,R.string.preferences_alarm_ps_key,R.string.FSGrad_pref_WayDetails_key,R.string.FSRouting_routing_category_key};
         for (int prefId : develeperPrefIds){
             Preference preference = findPreference(getResources().getString(prefId));
             if (preference != null){
                 preference.setVisible(developer);
             }
         }
+
+        Pref<Boolean> prefUseRoutingProfiles = prefCache.get(R.string.preferences_routingProfile_key, false);
+        Preference pRoutingProfiles = findPreference(getResources().getString(R.string.FSRouting_routing_profiles_menu_key));
+        prefUseRoutingProfiles.addObserver((Observer) evt -> pRoutingProfiles.setEnabled(prefUseRoutingProfiles.getValue()) );
+        prefUseRoutingProfiles.onChange();
     }
 
 }

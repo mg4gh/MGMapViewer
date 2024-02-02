@@ -115,7 +115,7 @@ public class FSGraphDetails extends FeatureService {
 
     private BBox getGraphDetails(PointModel pmTap, MultiPointModelImpl multiPointModel){
 
-        double closeThreshold = getMapViewUtility().getCloseThreshouldForZoomLevel();
+        double closeThreshold = getMapViewUtility().getCloseThresholdForZoomLevel();
         BBox bBoxTap = new BBox()
                 .extend(pmTap)
                 .extend(closeThreshold);
