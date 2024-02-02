@@ -249,6 +249,7 @@ public class FSRouting extends FeatureService {
 
         prefRoutingProfileId.addObserver(evt -> {
             String id = prefRoutingProfileId.getValue();
+            boolean profileSet = false;
             for (RoutingProfile routingProfile : definedRoutingProfiles){
                 if (routingProfile.getId().equals(id)){
                     getTimer().postDelayed(() -> {
@@ -257,8 +258,12 @@ public class FSRouting extends FeatureService {
                             application.markerTrackLogObservable.changed();
                         }
                     },1);
+                    profileSet = true;
                     break;
                 }
+            }
+            if (! profileSet){ //
+                prefRoutingProfileId.setValue(defaultRoutingProfileId);
             }
         } );
         prefCalcRouteInProgress.setValue(false);
