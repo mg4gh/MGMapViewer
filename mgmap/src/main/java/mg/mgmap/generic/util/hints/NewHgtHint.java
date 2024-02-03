@@ -20,6 +20,14 @@ public class NewHgtHint extends AbstractHint implements Runnable{
 
     @Override
     public boolean checkHintCondition() {
-        return super.checkHintCondition() && (hgtProvider.getEhgtList().size() > 0);
+        if (super.checkHintCondition()){
+            if (hgtProvider.getEhgtList().size() > 0){
+                return true;
+            } else {
+                prefShowHint.setValue(false);
+            }
+        }
+        return false;
+//        return super.checkHintCondition() && (hgtProvider.getEhgtList().size() > 0);
     }
 }
