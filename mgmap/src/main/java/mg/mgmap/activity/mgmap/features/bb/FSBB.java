@@ -434,7 +434,7 @@ public class FSBB extends FeatureService {
             }
         }
         if (jobGroup.size() > 0){
-            String msg = String.format(Locale.ENGLISH,"Downlaod %d hgt files [%.1fMB] from %s%s?", jobGroup.size(),downloadSize/1000000.0f,HgtProvider.HGT_URL,(layerName==null)?"":" for "+layerName);
+            String msg = String.format(Locale.ENGLISH,"Download %d hgt files [%.1fMB] %s?", jobGroup.size(),downloadSize/1000000.0f,(layerName==null)?"":" for "+layerName);
             jobGroup.setConstructed(msg);
         }
     }

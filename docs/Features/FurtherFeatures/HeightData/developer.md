@@ -19,9 +19,9 @@ In principle this server allows both "http" and "https" access. Unfortunately bo
   Unfortunately I got en error "javax.net.ssl.SSLHandshakeException: java.security.cert.CertPathValidatorException: Trust anchor for certification path not found." 
   The workaround for this is to add the intermediate and root certificate to the app. In detail this works as followed:  
   Open in Firefox the page "https://step.int.esa/" - open the lock symbol in front of the url, and then goto further information.  
-  <img src="./pageinfo.png" width="400" />  
+  <img src="./pageinfo.PNG" width="400" />  
   Click on "Zertifikat anzeigen" - then you get a page like this:  
-   <img src="./Zertifikate.png" width="600" />  
+   <img src="./Zertifikate.PNG" width="600" />  
    Here you can save the server certificate (step.esa.int), the intermediate cetificate (R3) and the root certificate (ISRG Root X1). Save the 2nd (to res/raw/r3.pem) and 3rd (to res/raw/isrgroot.pem) 
 to the res/raw folder and add in you network_security_config.xml a section:
 ```

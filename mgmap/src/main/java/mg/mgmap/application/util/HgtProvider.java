@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
 
-import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 import java.util.Properties;
@@ -22,7 +21,7 @@ public class HgtProvider {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public static final String HGT_URL = "https://step.esa.int/auxdata/dem/SRTMGL1/";
+    public static final String[] HGT_URLS = new String[]{"https://raw.githubusercontent.com/mg4gh/hgtdata/main/docs/%s.zip", "https://step.esa.int/auxdata/dem/SRTMGL1/%s.SRTMGL1.hgt.zip", "http://step.esa.int/auxdata/dem/SRTMGL1/%s.SRTMGL1.hgt.zip"};
 
 
     private final PersistenceManager persistenceManager;
@@ -51,7 +50,7 @@ public class HgtProvider {
         this.persistenceManager = persistenceManager;
         this.assetManager = assetManager;
         try {
-            hgtSize.load(assetManager.open("hgt.properties"));
+            hgtSize.load(assetManager.open("hgt2.properties"));
         } catch (Exception e){
             mgLog.e(e);
         }
@@ -89,21 +88,26 @@ public class HgtProvider {
 
     public void downloadHgt(String hgtName) throws Exception{ // assume it exists
         if (hgtExists(hgtName)){
-            String url = HGT_URL + persistenceManager.getHgtFilename(hgtName);
-            if (!downloadHtFromUrl(url, hgtName)){
-                mgLog.i("Download failed from "+url);
-                mgLog.i("try again with http instead of https ...");
-                if (!downloadHtFromUrl(url.replaceFirst("https","http"), hgtName)){
-                    throw new Exception("Download of hgt failed (see reason above).");
+            boolean success = false;
+            for (String urlPattern : HGT_URLS){
+                String url = String.format(urlPattern,hgtName);
+                if (downloadHgtFromUrl(url, hgtName)){
+                    mgLog.i("Successful download from "+url);
+                    success = true;
+                    break;
+                } else {
+                    mgLog.i("Unsuccessful download from "+url);
                 }
             }
-            mgLog.i("successful download for "+hgtName);
+            if (!success){
+                throw new Exception("Download of hgt failed (see reason above).");
+            }
         } else {
             IOUtil.copyStreams(assetManager.open("empty.hgt"), persistenceManager.openHgtOutput(hgtName));
         }
     }
 
-    private boolean downloadHtFromUrl(String url, String hgtName){
+    private boolean downloadHgtFromUrl(String url, String hgtName){
         try {
             OkHttpClient client = new OkHttpClient().newBuilder()
                     .build();
@@ -113,7 +117,7 @@ public class HgtProvider {
                 if (responseBody == null) {
                     mgLog.w("empty response body for download!");
                 } else {
-                    if (responseBody.contentLength() < 1000) throw new Exception("Invalid hgt size: "+responseBody.contentLength());
+                    if (responseBody.contentLength() < 1000) return false;
                     IOUtil.copyStreams(responseBody.byteStream(), persistenceManager.openHgtOutput(hgtName));
                     return true;
                 }
