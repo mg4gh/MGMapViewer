@@ -7,6 +7,7 @@
     <string name="hintAccessFineLocation">hint_access_fine_location_key</string>
     <string name="hintAccessBackgroundLocation">hint_access_background_location_key</string>
     <string name="hintBatteryUsage">hint_battery_usage_key</string>
+    <string name="hintNewHgtData">hint_new_hgt_data_key</string>
     <string name="hintShareReceived">hint_share_received_key</string>
     <string name="hintVersion">hint_version_key</string>
 

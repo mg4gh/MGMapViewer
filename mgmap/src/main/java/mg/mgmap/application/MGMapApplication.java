@@ -158,7 +158,7 @@ public class MGMapApplication extends Application {
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
-        hgtProvider = new HgtProvider(persistenceManager, getAssets()); // for hgt file handling
+        hgtProvider = new HgtProvider(this, persistenceManager, getAssets()); // for hgt file handling
         elevationProvider = new ElevationProviderImpl(hgtProvider); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
         metaDataUtil = new MetaDataUtil(persistenceManager);

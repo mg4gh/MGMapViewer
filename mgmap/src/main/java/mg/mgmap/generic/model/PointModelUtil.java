@@ -281,4 +281,10 @@ public class PointModelUtil {
         }
     }
 
+
+    private final static int shift = 1000;
+    public static int getLower(double d) {
+        return ((int)(d+shift) - shift);
+    }
+
 }

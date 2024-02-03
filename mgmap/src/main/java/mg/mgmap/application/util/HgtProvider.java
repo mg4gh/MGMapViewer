@@ -5,11 +5,19 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
 
+import mg.mgmap.activity.mgmap.view.HgtGridView;
+import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.BgJobGroup;
+import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import okhttp3.OkHttpClient;
@@ -24,10 +32,14 @@ public class HgtProvider {
     public static final String[] HGT_URLS = new String[]{"https://raw.githubusercontent.com/mg4gh/hgtdata/main/docs/%s.zip", "https://step.esa.int/auxdata/dem/SRTMGL1/%s.SRTMGL1.hgt.zip", "http://step.esa.int/auxdata/dem/SRTMGL1/%s.SRTMGL1.hgt.zip"};
 
 
+    private final MGMapApplication application;
     private final PersistenceManager persistenceManager;
     AssetManager assetManager;
 
+    /** This contains a list of all hgt files available from ESA or Sonny data */
     private final Properties hgtSize = new Properties();
+    /** This list contains only the new hgt files from Sonny (enhanced hgt) */
+    private final Properties ehgtSize = new Properties();
 
     private final Handler timer;
     private final LruCache<String, byte[]> hgtCache = new LruCache<>(4){
@@ -46,16 +58,73 @@ public class HgtProvider {
     };
 
 
-    public HgtProvider(PersistenceManager persistenceManager, AssetManager assetManager){
+    public HgtProvider(MGMapApplication application, PersistenceManager persistenceManager, AssetManager assetManager){
+        this.application = application;
         this.persistenceManager = persistenceManager;
         this.assetManager = assetManager;
         try {
-            hgtSize.load(assetManager.open("hgt2.properties"));
+            hgtSize.load(assetManager.open("hgt.properties"));
+            ehgtSize.load(assetManager.open("ehgt.properties"));
         } catch (Exception e){
             mgLog.e(e);
         }
         timer = new Handler(Looper.getMainLooper());
 
+    }
+
+    public void loadHgt(AppCompatActivity activity, boolean all, ArrayList<String> hgtNames, String layerName, HgtGridView hgtGridView){
+        BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download height data", new BgJobGroupCallback() {
+            @Override
+            public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                if (hgtGridView != null){
+                    hgtGridView.requestRedraw();
+                }
+                return false;
+            }
+        });
+        long downloadSize = 0;
+        for (String hgtName : hgtNames){
+            if (all || !hgtIsAvailable(hgtName)) {
+                BgJob bgJob = new BgJob(){
+                    @Override
+                    protected void doJob() throws Exception{
+                        downloadHgt(hgtName);
+                        this.setText("Download "+ hgtName);
+                        if (hgtGridView != null){
+                            hgtGridView.requestRedraw();
+                        }
+                    }
+                };
+                jobGroup.addJob(bgJob);
+                downloadSize += hgtSize(hgtName);
+            }
+        }
+        if (jobGroup.size() > 0){
+            String msg = String.format(Locale.ENGLISH,"Download %d hgt files [%.1fMB] %s?", jobGroup.size(),downloadSize/1000000.0f,(layerName==null)?"":" for "+layerName);
+            jobGroup.setConstructed(msg);
+        }
+    }
+    public void dropHgt(AppCompatActivity activity, ArrayList<String> hgtNames, HgtGridView hgtGridView){
+        if (hgtGridView != null) {
+            BgJobGroup jobGroup = new BgJobGroup(application, activity,"Drop hgt files", new BgJobGroupCallback() {
+                @Override
+                public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                    hgtGridView.requestRedraw();
+                    return false;
+                }
+            });
+            for (String hgtName : hgtNames){
+                if (hgtIsAvailable(hgtName)){
+                    jobGroup.addJob(new BgJob(){
+                        @Override
+                        protected void doJob(){
+                            dropHgt(hgtName);
+                        }
+                    });
+                }
+            }
+            jobGroup.setConstructed("Drop "+jobGroup.size()+" hgt files?");
+        }
     }
 
     public void cleanup(){
@@ -66,6 +135,20 @@ public class HgtProvider {
     private boolean hgtExists(String hgtName){
         return hgtSize.containsKey(hgtName);
     }
+    private boolean ehgtExists(String hgtName){
+        return ehgtSize.containsKey(hgtName);
+    }
+
+    public ArrayList<String> getEhgtList(){
+        ArrayList<String> res = new ArrayList<>();
+        for (String hgtName : persistenceManager.getExistingHgtNames()){
+            if (ehgtExists(hgtName)){
+                res.add(hgtName);
+            }
+        }
+        return res;
+    }
+
     public long hgtSize(String hgtName){
         Object oHgtSize = hgtSize.get(hgtName);
         if (oHgtSize == null){
@@ -132,7 +215,7 @@ public class HgtProvider {
         persistenceManager.dropHgt(hgtName);
     }
 
-    public String getHgtName(int iLat, int iLon) {
+    public static String getHgtName(int iLat, int iLon) {
         return String.format(Locale.GERMANY, "%s%02d%S%03d", (iLat > 0) ? "N" : "S", Math.abs(iLat), (iLon > 0) ? "E" : "W", Math.abs(iLon));
     }
 

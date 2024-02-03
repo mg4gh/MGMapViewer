@@ -349,6 +349,17 @@ public class PersistenceManager {
         return new File(hgtDir, getHgtFilename(hgtName));
     }
 
+    public ArrayList<String> getExistingHgtNames(){
+        ArrayList<String> res = new ArrayList<>();
+        String[] hgtFileNames = hgtDir.list();
+        if (hgtFileNames != null){
+            for (String hgtFileName : hgtFileNames){
+                res.add( hgtFileName.replaceFirst( "\\..*",""));
+            }
+        }
+        return res;
+    }
+
     public void dropHgt(String hgtName){
         deleteFile(getHgtFile(hgtName));
     }
