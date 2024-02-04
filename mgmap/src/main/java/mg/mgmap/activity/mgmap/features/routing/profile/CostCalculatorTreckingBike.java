@@ -3,7 +3,7 @@ package mg.mgmap.activity.mgmap.features.routing.profile;
 import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
 
-public class CostCalculatorTreckingBike extends CostCalculatorTwoPieceFunc implements CostCalculator {
+public class CostCalculatorTreckingBike implements CostCalculator {
 
     double mGenCostFactor = 2.0;
     private CostCalculatorHeuristicTwoPieceFunc mProfileCalculator;

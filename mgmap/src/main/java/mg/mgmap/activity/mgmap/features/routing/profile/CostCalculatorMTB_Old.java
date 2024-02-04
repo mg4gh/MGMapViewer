@@ -7,7 +7,7 @@ import android.util.Log;
 import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
 
-public class CostCalculatorMTB_Old extends CostCalculatorTwoPieceFunc implements CostCalculator {
+public class CostCalculatorMTB_Old  implements CostCalculator {
     double mGenCostFactor = 1.0;
     protected double mUpCosts;
     protected double mDnCosts;// base costs in m per hm uphill;

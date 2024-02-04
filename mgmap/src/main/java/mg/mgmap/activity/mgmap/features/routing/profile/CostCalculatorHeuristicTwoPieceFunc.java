@@ -6,8 +6,14 @@ import android.util.Log;
 
 import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 
-public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceFunc implements CostCalculator {
+public class CostCalculatorHeuristicTwoPieceFunc implements CostCalculator {
 
+    private final static double base_ul = 1.3; // factor increase base limit
+    private final static double ref_ul = 0.1; // base up limit
+    protected final static double fu = 1.4; // upCosts = fu / ulimit
+    private final double base_dl = 1.5;
+    private final static double ref_dl = -0.16;
+    protected final static double fd = -0.1; //means negative costs for downhill
     protected double mUpCosts;
     protected double mDnCosts;// base costs in m per hm uphill;
     protected double mUpSlopeLimit; //  up to this slope base Costs
@@ -19,16 +25,18 @@ public class CostCalculatorHeuristicTwoPieceFunc extends CostCalculatorTwoPieceF
     protected double mDnSlopeFactor;
     protected double mKlevel;
 
-    protected CostCalculatorHeuristicTwoPieceFunc( double klevel, double dnCosts, double dnSlopeLimit, double dnSlopeFactor) {
-        mKlevel = klevel;
-        mUpSlopeLimit = ref_ul * Math.pow(base_ul,klevel);
-        mUpCosts      = fb/mUpSlopeLimit; // required. Otherwise heuristic no longer correct
-//        double upSlopeFactor = fa; //0.9/Math.sqrt(mUpSlopeLimit);
-//        if (upSlopeFactor < 1 ) upSlopeFactor = 1; // required. Otherwise heuristic no longer correct
-        mUpSlopeFactor = fa;
+    protected double mSlevel;
+
+    protected CostCalculatorHeuristicTwoPieceFunc( double kLevel, double sLevel, double dnSlopeLimit, double dnSlopeFactor) {
+        mKlevel = kLevel;
+        mSlevel = sLevel;
+        mUpSlopeLimit = ref_ul * Math.pow(base_ul,mKlevel-1);
+        mUpCosts      = fu /mUpSlopeLimit;
+        mUpSlopeFactor = 2.5;
         mUpAddCosts = mUpSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
-        mDnCosts      = dnCosts;
-        mDnSlopeLimit = -abs(dnSlopeLimit);
+
+        mDnSlopeLimit = ref_dl * Math.pow(base_dl,mSlevel-1);;
+        mDnCosts      = fd/mDnSlopeLimit;
         if (dnSlopeFactor < 1 ) dnSlopeFactor = 1;
         // required. Otherwise heuristic no longer correct
         mDnAddCosts = dnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;

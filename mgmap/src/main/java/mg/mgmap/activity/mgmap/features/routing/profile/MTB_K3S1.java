@@ -9,12 +9,12 @@ public class MTB_K3S1 extends RoutingProfile {
 
     public MTB_K3S1( ) {
 //        super(new CostCalculatorHeuristicTwoPieceFunc(8.0, 0.10, 3, 0, -0.27, 2));
-        super(new CostCalculatorHeuristicTwoPieceFunc(3,  0, -0.27, 2));
+        super(new CostCalculatorHeuristicTwoPieceFunc(3,  1, -0.27, 2));
     }
 
     @Override
     protected CostCalculator getCostCalculator(CostCalculator profileCalculator, WayAttributs wayAttributs) {
-        return new CostCalculatorMTB(wayAttributs, (CostCalculatorHeuristicTwoPieceFunc) profileCalculator, 1.3,0,1.2,1.0,0.8,0.5);//0.0,0,1,0.0,1,0.0)
+        return new CostCalculatorMTB(wayAttributs, (CostCalculatorHeuristicTwoPieceFunc) profileCalculator, 1.3,0,1.4,1.0,0.8,0.5);//0.0,0,1,0.0,1,0.0)
     }
 
      @Override
