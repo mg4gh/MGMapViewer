@@ -227,7 +227,13 @@ public class ControlView extends RelativeLayout {
     }
 
     public ExtendedTextView createDashboardETV(ViewGroup vgDashboard, float weight) {
-        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(16));
+        ExtendedTextView etv = new ExtendedTextView(context){
+            public void layout(int l, int t, int r, int b) {
+                if ((b-t)==(r-l)) return; // 04.02.2024: There seems to be a bug in Android - layout with same height as width - although something different was requested
+                super.layout(l, t, r, b);
+            }
+        };
+        etv.setDrawableSize(dp(16));
         vgDashboard.addView(etv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
