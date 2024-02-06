@@ -803,12 +803,16 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             protected boolean checkDrag(float scrollX, float scrollY) {
                 String dashboardName = coView.checkDashboardEntry(scrollX,scrollY);
                 setDragObject(dashboardName);
-                return dashboardName != null;
+                if (dashboardName != null){
+                    getFS(FSTrackDetails.class).initDashboardDrag(dashboardName);
+                    return true;
+                }
+                return false;
             }
 
             @Override
             protected void handleDrag(float scrollX1, float scrollY1, float scrollX2, float scrollY2) {
-                if (getFS(FSTrackDetails.class).handleDashboardDrag(getDragObject(),scrollX1,scrollY1,scrollX2,scrollY2)){
+                if (getFS(FSTrackDetails.class).handleDashboardDrag(scrollX1,scrollY1,scrollX2,scrollY2)){
                     abortDrag(scrollX1, scrollY1);
                 }
             }

@@ -27,7 +27,7 @@ public class TdMarker {
 
     private Bitmap bitmap;
 
-    private int dim;
+    private final int dim;
 
     public TdMarker(FSTrackDetails fstd, RelativeLayout tdView, boolean firstMarker, int totalWidth, int imgDim){
         this.fstd = fstd;
@@ -50,8 +50,13 @@ public class TdMarker {
 
     }
 
-    public BitmapView getMarkerLayer(){
-        return tdMarkerLayer;
+    void registerTDService() {
+        tdMarkerLayer = new BitmapView(bitmap, wpm, dim);
+        fstd.register(tdMarkerLayer);
+    }
+    void unregisterTDService() {
+//            fstd.unregister(tdMarkerLayer); // not needed, since unregisterAll
+        tdMarkerLayer = null;
     }
 
     public void setPoint(PointModel pm){
@@ -60,17 +65,11 @@ public class TdMarker {
 
         if ((wpm.getLat() == PointModel.NO_LAT_LONG) && (wpm.getLon() == PointModel.NO_LAT_LONG)){
             tdvImage.setVisibility(View.VISIBLE);
-            if (tdMarkerLayer != null){
-                fstd.unregister(tdMarkerLayer);
-            }
+            tdMarkerLayer.setVisibility(false);
         } else {
             tdvImage.setVisibility(View.INVISIBLE);
-            if (tdMarkerLayer == null){
-                tdMarkerLayer = new BitmapView(bitmap, wpm);
-                fstd.register(tdMarkerLayer);
-            } else {
-                fstd.redraw();
-            }
+            tdMarkerLayer.setVisibility(true);
+            fstd.redraw();
         }
     }
 
