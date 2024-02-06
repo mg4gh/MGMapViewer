@@ -8,12 +8,25 @@ import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 
 public class CostCalculatorHeuristicTwoPieceFunc implements CostCalculator {
 
-    private final static double base_ul = 1.3; // factor increase base limit
-    private final static double ref_ul = 0.1; // base up limit
-    protected final static double fu = 1.4; // upCosts = fu / ulimit
-    private final double base_dl = 1.5;
-    private final static double ref_dl = -0.16;
-    protected final static double fd = -0.1; //means negative costs for downhill
+
+    private final static double bs_u = 1.3; // between 1.1 and 1.3; with 1 -> fus will be one , with 1.3 fus ~ 3 (depending on fu), with the condition that costs at 2 times ulimit is kept constant.
+    private final static double bref_ul = 0.077; // base ref up limit slope for fus = 1; between 0.06 and 0.09
+    protected final static double fu = 1.2; // ratio between costs per hm and limit between 0.8 and 1.4
+    private final static double base_ul = 1.25; // factor of change in ulimit per mtbscaleUp
+    private final static double bb_ul = 1/bs_u;
+    protected final static double fus = (fu + 1 - bb_ul*fu)/(2*bb_ul*bb_ul-bb_ul );
+    private final static double ref_ul = bref_ul*bs_u; // base up limit
+    // factor increase base limit
+
+
+    protected final static double fd = -0.1; // between 0 and -0.3
+    private final static double bref_dl = -0.13; // starting point of down limit slope for fd = 0
+    private final static double bref_fds = 2.0;
+    protected final double base_dl = 1.3;
+    private static double aprox_fds_fact = 2.333;
+    protected final static double fds = bref_fds + aprox_fds_fact*fd; // derived scaling factor for slope
+    protected final static double corr_dl_fact = fds/(fds-fd);
+    private final static double ref_dl = corr_dl_fact*bref_dl; // derived down limit slope at fd < 0
     protected double mUpCosts;
     protected double mDnCosts;// base costs in m per hm uphill;
     protected double mUpSlopeLimit; //  up to this slope base Costs
@@ -32,15 +45,14 @@ public class CostCalculatorHeuristicTwoPieceFunc implements CostCalculator {
         mSlevel = sLevel;
         mUpSlopeLimit = ref_ul * Math.pow(base_ul,mKlevel-1);
         mUpCosts      = fu /mUpSlopeLimit;
-        mUpSlopeFactor = 2.5;
+        mUpSlopeFactor = fus;
         mUpAddCosts = mUpSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
 
-        mDnSlopeLimit = ref_dl * Math.pow(base_dl,mSlevel-1);;
+        mDnSlopeLimit = ref_dl * Math.pow(base_dl,mSlevel-1);
         mDnCosts      = fd/mDnSlopeLimit;
-        if (dnSlopeFactor < 1 ) dnSlopeFactor = 1;
-        // required. Otherwise heuristic no longer correct
-        mDnAddCosts = dnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
-        mDnSlopeFactor = dnSlopeFactor;
+        mDnSlopeFactor = fds;
+        mDnAddCosts = mDnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
+
     }
 
     public double calcCosts(double dist, float vertDist){
