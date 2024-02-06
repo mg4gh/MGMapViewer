@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TableRow;
 
 import java.util.ArrayList;
 
@@ -59,6 +60,16 @@ public class ControlComposer {
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.gain);
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.loss);
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_DURATION).setData(R.drawable.duration);
+        float totalWeight = 0;
+        for (int i=0; i<dashboardEntry.getChildCount(); i++){
+            totalWeight += ((TableRow.LayoutParams)dashboardEntry.getChildAt(i).getLayoutParams()).weight;
+        }
+        int totalWidth = coView.getActivity().getResources().getDisplayMetrics().widthPixels;
+        for (int i=0; i<dashboardEntry.getChildCount(); i++){
+            TableRow.LayoutParams params = (TableRow.LayoutParams)dashboardEntry.getChildAt(i).getLayoutParams();
+            params.width = (int)( params.weight*totalWidth / totalWeight) - params.leftMargin - params.rightMargin;
+            dashboardEntry.getChildAt(i).setLayoutParams(params);
+        }
         coView.dashboardEntries.add(dashboardEntry);
         return dashboardEntry;
     }
