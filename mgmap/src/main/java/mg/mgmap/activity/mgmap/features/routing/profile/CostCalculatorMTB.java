@@ -8,33 +8,22 @@ import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class CostCalculatorMTB implements CostCalculator {
+
+    private static final double ful = 1 - 0.833;
+    private static final double fdl = 1 - 0.833;
     protected double mUpCosts;
     protected double mDnCosts;// base costs in m per hm uphill;
     protected double mUpSlopeLimit; //  up to this slope base Costs
     protected double mDnSlopeLimit;
     protected double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
     protected double mDnAddCosts;
-    //    double mUpCosts2;
+
     double mfud;
     double mfdd;
 
     private CostCalculatorHeuristicTwoPieceFunc mProfileCalculator;
     public CostCalculatorMTB(WayAttributs wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile,  double pful, double base_ul ,double base_us,double tful, double base_dl ,double base_ds) {
         mProfileCalculator = profile;
-//        fb = mProfileCalculator.fb;
-        base_ul = 1.2;
-        base_us = 2.0;
-        base_dl = 1.3;
-        base_ds = 2.0;
-
-        double fud;
-        double ful = 1 - 0.75;
-        double fus;
-
-        double fdd;
-        double fdl = 1 - 0.75;
-        double fds;
-
         double mtbUp = -2;
         double mtbDn = -2;
         if (wayTagEval.mtbscaleUp != null) {
@@ -60,27 +49,22 @@ public class CostCalculatorMTB implements CostCalculator {
         double deltaUp = Math.min(1.5,Math.max(0,mtbUp - mProfileCalculator.mKlevel));
         double deltaDn = Math.min(1.5,Math.max(0,mtbDn - mProfileCalculator.mSlevel));
         if ("path".equals(wayTagEval.highway)) {
-            fud = 1;
+            mfud = 1;
             if (mtbUp<0) deltaUp = 1;
-
-            fdd = 1;
+            mfdd = 1;
             if (mtbDn<0) deltaDn = 1;
-
         } else { //if ("track".equals(wayTagEval.highway)){
-            fud = 1.3;
-            fdd = 1.3;
-
+            mfud = 1.3;
+            mfdd = 1.65;
         }
 
         mUpSlopeLimit = profile.mUpSlopeLimit * (1-ful*deltaUp);
         mUpAddCosts = mProfileCalculator.fus/( mUpSlopeLimit * mUpSlopeLimit);
         mUpCosts =  mProfileCalculator.fu /mUpSlopeLimit;
-        mfud = fud;
 
         mDnSlopeLimit = profile.mDnSlopeLimit * (1-fdl*deltaDn);
         mDnAddCosts = mProfileCalculator.fds/( mDnSlopeLimit * mDnSlopeLimit) ;
         mDnCosts = mProfileCalculator.mDnCosts ;// base costs in m per hm uphill;
-        mfdd = fdd;
 
     }
 
