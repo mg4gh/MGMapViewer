@@ -41,6 +41,8 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Point;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
@@ -59,6 +61,9 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
+import mg.mgmap.activity.mgmap.features.trad.FSTrackDetails;
+import mg.mgmap.activity.mgmap.view.ControlMVLayer;
+import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.activity.settings.MainPreferenceScreen;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
@@ -104,7 +109,6 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.TopExceptionHandler;
 import mg.mgmap.generic.model.TrackLog;
-import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintAccessBackgroundLocation;
 import mg.mgmap.generic.util.hints.HintAccessFineLocation;
@@ -225,6 +229,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSPosition(this));
         featureServices.add(new FSBeeline(this));
         featureServices.add(new FSBB(this));
+        featureServices.add(new FSTrackDetails(this));
+        createLayers2();
 
         WaitUtil.doWait(this.getClass(), 100);
         coView.init(application, this);
@@ -779,6 +785,41 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
 
         });
+    }
+
+    public void createLayers2(){
+        Layers layers = mapView.getLayerManager().getLayers();
+
+        // create additional control layer to handle dashboard drag events */
+        layers.add(new ControlMVLayer<String>(FeatureService.getTimer()) {
+            @Override
+            public boolean onTap(LatLong tapLatLong, Point layerXY, Point tapXY) {
+                // we need to use this for EnlargeControl of Dashboard (instead of OnClickListener of dashboard views) - otherwise we don't get the drag events here
+                if (coView.checkDashboardEntryView((float)tapXY.x, (float)tapXY.y)) return true;
+                return super.onTap(tapLatLong, layerXY, tapXY);
+            }
+
+            @Override
+            protected boolean checkDrag(float scrollX, float scrollY) {
+                String dashboardName = coView.checkDashboardEntry(scrollX,scrollY);
+                setDragObject(dashboardName);
+                return dashboardName != null;
+            }
+
+            @Override
+            protected void handleDrag(float scrollX1, float scrollY1, float scrollX2, float scrollY2) {
+                if (getFS(FSTrackDetails.class).handleDashboardDrag(getDragObject(),scrollX1,scrollY1,scrollX2,scrollY2)){
+                    abortDrag(scrollX1, scrollY1);
+                }
+            }
+
+            @Override
+            protected void abortDrag(float scrollX, float scrollY) {
+                super.abortDrag(scrollX, scrollY);
+                getFS(FSTrackDetails.class).abortDashboardDrag();
+            }
+        });
+
     }
 
     private boolean toggleGlOnMatch(TrackLogRefApproach bestMatch, TrackLog candidate, Pref<Boolean> candidatesPref){

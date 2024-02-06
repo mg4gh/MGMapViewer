@@ -248,7 +248,7 @@ public class ExtendedTextView extends AppCompatTextView {
                 if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
                     setText( newText );
                 } else {
-                    mgLog.d("need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
+                    mgLog.d("TODO: check need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
                     Activity activity = (Activity) this.getContext();
                     activity.runOnUiThread(() -> setText( newText ));
                 }
@@ -308,8 +308,8 @@ public class ExtendedTextView extends AppCompatTextView {
                         activity.runOnUiThread(() -> setCompoundDrawables(drawable, null, null, null));
                     }
                 }
-            } else {
-                mgLog.d("unchanged");
+//            } else {
+//                mgLog.d("unchanged");
             }
         }
     }
@@ -324,6 +324,10 @@ public class ExtendedTextView extends AppCompatTextView {
 
     public String getLogText(){
         return logName + ":" + getText();
+    }
+
+    public String getLogName(){
+        return logName;
     }
 
 }

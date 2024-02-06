@@ -59,8 +59,8 @@ public class PointView extends MVLayer {
             return;
         }
 
-        int pixelX = lon2x(model.getLon());
-        int pixelY = lat2y(model.getLat());
+        int pixelX = lon2canvasX(model.getLon());
+        int pixelY = lat2canvasY(model.getLat());
 
         int radiusInPixel = (int) (displayModel.getScaleFactor() * radius * getScale(zoomLevel));
 

@@ -125,6 +125,10 @@ public class RoutingEngine {
 
     synchronized WriteableTrackLog updateRouting2(TrackLog mtl, WriteableTrackLog rotl){
         boolean routeModified = false;
+        if (routingProfile == null){
+            mgLog.e("routing profile is null; cannot route");
+            return rotl;
+        }
         boolean routingProfileChanged = routingProfile.getId().equals(mtl.getRoutingProfileId());
         mtl.setRoutingProfileId(routingProfile.getId());
 

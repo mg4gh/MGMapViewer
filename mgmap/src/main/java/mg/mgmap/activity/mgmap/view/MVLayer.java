@@ -67,9 +67,16 @@ public abstract class MVLayer extends Layer {
         return MercatorProjection.pixelYToLatitude(topLeftPoint.y + dy + y, mapSize);
     }
     protected int lon2x(double lon){
-        return (int)(MercatorProjection.longitudeToPixelX(lon, mapSize) - topLeftPoint.x);
+        return (int)(MercatorProjection.longitudeToPixelX(lon, mapSize) - dx -topLeftPoint.x);
     }
     protected int lat2y(double lat){
+        return (int)(MercatorProjection.latitudeToPixelY(lat, mapSize) - dy - topLeftPoint.y);
+    }
+
+    protected int lon2canvasX(double lon){
+        return (int)(MercatorProjection.longitudeToPixelX(lon, mapSize) - topLeftPoint.x);
+    }
+    protected int lat2canvasY(double lat){
         return (int)(MercatorProjection.latitudeToPixelY(lat, mapSize) - topLeftPoint.y);
     }
 

@@ -221,7 +221,7 @@ public class ControlView extends RelativeLayout {
 
     public ViewGroup createDashboardEntry(){
         TableRow tr = new TableRow(context);
-        TableLayout.LayoutParams llParms = new TableLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        TableLayout.LayoutParams llParms = new TableLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         tr.setLayoutParams(llParms);
         return tr;
     }
@@ -253,7 +253,7 @@ public class ControlView extends RelativeLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
-        etv.setOnClickListener(enlargeControl);
+//        etv.setOnClickListener(enlargeControl);
         return etv;
     }
 
@@ -299,6 +299,38 @@ public class ControlView extends RelativeLayout {
             ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
             ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.getDuration());
         }
+    }
+
+    /* Using this way to implement EnlargeControl for DashboardEntryViews allows to get scrollEvents and thus to implement drag and drop for Dashboard */
+    public boolean checkDashboardEntryView(float x, float y){
+        int[] loc = new int[2];
+        for (int i=0; i<dashboard.getChildCount(); i++){
+            ViewGroup dashboardEntry = (ViewGroup)dashboard.getChildAt(i);
+            dashboardEntry.getLocationOnScreen(loc);
+            if ((loc[0] < x) && (x < loc[0]+dashboardEntry.getWidth()) && (loc[1] <= y) && (y < loc[1]+dashboardEntry.getHeight())){
+                for (int j=0; j<dashboardEntry.getChildCount(); j++) {
+                    View dashboardEntryView = dashboardEntry.getChildAt(j);
+                    dashboardEntryView.getLocationOnScreen(loc);
+                    if ((loc[0] < x) && (x < loc[0] + dashboardEntryView.getWidth()) && (loc[1] <= y) && (y < loc[1] + dashboardEntryView.getHeight())) {
+                        new EnlargeControl(tv_enlarge).onClick(dashboardEntryView);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public String checkDashboardEntry(float x, float y){
+        int[] loc = new int[2];
+        for (int i=0; i<dashboard.getChildCount(); i++){
+            ViewGroup dashboardEntry = (ViewGroup)dashboard.getChildAt(i);
+            dashboardEntry.getLocationOnScreen(loc);
+            if ((loc[0] < x) && (x < loc[0]+dashboardEntry.getWidth()) && (loc[1] <= y) && (y < loc[1]+dashboardEntry.getHeight())){
+                return ((ExtendedTextView)(dashboardEntry.getChildAt(0))).getLogName();
+            }
+        }
+        return null;
     }
 
     // *************************************************************************************************
