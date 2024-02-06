@@ -16,12 +16,16 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
+		<LinearLayout
+            android:id="@+id/tr_states"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </LinearLayout>
         <RelativeLayout
             android:id="@+id/trackDetails"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            />
-
+			android:layout_below="@id/tr_states"/>
         <TableLayout
             android:id="@+id/dashboard"
             android:layout_width="match_parent"
@@ -78,11 +82,13 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp">
             </TableRow>
-            <TableRow
+<!--            
+			<TableRow
                 android:id="@+id/tr_states"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </TableRow>
+-->
 			<RelativeLayout
 				android:id="@+id/base3"
 				android:layout_width="match_parent"

@@ -84,7 +84,7 @@ public class ControlView extends RelativeLayout {
 
 
     /** parent object for status line */
-    TableRow tr_states = null;
+    ViewGroup tr_states = null;
     /** List will be filled with all members of the status line */
     ArrayList<TextView> tvList = new ArrayList<>();
 
@@ -174,7 +174,7 @@ public class ControlView extends RelativeLayout {
             params.setMargins(0, top,0,bottom);
             view.setLayoutParams(params);
         }
-        getActivity().getMapViewUtility().setScaleBarVMargin(bottom + dp(VUtil.QC_HEIGHT_DP*1.5f));
+        getActivity().getMapViewUtility().setScaleBarVMargin(bottom + dp(VUtil.QC_HEIGHT_DP*1.0f));
         getActivity().getMapViewUtility().setScaleBarColor((0xFF808080));
         activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle();
     }
@@ -437,7 +437,7 @@ public class ControlView extends RelativeLayout {
         ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(16));
         vgParent.addView(etv);
         tvList.add(etv);
-        TableRow.LayoutParams llParms = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams llParms = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
         int margin = dp(0.8f);
         llParms.setMargins(margin,margin,margin,margin);
         llParms.weight = weight;
