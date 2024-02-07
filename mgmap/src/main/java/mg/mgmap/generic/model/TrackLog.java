@@ -208,7 +208,6 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
                 reverse = true;
             }
         }
-//        mgLog.i("XXXXXX2 create new SubStatistic - use updateWithPoints");
         if (reverse){
             rStat.setSegmentIdx(-6);
             for (int segmentIdx=appEnd.segmentIdx; segmentIdx>=appStart.getSegmentIdx(); segmentIdx--){
@@ -229,6 +228,7 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
                 updateStatisticWithSegment(rStat,firstPoint,segment,startIdx,endIdx,lastPoint,false);
             }
         }
+        rStat.updateWithPoint(null);
     }
 
     private int lastNoneEmptySegmentIdx(){
@@ -239,16 +239,12 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
     }
 
     private void updateStatisticWithSegment(TrackLogStatistic statistic, PointModel firstPoint, TrackLogSegment segment,int startIdx, int endIdx, PointModel lastPoint, boolean reverse){
-//        mgLog.d("XXXXXX2 "+firstPoint+" "+segment.getSegmentIdx()+" "+startIdx+" "+endIdx+" "+lastPoint+" "+reverse+" "+segment.size());
         updateWithPoint(statistic,firstPoint);
-//        mgLog.d("XXXXXX2 First "+firstPoint+" "+statistic);
         for (int i=0; i<=(reverse?startIdx-endIdx:endIdx-startIdx); i++){
             int idx = reverse?startIdx-i:startIdx+i;
             updateWithPoint(statistic,segment.get(idx));
-//            mgLog.d("XXXXXX2 "+i+" "+idx+" "+segment.get(idx)+" "+statistic);
         }
         updateWithPoint(statistic,lastPoint);
-//        mgLog.d("XXXXXX2 Last "+lastPoint+" "+statistic);
     }
 
     private void updateWithPoint(TrackLogStatistic statistic, PointModel pm){
