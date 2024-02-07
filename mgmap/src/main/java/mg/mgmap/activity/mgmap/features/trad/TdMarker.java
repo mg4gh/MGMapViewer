@@ -10,7 +10,10 @@ import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.map.android.graphics.AndroidBitmap;
 
 import mg.mgmap.activity.mgmap.view.BitmapView;
+import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 
@@ -22,7 +25,7 @@ public class TdMarker {
 
     private BitmapView tdMarkerLayer;
 
-    private final FSTrackDetails fstd;
+    private FSTrackDetails fstd;
     private final WriteablePointModel wpm = new WriteablePointModelImpl();
 
     private Bitmap bitmap;
@@ -50,32 +53,39 @@ public class TdMarker {
 
     }
 
-    void registerTDService() {
+    MVLayer registerTDService() {
         tdMarkerLayer = new BitmapView(bitmap, wpm, dim);
-        fstd.register(tdMarkerLayer);
+        return tdMarkerLayer;
     }
     void unregisterTDService() {
 //            fstd.unregister(tdMarkerLayer); // not needed, since unregisterAll
         tdMarkerLayer = null;
     }
 
-    public void setPoint(PointModel pm){
+    public void setPosition(PointModel pm){
         wpm.setLat(pm.getLat());
         wpm.setLon(pm.getLon());
+        wpm.setEle(pm.getEleA());
 
-        if ((wpm.getLat() == PointModel.NO_LAT_LONG) && (wpm.getLon() == PointModel.NO_LAT_LONG)){
+        if (wpm.getLaLo() == PointModelUtil.NO_POS){
             tdvImage.setVisibility(View.VISIBLE);
             tdMarkerLayer.setVisibility(false);
         } else {
             tdvImage.setVisibility(View.INVISIBLE);
             tdMarkerLayer.setVisibility(true);
-            fstd.redraw();
         }
+        fstd.redraw();
     }
 
-    public void refresh(){
-        setPoint(wpm);
+    public PointModel getPosition(){
+        return new PointModelImpl(wpm);
     }
+
+    Runnable ttPositionTimeout = ()->{
+        setPosition(new PointModelImpl());
+        fstd.triggerRefreshObserver();
+    };
+
 
     public void resetPosition(){
         wpm.setLat(PointModel.NO_LAT_LONG);
@@ -99,8 +109,8 @@ public class TdMarker {
         }
     }
 
-    public Rect getMarkerRect(){
-        if ((wpm.getLat() == PointModel.NO_LAT_LONG) && (wpm.getLon() == PointModel.NO_LAT_LONG)){
+    public Rect getMarkerRect(boolean fix){
+        if (fix || (wpm.getLaLo() == PointModelUtil.NO_POS) || tdMarkerLayer == null){
             int[] loc = new int[2];
             tdvImage.getLocationOnScreen(loc);
             return new Rect(loc[0],loc[1],loc[0]+dim,loc[1]+dim);

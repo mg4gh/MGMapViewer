@@ -174,7 +174,7 @@ public class ControlView extends RelativeLayout {
             params.setMargins(0, top,0,bottom);
             view.setLayoutParams(params);
         }
-        getActivity().getMapViewUtility().setScaleBarVMargin(bottom + dp(VUtil.QC_HEIGHT_DP*1.0f));
+        getActivity().getMapViewUtility().setScaleBarVMargin(bottom + dp(VUtil.QC_HEIGHT_DP*0.99f));
         getActivity().getMapViewUtility().setScaleBarColor((0xFF808080));
         activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle();
     }
@@ -219,8 +219,16 @@ public class ControlView extends RelativeLayout {
         dashboard.setVisibility(visibitity?VISIBLE:INVISIBLE);
     }
 
+    public static class DashboardEntry extends TableRow{
+        TrackLogStatistic statistic = null;
+        TrackLogStatistic tdStatistic = null;
+        private DashboardEntry(Context context){
+            super(context);
+        }
+    }
+
     public ViewGroup createDashboardEntry(){
-        TableRow tr = new TableRow(context);
+        DashboardEntry tr = new DashboardEntry(context);
         TableLayout.LayoutParams llParms = new TableLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         tr.setLayoutParams(llParms);
         return tr;
@@ -253,7 +261,6 @@ public class ControlView extends RelativeLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
-//        etv.setOnClickListener(enlargeControl);
         return etv;
     }
 
@@ -287,18 +294,29 @@ public class ControlView extends RelativeLayout {
         return shouldBeVisible; // means finally it is visible
     }
 
+    public void setDashboardValue(String id, TrackLogStatistic tdStatistic){
+        DashboardEntry dashboardEntry = getDashboardEntry(id);
+        if (dashboardEntry != null){
+            dashboardEntry.tdStatistic=tdStatistic;
+            showDashboardValue(dashboardEntry);
+        }
+    }
     public void setDashboardValue(boolean condition, ViewGroup dashboardEntry, TrackLogStatistic statistic){
         if (setDashboardEntryVisibility(dashboardEntry, condition && (statistic != null) , (dashboardEntry.getParent() != null))){
             assert statistic != null;
-            String sIdx = "I="+statistic.getSegmentIdx();
-            if (statistic.getSegmentIdx() == -1) sIdx = "All";
-            if (statistic.getSegmentIdx() == -2) sIdx = "R";
-            ((ExtendedTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
-            ((ExtendedTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
-            ((ExtendedTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
-            ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
-            ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.getDuration());
+            ((DashboardEntry) dashboardEntry).statistic = statistic;
+            showDashboardValue((DashboardEntry) dashboardEntry);
         }
+    }
+
+    private void showDashboardValue(DashboardEntry dashboardEntry){
+        TrackLogStatistic statistic = ((dashboardEntry.tdStatistic != null) && (dashboardEntry.tdStatistic.getNumPoints()>0))?dashboardEntry.tdStatistic:dashboardEntry.statistic;
+        String sIdx = (statistic.getSegmentIdx()>=0)?"I="+statistic.getSegmentIdx():TrackLogStatistic.SEGMENT_IDS.get(statistic.getSegmentIdx());
+        ((ExtendedTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
+        ((ExtendedTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
+        ((ExtendedTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
+        ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
+        ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.getDuration());
     }
 
     /* Using this way to implement EnlargeControl for DashboardEntryViews allows to get scrollEvents and thus to implement drag and drop for Dashboard */
@@ -328,6 +346,20 @@ public class ControlView extends RelativeLayout {
             dashboardEntry.getLocationOnScreen(loc);
             if ((loc[0] < x) && (x < loc[0]+dashboardEntry.getWidth()) && (loc[1] <= y) && (y < loc[1]+dashboardEntry.getHeight())){
                 return ((ExtendedTextView)(dashboardEntry.getChildAt(0))).getLogName();
+            }
+        }
+        return null;
+    }
+
+    private DashboardEntry getDashboardEntry(String id){
+        for (int i=0; i<dashboard.getChildCount(); i++) {
+            DashboardEntry dashboardEntry = (DashboardEntry) dashboard.getChildAt(i);
+            View view = dashboardEntry.getChildAt(0);
+            if (view instanceof ExtendedTextView) {
+                ExtendedTextView evt = (ExtendedTextView) view;
+                if (evt.getLogName().equals(id)){
+                    return dashboardEntry;
+                }
             }
         }
         return null;

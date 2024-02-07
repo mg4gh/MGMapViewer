@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -37,6 +38,13 @@ public class TrackLogStatistic {
     private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
     String logName = "";  // used only for debug puposes
 
+    public static final Map<Integer,String> SEGMENT_IDS = Map.of(
+            -1,"All",
+            -2,"R",
+            -3,"S-2",
+            -4,"1-E",
+            -5,"1-2",
+            -6,"2-1");
     private int segmentIdx = -1; // -1 means all segments; // -2 remainings statistic
     private long tStart = PointModel.NO_TIME;
     private long duration = 0;
@@ -255,7 +263,7 @@ public class TrackLogStatistic {
     @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH,"start=%s duration=%s totalLength=%.2f gain=%.1f loss=%.1f minEle=%.1f maxEle=%.1f numPoints=%d",
+        return super.toString()+" "+String.format(Locale.ENGLISH,"start=%s duration=%s totalLength=%.2f gain=%.1f loss=%.1f minEle=%.1f maxEle=%.1f numPoints=%d",
                 sdf.format(tStart),durationToString(),totalLength,gain,loss,minEle,maxEle, numPoints);
     }
 

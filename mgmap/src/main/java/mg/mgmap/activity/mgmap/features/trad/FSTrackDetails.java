@@ -21,7 +21,7 @@ import android.widget.RelativeLayout;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import org.mapsforge.map.layer.Layer;
+import org.mapsforge.core.model.LatLong;
 
 import java.lang.invoke.MethodHandles;
 
@@ -31,7 +31,11 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLog;
+import mg.mgmap.generic.model.TrackLogRefApproach;
+import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.CC;
@@ -51,7 +55,6 @@ public class FSTrackDetails extends FeatureService {
     private boolean tdVisibility = false;
     private String tdDashboardId = null;
     private int tdColorId = 0;
-    private TrackLog tdTrackLog = null;
     private Observable tdObservable = null;
     private int tdDrawableId = 0;
 
@@ -66,12 +69,25 @@ public class FSTrackDetails extends FeatureService {
     public class TradControlLayer extends ControlMVLayer<TdMarker> {
 
         Point dragOffset = null;
+
+        @Override
+        public boolean onTap(LatLong tapLatLong, org.mapsforge.core.model.Point layerXY, org.mapsforge.core.model.Point tapXY) {
+            if (markerDragMatch((float) tapXY.x, (float) tapXY.y, tdm1.getMarkerRect(true)) != null) {
+                getMapViewUtility().setCenter(tdm1.getPosition());
+            } else if (markerDragMatch((float) tapXY.x, (float) tapXY.y, tdm2.getMarkerRect(true)) != null) {
+                getMapViewUtility().setCenter(tdm2.getPosition());
+            } else {
+                return false;
+            }
+            return true;
+        }
+
         @Override
         protected boolean checkDrag(float scrollX, float scrollY) {
-            if ((dragOffset=markerDragMatch(scrollX,scrollY,tdm1.getMarkerRect()))!=null){
+            if ((dragOffset=markerDragMatch(scrollX,scrollY,tdm1.getMarkerRect(false)))!=null){
                 setDragObject(tdm1);
                 return true;
-            } else if ((dragOffset=markerDragMatch(scrollX,scrollY,tdm2.getMarkerRect()))!=null){
+            } else if ((dragOffset=markerDragMatch(scrollX,scrollY,tdm2.getMarkerRect(false)))!=null){
                 setDragObject(tdm2);
                 return true;
             }
@@ -81,25 +97,10 @@ public class FSTrackDetails extends FeatureService {
         @Override
         protected void handleDrag(float scrollX1, float scrollY1, float scrollX2, float scrollY2) {
             WriteablePointModel pmCurrent = new WriteablePointModelImpl(y2lat(scrollY2+dragOffset.y), x2lon(scrollX2+dragOffset.x));
-            getDragObject().setPoint(pmCurrent);
+            getDragObject().setPosition(pmCurrent);
+            triggerRefreshObserver();
         }
 
-        @Override
-        protected void handleDrag(WriteablePointModel pmCurrent) {
-            getDragObject().setPoint(pmCurrent);
-
-//            super.handleDrag(pmCurrent);
-        }
-    }
-
-    public Point markerDragMatch(float x, float y, Rect rect){
-        if (((-1* (rect.bottom - rect.top)) / 3f + rect.top <= y) && (y <= (2* (rect.bottom - rect.top)) / 3f + rect.top)){ // match 2/3 at top of rect
-            int dx6 = (rect.right - rect.left) /6;
-            if ((rect.left+dx6 <= x) && (x <= rect.right-dx6)){
-                return new Point(rect.centerX()-(int)x, rect.bottom-(int)y);
-            }
-        }
-        return null;
     }
 
 
@@ -112,14 +113,11 @@ public class FSTrackDetails extends FeatureService {
         int totalWidth = getResources().getDisplayMetrics().widthPixels;
         tdm1 = new TdMarker(this, trackDetailsView, true, totalWidth, tdHeight);
         tdm2 = new TdMarker(this, trackDetailsView, false, totalWidth, tdHeight);
-
-
-
     }
 
     @Override
     protected void onResume() {
-        refreshObserver.onChange();
+        triggerRefreshObserver();
         if (tdVisibility) {
             registerTDService();
         }
@@ -133,6 +131,15 @@ public class FSTrackDetails extends FeatureService {
     }
 
     @Override
+    protected void redraw() {
+        super.redraw();
+    }
+
+    void triggerRefreshObserver(){
+        refreshObserver.onChange();
+    }
+
+    @Override
     protected void doRefreshResumedUI() {
         if (tdVisibility){
             TrackLog trackLog = null;
@@ -142,34 +149,56 @@ public class FSTrackDetails extends FeatureService {
                 trackLog = ((MGMapApplication.AvailableTrackLogsObservable) tdObservable).getSelectedTrackLogRef().getTrackLog();
             }
             if (trackLog == null){
-
+                tdDashboardId = "invalid"; // reopen of track details will reset also points
+                setVisibilityAndHeight(false, 0);
+            } else if (tdVisibility){ // if visibility is still given
+                TrackLogRefApproach approach1 = verifyPosition(tdm1, trackLog);
+                TrackLogRefApproach approach2 = verifyPosition(tdm2, trackLog);
+                TrackLogStatistic statistic = new TrackLogStatistic();
+                trackLog.subStatistic(statistic,approach1,approach2);
+                getControlView().setDashboardValue(tdDashboardId, statistic);
             }
-
-            tdm1.refresh();
-            tdm2.refresh();
         }
     }
 
+
+    TrackLogRefApproach verifyPosition(TdMarker tdm, TrackLog trackLog){
+        PointModel tdmPm = tdm.getPosition();
+        TrackLogRefApproach approach = null;
+        if (tdm.getPosition().getLaLo() != PointModelUtil.NO_POS){
+            getTimer().removeCallbacks(tdm.ttPositionTimeout);
+            approach = trackLog.getBestDistance(tdm.getPosition(), getMapViewUtility().getCloseThresholdForZoomLevel());
+            if (approach != null){
+                tdm.setPosition(approach.getApproachPoint());
+            } else {
+                tdm.setPosition(tdmPm); // just refresh
+                getTimer().postDelayed(tdm.ttPositionTimeout,3000);
+            }
+        }
+        return approach;
+    }
 
     private void setVisibilityAndHeight(boolean visibility, int height){
         if (tdVisibility != visibility){
             tdVisibility = visibility;
             if (tdVisibility){
                 registerTDService();
-                refreshObserver.onChange();
+                triggerRefreshObserver();
             } else {
                 unregisterTDService();
             }
         }
+        mgLog.i("set height="+height);
         trackDetailsView.getLayoutParams().height = height;
         trackDetailsView.setLayoutParams(trackDetailsView.getLayoutParams());
+        mgLog.i("get height="+trackDetailsView.getHeight()+ " "+trackDetailsView.getLayoutParams().height);
     }
 
     public void initDashboardDrag(String id){
         visibilityAtDashboardDragStart = tdVisibility;
         if (id != null){ // should always be true
-            setDashboardId(id);
             if (!tdVisibility){
+                setDashboardId(id);
                 setVisibilityAndHeight(true,0);
             }
         }
@@ -177,34 +206,40 @@ public class FSTrackDetails extends FeatureService {
     /** return true if drag should be aborted */
     public boolean handleDashboardDrag( float startX, float startY, float currentX, float currentY){
         boolean abort = false;
+        float dx = currentX - startX;
         float dy = currentY - startY;
-        if (visibilityAtDashboardDragStart){
-            if (dy <= 0){
-                if (dy <= -tdHeight){
-                    setVisibilityAndHeight(false, 0);
-                    abort = true;
+        if (Math.abs(dx) > Math.abs(dy)){
+            abort = true;
+        } else {
+            if (visibilityAtDashboardDragStart){
+                if (dy <= 0){
+                    if (dy <= -tdHeight){
+                        setVisibilityAndHeight(false, 0);
+                        abort = true;
+                    } else {
+                        setVisibilityAndHeight(true,tdHeight + (int)dy);
+                    }
                 } else {
-                    setVisibilityAndHeight(true,tdHeight + (int)dy);
+                    abort = true;
                 }
             } else {
-                abort = true;
-            }
-        } else {
-            if (dy >= 0){
-                if (dy >= tdHeight){
+                if (dy >= 0){
+                    if (dy >= tdHeight){
+                        setVisibilityAndHeight(true,tdHeight);
+                        abort = true;
+                    } else {
+                        setVisibilityAndHeight(true, (int) dy);
+                    }
+                }else {
                     abort = true;
-                } else {
-                    setVisibilityAndHeight(true, (int) dy);
                 }
-            }else {
-                abort = true;
             }
         }
         return abort;
     }
 
     public void abortDashboardDrag(){
-        if (trackDetailsView.getHeight() > tdHeight/2){
+        if (trackDetailsView.getLayoutParams().height > tdHeight/2){ // check requested height, since actual height might not be updated right now
             setVisibilityAndHeight(true, tdHeight);
         } else {
             setVisibilityAndHeight(false, 0);
@@ -219,20 +254,17 @@ public class FSTrackDetails extends FeatureService {
                 case "rtl":
                 case "rtls":
                     tdColorId = R.color.CC_RED100_A100;
-                    tdTrackLog = getApplication().recordingTrackLogObservable.getTrackLog();
                     tdObservable = getApplication().recordingTrackLogObservable;
                     tdDrawableId = R.drawable.td_marker_rtl;
                     break;
                 case "route":
                     tdColorId = R.color.CC_PURPLE_A100;
-                    tdTrackLog = getApplication().routeTrackLogObservable.getTrackLog();
                     tdObservable = getApplication().routeTrackLogObservable;
                     tdDrawableId = R.drawable.td_marker_route;
                     break;
                 case "stl":
                 case "stls":
                     tdColorId = R.color.CC_BLUE100_A100;
-                    tdTrackLog = getApplication().availableTrackLogsObservable.getSelectedTrackLogRef().getTrackLog();
                     tdObservable = getApplication().availableTrackLogsObservable;
                     tdDrawableId = R.drawable.td_marker_stl;
                     break;
@@ -253,9 +285,8 @@ public class FSTrackDetails extends FeatureService {
         tdObservable.addObserver(refreshObserver);
         tdControlLayer = new TradControlLayer();
         register(tdControlLayer);
-        tdm1.registerTDService();
-        tdm2.registerTDService();
-
+        register(tdm1.registerTDService());
+        register(tdm2.registerTDService());
     }
     private void unregisterTDService(){
         tdObservable.deleteObserver(refreshObserver);
@@ -263,27 +294,19 @@ public class FSTrackDetails extends FeatureService {
         unregisterAll();
         tdm1.unregisterTDService();
         tdm2.unregisterTDService();
+        getControlView().setDashboardValue(tdDashboardId, null);
     }
 
 
 
-    @Override
-    protected void unregisterAll() {
-        super.unregisterAll();
+    private Point markerDragMatch(float x, float y, Rect rect){
+        if (((-1* (rect.bottom - rect.top)) / 3f + rect.top <= y) && (y <= (2* (rect.bottom - rect.top)) / 3f + rect.top)){ // match 2/3 at top of rect
+            int dx6 = (rect.right - rect.left) /6;
+            if ((rect.left+dx6 <= x) && (x <= rect.right-dx6)){
+                return new Point(rect.centerX()-(int)x, rect.bottom-(int)y);
+            }
+        }
+        return null;
     }
 
-    @Override
-    protected void register(Layer layer) {
-        super.register(layer);
-    }
-
-    @Override
-    protected void unregister(Layer layer) {
-        super.unregister(layer);
-    }
-
-    @Override
-    protected void redraw() {
-        super.redraw();
-    }
 }

@@ -111,6 +111,7 @@ public class PointModelUtil {
 
         pmResult.setLon(Math.min(maxLong, Math.max(minLong, resLong)));
         pmResult.setLat(Math.min(maxLat, Math.max(minLat, resLat)));
+        interpolateELe(segmentEnd1, segmentEnd2, pmResult);
         return true;
     }
 
@@ -240,6 +241,7 @@ public class PointModelUtil {
                         if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
                         pmApproach.setLat(pmApproachCandidate.getLat());
                         pmApproach.setLon(pmApproachCandidate.getLon());
+                        pmApproach.setEle(pmApproachCandidate.getEleA());
                         bestMatch.setDistance( distance );
                         bestMatch.setEndPointIndex(i);
                     }
@@ -259,6 +261,7 @@ public class PointModelUtil {
                     if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
                     pmApproach.setLat(pmApproachCandidate.getLat());
                     pmApproach.setLon(pmApproachCandidate.getLon());
+                    pmApproach.setEle(pmApproachCandidate.getEleA());
                     bestMatch.setDistance( distance );
                     bestMatch.setEndPointIndex(i);
                 }
