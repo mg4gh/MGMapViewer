@@ -34,10 +34,10 @@ public class TrackLogStatistic {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
-    private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
-    String logName = "";  // used only for debug puposes
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
 
+    private static final float ELE_THRESHOLD_BARO = 1.9f; // in meter
+    private static final float ELE_THRESHOLD_ELSE = 3f; // in meter
     public static final Map<Integer,String> SEGMENT_IDS = Map.of(
             -1,"All",
             -2,"R",
@@ -45,7 +45,10 @@ public class TrackLogStatistic {
             -4,"1-E",
             -5,"1-2",
             -6,"2-1");
-    private int segmentIdx = -1; // -1 means all segments; // -2 remainings statistic
+
+    private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
+    String logName = "";  // used only for debug puposes
+    private int segmentIdx = -1; // see SEGMENT_IDS definition
     private long tStart = PointModel.NO_TIME;
     private long duration = 0;
 
@@ -118,9 +121,6 @@ public class TrackLogStatistic {
     private float lastSmoothing4GainLoss = 0;
     private float lastSmoothingSignum = 0;
     private float preLastSmoothingSignum = 0;
-
-    private static final float ELE_THRESHOLD_BARO = 1.9f; // in meter
-    private static final float ELE_THRESHOLD_ELSE = 3f; // in meter
 
     public TrackLogStatistic(){}
 
