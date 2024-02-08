@@ -25,8 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.core.content.res.ResourcesCompat;
-
 import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.ControlView;
@@ -85,7 +83,7 @@ public class SearchView extends LinearLayout {
     }
 
     void setPosBasedSearchIcon(boolean posBasedSearch){
-        Drawable drawable = ResourcesCompat.getDrawable(getContext().getResources(), posBasedSearch?R.drawable.search_pos2:R.drawable.search_pos1 , getContext().getTheme());
+        Drawable drawable = fsSearch.getDrawable( posBasedSearch?R.drawable.search_pos2:R.drawable.search_pos1 );
         if (drawable != null){
             drawable.setBounds(0,0, ControlView.dp(24),ControlView.dp(24));
             searchText.setCompoundDrawables(drawable,null,null,null);

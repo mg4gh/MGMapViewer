@@ -23,8 +23,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.core.content.res.ResourcesCompat;
-
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.activity.filemgr.FileManagerActivity;
@@ -125,8 +123,8 @@ public class FSControl extends FeatureService {
         super(activity);
 
         totalWidth = getActivity().getResources().getDisplayMetrics().widthPixels;
-        qcBackground = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape, activity.getTheme());
-        qcLightBackground = ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape_mu, activity.getTheme());
+        qcBackground = getDrawable(R.drawable.shape);
+        qcLightBackground = getDrawable(R.drawable.shape_mu);
 
         ttRefreshTime = 10;
         prefFullscreen.addObserver((e) -> {
