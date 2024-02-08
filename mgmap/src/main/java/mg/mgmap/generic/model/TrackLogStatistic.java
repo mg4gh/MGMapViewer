@@ -257,11 +257,13 @@ public class TrackLogStatistic {
     }
 
     public void finalizeStatistic(){
-        float diff = lastPoint4Distance.getEleD() - (lastPoint4GainLoss.getEleD()-lastSmoothing4GainLoss);
-        if (diff > 0){
-            gain += diff;
-        } else {
-            loss -= diff;
+        if ((lastPoint4Distance != null) && (lastPoint4GainLoss != null)){
+            float diff = lastPoint4Distance.getEleD() - (lastPoint4GainLoss.getEleD()-lastSmoothing4GainLoss);
+            if (diff > 0){
+                gain += diff;
+            } else {
+                loss -= diff;
+            }
         }
     }
 
