@@ -6,8 +6,8 @@ import mg.mgmap.generic.graph.WayAttributs;
 public class CostCalculatorTreckingBike implements CostCalculator {
 
     double mGenCostFactor = 2.0;
-    private CostCalculatorHeuristicTwoPieceFunc mProfileCalculator;
-    public CostCalculatorTreckingBike(WayAttributs wayTagEval, CostCalculatorHeuristicTwoPieceFunc profile) {
+    private CostCalculatorTwoPieceFunc mProfileCalculator;
+    public CostCalculatorTreckingBike(WayAttributs wayTagEval, CostCalculatorTwoPieceFunc profile) {
         mProfileCalculator = profile;
         short surfaceCat = 4;
         boolean cycleroute = false;
