@@ -33,6 +33,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRefApproach;
+import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
@@ -156,14 +157,42 @@ public class FSTrackDetails extends FeatureService {
                 tdDashboardId = "invalid"; // reopen of track details will reset also points
                 setVisibilityAndHeight(false, 0);
             } else if (tdVisibility){ // if visibility is still given
-                TrackLogRefApproach approach1 = verifyPosition(tdm1, trackLog);
-                TrackLogRefApproach approach2 = verifyPosition(tdm2, trackLog);
                 TrackLogStatistic statistic = new TrackLogStatistic();
-                trackLog.subStatistic(statistic,approach1,approach2);
+                statistic.setSegmentIdx(-5);
+                TrackLogRefApproach approachStart = verifyPosition(tdm1, trackLog);
+                if (approachStart == null){
+                    statistic.setSegmentIdx(-3);
+                    approachStart = new TrackLogRefApproach(trackLog, 0, 0);
+                    approachStart.setApproachPoint(trackLog.getTrackLogSegment(0).get(0));
+                    approachStart.setEndPointIndex(0);
+                }
+                TrackLogRefApproach approachEnd = verifyPosition(tdm2, trackLog);
+                if (approachEnd == null){
+                    statistic.setSegmentIdx(-4);
+                    int segmentIdx = trackLog.lastNoneEmptySegmentIdx();
+                    TrackLogSegment segment = trackLog.getTrackLogSegment(segmentIdx);
+                    approachEnd = new TrackLogRefApproach(trackLog, segmentIdx, 0);
+                    approachEnd.setApproachPoint(segment.getLastPoint());
+                    approachEnd.setEndPointIndex(segment.size() - 1);
+                }
+                boolean reverse = false;
+                if (approachStart.getSegmentIdx() > approachEnd.getSegmentIdx()){
+                    reverse = true;
+                } else if (approachStart.getSegmentIdx() == approachEnd.getSegmentIdx()){
+                    if (approachStart.getEndPointIndex() > approachEnd.getEndPointIndex()){
+                        reverse = true;
+                    }
+                }
+                if (reverse){
+                    statistic.setSegmentIdx(-6);
+                }
+                trackLog.subStatistic(statistic,approachStart,approachEnd,reverse);
                 getControlView().setDashboardValue(tdDashboardId, statistic);
             }
         }
     }
+
+
 
 
     TrackLogRefApproach verifyPosition(TdMarker tdm, TrackLog trackLog){

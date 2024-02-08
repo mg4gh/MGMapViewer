@@ -19,15 +19,11 @@ import androidx.annotation.NonNull;
 import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.Formatter;
-import mg.mgmap.generic.util.basic.MGLog;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 /** A TrackLog consists of multiple TrackLogSegment objects, a total TrackLogStatistic over all segments and a track log name */
 public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
-
-    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     protected ArrayList<TrackLogSegment> trackLogSegments = new ArrayList<>();
     protected TrackLogStatistic trackStatistic = new TrackLogStatistic(-1);
@@ -176,40 +172,10 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
     }
 
     // calculate statistic from approach appStart to the approach appEnd
-    // if appStart is null, assume start of track instead
-    // if appEnd is null, assume end of track instead
     // don't change the TrackLog statistic itself, rather calculate on a separate TrackLogStatistic Object
-    // if appEnd is in front of appStart, then calculate reverse statistic
-    public void subStatistic(TrackLogStatistic rStat, TrackLogRefApproach appStart, TrackLogRefApproach appEnd) {
-        rStat.reset();
-        if ((appStart == null) && (appEnd == null)) { mgLog.e("not allowed"); return; } //no allowed
-        if ((getNumberOfSegments() < 1) || (getTrackLogSegment(0).size() < 2)) return;
-
-        rStat.setSegmentIdx(-5);
-        if (appStart == null){
-            rStat.setSegmentIdx(-3);
-            appStart = new TrackLogRefApproach(this, 0, 0);
-            appStart.approachPoint = getTrackLogSegment(0).get(0);
-            appStart.endPointIndex = 0;
-        }
-        if (appEnd == null){
-            rStat.setSegmentIdx(-4);
-            int segmentIdx = lastNoneEmptySegmentIdx();
-            TrackLogSegment segment = getTrackLogSegment(lastNoneEmptySegmentIdx());
-            appEnd = new TrackLogRefApproach(this, segmentIdx, 0);
-            appEnd.approachPoint = segment.getLastPoint();
-            appEnd.endPointIndex = segment.size()-1;
-        }
-        boolean reverse = false;
-        if (appStart.segmentIdx > appEnd.segmentIdx){
-            reverse = true;
-        } else if (appStart.segmentIdx == appEnd.segmentIdx){
-            if (appStart.endPointIndex > appEnd.endPointIndex){
-                reverse = true;
-            }
-        }
+    // if appEnd is in front of appStart (and reverse is set - should be consistent), then calculate reverse statistic
+    public void subStatistic(TrackLogStatistic rStat, TrackLogRefApproach appStart, TrackLogRefApproach appEnd, boolean reverse) {
         if (reverse){
-            rStat.setSegmentIdx(-6);
             for (int segmentIdx=appEnd.segmentIdx; segmentIdx>=appStart.getSegmentIdx(); segmentIdx--){
                 TrackLogSegment segment = getTrackLogSegment(segmentIdx);
                 PointModel firstPoint = (segmentIdx==appStart.segmentIdx)?appStart.approachPoint:null;
@@ -231,7 +197,7 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
         rStat.updateWithPoint(null);
     }
 
-    private int lastNoneEmptySegmentIdx(){
+    public int lastNoneEmptySegmentIdx(){
         for (int i=getNumberOfSegments()-1; i>=0; i--){
             if (getTrackLogSegment(i).size() > 0) return i;
         }
