@@ -16,10 +16,8 @@ package mg.mgmap.activity.mgmap.features.trad;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.widget.RelativeLayout;
-
-import androidx.core.content.res.ResourcesCompat;
 
 import org.mapsforge.core.model.LatLong;
 
@@ -48,7 +46,9 @@ public class FSTrackDetails extends FeatureService {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
 
-    private static final int tdHeight = VUtil.dp(60);
+    private static final int TD_HEIGHT = VUtil.dp(60);
+    static long MARKER_ANIMATION_DURATION = 500;
+    static long MARKER_HOME_TIMEOUT = 2000;
 
     private final RelativeLayout trackDetailsView;
 
@@ -95,6 +95,7 @@ public class FSTrackDetails extends FeatureService {
 
         @Override
         protected void handleDrag(float scrollX1, float scrollY1, float scrollX2, float scrollY2) {
+            getTimer().removeCallbacks(getDragObject().ttPositionTimeout);
             WriteablePointModel pmCurrent = new WriteablePointModelImpl(y2lat(scrollY2+dragOffset.y), x2lon(scrollX2+dragOffset.x));
             getDragObject().setPosition(pmCurrent);
             triggerRefreshObserver();
@@ -110,8 +111,8 @@ public class FSTrackDetails extends FeatureService {
         trackDetailsView.setBackgroundColor(0x00000000);
 
         int totalWidth = getResources().getDisplayMetrics().widthPixels;
-        tdm1 = new TdMarker(this, trackDetailsView, true, totalWidth, tdHeight);
-        tdm2 = new TdMarker(this, trackDetailsView, false, totalWidth, tdHeight);
+        tdm1 = new TdMarker(this, trackDetailsView, true, totalWidth, TD_HEIGHT);
+        tdm2 = new TdMarker(this, trackDetailsView, false, totalWidth, TD_HEIGHT);
     }
 
     @Override
@@ -132,6 +133,10 @@ public class FSTrackDetails extends FeatureService {
     @Override
     protected void redraw() {
         super.redraw();
+    }
+
+    protected static Handler getTimer(){
+        return FeatureService.getTimer();
     }
 
     void triggerRefreshObserver(){
@@ -165,13 +170,12 @@ public class FSTrackDetails extends FeatureService {
         PointModel tdmPm = tdm.getPosition();
         TrackLogRefApproach approach = null;
         if (tdm.getPosition().getLaLo() != PointModelUtil.NO_POS){
-            getTimer().removeCallbacks(tdm.ttPositionTimeout);
             approach = trackLog.getBestDistance(tdm.getPosition(), getMapViewUtility().getCloseThresholdForZoomLevel());
             if (approach != null){
                 tdm.setPosition(approach.getApproachPoint());
             } else {
                 tdm.setPosition(tdmPm); // just refresh
-                getTimer().postDelayed(tdm.ttPositionTimeout,3000);
+                getTimer().postDelayed(tdm.ttPositionTimeout, MARKER_HOME_TIMEOUT);
             }
         }
         return approach;
@@ -212,19 +216,19 @@ public class FSTrackDetails extends FeatureService {
         } else {
             if (visibilityAtDashboardDragStart){
                 if (dy <= 0){
-                    if (dy <= -tdHeight){
+                    if (dy <= -TD_HEIGHT){
                         setVisibilityAndHeight(false, 0);
                         abort = true;
                     } else {
-                        setVisibilityAndHeight(true,tdHeight + (int)dy);
+                        setVisibilityAndHeight(true, TD_HEIGHT + (int)dy);
                     }
                 } else {
                     abort = true;
                 }
             } else {
                 if (dy >= 0){
-                    if (dy >= tdHeight){
-                        setVisibilityAndHeight(true,tdHeight);
+                    if (dy >= TD_HEIGHT){
+                        setVisibilityAndHeight(true, TD_HEIGHT);
                         abort = true;
                     } else {
                         setVisibilityAndHeight(true, (int) dy);
@@ -238,8 +242,8 @@ public class FSTrackDetails extends FeatureService {
     }
 
     public void abortDashboardDrag(){
-        if (trackDetailsView.getLayoutParams().height > tdHeight/2){ // check requested height, since actual height might not be updated right now
-            setVisibilityAndHeight(true, tdHeight);
+        if (trackDetailsView.getLayoutParams().height > TD_HEIGHT /2){ // check requested height, since actual height might not be updated right now
+            setVisibilityAndHeight(true, TD_HEIGHT);
         } else {
             setVisibilityAndHeight(false, 0);
         }

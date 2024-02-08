@@ -2,13 +2,19 @@ package mg.mgmap.activity.mgmap.features.trad;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.transition.AutoTransition;
+import android.transition.Transition;
+import android.transition.TransitionListenerAdapter;
+import android.transition.TransitionManager;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.map.android.graphics.AndroidBitmap;
 
+import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.view.BitmapView;
 import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.generic.model.PointModel;
@@ -16,12 +22,14 @@ import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class TdMarker {
 
-    private final ImageView tdvBgImage;
-
-    private final ImageView tdvImage;
+    private final ImageView tdvBgImage; // bg image in tdView
+    private final ImageView tdvImage; // fg image in tdView
+    private ImageView animationImage; // animation image is the same as fg image, it is used for home animation of Marker
+    private RelativeLayout animationGroup;
 
     private BitmapView tdMarkerLayer;
 
@@ -49,6 +57,16 @@ public class TdMarker {
             params.setMargins(firstMarker?0:totalWidth-dim,0,0,0);
             tdvImage.setLayoutParams(params);
             tdView.addView(tdvImage);
+        }
+        {
+            RelativeLayout animationView = fstd.getActivity().findViewById(R.id.animationview);
+            animationGroup = new RelativeLayout(fstd.getApplication());
+            animationGroup.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            animationView.addView(animationGroup);
+            animationImage = new ImageView(fstd.getApplication());
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(dim, dim);
+            params.setMargins(0,0,0,0);
+            animationImage.setLayoutParams(params);
         }
 
     }
@@ -81,9 +99,35 @@ public class TdMarker {
         return new PointModelImpl(wpm);
     }
 
+    Runnable homeAnimation = ()->{
+        AutoTransition at = new AutoTransition();
+        at.setDuration(FSTrackDetails.MARKER_ANIMATION_DURATION);
+        at.addListener(new TransitionListenerAdapter() {
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                MGLog.sd("transition end");
+                setPosition(new PointModelImpl());
+                fstd.triggerRefreshObserver();
+                animationGroup.removeView(animationImage);
+            }
+            @Override
+            public void onTransitionCancel(Transition transition) {
+                this.onTransitionEnd(transition);
+            }
+        });
+        TransitionManager.beginDelayedTransition(animationGroup, at);
+        setAnimationViewPosition(getTdvImageRect());
+    };
+
     Runnable ttPositionTimeout = ()->{
-        setPosition(new PointModelImpl());
-        fstd.triggerRefreshObserver();
+        if (tdMarkerLayer.getVisibility()){
+            assert (tdMarkerLayer.getVisibility());
+            tdMarkerLayer.setVisibility(false);
+            setAnimationViewPosition(tdMarkerLayer.getDrawableRect());
+            animationGroup.addView(animationImage);
+            fstd.redraw();
+            FSTrackDetails.getTimer().postDelayed(homeAnimation , 50);
+        }
     };
 
 
@@ -97,6 +141,8 @@ public class TdMarker {
         tdvBgImage.setVisibility(View.VISIBLE);
         tdvImage.setImageDrawable(drawableFg);
         tdvImage.setVisibility(View.VISIBLE);
+        animationImage.setImageDrawable(drawableFg);
+        animationImage.setVisibility(View.VISIBLE);
 
         if (drawableFg != null){
             android.graphics.Bitmap aBitmap = android.graphics.Bitmap.createBitmap(dim,dim,android.graphics.Bitmap.Config.ARGB_8888);
@@ -111,11 +157,22 @@ public class TdMarker {
 
     public Rect getMarkerRect(boolean fix){
         if (fix || (wpm.getLaLo() == PointModelUtil.NO_POS) || tdMarkerLayer == null){
-            int[] loc = new int[2];
-            tdvImage.getLocationOnScreen(loc);
-            return new Rect(loc[0],loc[1],loc[0]+dim,loc[1]+dim);
+            return getTdvImageRect();
         } else {
             return tdMarkerLayer.getDrawableRect();
         }
     }
+
+    private Rect getTdvImageRect(){
+        int[] loc = new int[2];
+        tdvImage.getLocationOnScreen(loc);
+        return new Rect(loc[0],loc[1],loc[0]+dim,loc[1]+dim);
+    }
+
+    private void setAnimationViewPosition(Rect pos){
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)animationImage.getLayoutParams();
+        params.setMargins(pos.left,pos.top,0,0);
+        animationImage.setLayoutParams(params);
+    }
+
 }

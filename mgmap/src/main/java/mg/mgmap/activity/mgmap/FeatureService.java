@@ -248,7 +248,7 @@ public class FeatureService {
         }
     }
 
-    protected MGMapActivity getActivity(){
+    public MGMapActivity getActivity(){
         return activity;
     }
     public MGMapApplication getApplication(){
