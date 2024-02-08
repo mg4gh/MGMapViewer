@@ -56,7 +56,6 @@ public class FSTrackDetails extends FeatureService {
     private String tdDashboardId = null;
     private int tdColorId = 0;
     private Observable tdObservable = null;
-    private int tdDrawableId = 0;
 
     private final TdMarker tdm1;
     private final TdMarker tdm2;
@@ -250,31 +249,34 @@ public class FSTrackDetails extends FeatureService {
     private void setDashboardId(String id){
         if (!id.equals(tdDashboardId)){
             tdDashboardId = id;
+            int drawableIdStart = R.drawable.td_marker_bg_start;
+            int drawableIdEnd = R.drawable.td_marker_bg_end;
             switch (id){
                 case "rtl":
                 case "rtls":
                     tdColorId = R.color.CC_RED100_A100;
                     tdObservable = getApplication().recordingTrackLogObservable;
-                    tdDrawableId = R.drawable.td_marker_rtl;
+                    drawableIdStart = R.drawable.td_marker_rtl_start;
+                    drawableIdEnd = R.drawable.td_marker_rtl_end;
                     break;
                 case "route":
                     tdColorId = R.color.CC_PURPLE_A100;
                     tdObservable = getApplication().routeTrackLogObservable;
-                    tdDrawableId = R.drawable.td_marker_route;
+                    drawableIdStart = R.drawable.td_marker_route_start;
+                    drawableIdEnd = R.drawable.td_marker_route_end;
                     break;
                 case "stl":
                 case "stls":
                     tdColorId = R.color.CC_BLUE100_A100;
                     tdObservable = getApplication().availableTrackLogsObservable;
-                    tdDrawableId = R.drawable.td_marker_stl;
+                    drawableIdStart = R.drawable.td_marker_stl_start;
+                    drawableIdEnd = R.drawable.td_marker_stl_end;
                     break;
                 default:
                     mgLog.e("unexpected id value: "+id);
             }
-            Drawable drawableBg = ResourcesCompat.getDrawable(getResources(), R.drawable.td_marker_bg, getActivity().getTheme());
-            Drawable drawableFg = ResourcesCompat.getDrawable(getResources(), tdDrawableId, getActivity().getTheme());
-            tdm1.setDrawable(drawableBg, drawableFg);
-            tdm2.setDrawable(drawableBg, drawableFg);
+            tdm1.setDrawable(getDrawable(R.drawable.td_marker_bg_start), getDrawable(drawableIdStart));
+            tdm2.setDrawable(getDrawable(R.drawable.td_marker_bg_end), getDrawable(drawableIdEnd));
             tdm1.resetPosition();
             tdm2.resetPosition();
         }

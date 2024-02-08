@@ -16,10 +16,12 @@ package mg.mgmap.activity.mgmap;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.ViewGroup;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Lifecycle;
 
 import org.mapsforge.core.graphics.Paint;
@@ -32,6 +34,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 
+import mg.mgmap.R;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.MVGroupLayer;
@@ -289,4 +292,7 @@ public class FeatureService {
         return activity.getPrefCache().get(id,defaultValue);
     }
 
+    protected Drawable getDrawable(int drawableId){
+        return ResourcesCompat.getDrawable(getResources(), drawableId, getActivity().getTheme());
+    }
 }
