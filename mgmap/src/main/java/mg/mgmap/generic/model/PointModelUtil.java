@@ -44,6 +44,7 @@ public class PointModelUtil {
     }
 
     public static double distance(PointModel pm1, PointModel pm2) {
+        if ((pm1 == null) || (pm2 == null)) return 0;
         return distance(pm1.getLat(), pm1.getLon(), pm2.getLat(), pm2.getLon() );
     }
     public static double distance(double lat1, double long1, double lat2, double long2) {
@@ -290,4 +291,22 @@ public class PointModelUtil {
         return ((int)(d+shift) - shift);
     }
 
+    public static void getHeightList(ArrayList<PointModel> points, double dist, float[] heights){
+        assert (heights.length >= 2);
+        dist *=  0.999999;
+        PointModel lastPoint = null;
+        int hIdx = 0;
+        double remainingDist = dist * 0.999999;
+        for (PointModel point : points){
+            double pointDist = distance(lastPoint,point);
+            double distFromLastPoint = -remainingDist;
+            while ((pointDist >= distFromLastPoint + dist) && (lastPoint != null) && (point != null)){
+                distFromLastPoint += dist;
+                heights[hIdx++] = (float)interpolate(0, pointDist,lastPoint.getEleA(),point.getEleA(),distFromLastPoint);
+                if (hIdx == heights.length) return;
+            }
+            remainingDist = pointDist-distFromLastPoint;
+            lastPoint = point;
+        }
+    }
 }

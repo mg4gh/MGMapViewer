@@ -171,30 +171,16 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
         return remainingDistance;
     }
 
-    // calculate statistic from approach appStart to the approach appEnd
-    // don't change the TrackLog statistic itself, rather calculate on a separate TrackLogStatistic Object
-    // if appEnd is in front of appStart (and reverse is set - should be consistent), then calculate reverse statistic
-    public void subStatistic(TrackLogStatistic rStat, TrackLogRefApproach appStart, TrackLogRefApproach appEnd, boolean reverse) {
-        if (reverse){
-            for (int segmentIdx=appEnd.segmentIdx; segmentIdx>=appStart.getSegmentIdx(); segmentIdx--){
-                TrackLogSegment segment = getTrackLogSegment(segmentIdx);
-                PointModel firstPoint = (segmentIdx==appStart.segmentIdx)?appStart.approachPoint:null;
-                int startIdx = (segmentIdx==appStart.segmentIdx)?appStart.endPointIndex-1:segment.size()-1;
-                int endIdx = (segmentIdx==appEnd.segmentIdx)?appEnd.endPointIndex:0;
-                PointModel lastPoint = (segmentIdx==appEnd.segmentIdx)?appEnd.approachPoint:null;
-                updateStatisticWithSegment(rStat,firstPoint,segment,startIdx,endIdx,lastPoint,true);
-            }
-        } else {
-            for (int segmentIdx=appStart.segmentIdx; segmentIdx<=appEnd.getSegmentIdx(); segmentIdx++){
-                TrackLogSegment segment = getTrackLogSegment(segmentIdx);
-                PointModel firstPoint = (segmentIdx==appStart.segmentIdx)?appStart.approachPoint:null;
-                int startIdx = (segmentIdx==appStart.segmentIdx)?appStart.endPointIndex:0;
-                int endIdx = (segmentIdx==appEnd.segmentIdx)?appEnd.endPointIndex-1:segment.size()-1;
-                PointModel lastPoint = (segmentIdx==appEnd.segmentIdx)?appEnd.approachPoint: null;
-                updateStatisticWithSegment(rStat,firstPoint,segment,startIdx,endIdx,lastPoint,false);
-            }
+    public ArrayList<PointModel> getPointList(TrackLogRefApproach appStart, TrackLogRefApproach appEnd){
+        ArrayList<PointModel> points = new ArrayList<>();
+        for (int segIdx=appStart.segmentIdx; segIdx<=appEnd.getSegmentIdx(); segIdx++){
+            TrackLogSegment segment = getTrackLogSegment(segIdx);
+            points.add( (segIdx==appStart.segmentIdx)?appStart.approachPoint:null );
+            points.addAll(segment.points.subList( (segIdx==appStart.segmentIdx)?appStart.endPointIndex:0, (segIdx==appEnd.segmentIdx)?appEnd.endPointIndex:segment.size() ));
+            points.add( (segIdx==appEnd.segmentIdx)?appEnd.approachPoint: null );
         }
-        rStat.updateWithPoint(null);
+        points.add( null );
+        return points;
     }
 
     public int lastNoneEmptySegmentIdx(){
@@ -202,19 +188,6 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
             if (getTrackLogSegment(i).size() > 0) return i;
         }
         return -1;
-    }
-
-    private void updateStatisticWithSegment(TrackLogStatistic statistic, PointModel firstPoint, TrackLogSegment segment,int startIdx, int endIdx, PointModel lastPoint, boolean reverse){
-        updateWithPoint(statistic,firstPoint);
-        for (int i=0; i<=(reverse?startIdx-endIdx:endIdx-startIdx); i++){
-            int idx = reverse?startIdx-i:startIdx+i;
-            updateWithPoint(statistic,segment.get(idx));
-        }
-        updateWithPoint(statistic,lastPoint);
-    }
-
-    private void updateWithPoint(TrackLogStatistic statistic, PointModel pm){
-        statistic.updateWithPoint(pm);
     }
 
 

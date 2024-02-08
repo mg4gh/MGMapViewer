@@ -102,7 +102,9 @@ public class MapViewUtility {
         return new PointModelImpl(this.mapView.getModel().mapViewPosition.getCenter());
     }
     public void setCenter(PointModel pm){
-        this.mapView.getModel().mapViewPosition.setCenter(new LatLong(pm.getLat(),pm.getLon()));
+        if (pm.getLaLo() != PointModelUtil.NO_POS){
+            this.mapView.getModel().mapViewPosition.setCenter(new LatLong(pm.getLat(),pm.getLon()));
+        }
     }
 
     public float getTrackWidth() {

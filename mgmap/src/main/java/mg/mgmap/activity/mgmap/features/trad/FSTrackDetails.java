@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import org.mapsforge.core.model.LatLong;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.FeatureService;
@@ -47,7 +48,7 @@ public class FSTrackDetails extends FeatureService {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
 
-    private static final int TD_HEIGHT = VUtil.dp(60);
+    private static final int TD_SIZE = VUtil.dp(60);
     static long MARKER_ANIMATION_DURATION = 500;
     static long MARKER_HOME_TIMEOUT = 2000;
 
@@ -61,7 +62,7 @@ public class FSTrackDetails extends FeatureService {
     private final TdMarker tdm1;
     private final TdMarker tdm2;
     private TradControlLayer tdControlLayer = null;
-
+    private final DataView tdDataView;
 
 
     private boolean visibilityAtDashboardDragStart = false;
@@ -112,8 +113,14 @@ public class FSTrackDetails extends FeatureService {
         trackDetailsView.setBackgroundColor(0x00000000);
 
         int totalWidth = getResources().getDisplayMetrics().widthPixels;
-        tdm1 = new TdMarker(this, trackDetailsView, true, totalWidth, TD_HEIGHT);
-        tdm2 = new TdMarker(this, trackDetailsView, false, totalWidth, TD_HEIGHT);
+        tdm1 = new TdMarker(this, trackDetailsView, true, totalWidth, TD_SIZE);
+        tdm2 = new TdMarker(this, trackDetailsView, false, totalWidth, TD_SIZE);
+        int tdCenterWidth = totalWidth - 2 * TD_SIZE;
+        tdDataView = new DataView(mmActivity, 100, tdCenterWidth, TD_SIZE);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(tdCenterWidth, TD_SIZE);
+        params.setMargins(TD_SIZE,0,0,0);
+        tdDataView.setLayoutParams(params);
+        trackDetailsView.addView(tdDataView);
     }
 
     @Override
@@ -159,6 +166,7 @@ public class FSTrackDetails extends FeatureService {
             } else if (tdVisibility){ // if visibility is still given
                 TrackLogStatistic statistic = new TrackLogStatistic();
                 statistic.setSegmentIdx(-5);
+                boolean valid = true;
                 TrackLogRefApproach approachStart = verifyPosition(tdm1, trackLog);
                 if (approachStart == null){
                     statistic.setSegmentIdx(-3);
@@ -168,6 +176,7 @@ public class FSTrackDetails extends FeatureService {
                 }
                 TrackLogRefApproach approachEnd = verifyPosition(tdm2, trackLog);
                 if (approachEnd == null){
+                    valid = statistic.getSegmentIdx() != -3;
                     statistic.setSegmentIdx(-4);
                     int segmentIdx = trackLog.lastNoneEmptySegmentIdx();
                     TrackLogSegment segment = trackLog.getTrackLogSegment(segmentIdx);
@@ -183,11 +192,27 @@ public class FSTrackDetails extends FeatureService {
                         reverse = true;
                     }
                 }
+                double length = trackLog.getTrackStatistic().getTotalLength();
+                ArrayList<PointModel> points;
+                if (valid){
+                    points = trackLog.getPointList(reverse?approachEnd:approachStart, reverse?approachStart:approachEnd);
+                    for (PointModel pm : points){
+                        statistic.updateWithPoint(pm);
+                    }
+                    length = statistic.getTotalLength();
+                } else {
+                    points = trackLog.getPointList(approachStart, approachEnd);
+                }
                 if (reverse){
                     statistic.setSegmentIdx(-6);
+                    statistic.reverse();
                 }
-                trackLog.subStatistic(statistic,approachStart,approachEnd,reverse);
                 getControlView().setDashboardValue(tdDashboardId, statistic);
+
+                double dist = length / 300;
+                float[] heights = new float[300+1];
+                PointModelUtil.getHeightList(points, dist, heights);
+                tdDataView.setData(heights);
             }
         }
     }
@@ -245,19 +270,19 @@ public class FSTrackDetails extends FeatureService {
         } else {
             if (visibilityAtDashboardDragStart){
                 if (dy <= 0){
-                    if (dy <= -TD_HEIGHT){
+                    if (dy <= -TD_SIZE){
                         setVisibilityAndHeight(false, 0);
                         abort = true;
                     } else {
-                        setVisibilityAndHeight(true, TD_HEIGHT + (int)dy);
+                        setVisibilityAndHeight(true, TD_SIZE + (int)dy);
                     }
                 } else {
                     abort = true;
                 }
             } else {
                 if (dy >= 0){
-                    if (dy >= TD_HEIGHT){
-                        setVisibilityAndHeight(true, TD_HEIGHT);
+                    if (dy >= TD_SIZE){
+                        setVisibilityAndHeight(true, TD_SIZE);
                         abort = true;
                     } else {
                         setVisibilityAndHeight(true, (int) dy);
@@ -271,8 +296,8 @@ public class FSTrackDetails extends FeatureService {
     }
 
     public void abortDashboardDrag(){
-        if (trackDetailsView.getLayoutParams().height > TD_HEIGHT /2){ // check requested height, since actual height might not be updated right now
-            setVisibilityAndHeight(true, TD_HEIGHT);
+        if (trackDetailsView.getLayoutParams().height > TD_SIZE /2){ // check requested height, since actual height might not be updated right now
+            setVisibilityAndHeight(true, TD_SIZE);
         } else {
             setVisibilityAndHeight(false, 0);
         }

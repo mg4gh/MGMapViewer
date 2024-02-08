@@ -294,4 +294,10 @@ public class TrackLogStatistic {
         this.frozen = frozen;
         return this;
     }
+
+    public void reverse(){
+        float temp = gain;
+        gain = loss;
+        loss = temp;
+    }
 }
