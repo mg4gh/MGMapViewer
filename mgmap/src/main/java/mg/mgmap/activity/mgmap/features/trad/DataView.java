@@ -71,13 +71,13 @@ public class DataView extends View {
         paintText = new TextPaint();
         paintText.setColor(textColor);
         paintText.setStyle(Paint.Style.FILL);
-        paintText.setTextSize(VUtil.dp(10));
+        paintText.setTextSize(VUtil.dp(15));
         paintText.setStrokeWidth(3);
         paintText.setTypeface(Typeface.DEFAULT_BOLD);
         paintBgText = new TextPaint();
         paintBgText.setColor(TEXT_BG_COLOR);
         paintBgText.setStyle(Paint.Style.FILL_AND_STROKE);
-        paintBgText.setTextSize(VUtil.dp(10));
+        paintBgText.setTextSize(VUtil.dp(15));
         paintBgText.setStrokeWidth(5);
         paintBgText.setTypeface(Typeface.DEFAULT_BOLD);
         setBackgroundColor(BG_COLOR);
@@ -121,8 +121,8 @@ public class DataView extends View {
 
             if (textEachInterval || odd){
                 String text = (int)current+"m";
-                texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(3), paintBgText));
-                texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(3), paintText));
+                texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(4), paintBgText));
+                texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(4), paintText));
             }
             odd = !odd;
         }
