@@ -209,10 +209,14 @@ public class FSTrackDetails extends FeatureService {
                 }
                 getControlView().setDashboardValue(tdDashboardId, statistic);
 
-                double dist = length / 300;
-                float[] heights = new float[300+1];
-                PointModelUtil.getHeightList(points, dist, heights);
-                tdDataView.setData(heights);
+                if (length > 0){
+                    double dist = length / 300;
+                    float[] heights = new float[300+1];
+                    PointModelUtil.getHeightList(points, dist, heights);
+                    tdDataView.setData(heights);
+                } else {
+                    tdDataView.setData(null);
+                }
             }
         }
     }

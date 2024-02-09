@@ -85,46 +85,48 @@ public class DataView extends View {
 
 
     public void setData(float[] data) {
-        float dataMin = Float.MAX_VALUE;
-        float dataMax = Float.MIN_VALUE;
-        for (float d : data){
-            if (d > dataMax) dataMax = d;
-            if (d < dataMin) dataMin = d;
-        }
-
-        dataMin = ((int)(dataMin / dataStep)) * dataStep;
-        dataMax = ((int)(dataMax / dataStep) + 1) * dataStep;
-
         pathFg.reset();
-        pathFg.moveTo(0,height);
-        for (int idx=0; idx<data.length; idx++){
-            pathFg.lineTo(idx*width/(data.length-1f), height - (float)PointModelUtil.interpolate(dataMin, dataMax, 0, height, data[idx]));
-        }
-        pathFg.lineTo(width,height);
-        pathFg.lineTo(0,height);
-        pathFg.close();
-
-        float currentDataStep = dataStep;
-        float interval = dataMax - dataMin;
-        while (interval / currentDataStep < 3.01f) currentDataStep /= 2;
-        while (interval / currentDataStep > 6.99f) currentDataStep *= 2;
-        boolean textEachInterval = (interval / currentDataStep < 3.01f);
-
         pathStep.reset();
         texts.clear();
-        paintText.setColor(textColor);
-        boolean odd = true;
-        for (float current=dataMin+currentDataStep; current<dataMax-currentDataStep*0.1; current+=currentDataStep ){
-            float y = (float)(height - PointModelUtil.interpolate(dataMin, dataMax, 0,height, current));
-            pathStep.moveTo(0,y);
-            pathStep.lineTo(width,y);
-
-            if (textEachInterval || odd){
-                String text = (int)current+"m";
-                texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(4), paintBgText));
-                texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(4), paintText));
+        if ((data != null) && (data.length>=2)){
+            float dataMin = Float.MAX_VALUE;
+            float dataMax = Float.MIN_VALUE;
+            for (float d : data){
+                if (d > dataMax) dataMax = d;
+                if (d < dataMin) dataMin = d;
             }
-            odd = !odd;
+
+            dataMin = ((int)(dataMin / dataStep)) * dataStep;
+            dataMax = ((int)(dataMax / dataStep) + 1) * dataStep;
+
+            pathFg.moveTo(0,height);
+            for (int idx=0; idx<data.length; idx++){
+                pathFg.lineTo(idx*width/(data.length-1f), height - (float)PointModelUtil.interpolate(dataMin, dataMax, 0, height, data[idx]));
+            }
+            pathFg.lineTo(width,height);
+            pathFg.lineTo(0,height);
+            pathFg.close();
+
+            float currentDataStep = dataStep;
+            float interval = dataMax - dataMin;
+            while (interval / currentDataStep < 3.01f) currentDataStep /= 2;
+            while (interval / currentDataStep > 6.99f) currentDataStep *= 2;
+            boolean textEachInterval = (interval / currentDataStep < 3.01f);
+
+            paintText.setColor(textColor);
+            boolean odd = true;
+            for (float current=dataMin+currentDataStep; current<dataMax-currentDataStep*0.1; current+=currentDataStep ){
+                float y = (float)(height - PointModelUtil.interpolate(dataMin, dataMax, 0,height, current));
+                pathStep.moveTo(0,y);
+                pathStep.lineTo(width,y);
+
+                if (textEachInterval || odd){
+                    String text = (int)current+"m";
+                    texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(4), paintBgText));
+                    texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(4), paintText));
+                }
+                odd = !odd;
+            }
         }
 
         this.invalidate();
