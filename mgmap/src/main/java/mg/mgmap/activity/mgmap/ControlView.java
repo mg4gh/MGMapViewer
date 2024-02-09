@@ -81,6 +81,8 @@ public class ControlView extends RelativeLayout {
     ArrayList<ViewGroup> dashboardEntries = new ArrayList<>();
     /** Parent of the dashboard entries. */
     ViewGroup dashboard;
+    ViewGroup trackDetails;
+    ViewGroup routingProfiles;
 
 
     /** parent object for status line */
@@ -94,6 +96,8 @@ public class ControlView extends RelativeLayout {
     private int statusBarHeight;
     private int navigationBarHeight;
     Pref<String> prefVerticalFullscreenOffset;
+    Pref<String> prefVerticalNoneFullscreenOffset;
+    Pref<String> prefVerticalFullscreenBottomOffset;
     public ArrayList<View> variableVerticalOffsetViews = new ArrayList<>();
 
     public ControlView(Context context) {
@@ -126,12 +130,16 @@ public class ControlView extends RelativeLayout {
             ControlComposer controlComposer = new ControlComposer();
             prepareEnlargeControl();
 
+            trackDetails = findViewById(R.id.trackDetails);
+            routingProfiles = findViewById(R.id.routingProfiles);
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
             dashboard = findViewById(R.id.dashboard);
             controlComposer.composeDashboard(activity, this);
             initSystemBarHeight(activity);
             variableVerticalOffsetViews.add(this);
             prefVerticalFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_fullscreen_offset_key, ""+statusBarHeight);
+            prefVerticalNoneFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_none_fullscreen_offset_key, ""+0);
+            prefVerticalFullscreenBottomOffset = activity.getPrefCache().get(R.string.preferences_display_fullscreen_bottom_offset_key, ""+0);
 
             controlComposer.composeRoutingProfileButtons(activity, this);
 
@@ -154,7 +162,7 @@ public class ControlView extends RelativeLayout {
     public void setVerticalOffset(){
         initSystemBarHeight(activity);
         boolean fullscreen =  activity.getPrefCache().get(R.string.FSControl_qcFullscreenOn, true).getValue();
-        int top = 0, bottom = 0;
+        int top = 0, bottom = dp(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
             top = statusBarHeight;
             if (fullscreen){
@@ -165,7 +173,21 @@ public class ControlView extends RelativeLayout {
                     mgLog.w("Reset prefVerticalFullscreenOffset to default "+statusBarHeight);
                     prefVerticalFullscreenOffset.setValue(""+statusBarHeight);
                 }
+                try{
+                    bottom = Integer.parseInt(prefVerticalFullscreenBottomOffset.getValue());
+                } catch (NumberFormatException e) {
+                    mgLog.e(e.getMessage());
+                    mgLog.w("Reset prefVerticalFullscreenBottomOffset to default "+0);
+                    prefVerticalFullscreenBottomOffset.setValue(""+0);
+                }
             } else{
+                try{
+                    top += Integer.parseInt(prefVerticalNoneFullscreenOffset.getValue());
+                } catch (NumberFormatException e) {
+                    mgLog.e(e.getMessage());
+                    mgLog.w("Reset prefVerticalNoneFullscreenOffset to default "+0);
+                    prefVerticalNoneFullscreenOffset.setValue(""+0);
+                }
                 bottom = navigationBarHeight;
             }
         }
@@ -174,7 +196,7 @@ public class ControlView extends RelativeLayout {
             params.setMargins(0, top,0,bottom);
             view.setLayoutParams(params);
         }
-        getActivity().getMapViewUtility().setScaleBarVMargin(bottom + dp(VUtil.QC_HEIGHT_DP*0.99f));
+        getActivity().getMapViewUtility().setScaleBarVMargin(bottom + dp(VUtil.QC_HEIGHT_DP*1.5f));
         getActivity().getMapViewUtility().setScaleBarColor((0xFF808080));
         activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle();
     }
@@ -216,7 +238,10 @@ public class ControlView extends RelativeLayout {
 // *************************************************************************************************
 
     public void setDashboardVisibility(boolean visibitity){
+        // This method is called, when search takes place - then do not only hide dashboard, but also track details.
+        trackDetails.setVisibility(visibitity?VISIBLE:INVISIBLE);
         dashboard.setVisibility(visibitity?VISIBLE:INVISIBLE);
+        routingProfiles.setVisibility(visibitity?VISIBLE:INVISIBLE);
     }
 
     public static class DashboardEntry extends TableRow{

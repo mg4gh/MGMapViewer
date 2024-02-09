@@ -160,7 +160,7 @@ public class FSTrackDetails extends FeatureService {
             } else if (tdObservable instanceof MGMapApplication.AvailableTrackLogsObservable) {
                 trackLog = ((MGMapApplication.AvailableTrackLogsObservable) tdObservable).getSelectedTrackLogRef().getTrackLog();
             }
-            if (trackLog == null){
+            if ((trackLog == null) || (trackLog.getTrackStatistic().getNumPoints() < 2)){
                 tdDashboardId = "invalid"; // reopen of track details will reset also points
                 setVisibilityAndHeight(false, 0);
             } else if (tdVisibility){ // if visibility is still given
