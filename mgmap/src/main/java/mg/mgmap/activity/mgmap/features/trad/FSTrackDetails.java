@@ -333,6 +333,7 @@ public class FSTrackDetails extends FeatureService {
                 default:
                     mgLog.e("unexpected id value: "+id);
             }
+            tdDataView.setTextColor(CC.getColor(tdColorId));
             tdm1.setDrawable(getDrawable(R.drawable.td_marker_bg_start), getDrawable(drawableIdStart));
             tdm2.setDrawable(getDrawable(R.drawable.td_marker_bg_end), getDrawable(drawableIdEnd));
             tdm1.resetPosition();

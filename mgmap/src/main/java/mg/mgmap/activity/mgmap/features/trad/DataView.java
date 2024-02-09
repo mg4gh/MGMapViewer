@@ -5,22 +5,55 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Typeface;
+import android.text.TextPaint;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.view.VUtil;
 
 @SuppressLint("ViewConstructor")
 public class DataView extends View {
 
-    Path path = new Path();
+    private static final int BG_COLOR = 0x40FFFFFF;
+    private static final int FG_COLOR = 0x80FFFFFF;
+    private static final int STEP_COLOR = 0x80FFFFFF;
+    private static final int TEXT_BG_COLOR = 0xFFFFFFFF;
+    private int textColor = 0x00000000;
+
+
+    Path pathFg = new Path();
+    Path pathStep = new Path();
+    ArrayList<AText> texts = new ArrayList<>();
+
     float dataStep;
     int width;
     int height;
 
 
-    Paint paint = new Paint();
+    Paint paintFg;
+    Paint paintStep;
+    TextPaint paintText;
+    TextPaint paintBgText;
+
+
+    private static class AText{
+        String text;
+        float x;
+        float y;
+        TextPaint paint;
+
+        public AText(String text, float x, float y, TextPaint paint) {
+            this.text = text;
+            this.x = x;
+            this.y = y;
+            this.paint = paint;
+        }
+    }
 
 
     public DataView(Context context, float dataStep, int width, int height) {
@@ -28,9 +61,26 @@ public class DataView extends View {
         this.dataStep = dataStep;
         this.width = width;
         this.height = height;
-        paint.setColor(0x80FFFFFF);
-        paint.setStyle(Paint.Style.FILL);
-        setBackgroundColor(0x40FFFFFF);
+        paintFg = new Paint();
+        paintFg.setColor(FG_COLOR);
+        paintFg.setStyle(Paint.Style.FILL);
+        paintStep = new Paint();
+        paintStep.setColor(STEP_COLOR);
+        paintStep.setStrokeWidth(3);
+        paintStep.setStyle(Paint.Style.STROKE);
+        paintText = new TextPaint();
+        paintText.setColor(textColor);
+        paintText.setStyle(Paint.Style.FILL);
+        paintText.setTextSize(VUtil.dp(10));
+        paintText.setStrokeWidth(3);
+        paintText.setTypeface(Typeface.DEFAULT_BOLD);
+        paintBgText = new TextPaint();
+        paintBgText.setColor(TEXT_BG_COLOR);
+        paintBgText.setStyle(Paint.Style.FILL_AND_STROKE);
+        paintBgText.setTextSize(VUtil.dp(10));
+        paintBgText.setStrokeWidth(5);
+        paintBgText.setTypeface(Typeface.DEFAULT_BOLD);
+        setBackgroundColor(BG_COLOR);
     }
 
 
@@ -45,14 +95,38 @@ public class DataView extends View {
         dataMin = ((int)(dataMin / dataStep)) * dataStep;
         dataMax = ((int)(dataMax / dataStep) + 1) * dataStep;
 
-        path.reset();
-        path.moveTo(0,height);
+        pathFg.reset();
+        pathFg.moveTo(0,height);
         for (int idx=0; idx<data.length; idx++){
-            path.lineTo(idx*width/(data.length-1f), height - (float)PointModelUtil.interpolate(dataMin, dataMax, 0, height, data[idx]));
+            pathFg.lineTo(idx*width/(data.length-1f), height - (float)PointModelUtil.interpolate(dataMin, dataMax, 0, height, data[idx]));
         }
-        path.lineTo(width,height);
-        path.lineTo(0,height);
-        path.close();
+        pathFg.lineTo(width,height);
+        pathFg.lineTo(0,height);
+        pathFg.close();
+
+        float currentDataStep = dataStep;
+        float interval = dataMax - dataMin;
+        while (interval / currentDataStep < 3.01f) currentDataStep /= 2;
+        while (interval / currentDataStep > 6.99f) currentDataStep *= 2;
+        boolean textEachInterval = (interval / currentDataStep < 3.01f);
+
+        pathStep.reset();
+        texts.clear();
+        paintText.setColor(textColor);
+        boolean odd = true;
+        for (float current=dataMin+currentDataStep; current<dataMax-currentDataStep*0.1; current+=currentDataStep ){
+            float y = (float)(height - PointModelUtil.interpolate(dataMin, dataMax, 0,height, current));
+            pathStep.moveTo(0,y);
+            pathStep.lineTo(width,y);
+
+            if (textEachInterval || odd){
+                String text = (int)current+"m";
+                texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(3), paintBgText));
+                texts.add(new AText(text, VUtil.dp(2), y + VUtil.dp(3), paintText));
+            }
+            odd = !odd;
+        }
+
         this.invalidate();
     }
 
@@ -60,8 +134,15 @@ public class DataView extends View {
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
-        if (path != null){
-            canvas.drawPath(path, paint);
+        canvas.drawPath(pathFg, paintFg);
+        canvas.drawPath(pathStep, paintStep);
+        for (AText aText : texts){
+            canvas.drawText(aText.text, aText.x,aText.y,aText.paint);
         }
+
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
     }
 }
