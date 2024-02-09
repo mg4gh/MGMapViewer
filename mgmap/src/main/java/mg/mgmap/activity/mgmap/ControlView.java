@@ -97,7 +97,6 @@ public class ControlView extends RelativeLayout {
     private int navigationBarHeight;
     Pref<String> prefVerticalFullscreenOffset;
     Pref<String> prefVerticalNoneFullscreenOffset;
-    Pref<String> prefVerticalFullscreenBottomOffset;
     public ArrayList<View> variableVerticalOffsetViews = new ArrayList<>();
 
     public ControlView(Context context) {
@@ -139,7 +138,6 @@ public class ControlView extends RelativeLayout {
             variableVerticalOffsetViews.add(this);
             prefVerticalFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_fullscreen_offset_key, ""+statusBarHeight);
             prefVerticalNoneFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_none_fullscreen_offset_key, ""+0);
-            prefVerticalFullscreenBottomOffset = activity.getPrefCache().get(R.string.preferences_display_fullscreen_bottom_offset_key, ""+0);
 
             controlComposer.composeRoutingProfileButtons(activity, this);
 
@@ -172,13 +170,6 @@ public class ControlView extends RelativeLayout {
                     mgLog.e(e.getMessage());
                     mgLog.w("Reset prefVerticalFullscreenOffset to default "+statusBarHeight);
                     prefVerticalFullscreenOffset.setValue(""+statusBarHeight);
-                }
-                try{
-                    bottom = Integer.parseInt(prefVerticalFullscreenBottomOffset.getValue());
-                } catch (NumberFormatException e) {
-                    mgLog.e(e.getMessage());
-                    mgLog.w("Reset prefVerticalFullscreenBottomOffset to default "+0);
-                    prefVerticalFullscreenBottomOffset.setValue(""+0);
                 }
             } else{
                 try{

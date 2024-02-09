@@ -82,10 +82,6 @@
     <string name="preferences_display_none_fullscreen_offset_title">Vertical none fullscreen offset</string>
     <string name="preferences_display_none_fullscreen_offset_desc">Vertical offset in none fullscreen mode - used for dashboard and search text.</string>
     <string name="preferences_display_none_fullscreen_offset_desc2">Vertical offset in none fullscreen mode - used for dashboard and search text. Helpful, if dashboard gesture is in conflict with system gesture.</string>
-    <string name="preferences_display_fullscreen_bottom_offset_key">pref_vertical_fullscreen_bottom_offset</string>
-    <string name="preferences_display_fullscreen_bottom_offset_title">Vertical fullscreen bottom offset</string>
-    <string name="preferences_display_fullscreen_bottom_offset_desc">Vertical bottom offset in fullscreen mode.</string>
-    <string name="preferences_display_fullscreen_bottom_offset_desc2">Vertical bottom offset in fullscreen mode. Helpful, if quick control usage is in conflict with system gesture.</string>
 
     <string name="preferences_hprof_gl_key">hprof_gl</string>
     <string name="preferences_hprof_gl_title">Ascent height profile</string>
