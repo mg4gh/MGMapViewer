@@ -29,6 +29,7 @@ public class DataView extends View {
     Path pathFg = new Path();
     Path pathStep = new Path();
     ArrayList<AText> texts = new ArrayList<>();
+    Path pathPos = new Path();
 
     float dataStep;
     int width;
@@ -39,6 +40,7 @@ public class DataView extends View {
     Paint paintStep;
     TextPaint paintText;
     TextPaint paintBgText;
+    Paint paintPos;
 
 
     private static class AText{
@@ -69,7 +71,6 @@ public class DataView extends View {
         paintStep.setStrokeWidth(3);
         paintStep.setStyle(Paint.Style.STROKE);
         paintText = new TextPaint();
-        paintText.setColor(textColor);
         paintText.setStyle(Paint.Style.FILL);
         paintText.setTextSize(VUtil.dp(15));
         paintText.setStrokeWidth(3);
@@ -81,13 +82,19 @@ public class DataView extends View {
         paintBgText.setStrokeWidth(5);
         paintBgText.setTypeface(Typeface.DEFAULT_BOLD);
         setBackgroundColor(BG_COLOR);
+
+        paintPos = new Paint();
+        paintPos.setStrokeWidth(4);
+        paintPos.setStyle(Paint.Style.STROKE);
+
     }
 
 
-    public void setData(float[] data) {
+    public void setData(float[] data, float pos) {
         pathFg.reset();
         pathStep.reset();
         texts.clear();
+        pathPos.reset();
         if ((data != null) && (data.length>=2)){
             float dataMin = Float.MAX_VALUE;
             float dataMax = Float.MIN_VALUE;
@@ -127,6 +134,15 @@ public class DataView extends View {
                 }
                 odd = !odd;
             }
+
+            if (pos > 0){
+                paintPos.setColor(textColor);
+                float x = pos*width/(data.length-1f);
+                pathPos.moveTo(x,0);
+                pathPos.lineTo(x,height);
+                pathPos.lineTo(x,0);
+                pathPos.close();
+            }
         }
 
         this.invalidate();
@@ -141,7 +157,7 @@ public class DataView extends View {
         for (AText aText : texts){
             canvas.drawText(aText.text, aText.x,aText.y,aText.paint);
         }
-
+        canvas.drawPath(pathPos, paintPos);
     }
 
     public void setTextColor(int textColor) {

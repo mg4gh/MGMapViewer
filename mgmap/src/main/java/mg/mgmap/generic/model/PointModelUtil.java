@@ -291,6 +291,15 @@ public class PointModelUtil {
         return ((int)(d+shift) - shift);
     }
 
+    public static double distance(ArrayList<PointModel> points){
+        PointModel lastPoint = null;
+        double distance = 0;
+        for (PointModel point : points){
+            distance += distance(lastPoint,point);
+            lastPoint = point;
+        }
+        return distance;
+    }
     public static void getHeightList(ArrayList<PointModel> points, double dist, float[] heights){
         assert (heights.length >= 2);
         dist *=  0.999999;

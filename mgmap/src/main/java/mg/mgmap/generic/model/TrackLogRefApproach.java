@@ -19,7 +19,7 @@ import java.util.Locale;
 /** A specific kind of {@link mg.mgmap.generic.model.TrackLogRef} to reference an approach to a TrackLog.
  * Additionally it references the ApproachPoint, the distance to the approachPoint and
  * the index of the endpoint in the segment. */
-public class TrackLogRefApproach extends TrackLogRef {
+public class TrackLogRefApproach extends TrackLogRef implements Comparable<TrackLogRefApproach>{
 
     PointModel approachPoint = null;
     double distance;
@@ -52,6 +52,22 @@ public class TrackLogRefApproach extends TrackLogRef {
 
     public void setEndPointIndex(int endPointIndex) {
         this.endPointIndex = endPointIndex;
+    }
+
+
+    @Override
+    public int compareTo(TrackLogRefApproach o) {
+        assert trackLog == o.trackLog; // can compare only approaches to the same track
+        if (getSegmentIdx() > o.getSegmentIdx()){
+            return  1;
+        } else if (getSegmentIdx() == o.getSegmentIdx()){
+            if (getEndPointIndex() > o.getEndPointIndex()){
+                return  1;
+            } else if (getEndPointIndex() == o.getEndPointIndex()){
+                return 0;
+            }
+        }
+        return -1;
     }
 
     @Override

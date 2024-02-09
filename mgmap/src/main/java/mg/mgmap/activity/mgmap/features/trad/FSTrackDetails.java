@@ -184,28 +184,24 @@ public class FSTrackDetails extends FeatureService {
                     approachEnd.setApproachPoint(segment.getLastPoint());
                     approachEnd.setEndPointIndex(segment.size() - 1);
                 }
-                boolean reverse = false;
-                if (approachStart.getSegmentIdx() > approachEnd.getSegmentIdx()){
-                    reverse = true;
-                } else if (approachStart.getSegmentIdx() == approachEnd.getSegmentIdx()){
-                    if (approachStart.getEndPointIndex() > approachEnd.getEndPointIndex()){
-                        reverse = true;
+                double length = 0;
+                int reverse = approachStart.compareTo(approachEnd);
+                ArrayList<PointModel> points = new ArrayList<>();
+                if (reverse != 0){
+                    length = trackLog.getTrackStatistic().getTotalLength();
+                    if (valid){
+                        points = trackLog.getPointList(reverse>0?approachEnd:approachStart, reverse>0?approachStart:approachEnd);
+                        for (PointModel pm : points){
+                            statistic.updateWithPoint(pm);
+                        }
+                        length = statistic.getTotalLength();
+                    } else {
+                        points = trackLog.getPointList(approachStart, approachEnd);
                     }
-                }
-                double length = trackLog.getTrackStatistic().getTotalLength();
-                ArrayList<PointModel> points;
-                if (valid){
-                    points = trackLog.getPointList(reverse?approachEnd:approachStart, reverse?approachStart:approachEnd);
-                    for (PointModel pm : points){
-                        statistic.updateWithPoint(pm);
+                    if (reverse>0){
+                        statistic.setSegmentIdx(-6);
+                        statistic.reverse();
                     }
-                    length = statistic.getTotalLength();
-                } else {
-                    points = trackLog.getPointList(approachStart, approachEnd);
-                }
-                if (reverse){
-                    statistic.setSegmentIdx(-6);
-                    statistic.reverse();
                 }
                 getControlView().setDashboardValue(tdDashboardId, statistic);
 
@@ -213,9 +209,19 @@ public class FSTrackDetails extends FeatureService {
                     double dist = length / 300;
                     float[] heights = new float[300+1];
                     PointModelUtil.getHeightList(points, dist, heights);
-                    tdDataView.setData(heights);
+
+                    float pos = 0;
+                    PointModel currentPos = getApplication().lastPositionsObservable.lastGpsPoint;
+                    if (getApplication().prefGps.getValue() && (currentPos != null)){
+                        TrackLogRefApproach rtlApproach = trackLog.getBestDistance(currentPos, PointModelUtil.getCloseThreshold());
+                        if ((rtlApproach != null) && (approachStart.compareTo(rtlApproach)<0) && (rtlApproach.compareTo(approachEnd)<0)){
+                            double partlyDistance = PointModelUtil.distance( trackLog.getPointList(approachStart, rtlApproach) );
+                            pos = (float)(partlyDistance/dist);
+                        }
+                    }
+                    tdDataView.setData(heights,pos);
                 } else {
-                    tdDataView.setData(null);
+                    tdDataView.setData(null,0);
                 }
             }
         }
@@ -348,12 +354,14 @@ public class FSTrackDetails extends FeatureService {
     private void registerTDService(){
         trackDetailsView.setBackgroundColor(CC.getColor(tdColorId));
         tdObservable.addObserver(refreshObserver);
+        getApplication().lastPositionsObservable.addObserver(refreshObserver);
         tdControlLayer = new TradControlLayer();
         register(tdControlLayer);
         register(tdm1.registerTDService());
         register(tdm2.registerTDService());
     }
     private void unregisterTDService(){
+        getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
         tdObservable.deleteObserver(refreshObserver);
         unregisterAllControl();
         unregisterAll();
