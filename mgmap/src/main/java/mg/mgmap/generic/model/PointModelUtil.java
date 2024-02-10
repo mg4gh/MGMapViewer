@@ -14,9 +14,11 @@
  */
 package mg.mgmap.generic.model;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.generic.util.basic.LaLo;
+import mg.mgmap.generic.util.basic.MGLog;
 
 /** Utilities for PointModel.
  * Especially
@@ -28,6 +30,8 @@ import mg.mgmap.generic.util.basic.LaLo;
  * </ul>
  */
 public class PointModelUtil {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static final long NO_POS = LaLo.getLaLo(LaLo.d2md(PointModel.NO_LAT_LONG), LaLo.d2md(PointModel.NO_LAT_LONG));
 
@@ -196,12 +200,12 @@ public class PointModelUtil {
 
     public static void interpolateELe(PointModel pm1, PointModel pm2, WriteablePointModel wpm){
         if (compareTo(pm1,pm2) == 0){
-            wpm.setEle(pm1.getEleA());
+            wpm.setEle(pm1.getEle());
         } else {
             if (Math.abs(pm2.getLon() - pm1.getLon()) > Math.abs(pm2.getLat() - pm1.getLat())){ // interpolate based on longitude
-                wpm.setEle( (float) interpolate(pm1.getLon(), pm2.getLon(), pm1.getEleA(), pm2.getEleA(), wpm.getLon()) );
+                wpm.setEle( (float) interpolate(pm1.getLon(), pm2.getLon(), pm1.getEle(), pm2.getEle(), wpm.getLon()) );
             } else { // interpolate based on latitude
-                wpm.setEle( (float) interpolate(pm1.getLat(), pm2.getLat(), pm1.getEleA(), pm2.getEleA(), wpm.getLat()) );
+                wpm.setEle( (float) interpolate(pm1.getLat(), pm2.getLat(), pm1.getEle(), pm2.getEle(), wpm.getLat()) );
             }
         }
     }
@@ -242,7 +246,7 @@ public class PointModelUtil {
                         if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
                         pmApproach.setLat(pmApproachCandidate.getLat());
                         pmApproach.setLon(pmApproachCandidate.getLon());
-                        pmApproach.setEle(pmApproachCandidate.getEleA());
+                        pmApproach.setEle(pmApproachCandidate.getEle());
                         bestMatch.setDistance( distance );
                         bestMatch.setEndPointIndex(i);
                     }
@@ -262,7 +266,7 @@ public class PointModelUtil {
                     if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
                     pmApproach.setLat(pmApproachCandidate.getLat());
                     pmApproach.setLon(pmApproachCandidate.getLon());
-                    pmApproach.setEle(pmApproachCandidate.getEleA());
+                    pmApproach.setEle(pmApproachCandidate.getEle());
                     bestMatch.setDistance( distance );
                     bestMatch.setEndPointIndex(i);
                 }
@@ -311,11 +315,34 @@ public class PointModelUtil {
             double distFromLastPoint = -remainingDist;
             while ((pointDist >= distFromLastPoint + dist) && (lastPoint != null) && (point != null)){
                 distFromLastPoint += dist;
-                heights[hIdx++] = (float)interpolate(0, pointDist,lastPoint.getEleA(),point.getEleA(),distFromLastPoint);
+                heights[hIdx++] = (float)interpolate(0, pointDist,lastPoint.getEle(),point.getEle(),distFromLastPoint);
                 if (hIdx == heights.length) return;
             }
             remainingDist = pointDist-distFromLastPoint;
             lastPoint = point;
         }
     }
+
+
+    public static float verticalDistance(TrackLogPoint pm1, TrackLogPoint pm2){
+        if ((pm1.getPressureEle() != PointModel.NO_ELE) && (pm2.getPressureEle() != PointModel.NO_ELE)){
+            return pm2.getPressureEle() - pm1.getPressureEle();
+        }
+        if ((pm1.getHgtEle() != PointModel.NO_ELE) && (pm2.getHgtEle() != PointModel.NO_ELE)){
+            return pm2.getHgtEle() - pm1.getHgtEle();
+        }
+        if ((pm1.getNmeaEle() != PointModel.NO_ELE) && (pm2.getNmeaEle() != PointModel.NO_ELE)){
+            return pm2.getNmeaEle() - pm1.getNmeaEle();
+        }
+        mgLog.w("no valid ele comparison: pm1: "+pm1+ " pm2: "+pm2);
+        return 0; //
+    }
+
+
+    public static float verticalDistance(PointModel pm1, PointModel pm2){
+        if ((pm1 instanceof TrackLogPoint) && (pm2 instanceof TrackLogPoint)) return verticalDistance((TrackLogPoint)pm1, (TrackLogPoint)pm2 );
+        if ((pm1.getEle() == PointModel.NO_ELE) || (pm2.getEle() == PointModel.NO_ELE)) return 0;
+        return pm2.getEle() - pm1.getEle();
+    }
+
 }

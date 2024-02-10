@@ -83,7 +83,7 @@ public class TdMarker {
     public void setPosition(PointModel pm){
         wpm.setLat(pm.getLat());
         wpm.setLon(pm.getLon());
-        wpm.setEle(pm.getEleA());
+        wpm.setEle(pm.getEle());
 
         if (wpm.getLaLo() == PointModelUtil.NO_POS){
             tdvImage.setVisibility(View.VISIBLE);

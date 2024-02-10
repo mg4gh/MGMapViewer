@@ -71,10 +71,10 @@ public class MarkerTest extends BaseTestCase {
         TrackLogStatistic stat = mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic();
         mgLog.i("Test Statistic: " + stat);
         Assert.assertEquals(4316,stat.getTotalLength(), 5);
-        Assert.assertEquals(70.9,stat.getGain(), 1);
-        Assert.assertEquals(79.8,stat.getLoss(), 1);
-        Assert.assertEquals(11.1,stat.getMinEle(), 1);
-        Assert.assertEquals(92.1,stat.getMaxEle(), 1);
+        Assert.assertEquals(67.3,stat.getGain(), 1);
+        Assert.assertEquals(91.5,stat.getLoss(), 1);
+        Assert.assertEquals(14.1,stat.getMinEle(), 1);
+        Assert.assertEquals(81.2,stat.getMaxEle(), 1);
         Assert.assertEquals(129,stat.getNumPoints());
 
 
@@ -84,10 +84,10 @@ public class MarkerTest extends BaseTestCase {
         stat = mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic();
         mgLog.i("Test Statistic: " + stat);
         Assert.assertEquals(3959,stat.getTotalLength(), 5);
-        Assert.assertEquals(70.9,stat.getGain(), 1);
-        Assert.assertEquals(79.8,stat.getLoss(), 1);
-        Assert.assertEquals(11.1,stat.getMinEle(), 1);
-        Assert.assertEquals(92.1,stat.getMaxEle(), 1);
+        Assert.assertEquals(67.3,stat.getGain(), 1);
+        Assert.assertEquals(91.5,stat.getLoss(), 1);
+        Assert.assertEquals(14.1,stat.getMinEle(), 1);
+        Assert.assertEquals(81.2,stat.getMaxEle(), 1);
         Assert.assertEquals(122,stat.getNumPoints());
 
         SystemClock.sleep(2000);

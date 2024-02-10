@@ -89,13 +89,7 @@ public class PointModelImplTest {
     @Test
     public void getEleA() {
         PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
-        assertEquals(17.8652f, pmi.getEleA(),0);
-    }
-
-    @Test
-    public void getEleD() {
-        PointModelImpl pmi = new PointModelImpl(49.60841449, 8.60512351, 17.8652f, 3.1f);
-        assertEquals(17.8652f, pmi.getEleD(),0);
+        assertEquals(17.8652f, pmi.getEle(),0);
     }
 
     @Test

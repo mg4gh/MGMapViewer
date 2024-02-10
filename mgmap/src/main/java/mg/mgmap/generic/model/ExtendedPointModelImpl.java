@@ -19,7 +19,7 @@ public class ExtendedPointModelImpl<T> extends PointModelImpl implements Extende
     private final T extent;
 
     public ExtendedPointModelImpl(PointModel pm, T extent){
-        this(pm.getLat(), pm.getLon(), pm.getEleA(), pm.getEleAcc(), extent);
+        this(pm.getLat(), pm.getLon(), pm.getEle(), pm.getEleAcc(), extent);
     }
 
     public ExtendedPointModelImpl(double latitude, double longitude, float ele, float eleAcc, T extent){

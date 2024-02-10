@@ -111,7 +111,7 @@ public class GpxImporter {
             } else if (eventType == XmlPullParser.END_TAG) {
                 if ("trkpt".equals(qName)) {
                     assert tlp != null;
-                    if (tlp.getEleD() == PointModel.NO_ELE){
+                    if (tlp.getEle() == PointModel.NO_ELE){
                         elevationProvider.setElevation(tlp); // try to enrich data with hgt height information
                     }
                     assert trackLog != null;

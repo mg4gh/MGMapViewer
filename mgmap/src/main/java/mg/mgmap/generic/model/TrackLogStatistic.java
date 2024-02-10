@@ -16,23 +16,18 @@ package mg.mgmap.generic.model;
 
 import androidx.annotation.NonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
 import mg.mgmap.generic.util.basic.Formatter;
-import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Statistic of a TrackLog or of a Segment of a TrackLog.
  */
 
 public class TrackLogStatistic {
-
-    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
 
@@ -119,8 +114,8 @@ public class TrackLogStatistic {
     private PointModel lastPoint4Distance = null;
     private PointModel lastPoint4GainLoss = null;
     private float lastSmoothing4GainLoss = 0;
-    private float lastSmoothingSignum = 0;
-    private float preLastSmoothingSignum = 0;
+    private float lastEleDiffSignum = 0;
+    private float preLastEleDiffSignum = 0;
 
     public TrackLogStatistic(){}
 
@@ -137,8 +132,8 @@ public class TrackLogStatistic {
         lastPoint4Distance = null;
         lastPoint4GainLoss = null;
         lastSmoothing4GainLoss = 0;
-        lastSmoothingSignum = 0;
-        preLastSmoothingSignum = 0;
+        lastEleDiffSignum = 0;
+        preLastEleDiffSignum = 0;
     }
 
     public void resetSegment() {
@@ -146,8 +141,8 @@ public class TrackLogStatistic {
         lastPoint4Distance = null;
         lastPoint4GainLoss = null;
         lastSmoothing4GainLoss = 0;
-        lastSmoothingSignum = 0;
-        preLastSmoothingSignum = 0;
+        lastEleDiffSignum = 0;
+        preLastEleDiffSignum = 0;
     }
 
     public TrackLogStatistic(int segmentIdx) {
@@ -193,12 +188,12 @@ public class TrackLogStatistic {
                 duration = point.getTimestamp() - tStart;
             }
 
-            if (point.getEleA() != PointModel.NO_ELE) {
-                float lastEle = point.getEleA();
+            if (point.getEle() != PointModel.NO_ELE) {
+                float lastEle = point.getEle();
                 maxEle = Math.max(maxEle, lastEle);
                 minEle = Math.min(minEle, lastEle);
             }
-            if (point.getEleD() != PointModel.NO_ELE){
+            if (point.getEle() != PointModel.NO_ELE){
                 process2GL(point);
             }
             if (lastPoint4Distance != null) {
@@ -229,36 +224,31 @@ public class TrackLogStatistic {
             lastPoint4GainLoss = point;
         } else {
             float smoothingFactor = (point.getEleAcc() == PointModel.NO_ACC)? 0.25f : Math.min(20, point.getEleAcc()) / 20.0f;
-            float smoothingDiff = (point.getEleD() - lastPoint4GainLoss.getEleD());
-            float smoothing = smoothingDiff * smoothingFactor / 2; // smoothing is maximal half of the difference
-            float smoothingSignum = Math.signum(smoothingDiff);
+            float eleDiff = PointModelUtil.verticalDistance (lastPoint4GainLoss,point);
+            float smoothing = eleDiff * smoothingFactor / 2; // smoothing is maximal half of the difference
+            float eleDiffSignum = Math.signum(eleDiff);
+
 
 //            if (Math.signum(lastSmoothing4GainLoss)!=Math.signum(smoothing)) lastSmoothingSignum=0;
 
-            float diff = (point.getEleD()-smoothing) - (lastPoint4GainLoss.getEleD()-lastSmoothing4GainLoss);
-            if ((Math.abs(diff) >= getEleThreshold(point)) ||
-                    ( (smoothingSignum == lastSmoothingSignum) && (lastSmoothingSignum == preLastSmoothingSignum))){
+            float diff = eleDiff -smoothing + lastSmoothing4GainLoss;
+            if ((Math.abs(diff) >= getEleThreshold(point)) || ( (eleDiffSignum == lastEleDiffSignum) && (lastEleDiffSignum == preLastEleDiffSignum))){
                 lastPoint4GainLoss = point;
-                preLastSmoothingSignum = lastSmoothingSignum;
-                lastSmoothingSignum = smoothingSignum;
+                preLastEleDiffSignum = lastEleDiffSignum;
+                lastEleDiffSignum = eleDiffSignum;
                 lastSmoothing4GainLoss = smoothing;
                 if (diff > 0){
                     gain += diff;
                 } else {
                     loss -= diff;
                 }
-                mgLog.v(()->String.format(Locale.ENGLISH,"+ Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d",
-                        sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
-            } else {
-                mgLog.v(()->String.format(Locale.ENGLISH,"- Time: %s | Diff: %+5.1f | Smooth: %+5.2f | SmoothF: %+5.2f | SmoothD: %+6.2f | ele: %5.1f | eleAcc: %5.1f | gain: %5.1f | loss: %5.1f | Seg: %s:%d",
-                        sdf.format(new Date(point.getTimestamp())), diff, smoothing, smoothingFactor, smoothingDiff, point.getEleD(), point.getEleAcc(), gain, loss, logName, segmentIdx));
             }
         }
     }
 
     public void finalizeStatistic(){
         if ((lastPoint4Distance != null) && (lastPoint4GainLoss != null)){
-            float diff = lastPoint4Distance.getEleD() - (lastPoint4GainLoss.getEleD()-lastSmoothing4GainLoss);
+            float diff = PointModelUtil.verticalDistance(lastPoint4GainLoss,lastPoint4Distance) -lastSmoothing4GainLoss;
             if (diff > 0){
                 gain += diff;
             } else {

@@ -22,7 +22,7 @@ public class WriteablePointModelImpl extends PointModelImpl implements Writeable
     long timestamp = NO_TIME;
 
     public WriteablePointModelImpl(PointModel pm){
-        this(pm.getLat(), pm.getLon(), pm.getEleA(), pm.getEleAcc());
+        this(pm.getLat(), pm.getLon(), pm.getEle(), pm.getEleAcc());
     }
 
     public WriteablePointModelImpl(double latitude, double longitude, float ele, float eleAcc) {

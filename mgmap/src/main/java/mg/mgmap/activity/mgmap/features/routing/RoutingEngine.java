@@ -382,7 +382,7 @@ public class RoutingEngine {
                             if (PointModelUtil.findApproach(pointModel, node, neighbourNode, pmApproach , closeThreshold)) {
                                 double distance = PointModelUtil.distance(pointModel, pmApproach)+0.0001;
                                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
-                                    GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEleA(), pmApproach.getEleAcc(), distance); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
+                                    GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEle(), pmApproach.getEleAcc(), distance); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
                                     ApproachModel approach = new ApproachModel(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbourNode, approachNode);
                                     approaches.add(approach);
                                 }

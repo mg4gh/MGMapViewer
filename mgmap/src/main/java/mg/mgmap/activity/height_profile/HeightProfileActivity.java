@@ -180,7 +180,7 @@ public class HeightProfileActivity extends AppCompatActivity {
             }
         }
         if (tls != null){
-            return (tls.get(0).getEleA() != PointModel.NO_ELE) && (tls.get(1).getEleA() != PointModel.NO_ELE);
+            return (tls.get(0).getEle() != PointModel.NO_ELE) && (tls.get(1).getEle() != PointModel.NO_ELE);
         }
         return false;
     }
@@ -207,15 +207,15 @@ public class HeightProfileActivity extends AppCompatActivity {
         if (segment.size() > 0){
             PointModel lastTlp = segment.get(0);
             PointModel lastPM = segment.get(0);
-            segmentHeightProfile.put( (int)distance, (int)(lastPM.getEleA()*1000));
+            segmentHeightProfile.put( (int)distance, (int)(lastPM.getEle()*1000));
             SparseIntArray segmentAscentProfileRaw = new SparseIntArray();
             double deltaDistance = 0;
             for (PointModel pm : segment){
                 deltaDistance += PointModelUtil.distance(pm, lastPM);
                 lastPM = pm;
                 if (deltaDistance > 150.0){
-                    if ((pm.getEleA() != PointModel.NO_ELE) && (lastTlp.getEleA() != PointModel.NO_ELE)){
-                        double deltaHeight = (pm.getEleD() - lastTlp.getEleD())*1000;
+                    if ((pm.getEle() != PointModel.NO_ELE) && (lastTlp.getEle() != PointModel.NO_ELE)){
+                        double deltaHeight = PointModelUtil.verticalDistance (lastTlp,pm) *1000;
                         double glValue = deltaHeight / deltaDistance;
                         segmentAscentProfileRaw.put( (int)(distance+deltaDistance/2), (int)(glValue * 10));
                     }
@@ -224,12 +224,12 @@ public class HeightProfileActivity extends AppCompatActivity {
                 }
                 distance += deltaDistance;
                 deltaDistance = 0;
-                if (pm.getEleA() != PointModel.NO_ELE){
-                    segmentHeightProfile.put( (int)distance, (int)(pm.getEleA()*1000));
+                if (pm.getEle() != PointModel.NO_ELE){
+                    segmentHeightProfile.put( (int)distance, (int)(pm.getEle()*1000));
                 }
                 lastTlp = pm;
             }
-            segmentHeightProfile.put( (int)(distance+deltaDistance), (int)(lastPM.getEleA()*1000));
+            segmentHeightProfile.put( (int)(distance+deltaDistance), (int)(lastPM.getEle()*1000));
 
             for (int i=1; i< segmentAscentProfileRaw.size()-1; i++){
                 int gl0 = segmentAscentProfileRaw.valueAt(i-1);

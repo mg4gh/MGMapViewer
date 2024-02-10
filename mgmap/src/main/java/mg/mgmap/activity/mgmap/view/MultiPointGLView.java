@@ -60,7 +60,6 @@ public class MultiPointGLView extends MultiPointView {
             PointModel pm1 = model.get(model.size() - 1), pm2;
             int x1 = lon2canvasX(pm1.getLon()), x2=x1, x3;
             int y1 = lat2canvasY(pm1.getLat()), y2=y1, y3;
-            float z1 = pm1.getEleD(), z2;
             double d1=0, d2=d1, d3;
             double gl1=0, gl2=gl1, gl3;
 
@@ -78,9 +77,8 @@ public class MultiPointGLView extends MultiPointView {
                 pm2=pm1; pm1 = getPM(model, i);
                 x3=x2; x2=x1; x1 = lon2canvasX(pm1.getLon());
                 y3=y2; y2=y1; y1 = lat2canvasY(pm1.getLat());
-                z2=z1; z1 = pm1.getEleD();
                 d3=d2; d2=d1; d1=PointModelUtil.distance(pm2,pm1);
-                gl3=gl2; gl2=gl1; gl1= (d1==0)?0:(z2-z1)/(d1 / 100.0);
+                gl3=gl2; gl2=gl1; gl1= (d1==0)?0:(PointModelUtil.verticalDistance(pm1,pm2))/(d1 / 100.0);
 
                 if (d2 > 0){
                     double f1=0.3, f2=1, f3=0.3;
