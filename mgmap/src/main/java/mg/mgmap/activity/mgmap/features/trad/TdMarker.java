@@ -14,6 +14,8 @@ import android.widget.RelativeLayout;
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.map.android.graphics.AndroidBitmap;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.view.BitmapView;
 import mg.mgmap.activity.mgmap.view.MVLayer;
@@ -25,6 +27,8 @@ import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 
 public class TdMarker {
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final ImageView tdvBgImage; // bg image in tdView
     private final ImageView tdvImage; // fg image in tdView
@@ -105,13 +109,14 @@ public class TdMarker {
         at.addListener(new TransitionListenerAdapter() {
             @Override
             public void onTransitionEnd(Transition transition) {
-                MGLog.sd("transition end");
+                mgLog.d("transition end");
                 setPosition(new PointModelImpl());
                 fstd.triggerRefreshObserver();
                 animationGroup.removeView(animationImage);
             }
             @Override
             public void onTransitionCancel(Transition transition) {
+                mgLog.d("transition cancel");
                 this.onTransitionEnd(transition);
             }
         });

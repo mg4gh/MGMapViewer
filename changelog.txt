@@ -1,3 +1,5 @@
+- replace menu animation timeout with menu animation duration setting
+- new Feature: track details
 - additional height data source (based on lidar) for europa (incl automatic re-download offer)
 - allow alternative routing profiles (developer feature)
 - improved routing performance due to lazy GGraphTile loading

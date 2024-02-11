@@ -17,6 +17,9 @@ package mg.mgmap.activity.mgmap.features.control;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.transition.AutoTransition;
+import android.transition.Transition;
+import android.transition.TransitionListenerAdapter;
 import android.transition.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -362,7 +365,7 @@ public class FSControl extends FeatureService {
     }
 
 
-    private class MenuInflater implements Runnable{
+    private class MenuInflater{
         private final int idx;
         private final ViewGroup qcs;
         public MenuInflater(int idx){
@@ -374,7 +377,9 @@ public class FSControl extends FeatureService {
             qcs.setVisibility(View.VISIBLE);
 
             // animate menu item inflation
-            TransitionManager.beginDelayedTransition(qcs);
+            AutoTransition at = new AutoTransition();
+            at.setDuration(getMenuAnimationTimeout());
+            TransitionManager.beginDelayedTransition(qcs,at);
             int max = qcs.getChildCount();
             for (int j=0; j<max; j++){
                 View view = qcs.getChildAt(j);
@@ -397,16 +402,10 @@ public class FSControl extends FeatureService {
                     }
                 }
             }
-            getTimer().postDelayed(this, getMenuAnimationTimeout());
-
-        }
-        @Override
-        public void run() {
-            activity.runOnUiThread(() -> TransitionManager.endTransitions(qcs));
         }
     }
 
-    private class MenuDeflater implements Runnable{
+    private class MenuDeflater{
         private final int idx;
         private final ViewGroup qcs;
         public MenuDeflater(int idx){
@@ -415,7 +414,28 @@ public class FSControl extends FeatureService {
         }
         public void start(){
             // animate menu item deflation
-            TransitionManager.beginDelayedTransition(qcs);
+            AutoTransition at = new AutoTransition();
+            at.setDuration(getMenuAnimationTimeout());
+            at.addListener(new TransitionListenerAdapter() {
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    mgLog.d("transition end");
+                    qcs.setVisibility(View.INVISIBLE);
+                    getMapViewUtility().setScaleBarVisibility(true);
+
+                    for (int i=0; i<qcss[0].getChildCount(); i++){
+                        // reset intensity and visibility of menus
+                        qcss[0].getChildAt(i).setVisibility(View.VISIBLE);
+                        qcss[0].getChildAt(i).setBackground(qcBackground);
+                    }
+                }
+                @Override
+                public void onTransitionCancel(Transition transition) {
+                    mgLog.d("transition cancel");
+                    this.onTransitionEnd(transition);
+                }
+            });
+            TransitionManager.beginDelayedTransition(qcs,at);
             int max = qcs.getChildCount();
             for (int j=0; j<max; j++){
                 View view = qcs.getChildAt(j);
@@ -423,21 +443,6 @@ public class FSControl extends FeatureService {
                 rlp.setMargins(VUtil.getX4QC(totalWidth,idx-1,max)+hMargin,(prefMenuOneLine.getValue()?0:VUtil.QC_HEIGHT) + hMargin,hMargin,vMargin);
                 view.setLayoutParams(rlp);
             }
-            getTimer().postDelayed(this,getMenuAnimationTimeout());
-        }
-        @Override
-        public void run() {
-            activity.runOnUiThread(() -> {
-                // hide menu item group
-                qcs.setVisibility(View.INVISIBLE);
-                getMapViewUtility().setScaleBarVisibility(true);
-
-                for (int i=0; i<qcss[0].getChildCount(); i++){
-                    // reset intensity and visibility of menus
-                    qcss[0].getChildAt(i).setVisibility(View.VISIBLE);
-                    qcss[0].getChildAt(i).setBackground(qcBackground);
-                }
-            });
         }
     }
 
