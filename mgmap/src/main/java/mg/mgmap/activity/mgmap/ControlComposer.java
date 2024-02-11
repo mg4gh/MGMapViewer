@@ -166,7 +166,7 @@ public class ControlComposer {
         createQC(activity, FSRouting.class,qcss[3],"routingSave",gos.get(0)).setId(R.id.mi_routing_save);
         createQC(activity, FSMarker.class,qcss[3],"markerEdit",gos.get(0)).setId(R.id.mi_marker_edit);
         createQC(activity, FSRouting.class,qcss[3],"routingHint",gos.get(0)).setId(R.id.mi_routing_hint);
-        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty2);
+        createQC(activity, FSMarker.class,qcss[3],"reverse",gos.get(0)).setId(R.id.mi_marker_reverse);
         createQC(activity, FSRouting.class,qcss[3],"matching",gos.get(0)).setId(R.id.mi_map_mathching);
         createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty3);
 

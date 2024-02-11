@@ -1,3 +1,4 @@
+- new Feature: qc button to reverse direction of MTL
 - remove FSRemainings, logically replaced by FSTrackDetails
 - replace menu animation timeout with menu animation duration setting
 - new Feature: track details

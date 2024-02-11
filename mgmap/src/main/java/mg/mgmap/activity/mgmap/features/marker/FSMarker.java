@@ -59,6 +59,7 @@ public class FSMarker extends FeatureService {
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
     private final Pref<Boolean> triggerHideMtl = new Pref<>(false);
     private final Pref<Boolean> triggerHideAll = getPref(R.string.FSATL_pref_hideAll, false);
+    private final Pref<Boolean> triggerReverseMtl = new Pref<>(false);
 
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
 
@@ -86,6 +87,7 @@ public class FSMarker extends FeatureService {
         triggerHideMtl.addObserver(hideMarkerTrackObserver);
         triggerHideAll.addObserver(hideMarkerTrackObserver);
         prefEditMarkerTrack.setValue(false);
+        triggerReverseMtl.addObserver((e)->createMarkerTrackLog(markerTrackLogObservable.getTrackLog(), true));
     }
 
     private final Runnable ttHide = () -> prefEditMarkerTrack.setValue(false);
@@ -114,6 +116,11 @@ public class FSMarker extends FeatureService {
             etv.setData(R.drawable.hide_mtl);
             etv.setPrAction(triggerHideMtl);
             etv.setDisabledData(prefMtlVisibility,R.drawable.hide_mtl_dis);
+            etv.setHelp(r(R.string.FSMarker_qcHideMtl_Help));
+        } else if ("reverse".equals(info)){
+            etv.setData(R.drawable.marker_reverse);
+            etv.setPrAction(triggerReverseMtl);
+            etv.setDisabledData(prefMtlVisibility,R.drawable.marker_reverse_dis);
             etv.setHelp(r(R.string.FSMarker_qcHideMtl_Help));
         }
         return etv;
@@ -156,8 +163,11 @@ public class FSMarker extends FeatureService {
         }
     }
 
-
     public void createMarkerTrackLog(TrackLog trackLog){
+        createMarkerTrackLog(trackLog, false);
+    }
+
+    public void createMarkerTrackLog(TrackLog trackLog, boolean reverse){
         String name = trackLog.getName();
         name = name.endsWith("_MarkerTrack")?name:(name+"_MarkerTrack");
         WriteableTrackLog mtl = new WriteableTrackLog(name);
@@ -168,7 +178,7 @@ public class FSMarker extends FeatureService {
         for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
             mtl.startSegment(segment.getStatistic().getTStart());
             for (int i = 0; i<segment.size(); i++){
-                PointModel pm = segment.get(i);
+                PointModel pm = segment.get(reverse? segment.size()-(i+1) : i);
                 PointModel npm;
                 if (pm instanceof TrackLogPoint) {
                     npm = new TrackLogPoint((TrackLogPoint) pm);
