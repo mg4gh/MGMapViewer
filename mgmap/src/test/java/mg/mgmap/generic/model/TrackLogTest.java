@@ -1,5 +1,6 @@
 package mg.mgmap.generic.model;
 
+import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -165,9 +166,9 @@ public class TrackLogTest {
         TrackLogRefApproach refApproach2 = trackLog.getBestDistance(new PointModelImpl(49.4005, 8.60001), 32);
         double ref1 = PointModelUtil.distance(new PointModelImpl(49.4001, 8.6),new PointModelImpl(49.4006, 8.6));
         double ref2 = PointModelUtil.distance(new PointModelImpl(49.4001, 8.6),new PointModelImpl(49.4005, 8.6));
-        assertEquals(ref1, trackLog.getRemainingDistance(refApproach1),0);
-        assertEquals(ref2, trackLog.getRemainingDistance(refApproach1,refApproach2),0);
-        assertEquals(ref2, trackLog.getRemainingDistance(refApproach2,refApproach1),0);
+        Assert.assertEquals(ref1, PointModelUtil.distance(trackLog.getPointList(refApproach1,null)),0);
+        assertEquals(ref2, PointModelUtil.distance(trackLog.getPointList(refApproach1,refApproach2)),0);
+        assertEquals(0, PointModelUtil.distance(trackLog.getPointList(refApproach2,refApproach1)),0);
     }
 
 

@@ -232,7 +232,7 @@ public class TurningInstructionService {
             text.insert(0,"on track ");
         }
         if (text.length() == 0){
-            if (bestMatch.getTrackLog().getRemainingDistance(lastHintApproach,bestMatch) > 500){
+            if (PointModelUtil.distance(bestMatch.getTrackLog().getPointList(lastHintApproach,bestMatch)) > 500){
                 text.append("on track");
             }
         }

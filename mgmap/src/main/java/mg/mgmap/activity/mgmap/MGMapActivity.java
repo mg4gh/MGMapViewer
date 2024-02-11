@@ -76,7 +76,6 @@ import mg.mgmap.activity.mgmap.features.grad.FSGraphDetails;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
 import mg.mgmap.activity.mgmap.features.beeline.FSBeeline;
 import mg.mgmap.activity.mgmap.features.position.FSPosition;
-import mg.mgmap.activity.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
@@ -217,7 +216,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSTime(this));
         featureServices.add(new FSAlpha(this));
         featureServices.add(new FSControl(this));
-        featureServices.add(new FSRemainings(this));
 
         featureServices.add(new FSAvailableTrackLogs(this));
         featureServices.add(new FSMarker(this));

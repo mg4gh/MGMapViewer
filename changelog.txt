@@ -1,3 +1,4 @@
+- remove FSRemainings, logically replaced by FSTrackDetails
 - replace menu animation timeout with menu animation duration setting
 - new Feature: track details
 - additional height data source (based on lidar) for europa (incl automatic re-download offer)

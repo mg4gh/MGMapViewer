@@ -34,7 +34,6 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRefApproach;
-import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
@@ -170,19 +169,13 @@ public class FSTrackDetails extends FeatureService {
                 TrackLogRefApproach approachStart = verifyPosition(tdm1, trackLog);
                 if (approachStart == null){
                     statistic.setSegmentIdx(-3);
-                    approachStart = new TrackLogRefApproach(trackLog, 0, 0);
-                    approachStart.setApproachPoint(trackLog.getTrackLogSegment(0).get(0));
-                    approachStart.setEndPointIndex(0);
+                    approachStart = trackLog.getStartApproach(null);
                 }
                 TrackLogRefApproach approachEnd = verifyPosition(tdm2, trackLog);
                 if (approachEnd == null){
                     valid = statistic.getSegmentIdx() != -3;
                     statistic.setSegmentIdx(-4);
-                    int segmentIdx = trackLog.lastNoneEmptySegmentIdx();
-                    TrackLogSegment segment = trackLog.getTrackLogSegment(segmentIdx);
-                    approachEnd = new TrackLogRefApproach(trackLog, segmentIdx, 0);
-                    approachEnd.setApproachPoint(segment.getLastPoint());
-                    approachEnd.setEndPointIndex(segment.size() - 1);
+                    approachEnd = trackLog.getEndApproach(null);
                 }
                 double length = 0;
                 int reverse = approachStart.compareTo(approachEnd);

@@ -32,7 +32,6 @@ import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.features.alpha.FSAlpha;
 import mg.mgmap.activity.mgmap.features.bb.FSBB;
 import mg.mgmap.activity.mgmap.features.position.FSPosition;
-import mg.mgmap.activity.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
@@ -112,7 +111,6 @@ public class ControlComposer {
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "time");
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 20), "job");
         activity.getFS(FSPosition.class).initStatusLine(coView.createStatusLineETV(parent, 20), "height");
-        activity.getFS(FSRemainings.class).initStatusLine(coView.createStatusLineETV(parent, 20), "remain");
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "bat");
     }
 

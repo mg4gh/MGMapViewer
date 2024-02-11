@@ -42,7 +42,6 @@ Each feature contains a link to the corresponding detailed feature description.
   to share, delete, save and trigger visualisation of tracks.
 - [Height profile](./Features/FurtherFeatures/HeightProfile/hprof.md): Show the height profile form the recording track, the selected track or the current route 
 - [Height data](./Features/FurtherFeatures/HeightData/heightdata.md): Provide height information for given points. This is useful for height profiles and statistics of planned routes.
-- [Remaining distance](./Features/FurtherFeatures/Remaining/remaining.md): show distance along the selected track 
 - [Beeline distance](Features/FurtherFeatures/BeelineDistance/beeline.md): show the beeline distance between current position and the center position of the map
 - [Geocode](./Features/FurtherFeatures/Geocode/geocode.md): Search location by name and search entity by location
 - [Status line](Features/FurtherFeatures/Statusline/status.md): show some state information in the status line
