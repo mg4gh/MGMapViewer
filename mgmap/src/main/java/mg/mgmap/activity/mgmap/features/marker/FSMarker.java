@@ -121,7 +121,7 @@ public class FSMarker extends FeatureService {
             etv.setData(R.drawable.marker_reverse);
             etv.setPrAction(triggerReverseMtl);
             etv.setDisabledData(prefMtlVisibility,R.drawable.marker_reverse_dis);
-            etv.setHelp(r(R.string.FSMarker_qcHideMtl_Help));
+            etv.setHelp(r(R.string.FSMarker_qcReverseMtl_Help));
         }
         return etv;
     }
