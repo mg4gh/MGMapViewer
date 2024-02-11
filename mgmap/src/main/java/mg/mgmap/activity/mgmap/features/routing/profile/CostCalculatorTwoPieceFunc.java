@@ -17,8 +17,8 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
 
     // parameters, which determine kLevel
     private final static double bref_ul = 0.077; // base ref up limit slope for bs_u = 1; between 0.06 and 0.09
-    private final static double base_ul = 1.3; // factor of change in uphill slope limit per mtbscaleUp
-    private final static double ref_ul =bs_u * bref_ul; // reference up slope limit for given value of bs_u. See comment of bs_u
+    protected final static double base_ul = 1.3; // factor of change in uphill slope limit per mtbscaleUp
+    protected final static double ref_ul =bs_u * bref_ul; // reference up slope limit for given value of bs_u. See comment of bs_u
     // factor increase base limit
 
     //downhill Parameters
@@ -30,8 +30,8 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
 
     // parameters, which determine sLevel
     private final static double bref_dl = -0.14; // reference down slope limit. Starting point of down slope limit  for fd = 0 and slevel = 1;
-    protected final double base_dl = 1.35; // factor of change in downhill limit per mtbscale
-    private final static double ref_dl = fds/(fds-fd)*bref_dl; // derived down limit slope at fd < 0, effective slope after down slope limit is kept constant
+    protected final static double base_dl = 1.35; // factor of change in downhill limit per mtbscale
+    protected final static double ref_dl = fds/(fds-fd)*bref_dl; // derived down limit slope at fd < 0, effective slope after down slope limit is kept constant
     // make sure that intersection with cost = 1 is kept at the same slope with smaller fd
 
     protected final double mUpSlopeLimit; //  up to this slope base Costs
@@ -46,13 +46,12 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     protected double mUpSlopeFactor;
     protected double mDnSlopeFactor; */
 
+
     protected CostCalculatorTwoPieceFunc(double kLevel, double sLevel) {
         mKlevel = kLevel;
         mSlevel = sLevel;
         mUpSlopeLimit = ref_ul * Math.pow(base_ul,mKlevel-1);
         mDnSlopeLimit = ref_dl * Math.pow(base_dl,mSlevel-1);
-
-
     }
 
 

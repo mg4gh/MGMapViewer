@@ -20,43 +20,120 @@ public class CostCalculatorMTB implements CostCalculator {
     private final double mDelta;
     private final double mfud;
     private final double mfdd;
+    private final CostCalculatorTwoPieceFunc mProfileCalculator;
 
-    private CostCalculatorTwoPieceFunc mProfileCalculator;
     public CostCalculatorMTB(WayAttributs wayTagEval, CostCalculatorTwoPieceFunc profile) {
         mProfileCalculator = profile;
         double mtbUp = -2;
         double mtbDn = -2;
-        if (wayTagEval.mtbscaleUp != null) {
-            switch (wayTagEval.mtbscaleUp) {
-                case "mtbu_0": mtbUp = 0; break;
-                case "mtbu_1": mtbUp = 1; break;
-                case "mtbu_2": mtbUp = 2; break;
-                case "mtbu_3": mtbUp = 3; break;
-                case "mtbu_4": mtbUp = 4; break;
-                default:       mtbUp = 5;
+        double mfud = 1;
+        double mfdd = 1;
+        double deltaUp = 0;
+        double deltaDn = 0;
+        if (!wayTagEval.accessable) {
+            mfud = 10;
+            mfdd = 10;
+        } else {
+            if (wayTagEval.mtbscaleUp != null) {
+                switch (wayTagEval.mtbscaleUp) {
+                    case "mtbu_0":
+                        mtbUp = 0;
+                        break;
+                    case "mtbu_1":
+                        mtbUp = 1;
+                        break;
+                    case "mtbu_2":
+                        mtbUp = 2;
+                        break;
+                    case "mtbu_3":
+                        mtbUp = 3;
+                        break;
+                    case "mtbu_4":
+                        mtbUp = 4;
+                        break;
+                    default:
+                        mtbUp = 5;
+                }
+            }
+            if (wayTagEval.mtbscale != null) {
+                switch (wayTagEval.mtbscale) {
+                    case "mtbs_0":
+                        mtbDn = 0;
+                        break;
+                    case "mtbs_1":
+                        mtbDn = 1;
+                        break;
+                    case "mtbs_2":
+                        mtbDn = 2;
+                        break;
+                    case "mtbs_3":
+                        mtbDn = 3;
+                        break;
+                    default:
+                        mtbDn = 4;
+                }
+            }
+            if (mtbUp <= 0) mtbUp = mtbDn + 1;
+            if (mtbUp - mProfileCalculator.mKlevel >= 1 )
+                deltaUp = Math.sqrt( mtbUp - mProfileCalculator.mKlevel);
+            if (mtbDn - mProfileCalculator.mSlevel >= 1 )
+                deltaDn = Math.sqrt( mtbDn - mProfileCalculator.mSlevel);
+            if ("path".equals(wayTagEval.highway)) {
+                mfud = 1;
+                mfdd = 1;
+                if (mtbUp < 0) deltaUp = 1;
+                if (mtbDn < 0) deltaDn = 1;
+            } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
+                short surfaceCat = 4;
+                if (wayTagEval.surface != null) {
+                    switch (wayTagEval.surface) {
+                        case "asphalt":
+                        case "paved":
+                            surfaceCat = 1;
+                            break;
+                        case "fine_gravel":
+                        case "compacted":
+                        case "paving_stones":
+                            surfaceCat = 2;
+                            break;
+                        case "ground":
+                        case "dirt":
+                        case "earth":
+                            surfaceCat = 3;
+                            break;
+                        default:
+                            surfaceCat = 4;
+                    }
+                }
+                mfud = 1.25;
+                mfdd = 1.25;
+                if ("grade2".equals(wayTagEval.tracktype) || "grade1".equals(wayTagEval.tracktype) || surfaceCat <= 2) {
+                } else if ("grade3".equals(wayTagEval.tracktype) || surfaceCat <= 3) {
+                    if (mtbUp < 0) deltaUp = 0.5;
+                    if (mtbDn < 0) deltaDn = 0.5;
+                } else {
+                    if (mtbUp < 0) deltaUp = 1;
+                    if (mtbDn < 0) deltaDn = 1;
+                }
+            } else if ("steps".equals(wayTagEval.highway)) {
+                mfud = 20;
+                deltaUp = 2;
+                if ( mProfileCalculator.mSlevel == 3 )
+                    mfdd = 2.5;
+                else if (mProfileCalculator.mSlevel == 2)
+                    mfdd = 5;
+                else
+                    mfdd = 20;
+                deltaDn = 2;
+            } else {
+                double distFactor = getDistFactor(wayTagEval);
+                mfud = 1.2*distFactor;
+                mfdd = 1.2*distFactor;
             }
         }
-        if (wayTagEval.mtbscale != null) {
-            switch (wayTagEval.mtbscale ) {
-                case "mtbs_0": mtbDn = 0; break;
-                case "mtbs_1": mtbDn = 1; break;
-                case "mtbs_2": mtbDn = 2; break;
-                case "mtbs_3": mtbDn = 3; break;
-                default:       mtbDn = 4;
-            }
-        }
-        if ( mtbUp <= 0 ) mtbUp = mtbDn + 1;
-        double deltaUp = Math.min(1.5,Math.max(0,mtbUp - mProfileCalculator.mKlevel));
-        double deltaDn = Math.min(1.5,Math.max(0,mtbDn - mProfileCalculator.mSlevel));
-        if ("path".equals(wayTagEval.highway)) {
-            mfud = 1;
-            if (mtbUp<0) deltaUp = 1;
-            mfdd = 1;
-            if (mtbDn<0) deltaDn = 1;
-        } else { //if ("track".equals(wayTagEval.highway)){
-            mfud = 1.3;
-            mfdd = 1.65;
-        }
+
+        this.mfud = mfud;
+        this.mfdd = mfdd;
 
         mUpSlopeLimit = profile.mUpSlopeLimit * (1-ful*deltaUp);
 /*        mUpAddCosts = mProfileCalculator.fus/( mUpSlopeLimit * mUpSlopeLimit);
@@ -64,9 +141,66 @@ public class CostCalculatorMTB implements CostCalculator {
 */
         mDelta =  (1-fdl*deltaDn);
         mDnSlopeLimit = profile.mDnSlopeLimit * mDelta;
+
+
 /*        mDnAddCosts = mProfileCalculator.fds/( mDnSlopeLimit * mDnSlopeLimit) ;
         mDnCosts = mProfileCalculator.mDnCosts ;// attention! Need to be different approach than upCosts to avoid conflict with heuristic
 */
+    }
+
+    protected static double getDistFactor( WayAttributs wayTagEval ){
+        double distFactor = 1.3;
+        if ("cycleway".equals(wayTagEval.highway)) {
+            if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+                distFactor = 1;
+            else
+                distFactor = 1.5;
+        } else if ("primary".equals(wayTagEval.highway) || "primary_link".equals(wayTagEval.highway)) {
+            if ("bic_no".equals(wayTagEval.bicycle))
+                distFactor = 10;
+            else if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+                distFactor = 1.5;
+            else if (wayTagEval.cycleway != null || "lcn".equals(wayTagEval.network)  )
+                distFactor = 1.8;
+            else
+                distFactor = 2.5;
+        } else if ("secondary".equals(wayTagEval.highway)) {
+            if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+                distFactor = 1.4;
+            else if (wayTagEval.cycleway != null || "lcn".equals(wayTagEval.network) )
+                distFactor = 1.6;
+            else
+                distFactor = 2.0;
+        } else if ("tertiary".equals(wayTagEval.highway)) {
+            if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+                distFactor = 1.3;
+            else if (wayTagEval.cycleway != null || "lcn".equals(wayTagEval.network))
+                distFactor = 1.4;
+            else
+                distFactor = 1.5;
+        } else if ("residential".equals(wayTagEval.highway)||"living_street".equals(wayTagEval.highway)) {
+            if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+                distFactor = 1.0;
+            else
+                distFactor = 1.3;
+        } else if ("footway".equals(wayTagEval.highway) || "pedestrian".equals(wayTagEval.highway)) {
+            if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || "bic_yes".equals(wayTagEval.bicycle))
+                distFactor = 1;
+            else if ("bic_no".equals(wayTagEval.bicycle))
+                distFactor = 2.5;
+            else
+                distFactor = 1.8;
+        } else if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
+            distFactor = 1;
+        } else if ("service".equals(wayTagEval.highway)) {
+            if ("parking_aisle".equals(wayTagEval.service))
+                distFactor = 1.5;
+            else if ( "private".equals(wayTagEval.access) || "no".equals(wayTagEval.access))
+                distFactor = 15;
+            else
+                distFactor = 2.5;
+        }
+        return distFactor;
     }
 
     public double calcCosts(double dist, float vertDist){
@@ -85,7 +219,9 @@ public class CostCalculatorMTB implements CostCalculator {
                 cost = dist* ( mfud + relslope * ( mProfileCalculator.fu + (relslope - 1) * mProfileCalculator.fus));
         } else {
             relslope = slope / mDnSlopeLimit;
-            if (relslope <= 1)
+            if (relslope <= 0.2)
+                cost = dist* ( mfud + relslope * mDelta * mProfileCalculator.fd);
+            else if (relslope <= 1)
                 cost = dist* ( mfdd + relslope * mDelta * mProfileCalculator.fd);
             else
                 cost = dist* ( mfdd + relslope * mDelta *( mProfileCalculator.fd + (relslope - 1) * mProfileCalculator.fds));
@@ -119,5 +255,7 @@ public class CostCalculatorMTB implements CostCalculator {
     public double heuristic(double dist, float vertDist) {
         return mProfileCalculator.heuristic(dist, vertDist);
     }
+
+
 
 }

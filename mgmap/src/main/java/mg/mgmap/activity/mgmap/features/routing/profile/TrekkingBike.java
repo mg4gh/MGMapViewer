@@ -7,7 +7,7 @@ import mg.mgmap.generic.graph.WayAttributs;
 
 public class TrekkingBike extends RoutingProfile {
     public TrekkingBike( ) {
-        super(new CostCalculatorTwoPieceFunc( 0,  0));
+        super(new CostCalculatorTwoPieceFunc( 1.0,0.0));
     }
 
     protected CostCalculator getCostCalculator(CostCalculator profileCalculator, WayAttributs wayAttributs) {
