@@ -33,6 +33,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Bounding Box](./Features/MainTrackFeatures/BoundingBox/boundingbox.md) search tracks by marking an area (bounding box) and load all tracks through this area 
 - [Basic Routing](./Features/MainTrackFeatures/Routing/routing.md) basic route calculation (shortest path) based on a marker track.
 - [Dashboard](./Features/MainTrackFeatures/Dashboard/dashboard.md) visualization of the most important information of the recording, the selected and the route track log.
+- [Track details](./Features/MainTrackFeatures/TrackDetails/trackdetails.md) visualization of (sub-)track details, including small height profile.
 
 ### Further features
 - [enlarge](./Features/FurtherFeatures/Enlarge/enlarge.md) temporary a view entry (dashboard, status line) on a tap event (becomes readable without glasses)
