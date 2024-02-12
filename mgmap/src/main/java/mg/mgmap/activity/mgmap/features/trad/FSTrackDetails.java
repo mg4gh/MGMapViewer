@@ -203,6 +203,14 @@ public class FSTrackDetails extends FeatureService {
                     float[] heights = new float[300+1];
                     PointModelUtil.getHeightList(points, dist, heights);
 
+                    if (reverse>0){
+                        for (int i=0; i<heights.length/2; i++){
+                            float temp=heights[i];
+                            heights[i] = heights[heights.length - (i+1)];
+                            heights[heights.length - (i+1)] = temp;
+                        }
+                    }
+
                     float pos = 0;
                     PointModel currentPos = getApplication().lastPositionsObservable.lastGpsPoint;
                     if (getApplication().prefGps.getValue() && (currentPos != null)){
