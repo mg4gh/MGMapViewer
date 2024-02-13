@@ -95,7 +95,6 @@ import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.GpxSyncUtil;
-import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.Zipper;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
@@ -153,7 +152,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private MapDataStoreUtil mapDataStoreUtil = null;
     private GGraphTileFactory gGraphTileFactory = null;
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
-    private final PropertyChangeListener pclTriggerTrackLoggerService = (e) -> triggerTrackLoggerService();
+    private final PropertyChangeListener prefGpsObserver = (e) -> triggerTrackLoggerService();
 
     public MGMapApplication getMGMapApplication(){
         return application;
@@ -231,17 +230,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSTrackDetails(this));
         createLayers2();
 
-        WaitUtil.doWait(this.getClass(), 100);
         coView.init(application, this);
         if (!getIntent().toString().contains(" act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] "))
             onNewIntent(getIntent());
-        // use prefGps and prefRestart from applications prefCache to prevent race conditions during startup phase
-        application.prefGps.addObserver(pclTriggerTrackLoggerService);
-        mgLog.d("prefGps="+application.prefGps.getValue()+" prefRestart="+application.prefRestart.getValue() );
-        if (application.prefGps.getValue() && application.prefRestart.getValue()){
-            triggerTrackLoggerService(); // restart track logger service after app restart while track recording is on
-        }
-        application.prefRestart.setValue(false);
+        // use prefGps from applications prefCache to prevent race conditions during startup phase
+        application.prefGps.addObserver(prefGpsObserver);
+        application.prefGps.onChange();
         prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> new GpxSyncUtil().trySynchronisation(application));
         prefCache.dumpPrefs();
     }
@@ -343,7 +337,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.routeTrackLogObservable.deleteObservers();
         application.lastPositionsObservable.deleteObservers();
 
-        application.prefGps.deleteObserver(pclTriggerTrackLoggerService);
+        application.prefGps.deleteObserver(prefGpsObserver);
 
         mapView.destroyAll();
         mapDataStoreUtil.onDestroy();
@@ -600,9 +594,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @SuppressLint("BatteryLife")
     public void triggerTrackLoggerService(){
         mgLog.i();
-        if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
-            mgLog.i();
-            if (application.prefGps.getValue()){
+        if (application.prefGps.getValue()){
+            if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
+                mgLog.i();
                 AbstractHint hint = new HintAccessFineLocation(this).addGotItAction(() -> {
                     if (Build.VERSION.SDK_INT < 28){
                         Permissions.request(MGMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_CODE);
@@ -611,18 +605,18 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     }
                 });
                 application.getHintUtil().showHint(hint);
-            }
-        } else {
-            application.startTrackLoggerService(this);
-            if (application.prefGps.getValue()){
+            } else {
+                application.startTrackLoggerService(this, true);
                 getMGMapApplication().getHintUtil().showHint(new HintBatteryUsage(this)
                         .addGotItAction(()-> {
                             Intent intent = new Intent();
                             intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                             intent.setData(Uri.parse("package:"+getPackageName()));
                             startActivity(intent);
-                            }));
+                        }));
             }
+        } else {
+            application.startTrackLoggerService(this, false);
         }
     }
 

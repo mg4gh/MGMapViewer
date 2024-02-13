@@ -56,7 +56,6 @@ public class TrackLoggerService extends Service {
     private BarometerListener barometerListener = null;
     private TrackLogPointVerifier trackLogPointVerifier = null;
     private TurningInstructionService turningInstructionService = null;
-    private boolean active = false;
     private Notification notification = null;
     private PrefCache prefCache = null;
     private Pref<Boolean> prefGps;
@@ -105,13 +104,11 @@ public class TrackLoggerService extends Service {
 
         application = (MGMapApplication)getApplication();
 
-        boolean shouldBeActive = prefGps.getValue();
-        mgLog.i("active="+active+" shouldBeActive="+shouldBeActive);
-        if (!active && shouldBeActive){
-            active = true;
+        if (prefGps.getValue()){
+            application.prefGpsState.setValue(true); // store current state in application.prefGpsState - so application can check this state before calling startForegroundService
             activateService();
-        } else if (active && !shouldBeActive){
-            active = false;
+        } else {
+            application.prefGpsState.setValue(false);
             deactivateService();
         }
         return START_STICKY;

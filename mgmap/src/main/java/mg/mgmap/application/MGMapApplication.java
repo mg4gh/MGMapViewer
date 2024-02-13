@@ -109,8 +109,8 @@ public class MGMapApplication extends Application {
     private final ArrayList<BgJob> activeBgJobs = new ArrayList<>();
 
     PrefCache prefCache = null;
-    public Pref<Boolean> prefRestart = null; // property to distinguish ApplicationStart from ActivityRecreate
-    public Pref<Boolean> prefGps = null;
+    public Pref<Boolean> prefGps = null; // gps target state
+    public Pref<Boolean> prefGpsState = new Pref<>(false); // gps current state
 
     private Setup setup;
     public BaseConfig baseConfig = null;
@@ -166,9 +166,7 @@ public class MGMapApplication extends Application {
         trackStatisticFilter = new TrackStatisticFilter(prefCache);
         hintUtil = new HintUtil();
 
-        prefRestart = prefCache.get(R.string.MGMapApplication_pref_Restart, true);
         prefGps = prefCache.get(R.string.FSPosition_pref_GpsOn, false);
-        prefRestart.setValue(true);
         prefGps.setValue(false);
 
         Parameters.LAYER_SCROLL_EVENT = true; // needed to support drag and drop of marker points
@@ -471,10 +469,12 @@ public class MGMapApplication extends Application {
         }
     }
 
-    public void startTrackLoggerService(Context context){
-        Intent intent = new Intent(context, TrackLoggerService.class);
-        this.startForegroundService(intent);
-        mgLog.i("prefGps="+prefGps.getValue());
+    public void startTrackLoggerService(Context context, boolean gpsTargetState){
+        mgLog.i("gpsTargetState="+gpsTargetState+ " prefGpsState="+prefGpsState.getValue());
+        if (gpsTargetState != prefGpsState.getValue()){
+            Intent intent = new Intent(context, TrackLoggerService.class);
+            this.startForegroundService(intent);
+        }
     }
 
     public HgtProvider getHgtProvider() {
