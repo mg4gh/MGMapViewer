@@ -211,7 +211,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         coView = getControlView();
-        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider());
+        boolean wayDetails = prefCache.get(R.string.FSGrad_pref_WayDetails_key, false).getValue();
+        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), wayDetails);
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSAlpha(this));
