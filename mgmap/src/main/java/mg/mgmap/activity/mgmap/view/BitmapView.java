@@ -7,11 +7,7 @@ import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Point;
 
-import java.util.Locale;
-
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.view.VUtil;
 
 public class BitmapView extends MVLayer{
 
@@ -36,7 +32,6 @@ public class BitmapView extends MVLayer{
             int left = x - dim/2;
             int top = y - dim;
             canvas.drawBitmap(bitmap,left, top);
-            MGLog.sd(String.format(Locale.ENGLISH," (%d,%d) (%.6f,%.6f) (%.1f,%.1f)",x,y,pm.getLat(),pm.getLon(),topLeftPoint.x,topLeftPoint.y));
         }
     }
 

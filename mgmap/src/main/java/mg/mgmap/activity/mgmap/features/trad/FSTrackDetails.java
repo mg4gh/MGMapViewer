@@ -256,10 +256,8 @@ public class FSTrackDetails extends FeatureService {
                 unregisterTDService();
             }
         }
-        mgLog.i("set height="+height);
         trackDetailsView.getLayoutParams().height = height;
         trackDetailsView.setLayoutParams(trackDetailsView.getLayoutParams());
-        mgLog.i("get height="+trackDetailsView.getHeight()+ " "+trackDetailsView.getLayoutParams().height);
     }
 
     public void initDashboardDrag(String id){

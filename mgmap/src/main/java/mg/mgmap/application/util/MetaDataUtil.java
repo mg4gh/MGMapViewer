@@ -139,7 +139,7 @@ public class MetaDataUtil {
 
     public void readMetaData(FileInputStream in, TrackLog trackLog) {
         try {
-            mgLog.d(trackLog.getName());
+            mgLog.v(trackLog.getName());
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] b = new byte[MetaData.BUF_SIZE];
             while (in.available() >= b.length){

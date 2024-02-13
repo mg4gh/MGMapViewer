@@ -419,7 +419,7 @@ public class FSControl extends FeatureService {
             at.addListener(new TransitionListenerAdapter() {
                 @Override
                 public void onTransitionEnd(Transition transition) {
-                    mgLog.d("transition end");
+                    mgLog.v("transition end");
                     qcs.setVisibility(View.INVISIBLE);
                     getMapViewUtility().setScaleBarVisibility(true);
 
@@ -431,7 +431,7 @@ public class FSControl extends FeatureService {
                 }
                 @Override
                 public void onTransitionCancel(Transition transition) {
-                    mgLog.d("transition cancel");
+                    mgLog.v("transition cancel");
                     this.onTransitionEnd(transition);
                 }
             });
