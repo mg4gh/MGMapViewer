@@ -322,7 +322,9 @@ public class MGMapApplication extends Application {
 
     public void addMetaDataTrackLog(TrackLog trackLog){
         trackStatisticFilter.checkFilter(trackLog);
-        metaTrackLogs.put(trackLog.getNameKey(),trackLog);
+        synchronized (metaTrackLogs){
+            metaTrackLogs.put(trackLog.getNameKey(),trackLog);
+        }
     }
 
     void cleanup(){
