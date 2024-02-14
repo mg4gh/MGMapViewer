@@ -237,7 +237,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.prefGps.addObserver(prefGpsObserver);
         application.prefGps.onChange();
         prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> new GpxSyncUtil().trySynchronisation(application));
-        prefCache.dumpPrefs();
+//        prefCache.dumpPrefs();
     }
 
     @Override

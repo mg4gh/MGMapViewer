@@ -137,7 +137,7 @@ public class MGLog {
                 tag = tag.substring(0,idx);
             }
         }
-        i(this.tag+" : "+level);
+        v(this.tag+" : "+level);
     }
 
     public void e(Throwable t){
