@@ -161,7 +161,7 @@ public class MGMapApplication extends Application {
         hgtProvider = new HgtProvider(this, persistenceManager, getAssets()); // for hgt file handling
         elevationProvider = new ElevationProviderImpl(hgtProvider); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
-        metaDataUtil = new MetaDataUtil(persistenceManager);
+        metaDataUtil = new MetaDataUtil(this, persistenceManager);
         notificationUtil = new NotificationUtil(this);
         trackStatisticFilter = new TrackStatisticFilter(prefCache);
         hintUtil = new HintUtil();
@@ -317,10 +317,12 @@ public class MGMapApplication extends Application {
 
     public void checkCreateLoadMetaData(boolean onlyNew){
         ArrayList<String> newNames = ExtrasUtil.checkCreateMeta(persistenceManager, metaDataUtil, elevationProvider);
-        for (TrackLog trackLog : metaDataUtil.loadMetaData(onlyNew?newNames:null)){
-            trackStatisticFilter.checkFilter(trackLog);
-            metaTrackLogs.put(trackLog.getNameKey(),trackLog);
-        }
+        metaDataUtil.loadMetaData(onlyNew?newNames:null);
+    }
+
+    public void addMetaDataTrackLog(TrackLog trackLog){
+        trackStatisticFilter.checkFilter(trackLog);
+        metaTrackLogs.put(trackLog.getNameKey(),trackLog);
     }
 
     void cleanup(){
