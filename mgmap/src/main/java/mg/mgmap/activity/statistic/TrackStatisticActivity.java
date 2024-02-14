@@ -203,7 +203,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
             addTrackLog(nameKeys, trackLog);
         }
-        for (TrackLog trackLog : application.metaTrackLogs.values()) {
+        for (TrackLog trackLog : new ArrayList<>(application.metaTrackLogs.values())) {
             addTrackLog(nameKeys, trackLog);
         }
         refreshVisibleEntries();
