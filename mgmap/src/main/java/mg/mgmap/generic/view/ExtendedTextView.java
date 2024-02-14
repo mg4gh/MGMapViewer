@@ -109,6 +109,11 @@ public class ExtendedTextView extends AppCompatTextView {
         logName = rName.replaceFirst(".*/","");
     }
 
+    public void setIdOnly(int id){
+        super.setId(id);
+        logName = "res_"+id;
+    }
+
     public ExtendedTextView setData(int drId){
         drId1 = drId;
         onChange(null);

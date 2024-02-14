@@ -76,7 +76,7 @@ public class ControlComposer {
     void composeRoutingProfileButtons(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.routingProfiles);
         for (RoutingProfile routingProfile : FSRouting.getDefinedRoutingProfiles()){
-            activity.getFS(FSRouting.class).initRoutingProfile(coView.createRoutingProfileETV(parent), routingProfile).setId(View.generateViewId());
+            activity.getFS(FSRouting.class).initRoutingProfile(coView.createRoutingProfileETV(parent), routingProfile).setIdOnly(View.generateViewId());
         }
         parent.setVisibility(View.INVISIBLE);
     }
