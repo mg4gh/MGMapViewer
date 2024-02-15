@@ -28,15 +28,31 @@ public class CostCalculatorTreckingBike implements CostCalculator {
         double deltaSlope = 0.0;
         double  distFactor = 2.0;
 
-        if (!wayTagEval.accessable) {
+        if (!wayTagEval.accessable || "private".equals(wayTagEval.access)){
              distFactor = 10;
         } else {
+            int surfaceCat = 0;
+            if (wayTagEval.surface != null) {
+                switch (wayTagEval.surface) {
+                    case "asphalt":
+                    case "paved":
+                        surfaceCat = 1;
+                        break;
+                    case "fine_gravel":
+                    case "compacted":
+                    case "paving_stones":
+                        surfaceCat = 2;
+                        break;
+                    default:
+                        surfaceCat = 3;
+                }
+            }
             if ("path".equals(wayTagEval.highway)) {
-                if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+                if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || surfaceCat == 1 )
                     distFactor = 1.0;
-                else if ("bic_designated".equals(wayTagEval.bicycle)){
-                    distFactor = 1.2;
-                    deltaSlope = 1.2;
+                else if ("bic_designated".equals(wayTagEval.bicycle)){ // often bike lanes along big streets
+                    distFactor = 1.5;
+                    deltaSlope = 1.0;
                 } else if ("bic_yes".equals(wayTagEval.bicycle)) {
                     distFactor = 1.5;
                     deltaSlope = 1.5;
@@ -45,35 +61,39 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                     deltaSlope = 2;
                 }
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
-                short surfaceCat = 4;
-                if (wayTagEval.surface != null) {
-                    switch (wayTagEval.surface) {
-                        case "asphalt":
-                        case "paved":
-                            surfaceCat = 1;
+                int type = 0;
+                if (wayTagEval.tracktype != null) {
+                    switch (wayTagEval.tracktype) {
+                        case "grade1":
+                            type = 1;
                             break;
-                        case "fine_gravel":
-                        case "compacted":
-                        case "paving_stones":
-                            surfaceCat = 2;
+                        case "grade2":
+                            type = 2;
+                            break;
+                        case "grade3":
+                            type = 3;
                             break;
                         default:
-                            surfaceCat = 3;
+                            type = 4;
                     }
                 }
-                if ("grade1".equals(wayTagEval.tracktype) || surfaceCat <= 1 || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) ) {
+                type = Math.max(type, surfaceCat);
+                if ( type ==1  || type <= 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1;
                     deltaSlope = 0;
-                } else if ("grade2".equals(wayTagEval.tracktype) || surfaceCat <= 2) {
+                } else if (type == 2 || type <= 3 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1.2;
                     deltaSlope = 0.5;
-                } else if ("grade3".equals(wayTagEval.tracktype) || surfaceCat <= 3) {
-                    distFactor = 2.0;
-                    deltaSlope = 2.0;
-                } else if ("bic_designated".equals(wayTagEval.bicycle)){
-                    distFactor = 1.2;
+                } else if (type==3) {
+                    distFactor = 1.6;
+                    deltaSlope = 1.5;
+                } else if (type==4) {
+                    distFactor = 2;
+                    deltaSlope = 2;
+                } else if ("bic_designated".equals(wayTagEval.bicycle)) { // often for bike lanes along big streets
+                    distFactor = 1.5;
                     deltaSlope = 0.5;
-                } else if ("bic_yes".equals(wayTagEval.bicycle)) {
+                } else if ("bic_yes".equals(wayTagEval.bicycle) ) {
                     distFactor = 1.5;
                     deltaSlope = 0.5;
                 } else {
@@ -83,7 +103,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
             } else if ("steps".equals(wayTagEval.highway)) {
                 distFactor = 20;
             } else
-                distFactor = CostCalculatorMTB.getDistFactor(wayTagEval);
+                distFactor = CostCalculatorMTB.getDistFactor(wayTagEval) ;
         }
 
         mfd =  distFactor;

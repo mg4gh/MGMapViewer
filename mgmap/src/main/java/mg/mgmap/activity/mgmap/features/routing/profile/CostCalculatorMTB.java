@@ -30,7 +30,7 @@ public class CostCalculatorMTB implements CostCalculator {
         double mfdd = 1;
         double deltaUp = 0;
         double deltaDn = 0;
-        if (!wayTagEval.accessable) {
+        if (!wayTagEval.accessable || "private".equals(wayTagEval.access)) {
             mfud = 10;
             mfdd = 10;
         } else {
@@ -126,9 +126,10 @@ public class CostCalculatorMTB implements CostCalculator {
                     mfdd = 20;
                 deltaDn = 2;
             } else {
-                double distFactor = getDistFactor(wayTagEval);
-                mfud = 1.2*distFactor;
-                mfdd = 1.2*distFactor;
+                double distFactor = getDistFactor(wayTagEval) ;
+                distFactor = ( distFactor == 1) ? 1 : distFactor * 1.2;
+                mfud = distFactor;
+                mfdd = distFactor;
             }
         }
 
@@ -148,38 +149,38 @@ public class CostCalculatorMTB implements CostCalculator {
 */
     }
 
-    protected static double getDistFactor( WayAttributs wayTagEval ){
+    protected static double getDistFactor(WayAttributs wayTagEval ){
         double distFactor = 1.3;
         if ("cycleway".equals(wayTagEval.highway)) {
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
                 distFactor = 1;
             else
-                distFactor = 1.5;
+                distFactor = 1.3;
         } else if ("primary".equals(wayTagEval.highway) || "primary_link".equals(wayTagEval.highway)) {
             if ("bic_no".equals(wayTagEval.bicycle))
                 distFactor = 10;
-            else if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+            else if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || ( wayTagEval.cycleway != null && "lcn".equals(wayTagEval.network)))
                 distFactor = 1.5;
             else if (wayTagEval.cycleway != null || "lcn".equals(wayTagEval.network)  )
                 distFactor = 1.8;
             else
                 distFactor = 2.5;
         } else if ("secondary".equals(wayTagEval.highway)) {
-            if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+            if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || ( wayTagEval.cycleway != null && "lcn".equals(wayTagEval.network)))
                 distFactor = 1.4;
             else if (wayTagEval.cycleway != null || "lcn".equals(wayTagEval.network) )
                 distFactor = 1.6;
             else
                 distFactor = 2.0;
         } else if ("tertiary".equals(wayTagEval.highway)) {
-            if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
-                distFactor = 1.3;
+            if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || ( wayTagEval.cycleway != null && "lcn".equals(wayTagEval.network)))
+                distFactor = 1.2;
             else if (wayTagEval.cycleway != null || "lcn".equals(wayTagEval.network))
-                distFactor = 1.4;
+                distFactor = 1.3;
             else
                 distFactor = 1.5;
         } else if ("residential".equals(wayTagEval.highway)||"living_street".equals(wayTagEval.highway)) {
-            if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+            if ("bic_destination".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )
                 distFactor = 1.0;
             else
                 distFactor = 1.3;
@@ -187,18 +188,18 @@ public class CostCalculatorMTB implements CostCalculator {
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || "bic_yes".equals(wayTagEval.bicycle))
                 distFactor = 1;
             else if ("bic_no".equals(wayTagEval.bicycle))
-                distFactor = 2.5;
+                distFactor = 4.0;
             else
-                distFactor = 1.8;
+                distFactor = 3.0;
         } else if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
             distFactor = 1;
         } else if ("service".equals(wayTagEval.highway)) {
-            if ("parking_aisle".equals(wayTagEval.service))
-                distFactor = 1.5;
-            else if ( "private".equals(wayTagEval.access) || "no".equals(wayTagEval.access))
+            if ("bic_destination".equals(wayTagEval.bicycle))
+                distFactor = 1.0;
+            else if ( "no".equals(wayTagEval.access) || "bic_no".equals(wayTagEval.bicycle))
                 distFactor = 15;
             else
-                distFactor = 2.5;
+                distFactor = 1.5;
         }
         return distFactor;
     }
