@@ -12,9 +12,14 @@ public class WayAttributs {
     public String cycleway = null;
     public String surface = null;
     public String mtbscale = null;
-    public String trail_visibility = null;
+    public String mtbscaleUp = null;
+//    public String trail_visibility = null;
     public String tracktype = null;
     public String network = null;
+
+//    public String service = null;
+
+//    public String name = null;
 
 
 
@@ -41,6 +46,7 @@ public class WayAttributs {
                     bicycle = tag.value;
                     break;
                 case "cycleway":
+                case "cycleway_track":
                 case "cycleway_lane":
                     cycleway = tag.value;
                     break;
@@ -50,6 +56,14 @@ public class WayAttributs {
                 case "mtb_scale":
                     mtbscale = tag.value;
                     break;
+                case "mtb_scale_uphill":
+                    mtbscaleUp  = tag.value;
+                    break;
+/*                case "name":
+                    name = tag.value;
+                    break;
+                case "service":
+                    service = tag.value; */
             }
         }
         if (accessable && ("private".equals(bicycle) || "private".equals(access) ||
