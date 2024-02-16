@@ -23,7 +23,6 @@ import org.mapsforge.map.layer.renderer.TileRendererLayer;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Map;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
@@ -40,12 +39,11 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
-import mg.mgmap.generic.util.BgJob;
-import mg.mgmap.generic.util.BgJobGroup;
-import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.hints.AbstractHint;
+import mg.mgmap.generic.util.hints.NewHgtHint;
 import mg.mgmap.generic.view.ExtendedTextView;
 
 public class FSBB extends FeatureService {
@@ -67,6 +65,7 @@ public class FSBB extends FeatureService {
 
     private final ArrayList<MGTileStore> tss = identifyTS();
     private boolean initSquare = false;
+    final private AbstractHint hgtHint;
 
     public FSBB(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -84,6 +83,8 @@ public class FSBB extends FeatureService {
         prefAutoDlHgt.addObserver((e) -> {
             if (!prefAutoDlHgt.getValue()) prefAutoDlHgtAsked.setValue("");
         });
+        hgtHint = new NewHgtHint(getActivity(), getApplication().getHgtProvider());
+        hgtHint.addGotItAction(()-> getApplication().getHgtProvider().loadHgt(getActivity(), true, getApplication().getHgtProvider().getEhgtList(), null, null) );
     }
 
     private WriteablePointModel p1 = null;
@@ -139,6 +140,7 @@ public class FSBB extends FeatureService {
         prefBboxOn.setValue(false);
         refreshObserver.onChange();
         getTimer().postDelayed(ttCheckHgt, 100) ;
+        getTimer().postDelayed(hgtHint, 500);
     }
 
     @Override
@@ -402,68 +404,25 @@ public class FSBB extends FeatureService {
     }
 
     private void loadHgt(BBox bBox, boolean all, String layerName){
-        final HgtProvider hgtProvider = getApplication().getHgtProvider();
-        final HgtGridView hgtGridView = identifyHgt();
-        BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download height data", new BgJobGroupCallback() {
-            @Override
-            public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
-                if (hgtGridView != null){
-                    hgtGridView.requestRedraw();
-                }
-                return false;
-            }
-        });
-        long downloadSize = 0;
-        for (int latitude = HgtProvider.getLower(bBox.minLatitude); latitude<HgtProvider.getLower(bBox.maxLatitude)+1; latitude++ ){
-            for (int longitude = HgtProvider.getLower(bBox.minLongitude); longitude<HgtProvider.getLower(bBox.maxLongitude)+1; longitude++ ){
-                String hgtName = hgtProvider.getHgtName(latitude, longitude);
-                if (all || !hgtProvider.hgtIsAvailable(hgtName)){
-                    BgJob bgJob = new BgJob(){
-                        @Override
-                        protected void doJob() throws Exception{
-                            hgtProvider.downloadHgt(hgtName);
-                            this.setText("Download "+ hgtName);
-                            if (hgtGridView != null){
-                                hgtGridView.requestRedraw();
-                            }
-                        }
-                    };
-                    jobGroup.addJob(bgJob);
-                    downloadSize += hgtProvider.hgtSize(hgtName);
-                }
+        ArrayList<String> hgtNames = new ArrayList<>();
+        for (int latitude = PointModelUtil.getLower(bBox.minLatitude); latitude<PointModelUtil.getLower(bBox.maxLatitude)+1; latitude++ ) {
+            for (int longitude = PointModelUtil.getLower(bBox.minLongitude); longitude < PointModelUtil.getLower(bBox.maxLongitude) + 1; longitude++) {
+                String hgtName = HgtProvider.getHgtName(latitude, longitude);
+                hgtNames.add(hgtName);
             }
         }
-        if (jobGroup.size() > 0){
-            String msg = String.format(Locale.ENGLISH,"Downlaod %d hgt files [%.1fMB] from %s%s?", jobGroup.size(),downloadSize/1000000.0f,HgtProvider.HGT_URL,(layerName==null)?"":" for "+layerName);
-            jobGroup.setConstructed(msg);
-        }
+        getApplication().getHgtProvider().loadHgt(getActivity(), all, hgtNames, layerName, identifyHgt());
     }
+
     private void dropHgt(BBox bBox){
-        final HgtProvider hgtProvider = getApplication().getHgtProvider();
-        final HgtGridView hgtGridView = identifyHgt();
-        if (hgtGridView != null) {
-            BgJobGroup jobGroup = new BgJobGroup(application, activity,"Drop hgt files", new BgJobGroupCallback() {
-                @Override
-                public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
-                    hgtGridView.requestRedraw();
-                    return false;
-                }
-            });
-            for (int latitude = HgtProvider.getLower(bBox.minLatitude)+1; latitude<HgtProvider.getLower(bBox.maxLatitude); latitude++ ){
-                for (int longitude = HgtProvider.getLower(bBox.minLongitude)+1; longitude<HgtProvider.getLower(bBox.maxLongitude); longitude++ ){
-                    String hgtName = hgtProvider.getHgtName(latitude, longitude);
-                    if (hgtProvider.hgtIsAvailable(hgtName)){
-                        jobGroup.addJob(new BgJob(){
-                            @Override
-                            protected void doJob(){
-                                hgtProvider.dropHgt(hgtName);
-                            }
-                        });
-                    }
-                }
+        ArrayList<String> hgtNames = new ArrayList<>();
+        for (int latitude = PointModelUtil.getLower(bBox.minLatitude); latitude<PointModelUtil.getLower(bBox.maxLatitude)+1; latitude++ ) {
+            for (int longitude = PointModelUtil.getLower(bBox.minLongitude); longitude < PointModelUtil.getLower(bBox.maxLongitude) + 1; longitude++) {
+                String hgtName = HgtProvider.getHgtName(latitude, longitude);
+                hgtNames.add(hgtName);
             }
-            jobGroup.setConstructed("Drop "+jobGroup.size()+" hgt files?");
         }
+        getApplication().getHgtProvider().dropHgt(getActivity(), hgtNames, identifyHgt());
     }
 
 

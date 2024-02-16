@@ -46,6 +46,10 @@ public class WriteableTrackLog extends TrackLog {
     }
 
     public void stopSegment(long timestamp){
+        if (currentSegment == null){
+            currentSegment = getTrackLogSegment(getNumberOfSegments()-1);
+        }
+        currentSegment.getStatistic().finalizeStatistic();
         recalcTrackStatistic();
         currentSegment = null;
     }

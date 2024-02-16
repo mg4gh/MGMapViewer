@@ -77,7 +77,7 @@ public class GpxExporter {
                             String sLat = " lat=\"" + String.format(Locale.ENGLISH,"%.6f",pm.getLat()) + "\"";
                             String sLon = " lon=\"" + String.format(Locale.ENGLISH,"%.6f",pm.getLon()) + "\"";
                             pw.println("\t\t\t<trkpt " + sLat + sLon + ">");
-                            float ele = pm.getEleA();
+                            float ele = pm.getEle();
                             if (ele != PointModel.NO_ELE) {
                                 pw.println("\t\t\t\t<ele>" + String.format(Locale.ENGLISH,"%.1f",ele) + "</ele>");
                             }

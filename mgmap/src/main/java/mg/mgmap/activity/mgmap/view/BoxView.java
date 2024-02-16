@@ -46,10 +46,10 @@ public class BoxView extends MVLayer {
             return;
         }
 
-        int minX = lon2x(model.minLongitude);
-        int maxX = lon2x(model.maxLongitude);
-        int minY = lat2y(model.minLatitude);
-        int maxY = lat2y(model.maxLatitude);
+        int minX = lon2canvasX(model.minLongitude);
+        int maxX = lon2canvasX(model.maxLongitude);
+        int minY = lat2canvasY(model.minLatitude);
+        int maxY = lat2canvasY(model.maxLatitude);
 
 
         Path path = BoxView.graphicFactory.createPath();

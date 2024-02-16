@@ -137,39 +137,48 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
         return (bestMatch.getApproachPoint()==null)?null:bestMatch;
     }
 
-
-
-    public double getRemainingDistance(TrackLogRefApproach ref){
-        TrackLogSegment segment = getTrackLogSegment(ref.segmentIdx);
-        double remainingDistance = 0;
-        PointModel p1 = ref.getApproachPoint();
-        for (int idx = ref.getEndPointIndex(); idx < segment.size(); idx++){
-            PointModel p2 = segment.get(idx);
-            remainingDistance += PointModelUtil.distance(p1,p2);
-            p1 = p2;
+    public TrackLogRefApproach getStartApproach(TrackLogRefApproach appStart){
+        if (appStart == null){
+            appStart = new TrackLogRefApproach(this, 0, 0);
+            appStart.setApproachPoint(getTrackLogSegment(0).get(0));
+            appStart.setEndPointIndex(0);
         }
-        return remainingDistance;
+        return appStart;
+    }
+    public TrackLogRefApproach getEndApproach(TrackLogRefApproach appEnd){
+        if (appEnd == null) {
+            int segmentIdx = lastNoneEmptySegmentIdx();
+            TrackLogSegment segment = getTrackLogSegment(segmentIdx);
+            appEnd = new TrackLogRefApproach(this, segmentIdx, 0);
+            appEnd.setApproachPoint(segment.getLastPoint());
+            appEnd.setEndPointIndex(segment.size() - 1);
+        }
+        return appEnd;
     }
 
-    public double getRemainingDistance(TrackLogRefApproach ref1, TrackLogRefApproach ref2){
-        if (ref1.segmentIdx != ref2.segmentIdx) return -1;
-        if (ref2.getEndPointIndex() < ref1.getEndPointIndex()){
-            TrackLogRefApproach ref = ref1;
-            ref1 = ref2;
-            ref2 = ref;
+    public ArrayList<PointModel> getPointList(TrackLogRefApproach appStart, TrackLogRefApproach appEnd){
+        appStart = getStartApproach(appStart);
+        appEnd = getEndApproach(appEnd);
+        ArrayList<PointModel> points = new ArrayList<>();
+        if ((appEnd.getSegmentIdx() >= 0) && (appStart.compareTo(appEnd) < 0)){
+            for (int segIdx=appStart.segmentIdx; segIdx<=appEnd.getSegmentIdx(); segIdx++){
+                TrackLogSegment segment = getTrackLogSegment(segIdx);
+                points.add( (segIdx==appStart.segmentIdx)?appStart.approachPoint:null );
+                points.addAll(segment.points.subList( (segIdx==appStart.segmentIdx)?appStart.endPointIndex:0, (segIdx==appEnd.segmentIdx)?appEnd.endPointIndex:segment.size() ));
+                points.add( (segIdx==appEnd.segmentIdx)?appEnd.approachPoint: null );
+            }
+            points.add( null );
         }
-
-        TrackLogSegment segment = getTrackLogSegment(ref1.segmentIdx);
-        double remainingDistance = 0;
-        PointModel p1 = ref1.getApproachPoint();
-        for (int idx = ref1.getEndPointIndex(); idx < ref2.getEndPointIndex(); idx++){
-            PointModel p2 = segment.get(idx);
-            remainingDistance += PointModelUtil.distance(p1,p2);
-            p1 = p2;
-        }
-        remainingDistance += PointModelUtil.distance(p1,ref2.getApproachPoint());
-        return remainingDistance;
+        return points;
     }
+
+    public int lastNoneEmptySegmentIdx(){
+        for (int i=getNumberOfSegments()-1; i>=0; i--){
+            if (getTrackLogSegment(i).size() > 0) return i;
+        }
+        return -1;
+    }
+
 
     public void changed(Object o){
         setChanged();

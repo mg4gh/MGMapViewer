@@ -16,10 +16,12 @@ package mg.mgmap.activity.mgmap;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.ViewGroup;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Lifecycle;
 
 import org.mapsforge.core.graphics.Paint;
@@ -192,6 +194,22 @@ public class FeatureService {
         }
     }
 
+    protected void unregister(final Layer layer){
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            mgLog.d("unregister fs="+this.getClass().getSimpleName()+" layer="+((layer==null)?"":layer.getClass().getSimpleName())+" control="+(layer instanceof ControlMVLayer));
+            synchronized (getMapView().getLayerManager().getLayers()) {
+                if (layer instanceof ControlMVLayer){
+                    fsControlLayers.layers.remove(layer);
+                } else if (layer != null){
+                    fsLayers.layers.remove(layer);
+                }
+                getMapView().getLayerManager().redrawLayers();
+            }
+        } else {
+            getActivity().runOnUiThread(() -> unregister(layer));
+        }
+    }
+
     protected void unregisterAll(){
         if (!fsLayers.layers.isEmpty()){
             if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
@@ -219,7 +237,18 @@ public class FeatureService {
         }
     }
 
-    protected MGMapActivity getActivity(){
+    protected void redraw(){
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            mgLog.d("redraw fs="+this.getClass().getSimpleName());
+            synchronized (getMapView().getLayerManager().getLayers()) {
+                getMapView().getLayerManager().redrawLayers();
+            }
+        } else {
+            getActivity().runOnUiThread(this::redraw);
+        }
+    }
+
+    public MGMapActivity getActivity(){
         return activity;
     }
     public MGMapApplication getApplication(){
@@ -262,4 +291,7 @@ public class FeatureService {
         return activity.getPrefCache().get(id,defaultValue);
     }
 
+    public Drawable getDrawable(int drawableId){
+        return ResourcesCompat.getDrawable(getResources(), drawableId, getActivity().getTheme());
+    }
 }

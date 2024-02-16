@@ -223,7 +223,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
 
             for (TrackLogPoint lp : listAll) {
                 float curEle = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, lp.getPressure());
-                float curNmea = lp.getEleA() - (curEle - refEle);
+                float curNmea = lp.getEle() - (curEle - refEle);
 
                 cntEle++;
                 sumEle += curNmea;

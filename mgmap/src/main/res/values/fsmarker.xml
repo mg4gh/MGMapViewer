@@ -15,4 +15,5 @@
     <string name="FSMarker_qcEditMarkerTrack_Help2">on tap: switch edit mode off</string>
 
     <string name="FSMarker_qcHideMtl_Help">Hide marker track log</string>
+    <string name="FSMarker_qcReverseMtl_Help">Reverse direction</string>
 </resources>

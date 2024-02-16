@@ -14,6 +14,8 @@
  */
 package mg.mgmap.activity.mgmap.view;
 
+import android.os.Handler;
+
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
@@ -22,17 +24,30 @@ public abstract class ControlMVLayer<T> extends MVLayer {
 
     private float dragX;
     private float dragY;
-    private PointModel dragOrigin = null;
+
+    /** 0 - no drag origin found
+     *  1 - drag origin found
+     *  2 - drag aborted          */
+    private int dragOriginFound = 0;
     private T dragObject = null;
 
+    private Handler timer = null;
+    private final Runnable ttDrag = () -> abortDrag(dragX, dragY);
+    protected long timeoutDrag = 1000;
+
     public ControlMVLayer(){
+        reset();
+    }
+
+    public ControlMVLayer(Handler timer){
+        this.timer = timer;
         reset();
     }
 
     private void reset(){
         dragX = Float.MIN_VALUE;
         dragY = Float.MIN_VALUE;
-        dragOrigin = null;
+        dragOriginFound = 0;
         dragObject = null;
     }
 
@@ -42,15 +57,21 @@ public abstract class ControlMVLayer<T> extends MVLayer {
         if (!checkDragXY(scrollX1,scrollY1)){
             reset();
             setDragXY(scrollX1,scrollY1);
-            PointModel pmStartScroll = new WriteablePointModelImpl(y2lat(scrollY1), x2lon(scrollX1));
-            if (checkDrag(pmStartScroll)){
-                dragOrigin = pmStartScroll;
+            if (checkDrag(scrollX1, scrollY1)){
+                dragOriginFound = 1;
+            }
+        } else {
+            if (dragOriginFound == 2){
+                return true;
             }
         }
 
-        if (dragOrigin != null){
-            WriteablePointModel pmCurrent = new WriteablePointModelImpl(y2lat(scrollY2), x2lon(scrollX2));
-            handleDrag(pmCurrent);
+        if (dragOriginFound == 1){
+            handleDrag(scrollX1, scrollY1, scrollX2, scrollY2);
+            if (timer != null){
+                timer.removeCallbacks(ttDrag);
+                timer.postDelayed(ttDrag,timeoutDrag);
+            }
             return true;
         }
 
@@ -75,10 +96,23 @@ public abstract class ControlMVLayer<T> extends MVLayer {
     }
 
 
-
+    protected boolean checkDrag(float scrollX, float scrollY){
+        PointModel pmStartScroll = new WriteablePointModelImpl(y2lat(scrollY), x2lon(scrollX));
+        return checkDrag(pmStartScroll);
+    }
     protected boolean checkDrag(PointModel pmStart){
         return false;
     }
+
+    protected void handleDrag(float scrollX1, float scrollY1, float scrollX2, float scrollY2){
+        WriteablePointModel pmCurrent = new WriteablePointModelImpl(y2lat(scrollY2), x2lon(scrollX2));
+        handleDrag(pmCurrent);
+    }
+
     protected void handleDrag(WriteablePointModel pmCurrent){}
 
+    protected void abortDrag(float scrollX, float scrollY){
+//        reset();
+        dragOriginFound = 2;
+    }
 }

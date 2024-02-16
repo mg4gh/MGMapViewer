@@ -38,8 +38,10 @@ No further data are transferred.
 A mapstore can be downloaded completely offline and copied just to the path for the mapstore. But there is an additional feature that allows to download tiles
 similar to the online maps, except that the downloaded tiles are stored additionally in a local mapstore, similar to a cache. So they are available for later usage independent 
 on the internet access. Again the server have to be listed in a configuration file that is provided by the user. 
-- [hgt grid layer](./Features/MainMapFeatures/MapGrid/hgt.md)<br>
-Similar to the mapstore download feature the hgt grid layer can be used to download hgt height files. In this case there is no configuration file required. The data are downloaded
+- [height data](./Features/FurtherFeatures/HeightData/heightdata.md)<br>
+Similar to the mapstore download feature the [hgt grid layer](./Features/MainMapFeatures/MapGrid/hgt.md) can be used to download hgt height data files. Additionally such a height data download, 
+will automatically be offered after a mapsforge map download, if corresponding height data are not yet abailable.
+The data are downloaded either form this [github height data project](https://github.com/mg4gh/hgtdata) or (if not found there) 
 from the domain **step.esa.int** that is provided by the European Space Agency (ESA).
 - [mapsforge themes](./Features/MainMapFeatures/MapsforgeThemes/mapsforgethemes.md)<br>
 Similar to the mapsforge maps there is a download option for the mapsforge map themes. As in the feature description visible, this download procedure opens a browser window again to the domain

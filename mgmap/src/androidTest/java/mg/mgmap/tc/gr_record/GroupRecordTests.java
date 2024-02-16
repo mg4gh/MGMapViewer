@@ -168,7 +168,7 @@ public class GroupRecordTests extends BaseTestCase {
         animateAndClick(54.3220, 13.3515, 11.1f, 83.1f, 48.6f, 55.5f);
 
         SystemClock.sleep(1000);
-        addRegex(".*Test Statistic: .* duration=0:00 totalLength=721.18 gain=11.5 loss=0.0 minEle=11.5 maxEle=34.5 numPoints=6");
+        addRegex(".*Test Statistic: .* duration=0:00 totalLength=721.18 gain=20.5 loss=0.0 minEle=11.5 maxEle=34.5 numPoints=6");
         mgLog.i("Test Statistic: " + mgMapApplication.recordingTrackLogObservable.getTrackLog().getTrackStatistic());
 
 
@@ -212,7 +212,7 @@ public class GroupRecordTests extends BaseTestCase {
         animateAndClick(54.3220, 13.3515, 11.1f, 83.1f, 48.6f, 55.5f);
 
         SystemClock.sleep(1000);
-        addRegex(".*Test Statistic: .* duration=0:00 totalLength=497.69 gain=0.0 loss=0.0 minEle=11.5 maxEle=34.5 numPoints=6");
+        addRegex(".*Test Statistic: .* duration=0:00 totalLength=497.69 gain=12.4 loss=0.4 minEle=11.5 maxEle=34.5 numPoints=6");
         mgLog.i("Test Statistic: " + mgMapApplication.recordingTrackLogObservable.getTrackLog().getTrackStatistic());
 
 

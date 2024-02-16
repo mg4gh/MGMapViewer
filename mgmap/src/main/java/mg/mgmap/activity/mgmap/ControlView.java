@@ -81,10 +81,12 @@ public class ControlView extends RelativeLayout {
     ArrayList<ViewGroup> dashboardEntries = new ArrayList<>();
     /** Parent of the dashboard entries. */
     ViewGroup dashboard;
+    ViewGroup trackDetails;
+    ViewGroup routingProfiles;
 
 
     /** parent object for status line */
-    TableRow tr_states = null;
+    ViewGroup tr_states = null;
     /** List will be filled with all members of the status line */
     ArrayList<TextView> tvList = new ArrayList<>();
 
@@ -94,6 +96,7 @@ public class ControlView extends RelativeLayout {
     private int statusBarHeight;
     private int navigationBarHeight;
     Pref<String> prefVerticalFullscreenOffset;
+    Pref<String> prefVerticalNoneFullscreenOffset;
     public ArrayList<View> variableVerticalOffsetViews = new ArrayList<>();
 
     public ControlView(Context context) {
@@ -126,12 +129,15 @@ public class ControlView extends RelativeLayout {
             ControlComposer controlComposer = new ControlComposer();
             prepareEnlargeControl();
 
+            trackDetails = findViewById(R.id.trackDetails);
+            routingProfiles = findViewById(R.id.routingProfiles);
             // initialize the dashboardKeys and dashboardMap object and then hide dashboard entries
             dashboard = findViewById(R.id.dashboard);
             controlComposer.composeDashboard(activity, this);
             initSystemBarHeight(activity);
             variableVerticalOffsetViews.add(this);
             prefVerticalFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_fullscreen_offset_key, ""+statusBarHeight);
+            prefVerticalNoneFullscreenOffset = activity.getPrefCache().get(R.string.preferences_display_none_fullscreen_offset_key, ""+0);
 
             controlComposer.composeRoutingProfileButtons(activity, this);
 
@@ -154,7 +160,7 @@ public class ControlView extends RelativeLayout {
     public void setVerticalOffset(){
         initSystemBarHeight(activity);
         boolean fullscreen =  activity.getPrefCache().get(R.string.FSControl_qcFullscreenOn, true).getValue();
-        int top = 0, bottom = 0;
+        int top = 0, bottom = dp(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
             top = statusBarHeight;
             if (fullscreen){
@@ -166,6 +172,13 @@ public class ControlView extends RelativeLayout {
                     prefVerticalFullscreenOffset.setValue(""+statusBarHeight);
                 }
             } else{
+                try{
+                    top += Integer.parseInt(prefVerticalNoneFullscreenOffset.getValue());
+                } catch (NumberFormatException e) {
+                    mgLog.e(e.getMessage());
+                    mgLog.w("Reset prefVerticalNoneFullscreenOffset to default "+0);
+                    prefVerticalNoneFullscreenOffset.setValue(""+0);
+                }
                 bottom = navigationBarHeight;
             }
         }
@@ -216,18 +229,35 @@ public class ControlView extends RelativeLayout {
 // *************************************************************************************************
 
     public void setDashboardVisibility(boolean visibitity){
+        // This method is called, when search takes place - then do not only hide dashboard, but also track details.
+        trackDetails.setVisibility(visibitity?VISIBLE:INVISIBLE);
         dashboard.setVisibility(visibitity?VISIBLE:INVISIBLE);
+        routingProfiles.setVisibility(visibitity?VISIBLE:INVISIBLE);
+    }
+
+    public static class DashboardEntry extends TableRow{
+        TrackLogStatistic statistic = null;
+        TrackLogStatistic tdStatistic = null;
+        private DashboardEntry(Context context){
+            super(context);
+        }
     }
 
     public ViewGroup createDashboardEntry(){
-        TableRow tr = new TableRow(context);
-        TableLayout.LayoutParams llParms = new TableLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        DashboardEntry tr = new DashboardEntry(context);
+        TableLayout.LayoutParams llParms = new TableLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         tr.setLayoutParams(llParms);
         return tr;
     }
 
     public ExtendedTextView createDashboardETV(ViewGroup vgDashboard, float weight) {
-        ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(16));
+        ExtendedTextView etv = new ExtendedTextView(context){
+            public void layout(int l, int t, int r, int b) {
+                if ((b-t)==(r-l)) return; // 04.02.2024: There seems to be a bug in Android - layout with same height as width - although something different was requested
+                super.layout(l, t, r, b);
+            }
+        };
+        etv.setDrawableSize(dp(16));
         vgDashboard.addView(etv);
 
         TableRow.LayoutParams params = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
@@ -247,7 +277,6 @@ public class ControlView extends RelativeLayout {
         etv.setCompoundDrawables(drawable,null,null,null);
         etv.setText("");
         etv.setLines(1);
-        etv.setOnClickListener(enlargeControl);
         return etv;
     }
 
@@ -281,18 +310,75 @@ public class ControlView extends RelativeLayout {
         return shouldBeVisible; // means finally it is visible
     }
 
+    public void setDashboardValue(String id, TrackLogStatistic tdStatistic){
+        DashboardEntry dashboardEntry = getDashboardEntry(id);
+        if (dashboardEntry != null){
+            dashboardEntry.tdStatistic=tdStatistic;
+            showDashboardValue(dashboardEntry);
+        }
+    }
     public void setDashboardValue(boolean condition, ViewGroup dashboardEntry, TrackLogStatistic statistic){
         if (setDashboardEntryVisibility(dashboardEntry, condition && (statistic != null) , (dashboardEntry.getParent() != null))){
             assert statistic != null;
-            String sIdx = "I="+statistic.getSegmentIdx();
-            if (statistic.getSegmentIdx() == -1) sIdx = "All";
-            if (statistic.getSegmentIdx() == -2) sIdx = "R";
-            ((ExtendedTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
-            ((ExtendedTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
-            ((ExtendedTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
-            ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
-            ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.getDuration());
+            ((DashboardEntry) dashboardEntry).statistic = statistic;
+            showDashboardValue((DashboardEntry) dashboardEntry);
         }
+    }
+
+    private void showDashboardValue(DashboardEntry dashboardEntry){
+        TrackLogStatistic statistic = ((dashboardEntry.tdStatistic != null) && (dashboardEntry.tdStatistic.getNumPoints()>0))?dashboardEntry.tdStatistic:dashboardEntry.statistic;
+        String sIdx = (statistic.getSegmentIdx()>=0)?"I="+statistic.getSegmentIdx():TrackLogStatistic.SEGMENT_IDS.get(statistic.getSegmentIdx());
+        ((ExtendedTextView) dashboardEntry.getChildAt(0)).setValue(sIdx);
+        ((ExtendedTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
+        ((ExtendedTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
+        ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
+        ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.getDuration());
+    }
+
+    /* Using this way to implement EnlargeControl for DashboardEntryViews allows to get scrollEvents and thus to implement drag and drop for Dashboard */
+    public boolean checkDashboardEntryView(float x, float y){
+        int[] loc = new int[2];
+        for (int i=0; i<dashboard.getChildCount(); i++){
+            ViewGroup dashboardEntry = (ViewGroup)dashboard.getChildAt(i);
+            dashboardEntry.getLocationOnScreen(loc);
+            if ((loc[0] < x) && (x < loc[0]+dashboardEntry.getWidth()) && (loc[1] <= y) && (y < loc[1]+dashboardEntry.getHeight())){
+                for (int j=0; j<dashboardEntry.getChildCount(); j++) {
+                    View dashboardEntryView = dashboardEntry.getChildAt(j);
+                    dashboardEntryView.getLocationOnScreen(loc);
+                    if ((loc[0] < x) && (x < loc[0] + dashboardEntryView.getWidth()) && (loc[1] <= y) && (y < loc[1] + dashboardEntryView.getHeight())) {
+                        new EnlargeControl(tv_enlarge).onClick(dashboardEntryView);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public String checkDashboardEntry(float x, float y){
+        int[] loc = new int[2];
+        for (int i=0; i<dashboard.getChildCount(); i++){
+            ViewGroup dashboardEntry = (ViewGroup)dashboard.getChildAt(i);
+            dashboardEntry.getLocationOnScreen(loc);
+            if ((loc[0] < x) && (x < loc[0]+dashboardEntry.getWidth()) && (loc[1] <= y) && (y < loc[1]+dashboardEntry.getHeight())){
+                return ((ExtendedTextView)(dashboardEntry.getChildAt(0))).getLogName();
+            }
+        }
+        return null;
+    }
+
+    private DashboardEntry getDashboardEntry(String id){
+        for (int i=0; i<dashboard.getChildCount(); i++) {
+            DashboardEntry dashboardEntry = (DashboardEntry) dashboard.getChildAt(i);
+            View view = dashboardEntry.getChildAt(0);
+            if (view instanceof ExtendedTextView) {
+                ExtendedTextView evt = (ExtendedTextView) view;
+                if (evt.getLogName().equals(id)){
+                    return dashboardEntry;
+                }
+            }
+        }
+        return null;
     }
 
     // *************************************************************************************************
@@ -399,7 +485,7 @@ public class ControlView extends RelativeLayout {
         ExtendedTextView etv = new ExtendedTextView(context).setDrawableSize(dp(16));
         vgParent.addView(etv);
         tvList.add(etv);
-        TableRow.LayoutParams llParms = new TableRow.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams llParms = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
         int margin = dp(0.8f);
         llParms.setMargins(margin,margin,margin,margin);
         llParms.weight = weight;

@@ -16,10 +16,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
+        <RelativeLayout
+            android:id="@+id/trackDetails"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
         <TableLayout
             android:id="@+id/dashboard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" 
+			android:layout_below="@id/trackDetails"/>
 
         <LinearLayout
             android:id="@+id/routingProfiles"
@@ -71,11 +76,11 @@
                 android:layout_height="wrap_content"
                 android:padding="8dp">
             </TableRow>
-            <TableRow
+			<LinearLayout
                 android:id="@+id/tr_states"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </TableRow>
+                android:layout_height="wrap_content" />
+
 			<RelativeLayout
 				android:id="@+id/base3"
 				android:layout_width="match_parent"
@@ -110,6 +115,12 @@
             >
         </LinearLayout>
     </mg.mgmap.activity.mgmap.ControlView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/animationview"
+        />
 
     <mg.mgmap.generic.view.DialogView
         android:layout_width="match_parent"

@@ -107,7 +107,7 @@ public class GGraphTile extends GGraph {
                 hgtTemp.setLat(latitude);
                 hgtTemp.setLon(longitude);
                 elevationProvider.setElevation(hgtTemp);
-                GNode node = new GNode(latitude, longitude, hgtTemp.getEleA(), hgtTemp.getEleAcc(), 0);
+                GNode node = new GNode(latitude, longitude, hgtTemp.getEle(), hgtTemp.getEleAcc(), 0);
                 if (longitude == tbBox.minLongitude) node.borderNode |= GNode.BORDER_NODE_WEST;
                 if (longitude == tbBox.maxLongitude) node.borderNode |= GNode.BORDER_NODE_EAST;
                 if (latitude == tbBox.minLatitude)  node.borderNode |= GNode.BORDER_NODE_SOUTH;

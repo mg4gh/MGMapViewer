@@ -159,7 +159,7 @@ public class FSPosition extends FeatureService {
         }
         register(new PointView(pm, PAINT_FIX2_STROKE, PAINT_FIX2_FILL).setRadius( 6 ));
 
-        getControlView().setStatusLineValue(etvHeight, pm.getEleA());
+        getControlView().setStatusLineValue(etvHeight, pm.getEle());
     }
 
     private void centerCurrentPosition(PointModel pm){

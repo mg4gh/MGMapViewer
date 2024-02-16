@@ -44,7 +44,7 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     }
 
     public PointModelImpl(PointModel pm){
-        this(pm.getLat(), pm.getLon(), pm.getEleA(), pm.getEleAcc());
+        this(pm.getLat(), pm.getLon(), pm.getEle(), pm.getEleAcc());
     }
 
     public PointModelImpl(double latitude, double longitude, float ele, float eleAcc){
@@ -74,14 +74,10 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     }
 
     @Override
-    public float getEleA(){
+    public float getEle(){
         return ele;
     }
 
-    @Override
-    public float getEleD() {
-        return ele;
-    }
 
     @Override
     public float getEleAcc() {

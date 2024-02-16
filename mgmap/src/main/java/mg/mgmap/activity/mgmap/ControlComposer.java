@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TableRow;
 
 import java.util.ArrayList;
 
@@ -31,7 +32,6 @@ import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.features.alpha.FSAlpha;
 import mg.mgmap.activity.mgmap.features.bb.FSBB;
 import mg.mgmap.activity.mgmap.features.position.FSPosition;
-import mg.mgmap.activity.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
@@ -59,6 +59,16 @@ public class ControlComposer {
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.gain);
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_HEIGHT).setData(R.drawable.loss);
         coView.createDashboardETV(dashboardEntry, 20).setFormat(Formatter.FormatType.FORMAT_DURATION).setData(R.drawable.duration);
+        float totalWeight = 0;
+        for (int i=0; i<dashboardEntry.getChildCount(); i++){
+            totalWeight += ((TableRow.LayoutParams)dashboardEntry.getChildAt(i).getLayoutParams()).weight;
+        }
+        int totalWidth = coView.getActivity().getResources().getDisplayMetrics().widthPixels;
+        for (int i=0; i<dashboardEntry.getChildCount(); i++){
+            TableRow.LayoutParams params = (TableRow.LayoutParams)dashboardEntry.getChildAt(i).getLayoutParams();
+            params.width = (int)( params.weight*totalWidth / totalWeight) - params.leftMargin - params.rightMargin;
+            dashboardEntry.getChildAt(i).setLayoutParams(params);
+        }
         coView.dashboardEntries.add(dashboardEntry);
         return dashboardEntry;
     }
@@ -66,7 +76,7 @@ public class ControlComposer {
     void composeRoutingProfileButtons(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.routingProfiles);
         for (RoutingProfile routingProfile : FSRouting.getDefinedRoutingProfiles()){
-            activity.getFS(FSRouting.class).initRoutingProfile(coView.createRoutingProfileETV(parent), routingProfile).setId(View.generateViewId());
+            activity.getFS(FSRouting.class).initRoutingProfile(coView.createRoutingProfileETV(parent), routingProfile).setIdOnly(View.generateViewId());
         }
         parent.setVisibility(View.INVISIBLE);
     }
@@ -101,7 +111,6 @@ public class ControlComposer {
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "time");
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 20), "job");
         activity.getFS(FSPosition.class).initStatusLine(coView.createStatusLineETV(parent, 20), "height");
-        activity.getFS(FSRemainings.class).initStatusLine(coView.createStatusLineETV(parent, 20), "remain");
         activity.getFS(FSTime.class).initStatusLine(coView.createStatusLineETV(parent, 15), "bat");
     }
 
@@ -157,7 +166,7 @@ public class ControlComposer {
         createQC(activity, FSRouting.class,qcss[3],"routingSave",gos.get(0)).setId(R.id.mi_routing_save);
         createQC(activity, FSMarker.class,qcss[3],"markerEdit",gos.get(0)).setId(R.id.mi_marker_edit);
         createQC(activity, FSRouting.class,qcss[3],"routingHint",gos.get(0)).setId(R.id.mi_routing_hint);
-        createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty2);
+        createQC(activity, FSMarker.class,qcss[3],"reverse",gos.get(0)).setId(R.id.mi_marker_reverse);
         createQC(activity, FSRouting.class,qcss[3],"matching",gos.get(0)).setId(R.id.mi_map_mathching);
         createQC(activity, FSControl.class,qcss[3],"empty",gos.get(0)).setId(R.id.mi_marker_empty3);
 

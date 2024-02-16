@@ -66,9 +66,9 @@ public class Dijkstra {
             GNodeRef ref = new GNodeRef(source,0,null,null, heuristic(source));
             source.setNodeRef(ref);
             prioQueue.add(ref);
-            mgLog.d(()->String.format(Locale.ENGLISH, "Source: lat=%.6f lon=%.6f ele=%.2f cost=%.2f heuristic=%.2f hcost=%.2f",source.getLat(),source.getLon(),source.getEleA(),
+            mgLog.d(()->String.format(Locale.ENGLISH, "Source: lat=%.6f lon=%.6f ele=%.2f cost=%.2f heuristic=%.2f hcost=%.2f",source.getLat(),source.getLon(),source.getEle(),
                     ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost()));
-            mgLog.d(()->String.format(Locale.ENGLISH, "Target: lat=%.6f lon=%.6f ele=%.2f",target.getLat(),target.getLon(),target.getEleA()));
+            mgLog.d(()->String.format(Locale.ENGLISH, "Target: lat=%.6f lon=%.6f ele=%.2f",target.getLat(),target.getLon(),target.getEle()));
         }
 
         GNodeRef ref = prioQueue.first();

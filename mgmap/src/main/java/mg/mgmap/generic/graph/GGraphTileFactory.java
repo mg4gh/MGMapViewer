@@ -47,13 +47,15 @@ public class GGraphTileFactory {
 
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
+    private boolean wayDetails;
     private LinkedHashMap<Integer, GGraphTile> cache = null;
 
     public GGraphTileFactory(){}
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider){
+    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
+        this.wayDetails = wayDetails;
 
         cache = new LinkedHashMap<>(100, 0.6f, true) {
             @Override
@@ -127,10 +129,6 @@ public class GGraphTileFactory {
         return am;
     }
 
-    public ElevationProvider getElevationProvider() {
-        return elevationProvider;
-    }
-
     @SuppressWarnings("CommentedOutCode")
     public GGraphTile getGGraphTile(int tileX, int tileY){
         int key = getKey(tileX,tileY);
@@ -147,17 +145,19 @@ public class GGraphTileFactory {
                     gGraphTile.addLatLongs( wayAttributs, way.latLongs[0]);
 
                     // now setup rawWays
-                    MultiPointModelImpl mpm = new MultiPointModelImpl();
-                    for (LatLong latLong : way.latLongs[0] ){
-                        // for points inside the tile use the GNodes as already allocated
-                        // for points outside use extra Objects, don't pollute the graph with them
-                        if (gGraphTile.tbBox.contains(latLong.latitude, latLong.longitude)){
-                            mpm.addPoint(gGraphTile.getAddNode(latLong.latitude, latLong.longitude));
-                        } else {
-                            mpm.addPoint(new PointModelImpl(latLong));
+                    if (wayDetails){
+                        MultiPointModelImpl mpm = new MultiPointModelImpl();
+                        for (LatLong latLong : way.latLongs[0] ){
+                            // for points inside the tile use the GNodes as already allocated
+                            // for points outside use extra Objects, don't pollute the graph with them
+                            if (gGraphTile.tbBox.contains(latLong.latitude, latLong.longitude)){
+                                mpm.addPoint(gGraphTile.getAddNode(latLong.latitude, latLong.longitude));
+                            } else {
+                                mpm.addPoint(new PointModelImpl(latLong));
+                            }
                         }
+                        gGraphTile.getRawWays().add(mpm);
                     }
-                    gGraphTile.getRawWays().add(mpm);
                 }
             }
             int latThreshold = LaLo.d2md( PointModelUtil.latitudeDistance(GGraph.CONNECT_THRESHOLD_METER) );

@@ -114,7 +114,7 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
     }
 
     @Override
-    public float getEleA() {
+    public float getEle() {
         if (ele != PointModel.NO_ELE){
             return ele;
         }
@@ -124,21 +124,7 @@ public class TrackLogPoint extends WriteablePointModelImpl implements WriteableP
         if (nmeaEle != PointModel.NO_ELE){
             return nmeaEle;
         }
-        return super.getEleA();
-    }
-
-    @Override
-    public float getEleD() {
-        if (pressureEle != PointModel.NO_ELE){
-            return pressureEle;
-        }
-        if (hgtEle != PointModel.NO_ELE){
-            return hgtEle;
-        }
-        if (nmeaEle != PointModel.NO_ELE){
-            return nmeaEle;
-        }
-        return super.getEleD();
+        return super.getEle();
     }
 
     @Override

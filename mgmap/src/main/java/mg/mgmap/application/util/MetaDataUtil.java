@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MetaData;
 import mg.mgmap.generic.model.PointModel;
@@ -31,6 +32,7 @@ import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLogStatistic;
+import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.basic.MGLog;
 
 public class MetaDataUtil {
@@ -40,9 +42,11 @@ public class MetaDataUtil {
     public static final long MAGIC = 0xAFFEAFFED00FD00FL;
     public static final int VERSION = 0x0200;
 
+    MGMapApplication application;
     PersistenceManager persistenceManager;
 
-    public MetaDataUtil(PersistenceManager persistenceManager){
+    public MetaDataUtil(MGMapApplication application, PersistenceManager persistenceManager){
+        this.application = application;
         this.persistenceManager = persistenceManager;
     }
 
@@ -139,7 +143,7 @@ public class MetaDataUtil {
 
     public void readMetaData(FileInputStream in, TrackLog trackLog) {
         try {
-            mgLog.d(trackLog.getName());
+            mgLog.v(trackLog.getName());
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] b = new byte[MetaData.BUF_SIZE];
             while (in.available() >= b.length){
@@ -190,22 +194,25 @@ public class MetaDataUtil {
         }
     }
 
-    public ArrayList<TrackLog> loadMetaData(ArrayList<String> metaNames){
-        ArrayList<TrackLog> trackLogs = new ArrayList<>();
+    public void loadMetaData(ArrayList<String> metaNames){
         mgLog.i("loading meta files started");
 
         if (metaNames == null){
             metaNames = persistenceManager.getMetaNames();
         }
         for (String name : metaNames){
-            final TrackLog trackLog = new TrackLog();
-            trackLog.setName(name);
-            readMetaData(persistenceManager.openMetaInput(name), trackLog);
-            trackLogs.add(trackLog);
+            application.addBgJob(new BgJob(){
+                @Override
+                protected void doJob() {
+                    final TrackLog trackLog = new TrackLog();
+                    trackLog.setName(name);
+                    readMetaData(persistenceManager.openMetaInput(name), trackLog);
+                    application.addMetaDataTrackLog(trackLog);
+                }
+            });
         }
 
-        mgLog.i("loading meta files finished ("+trackLogs.size()+").");
-        return trackLogs;
+        mgLog.i("loading meta files triggered ("+metaNames.size()+").");
     }
 
 

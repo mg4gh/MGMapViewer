@@ -96,6 +96,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
         String preferencesName = MGMapApplication.getByContext(this).getPreferencesName();
         this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( preferencesName+"_"+this.getClass().getSimpleName(), MODE_PRIVATE));
         recreatePreferences = Arrays.asList(
+                getResources().getString(R.string.FSGrad_pref_WayDetails_key),
                 getResources().getString(R.string.Layers_pref_chooseMap1_key),
                 getResources().getString(R.string.Layers_pref_chooseMap2_key),
                 getResources().getString(R.string.Layers_pref_chooseMap3_key),

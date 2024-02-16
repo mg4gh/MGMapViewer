@@ -60,7 +60,7 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
             WriteablePointModel wpm = (WriteablePointModel) points.get(idx);
             wpm.setLat(toPos.getLat());
             wpm.setLon(toPos.getLon());
-            wpm.setEle(toPos.getEleA());
+            wpm.setEle(toPos.getEle());
             recalcBBox(); // could be optimized
         }
     }
@@ -79,7 +79,7 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
     @Override
     public Iterator<PointModel> iterator() {
         if (iterateConcurrent){
-            return new ArrayList<PointModel>(points).iterator();
+            return new ArrayList<>(points).iterator();
         } else {
             return points.iterator();
         }

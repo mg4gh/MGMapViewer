@@ -68,12 +68,16 @@ public class MapViewUtility {
         this.mapView.getModel().mapViewPosition.setZoomLevel(bzoom);
     }
 
+    public double getCloseThresholdForZoomLevel(double limit) {
+        return Math.min(limit, getCloseThresholdForZoomLevel());
+    }
+
     public double getCloseThresholdForZoomLevel() {
         int currentZoomLevel = this.mapView.getModel().mapViewPosition.getZoomLevel();
         double closeThresholdForZoomLevel = PointModelUtil.getCloseThreshold();
         closeThresholdForZoomLevel = closeThresholdForZoomLevel / (1 << 9);
         closeThresholdForZoomLevel = closeThresholdForZoomLevel * (1 << (25 - currentZoomLevel));
-        return Math.min(500,  closeThresholdForZoomLevel * 1.5);
+        return closeThresholdForZoomLevel * 1.5;
     }
 
     public boolean isClose(double distance) {
@@ -98,7 +102,9 @@ public class MapViewUtility {
         return new PointModelImpl(this.mapView.getModel().mapViewPosition.getCenter());
     }
     public void setCenter(PointModel pm){
-        this.mapView.getModel().mapViewPosition.setCenter(new LatLong(pm.getLat(),pm.getLon()));
+        if (pm.getLaLo() != PointModelUtil.NO_POS){
+            this.mapView.getModel().mapViewPosition.setCenter(new LatLong(pm.getLat(),pm.getLon()));
+        }
     }
 
     public float getTrackWidth() {

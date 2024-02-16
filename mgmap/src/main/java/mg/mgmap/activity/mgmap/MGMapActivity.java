@@ -41,6 +41,8 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Point;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
@@ -59,6 +61,9 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
+import mg.mgmap.activity.mgmap.features.trad.FSTrackDetails;
+import mg.mgmap.activity.mgmap.view.ControlMVLayer;
+import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.activity.settings.MainPreferenceScreen;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.application.MGMapApplication;
@@ -71,7 +76,6 @@ import mg.mgmap.activity.mgmap.features.grad.FSGraphDetails;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
 import mg.mgmap.activity.mgmap.features.beeline.FSBeeline;
 import mg.mgmap.activity.mgmap.features.position.FSPosition;
-import mg.mgmap.activity.mgmap.features.remainings.FSRemainings;
 import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
@@ -91,7 +95,6 @@ import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.GpxSyncUtil;
-import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.Zipper;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
@@ -104,7 +107,6 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.TopExceptionHandler;
 import mg.mgmap.generic.model.TrackLog;
-import mg.mgmap.activity.mgmap.view.MVLayer;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintAccessBackgroundLocation;
 import mg.mgmap.generic.util.hints.HintAccessFineLocation;
@@ -150,7 +152,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private MapDataStoreUtil mapDataStoreUtil = null;
     private GGraphTileFactory gGraphTileFactory = null;
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
-    private final PropertyChangeListener pclTriggerTrackLoggerService = (e) -> triggerTrackLoggerService();
+    private final PropertyChangeListener prefGpsObserver = (e) -> triggerTrackLoggerService();
 
     public MGMapApplication getMGMapApplication(){
         return application;
@@ -208,12 +210,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         coView = getControlView();
-        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider());
+        boolean wayDetails = prefCache.get(R.string.FSGrad_pref_WayDetails_key, false).getValue();
+        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), wayDetails);
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSAlpha(this));
         featureServices.add(new FSControl(this));
-        featureServices.add(new FSRemainings(this));
 
         featureServices.add(new FSAvailableTrackLogs(this));
         featureServices.add(new FSMarker(this));
@@ -225,20 +227,17 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSPosition(this));
         featureServices.add(new FSBeeline(this));
         featureServices.add(new FSBB(this));
+        featureServices.add(new FSTrackDetails(this));
+        createLayers2();
 
-        WaitUtil.doWait(this.getClass(), 100);
         coView.init(application, this);
         if (!getIntent().toString().contains(" act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] "))
             onNewIntent(getIntent());
-        // use prefGps and prefRestart from applications prefCache to prevent race conditions during startup phase
-        application.prefGps.addObserver(pclTriggerTrackLoggerService);
-        mgLog.d("prefGps="+application.prefGps.getValue()+" prefRestart="+application.prefRestart.getValue() );
-        if (application.prefGps.getValue() && application.prefRestart.getValue()){
-            triggerTrackLoggerService(); // restart track logger service after app restart while track recording is on
-        }
-        application.prefRestart.setValue(false);
+        // use prefGps from applications prefCache to prevent race conditions during startup phase
+        application.prefGps.addObserver(prefGpsObserver);
+        application.prefGps.onChange();
         prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> new GpxSyncUtil().trySynchronisation(application));
-        prefCache.dumpPrefs();
+//        prefCache.dumpPrefs();
     }
 
     @Override
@@ -338,7 +337,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.routeTrackLogObservable.deleteObservers();
         application.lastPositionsObservable.deleteObservers();
 
-        application.prefGps.deleteObserver(pclTriggerTrackLoggerService);
+        application.prefGps.deleteObserver(prefGpsObserver);
 
         mapView.destroyAll();
         mapDataStoreUtil.onDestroy();
@@ -595,9 +594,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @SuppressLint("BatteryLife")
     public void triggerTrackLoggerService(){
         mgLog.i();
-        if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
-            mgLog.i();
-            if (application.prefGps.getValue()){
+        if (application.prefGps.getValue()){
+            if (!(Permissions.check(this,  Manifest.permission.ACCESS_FINE_LOCATION))){
+                mgLog.i();
                 AbstractHint hint = new HintAccessFineLocation(this).addGotItAction(() -> {
                     if (Build.VERSION.SDK_INT < 28){
                         Permissions.request(MGMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_CODE);
@@ -606,18 +605,18 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                     }
                 });
                 application.getHintUtil().showHint(hint);
-            }
-        } else {
-            application.startTrackLoggerService(this);
-            if (application.prefGps.getValue()){
+            } else {
+                application.startTrackLoggerService(this, true);
                 getMGMapApplication().getHintUtil().showHint(new HintBatteryUsage(this)
                         .addGotItAction(()-> {
                             Intent intent = new Intent();
                             intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                             intent.setData(Uri.parse("package:"+getPackageName()));
                             startActivity(intent);
-                            }));
+                        }));
             }
+        } else {
+            application.startTrackLoggerService(this, false);
         }
     }
 
@@ -779,6 +778,45 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
 
         });
+    }
+
+    public void createLayers2(){
+        Layers layers = mapView.getLayerManager().getLayers();
+
+        // create additional control layer to handle dashboard drag events */
+        layers.add(new ControlMVLayer<String>(FeatureService.getTimer()) {
+            @Override
+            public boolean onTap(LatLong tapLatLong, Point layerXY, Point tapXY) {
+                // we need to use this for EnlargeControl of Dashboard (instead of OnClickListener of dashboard views) - otherwise we don't get the drag events here
+                if (coView.checkDashboardEntryView((float)tapXY.x, (float)tapXY.y)) return true;
+                return super.onTap(tapLatLong, layerXY, tapXY);
+            }
+
+            @Override
+            protected boolean checkDrag(float scrollX, float scrollY) {
+                String dashboardName = coView.checkDashboardEntry(scrollX,scrollY);
+                setDragObject(dashboardName);
+                if (dashboardName != null){
+                    getFS(FSTrackDetails.class).initDashboardDrag(dashboardName);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            protected void handleDrag(float scrollX1, float scrollY1, float scrollX2, float scrollY2) {
+                if (getFS(FSTrackDetails.class).handleDashboardDrag(scrollX1,scrollY1,scrollX2,scrollY2)){
+                    abortDrag(scrollX1, scrollY1);
+                }
+            }
+
+            @Override
+            protected void abortDrag(float scrollX, float scrollY) {
+                super.abortDrag(scrollX, scrollY);
+                getFS(FSTrackDetails.class).abortDashboardDrag();
+            }
+        });
+
     }
 
     private boolean toggleGlOnMatch(TrackLogRefApproach bestMatch, TrackLog candidate, Pref<Boolean> candidatesPref){

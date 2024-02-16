@@ -36,6 +36,16 @@
             app:iconSpaceReserved="false"
             />
         <Preference
+            app:title="Preferred Height Data "
+            app:summary="by Sonny\nHeight data from https://sonny.4lima.de/, mostly based on Lidar. For programmatically access copied to https://github.com/mg4gh/hgtdata."
+            app:iconSpaceReserved="false"
+            />
+        <Preference
+            app:title="Height Data"
+            app:summary="by ESA\nHeight data from https://step.esa.int/auxdata/dem/SRTMGL1/ are based on the SRTM (Shuttle Radar Topography Mission) project."
+            app:iconSpaceReserved="false"
+            />
+        <Preference
             app:title="Height profile"
             app:summary="Height profile activity is based on\nhttps://github.com/jjoe64/GraphView"
             app:iconSpaceReserved="false"

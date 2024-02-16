@@ -23,8 +23,8 @@
     <string name="FSControl_pref_menu_one_line_desc">Show menus and menu items in the same line (default is two lines)</string>
 
     <string name="FSControl_pref_menu_animation_timeout_key">FSControl.menuAnimationTimeout</string>
-    <string name="FSControl_pref_menu_animation_timeout_title">Menu animation timeout</string>
-    <string name="FSControl_pref_menu_animation_timeout_desc1">Abort menu animation after this time</string>
-    <string name="FSControl_pref_menu_animation_timeout_desc2">Timeout for menu animation in ms (Default 250ms). A value of 0 means no animation.</string>
+    <string name="FSControl_pref_menu_animation_timeout_title">Menu animation time</string>
+    <string name="FSControl_pref_menu_animation_timeout_desc1">Duration of menu animation</string>
+    <string name="FSControl_pref_menu_animation_timeout_desc2">Duration of menu animation (Default 250ms). Valid range is between 0 and 500.</string>
     <string name="FSControl_pref_version_key">FSControl.prefVersionKey</string>
 </resources>

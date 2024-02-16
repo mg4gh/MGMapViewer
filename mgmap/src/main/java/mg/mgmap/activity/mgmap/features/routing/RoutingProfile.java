@@ -33,9 +33,7 @@ public abstract class RoutingProfile {
         if ((wayAttributs!=null) && (wayAttributs.getDerivedData()==null)){
             wayAttributs.setDerivedData( getCostCalculator(costCalculator, wayAttributs));
         }
-        double distance = PointModelUtil.distance(node1, node2);
-        float verticalDistance = node2.getEleD() - node1.getEleD();
-        return getCost(wayAttributs, distance, verticalDistance);
+        return getCost(wayAttributs, PointModelUtil.distance(node1, node2), PointModelUtil.verticalDistance(node1,node2));
     }
     protected double getCost(WayAttributs wayAttributs, double distance, float verticalDistance){
         CostCalculator calculator = this.costCalculator;
@@ -45,10 +43,8 @@ public abstract class RoutingProfile {
         return calculator.calcCosts(distance, verticalDistance);
     }
 
-    public double heuristic(PointModel node, PointModel target){
-        double distance = PointModelUtil.distance(node, target);
-        float verticalDistance = target.getEleD() - node.getEleD();
-        return heuristic(distance, verticalDistance);
+    public double heuristic(PointModel node1, PointModel node2){
+        return heuristic(PointModelUtil.distance(node1, node2), PointModelUtil.verticalDistance(node1,node2));
     }
     protected double heuristic(double distance, float verticalDistance){
         return costCalculator.heuristic(distance,verticalDistance);

@@ -29,13 +29,9 @@ public interface PointModel {
 
     /**
      * @return elevation for absolute elevation calculation (e.g. gps based or hgt based)
+     * For elevation delta (gain/loss) use PointModelUtil.verticalDistance()
      */
-    float getEleA();
-
-    /**
-     * @return elevation for delta elevation calculation (e.g. pressure based or hgt based)
-     */
-    float getEleD();
+    float getEle();
 
     float getEleAcc();
 

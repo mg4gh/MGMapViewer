@@ -47,7 +47,7 @@ public class FSTime extends FeatureService {
             etvTime = etv;
         }
         if (info.equals("bat")){
-            etv.setData(R.drawable.bat2);
+            etv.setData(R.drawable.bat);
             etv.setFormat(Formatter.FormatType.FORMAT_INT);
             etvBat = etv;
         }
@@ -80,12 +80,6 @@ public class FSTime extends FeatureService {
         if (--batCnt <= 0){
             batCnt = 60;
             getControlView().setStatusLineValue(etvBat, getBatteryPercent());
-            Drawable d = etvBat.getCompoundDrawables()[0];
-            if (d instanceof Animatable) {
-                Animatable animatable = (Animatable) d;
-                animatable.start();
-
-            }
         }
         if (getApplication().totalBgJobs() == 0){
             getControlView().setStatusLineValue(etvJob, "");

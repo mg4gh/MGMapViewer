@@ -159,11 +159,11 @@ public class GGraphMulti extends GGraph {
                     if ((node1.countNeighbours() == 1) && (node2.countNeighbours() == 1) && (PointModelUtil.distance(node1,node2)<CONNECT_THRESHOLD_METER*20)){
                         GNode node1Neighbour = node1.getNeighbour().getNextNeighbour().getNeighbourNode();
                         GNode node2Neighbour = node2.getNeighbour().getNextNeighbour().getNeighbourNode();
-                        WriteablePointModel approchPoint = new WriteablePointModelImpl();
-                        if (!PointModelUtil.findApproach(node1,node1Neighbour,node2Neighbour,approchPoint,0)) continue; // approach not found try next ponits
-                        if (PointModelUtil.distance(approchPoint,node1) > CONNECT_THRESHOLD_METER) continue;
-                        if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approchPoint,0)) continue; // approach not found try next ponits
-                        if (PointModelUtil.distance(approchPoint,node2) > CONNECT_THRESHOLD_METER) continue;
+                        WriteablePointModel approachPoint = new WriteablePointModelImpl();
+                        if (!PointModelUtil.findApproach(node1,node1Neighbour,node2Neighbour,approachPoint,0)) continue; // approach not found try next points
+                        if (PointModelUtil.distance(approachPoint,node1) > CONNECT_THRESHOLD_METER) continue;
+                        if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approachPoint,0)) continue; // approach not found try next points
+                        if (PointModelUtil.distance(approachPoint,node2) > CONNECT_THRESHOLD_METER) continue;
                         mgLog.d(()->"OK, connect: node1 " + node1 + " node1neighbour " + node1Neighbour + " node2 " + node2 + " node2neighbour " + node2Neighbour);
                         connect(node1Neighbour, node2Neighbour);
                         stillRemainingNodes1.remove(node1);

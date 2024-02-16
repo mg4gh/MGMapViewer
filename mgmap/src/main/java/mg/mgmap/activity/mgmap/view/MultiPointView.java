@@ -25,11 +25,9 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
 
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 /**
  */
@@ -88,15 +86,15 @@ public class MultiPointView extends MVLayer {
             Path path = this.graphicFactory.createPath();
 
             PointModel pm = iterator.next();
-            int x = lon2x(pm.getLon());
-            int y = lat2y(pm.getLat());
+            int x = lon2canvasX(pm.getLon());
+            int y = lat2canvasY(pm.getLat());
             path.moveTo(x, y);
             drawPoint(canvas, x,y, zoomLevel);
 
             while (iterator.hasNext()) {
                 pm = iterator.next();
-                x = lon2x(pm.getLon());
-                y = lat2y(pm.getLat());
+                x = lon2canvasX(pm.getLon());
+                y = lat2canvasY(pm.getLat());
                 if (this.paintStroke.getStrokeWidth() > 0){
                     path.lineTo(x, y);
                 } else {
