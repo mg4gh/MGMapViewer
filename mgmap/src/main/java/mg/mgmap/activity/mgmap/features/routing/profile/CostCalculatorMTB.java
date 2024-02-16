@@ -89,6 +89,7 @@ public class CostCalculatorMTB implements CostCalculator {
                     switch (wayTagEval.surface) {
                         case "asphalt":
                         case "paved":
+                        case "smooth_paved":
                             surfaceCat = 1;
                             break;
                         case "fine_gravel":
@@ -96,11 +97,12 @@ public class CostCalculatorMTB implements CostCalculator {
                         case "paving_stones":
                             surfaceCat = 2;
                             break;
-                        case "ground":
+/*                        case "ground":
                         case "dirt":
                         case "earth":
+                        case "raw":
                             surfaceCat = 3;
-                            break;
+                            break;*/
                         default:
                             surfaceCat = 4;
                     }
@@ -108,7 +110,7 @@ public class CostCalculatorMTB implements CostCalculator {
                 mfud = 1.25;
                 mfdd = 1.25;
                 if ("grade2".equals(wayTagEval.tracktype) || "grade1".equals(wayTagEval.tracktype) || surfaceCat <= 2) {
-                } else if ("grade3".equals(wayTagEval.tracktype) || surfaceCat <= 3) {
+                } else if ("grade3".equals(wayTagEval.tracktype) ) {
                     if (mtbUp < 0) deltaUp = 0.5;
                     if (mtbDn < 0) deltaDn = 0.5;
                 } else {

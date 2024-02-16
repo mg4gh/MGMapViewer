@@ -36,6 +36,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                 switch (wayTagEval.surface) {
                     case "asphalt":
                     case "paved":
+                    case "smooth_paved":
                         surfaceCat = 1;
                         break;
                     case "fine_gravel":
@@ -48,12 +49,13 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                 }
             }
             if ("path".equals(wayTagEval.highway)) {
+                surfaceCat = ( surfaceCat == 0 ) ? 3 : surfaceCat;
                 if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || surfaceCat == 1 )
                     distFactor = 1.0;
-                else if ("bic_designated".equals(wayTagEval.bicycle)){ // often bike lanes along big streets
+                else if ("bic_designated".equals(wayTagEval.bicycle) && surfaceCat <= 2 ){ // often bike lanes along big streets
                     distFactor = 1.5;
                     deltaSlope = 1.0;
-                } else if ("bic_yes".equals(wayTagEval.bicycle)) {
+                } else if ("bic_yes".equals(wayTagEval.bicycle) && surfaceCat <= 2) {
                     distFactor = 1.5;
                     deltaSlope = 1.5;
                 } else {
@@ -78,6 +80,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                     }
                 }
                 type = Math.max(type, surfaceCat);
+                type = ( type == 0 ) ? 4 : type;
                 if ( type ==1  || type <= 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1;
                     deltaSlope = 0;
