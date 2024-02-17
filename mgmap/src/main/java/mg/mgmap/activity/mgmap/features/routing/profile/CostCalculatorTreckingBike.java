@@ -22,7 +22,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
         double deltaSlope = 0.0;
         double  distFactor ;
 
-        if (!wayTagEval.accessable || "private".equals(wayTagEval.access)){
+        if (!wayTagEval.accessible || "private".equals(wayTagEval.access)){
              distFactor = 10;
         } else {
             int surfaceCat = 0;
@@ -58,8 +58,8 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                 }
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
                 int type = 0;
-                if (wayTagEval.tracktype != null) {
-                    switch (wayTagEval.tracktype) {
+                if (wayTagEval.trackType != null) {
+                    switch (wayTagEval.trackType) {
                         case "grade1":
                             type = 1;
                             break;

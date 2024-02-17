@@ -5,16 +5,16 @@ import org.mapsforge.map.datastore.Way;
 
 public class WayAttributs {
 
-    public boolean accessable = false;
+    public boolean accessible = false;
     public String highway = null;
     public String bicycle = null;
     public String access = null;
     public String cycleway = null;
     public String surface = null;
-    public String mtbscale = null;
-    public String mtbscaleUp = null;
+    public String mtbScale = null;
+    public String mtbScaleUp = null;
 
-    public String tracktype = null;
+    public String trackType = null;
     public String network = null;
 //    additional tags that might be used in future
 //    public String service = null;
@@ -30,14 +30,14 @@ public class WayAttributs {
         for (Tag tag : way.tags) {
             switch (tag.key) {
                 case "highway":
-                    accessable = true;
+                    accessible = true;
                     highway = tag.value;
                     break;
                 case "surface":
                     surface = tag.value;
                     break;
                 case "tracktype":
-                    tracktype = tag.value;
+                    trackType = tag.value;
                     break;
                 case "network":
                     network = tag.value;
@@ -54,10 +54,10 @@ public class WayAttributs {
                     access = tag.value;
                     break;
                 case "mtb_scale":
-                    mtbscale = tag.value;
+                    mtbScale = tag.value;
                     break;
                 case "mtb_scale_uphill":
-                    mtbscaleUp  = tag.value;
+                    mtbScaleUp = tag.value;
                     break;
 /*                case "name":
                     name = tag.value;
@@ -66,9 +66,9 @@ public class WayAttributs {
                     service = tag.value; */
             }
         }
-        if (accessable && ("private".equals(bicycle) || "private".equals(access) ||
+        if (accessible && ("private".equals(bicycle) || "private".equals(access) ||
                 "motorway".equals(highway) || "trunk".equals(highway))) {
-            accessable = false;
+            accessible = false;
         }
     }
 

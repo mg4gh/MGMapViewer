@@ -27,12 +27,12 @@ public class CostCalculatorMTB implements CostCalculator {
         double mfdd = 1;
         double deltaUp = 0;
         double deltaDn = 0;
-        if (!wayTagEval.accessable || "private".equals(wayTagEval.access)) {
+        if (!wayTagEval.accessible || "private".equals(wayTagEval.access)) {
             mfud = 10;
             mfdd = 10;
         } else {
-            if (wayTagEval.mtbscaleUp != null) {
-                switch (wayTagEval.mtbscaleUp) {
+            if (wayTagEval.mtbScaleUp != null) {
+                switch (wayTagEval.mtbScaleUp) {
                     case "mtbu_0":
                         mtbUp = 0;
                         break;
@@ -52,8 +52,8 @@ public class CostCalculatorMTB implements CostCalculator {
                         mtbUp = 5;
                 }
             }
-            if (wayTagEval.mtbscale != null) {
-                switch (wayTagEval.mtbscale) {
+            if (wayTagEval.mtbScale != null) {
+                switch (wayTagEval.mtbScale) {
                     case "mtbs_0":
                         mtbDn = 0;
                         break;
@@ -104,8 +104,8 @@ public class CostCalculatorMTB implements CostCalculator {
                 mfud = 1.25;
                 mfdd = 1.25;
                 //noinspection StatementWithEmptyBody
-                if ("grade2".equals(wayTagEval.tracktype) || "grade1".equals(wayTagEval.tracktype) || surfaceCat <= 2) {
-                } else if ("grade3".equals(wayTagEval.tracktype) ) {
+                if ("grade2".equals(wayTagEval.trackType) || "grade1".equals(wayTagEval.trackType) || surfaceCat <= 2) {
+                } else if ("grade3".equals(wayTagEval.trackType) ) {
                     if (mtbUp < 0) deltaUp = 0.5;
                     if (mtbDn < 0) deltaDn = 0.5;
                 } else {
