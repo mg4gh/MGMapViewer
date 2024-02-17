@@ -4,10 +4,13 @@ import static java.lang.Math.abs;
 
 import android.util.Log;
 
+import java.lang.invoke.MethodHandles;
+
 import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class CostCalculatorTwoPieceFunc implements CostCalculator {
-
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     // uphill Parameters
     // parameters which determine curve shape
     protected final static double fu = 1.2; //  product of costs per hm uphill slope limit; between 0.8 and 1.4
@@ -38,13 +41,7 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     protected final double mDnSlopeLimit;
     protected final double mKlevel;
     protected final double mSlevel;
-/*
-    protected double mUpCosts;
-    protected double mDnCosts;// base costs in m per hm uphill;
-    protected double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
-    protected double mDnAddCosts;
-    protected double mUpSlopeFactor;
-    protected double mDnSlopeFactor; */
+
 
 
     protected CostCalculatorTwoPieceFunc(double kLevel, double sLevel) {
@@ -55,13 +52,12 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     }
 
 
-
     public double calcCosts(double dist, float vertDist){
         if (dist <= 0.0000001 ) {
             return 0.0001;
         }
         double slope = vertDist / dist;
-        if ( abs(slope) >=  10.0 ) Log.e("CostCalcMTB","Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
+        if ( abs(slope) >=  10.0 ) mgLog.e("Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         double cost;
         double relslope;
         if (slope >= 0) {
@@ -81,33 +77,7 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     }
 
 
-/*      in original constructor
-        mUpCosts      = fu /mUpSlopeLimit;
-        mUpSlopeFactor = fus;
-        mUpAddCosts = mUpSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
-        mDnCosts      = fd/mDnSlopeLimit;
-        mDnSlopeFactor = fds;
-        mDnAddCosts = mDnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
-
-        public double calcCostsold(double dist, float vertDist){
-        if (dist <= 0.0000001 ) {
-            return 0.0001;
-        }
-        double slope = vertDist / dist;
-        double cost;
-        if (slope >= 0) {
-            if (slope <= mUpSlopeLimit)
-                cost = dist + vertDist * mUpCosts;
-            else
-                cost = dist + vertDist * ( mUpCosts + (slope - mUpSlopeLimit) * mUpAddCosts);
-        } else {
-            if (slope >= mDnSlopeLimit)
-                cost = dist + vertDist * mDnCosts;
-            else
-                return dist + vertDist * ( mDnCosts + (slope - mDnSlopeLimit) * mDnAddCosts);
-        }
-        return cost + 0.0001;
-    }
+/*
     derivation of the heuristic only for positive slope values, so target is uphill (for negative in principle the same, but a bit more cumbersome )
     In general heuristic must always be smaller than the actual costs independent of the route taken to the target. Any route on any hypothetical surface can be taken,
     so basically any route in the three dimensional space. For the vertical direction the solution is trivial, since with the given cost function any route which includes up- and downhill
@@ -136,6 +106,7 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     I omit this case for now and make sure that the constraint for case a is always full filled, so  upAddCosts >= 1/upSlopeLimit^2 (see constructor)
     In this case heuristic would be actually dependant on upAddCosts and the slope of the optimal route would be larger than upSlopeLimit.
 
+    original first implementation:
     public double heuristicold(double dist, float vertDist){
         if (dist <= 0.0000001 ) {
             return 0.0;
@@ -155,7 +126,44 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
                 heuristic = vertDist/ mDnSlopeLimit + vertDist * mDnCosts; // => heuristic strictly >= 0 => 1/mMaxOptDownSlope + mBaseDownCosts > 0 =>  1/mMaxOptDownSlope > -mBaseDownCosts => -1/mMaxOptDownSlope > mBaseDownCosts
         }
         return heuristic * 0.999;
-    } */
+      }
+        original declaration:
+        protected double mUpCosts;
+        protected double mDnCosts;    // base costs in m per hm uphill;
+        protected double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
+        protected double mDnAddCosts;
+        protected double mUpSlopeFactor;
+        protected double mDnSlopeFactor;
+
+        in original constructor
+        mUpCosts      = fu /mUpSlopeLimit;
+        mUpSlopeFactor = fus;
+        mUpAddCosts = mUpSlopeFactor/( mUpSlopeLimit * mUpSlopeLimit);
+        mDnCosts      = fd/mDnSlopeLimit;
+        mDnSlopeFactor = fds;
+        mDnAddCosts = mDnSlopeFactor/( mDnSlopeLimit * mDnSlopeLimit) ;
+
+        original implementation of calcCosts:
+        public double calcCostsold(double dist, float vertDist){
+        if (dist <= 0.0000001 ) {
+            return 0.0001;
+        }
+        double slope = vertDist / dist;
+        double cost;
+        if (slope >= 0) {
+            if (slope <= mUpSlopeLimit)
+                cost = dist + vertDist * mUpCosts;
+            else
+                cost = dist + vertDist * ( mUpCosts + (slope - mUpSlopeLimit) * mUpAddCosts);
+        } else {
+            if (slope >= mDnSlopeLimit)
+                cost = dist + vertDist * mDnCosts;
+            else
+                return dist + vertDist * ( mDnCosts + (slope - mDnSlopeLimit) * mDnAddCosts);
+        }
+        return cost + 0.0001;
+    }
+    */
 
     public double heuristic(double dist, float vertDist){
         if (dist <= 0.0000001 ) {
@@ -170,18 +178,15 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
             if (relslope <= 1)
                 heuristic = dist*(1+relslope*fu);
             else
-                heuristic = dist*relslope*(1+fu); // vertDist/mMaxOptUpSlope is the distance to the target if slope = mMaxOptUpSlope!
+                heuristic = dist*relslope*(1+fu);
         } else {
             relslope = slope / mDnSlopeLimit;
             if (relslope <= 1)
                 heuristic = dist*(1+relslope*fd);
             else
-                heuristic = dist*relslope*(1+fd);  // => heuristic strictly >= 0 => 1/mMaxOptDownSlope + mBaseDownCosts > 0 =>  1/mMaxOptDownSlope > -mBaseDownCosts => -1/mMaxOptDownSlope > mBaseDownCosts
+                heuristic = dist*relslope*(1+fd);
         }
         return heuristic * 0.999;
     }
-
-
-
 
 }

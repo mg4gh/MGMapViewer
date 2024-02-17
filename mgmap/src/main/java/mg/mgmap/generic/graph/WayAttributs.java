@@ -13,13 +13,13 @@ public class WayAttributs {
     public String surface = null;
     public String mtbscale = null;
     public String mtbscaleUp = null;
-//    public String trail_visibility = null;
+
     public String tracktype = null;
     public String network = null;
-
+//    additional tags that might be used in future
 //    public String service = null;
-
 //    public String name = null;
+//    public String trail_visibility = null;
 
 
 

@@ -1,32 +1,26 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import static java.lang.Math.abs;
-
-import android.util.Log;
-
+import java.lang.invoke.MethodHandles;
 import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
+import mg.mgmap.generic.util.basic.MGLog;
 
 public class CostCalculatorTreckingBike implements CostCalculator {
-
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private static final double fl = 1 - 1/1.3; // reduction of uphill slope limit with deltaSlope
-
-    /*    protected double mUpCosts;
-        protected double mDnCosts;// base costs in m per hm uphill;
-        protected double mUpAddCosts; // relative additional costs per slope increase ( 10 means, that costs double with 10% slope increase )
-        protected double mDnAddCosts; */
-    private final double mUpSlopeLimit; //  up to this slope base Costs
+    private final double mUpSlopeLimit;
     private final double mDnSlopeLimit;
     private final double mDelta;
     private final double mfd;
 
 
-    private CostCalculatorTwoPieceFunc mProfileCalculator;
+    private final CostCalculatorTwoPieceFunc mProfileCalculator;
     public CostCalculatorTreckingBike(WayAttributs wayTagEval, CostCalculatorTwoPieceFunc profile) {
         mProfileCalculator = profile;
 
         double deltaSlope = 0.0;
-        double  distFactor = 2.0;
+        double  distFactor ;
 
         if (!wayTagEval.accessable || "private".equals(wayTagEval.access)){
              distFactor = 10;
@@ -50,9 +44,9 @@ public class CostCalculatorTreckingBike implements CostCalculator {
             }
             if ("path".equals(wayTagEval.highway)) {
                 surfaceCat = ( surfaceCat == 0 ) ? 3 : surfaceCat;
-                if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || surfaceCat == 1 )
+                if (surfaceCat == 1  || (surfaceCat <= 2 && ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))))
                     distFactor = 1.0;
-                else if ("bic_designated".equals(wayTagEval.bicycle) && surfaceCat <= 2 ){ // often bike lanes along big streets
+                else if ( ("bic_designated".equals(wayTagEval.bicycle) && surfaceCat <= 2 ) ||"lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)){
                     distFactor = 1.5;
                     deltaSlope = 1.0;
                 } else if ("bic_yes".equals(wayTagEval.bicycle) && surfaceCat <= 2) {
@@ -87,21 +81,12 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                 } else if (type == 2 || type <= 3 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1.2;
                     deltaSlope = 0.5;
-                } else if (type==3) {
-                    distFactor = 1.6;
-                    deltaSlope = 1.5;
-                } else if (type==4) {
+                } else if (type==3 || "bic_designated".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
+                    distFactor = 1.5;
+                    deltaSlope = 1.0;
+                } else {
                     distFactor = 2;
                     deltaSlope = 2;
-                } else if ("bic_designated".equals(wayTagEval.bicycle)) { // often for bike lanes along big streets
-                    distFactor = 1.5;
-                    deltaSlope = 0.5;
-                } else if ("bic_yes".equals(wayTagEval.bicycle) ) {
-                    distFactor = 1.5;
-                    deltaSlope = 0.5;
-                } else {
-                    distFactor = 2.5;
-                    deltaSlope = 2.5;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
                 distFactor = 20;
@@ -122,21 +107,21 @@ public class CostCalculatorTreckingBike implements CostCalculator {
             return 0.0001;
         }
         double slope = vertDist / dist;
-        if ( abs(slope) >=  10.0 ) Log.e("CostCalcMTB","Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
+        if ( abs(slope) >=  10.0 ) mgLog.e("Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         double cost;
         double relslope;
         if (slope >= 0) {
             relslope = slope / mUpSlopeLimit;
             if (relslope <= 1)
-                cost = dist* ( mfd + relslope * mProfileCalculator.fu);
+                cost = dist* ( mfd + relslope * CostCalculatorTwoPieceFunc.fu);
             else
-                cost = dist* ( mfd + relslope * ( mProfileCalculator.fu + (relslope - 1) * mProfileCalculator.fus));
+                cost = dist* ( mfd + relslope * ( CostCalculatorTwoPieceFunc.fu + (relslope - 1) * CostCalculatorTwoPieceFunc.fus));
         } else {
             relslope = slope / mDnSlopeLimit;
             if (relslope <= 1)
-                cost = dist* ( mfd + relslope * mDelta * mProfileCalculator.fd);
+                cost = dist* ( mfd + relslope * mDelta * CostCalculatorTwoPieceFunc.fd);
             else
-                cost = dist* ( mfd + relslope * mDelta *( mProfileCalculator.fd + (relslope - 1) * mProfileCalculator.fds));
+                cost = dist* ( mfd + relslope * mDelta *( CostCalculatorTwoPieceFunc.fd + (relslope - 1) * CostCalculatorTwoPieceFunc.fds));
         }
         return cost + 0.0001;
     }
