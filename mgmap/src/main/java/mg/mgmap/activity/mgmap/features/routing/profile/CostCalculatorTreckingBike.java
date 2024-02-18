@@ -29,17 +29,17 @@ public class CostCalculatorTreckingBike implements CostCalculator {
             if (wayTagEval.surface != null) {
                 switch (wayTagEval.surface) {
                     case "asphalt":
-                    case "paved":
                     case "smooth_paved":
                         surfaceCat = 1;
                         break;
-                    case "fine_gravel":
                     case "compacted":
+                    case "paved":
+                    case "fine_gravel":
                     case "paving_stones":
                         surfaceCat = 2;
                         break;
                     default:
-                        surfaceCat = 3;
+                        surfaceCat = 4;
                 }
             }
             if ("path".equals(wayTagEval.highway)) {
@@ -73,8 +73,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                             type = 4;
                     }
                 }
-                type = Math.max(type, surfaceCat);
-                type = ( type == 0 ) ? 4 : type;
+                type = (type > 0) ? type : (surfaceCat>0) ? surfaceCat:4;
                 if ( type ==1  || type <= 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1;
                     deltaSlope = 0;
@@ -85,11 +84,14 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                     distFactor = 1.5;
                     deltaSlope = 1.0;
                 } else {
-                    distFactor = 2;
-                    deltaSlope = 2;
+                    distFactor = 2.5;
+                    deltaSlope = 2.5;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
-                distFactor = 20;
+                if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
+                    distFactor = 5.0;
+                else
+                    distFactor = 20;
             } else
                 distFactor = CostCalculatorMTB.getDistFactor(wayTagEval) ;
         }
