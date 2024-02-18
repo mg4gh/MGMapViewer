@@ -173,6 +173,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     public MapDataStoreUtil getMapDataStoreUtil() {
         return mapDataStoreUtil;
     }
+    public GGraphTileFactory getGGraphTileFactory() {
+        return gGraphTileFactory;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
