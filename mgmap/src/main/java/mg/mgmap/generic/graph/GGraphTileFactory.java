@@ -92,6 +92,10 @@ public class GGraphTileFactory {
         }
     }
 
+    public void clearCache(){
+        cache.clear();
+    }
+
     public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){
         ArrayList<GGraphTile> tileList = new ArrayList<>();
         try {

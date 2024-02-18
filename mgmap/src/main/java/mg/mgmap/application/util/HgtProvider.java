@@ -13,8 +13,10 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
 
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
@@ -72,12 +74,20 @@ public class HgtProvider {
 
     }
 
-    public void loadHgt(AppCompatActivity activity, boolean all, ArrayList<String> hgtNames, String layerName, HgtGridView hgtGridView){
+    public void loadHgt(MGMapActivity activity, boolean all, ArrayList<String> hgtNames, String layerName, HgtGridView hgtGridView){
         BgJobGroup jobGroup = new BgJobGroup(application, activity, "Download height data", new BgJobGroupCallback() {
             @Override
             public boolean groupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
                 if (hgtGridView != null){
                     hgtGridView.requestRedraw();
+                }
+                hgtCache.evictAll();
+                activity.getGGraphTileFactory().clearCache();
+                TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+                if (mtl != null){
+                    mgLog.d("set mtl changed");
+                    mtl.setRoutingProfileId("invalid"); // trigger a recalculation of the whole route
+                    application.markerTrackLogObservable.changed();
                 }
                 return false;
             }
