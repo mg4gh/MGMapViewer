@@ -165,7 +165,7 @@ public class GGraphMulti extends GGraph {
                         if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approachPoint,0)) continue; // approach not found try next points
                         if (PointModelUtil.distance(approachPoint,node2) > CONNECT_THRESHOLD_METER) continue;
                         mgLog.d(()->"OK, connect: node1 " + node1 + " node1neighbour " + node1Neighbour + " node2 " + node2 + " node2neighbour " + node2Neighbour);
-                        connect(node1Neighbour, node2Neighbour);
+                        connect(node1, node2);
                         stillRemainingNodes1.remove(node1);
                         stillRemainingNodes2.remove(node2);
                     }
