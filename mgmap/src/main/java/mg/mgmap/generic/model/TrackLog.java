@@ -138,7 +138,7 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
     }
 
     public TrackLogRefApproach getStartApproach(TrackLogRefApproach appStart){
-        if (appStart == null){
+        if (appStart == null || appStart.getTrackLog() != this){
             appStart = new TrackLogRefApproach(this, 0, 0);
             appStart.setApproachPoint(getTrackLogSegment(0).get(0));
             appStart.setEndPointIndex(0);
@@ -146,7 +146,7 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
         return appStart;
     }
     public TrackLogRefApproach getEndApproach(TrackLogRefApproach appEnd){
-        if (appEnd == null) {
+        if (appEnd == null || appEnd.getTrackLog() != this) {
             int segmentIdx = lastNoneEmptySegmentIdx();
             TrackLogSegment segment = getTrackLogSegment(segmentIdx);
             appEnd = new TrackLogRefApproach(this, segmentIdx, 0);
