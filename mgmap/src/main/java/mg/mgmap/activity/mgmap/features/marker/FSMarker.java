@@ -48,8 +48,9 @@ public class FSMarker extends FeatureService {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private static final long TT_HIDE_TIME = 60000;
+    private static final long TT_HIDE_TIME = 10000;
 
+    private volatile int ttCount = 0;
     private final Paint PAINT_STROKE_MTL = CC.getStrokePaint(R.color.CC_PINK, DisplayModel.getDeviceScaleFactor()*1.5f);
 
     private final Pref<Boolean> toggleEditMarkerTrack =  new Pref<>(false); // need separate action pref, since jump back to menu qc is an observer to this - otherwise timeout on editMarkerTrack triggers  jump back to menu group.
@@ -60,6 +61,7 @@ public class FSMarker extends FeatureService {
     private final Pref<Boolean> triggerHideMtl = new Pref<>(false);
     private final Pref<Boolean> triggerHideAll = getPref(R.string.FSATL_pref_hideAll, false);
     private final Pref<Boolean> triggerReverseMtl = new Pref<>(false);
+    private final Pref<Boolean> prefCalcRouteInProgress = getPref(R.string.FSRouting_pref_calcRouteInProgress, false);
 
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
 
@@ -90,8 +92,22 @@ public class FSMarker extends FeatureService {
         triggerReverseMtl.addObserver((e)->createMarkerTrackLog(markerTrackLogObservable.getTrackLog(), true));
     }
 
-    private final Runnable ttHide = () -> prefEditMarkerTrack.setValue(false);
+    private final Runnable ttHide = () -> {
+        if (prefCalcRouteInProgress.getValue()){ // if routing is still in progress start timer from scratch
+            refreshTTHide();
+        } else {
+            if (ttCount <= 1){ // if timer is expired, switch of prefEditMarkerTrack
+                prefEditMarkerTrack.setValue(false);
+            } else { // trigger next timer period
+                refreshTTHide(ttCount-1);
+            }
+        }
+    };
     private void refreshTTHide(){
+        refreshTTHide(6);
+    }
+    private void refreshTTHide(int count){
+        ttCount = count;
         getTimer().removeCallbacks(ttHide);
         getTimer().postDelayed(ttHide, TT_HIDE_TIME);
     }
