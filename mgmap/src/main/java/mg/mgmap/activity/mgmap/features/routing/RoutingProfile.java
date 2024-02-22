@@ -4,8 +4,6 @@ import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
-import mg.mgmap.generic.util.Pref;
-import mg.mgmap.generic.view.ExtendedTextView;
 
 public abstract class RoutingProfile {
 
@@ -59,11 +57,4 @@ public abstract class RoutingProfile {
         return getIconIdActive();
     }
 
-    protected void initETV(ExtendedTextView etv, Pref<String> prefCurrentRoutingProfileId, Pref<Boolean> prefCalcRoutingInProgress){
-        Pref<Boolean> rpState = new Pref<>(id.equals(prefCurrentRoutingProfileId.getValue()));
-        prefCurrentRoutingProfileId.addObserver(evt -> rpState.setValue( id.equals(prefCurrentRoutingProfileId.getValue()) ));
-        etv.setData(rpState, prefCalcRoutingInProgress, getIconIdInactive(), getIconIdActive(), getIconIdInactive(), getIconIdCalculating());
-        etv.setOnClickListener(v -> prefCurrentRoutingProfileId.setValue(id));
-        etv.setName(prefCurrentRoutingProfileId.getKey());
-    }
 }

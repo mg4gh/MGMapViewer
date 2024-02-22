@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.generic.graph.AStar;
 import mg.mgmap.generic.graph.ApproachModel;
@@ -53,6 +54,7 @@ public class RoutingEngine {
     private final ArrayList<PointModel> currentRelaxedNodes = new ArrayList<>();
     private RoutingContext routingContext;
     RoutingProfile routingProfile;
+    final AtomicInteger refreshRequired = new AtomicInteger(0);
 
     public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext){
         this.gFactory = gFactory;
@@ -69,17 +71,19 @@ public class RoutingEngine {
         }
     }
 
-    synchronized boolean setRoutingProfile(RoutingProfile routingProfile){
+    boolean setRoutingProfile(RoutingProfile routingProfile){
         if (this.routingProfile != routingProfile){
             mgLog.i("profile changed to: "+routingProfile.getId());
             this.routingProfile = routingProfile;
-            gFactory.resetCosts();
+            synchronized (this){
+                gFactory.resetCosts();
+            }
             return true;
         }
         return false;
     }
 
-    public synchronized ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
+    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
         return gFactory.getGGraphTileList(bBox);
     }
 
@@ -164,6 +168,11 @@ public class RoutingEngine {
                     routeModified = true;
                     current.newMPM = calcRouting(prev, current, current.routingHints, currentRelaxedNodes);
                 }
+                if (refreshRequired.get() > 0) break;
+            }
+            if (refreshRequired.get() > 0) {
+                routeModified = true;
+                break;
             }
         }
 
@@ -238,6 +247,12 @@ public class RoutingEngine {
                 routePointMap.remove(unusedMtlp);
             }
 
+            if ((refreshRequired.get()>0) && ("invalid".equals(mtl.getRoutingProfileId()))){ // if routing was just aborted, then it should not be triggered automatically again
+                refreshRequired.getAndDecrement();
+            }
+
+        } else {
+            mgLog.d("route unchanged");
         }
         return routeTrackLog;
     }
@@ -270,7 +285,7 @@ public class RoutingEngine {
 
                 // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
                 AStar aStar = new AStar(multi, routingProfile);
-                for (GNodeRef gnr : aStar.perform(gStart, gEnd, distLimit, relaxedNodes)){
+                for (GNodeRef gnr : aStar.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes)){
                     mpm.addPoint(gnr.getNode() );
                 }
                 mgLog.i(aStar.getResult());

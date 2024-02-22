@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.model.PointModel;
@@ -49,13 +50,13 @@ public class Dijkstra {
     }
 
 
-    public List<GNodeRef> perform(GNode source, GNode target, double costLimit, ArrayList<PointModel> relaxedList){
+    public List<GNodeRef> perform(GNode source, GNode target, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
         List<GNode> sources = new ArrayList<>();
         sources.add(source);
-        return perform(sources,target,costLimit,relaxedList);
+        return perform(sources,target,costLimit,refreshRequired,relaxedList);
     }
 
-    public List<GNodeRef> perform(List<GNode> sources, GNode target, double costLimit, ArrayList<PointModel> relaxedList){
+    public List<GNodeRef> perform(List<GNode> sources, GNode target, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
         prioQueue = new TreeSet<>();
         resetNodeRefs();
         if (relaxedList != null) relaxedList.clear();
@@ -74,7 +75,7 @@ public class Dijkstra {
         GNodeRef ref = prioQueue.first();
         while ((ref != null) && (ref.getNode() != target) && (ref.getHeuristicCost() <= costLimit)){ // abort  if target reached of if there are no more nodes to settle
             if (ref.getNode().getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
-
+                if (refreshRequired.get() > 0) break;
                 GNode node = ref.getNode();
                 graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
                 GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours

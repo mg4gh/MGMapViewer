@@ -108,12 +108,13 @@ public class MGLog {
     }
     public static void ctx(Level level, int depth){
         StackTraceElement[] stes = new Throwable().getStackTrace();
+        StringBuilder msg = new StringBuilder(NameUtil.context(stes[1]));
+        String tag = stes[1].getClassName();
         for (int i=2; (i<2+depth)&&(i<stes.length); i++){
             StackTraceElement ste = stes[i];
-            String tag = ste.getClassName();
-            String msg = "        "+NameUtil.context(ste);
-            println(level, tag, msg);
+            msg.append("\n        ").append(NameUtil.context(ste));
         }
+        println(level, tag, msg.toString());
     }
 
 
