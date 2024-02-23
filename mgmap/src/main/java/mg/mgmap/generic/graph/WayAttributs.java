@@ -66,7 +66,7 @@ public class WayAttributs {
                     service = tag.value; */
             }
         }
-        if (accessible && ("private".equals(bicycle) || (("private".equals(access)|| "no".equals(access))&&!("bic_yes".equals(bicycle)||"bic_permissive".equals(bicycle))) ||
+        if (accessible && ("private".equals(bicycle) || (("private".equals(access)|| "no".equals(access))&&!("bic_yes".equals(bicycle)|| "bic_designated".equals(bicycle)||"bic_permissive".equals(bicycle))) ||
                 "motorway".equals(highway) || "trunk".equals(highway))) {
             accessible = false;
         }
