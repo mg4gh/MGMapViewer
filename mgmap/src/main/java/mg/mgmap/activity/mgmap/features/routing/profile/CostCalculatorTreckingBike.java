@@ -22,7 +22,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
         double deltaSlope = 0.0;
         double  distFactor ;
 
-        if (!wayTagEval.accessible || "private".equals(wayTagEval.access)){
+        if (!wayTagEval.accessible ){
              distFactor = 10;
         } else {
             int surfaceCat = 0;
@@ -116,8 +116,10 @@ public class CostCalculatorTreckingBike implements CostCalculator {
             relslope = slope / mUpSlopeLimit;
             if (relslope <= 1)
                 cost = dist* ( mfd + relslope * CostCalculatorTwoPieceFunc.fu);
-            else
+            else if (relslope <= 2)
                 cost = dist* ( mfd + relslope * ( CostCalculatorTwoPieceFunc.fu + (relslope - 1) * CostCalculatorTwoPieceFunc.fus));
+            else
+                cost = dist*(mfd + 2*CostCalculatorTwoPieceFunc.fus+relslope*CostCalculatorTwoPieceFunc.fu);
         } else {
             relslope = slope / mDnSlopeLimit;
             if (relslope <= 1)
