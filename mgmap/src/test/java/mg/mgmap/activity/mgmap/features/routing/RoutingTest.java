@@ -34,7 +34,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext);
         routingEngine.setRoutingProfile(new ShortestDistance());

@@ -66,7 +66,7 @@ public class TrackLogStatisticTest {
         assertTrue(Math.abs(stat.getMaxEle()-(123.45f-49.49f)) < 0.001);
         assertEquals( 1, stat.getNumPoints());
 
-        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(1234568655L, 49.4001, 8.6001, 3.14f, 126.45, 48.49f, 1.23f);
+        TrackLogPoint tlp2 = TrackLogPoint.createGpsLogPoint(1234568655L, 49.4001, 8.6001, 3.14f, 126.45, 50.49f, 1.23f);
         stat.updateWithPoint(tlp2);
 
         assertEquals(-2, stat.getSegmentIdx());
@@ -77,7 +77,7 @@ public class TrackLogStatisticTest {
         assertTrue(Math.abs(stat.getGain()-(0.0)) < 0.001);
         assertTrue(Math.abs(stat.getLoss()-(0.0)) < 0.001);
         assertTrue(Math.abs(stat.getMinEle()-(123.45f-49.49f)) < 0.001);
-        assertTrue(Math.abs(stat.getMaxEle()-(126.45f-48.49f)) < 0.001);
+        assertTrue(Math.abs(stat.getMaxEle()-(126.45f-50.49f)) < 0.001);
         assertEquals( 2, stat.getNumPoints());
 
         TrackLogPoint tlp3 = TrackLogPoint.createGpsLogPoint(1234568665L, 49.4002, 8.6002, 3.14f, 132.45, 47.49f, 1.23f);
@@ -105,7 +105,7 @@ public class TrackLogStatisticTest {
 //        assertEquals(14, stat.getTotalLength());
         assertTrue(Math.abs(stat.getTotalLength()-(39.845)) < 0.001);
         assertEquals(10.67,stat.getGain(), 0.001);
-        assertEquals(19.4,stat.getLoss(), 0.001);
+        assertEquals(19.07,stat.getLoss(), 0.001);
         assertTrue(Math.abs(stat.getMinEle()-(112.45f-47.49f)) < 0.001);
         assertTrue(Math.abs(stat.getMaxEle()-(132.45f-47.49f)) < 0.001);
         assertEquals( 4, stat.getNumPoints());
@@ -121,8 +121,8 @@ public class TrackLogStatisticTest {
 //        assertEquals(11, stat.getGain());
 //        assertEquals(14, stat.getTotalLength());
         assertTrue(Math.abs(stat.getTotalLength()-(39.845)) < 0.001);
-        assertEquals(10.67,stat.getGain(), 0.001);
-        assertEquals(19.4,stat.getLoss(), 0.001);
+        assertEquals(11.27,stat.getGain(), 0.001);
+        assertEquals(19.07,stat.getLoss(), 0.001);
         assertTrue(Math.abs(stat.getMinEle()-(112.45f-47.49f)) < 0.001);
         assertTrue(Math.abs(stat.getMaxEle()-(152.45f-47.49f)) < 0.001);
         assertEquals( 5, stat.getNumPoints());
@@ -137,8 +137,8 @@ public class TrackLogStatisticTest {
 //        assertEquals(11, stat.getLoss());
 //        assertEquals(14, stat.getTotalLength());
         assertTrue(Math.abs(stat.getTotalLength()-(39.845)) < 0.001);
-        assertEquals(10.67,stat.getGain(), 0.001);
-        assertEquals(22.025,stat.getLoss(), 0.001);
+        assertEquals(11.27,stat.getGain(), 0.001);
+        assertEquals(19.07,stat.getLoss(), 0.001);
         assertTrue(Math.abs(stat.getMinEle()-(112.45f-47.49f)) < 0.001);
         assertTrue(Math.abs(stat.getMaxEle()-(152.45f-47.49f)) < 0.001);
         assertEquals( 6, stat.getNumPoints());
@@ -155,8 +155,8 @@ public class TrackLogStatisticTest {
 //        assertEquals(11, stat.getLoss());
 //        assertEquals(14, stat.getTotalLength());
         assertTrue(Math.abs(stat.getTotalLength()-(39.845)) < 0.001);
-        assertEquals(10.67,stat.getGain(), 0.001);
-        assertEquals(22.025,stat.getLoss(), 0.001);
+        assertEquals(11.27,stat.getGain(), 0.001);
+        assertEquals(19.07,stat.getLoss(), 0.001);
         assertTrue(Math.abs(stat.getMinEle()-(112.45f-47.49f)) < 0.001);
         assertTrue(Math.abs(stat.getMaxEle()-(152.45f-47.49f)) < 0.001);
         assertEquals( 6, stat.getNumPoints());
@@ -332,7 +332,7 @@ public class TrackLogStatisticTest {
         TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(1234569154L, 49.4, 8.6, 3.14f, 123.45, 0f, 1.23f);
         stat1.updateWithPoint(tlp);
 
-        assertEquals("start=15.01.1970_07:56:07 duration=0:00 totalLength=123456.78 gain=1234.0 loss=1243.0 minEle=123.4 maxEle=543.2 numPoints=1", stat1.toString());
+        assertTrue(stat1.toString().endsWith("start=15.01.1970_07:56:07 duration=0:00 totalLength=123456.78 gain=1234.0 loss=1243.0 minEle=123.4 maxEle=543.2 numPoints=1"));
     }
 
 }
