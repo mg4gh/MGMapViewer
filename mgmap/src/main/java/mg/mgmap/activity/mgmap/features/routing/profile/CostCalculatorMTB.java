@@ -27,7 +27,7 @@ public class CostCalculatorMTB implements CostCalculator {
         double mfdd = 1;
         double deltaUp = 0;
         double deltaDn = 0;
-        if (!wayTagEval.accessible || "private".equals(wayTagEval.access)) {
+        if (!wayTagEval.accessible ) {
             mfud = 10;
             mfdd = 10;
         } else {
@@ -113,14 +113,14 @@ public class CostCalculatorMTB implements CostCalculator {
                     if (mtbDn < 0) deltaDn = 1;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
-                mfud = 20;
+                mfud = 15;
                 deltaUp = 2;
                 if ( mProfileCalculator.mSlevel == 3 )
                     mfdd = 2.5;
                 else if (mProfileCalculator.mSlevel == 2)
                     mfdd = 5;
                 else
-                    mfdd = 20;
+                    mfdd = 15;
                 deltaDn = 2;
             } else {
                 double distFactor = getDistFactor(wayTagEval) ;
@@ -207,8 +207,10 @@ public class CostCalculatorMTB implements CostCalculator {
             relslope = slope / mUpSlopeLimit;
             if (relslope <= 1)
                 cost = dist* ( mfud + relslope * CostCalculatorTwoPieceFunc.fu);
-            else
+            else if (relslope <= 2)
                 cost = dist* ( mfud + relslope * ( CostCalculatorTwoPieceFunc.fu + (relslope - 1) * CostCalculatorTwoPieceFunc.fus));
+            else
+                cost = dist*(mfud + 2*CostCalculatorTwoPieceFunc.fus+relslope*CostCalculatorTwoPieceFunc.fu);
         } else {
             relslope = slope / mDnSlopeLimit;
             if (relslope <= 0.2)
