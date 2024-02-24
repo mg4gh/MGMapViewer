@@ -83,7 +83,7 @@ public class Dijkstra {
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     double costToNeighbour = neighbour.getCost();
                     if (costToNeighbour < 0){
-                        costToNeighbour = routingProfile.getCost(neighbour.getWayAttributs(), node, neighbourNode);
+                        costToNeighbour = routingProfile.getCost(neighbour.getWayAttributs(), node, neighbourNode, neighbour.isPrimaryDirection());
                         neighbour.setCost(costToNeighbour);
                     }
                     double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path

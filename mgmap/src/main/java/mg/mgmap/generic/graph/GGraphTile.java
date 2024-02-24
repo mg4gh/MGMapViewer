@@ -77,7 +77,7 @@ public class GGraphTile extends GGraph {
 
     void addSegment(WayAttributs wayAttributs, GNode node1, GNode node2){
         node1.addNeighbour(new GNeighbour(node2, wayAttributs ));
-        node2.addNeighbour(new GNeighbour(node1, wayAttributs ));
+        node2.addNeighbour(new GNeighbour(node1, wayAttributs ).setPrimaryDirection(false));
     }
 
     public GNode getNode(double latitude, double longitude){

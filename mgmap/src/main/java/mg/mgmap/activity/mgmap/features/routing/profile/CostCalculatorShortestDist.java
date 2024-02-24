@@ -9,7 +9,7 @@ public class CostCalculatorShortestDist implements CostCalculator {
     }
 
     @Override
-    public double calcCosts(double dist, float verDist) {
+    public double calcCosts(double dist, float verDist, boolean primaryDirection) {
         return dist + 0.0001;
     }
 }

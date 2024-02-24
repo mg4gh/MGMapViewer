@@ -24,6 +24,7 @@ public class GNeighbour{
     private double cost;
     private GNeighbour nextNeighbour = null;
     private WayAttributs wayAttributs = null;
+    private boolean primaryDirection = true;
 
     public GNeighbour(GNode neighbourNode, double cost){
         this.neighbourNode = neighbourNode;
@@ -56,6 +57,15 @@ public class GNeighbour{
 
     public void setNextNeighbour(GNeighbour nextNeighbour) {
         this.nextNeighbour = nextNeighbour;
+    }
+
+    public boolean isPrimaryDirection() {
+        return primaryDirection;
+    }
+
+    public GNeighbour setPrimaryDirection(boolean primaryDirection) {
+        this.primaryDirection = primaryDirection;
+        return this;
     }
 
     public WayAttributs getWayAttributs() {

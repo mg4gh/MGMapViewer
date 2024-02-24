@@ -17,7 +17,7 @@ public class CostCalculatorSimple implements CostCalculator {
     }
 
     @Override
-    public double calcCosts(double dist, float vertDist) {
+    public double calcCosts(double dist, float vertDist, boolean primaryDirection) {
         if (vertDist > 0){
             return dist + vertDist*mVertDistCostFactor + 0.0001;
         }
