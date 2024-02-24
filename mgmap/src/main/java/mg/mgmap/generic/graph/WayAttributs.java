@@ -16,9 +16,10 @@ public class WayAttributs {
 
     public String trackType = null;
     public String network = null;
+
+    public boolean oneway = false;
 //    additional tags that might be used in future
 //    public String service = null;
-//    public String name = null;
 //    public String trail_visibility = null;
 
 
@@ -26,6 +27,10 @@ public class WayAttributs {
     private Object derivedData; // profile specific, will be reset on profile change
 
     public WayAttributs(Way way) {
+
+        String oneway = null;
+        String oneway_bic = null;
+        String name = null;
 
         for (Tag tag : way.tags) {
             switch (tag.key) {
@@ -59,10 +64,16 @@ public class WayAttributs {
                 case "mtb_scale_uphill":
                     mtbScaleUp = tag.value;
                     break;
-/*                case "name":
+                case "oneway":
+                    oneway = tag.value;
+                    break;
+                case "oneway:bicycle":
+                    oneway_bic = tag.value;
+                    break;
+                case "name":
                     name = tag.value;
                     break;
-                case "service":
+     /*           case "service":
                     service = tag.value; */
             }
         }
@@ -70,6 +81,7 @@ public class WayAttributs {
                 "motorway".equals(highway) || "trunk".equals(highway))) {
             accessible = false;
         }
+        this.oneway = ( "yes".equals(oneway) && !"ow_bic_no".equals(oneway_bic));
     }
 
     public Object getDerivedData() {
