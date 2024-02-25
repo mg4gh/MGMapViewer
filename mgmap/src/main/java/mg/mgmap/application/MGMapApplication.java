@@ -55,6 +55,7 @@ import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.util.gpx.GpxImporter;
 import mg.mgmap.generic.util.hints.HintUtil;
 import mg.mgmap.generic.util.gpx.GpxExporter;
 import mg.mgmap.service.bgjob.BgJobService;
@@ -523,6 +524,27 @@ public class MGMapApplication extends Application {
 
     public Setup getSetup() {
         return setup;
+    }
+
+    public void reloadStlWithGpx(){
+        TrackLog trackLog = availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
+        if (trackLog != null){
+            if (metaTrackLogs.get(trackLog.getNameKey()) != null){
+                String name = trackLog.getName();
+                try {
+                    TrackLog gpxTrackLog = new GpxImporter(getElevationProvider())
+                            .parseTrackLog(name, getPersistenceManager().openGpxInput(name));
+                    if (gpxTrackLog != null) {
+                        gpxTrackLog.setName(name);
+                        gpxTrackLog.setModified(false);
+                        TrackLogRef selectedRef = new TrackLogRef(gpxTrackLog, availableTrackLogsObservable.selectedTrackLogRef.getSegmentIdx());
+                        availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
+                    }
+                } catch (Exception e) {
+                    mgLog.e(e);
+                }
+            }
+        }
     }
 
     public static MGMapApplication getByContext(Context context){
