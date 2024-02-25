@@ -129,7 +129,9 @@ public class TdMarker {
             assert (tdMarkerLayer.getVisibility());
             tdMarkerLayer.setVisibility(false);
             setAnimationViewPosition(tdMarkerLayer.getDrawableRect());
-            animationGroup.addView(animationImage);
+            if (animationImage.getParent() == null){ // theoretically always true, practically at least once not -> caused crash. 
+                animationGroup.addView(animationImage);
+            }
             fstd.redraw();
             FSTrackDetails.getTimer().postDelayed(homeAnimation , 50);
         }
