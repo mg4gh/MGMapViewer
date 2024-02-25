@@ -129,7 +129,7 @@ public class TdMarker {
             assert (tdMarkerLayer.getVisibility());
             tdMarkerLayer.setVisibility(false);
             setAnimationViewPosition(tdMarkerLayer.getDrawableRect());
-            if (animationImage.getParent() == null){ // theoretically always true, practically at least once not -> caused crash. 
+            if (animationImage.getParent() == null){ // theoretically always true, practically at least once not -> caused crash.
                 animationGroup.addView(animationImage);
             }
             fstd.redraw();
