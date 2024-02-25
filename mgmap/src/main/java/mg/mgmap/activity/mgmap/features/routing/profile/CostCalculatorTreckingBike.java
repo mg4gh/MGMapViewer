@@ -13,12 +13,13 @@ public class CostCalculatorTreckingBike implements CostCalculator {
     private final double mDnSlopeLimit;
     private final double mDelta;
     private final double mfd;
+    private final boolean oneway;
 
 
     private final CostCalculatorTwoPieceFunc mProfileCalculator;
     public CostCalculatorTreckingBike(WayAttributs wayTagEval, CostCalculatorTwoPieceFunc profile) {
         mProfileCalculator = profile;
-
+        oneway = wayTagEval.oneway;
         double deltaSlope = 0.0;
         double  distFactor ;
 
@@ -34,6 +35,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                         break;
                     case "compacted":
                     case "paved":
+                    case "rough_paved":
                     case "fine_gravel":
                     case "paving_stones":
                         surfaceCat = 2;
@@ -108,25 +110,26 @@ public class CostCalculatorTreckingBike implements CostCalculator {
         if (dist <= 0.0000001 ) {
             return 0.0001;
         }
-        double slope = vertDist / dist;
-        if ( abs(slope) >=  10.0 ) mgLog.e("Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         double cost;
+        double slope = vertDist / dist;
+        if (abs(slope) >= 10.0)
+           mgLog.e("Suspicious Slope in calcCosts. Dist:" + dist + " VertDist:" + vertDist + " Slope:" + slope);
         double relslope;
         if (slope >= 0) {
             relslope = slope / mUpSlopeLimit;
             if (relslope <= 1)
-                cost = dist* ( mfd + relslope * CostCalculatorTwoPieceFunc.fu);
-            else if (relslope <= 2)
-                cost = dist* ( mfd + relslope * ( CostCalculatorTwoPieceFunc.fu + (relslope - 1) * CostCalculatorTwoPieceFunc.fus));
+                cost = dist * (mfd + relslope * CostCalculatorTwoPieceFunc.fu);
             else
-                cost = dist*(mfd + 2*CostCalculatorTwoPieceFunc.fus+relslope*CostCalculatorTwoPieceFunc.fu);
+                cost = dist * (mfd + relslope * (CostCalculatorTwoPieceFunc.fu + (relslope - 1) * CostCalculatorTwoPieceFunc.fus));
         } else {
             relslope = slope / mDnSlopeLimit;
             if (relslope <= 1)
-                cost = dist* ( mfd + relslope * mDelta * CostCalculatorTwoPieceFunc.fd);
+                cost = dist * (mfd + relslope * mDelta * CostCalculatorTwoPieceFunc.fd);
             else
-                cost = dist* ( mfd + relslope * mDelta *( CostCalculatorTwoPieceFunc.fd + (relslope - 1) * CostCalculatorTwoPieceFunc.fds));
+                cost = dist * (mfd + relslope * mDelta * (CostCalculatorTwoPieceFunc.fd + (relslope - 1) * CostCalculatorTwoPieceFunc.fds));
         }
+        if ( oneway && !primaryDirection)
+            cost = cost + dist * 5;
         return cost + 0.0001;
     }
 

@@ -14,7 +14,7 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     // uphill Parameters
     // parameters which determine curve shape
     protected final static double fu = 1.2; //  product of costs per hm uphill slope limit; between 0.8 and 1.4
-    private final static double bs_u = 1.3;// between 1.1 and 1.3; with 1 -> fus will be one , with 1.3 fus ~ 3 (depending on fu). Defines curve shape.
+    private final static double bs_u = 1.2;// between 1.1 and 1.3; with 1 -> fus will be one , with 1.3 fus ~ 3 (depending on fu). Defines curve shape.
     // With 1 no kink in the curve at up slope limit (Not robust with respect to heuristic!). With 1.3 sharp kink. Factor has little to no effect on overall routing results!
     protected final static double fus = (fu + 1 - fu/bs_u)/(2/(bs_u*bs_u)-1/bs_u); // up slope limit. See comment bs_u
 
@@ -64,10 +64,8 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
             relslope = slope / mUpSlopeLimit;
             if (relslope <= 1)
                 cost = dist* ( 1 + relslope * fu);
-            else if (relslope <= 2)
-                cost = dist* ( 1 + relslope * ( fu + (relslope - 1) * fus));
             else
-                cost = dist * ( 1+2*fus + relslope*fu);
+               cost = dist* ( 1 + relslope * ( fu + (relslope - 1) * fus));
         } else {
             relslope = slope / mDnSlopeLimit;
             if (relslope <= 1)
@@ -179,10 +177,8 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
             relslope = slope / mUpSlopeLimit;
             if (relslope <= 1)
                 heuristic = dist*(1+relslope*fu);
-            else if (relslope <= 2)
-                heuristic = dist*relslope*(1+fu);
             else
-                heuristic = dist*(2+relslope*fu);
+                heuristic = dist*relslope*(1+fu);
         } else {
             relslope = slope / mDnSlopeLimit;
             if (relslope <= 1)

@@ -18,9 +18,11 @@ public class CostCalculatorMTB implements CostCalculator {
     private final double mfud;
     private final double mfdd;
     private final CostCalculatorTwoPieceFunc mProfileCalculator;
+    private final boolean oneway;
 
     public CostCalculatorMTB(WayAttributs wayTagEval, CostCalculatorTwoPieceFunc profile) {
         mProfileCalculator = profile;
+        oneway = wayTagEval.oneway;
         double mtbUp = -2;
         double mtbDn = -2;
         double mfud = 1;
@@ -88,6 +90,7 @@ public class CostCalculatorMTB implements CostCalculator {
                             surfaceCat = 1;
                             break;
                         case "fine_gravel":
+                        case "rough_paved":
                         case "compacted":
                         case "paving_stones":
                             surfaceCat = 2;
@@ -124,7 +127,7 @@ public class CostCalculatorMTB implements CostCalculator {
                 deltaDn = 2;
             } else {
                 double distFactor = getDistFactor(wayTagEval) ;
-                distFactor = ( distFactor == 1) ? 1 : distFactor * 1.2;
+                distFactor = ( distFactor <= 1.2 ) ? distFactor : distFactor * 1.2;
                 mfud = distFactor;
                 mfdd = distFactor;
             }
@@ -163,7 +166,7 @@ public class CostCalculatorMTB implements CostCalculator {
                 distFactor = 2.0;
         } else if ("tertiary".equals(wayTagEval.highway)) {
             if ( "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || ( wayTagEval.cycleway != null && "lcn".equals(wayTagEval.network)))
-                distFactor = 1.2;
+                distFactor = 1.21;
             else if (wayTagEval.cycleway != null || "lcn".equals(wayTagEval.network))
                 distFactor = 1.3;
             else
@@ -172,10 +175,12 @@ public class CostCalculatorMTB implements CostCalculator {
             if ("bic_destination".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )
                 distFactor = 1.0;
             else
-                distFactor = 1.3;
+                distFactor = 1.15;
         } else if ("footway".equals(wayTagEval.highway) || "pedestrian".equals(wayTagEval.highway)) {
-            if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) || "bic_yes".equals(wayTagEval.bicycle))
+            if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )
                 distFactor = 1;
+            else if ("bic_yes".equals(wayTagEval.bicycle))
+                distFactor = 1.5;
             else if ("bic_no".equals(wayTagEval.bicycle))
                 distFactor = 4.0;
             else
@@ -207,19 +212,17 @@ public class CostCalculatorMTB implements CostCalculator {
             relslope = slope / mUpSlopeLimit;
             if (relslope <= 1)
                 cost = dist* ( mfud + relslope * CostCalculatorTwoPieceFunc.fu);
-            else if (relslope <= 2)
-                cost = dist* ( mfud + relslope * ( CostCalculatorTwoPieceFunc.fu + (relslope - 1) * CostCalculatorTwoPieceFunc.fus));
             else
-                cost = dist*(mfud + 2*CostCalculatorTwoPieceFunc.fus+relslope*CostCalculatorTwoPieceFunc.fu);
+                cost = dist* ( mfud + relslope * ( CostCalculatorTwoPieceFunc.fu + (relslope - 1) * CostCalculatorTwoPieceFunc.fus));
         } else {
             relslope = slope / mDnSlopeLimit;
-            if (relslope <= 0.2)
-                cost = dist* ( mfud + relslope * mDelta * CostCalculatorTwoPieceFunc.fd);
-            else if (relslope <= 1)
+            if (relslope <= 1)
                 cost = dist* ( mfdd + relslope * mDelta * CostCalculatorTwoPieceFunc.fd);
             else
                 cost = dist* ( mfdd + relslope * mDelta *( CostCalculatorTwoPieceFunc.fd + (relslope - 1) * CostCalculatorTwoPieceFunc.fds));
         }
+        if ( oneway && !primaryDirection)
+            cost = cost + dist * 5;
         return cost + 0.0001;
     }
 
