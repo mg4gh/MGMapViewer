@@ -20,4 +20,6 @@
     <string name="FSSearch_pref_SearchDetails_key">FSSearch.searchDetails</string>
     <string name="FSSearch_pref_SearchDetails_title">Search details (developer)</string>
     <string name="FSSearch_pref_SearchDetails_desc">Visualize search details on double click</string>
+
+    <string name="FSSearch_reverseSearchOn">FSSearch.reverseSearchOn</string>
 </resources>
