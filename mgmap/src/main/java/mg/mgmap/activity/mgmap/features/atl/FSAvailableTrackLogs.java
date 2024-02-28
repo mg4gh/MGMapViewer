@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 
 import org.mapsforge.core.graphics.Paint;
 
+import java.util.ArrayList;
+
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
@@ -67,7 +69,7 @@ public class FSAvailableTrackLogs extends FeatureService {
         prefAlphaStl.addObserver(refreshObserver);
         prefAlphaAtl.addObserver(refreshObserver);
         prefStlGl.addObserver(refreshObserver);
-
+        ttRefreshTime = 30;
     }
 
     @Override
@@ -136,7 +138,7 @@ public class FSAvailableTrackLogs extends FeatureService {
 
         MGMapApplication.AvailableTrackLogsObservable available = getApplication().availableTrackLogsObservable;
         boolean bAtlAlphaVisibility = false;
-        for (TrackLog trackLog: available.getAvailableTrackLogs()){
+        for (TrackLog trackLog: new ArrayList<>(available.getAvailableTrackLogs())){
             if ((trackLog != available.getSelectedTrackLogRef().getTrackLog()) &&
                     (trackLog != getApplication().recordingTrackLogObservable.getTrackLog()) &&
                     (trackLog != getApplication().markerTrackLogObservable.getTrackLog()) &&

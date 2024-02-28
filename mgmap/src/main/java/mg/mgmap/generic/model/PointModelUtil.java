@@ -77,8 +77,6 @@ public class PointModelUtil {
     /** Check, whether pm has an approach to the segment segmentEnd1-segmentEnd2. Return the closest point in pmResult.
      * Be careful with passing references to pmResult !!*/
     public static boolean findApproach(PointModel pm, PointModel segmentEnd1, PointModel segmentEnd2, WriteablePointModel pmResult, int threshold) {
-        double f = Math.cos(Math.toRadians(pm.getLat()));
-
         double minLat = Math.min(segmentEnd1.getLat(), segmentEnd2.getLat());
         double maxLat = Math.max(segmentEnd1.getLat(), segmentEnd2.getLat());
         double minLong = Math.min(segmentEnd1.getLon(), segmentEnd2.getLon());
@@ -107,6 +105,7 @@ public class PointModelUtil {
         double dpx = pm.getLon() - segmentEnd1.getLon();
         double dpy = pm.getLat() - segmentEnd1.getLat();
         // vector v2 = orthogonal Vector from v1 - scaled by latitude factor f
+        double f = Math.cos(Math.toRadians(pm.getLat()));
         double v2x = v1y/(f*f);
         double v2y = -v1x;
         // segmentEnd1 + n * v1 == pm + m * v2
@@ -233,27 +232,62 @@ public class PointModelUtil {
         return (meters * 360) / (2 * Math.PI * EQUATORIAL_RADIUS * Math.cos(Math.toRadians(latitude)));
     }
 
-    public static void getBestDistance(ArrayList<? extends MultiPointModel> mpms, PointModel pm, TrackLogRefApproach bestMatch){
+    public static void getBestDistance(ArrayList<TrackLogSegment> segments, PointModel pm, TrackLogRefApproach bestMatch) {
         WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();
         WriteablePointModel pmApproach = new WriteablePointModelImpl();//new TrackLogPoint();
-        for (int segmentIdx = 0; segmentIdx< mpms.size(); segmentIdx++){
-            MultiPointModel segment = mpms.get(segmentIdx);
-            for (int i = 1, j = 0; i < segment.size(); j = i++) {
-                if (PointModelUtil.findApproach(pm, segment.get(i), segment.get(j), pmApproachCandidate, (int)(bestMatch.getDistance()+1) )){
-                    double distance = PointModelUtil.distance( pm, pmApproachCandidate);
-                    if (distance < bestMatch.getDistance()){
-                        bestMatch.setSegmentIdx( segmentIdx );
-                        if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
-                        pmApproach.setLat(pmApproachCandidate.getLat());
-                        pmApproach.setLon(pmApproachCandidate.getLon());
-                        pmApproach.setEle(pmApproachCandidate.getEle());
-                        bestMatch.setDistance( distance );
-                        bestMatch.setEndPointIndex(i);
+        BBox checkBBox = new BBox().extend(pm).extend((int)(bestMatch.getDistance()+1));
+        for (int segmentIdx = 0; segmentIdx< segments.size(); segmentIdx++){
+            TrackLogSegment segment = segments.get(segmentIdx);
+            int metaStartPoint = 0;
+            for (MetaData metaData : segment.getMetaDatas()) {
+                if (metaData.bBox.intersects(checkBBox)) {
+
+                    for (int i=metaStartPoint, j=i-1; i<metaStartPoint+metaData.numPoints+1; j = i++) {
+                        if (j < 0) continue;
+                        if (i >= segment.size()) break;
+
+                        if (PointModelUtil.findApproach(pm, segment.get(i), segment.get(j), pmApproachCandidate, (int)(bestMatch.getDistance()+1) )){
+                            double distance = PointModelUtil.distance( pm, pmApproachCandidate);
+                            if (distance < bestMatch.getDistance()){
+                                bestMatch.setSegmentIdx( segmentIdx );
+                                if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
+                                pmApproach.setLat(pmApproachCandidate.getLat());
+                                pmApproach.setLon(pmApproachCandidate.getLon());
+                                pmApproach.setEle(pmApproachCandidate.getEle());
+                                bestMatch.setDistance( distance );
+                                bestMatch.setEndPointIndex(i);
+                            }
+                        }
+
                     }
                 }
+                metaStartPoint += metaData.numPoints;
             }
         }
     }
+//    /* keep right now the old implementation - but there seems to be only a slight speed advantage with the usage of metaData - on the other Hand, if this
+//       slight advantage is given, why not using it ...*/
+//    public static void getBestDistance(ArrayList<? extends MultiPointModel> mpms, PointModel pm, TrackLogRefApproach bestMatch){
+//        WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();
+//        WriteablePointModel pmApproach = new WriteablePointModelImpl();//new TrackLogPoint();
+//        for (int segmentIdx = 0; segmentIdx< mpms.size(); segmentIdx++){
+//            MultiPointModel segment = mpms.get(segmentIdx);
+//            for (int i = 1, j = 0; i < segment.size(); j = i++) {
+//                if (PointModelUtil.findApproach(pm, segment.get(i), segment.get(j), pmApproachCandidate, (int)(bestMatch.getDistance()+1) )){
+//                    double distance = PointModelUtil.distance( pm, pmApproachCandidate);
+//                    if (distance < bestMatch.getDistance()){
+//                        bestMatch.setSegmentIdx( segmentIdx );
+//                        if (bestMatch.getApproachPoint() == null) bestMatch.setApproachPoint(pmApproach);
+//                        pmApproach.setLat(pmApproachCandidate.getLat());
+//                        pmApproach.setLon(pmApproachCandidate.getLon());
+//                        pmApproach.setEle(pmApproachCandidate.getEle());
+//                        bestMatch.setDistance( distance );
+//                        bestMatch.setEndPointIndex(i);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public static void getBestDistance(MultiPointModel segment, PointModel pm, TrackLogRefApproach bestMatch){
         WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();

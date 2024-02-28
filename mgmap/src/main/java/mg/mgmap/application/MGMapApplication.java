@@ -424,28 +424,31 @@ public class MGMapApplication extends Application {
             selectedTrackLogRef = noRef;
             changed();
         }
-        public void setSelectedTrackLogRef(TrackLogRef ref){
+        public void setSelectedTrackLogRef(final TrackLogRef ref){
             if (ref.getTrackLog() != null){
-                try {
-                    TrackLog trackLog = ref.getTrackLog();
-                    if ((metaTrackLogs.get(trackLog.getNameKey()) != null)
-                            && (trackLog.getTrackStatistic().getNumPoints()>1)
-                            && (!(trackLog.getTrackLogSegment(0).getLastPoint() instanceof TrackLogPoint))){
-                        String name = trackLog.getName();
-                        TrackLog gpxTrackLog = new GpxImporter(getElevationProvider())
-                                .parseTrackLog(name, getPersistenceManager().openGpxInput(name));
-                        if (gpxTrackLog != null) {
-                            gpxTrackLog.setName(name);
-                            gpxTrackLog.setModified(false);
-                            ref = new TrackLogRef(gpxTrackLog, ref.getSegmentIdx());
-
-                            if ((selectedTrackLogRef.getTrackLog() != null) && (selectedTrackLogRef.getTrackLog().getNameKey().equals(ref.getTrackLog().getNameKey()))){
-                                availableTrackLogs.remove(selectedTrackLogRef.getTrackLog()); // remove old entry, otherwise new entry will not be entered in the set
+                TrackLog trackLog = ref.getTrackLog();
+                if ((metaTrackLogs.get(trackLog.getNameKey()) != null)
+                        && (trackLog.getTrackStatistic().getNumPoints()>1)
+                        && (!(trackLog.getTrackLogSegment(0).getLastPoint() instanceof TrackLogPoint))){
+                    String name = trackLog.getName();
+                    new Thread(() -> { // trigger asynchronous reload of gpxTrackLog to ba have also timestamp/duration data available
+                        try {
+                            TrackLog gpxTrackLog = new GpxImporter(getElevationProvider())
+                                    .parseTrackLog(name, getPersistenceManager().openGpxInput(name));
+                            if (gpxTrackLog != null) {
+                                gpxTrackLog.setName(name);
+                                gpxTrackLog.setModified(false);
+                                getMetaDataUtil().createMetaData(gpxTrackLog);
+                                TrackLogRef gpxTrackLogRef = new TrackLogRef(gpxTrackLog, ref.getSegmentIdx());
+                                availableTrackLogs.remove(ref.getTrackLog()); // remove old entry from availableTrackLogs, otherwise the gpxTrackLog will not be entered in the set
+                                if (selectedTrackLogRef.getTrackLog().getNameKey().equals(gpxTrackLog.getNameKey())){
+                                    setSelectedTrackLogRef(gpxTrackLogRef);
+                                }
                             }
+                        } catch (Exception e) {
+                            mgLog.e(e);
                         }
-                    }
-                } catch (Exception e) {
-                    mgLog.e(e);
+                    }).start();
                 }
                 availableTrackLogs.add(ref.getTrackLog());
             }
