@@ -267,7 +267,7 @@ public class PointModelUtil {
 //        }
 //    }
 
-    
+
     public static void getBestDistance(ArrayList<? extends MultiPointModel> mpms, PointModel pm, TrackLogRefApproach bestMatch){
         WriteablePointModel pmApproachCandidate = new WriteablePointModelImpl();//new TrackLogPoint();
         WriteablePointModel pmApproach = new WriteablePointModelImpl();//new TrackLogPoint();
