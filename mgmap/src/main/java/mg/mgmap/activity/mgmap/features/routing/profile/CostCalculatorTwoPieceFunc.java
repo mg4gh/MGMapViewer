@@ -189,4 +189,9 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
         return heuristic * 0.999;
     }
 
+    @Override
+    public double getDuration(double dist, float vertDist) {
+        return dist * 2.77;
+    }
+
 }

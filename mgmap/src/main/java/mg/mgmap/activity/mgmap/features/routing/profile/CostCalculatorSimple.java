@@ -16,11 +16,18 @@ public class CostCalculatorSimple implements CostCalculator {
         return dist*0.999;
     }
 
+
     @Override
     public double calcCosts(double dist, float vertDist, boolean primaryDirection) {
         if (vertDist > 0){
             return dist + vertDist*mVertDistCostFactor + 0.0001;
         }
         return dist + 0.0001;
+    }
+
+
+    @Override
+    public double getDuration(double dist, float vertDist) {
+        return dist*2.77;
     }
 }
