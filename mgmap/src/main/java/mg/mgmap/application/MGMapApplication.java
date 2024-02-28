@@ -30,6 +30,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import mg.mgmap.BuildConfig;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
+import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
@@ -391,7 +392,7 @@ public class MGMapApplication extends Application {
 
     // TODO: Probably it makes sense to split this in a TrackLogObservable for the selected TrackLog and an AvailableTrackLogsObeservable without selected TrackLog information.
     @SuppressWarnings("WeakerAccess")
-    public static class AvailableTrackLogsObservable extends ObservableImpl{
+    public class AvailableTrackLogsObservable extends ObservableImpl{
         public AvailableTrackLogsObservable(){
             super("availableTrackLogs");
         }
@@ -424,10 +425,31 @@ public class MGMapApplication extends Application {
             changed();
         }
         public void setSelectedTrackLogRef(TrackLogRef ref){
-            selectedTrackLogRef = ref;
             if (ref.getTrackLog() != null){
+                try {
+                    TrackLog trackLog = ref.getTrackLog();
+                    if ((metaTrackLogs.get(trackLog.getNameKey()) != null)
+                            && (trackLog.getTrackStatistic().getNumPoints()>1)
+                            && (!(trackLog.getTrackLogSegment(0).getLastPoint() instanceof TrackLogPoint))){
+                        String name = trackLog.getName();
+                        TrackLog gpxTrackLog = new GpxImporter(getElevationProvider())
+                                .parseTrackLog(name, getPersistenceManager().openGpxInput(name));
+                        if (gpxTrackLog != null) {
+                            gpxTrackLog.setName(name);
+                            gpxTrackLog.setModified(false);
+                            ref = new TrackLogRef(gpxTrackLog, ref.getSegmentIdx());
+
+                            if ((selectedTrackLogRef.getTrackLog() != null) && (selectedTrackLogRef.getTrackLog().getNameKey().equals(ref.getTrackLog().getNameKey()))){
+                                availableTrackLogs.remove(selectedTrackLogRef.getTrackLog()); // remove old entry, otherwise new entry will not be entered in the set
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    mgLog.e(e);
+                }
                 availableTrackLogs.add(ref.getTrackLog());
             }
+            selectedTrackLogRef = ref;
             changed();
         }
     }
@@ -525,27 +547,6 @@ public class MGMapApplication extends Application {
 
     public Setup getSetup() {
         return setup;
-    }
-
-    public void reloadStlWithGpx(){
-        TrackLog trackLog = availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
-        if (trackLog != null){
-            if (metaTrackLogs.get(trackLog.getNameKey()) != null){
-                String name = trackLog.getName();
-                try {
-                    TrackLog gpxTrackLog = new GpxImporter(getElevationProvider())
-                            .parseTrackLog(name, getPersistenceManager().openGpxInput(name));
-                    if (gpxTrackLog != null) {
-                        gpxTrackLog.setName(name);
-                        gpxTrackLog.setModified(false);
-                        TrackLogRef selectedRef = new TrackLogRef(gpxTrackLog, availableTrackLogsObservable.selectedTrackLogRef.getSegmentIdx());
-                        availableTrackLogsObservable.setSelectedTrackLogRef(selectedRef);
-                    }
-                } catch (Exception e) {
-                    mgLog.e(e);
-                }
-            }
-        }
     }
 
     public static MGMapApplication getByContext(Context context){
