@@ -232,6 +232,10 @@ public class CostCalculatorMTB implements CostCalculator {
         return mProfileCalculator.heuristic(dist, vertDist);
     }
 
+    @Override
+    public double getDuration(double dist, float vertDist) {
+        return dist * 2.77;
+    }
 
 
 }

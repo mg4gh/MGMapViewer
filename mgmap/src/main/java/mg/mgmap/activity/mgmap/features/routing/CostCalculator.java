@@ -5,4 +5,6 @@ public interface CostCalculator {
     double calcCosts(double dist, float verDist, boolean primaryDirection);
 
     double heuristic( double dist, float vertDist);
+
+    double getDuration(double dist, float vertDist);
 }

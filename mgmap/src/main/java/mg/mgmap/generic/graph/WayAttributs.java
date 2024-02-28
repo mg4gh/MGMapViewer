@@ -16,7 +16,6 @@ public class WayAttributs {
 
     public String trackType = null;
     public String network = null;
-
     public boolean oneway = false;
 //    additional tags that might be used in future
 //    public String service = null;
@@ -30,7 +29,7 @@ public class WayAttributs {
 
         String oneway = null;
         String oneway_bic = null;
-        String name = null;
+//        String name = null;
 
         for (Tag tag : way.tags) {
             switch (tag.key) {
@@ -70,10 +69,10 @@ public class WayAttributs {
                 case "oneway:bicycle":
                     oneway_bic = tag.value;
                     break;
-                case "name":
+     /*           case "name":
                     name = tag.value;
                     break;
-     /*           case "service":
+                case "service":
                     service = tag.value; */
             }
         }
