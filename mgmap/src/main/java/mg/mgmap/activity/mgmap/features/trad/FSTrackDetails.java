@@ -338,7 +338,6 @@ public class FSTrackDetails extends FeatureService {
                     tdObservable = getApplication().availableTrackLogsObservable;
                     drawableIdStart = R.drawable.td_marker_stl_start;
                     drawableIdEnd = R.drawable.td_marker_stl_end;
-                    application.reloadStlWithGpx();
                     break;
                 default:
                     mgLog.e("unexpected id value: "+id);

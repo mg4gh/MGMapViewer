@@ -69,17 +69,7 @@ public class Setup {
 
                 Properties pPreferences = new Properties();
                 pPreferences.load(assetManager.open(wanted+"/preferences.properties"));
-
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                for (Object oPrefName  : pPreferences.keySet()){
-                    String prefValue = pPreferences.getProperty(oPrefName.toString());
-                    if (prefValue.startsWith("Boolean:")){
-                        editor.putBoolean( oPrefName.toString(), prefValue.equals("Boolean:true"));
-                    } else {
-                        editor.putString( oPrefName.toString(), prefValue);
-                    }
-                }
-                editor.apply();
+                loadPropertiesToPreferences(sharedPreferences, pPreferences);
                 mode = BaseConfig.Mode.INSTRUMENTATION_TEST;
             }
 
@@ -90,5 +80,18 @@ public class Setup {
         } catch (Exception e) {
             mgLog.e(e);
         }
+    }
+
+    public static void loadPropertiesToPreferences(SharedPreferences sharedPreferences, Properties properties){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        for (Object oPrefName  : properties.keySet()){
+            String prefValue = properties.getProperty(oPrefName.toString());
+            if (prefValue.startsWith("Boolean:")){
+                editor.putBoolean( oPrefName.toString(), prefValue.equals("Boolean:true"));
+            } else {
+                editor.putString( oPrefName.toString(), prefValue);
+            }
+        }
+        editor.apply();
     }
 }

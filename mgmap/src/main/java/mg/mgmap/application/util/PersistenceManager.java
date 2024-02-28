@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -217,12 +218,12 @@ public class PersistenceManager {
     public byte[] getRawData() {
         try {
             if (fRaw.exists()) {
-                FileInputStream fis = new FileInputStream(fRaw);
-                byte[] b = new byte[fis.available()];
-                if (fis.read(b) != b.length)
-                    mgLog.w("Failed to read "+b.length+" bytes");
-
-                return b;
+                try (FileInputStream fis = new FileInputStream(fRaw)){
+                    byte[] b = new byte[fis.available()];
+                    if (fis.read(b) != b.length)
+                        mgLog.w("Failed to read "+b.length+" bytes");
+                    return b;
+                }
             }
         } catch (IOException e) {
             mgLog.e(e);
@@ -492,7 +493,7 @@ public class PersistenceManager {
         try {
             File graphhopperSearchConfig = new File(searchConfigDir, ghCfg);
             if (!graphhopperSearchConfig.exists()){
-                IOUtil.copyStreams( application.getAssets().open("graphhopper.log"), new FileOutputStream(new File(searchConfigDir, ghCfg)) );
+                IOUtil.copyStreams( application.getAssets().open("graphhopper.log"), Files.newOutputStream(new File(searchConfigDir, ghCfg).toPath()));
             }
         } catch (IOException e) {
             mgLog.e(e);

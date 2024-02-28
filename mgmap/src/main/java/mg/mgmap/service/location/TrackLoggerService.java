@@ -146,8 +146,8 @@ public class TrackLoggerService extends Service {
     protected void deactivateService(){
         try {
             stopForeground(STOP_FOREGROUND_REMOVE);
-            locationListener.deactivate();
-            barometerListener.deactivate();
+            if (locationListener != null) locationListener.deactivate();
+            if (barometerListener != null) barometerListener.deactivate();
         } catch (Exception e) {
             mgLog.e(e);
         }

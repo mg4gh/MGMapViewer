@@ -28,6 +28,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import mg.mgmap.BuildConfig;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -62,6 +63,7 @@ public class FSSearch extends FeatureService {
     private final Pref<String> prefSearchPos = getPref(R.string.FSSearch_pref_SearchPos2, "");
     private final Pref<Boolean> prefPosBasedSearch = getPref(R.string.FSSearch_pref_PosBasedSearch, true);
     private final Pref<Boolean> prefSearchResultDetails = getPref(R.string.FSSearch_pref_SearchDetails_key, false);
+    private final Pref<Boolean> prefReverseSearchOn = getPref(R.string.FSSearch_reverseSearchOn, false);
 
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -198,12 +200,16 @@ public class FSSearch extends FeatureService {
 
         @Override
         public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
-            PointModel pos = new PointModelImpl(tapLatLong);
-            mgLog.i("rev Geocode: pos="+pos);
-            long timestamp = System.currentTimeMillis();
-            searchProvider.doSearch(new SearchRequest("",0,timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
-            hideKeyboard();
-            return true;
+            //noinspection ConstantConditions
+            if (BuildConfig.FLAVOR.equals("mg4gh") || prefReverseSearchOn.getValue()){
+                PointModel pos = new PointModelImpl(tapLatLong);
+                mgLog.i("rev Geocode: pos="+pos);
+                long timestamp = System.currentTimeMillis();
+                searchProvider.doSearch(new SearchRequest("",0,timestamp, pos, getActivity().getMapViewUtility().getZoomLevel() ));
+                hideKeyboard();
+                return true;
+            }
+            return false;
         }
     }
 
