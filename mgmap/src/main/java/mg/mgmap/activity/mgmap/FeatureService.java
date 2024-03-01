@@ -180,7 +180,7 @@ public class FeatureService {
                 ((MVLayer) layer).setMapViewUtility(getMapViewUtility());
             }
             layer.setDisplayModel(fsLayers.getDisplayModel());
-            mgLog.d("register fs="+this.getClass().getSimpleName()+" layer="+layer.getClass().getSimpleName()+" control="+(layer instanceof ControlMVLayer));
+//            mgLog.d("register fs="+this.getClass().getSimpleName()+" layer="+layer.getClass().getSimpleName()+" control="+(layer instanceof ControlMVLayer));
             synchronized (getMapView().getLayerManager().getLayers()) {
                 if (layer instanceof ControlMVLayer){
                     fsControlLayers.layers.add(layer);
@@ -196,7 +196,7 @@ public class FeatureService {
 
     protected void unregister(final Layer layer){
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-            mgLog.d("unregister fs="+this.getClass().getSimpleName()+" layer="+((layer==null)?"":layer.getClass().getSimpleName())+" control="+(layer instanceof ControlMVLayer));
+//            mgLog.d("unregister fs="+this.getClass().getSimpleName()+" layer="+((layer==null)?"":layer.getClass().getSimpleName())+" control="+(layer instanceof ControlMVLayer));
             synchronized (getMapView().getLayerManager().getLayers()) {
                 if (layer instanceof ControlMVLayer){
                     fsControlLayers.layers.remove(layer);
@@ -239,7 +239,7 @@ public class FeatureService {
 
     protected void redraw(){
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-            mgLog.d("redraw fs="+this.getClass().getSimpleName());
+//            mgLog.d("redraw fs="+this.getClass().getSimpleName());
             synchronized (getMapView().getLayerManager().getLayers()) {
                 getMapView().getLayerManager().redrawLayers();
             }
