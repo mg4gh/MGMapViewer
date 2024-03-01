@@ -116,6 +116,7 @@ public class PointModelUtil {
         pmResult.setLon(Math.min(maxLong, Math.max(minLong, resLong)));
         pmResult.setLat(Math.min(maxLat, Math.max(minLat, resLat)));
         interpolateELe(segmentEnd1, segmentEnd2, pmResult);
+        interpolateTimestamp(segmentEnd1, segmentEnd2, pmResult);
         return true;
     }
 
@@ -209,6 +210,17 @@ public class PointModelUtil {
         }
     }
 
+    public static void  interpolateTimestamp(PointModel pm1, PointModel pm2, WriteablePointModel wpm) {
+        if ((pm1.getTimestamp() == PointModel.NO_TIME) || (pm1.getTimestamp() == PointModel.NO_TIME)){
+            wpm.setTimestamp(PointModel.NO_TIME);
+        } else {
+            if (Math.abs(pm2.getLon() - pm1.getLon()) > Math.abs(pm2.getLat() - pm1.getLat())){ // interpolate based on longitude
+                wpm.setTimestamp( (long) interpolate(pm1.getLon(), pm2.getLon(), pm1.getTimestamp(), pm2.getTimestamp(), wpm.getLon()) );
+            } else { // interpolate based on latitude
+                wpm.setTimestamp( (long) interpolate(pm1.getLat(), pm2.getLat(), pm1.getTimestamp(), pm2.getTimestamp(), wpm.getLat()) );
+            }
+        }
+    }
 
 
     /**
@@ -282,6 +294,7 @@ public class PointModelUtil {
                         pmApproach.setLat(pmApproachCandidate.getLat());
                         pmApproach.setLon(pmApproachCandidate.getLon());
                         pmApproach.setEle(pmApproachCandidate.getEle());
+                        pmApproach.setTimestamp(pmApproachCandidate.getTimestamp());
                         bestMatch.setDistance( distance );
                         bestMatch.setEndPointIndex(i);
                     }
@@ -302,6 +315,7 @@ public class PointModelUtil {
                     pmApproach.setLat(pmApproachCandidate.getLat());
                     pmApproach.setLon(pmApproachCandidate.getLon());
                     pmApproach.setEle(pmApproachCandidate.getEle());
+                    pmApproach.setTimestamp(pmApproachCandidate.getTimestamp());
                     bestMatch.setDistance( distance );
                     bestMatch.setEndPointIndex(i);
                 }

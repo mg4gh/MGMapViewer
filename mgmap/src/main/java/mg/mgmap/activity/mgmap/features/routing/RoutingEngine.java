@@ -216,7 +216,8 @@ public class RoutingEngine {
             ArrayList<PointModel> rpmKeys = new ArrayList<>(routePointMap.keySet()); // create a list to detect unused entries in routePointMap
             for (TrackLogSegment segment : mtl.getTrackLogSegments()){
                 segment.removeSegmentPointsFrom(rpmKeys); // remove used entries
-                routeTrackLog.startSegment(0);
+                long timestamp = 0;
+                routeTrackLog.startSegment(timestamp);
                 PointModel lastPM = null;
                 for (int idx=1; idx<segment.size(); idx++){ // skip first point of segment, since it doesn't contain route information
                     RoutePointModel rpm = routePointMap.get(segment.get(idx));
@@ -227,6 +228,8 @@ public class RoutingEngine {
                             for (PointModel pm : rpm.newMPM){
                                 if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
                                     ExtendedPointModelImpl<RoutingHint> pmr = new ExtendedPointModelImpl<>(pm,rpm.routingHints.get(pm));
+                                    timestamp += (lastPM==null)?0:routingProfile.getDuration(lastPM, pmr);
+                                    pmr.setTimestamp(timestamp);
                                     routeTrackLog.addPoint(pmr);
                                     routePointMap2.put(pmr,rpm);
                                 }
@@ -238,7 +241,7 @@ public class RoutingEngine {
                 if (segment.getStatistic().getNumPoints() == 1){ // indicates that no rout was calculated
                     routeTrackLog.addPoint(new PointModelImpl(segment.get(0)));
                 }
-                routeTrackLog.stopSegment(0);
+                routeTrackLog.stopSegment(timestamp);
             }
             routeTrackLog.stopTrack(0);
 

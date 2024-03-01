@@ -48,6 +48,13 @@ public abstract class RoutingProfile {
         return costCalculator.heuristic(distance,verticalDistance);
     }
 
+    public long getDuration(PointModel node1, PointModel node2){
+        return getDuration(PointModelUtil.distance(node1, node2), PointModelUtil.verticalDistance(node1,node2));
+    }
+    protected long getDuration(double distance, float verticalDistance){
+        return (long)(costCalculator.getDuration(distance,verticalDistance)*1000);
+    }
+
 
 
     abstract public int getIconIdActive();
