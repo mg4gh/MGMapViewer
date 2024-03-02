@@ -478,6 +478,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                             getMapViewUtility().zoomForBoundingBox(bBox2show);
                         }
                     }
+                } else if (uri == null){
+                    mgLog.i("No further processing due to uri=null");
                 } else if ("mf-v4-map".equals(uri.getScheme())){
                     BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Download map", new BgJobGroupCallback() {
                         @Override
