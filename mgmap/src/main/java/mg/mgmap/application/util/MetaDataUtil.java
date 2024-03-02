@@ -23,6 +23,8 @@ import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.BBox;
@@ -32,7 +34,6 @@ import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLogStatistic;
-import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.basic.MGLog;
 
 public class MetaDataUtil {
@@ -200,18 +201,20 @@ public class MetaDataUtil {
         if (metaNames == null){
             metaNames = persistenceManager.getMetaNames();
         }
+        int numMetaNames = metaNames.size();
+        ExecutorService executor = Executors.newFixedThreadPool(8);
         for (String name : metaNames){
-            application.addBgJob(new BgJob(){
-                @Override
-                protected void doJob() {
-                    final TrackLog trackLog = new TrackLog();
-                    trackLog.setName(name);
-                    readMetaData(persistenceManager.openMetaInput(name), trackLog);
-                    application.addMetaDataTrackLog(trackLog);
+            executor.execute(() -> {
+                final TrackLog trackLog = new TrackLog();
+                trackLog.setName(name);
+                readMetaData(persistenceManager.openMetaInput(name), trackLog);
+                application.addMetaDataTrackLog(trackLog);
+                if (numMetaNames == application.metaTrackLogs.size()){
+                    mgLog.i("loading meta files finished");
                 }
             });
         }
-
+        executor.shutdown();
         mgLog.i("loading meta files triggered ("+metaNames.size()+").");
     }
 
