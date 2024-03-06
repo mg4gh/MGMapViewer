@@ -80,8 +80,8 @@ public class TdMarker {
         return tdMarkerLayer;
     }
     void unregisterTDService() {
-//            fstd.unregister(tdMarkerLayer); // not needed, since unregisterAll
-        tdMarkerLayer = null;
+//        fstd.unregister(tdMarkerLayer); // not needed, since unregisterAll
+//        tdMarkerLayer = null; // may cause a null pointer exception due to concurrent actions, not really needed
     }
 
     public void setPosition(PointModel pm){
