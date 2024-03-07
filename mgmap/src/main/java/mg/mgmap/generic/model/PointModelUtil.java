@@ -335,6 +335,9 @@ public class PointModelUtil {
         if ((pm1.getNmeaEle() != PointModel.NO_ELE) && (pm2.getNmeaEle() != PointModel.NO_ELE)){
             return pm2.getNmeaEle() - pm1.getNmeaEle();
         }
+        if ((pm1.getEle() != PointModel.NO_ELE) && (pm2.getEle() != PointModel.NO_ELE)){
+            return pm2.getEle() - pm1.getEle();
+        }
         mgLog.w("no valid ele comparison: pm1: "+pm1+ " pm2: "+pm2);
         return 0; //
     }

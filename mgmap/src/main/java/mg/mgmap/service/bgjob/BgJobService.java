@@ -14,17 +14,20 @@
  */
 package mg.mgmap.service.bgjob;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -71,6 +74,7 @@ public class BgJobService extends Service {
     public void onCreate() {
         super.onCreate();
         application = (MGMapApplication)getApplication();
+        timer = new Handler();
 
         CHANNEL_ID = "MGMapViewer_BgJobService_Notification";
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
@@ -107,7 +111,6 @@ public class BgJobService extends Service {
                 }
                 mgLog.i("startForeground() for BgJobService triggered.  ");
 
-                timer = new Handler();
                 timer.postDelayed(ttNotify, 1000);
             }
         } catch (Exception e) {
@@ -162,9 +165,12 @@ public class BgJobService extends Service {
 
     public void notifyUserProgress(NotificationCompat.Builder builder, int notificationId, int max, int progress, boolean indeterminate) {
         builder.setProgress(max, progress, indeterminate);
-        NotificationManagerCompat.from(application).notify(notificationId, builder.build());
-        mgLog.v("NOTI: id="+notificationId+" "+" max="+max+" progress="+progress);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            NotificationManagerCompat.from(application).notify(notificationId, builder.build());
+            mgLog.v("NOTI: id="+notificationId+" "+" max="+max+" progress="+progress);
+        }
     }
+
     public void notifyUserFinish(int notificationId) {
         NotificationManagerCompat.from(application).cancel(notificationId);
         mgLog.v("NOTI: id="+notificationId+" "+" cancel");
