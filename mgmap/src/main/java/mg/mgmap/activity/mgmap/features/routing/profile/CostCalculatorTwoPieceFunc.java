@@ -39,44 +39,17 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
 
     protected final double mUpSlopeLimit; //  up to this slope base Costs
     protected final double mDnSlopeLimit;
-    protected final double mKlevel;
-    protected final double mSlevel;
-
-    private final double[] xv = { -0.4, -0.2, -0.05, 0, 0.05,0.1, 0.7 };
-    private final double[] yv = new double[xv.length];
+    protected final short mKlevel;
+    protected final short mSlevel;
     private final CubicSpline cubicSpline;
 
 
-    protected CostCalculatorTwoPieceFunc(double kLevel, double sLevel) {
+    protected CostCalculatorTwoPieceFunc(short kLevel, short sLevel, short bicType) {
         mKlevel = kLevel;
         mSlevel = sLevel;
         mUpSlopeLimit = ref_ul * Math.pow(base_ul,mKlevel-1);
         mDnSlopeLimit = ref_dl * Math.pow(base_dl,mSlevel-1);
-        yv[0] = getDownTime(xv[0]);
-        yv[1] = getDownTime(xv[1]);
-        double watt = 80;
-        double ACw = 0.7;
-        double rho = 1.2;
-        double Cr  = 0.005;
-        double m = 90;
-        yv[0] = getDownTime(xv[0]);
-        yv[1] = getDownTime(xv[1]);
-        yv[2] = 1/(getFrictionBasedVelocity(xv[2],watt,Cr,ACw,rho,m)*0.85);
-        for ( int i = 3; i<xv.length; i++){
-            yv[i] = 1/getFrictionBasedVelocity(xv[i],watt,Cr,ACw,rho,m);
-        }
-        try {
-            cubicSpline = new CubicSpline(xv,yv);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        double[] t = new double[80];
-        double slope = -0.21;
-        for( int i = 0; i< t.length; i++){
-            t[i] = cubicSpline.calc(slope);
-            slope = slope + 0.01;
-        }
+        cubicSpline = DurationSplineFunctionFactory.getInst().getDurationSplineFunction(kLevel,sLevel,(short) 1, bicType);
     }
 
 
@@ -219,36 +192,7 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
 
     @Override
     public double getDuration(double dist, float vertDist) {
-        return dist * 2.77;
+        return ( dist >= 0.00001) ? dist * cubicSpline.calc(vertDist/dist) : 0.0;
     }
 
-    /**
-     * see https://www.michael-konczer.com/de/training/rechner/rennrad-leistung-berechnen
-     * @param slope
-     * @param watt
-     * @param Cr rolling friction coefficient
-     * @param ACw
-     * @param rho Air density
-     * @param m system mass [driver + bike ]
-     * @return velocity (v in [m/s]
-     * watt = P air + P roll + P slope
-     * P air = 1/2 * Acw * rho * v^3 ; P roll = mg * Cr * v; P slope = mg * slope
-     * solved for velocity via cardanic equations
-     */
-    private double getFrictionBasedVelocity(double slope, double watt, double Cr, double ACw, double rho, double m ){
-        double mg = m*9.81;
-        double ACwr = 0.5 * ACw * rho;
-        double eta = 0.95;
-        double p =  mg*(Cr+slope)/ACwr;
-        double q =  -watt/ACwr*eta;
-        double D = Math.pow(q,2)/4. + Math.pow(p,3)/27.;
-
-        return (D>=0) ? Math.cbrt(- q*0.5 + Math.sqrt(D)) + Math.cbrt(- q*0.5 - Math.sqrt(D)) :
-                Math.sqrt(-4.*p/3.) * Math.cos(1./3.*Math.acos(-q/2*Math.sqrt(-27./Math.pow(p,3.))));
-    }
-
-    private double getDownTime(double slope){
-        return -slope*2.-0.1;
-    }
-
-}
+ }

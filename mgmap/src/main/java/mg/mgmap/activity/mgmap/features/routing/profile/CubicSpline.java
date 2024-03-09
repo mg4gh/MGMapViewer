@@ -59,7 +59,7 @@ public class CubicSpline {
         int i = -1;
         do {
             i = i + 1;
-        } while (i < this.x.length - 1 && this.x[i+1] < x );
+        } while (i < this.x.length - 2 && this.x[i+1] < x ); //x.length - 2 = n - 1 !
         double x1 = x - this.x[i];
         double x2 = x1*x1;
         double x3 = x2*x1;

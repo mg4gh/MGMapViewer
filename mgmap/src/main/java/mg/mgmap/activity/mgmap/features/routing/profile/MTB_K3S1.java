@@ -9,7 +9,7 @@ public class MTB_K3S1 extends RoutingProfile {
 
     public MTB_K3S1( ) {
 //        super(new CostCalculatorTwoPieceFunc(8.0, 0.10, 3, 0, -0.27, 2));
-        super(new CostCalculatorTwoPieceFunc(3,  1));
+        super(new CostCalculatorTwoPieceFunc((short)3,  (short)1, (short)1));
     }
 
     @Override

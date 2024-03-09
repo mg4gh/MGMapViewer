@@ -17,19 +17,22 @@ public class CostCalculatorMTB implements CostCalculator {
     private final double mDelta;
     private final double mfud;
     private final double mfdd;
+    private final short surfaceCat;
     private final CostCalculatorTwoPieceFunc mProfileCalculator;
     private final boolean oneway;
 
     public CostCalculatorMTB(WayAttributs wayTagEval, CostCalculatorTwoPieceFunc profile) {
         mProfileCalculator = profile;
-        oneway = wayTagEval.oneway;
+        oneway = wayTagEval.onewayBic;
         double mtbUp = -2;
         double mtbDn = -2;
         double mfud = 1;
         double mfdd = 1;
         double deltaUp = 0;
         double deltaDn = 0;
-        if (!wayTagEval.accessible ) {
+        short surfaceCat = TagEval.getSurfaceCat(wayTagEval);
+//        surfaceCat = ( surfaceCat == 0) ? 4: surfaceCat;
+        if (!TagEval.getAccessible(wayTagEval)) {
             mfud = 10;
             mfdd = 10;
         } else {
@@ -78,44 +81,42 @@ public class CostCalculatorMTB implements CostCalculator {
             if (mtbDn - mProfileCalculator.mSlevel >= 1 )
                 deltaDn = Math.sqrt( mtbDn - mProfileCalculator.mSlevel);
             if ("path".equals(wayTagEval.highway)) {
+                if ( surfaceCat == 0){
+                    surfaceCat = (short) (3 + Math.max(deltaDn,deltaUp));
+                }
                 if (mtbUp < 0) deltaUp = 1;
                 if (mtbDn < 0) deltaDn = 1;
+
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
-                short surfaceCat = 4;
-                if (wayTagEval.surface != null) {
-                    switch (wayTagEval.surface) {
-                        case "asphalt":
-                        case "paved":
-                        case "smooth_paved":
-                            surfaceCat = 1;
+                short type = 0;
+                if (wayTagEval.trackType != null) {
+                    switch (wayTagEval.trackType) {
+                        case "grade1":
+                            type = 1;
                             break;
-                        case "fine_gravel":
-                        case "rough_paved":
-                        case "compacted":
-                        case "paving_stones":
-                            surfaceCat = 2;
+                        case "grade2":
+                            type = 2;
                             break;
-/*   might be used in future ...
-                      case "ground":
-                        case "dirt":
-                        case "earth":
-                        case "raw":
-                            surfaceCat = 3;
-                            break;*/
+                        case "grade3":
+                            type = 3;
+                            break;
+                        default:
+                            type = 4;
                     }
                 }
+                surfaceCat = (type > 0) ? type : (surfaceCat>0) ? surfaceCat:4;
                 mfud = 1.25;
                 mfdd = 1.25;
                 //noinspection StatementWithEmptyBody
-                if ("grade2".equals(wayTagEval.trackType) || "grade1".equals(wayTagEval.trackType) || surfaceCat <= 2) {
-                } else if ("grade3".equals(wayTagEval.trackType) ) {
+                if (surfaceCat == 3 ) {
                     if (mtbUp < 0) deltaUp = 0.5;
                     if (mtbDn < 0) deltaDn = 0.5;
-                } else {
+                } else if (surfaceCat >= 4){
                     if (mtbUp < 0) deltaUp = 1;
                     if (mtbDn < 0) deltaDn = 1;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
+                surfaceCat = 10;
                 mfud = 15;
                 deltaUp = 2;
                 if ( mProfileCalculator.mSlevel == 3 )
@@ -126,22 +127,21 @@ public class CostCalculatorMTB implements CostCalculator {
                     mfdd = 15;
                 deltaDn = 2;
             } else {
-                double distFactor = getDistFactor(wayTagEval) ;
+                double distFactor = TagEval.getDistFactor(wayTagEval) ;
                 distFactor = ( distFactor <= 1.2 ) ? distFactor : distFactor * 1.2;
                 mfud = distFactor;
                 mfdd = distFactor;
             }
         }
-
+        this.surfaceCat = surfaceCat;
         this.mfud = mfud;
         this.mfdd = mfdd;
-
         mUpSlopeLimit = profile.mUpSlopeLimit * (1-ful*deltaUp);
         mDelta =  (1-fdl*deltaDn);
         mDnSlopeLimit = profile.mDnSlopeLimit * mDelta;
     }
 
-    protected static double getDistFactor(WayAttributs wayTagEval ){
+      protected static double getDistFactor(WayAttributs wayTagEval ){
         double distFactor ;
         if ("cycleway".equals(wayTagEval.highway)) {
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
@@ -234,7 +234,7 @@ public class CostCalculatorMTB implements CostCalculator {
 
     @Override
     public double getDuration(double dist, float vertDist) {
-        return dist * 2.77;
+        return ( dist >= 0.00001) ? dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,(short) 1).calc(vertDist/dist) : 0.0;
     }
 
 

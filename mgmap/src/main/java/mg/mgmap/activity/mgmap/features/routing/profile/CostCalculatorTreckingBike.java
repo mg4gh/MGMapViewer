@@ -14,36 +14,19 @@ public class CostCalculatorTreckingBike implements CostCalculator {
     private final double mDelta;
     private final double mfd;
     private final boolean oneway;
+    private final short surfaceCat;
 
 
     private final CostCalculatorTwoPieceFunc mProfileCalculator;
     public CostCalculatorTreckingBike(WayAttributs wayTagEval, CostCalculatorTwoPieceFunc profile) {
         mProfileCalculator = profile;
-        oneway = wayTagEval.oneway;
+        oneway = wayTagEval.onewayBic;
         double deltaSlope = 0.0;
         double  distFactor ;
-
-        if (!wayTagEval.accessible ){
+        short surfaceCat = TagEval.getSurfaceCat(wayTagEval);
+        if (TagEval.getAccessible(wayTagEval) ){
              distFactor = 10;
         } else {
-            int surfaceCat = 0;
-            if (wayTagEval.surface != null) {
-                switch (wayTagEval.surface) {
-                    case "asphalt":
-                    case "smooth_paved":
-                        surfaceCat = 1;
-                        break;
-                    case "compacted":
-                    case "paved":
-                    case "rough_paved":
-                    case "fine_gravel":
-                    case "paving_stones":
-                        surfaceCat = 2;
-                        break;
-                    default:
-                        surfaceCat = 4;
-                }
-            }
             if ("path".equals(wayTagEval.highway)) {
                 surfaceCat = ( surfaceCat == 0 ) ? 3 : surfaceCat;
                 if (surfaceCat == 1  || (surfaceCat <= 2 && ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))))
@@ -59,7 +42,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                     deltaSlope = 2;
                 }
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
-                int type = 0;
+                short type = 0;
                 if (wayTagEval.trackType != null) {
                     switch (wayTagEval.trackType) {
                         case "grade1":
@@ -75,14 +58,14 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                             type = 4;
                     }
                 }
-                type = (type > 0) ? type : (surfaceCat>0) ? surfaceCat:4;
-                if ( type ==1  || type <= 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
+                surfaceCat = (type > 0) ? type : (surfaceCat>0) ? surfaceCat:4;
+                if ( surfaceCat ==1  || surfaceCat <= 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1;
                     deltaSlope = 0;
-                } else if (type == 2 || type <= 3 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
+                } else if (surfaceCat == 2 || surfaceCat <= 3 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1.2;
                     deltaSlope = 0.5;
-                } else if (type==3 || "bic_designated".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
+                } else if (surfaceCat==3 || "bic_designated".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
                     distFactor = 1.5;
                     deltaSlope = 1.0;
                 } else {
@@ -90,14 +73,15 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                     deltaSlope = 2.5;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
+                surfaceCat = 10;
                 if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
                     distFactor = 5.0;
                 else
                     distFactor = 20;
             } else
-                distFactor = CostCalculatorMTB.getDistFactor(wayTagEval) ;
+                distFactor = TagEval.getDistFactor(wayTagEval) ;
         }
-
+        this.surfaceCat = surfaceCat;
         mfd =  distFactor;
         mUpSlopeLimit = profile.mUpSlopeLimit * (1-fl*deltaSlope);
         mDelta =  (1-fl*deltaSlope);
@@ -141,7 +125,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
 
     @Override
     public double getDuration(double dist, float vertDist) {
-        return dist * 2.77;
+       return ( dist >= 0.00001) ? dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,(short) 3).calc(vertDist/dist) : 0.0;
     }
 
 }
