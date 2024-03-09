@@ -38,7 +38,7 @@ import mg.mgmap.generic.util.basic.MGLog;
  * of smoothing acts on a rather shot period of time, which is no problem for track recording.
  * TODO: speed as a configurable parameter.
  */
-class BarometerListener implements SensorEventListener {
+public class BarometerListener implements SensorEventListener {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
@@ -52,8 +52,13 @@ class BarometerListener implements SensorEventListener {
     private final LongSparseArray<Float> pValues = new LongSparseArray<>();
     private final long uptimeMillis;
 
+    private static int[] escalationCnt = null;
 
-    BarometerListener(MGMapApplication application, final int speed, long barometerSmoothingPeriod){
+    public static void setEscalationCnt(int[] escalationCnt) {
+        BarometerListener.escalationCnt = escalationCnt;
+    }
+
+    public BarometerListener(MGMapApplication application, final int speed, long barometerSmoothingPeriod){
         this.speed = speed;
         this.barometerSmoothingPeriod = barometerSmoothingPeriod;
         sensorManager = (SensorManager) application.getSystemService(Application.SENSOR_SERVICE);
@@ -100,6 +105,11 @@ class BarometerListener implements SensorEventListener {
                 }
                 mgLog.v(pressure+" ts="+now+" tse="+eventTimeMillis+" "+pValues.size());
             }
+        }
+        int[] escalationCnt = BarometerListener.escalationCnt;
+        if ((escalationCnt != null) && (escalationCnt.length >= 4)){
+            escalationCnt[2]++;
+            escalationCnt[3] = (int)(pressure*1000);
         }
     }
 

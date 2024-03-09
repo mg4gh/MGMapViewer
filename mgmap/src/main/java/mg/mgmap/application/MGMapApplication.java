@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.content.SharedPreferences;
+import android.hardware.SensorManager;
 import android.os.SystemClock;
 
 import org.mapsforge.core.util.Parameters;
@@ -60,6 +61,7 @@ import mg.mgmap.generic.util.gpx.GpxImporter;
 import mg.mgmap.generic.util.hints.HintUtil;
 import mg.mgmap.generic.util.gpx.GpxExporter;
 import mg.mgmap.service.bgjob.BgJobService;
+import mg.mgmap.service.location.BarometerListener;
 import mg.mgmap.service.location.TrackLoggerService;
 import mg.mgmap.R;
 
@@ -67,6 +69,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
@@ -273,7 +276,8 @@ public class MGMapApplication extends Application {
             mgLog.i("logcat supervision: start ");
             UUID uuid = currentRun;
             int cnt = 0;
-            final int[] escalationCnt = {0};
+            final int[] escalationCnt = {0,(int)(SensorManager.PRESSURE_STANDARD_ATMOSPHERE*1000),0,0}; // escalationCnt, last pressure*1000, barometerSensorChangedCnt, pressure*1000
+            BarometerListener.setEscalationCnt(escalationCnt);
             registerActivityLifecycleCallbacks(new ActivityLifecycleAdapter() {
                 @Override
                 public void onActivityResumed(@NonNull Activity activity) {
@@ -299,7 +303,14 @@ public class MGMapApplication extends Application {
                     long now = System.currentTimeMillis();
                     if (prefGps.getValue() && (recordingTrackLogObservable.getTrackLog() != null) && ((now - lastCheck) > (TIMEOUT*1.5))){ // we might have detected an energy saving problem
                         mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now);
-                        escalationCnt[0]++;
+                        if (escalationCnt[2] != 0){ // there is a new pressure changed event
+                            float lastHeight = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  escalationCnt[1]/1000f);
+                            float currentHeight = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  escalationCnt[1]/1000f);
+                            if (Math.abs(lastHeight-currentHeight) > 5){ // there is some height movement as indicator that position is changing
+                                escalationCnt[0]++;
+                                mgLog.i("escalationCnt="+ Arrays.toString(escalationCnt));
+                            }
+                        }
                     } else {
                         escalationCnt[0] = 0;
                     }
@@ -311,6 +322,7 @@ public class MGMapApplication extends Application {
                         mgLog.i("logcat supervision: OK. (running "+(cnt/6)+" min)");
                     }
                     lastCheck = now;
+                    escalationCnt[2] = 0; // reset cnt of pressure change events
                 }
             }
         }).start();
