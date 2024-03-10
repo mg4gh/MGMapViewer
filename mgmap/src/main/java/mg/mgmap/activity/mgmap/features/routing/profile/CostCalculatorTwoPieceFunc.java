@@ -41,12 +41,14 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     protected final double mDnSlopeLimit;
     protected final short mKlevel;
     protected final short mSlevel;
+    protected final short mBicType;
     private final CubicSpline cubicSpline;
 
 
     protected CostCalculatorTwoPieceFunc(short kLevel, short sLevel, short bicType) {
         mKlevel = kLevel;
         mSlevel = sLevel;
+        mBicType = bicType;
         mUpSlopeLimit = ref_ul * Math.pow(base_ul,mKlevel-1);
         mDnSlopeLimit = ref_dl * Math.pow(base_dl,mSlevel-1);
         cubicSpline = DurationSplineFunctionFactory.getInst().getDurationSplineFunction(kLevel,sLevel,(short) 1, bicType);
