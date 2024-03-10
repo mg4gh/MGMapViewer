@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.routing.profile.Hiking;
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S1;
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S2;
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S3;
@@ -235,6 +236,7 @@ public class FSRouting extends FeatureService {
         });
         definedRoutingProfiles = new ArrayList<>();
         addDefinedRoutingProfile(prefCache, new ShortestDistance(), true);
+        addDefinedRoutingProfile(prefCache, new Hiking(), true);
         addDefinedRoutingProfile(prefCache, new MTB_K1S1(), true);
         addDefinedRoutingProfile(prefCache, new MTB_K1S2(), false);
         addDefinedRoutingProfile(prefCache, new MTB_K1S3(), false);
