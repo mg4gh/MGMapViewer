@@ -48,11 +48,15 @@ public abstract class RoutingProfile {
         return costCalculator.heuristic(distance,verticalDistance);
     }
 
-    public long getDuration(PointModel node1, PointModel node2){
-        return getDuration(PointModelUtil.distance(node1, node2), PointModelUtil.verticalDistance(node1,node2));
+    public long getDuration(WayAttributs wayAttributs, PointModel node1, PointModel node2){
+        return getDuration(wayAttributs, PointModelUtil.distance(node1, node2), PointModelUtil.verticalDistance(node1,node2));
     }
-    protected long getDuration(double distance, float verticalDistance){
-        return costCalculator.getDuration(distance,verticalDistance);
+    protected long getDuration(WayAttributs wayAttributs, double distance, float verticalDistance){
+        CostCalculator calculator = this.costCalculator;
+        if ((wayAttributs != null) && (wayAttributs.getDerivedData() instanceof CostCalculator)){
+            calculator = ((CostCalculator)wayAttributs.getDerivedData());
+        }
+        return calculator.getDuration(distance,verticalDistance);
     }
 
 
