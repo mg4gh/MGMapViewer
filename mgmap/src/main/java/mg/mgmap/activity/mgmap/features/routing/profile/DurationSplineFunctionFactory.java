@@ -18,17 +18,17 @@ public class DurationSplineFunctionFactory {
         short[] id = {klevel,slevel,surfaceLevel};
         CubicSpline cubicSpline = map.get(id);
         if (cubicSpline == null) {
-            double downMaxSpeedSlope = -0.05; // - 0.01*( slevel - surfaceLevel);
-            double[] slopes = {-0.4, -0.2, downMaxSpeedSlope, 0, 0.05, 0.1, 0.7};
+            double[] slopes = {-0.4, -0.2, -0.05, 0, 0.05, 0.1, 0.7};
             double[] durations = new double[slopes.length];
 
-            double watt = 80 + 30*klevel;
+            double watt = 80 + 30*(klevel-1);
             double ACw = 0.7;
             double rho = 1.2;
-            double Cr = 0.005*surfaceLevel;
+            double Cr = 0.005+(surfaceLevel-1) * 0.01;
             double m = 90;
-            durations[0] = -slopes[0]*slevel-0.05*slevel;
-            durations[1] = -slopes[0]*slevel-0.05*slevel;
+            double fdown = 3.0/slevel+0.5*surfaceLevel;
+            durations[0] = (-slopes[0]-0.075)*fdown;
+            durations[1] = (-slopes[1]-0.075)*fdown;
             durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, rho, m) * 0.85);
             for (int i = 3; i < slopes.length; i++) {
                 durations[i] = 1 / getFrictionBasedVelocity(slopes[i], watt, Cr, ACw, rho, m);

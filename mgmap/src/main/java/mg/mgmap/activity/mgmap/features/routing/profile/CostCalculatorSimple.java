@@ -27,7 +27,7 @@ public class CostCalculatorSimple implements CostCalculator {
 
 
     @Override
-    public double getDuration(double dist, float vertDist) {
-        return dist*2.77;
+    public long getDuration(double dist, float vertDist) {
+        return (long) (dist*0.36);
     }
 }

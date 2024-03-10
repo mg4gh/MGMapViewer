@@ -124,8 +124,8 @@ public class CostCalculatorTreckingBike implements CostCalculator {
     }
 
     @Override
-    public double getDuration(double dist, float vertDist) {
-       return ( dist >= 0.00001) ? dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,(short) 3).calc(vertDist/dist) : 0.0;
+    public long getDuration(double dist, float vertDist) {
+       return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,(short) 3).calc(vertDist/dist)) : 0;
     }
 
 }
