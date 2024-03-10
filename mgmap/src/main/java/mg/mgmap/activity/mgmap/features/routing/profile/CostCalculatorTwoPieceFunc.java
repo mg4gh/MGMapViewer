@@ -39,16 +39,17 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
 
     protected final double mUpSlopeLimit; //  up to this slope base Costs
     protected final double mDnSlopeLimit;
-    protected final double mKlevel;
-    protected final double mSlevel;
+    protected final short mKlevel;
+    protected final short mSlevel;
+    private final CubicSpline cubicSpline;
 
 
-
-    protected CostCalculatorTwoPieceFunc(double kLevel, double sLevel) {
+    protected CostCalculatorTwoPieceFunc(short kLevel, short sLevel, short bicType) {
         mKlevel = kLevel;
         mSlevel = sLevel;
         mUpSlopeLimit = ref_ul * Math.pow(base_ul,mKlevel-1);
         mDnSlopeLimit = ref_dl * Math.pow(base_dl,mSlevel-1);
+        cubicSpline = DurationSplineFunctionFactory.getInst().getDurationSplineFunction(kLevel,sLevel,(short) 1, bicType);
     }
 
 
@@ -190,8 +191,8 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     }
 
     @Override
-    public double getDuration(double dist, float vertDist) {
-        return dist * 2.77;
+    public long getDuration(double dist, float vertDist) {
+        return ( dist >= 0.00001) ? (long) (1000 * dist * cubicSpline.calc(vertDist/dist)) : 0;
     }
 
-}
+ }

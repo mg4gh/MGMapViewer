@@ -15,7 +15,7 @@ public class CostCalculatorShortestDist implements CostCalculator {
     }
 
     @Override
-    public double getDuration(double dist, float vertDist) {
-        return dist/2.778;
+    public long getDuration(double dist, float vertDist) {
+        return (long) (dist*0.36);
     }
 }

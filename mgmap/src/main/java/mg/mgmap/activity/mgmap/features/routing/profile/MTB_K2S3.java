@@ -7,7 +7,7 @@ import mg.mgmap.generic.graph.WayAttributs;
 
 public class MTB_K2S3 extends RoutingProfile {
     public MTB_K2S3( ) {
-        super(new CostCalculatorTwoPieceFunc(2.0,  3));
+        super(new CostCalculatorTwoPieceFunc((short)2.0,  (short)3, (short)1));
     }
 
 

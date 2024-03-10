@@ -5,7 +5,7 @@ import org.mapsforge.map.datastore.Way;
 
 public class WayAttributs {
 
-    public boolean accessible = false;
+//    public boolean accessible = false;
     public String highway = null;
     public String bicycle = null;
     public String access = null;
@@ -16,7 +16,7 @@ public class WayAttributs {
 
     public String trackType = null;
     public String network = null;
-    public boolean oneway = false;
+    public boolean onewayBic = false;
 //    additional tags that might be used in future
 //    public String service = null;
 //    public String trail_visibility = null;
@@ -34,7 +34,7 @@ public class WayAttributs {
         for (Tag tag : way.tags) {
             switch (tag.key) {
                 case "highway":
-                    accessible = true;
+//                    accessible = true;
                     highway = tag.value;
                     break;
                 case "surface":
@@ -69,6 +69,9 @@ public class WayAttributs {
                 case "oneway:bicycle":
                     oneway_bic = tag.value;
                     break;
+                case "smoothness":
+                    boolean smoothness = true;
+                    break;
      /*           case "name":
                     name = tag.value;
                     break;
@@ -76,11 +79,11 @@ public class WayAttributs {
                     service = tag.value; */
             }
         }
-        if (accessible && ("private".equals(bicycle) || (("private".equals(access)|| "no".equals(access))&&!("bic_yes".equals(bicycle)|| "bic_designated".equals(bicycle)||"bic_permissive".equals(bicycle))) ||
+/*        if (accessible && ("private".equals(bicycle) || (("private".equals(access)|| "no".equals(access))&&!("bic_yes".equals(bicycle)|| "bic_designated".equals(bicycle)||"bic_permissive".equals(bicycle))) ||
                 "motorway".equals(highway) || "trunk".equals(highway))) {
             accessible = false;
-        }
-        this.oneway = ( "yes".equals(oneway) && !"ow_bic_no".equals(oneway_bic));
+        } */
+        this.onewayBic = ( "yes".equals(oneway) && !"ow_bic_no".equals(oneway_bic));
     }
 
     public Object getDerivedData() {
