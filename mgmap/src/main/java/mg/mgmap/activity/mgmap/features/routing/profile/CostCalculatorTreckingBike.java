@@ -24,7 +24,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
         double deltaSlope = 0.0;
         double  distFactor ;
         short surfaceCat = TagEval.getSurfaceCat(wayTagEval);
-        if (TagEval.getAccessible(wayTagEval) ){
+        if (!TagEval.getAccessible(wayTagEval) ){
              distFactor = 10;
         } else {
             if ("path".equals(wayTagEval.highway)) {
@@ -125,7 +125,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
 
     @Override
     public long getDuration(double dist, float vertDist) {
-       return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,(short) 3).calc(vertDist/dist)) : 0;
+       return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(vertDist/dist)) : 0;
     }
 
 }

@@ -1,32 +1,58 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class DurationSplineFunctionFactory {
     static DurationSplineFunctionFactory durationSplineFunctionFactory = new DurationSplineFunctionFactory();
-    private HashMap<short[],CubicSpline> map = new HashMap<>();
+
+    private class Id {
+        private final short[] ids;
+        Id(short[] ids){
+            this.ids = ids;
+        }
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(ids);
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            Id other = (Id) obj;
+            return Arrays.equals(ids, other.ids);
+        }
+    }
+    private HashMap<Id,CubicSpline> map = new HashMap<>();
 
     public static DurationSplineFunctionFactory getInst(){
         return durationSplineFunctionFactory;
     }
+
+
 
     public CubicSpline getDurationSplineFunction(short klevel, short slevel,short bicType){
         return getDurationSplineFunction(klevel,slevel, (short) 1,bicType);
     }
 
     public CubicSpline getDurationSplineFunction(short klevel, short slevel, short surfaceLevel, short bicType){
-        short[] id = {klevel,slevel,surfaceLevel};
+
+        Id id = new Id(new short[] {klevel,slevel,surfaceLevel,bicType});
         CubicSpline cubicSpline = map.get(id);
         if (cubicSpline == null) {
             double[] slopes = {-0.4, -0.2, -0.05, 0, 0.05, 0.1, 0.7};
             double[] durations = new double[slopes.length];
 
-            double watt = 80 + 30*(klevel-1);
+            double watt = 60 + 40*klevel + 20*bicType;
             double ACw = 0.7;
             double rho = 1.2;
-            double Cr = 0.005+(surfaceLevel-1) * 0.01;
+            double Cr = 0.005+(surfaceLevel-1) * 0.03;
             double m = 90;
-            double fdown = 3.0/slevel+0.5*surfaceLevel;
+            double fdown = 3.0/(slevel+1)+0.5*surfaceLevel;
             durations[0] = (-slopes[0]-0.075)*fdown;
             durations[1] = (-slopes[1]-0.075)*fdown;
             durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, rho, m) * 0.85);

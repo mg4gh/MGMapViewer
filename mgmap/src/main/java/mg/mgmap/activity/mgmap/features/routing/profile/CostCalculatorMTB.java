@@ -81,7 +81,7 @@ public class CostCalculatorMTB implements CostCalculator {
             if (mtbDn - mProfileCalculator.mSlevel >= 1 )
                 deltaDn = Math.sqrt( mtbDn - mProfileCalculator.mSlevel);
             if ("path".equals(wayTagEval.highway)) {
-                if ( surfaceCat == 0){
+                if ( surfaceCat <= 3){
                     surfaceCat = (short) (3 + Math.max(deltaDn,deltaUp));
                 }
                 if (mtbUp < 0) deltaUp = 1;
@@ -107,7 +107,6 @@ public class CostCalculatorMTB implements CostCalculator {
                 surfaceCat = (type > 0) ? type : (surfaceCat>0) ? surfaceCat:4;
                 mfud = 1.25;
                 mfdd = 1.25;
-                //noinspection StatementWithEmptyBody
                 if (surfaceCat == 3 ) {
                     if (mtbUp < 0) deltaUp = 0.5;
                     if (mtbDn < 0) deltaDn = 0.5;
@@ -234,7 +233,7 @@ public class CostCalculatorMTB implements CostCalculator {
 
     @Override
     public long getDuration(double dist, float vertDist) {
-        return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,(short) 3).calc(vertDist/dist)) : 0;
+        return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(vertDist/dist)) : 0;
     }
 
 
