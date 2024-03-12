@@ -18,6 +18,7 @@ import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.util.basic.MemoryUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -86,18 +87,25 @@ public class GGraphMulti extends GGraph {
         overlayNeighbours.add(new GOverlayNeighbour(node, neighbour, nextNeighbour));
     }
 
-    void preNodeRelax(GNode node){
-        if ((node.borderNode != 0) && (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)){ // add lazy expansion of GGraphMulti
+    // return true, if routing should be aborted due to low memory
+    boolean preNodeRelax(GNode node){
+        if ((node.borderNode != 0) /*&& (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)*/){ // add lazy expansion of GGraphMulti
             GGraphTile gGraphTile = gGraphTileMap.get(node.tileIdx);
             assert(gGraphTile != null) : "Node tileIdx="+node.tileIdx+" "+(node.tileIdx>>16)+" "+(node.tileIdx & 0xFFFF)+" "+gGraphTileMap.size()+" "+node.borderNode;
-            checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST, gGraphTile.getTileX()-1, gGraphTile.getTileY());
-            checkGGraphTileNeighbour(node,GNode.BORDER_NODE_NORTH, gGraphTile.getTileX(), gGraphTile.getTileY()-1);
-            checkGGraphTileNeighbour(node,GNode.BORDER_NODE_EAST, gGraphTile.getTileX()+1, gGraphTile.getTileY());
-            checkGGraphTileNeighbour(node,GNode.BORDER_NODE_SOUTH, gGraphTile.getTileX(), gGraphTile.getTileY()+1);
+            boolean changed = checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST, gGraphTile.getTileX()-1, gGraphTile.getTileY());
+            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_NORTH, gGraphTile.getTileX(), gGraphTile.getTileY()-1);
+            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_EAST, gGraphTile.getTileX()+1, gGraphTile.getTileY());
+            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_SOUTH, gGraphTile.getTileX(), gGraphTile.getTileY()+1);
+            if (changed && MemoryUtil.checkLowMemory(GGraphTileFactory.LOW_MEMORY_THRESHOLD)){
+                mgLog.w("abort routing due low memory");
+                return true;
+            }
         }
+        return false;
     }
 
-    private void checkGGraphTileNeighbour(GNode node, byte border, int tileX, int tileY){
+    // Returns true, if graph is extended
+    private boolean checkGGraphTileNeighbour(GNode node, byte border, int tileX, int tileY){
         if ( (node.borderNode & border) != 0 ){
             Integer neighbourIdx = GGraphTileFactory.getKey(tileX, tileY);
             GGraphTile gGraphTileNeighbour = gGraphTileMap.get(neighbourIdx);
@@ -106,9 +114,11 @@ public class GGraphMulti extends GGraph {
                 gGraphTileMap.put(neighbourIdx, gGraphTileNeighbour);
                 gGraphTileNeighbour.resetNodeRefs();
                 connectGGraphTile(gGraphTileNeighbour);
+                mgLog.d("size: "+gGraphTileMap.size());
+                return true;
             }
         }
-
+        return false;
     }
 
     private void connectGGraphTile(GGraphTile newGGraphTile){

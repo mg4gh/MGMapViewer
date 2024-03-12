@@ -351,6 +351,20 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.onDestroy();
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        mgLog.i("level: "+level);
+        for (int i = featureServices.size() - 1; i >= 0; i--) { // reverse order
+            FeatureService microService = featureServices.get(i);
+            try {
+                microService.onTrimMemory(level);
+            } catch (Exception e) {
+                mgLog.w("onTrimMemory " + microService + " failed: " + e.getMessage());
+            }
+        }
+    }
+
     /** Return the feature service by type  */
     @SuppressWarnings("unchecked")
     public <T> T getFS(Class<T> tClass){

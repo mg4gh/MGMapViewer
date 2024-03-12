@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import mg.mgmap.generic.graph.AStar;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.GGraphMulti;
+import mg.mgmap.generic.graph.GGraphSearch;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.graph.GNeighbour;
@@ -55,6 +56,7 @@ public class RoutingEngine {
     private RoutingContext routingContext;
     RoutingProfile routingProfile;
     final AtomicInteger refreshRequired = new AtomicInteger(0);
+    private GGraphSearch gGraphSearch = null;
 
     public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext){
         this.gFactory = gFactory;
@@ -64,6 +66,11 @@ public class RoutingEngine {
     public RoutingContext getRoutingContext() {
         return routingContext;
     }
+
+    public GGraphSearch getGGraphSearch() {
+        return gGraphSearch;
+    }
+
     public void setRoutingContext(RoutingContext routingContext){
         this.routingContext = routingContext;
         for (RoutePointModel rpm : routePointMap.values()){ // invalidate Approaches
@@ -281,8 +288,9 @@ public class RoutingEngine {
 
         try {
             if ((gStart != null) && (gEnd != null)){
-                BBox bBox = new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold());
-                multi = new GGraphMulti(gFactory, getGGraphTileList(bBox));
+                ArrayList<GGraphTile> gGraphTiles = getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
+                gGraphTiles.addAll(getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
+                multi = new GGraphMulti(gFactory, gGraphTiles);
 
                 multi.createOverlaysForApproach(validateApproachModel(source.selectedApproach));
                 multi.createOverlaysForApproach(validateApproachModel(target.selectedApproach));
@@ -290,11 +298,12 @@ public class RoutingEngine {
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
                 // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
-                AStar aStar = new AStar(multi, routingProfile);
-                for (GNodeRef gnr : aStar.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes)){
+                gGraphSearch = new AStar(multi, routingProfile);
+                for (GNodeRef gnr : gGraphSearch.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes)){
                     mpm.addPoint(gnr.getNode() );
                 }
-                mgLog.i(aStar.getResult());
+                mgLog.i(gGraphSearch.getResult());
+                gGraphSearch = null;
 
                 // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
                 if (mpm.size() == 3){

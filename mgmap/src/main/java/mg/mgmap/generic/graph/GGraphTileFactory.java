@@ -40,6 +40,7 @@ public class GGraphTileFactory {
     final static int CACHE_LIMIT = 1000;
     private final byte ZOOM_LEVEL = 15;
     private final int TILE_SIZE = 256;
+    static final int LOW_MEMORY_THRESHOLD = 5;
 
     static int getKey(int tileX,int tileY){
         return ( tileX <<16) + tileY;
@@ -63,7 +64,7 @@ public class GGraphTileFactory {
                 boolean bRes = (size() > CACHE_LIMIT);
                 if (bRes) {
                     GGraphTile old = eldest.getValue();
-                    mgLog.d(() -> "remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
+                    mgLog.v(() -> "remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
                 }
                 return bRes;
             }

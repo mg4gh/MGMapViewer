@@ -28,15 +28,13 @@ import mg.mgmap.generic.util.basic.MGLog;
 /**
  * Implementation of the Dijkstra algorithm.
  */
-public class Dijkstra {
+public class Dijkstra extends GGraphSearch{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    protected final GGraphMulti graph;
-    protected final RoutingProfile routingProfile;
-
     private TreeSet<GNodeRef> prioQueue = null;
     protected GNode target = null;
+    protected GNodeRef bestHeuristicRef = null;
 
     private long duration = 0;
     private int cntTotal = 0;
@@ -45,8 +43,7 @@ public class Dijkstra {
     private int resultPathLength = 0;
 
     public Dijkstra(GGraphMulti graph, RoutingProfile routingProfile) {
-        this.graph = graph;
-        this.routingProfile = routingProfile;
+        super(graph, routingProfile);
     }
 
 
@@ -73,11 +70,12 @@ public class Dijkstra {
         }
 
         GNodeRef ref = prioQueue.first();
-        while ((ref != null) && (ref.getNode() != target) && (ref.getHeuristicCost() <= costLimit)){ // abort  if target reached of if there are no more nodes to settle
+        boolean lowMemory = false;
+        while ((ref != null) && (ref.getNode() != target) && (ref.getHeuristicCost() <= costLimit) && (!lowMemory)){ // abort  if target reached or if there are no more nodes to settle or costLimit reached or lowMemory
             if (ref.getNode().getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
                 if (refreshRequired.get() > 0) break;
                 GNode node = ref.getNode();
-                graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
+                lowMemory = graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
                 GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();
@@ -99,6 +97,9 @@ public class Dijkstra {
                     }
                 }
                 ref.setSettled(true);
+                if (( bestHeuristicRef == null) || (ref.getHeuristic() < bestHeuristicRef.getHeuristic())){
+                    bestHeuristicRef = ref;
+                }
             }
             ref = prioQueue.higher(ref);
         }
@@ -121,19 +122,25 @@ public class Dijkstra {
                 }
             }
         }
-
-        ArrayList<GNodeRef> resultPath = new ArrayList<>();
-        if ((target != null) && (target.getNodeRef() != null)){
-            ref = target.getNodeRef();
-            while (ref.getPredecessor() != null){
-                resultPath.add(0, ref);
-                ref = ref.getPredecessor().getNodeRef();
-            }
-            resultPath.add(0,ref);
-        }
-
+        ArrayList<GNodeRef> resultPath = getPath(target.getNodeRef());
         resultPathLength = resultPath.size();
         return resultPath;
+    }
+
+    public ArrayList<GNodeRef> getBestPath(){
+        return getPath(bestHeuristicRef);
+    }
+
+    public ArrayList<GNodeRef> getPath(GNodeRef ref){
+        ArrayList<GNodeRef> path = new ArrayList<>();
+        if (ref != null){
+            while (ref.getPredecessor() != null){
+                path.add(0, ref);
+                ref = ref.getPredecessor().getNodeRef();
+            }
+            path.add(0,ref);
+        }
+        return path;
     }
 
 
