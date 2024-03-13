@@ -235,9 +235,12 @@ public class RoutingEngine {
                             for (PointModel pm : rpm.newMPM){
                                 if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
                                     ExtendedPointModelImpl<RoutingHint> pmr = new ExtendedPointModelImpl<>(pm,rpm.routingHints.get(pm));
+                                    GNeighbour neighbour = null;
                                     if ((lastPM instanceof  GNode) && (pm instanceof GNode)){
-                                        GNeighbour neighbour = ((GNode)lastPM).getNeighbour((GNode)pm);
-                                        timestamp += routingProfile.getDuration((neighbour==null)?null:neighbour.getWayAttributs(), lastPM, pmr);
+                                        neighbour = ((GNode)lastPM).getNeighbour((GNode)pm);
+                                    }
+                                    if (lastPM != null) {
+                                        timestamp += routingProfile.getDuration((neighbour == null) ? null : neighbour.getWayAttributs(), lastPM, pmr);
                                     }
                                     pmr.setTimestamp(timestamp);
                                     routeTrackLog.addPoint(pmr);
