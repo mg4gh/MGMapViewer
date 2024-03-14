@@ -86,7 +86,7 @@ public class HgtProvider {
                 TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
                 if (mtl != null){
                     mgLog.d("set mtl changed");
-                    mtl.setRoutingProfileId("invalid"); // trigger a recalculation of the whole route
+                    mtl.setRoutingProfileId("refresh"); // trigger a recalculation of the whole route
                     application.markerTrackLogObservable.changed();
                 }
                 return false;

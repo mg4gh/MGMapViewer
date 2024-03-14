@@ -15,10 +15,10 @@ public class TrackLogPointVerifier {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    protected static final float ACCURACY_LIMIT = 30.0f; // accuracy limit in meter
-    protected static final float DEFAULT_HEIGHT_CONSISTENCY_THRESHOLD = 100.0f; // default for height consistency threshold in meter (diff between hgt and gps height)
-    protected static final  float SPEED_INCREASE_FACTOR_LIMIT = 4.0f;
-    protected static final  float HGT_PRESSURE_DIFF_LIMIT = 4.0f;
+    protected static final float ACCURACY_LIMIT = 50.0f; // accuracy limit in meter
+    protected static final float DEFAULT_HEIGHT_CONSISTENCY_THRESHOLD = 200.0f; // default for height consistency threshold in meter (diff between hgt and gps height)
+    protected static final  float SPEED_INCREASE_FACTOR_LIMIT = 6.0f;
+    protected static final  float HGT_PRESSURE_DIFF_LIMIT = 6.0f;
 
     private final PrefCache prefCache;
 

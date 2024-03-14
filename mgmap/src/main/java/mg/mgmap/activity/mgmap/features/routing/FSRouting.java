@@ -14,8 +14,10 @@
  */
 package mg.mgmap.activity.mgmap.features.routing;
 
+import android.content.ComponentCallbacks2;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
@@ -27,6 +29,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.features.routing.profile.Hiking;
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S1;
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S2;
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K1S3;
@@ -43,9 +46,11 @@ import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
 import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.GGraphSearch;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.graph.GNode;
+import mg.mgmap.generic.graph.GNodeRef;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -115,6 +120,7 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefCalcRouteInProgress = getPref(R.string.FSRouting_pref_calcRouteInProgress, false);
     private final ArrayList<ExtendedTextView> profileETVs = new ArrayList<>();
     private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
+    private MultiPointView routingIntermediate = null;
 
 
     private ViewGroup dashboardRoute = null;
@@ -235,6 +241,7 @@ public class FSRouting extends FeatureService {
         });
         definedRoutingProfiles = new ArrayList<>();
         addDefinedRoutingProfile(prefCache, new ShortestDistance(), true);
+        addDefinedRoutingProfile(prefCache, new Hiking(), true);
         addDefinedRoutingProfile(prefCache, new MTB_K1S1(), true);
         addDefinedRoutingProfile(prefCache, new MTB_K1S2(), false);
         addDefinedRoutingProfile(prefCache, new MTB_K1S3(), false);
@@ -261,11 +268,47 @@ public class FSRouting extends FeatureService {
             }
         } );
         prefCalcRouteInProgress.setValue(false);
+        prefCalcRouteInProgress.addObserver((e)-> getActivity().runOnUiThread(() -> {
+            if (prefCalcRouteInProgress.getValue()) {
+                getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                getTimer().postDelayed(ttRoutingIntermediate,1500);
+            } else {
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                getTimer().removeCallbacks(ttRoutingIntermediate);
+                hideIntermediate();
+            }
+        }));
+
         prefRoutingProfileId.changed();
         application.routeTrackLogObservable.addObserver((e) -> {
             TrackLog rotl = application.routeTrackLogObservable.getTrackLog();
             prefRouteSavable.setValue((rotl != null) && rotl.isModified() );
         });
+    }
+
+    Runnable ttRoutingIntermediate = this::refreshRoutingIntermediate;
+    private void refreshRoutingIntermediate(){
+        hideIntermediate();
+        if (prefCalcRouteInProgress.getValue()) {
+            showIntermediate();
+            getTimer().postDelayed(ttRoutingIntermediate,500);
+        }
+    }
+
+    private void hideIntermediate(){
+        unregister(routingIntermediate);
+        routingIntermediate = null;
+    }
+    private void showIntermediate(){
+        GGraphSearch gGraphSearch = routingEngine.getGGraphSearch();
+        if (gGraphSearch != null) {
+            MultiPointModelImpl mpm = new MultiPointModelImpl();
+            for (GNodeRef gnr : gGraphSearch.getBestPath()){
+                mpm.addPoint(gnr.getNode() );
+            }
+            routingIntermediate = new MultiPointView(mpm, PAINT_ROUTE_STROKE);
+            register(routingIntermediate);
+        }
     }
 
     private void addDefinedRoutingProfile(PrefCache prefCache, RoutingProfile routingProfile, boolean defaultVisibility){
@@ -376,6 +419,21 @@ public class FSRouting extends FeatureService {
             FSRouting.this.notifyAll();
         }
         prefRoutingProfileId.deleteObservers();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level == ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL){
+            if (prefCalcRouteInProgress.getValue()){
+                TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
+                if (mtl != null){
+                    mtl.setRoutingProfileId("invalid");
+                    routingEngine.refreshRequired.incrementAndGet();
+                    mgLog.w("abort routing due to onTrimMemory callback with TRIM_MEMORY_RUNNING_CRITICAL");
+                }
+            }
+        }
     }
 
     @Override

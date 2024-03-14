@@ -175,6 +175,7 @@ public class FeatureService {
 
 
     protected void register(final Layer layer){
+        if (layer == null) return;
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             if (layer instanceof MVLayer) {
                 ((MVLayer) layer).setMapViewUtility(getMapViewUtility());
@@ -195,12 +196,13 @@ public class FeatureService {
     }
 
     protected void unregister(final Layer layer){
+        if (layer == null) return;
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
 //            mgLog.d("unregister fs="+this.getClass().getSimpleName()+" layer="+((layer==null)?"":layer.getClass().getSimpleName())+" control="+(layer instanceof ControlMVLayer));
             synchronized (getMapView().getLayerManager().getLayers()) {
                 if (layer instanceof ControlMVLayer){
                     fsControlLayers.layers.remove(layer);
-                } else if (layer != null){
+                } else {
                     fsLayers.layers.remove(layer);
                 }
                 getMapView().getLayerManager().redrawLayers();
@@ -286,6 +288,7 @@ public class FeatureService {
         cancelRefresh();
     }
     protected void onDestroy(){ }
+    public void onTrimMemory(int level){ }
 
     protected <T> Pref<T> getPref(int id, T defaultValue){
         return activity.getPrefCache().get(id,defaultValue);
