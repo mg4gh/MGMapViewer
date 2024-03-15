@@ -137,8 +137,11 @@ public class HgtProvider {
         }
     }
 
-    public void cleanup(){
+    public void clearCache(){
         hgtCache.evictAll();
+    }
+    public void cleanup(){
+        clearCache();
         timer.removeCallbacks(ttCheckHgts);
     }
 

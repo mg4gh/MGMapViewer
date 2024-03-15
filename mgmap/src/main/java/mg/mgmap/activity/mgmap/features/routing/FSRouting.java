@@ -433,6 +433,8 @@ public class FSRouting extends FeatureService {
                     mgLog.w("abort routing due to onTrimMemory callback with TRIM_MEMORY_RUNNING_CRITICAL");
                 }
             }
+            gFactory.clearCache(); // clear GGraphTileFactory cache
+            application.getHgtProvider().clearCache(); // clear HgtCache
         }
     }
 
