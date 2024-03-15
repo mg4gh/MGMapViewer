@@ -22,6 +22,7 @@ import mg.mgmap.generic.util.basic.MemoryUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.TreeMap;
 
 
@@ -90,12 +91,10 @@ public class GGraphMulti extends GGraph {
     // return true, if routing should be aborted due to low memory
     boolean preNodeRelax(GNode node){
         if ((node.borderNode != 0) /*&& (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)*/){ // add lazy expansion of GGraphMulti
-            GGraphTile gGraphTile = gGraphTileMap.get(node.tileIdx);
-            assert(gGraphTile != null) : "Node tileIdx="+node.tileIdx+" "+(node.tileIdx>>16)+" "+(node.tileIdx & 0xFFFF)+" "+gGraphTileMap.size()+" "+node.borderNode;
-            boolean changed = checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST, gGraphTile.getTileX()-1, gGraphTile.getTileY());
-            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_NORTH, gGraphTile.getTileX(), gGraphTile.getTileY()-1);
-            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_EAST, gGraphTile.getTileX()+1, gGraphTile.getTileY());
-            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_SOUTH, gGraphTile.getTileX(), gGraphTile.getTileY()+1);
+            boolean changed = checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST);
+            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_NORTH);
+            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_EAST);
+            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_SOUTH);
             if (changed && MemoryUtil.checkLowMemory(GGraphTileFactory.LOW_MEMORY_THRESHOLD)){
                 mgLog.w("abort routing due low memory");
                 return true;
@@ -105,12 +104,17 @@ public class GGraphMulti extends GGraph {
     }
 
     // Returns true, if graph is extended
-    private boolean checkGGraphTileNeighbour(GNode node, byte border, int tileX, int tileY){
-        if ( (node.borderNode & border) != 0 ){
+    private boolean checkGGraphTileNeighbour(GNode node, byte border){
+        if ( (node.borderNode & border) != 0 ) {
+            GGraphTile gGraphTile = gGraphTileMap.get(node.tileIdx);
+            assert(gGraphTile != null) : "Node tileIdx="+node.tileIdx+" "+(node.tileIdx>>16)+" "+(node.tileIdx & 0xFFFF)+" "+gGraphTileMap.size()+" "+node.borderNode;
+            int tileX = gGraphTile.getTileX() + GNode.deltaX(border);
+            int tileY = gGraphTile.getTileY() + GNode.deltaY(border);
             Integer neighbourIdx = GGraphTileFactory.getKey(tileX, tileY);
             GGraphTile gGraphTileNeighbour = gGraphTileMap.get(neighbourIdx);
             if (gGraphTileNeighbour == null){
-                gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileX, tileY);
+                mgLog.d(String.format(Locale.ENGLISH, "border=%d tileX=%d tileY=%d",border,tileX,tileY));
+                gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(border, tileX, tileY);
                 gGraphTileMap.put(neighbourIdx, gGraphTileNeighbour);
                 gGraphTileNeighbour.resetNodeRefs();
                 connectGGraphTile(gGraphTileNeighbour);

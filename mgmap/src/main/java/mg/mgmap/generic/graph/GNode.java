@@ -37,6 +37,21 @@ public class GNode extends PointModelImpl {
     public static final byte BORDER_NODE_EAST  = 0x02;
     public static final byte BORDER_NODE_SOUTH = 0x01;
 
+    public static int deltaX(byte border){
+        switch (border){
+            case BORDER_NODE_WEST: return -1;
+            case BORDER_NODE_EAST: return 1;
+            default: return 0;
+        }
+    }
+    public static int deltaY(byte border){
+        switch (border){
+            case BORDER_NODE_NORTH: return -1;
+            case BORDER_NODE_SOUTH: return 1;
+            default: return 0;
+        }
+    }
+
     public GNode(double latitude, double longitude, float ele, float eleAcc, double cost){
         super(latitude, longitude, ele, eleAcc);
         this.neighbour = new GNeighbour(this, cost);
