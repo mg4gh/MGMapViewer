@@ -46,13 +46,14 @@ public class DurationSplineFunctionFactory {
         if (cubicSpline == null) {
             double[] slopes = {-0.4, -0.2, -0.05, 0, 0.05, 0.1, 0.7};
             double[] durations = new double[slopes.length];
-
             double watt = 60 + 40*klevel + 20*bicType;
-            double ACw = 0.7;
+            double ACw = 0.5;
             double rho = 1.2;
-            double Cr = 0.005+(surfaceLevel-1) * 0.03;
+            double f12 = 0.3;
+            double surfaceFact = (surfaceLevel <= 2) ? f12 * surfaceLevel - f12 : surfaceLevel-( 1.0-f12);
+            double Cr = 0.005+surfaceFact * 0.03;
             double m = 90;
-            double fdown = 3.0/(slevel+1)+0.5*surfaceLevel;
+            double fdown = 2.0/(slevel+1)+0.5*(surfaceFact+1.0);
             durations[0] = (-slopes[0]-0.075)*fdown;
             durations[1] = (-slopes[1]-0.075)*fdown;
             durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, rho, m) * 0.85);
