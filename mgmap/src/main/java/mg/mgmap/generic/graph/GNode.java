@@ -29,6 +29,7 @@ public class GNode extends PointModelImpl {
 
     // for Routing algorithms
     private GNodeRef nodeRef = null;
+    private GNodeRef nodeReverseRef = null;
 
     int tileIdx;
     byte borderNode = 0;
@@ -95,9 +96,19 @@ public class GNode extends PointModelImpl {
     public GNodeRef getNodeRef() {
         return nodeRef;
     }
+    public GNodeRef getNodeRef(boolean reverse) {
+        return reverse?nodeReverseRef:nodeRef;
+    }
 
     public void setNodeRef(GNodeRef nodeRef) {
-        this.nodeRef = nodeRef;
+        if (nodeRef == null){
+            this.nodeRef = null;
+            nodeReverseRef = null;
+        } else if (nodeRef.isReverse()){
+            nodeReverseRef = nodeRef;
+        } else {
+            this.nodeRef = nodeRef;
+        }
     }
 
     public void removeNeighbourNode(GNode neighbourNode){

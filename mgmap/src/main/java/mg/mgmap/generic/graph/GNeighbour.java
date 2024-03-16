@@ -25,6 +25,7 @@ public class GNeighbour{
     private GNeighbour nextNeighbour = null;
     private WayAttributs wayAttributs = null;
     private boolean primaryDirection = true;
+    private GNeighbour reverse = null;
 
     public GNeighbour(GNode neighbourNode, double cost){
         this.neighbourNode = neighbourNode;
@@ -70,5 +71,13 @@ public class GNeighbour{
 
     public WayAttributs getWayAttributs() {
         return wayAttributs;
+    }
+
+    public GNeighbour getReverse() {
+        return reverse;
+    }
+
+    public void setReverse(GNeighbour reverse) {
+        this.reverse = reverse;
     }
 }

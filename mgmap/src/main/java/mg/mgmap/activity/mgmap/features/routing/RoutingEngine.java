@@ -22,15 +22,14 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import mg.mgmap.generic.graph.AStar;
 import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.BidirectionalAStar;
 import mg.mgmap.generic.graph.GGraphMulti;
 import mg.mgmap.generic.graph.GGraphSearch;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.graph.GNeighbour;
 import mg.mgmap.generic.graph.GNode;
-import mg.mgmap.generic.graph.GNodeRef;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -301,9 +300,10 @@ public class RoutingEngine {
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
                 // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
-                gGraphSearch = new AStar(multi, routingProfile);
-                for (GNodeRef gnr : gGraphSearch.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes)){
-                    mpm.addPoint(gnr.getNode() );
+//                gGraphSearch = new AStar(multi, routingProfile);
+                gGraphSearch = new BidirectionalAStar(multi, routingProfile);
+                for (PointModel pm : gGraphSearch.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes)){
+                    mpm.addPoint( pm );
                 }
                 mgLog.i(gGraphSearch.getResult());
                 gGraphSearch = null;

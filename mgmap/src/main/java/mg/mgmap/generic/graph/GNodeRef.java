@@ -16,8 +16,6 @@ package mg.mgmap.generic.graph;
 
 import androidx.annotation.NonNull;
 
-import mg.mgmap.generic.model.PointModelUtil;
-
 /**
  * Keeps references on nodes and node relationships including meta data. Only used für routing algorithm processing.
  */
@@ -30,6 +28,7 @@ public class GNodeRef implements Comparable<GNodeRef>{
     private final double cost;
     private final double heuristic;
     private boolean settled = false;
+    private boolean reverse = false;
 
     GNodeRef(GNode node, double cost, GNode predecessor, GNeighbour neighbour, double heuristic){
         this.node = node;
@@ -79,5 +78,13 @@ public class GNodeRef implements Comparable<GNodeRef>{
 
     public void setSettled(boolean settled) {
         this.settled = settled;
+    }
+
+    public boolean isReverse() {
+        return reverse;
+    }
+
+    public void setReverse(boolean reverse) {
+        this.reverse = reverse;
     }
 }

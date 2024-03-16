@@ -41,6 +41,7 @@ import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K3S2;
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K3S3;
 import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
+import mg.mgmap.activity.mgmap.view.MultiMultiPointView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -50,7 +51,6 @@ import mg.mgmap.generic.graph.GGraphSearch;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.graph.GNode;
-import mg.mgmap.generic.graph.GNodeRef;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -302,11 +302,7 @@ public class FSRouting extends FeatureService {
     private void showIntermediate(){
         GGraphSearch gGraphSearch = routingEngine.getGGraphSearch();
         if (gGraphSearch != null) {
-            MultiPointModelImpl mpm = new MultiPointModelImpl();
-            for (GNodeRef gnr : gGraphSearch.getBestPath()){
-                mpm.addPoint(gnr.getNode() );
-            }
-            routingIntermediate = new MultiPointView(mpm, PAINT_ROUTE_STROKE);
+            routingIntermediate = new MultiMultiPointView(gGraphSearch.getBestPath(), PAINT_ROUTE_STROKE);
             register(routingIntermediate);
         }
     }

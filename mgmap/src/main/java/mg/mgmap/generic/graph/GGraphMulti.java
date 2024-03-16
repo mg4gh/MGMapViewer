@@ -197,9 +197,12 @@ public class GGraphMulti extends GGraph {
     }
 
     private void connect(GNode node1, GNode node2){
-//        double cost = PointModelUtil.distance(node1, node2)+0.001;
-        addNextNeighbour(node1,getLastNeighbour(node1),new GNeighbour(node2,null));
-        addNextNeighbour(node2,getLastNeighbour(node2),new GNeighbour(node1,null));
+        GNeighbour n12 = new GNeighbour(node2,null);
+        GNeighbour n21 = new GNeighbour(node1,null);
+        n12.setReverse(n21);
+        n21.setReverse(n12);
+        addNextNeighbour(node1,getLastNeighbour(node1),n12);
+        addNextNeighbour(node2,getLastNeighbour(node2),n21);
     }
 
     public void createOverlaysForApproach(ApproachModel approach){

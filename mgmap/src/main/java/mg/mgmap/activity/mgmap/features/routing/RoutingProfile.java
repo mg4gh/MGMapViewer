@@ -1,6 +1,5 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
-import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -27,7 +26,7 @@ public abstract class RoutingProfile {
         return profileCalculator; // default is no way specific calculator
     }
 
-    public double getCost(WayAttributs wayAttributs, GNode node1, GNode node2, boolean primaryDirection){
+    public double getCost(WayAttributs wayAttributs, PointModel node1, PointModel node2, boolean primaryDirection){
         if ((wayAttributs!=null) && (wayAttributs.getDerivedData()==null)){
             wayAttributs.setDerivedData( getCostCalculator(costCalculator, wayAttributs));
         }
