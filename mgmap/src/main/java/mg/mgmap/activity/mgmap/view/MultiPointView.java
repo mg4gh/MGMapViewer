@@ -42,6 +42,7 @@ public class MultiPointView extends MVLayer {
     protected Paint paintStroke;
     protected double strokeIncrease = 1.2;
     protected boolean showIntermediates = false;
+    protected boolean showPointsOnly = false;
     protected int pointRadius = POINT_RADIUS;
 
     protected final MultiPointModel model;
@@ -95,7 +96,7 @@ public class MultiPointView extends MVLayer {
                 pm = iterator.next();
                 x = lon2canvasX(pm.getLon());
                 y = lat2canvasY(pm.getLat());
-                if (this.paintStroke.getStrokeWidth() > 0){
+                if ((this.paintStroke.getStrokeWidth() > 0) && (!showPointsOnly)){
                     path.lineTo(x, y);
                 } else {
                     path.moveTo(x, y);
@@ -132,6 +133,10 @@ public class MultiPointView extends MVLayer {
 
     public void setShowIntermediates(boolean showIntermediates) {
         this.showIntermediates = showIntermediates;
+    }
+
+    public void setShowPointsOnly(boolean showPointsOnly) {
+        this.showPointsOnly = showPointsOnly;
     }
 
     public void setPointRadius(int pointRadius) {

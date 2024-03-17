@@ -490,9 +490,15 @@ public class FSRouting extends FeatureService {
     private void checkRelaxedViews(TrackLog mtl){
         if ((mtl != null) && prefWayDetails.getValue() && getMapView().getModel().mapViewPosition.getZoomLevel() >= ZOOM_LEVEL_RELAXED_VISIBILITY){
             if (mtl.getTrackStatistic().getNumPoints() >= 2){
+                MultiPointModelImpl mpm = new MultiPointModelImpl();
                 for (PointModel pm : new ArrayList<>( routingEngine.getCurrentRelaxedNodes() )){ // use a copy of the list to iterate over, since a synchronized access would block the UI thread
+                    mpm.addPoint(pm);
                     register( new PointView(pm, PAINT_RELAXED ));
                 }
+                MultiPointView mpv = new MultiPointView(mpm, PAINT_RELAXED);
+                mpv.setShowIntermediates(true);
+                mpv.setShowPointsOnly(true);
+                register(mpv);
             }
         }
     }
