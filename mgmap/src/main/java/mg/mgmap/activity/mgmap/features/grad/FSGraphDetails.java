@@ -168,18 +168,21 @@ public class FSGraphDetails extends FeatureService {
             GNode lastNode = null;
             for (GNode node : nodes){
                 multiPointModel.addPoint(node);
-                GNodeRef ref = node.getNodeRef();
                 if (lastNode != null){
                     final GNode last = lastNode;
                     double distance = PointModelUtil.distance(last,node);
                     double verticalDistance = PointModelUtil.verticalDistance(last, node);
                     mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost()));
                 }
-                mgLog.d(()-> "Point "+ node + ((ref != null)?String.format(Locale.ENGLISH, " setteled=%b cost=%.2f heuristic=%.2f hcost=%.2f",ref.isSetteled(),ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost()):""));
+                mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
                 lastNode = node;
             }
         }
         return (bestTile==null)?null:bestTile.getTileBBox();
     }
 
+    private String getRefDetails(GNodeRef ref){
+        if (ref == null) return "";
+        return String.format(Locale.ENGLISH, " %s settled=%b cost=%.2f heuristic=%.2f hcost=%.2f",ref.isReverse()?"rv":"fw",ref.isSetteled(),ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost());
+    }
 }
