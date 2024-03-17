@@ -34,6 +34,7 @@ public class BidirectionalAStar extends GGraphSearch{
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private TreeSet<GNodeRef> prioQueue = null;
+    protected GNode source = null;
     protected GNode target = null;
     protected GNodeRef bestHeuristicRef = null;
     protected GNodeRef bestReverseHeuristicRef = null;
@@ -55,14 +56,15 @@ public class BidirectionalAStar extends GGraphSearch{
         resetNodeRefs();
         if (relaxedList != null) relaxedList.clear();
 
+        this.source = source;
         this.target = target;
         long tStart = System.currentTimeMillis();
-        GNodeRef refSource = new GNodeRef(source,0,null,null, routingProfile.heuristic(source,target));
+        GNodeRef refSource = new GNodeRef(source,0,null,null, heuristic(false, source));
         source.setNodeRef(refSource);
         prioQueue.add(refSource);
         mgLog.d(()->String.format(Locale.ENGLISH, "Source: lat=%.6f lon=%.6f ele=%.2f cost=%.2f heuristic=%.2f hcost=%.2f",source.getLat(),source.getLon(),source.getEle(),
                 refSource.getCost(),refSource.getHeuristic(),refSource.getHeuristicCost()));
-        GNodeRef refTarget = new GNodeRef(target,0,null,null, routingProfile.heuristic(source,target));
+        GNodeRef refTarget = new GNodeRef(target,0,null,null, heuristic(true, target));
         refTarget.setReverse(true);
         target.setNodeRef(refTarget);
         prioQueue.add(refTarget);
@@ -72,7 +74,7 @@ public class BidirectionalAStar extends GGraphSearch{
         GNodeRef ref = prioQueue.first();
         GNodeRef reverseRef = null;
         boolean lowMemory = false;
-        while ((ref != null) && ((reverseRef == null) || (!reverseRef.isSetteled())) && (ref.getHeuristicCost() <= costLimit/2) && (!lowMemory)){ // abort  if target reached or if there are no more nodes to settle or costLimit reached or lowMemory
+        while ((ref != null) && (ref.getHeuristicCost() <= costLimit/2) && (!lowMemory)){ // abort  if target reached or if there are no more nodes to settle or costLimit reached or lowMemory
             if (ref.getNode().getNodeRef(ref.isReverse()) == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
                 if (refreshRequired.get() > 0) break;
                 GNode node = ref.getNode();
@@ -92,7 +94,7 @@ public class BidirectionalAStar extends GGraphSearch{
                     // create new prioQueue entry, if there is currently none or if the current relaxted path has better cost
                     GNodeRef neighbourRef = neighbourNode.getNodeRef(ref.isReverse());
                     if ((neighbourRef == null) || (currentCost < neighbourRef.getCost() )){
-                        neighbourRef = new GNodeRef(neighbourNode,currentCost,ref.getNode(),directedNeighbour, routingProfile.heuristic(ref.isReverse()?source:neighbourNode, ref.isReverse()?neighbourNode:target));
+                        neighbourRef = new GNodeRef(neighbourNode,currentCost, ref.getNode(),directedNeighbour, heuristic(ref.isReverse(), neighbourNode));
                         neighbourRef.setReverse(ref.isReverse());
                         neighbourNode.setNodeRef(neighbourRef);
                         prioQueue.add(neighbourRef);
@@ -113,7 +115,8 @@ public class BidirectionalAStar extends GGraphSearch{
                 }
             }
             ref = prioQueue.higher(ref);
-            reverseRef = ref.getNode().getNodeRef(!ref.isReverse());
+            reverseRef = (ref != null)?ref.getNode().getNodeRef(!ref.isReverse()):null;
+            if ((reverseRef != null) && (reverseRef.isSetteled())) break; // match found
         }
         duration = System.currentTimeMillis() - tStart;
 
@@ -125,10 +128,11 @@ public class BidirectionalAStar extends GGraphSearch{
         for (GNode node : graph.getNodes()){
             if (node.getNeighbour() != null){
                 cntTotal++;
-                if (node.getNodeRef() != null){
+                if ((node.getNodeRef() != null) || (node.getNodeRef(true) != null)){
                     cntRelaxed++;
                     if (relaxedList != null) relaxedList.add(node);
-                    if (node.getNodeRef().isSetteled()){
+                    if (((node.getNodeRef() != null) && (node.getNodeRef().isSetteled())) ||
+                            ((node.getNodeRef(true) != null) && (node.getNodeRef(true).isSetteled()))){
                         cntSettled++;
                     }
                 }
@@ -147,6 +151,28 @@ public class BidirectionalAStar extends GGraphSearch{
         return resultPath;
     }
 
+    double heuristic1(boolean reverse, GNode node){
+        double h;
+        if (reverse){
+            h = routingProfile.heuristic(source, node);
+        } else {
+            h = routingProfile.heuristic(node, target);
+        }
+        return h;
+    }
+
+    double heuristic(boolean reverse, GNode node){
+        double h;
+        double hf = routingProfile.heuristic(node, target);
+        double hr = routingProfile.heuristic(source, node);
+        if (reverse){
+            h = (hr - hf) / 2;
+        } else {
+            h = (hf - hr) / 2;
+        }
+        return h;
+    }
+
     public ArrayList<MultiPointModel> getBestPath(){
         ArrayList<MultiPointModel> paths = new ArrayList<>();
         paths.add(getPath(bestHeuristicRef));
@@ -161,9 +187,13 @@ public class BidirectionalAStar extends GGraphSearch{
             res += "no path found";
         } else {
 
-            res += String.format(Locale.GERMAN,"traget path found - hop count=%d cost=%.2f",resultPathLength,matchNode.getNodeRef().getCost()+matchNode.getNodeRef(true).getCost());
+            res += String.format(Locale.GERMAN,"target path found - hop count=%d cost=%.2f",resultPathLength,matchNode.getNodeRef().getCost()+matchNode.getNodeRef(true).getCost());
         }
         return res;
     }
 
+    private double getMatchCost(GNode aMatchNode){
+        if ((aMatchNode == null) || (aMatchNode.getNodeRef()==null) || (aMatchNode.getNodeRef(true)== null)) return Double.MAX_VALUE;
+        return aMatchNode.getNodeRef().getCost()+aMatchNode.getNodeRef(true).getCost();
+    }
 }

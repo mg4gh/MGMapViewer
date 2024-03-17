@@ -132,7 +132,7 @@ public class AStar extends GGraphSearch{
         } else if (target.getNodeRef() == null) {
             res += "no path found";
         } else {
-            res += String.format(Locale.GERMAN,"traget path found - hop count=%d cost=%.2f",resultPathLength,target.getNodeRef().getCost());
+            res += String.format(Locale.GERMAN,"target path found - hop count=%d cost=%.2f",resultPathLength,target.getNodeRef().getCost());
         }
         return res;
     }
