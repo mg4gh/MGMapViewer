@@ -17,7 +17,7 @@ public class GGraphTileCache {
             boolean bRes = (size() > GGraphTileFactory.CACHE_LIMIT);
             if (bRes) {
                 GGraphTile old = eldest.getValue();
-                mgLog.v(() -> "remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
+                mgLog.d(() -> "remove from cache: tile x=" + old.tile.tileX + " y=" + old.tile.tileY + " Cache Size:" + cache.size());
             }
             return bRes;
         }
@@ -29,12 +29,24 @@ public class GGraphTileCache {
         new Thread(() -> {
             while (true){
                 try {
-                    int key = getWork();
-                    if (cache.get(key) == null){
+                    int key;
+                    boolean load;
+                    synchronized (this){
+                        while (workQueue.size() == 0){
+                            wait(1000);
+                        }
+                        key = workQueue.remove(0);
+                        load = (cache.get(key) == null);
+                    }
+                    if (load){
                         int tileX = key>>16;
                         int tileY = key & 0xFFFF;
                         GGraphTile gGraphTile = gGraphTileFactory.loadGGraphTile(tileX,tileY);
-                        putTile(key, gGraphTile);
+
+                        synchronized (this){
+                            cache.put(key, gGraphTile);
+                            notifyAll();
+                        }
                     }
                 } catch (Throwable t){
                     mgLog.e(t);
@@ -42,26 +54,6 @@ public class GGraphTileCache {
             }
         }).start();
     }
-
-    private synchronized int getWork() throws InterruptedException{
-        while (workQueue.size() == 0){
-            wait(1000);
-        }
-        return workQueue.remove(0);
-    }
-
-    private synchronized void putTile(int idx, GGraphTile gGraphTile){
-        cache.put(idx, gGraphTile);
-        ArrayList<Integer> tempList = new ArrayList<>(workQueue);
-        for (int i=tempList.size()-1; i>=0; i--){
-            if (tempList.get(i) == idx){
-                workQueue.remove(i);
-            }
-        }
-        notifyAll();
-    }
-
-
 
     synchronized GGraphTile get(byte originatorBorder, int tileX, int tileY){
         int key = GGraphTileFactory.getKey(tileX,tileY);
