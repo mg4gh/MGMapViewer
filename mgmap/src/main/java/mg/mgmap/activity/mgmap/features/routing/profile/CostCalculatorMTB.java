@@ -35,6 +35,7 @@ public class CostCalculatorMTB implements CostCalculator {
         if (!TagEval.getAccessible(wayTagEval)) {
             mfud = 10;
             mfdd = 10;
+            surfaceCat = 10;
         } else {
             if (wayTagEval.mtbScaleUp != null) {
                 switch (wayTagEval.mtbScaleUp) {
@@ -81,30 +82,14 @@ public class CostCalculatorMTB implements CostCalculator {
             if (mtbDn - mProfileCalculator.mSlevel >= 1 )
                 deltaDn = Math.sqrt( mtbDn - mProfileCalculator.mSlevel);
             if ("path".equals(wayTagEval.highway)) {
-                if ( surfaceCat <= 3){
-                    surfaceCat = (short) (3 + Math.max(deltaDn,deltaUp));
-                }
+/*                if ( surfaceCat <= 4){
+                    surfaceCat = (short) (4 + Math.max(deltaDn,deltaUp));
+                } */
                 if (mtbUp < 0) deltaUp = 1;
                 if (mtbDn < 0) deltaDn = 1;
-
+                surfaceCat = (surfaceCat>0) ? surfaceCat :4;
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
-                short type = 0;
-                if (wayTagEval.trackType != null) {
-                    switch (wayTagEval.trackType) {
-                        case "grade1":
-                            type = 1;
-                            break;
-                        case "grade2":
-                            type = 2;
-                            break;
-                        case "grade3":
-                            type = 3;
-                            break;
-                        default:
-                            type = 4;
-                    }
-                }
-                surfaceCat = (type > 0) ? type : (surfaceCat>0) ? surfaceCat:4;
+                surfaceCat = (surfaceCat>0) ? surfaceCat :4;
                 mfud = 1.25;
                 mfdd = 1.25;
                 if (surfaceCat == 3 ) {
@@ -115,19 +100,23 @@ public class CostCalculatorMTB implements CostCalculator {
                     if (mtbDn < 0) deltaDn = 1;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
-                surfaceCat = 10;
                 mfud = 15;
                 deltaUp = 2;
-                if ( mProfileCalculator.mSlevel == 3 )
+                if ( mProfileCalculator.mSlevel == 3 ) {
                     mfdd = 2.5;
-                else if (mProfileCalculator.mSlevel == 2)
+                    surfaceCat = 3;
+                } else if (mProfileCalculator.mSlevel == 2) {
                     mfdd = 5;
-                else
+                    surfaceCat = 5;
+                } else {
                     mfdd = 15;
+                    surfaceCat = 10;
+                }
                 deltaDn = 2;
             } else {
-                double distFactor = TagEval.getDistFactor(wayTagEval) ;
-                distFactor = ( distFactor <= 1.2 ) ? distFactor : distFactor * 1.2;
+                TagEval.Factors factors = TagEval.getFactors(wayTagEval, surfaceCat);
+                surfaceCat = (surfaceCat == 0) ? factors.surfaceCat : surfaceCat;
+                double distFactor = (surfaceCat == 0) ? factors.distFactor*1.2 : factors.distFactor ;
                 mfud = distFactor;
                 mfdd = distFactor;
             }
@@ -140,7 +129,7 @@ public class CostCalculatorMTB implements CostCalculator {
         mDnSlopeLimit = profile.mDnSlopeLimit * mDelta;
     }
 
-      protected static double getDistFactor(WayAttributs wayTagEval ){
+/*      protected static double getDistFactor(WayAttributs wayTagEval ){
         double distFactor ;
         if ("cycleway".equals(wayTagEval.highway)) {
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
@@ -196,7 +185,7 @@ public class CostCalculatorMTB implements CostCalculator {
         } else
             distFactor = 1.3;
         return distFactor;
-    }
+    } */
 
 
     public double calcCosts(double dist, float vertDist, boolean primaryDirection){

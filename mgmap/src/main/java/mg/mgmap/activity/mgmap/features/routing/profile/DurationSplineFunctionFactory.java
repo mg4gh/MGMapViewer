@@ -46,17 +46,43 @@ public class DurationSplineFunctionFactory {
         if (cubicSpline == null) {
             double[] slopes = {-0.4, -0.2, -0.05, 0, 0.05, 0.1, 0.7};
             double[] durations = new double[slopes.length];
-            double watt = 60 + 40*klevel + 20*bicType;
-            double ACw = 0.5;
+            double watt;
+            if (bicType == 1){
+                watt = 80 + 40*klevel;
+            } else {
+                watt = 90 + 40*klevel;
+            }
+            double ACw = 0.35;
             double rho = 1.2;
-            double f12 = 0.3;
-            double surfaceFact = (surfaceLevel <= 2) ? f12 * surfaceLevel - f12 : surfaceLevel-( 1.0-f12);
-            double Cr = 0.005+surfaceFact * 0.03;
+            double Cr;
+            double fdown;
+            double fr = 0.85;
+            if (bicType == 1){
+                fdown = 2.0/(slevel+1);
+                if (surfaceLevel <= 3){
+                    Cr = 0.005 + 0.002*surfaceLevel;
+                    fdown = fdown + 1;
+                } else {
+                    Cr = 0.011 + 0.03 * (surfaceLevel - 3);
+                    fdown = fdown + (surfaceLevel - 3);
+                }
+            } else {
+                if (surfaceLevel <= 2){
+                    ACw = 0.35 + 0.1 * surfaceLevel;
+                    Cr = 0.004 + 0.001*surfaceLevel;
+                    fdown = 2.5 + 0.5*surfaceLevel;
+                    fr    = 0.85 - 0.075*surfaceLevel;
+                } else {
+                    ACw = 0.8 + 0.3 * ( surfaceLevel - 3);
+                    Cr = 0.03 + 0.015 * (surfaceLevel - 3);
+                    fdown = 3.5 + (surfaceLevel - 2);
+                    fr = 0.6;
+                }
+            }
             double m = 90;
-            double fdown = 2.0/(slevel+1)+0.5*(surfaceFact+1.0);
             durations[0] = (-slopes[0]-0.075)*fdown;
             durations[1] = (-slopes[1]-0.075)*fdown;
-            durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, rho, m) * 0.85);
+            durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, rho, m) * fr);
             for (int i = 3; i < slopes.length; i++) {
                 durations[i] = 1 / getFrictionBasedVelocity(slopes[i], watt, Cr, ACw, rho, m);
             }

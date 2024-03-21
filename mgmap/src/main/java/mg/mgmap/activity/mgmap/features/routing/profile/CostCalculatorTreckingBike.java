@@ -26,39 +26,29 @@ public class CostCalculatorTreckingBike implements CostCalculator {
         short surfaceCat = TagEval.getSurfaceCat(wayTagEval);
         if (!TagEval.getAccessible(wayTagEval) ){
              distFactor = 10;
+             surfaceCat = 2;
         } else {
             if ("path".equals(wayTagEval.highway)) {
-                surfaceCat = ( surfaceCat == 0 ) ? 3 : surfaceCat;
-                if (surfaceCat == 1  || (surfaceCat <= 2 && ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))))
+                if (surfaceCat == 1  || (surfaceCat <= 2 && ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)))) {
                     distFactor = 1.0;
-                else if ( ("bic_designated".equals(wayTagEval.bicycle) && surfaceCat <= 2 ) ||"lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)){
+                } else if ( ("bic_designated".equals(wayTagEval.bicycle) && surfaceCat <= 2 ) ||"lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)){
+                    surfaceCat = ( surfaceCat == 0 ) ? 2 : surfaceCat;
                     distFactor = 1.5;
                     deltaSlope = 1.0;
                 } else if ("bic_yes".equals(wayTagEval.bicycle) && surfaceCat <= 2) {
                     distFactor = 1.5;
                     deltaSlope = 1.5;
+                } else if ("bic_yes".equals(wayTagEval.bicycle) || "bic_designated".equals(wayTagEval.bicycle)) {
+                    surfaceCat = ( surfaceCat == 0 ) ? 3 : surfaceCat;
+                    distFactor = 2;
+                    deltaSlope = 1.5;
                 } else {
+                    surfaceCat = ( surfaceCat == 0 ) ? 4 : surfaceCat;
                     distFactor = 10;
                     deltaSlope = 2;
                 }
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
-                short type = 0;
-                if (wayTagEval.trackType != null) {
-                    switch (wayTagEval.trackType) {
-                        case "grade1":
-                            type = 1;
-                            break;
-                        case "grade2":
-                            type = 2;
-                            break;
-                        case "grade3":
-                            type = 3;
-                            break;
-                        default:
-                            type = 4;
-                    }
-                }
-                surfaceCat = (type > 0) ? type : (surfaceCat>0) ? surfaceCat:4;
+                surfaceCat = (surfaceCat>0) ? surfaceCat :4;
                 if ( surfaceCat ==1  || surfaceCat <= 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1;
                     deltaSlope = 0;
@@ -78,8 +68,11 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                     distFactor = 5.0;
                 else
                     distFactor = 20;
-            } else
-                distFactor = TagEval.getDistFactor(wayTagEval) ;
+            } else {
+                TagEval.Factors factors = TagEval.getFactors(wayTagEval, surfaceCat);
+                surfaceCat = factors.surfaceCat;
+                distFactor = factors.distFactor;
+            }
         }
         this.surfaceCat = surfaceCat;
         mfd =  distFactor;
@@ -125,12 +118,12 @@ public class CostCalculatorTreckingBike implements CostCalculator {
 
     @Override
     public long getDuration(double dist, float vertDist) {
-       if (dist >= 0.00001) {
+/*       if (dist >= 0.00001) {
            double slope = vertDist / dist;
            double spm = DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(slope);
            double v = 3.6/spm;
-           mgLog.d("DurationCalc - Slope:" + slope + " v:" + v + " time:" + spm*dist);
-       }
+           mgLog.d("DurationCalc - Slope:" + slope + " v:" + v + " time:" + spm*dist + " dist:" + dist + " surfaceCat:" + surfaceCat + " mfd:" + mfd);
+       } */
        return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(vertDist/dist)) : 0;
     }
 
