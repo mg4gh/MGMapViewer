@@ -128,6 +128,44 @@ public class RoutingTest {
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
             System.out.printf(Locale.ENGLISH, "%s x=%03d started%n",sdf.format(new Date()),x );
+            GNode gStart = gGraphTileFactory.getGGraphTile(17084+x/2, 11160+x).getNodes().get(5);
+            GNode gEnd = gGraphTileFactory.getGGraphTile(17102+x/2, 11179+x).getNodes().get(5);
+
+            ArrayList<GGraphTile> gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
+            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
+            GGraphMulti multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
+
+
+            RoutingProfile rp = new TrekkingBike();
+
+            MultiPointModel mpm1 = performSearch(new BidirectionalAStar(multi, rp), gStart, gEnd);
+            MultiPointModel mpm2 = performSearch(new AStar(multi, rp), gStart, gEnd);
+
+            Assert.assertEquals(mpm1.size(), mpm2.size());
+            for (int i=0; i<mpm1.size(); i++){
+                Assert.assertEquals(mpm1.get(i),mpm2.get(i));
+            }
+        }
+
+    }
+
+    @Test
+    public void _03_routing() {
+        PointModelUtil.init(32);
+//        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+        MGLog.setUnittest(true);
+
+        ElevationProvider elevationProvider = new ElevationProviderImplHelper();
+        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
+
+        MapDataStore mds = new MapFile(mapFile, "de");
+        WayProvider wayProvider = new WayProviderHelper(mds);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
+        for (int x=0; x<100; x++){
+            System.out.printf(Locale.ENGLISH, "%s x=%03d started%n",sdf.format(new Date()),x );
             GNode gStart = gGraphTileFactory.getGGraphTile(17184+x/2, 11160+x).getNodes().get(5);
             GNode gEnd = gGraphTileFactory.getGGraphTile(17202+x/2, 11179+x).getNodes().get(5);
 
