@@ -9,7 +9,8 @@ public class TagEval {
         return wayTagEval.highway!= null && ! ("private".equals(wayTagEval.bicycle) || (("private".equals(wayTagEval.access) ||
                 "acc_no".equals(wayTagEval.access)) && !("bic_yes".equals(wayTagEval.bicycle) ||
                 "bic_designated".equals(wayTagEval.bicycle) || "bic_permissive".equals(wayTagEval.bicycle) ||
-                "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))) ||
+                "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) ||
+                wayTagEval.mtbScaleUp != null || wayTagEval.mtbScale != null )) ||
                 "motorway".equals(wayTagEval.highway) || "trunk".equals(wayTagEval.highway));
     }
 
@@ -66,9 +67,9 @@ public class TagEval {
     protected static Factors getFactors(WayAttributs wayTagEval, short surfaceCat){
         double distFactor ;
         if ("cycleway".equals(wayTagEval.highway)) {
-            surfaceCat = 1;
+            surfaceCat = (surfaceCat>0) ? surfaceCat :1;
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
-                distFactor = 1;
+                distFactor = 1.0;
             else
                 distFactor = 1.3;
         } else if ("primary".equals(wayTagEval.highway) || "primary_link".equals(wayTagEval.highway)) {
@@ -107,7 +108,7 @@ public class TagEval {
         } else if ("footway".equals(wayTagEval.highway) || "pedestrian".equals(wayTagEval.highway)) {
             surfaceCat = 2;
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )
-                distFactor = 1;
+                distFactor = 1.0;
             else if ("bic_yes".equals(wayTagEval.bicycle))
                 distFactor = 1.5;
             else if ("bic_no".equals(wayTagEval.bicycle))

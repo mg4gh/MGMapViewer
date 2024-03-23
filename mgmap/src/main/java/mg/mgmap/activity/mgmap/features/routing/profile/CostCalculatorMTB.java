@@ -33,9 +33,9 @@ public class CostCalculatorMTB implements CostCalculator {
         short surfaceCat = TagEval.getSurfaceCat(wayTagEval);
 //        surfaceCat = ( surfaceCat == 0) ? 4: surfaceCat;
         if (!TagEval.getAccessible(wayTagEval)) {
-            mfud = 10;
-            mfdd = 10;
-            surfaceCat = 10;
+            mfud = 4;
+            mfdd = 4;
+            surfaceCat = 4;
         } else {
             if (wayTagEval.mtbScaleUp != null) {
                 switch (wayTagEval.mtbScaleUp) {
@@ -222,6 +222,12 @@ public class CostCalculatorMTB implements CostCalculator {
 
     @Override
     public long getDuration(double dist, float vertDist) {
+        if (dist >= 0.00001) {
+           double slope = vertDist / dist;
+           double spm = DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(slope);
+           double v = 3.6/spm;
+           mgLog.d("DurationCalc - Slope:" + slope + " v:" + v + " time:" + spm*dist + " dist:" + dist + " surfaceCat:" + surfaceCat + " mfd:" + mfdd);
+       }
         return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(vertDist/dist)) : 0;
     }
 

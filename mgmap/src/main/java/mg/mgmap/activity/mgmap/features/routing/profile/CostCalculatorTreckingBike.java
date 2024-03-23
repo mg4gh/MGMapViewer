@@ -29,8 +29,9 @@ public class CostCalculatorTreckingBike implements CostCalculator {
              surfaceCat = 2;
         } else {
             if ("path".equals(wayTagEval.highway)) {
-                if (surfaceCat == 1  || (surfaceCat <= 2 && ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)))) {
-                    distFactor = 1.0;
+                if (surfaceCat <= 1  || (surfaceCat <= 2 && ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)))) {
+                    distFactor = 1.1;
+                    deltaSlope = 0;
                 } else if ( ("bic_designated".equals(wayTagEval.bicycle) && surfaceCat <= 2 ) ||"lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)){
                     surfaceCat = ( surfaceCat == 0 ) ? 2 : surfaceCat;
                     distFactor = 1.5;
@@ -49,14 +50,17 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                 }
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
                 surfaceCat = (surfaceCat>0) ? surfaceCat :4;
-                if ( surfaceCat ==1  || surfaceCat <= 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
-                    distFactor = 1;
+                if ( surfaceCat <=1  && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
+                    distFactor = 1.0;
+                    deltaSlope = 0;
+                } else if ( surfaceCat <=1 || surfaceCat <= 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
+                    distFactor = 1.05;
                     deltaSlope = 0;
                 } else if (surfaceCat == 2 || surfaceCat <= 3 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1.2;
                     deltaSlope = 0.5;
                 } else if (surfaceCat==3 || "bic_designated".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
-                    distFactor = 1.5;
+                    distFactor = 1.8;
                     deltaSlope = 1.0;
                 } else {
                     distFactor = 2.5;

@@ -34,11 +34,6 @@ public class DurationSplineFunctionFactory {
     }
 
 
-
-    public CubicSpline getDurationSplineFunction(short klevel, short slevel,short bicType){
-        return getDurationSplineFunction(klevel,slevel, (short) 1,bicType);
-    }
-
     public CubicSpline getDurationSplineFunction(short klevel, short slevel, short surfaceLevel, short bicType){
 
         Id id = new Id(new short[] {klevel,slevel,surfaceLevel,bicType});
@@ -50,41 +45,44 @@ public class DurationSplineFunctionFactory {
             if (bicType == 1){
                 watt = 80 + 40*klevel;
             } else {
-                watt = 90 + 40*klevel;
+                watt = 130;
             }
-            double ACw = 0.35;
-            double rho = 1.2;
+            double ACw;
             double Cr;
             double fdown;
-            double fr = 0.85;
+            double fr;
             if (bicType == 1){
-                fdown = 2.0/(slevel+1);
+                fdown = 1.75/(slevel+0.5);
                 if (surfaceLevel <= 3){
+                    ACw = 0.4 + 0.1 * surfaceLevel;
                     Cr = 0.005 + 0.002*surfaceLevel;
-                    fdown = fdown + 1;
+                    fr = 1 - fdown/5;
+                    fdown = fdown*(3+surfaceLevel*0.5);
                 } else {
-                    Cr = 0.011 + 0.03 * (surfaceLevel - 3);
-                    fdown = fdown + (surfaceLevel - 3);
+                    ACw = 0.4 + fdown/3 + 0.2 * ( surfaceLevel - 3) ;
+                    Cr = 0.015*fdown/3 + 0.01 * (surfaceLevel - 3);
+                    fr = 1 - fdown/4;
+                    fdown =  fdown*(3+surfaceLevel*0.5);
                 }
             } else {
                 if (surfaceLevel <= 2){
-                    ACw = 0.35 + 0.1 * surfaceLevel;
+                    ACw = 0.45 + 0.1 * surfaceLevel;
                     Cr = 0.004 + 0.001*surfaceLevel;
-                    fdown = 2.5 + 0.5*surfaceLevel;
                     fr    = 0.85 - 0.075*surfaceLevel;
+                    fdown = 2.5 + 0.5*surfaceLevel;
                 } else {
                     ACw = 0.8 + 0.3 * ( surfaceLevel - 3);
                     Cr = 0.03 + 0.015 * (surfaceLevel - 3);
-                    fdown = 3.5 + (surfaceLevel - 2);
                     fr = 0.6;
+                    fdown = 3.5 + (surfaceLevel - 2);
                 }
             }
             double m = 90;
             durations[0] = (-slopes[0]-0.075)*fdown;
             durations[1] = (-slopes[1]-0.075)*fdown;
-            durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, rho, m) * fr);
+            durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, m) * fr);
             for (int i = 3; i < slopes.length; i++) {
-                durations[i] = 1 / getFrictionBasedVelocity(slopes[i], watt, Cr, ACw, rho, m);
+                durations[i] = 1 / getFrictionBasedVelocity(slopes[i], watt, Cr, ACw, m);
             }
             try {
                 cubicSpline = new CubicSpline(slopes, durations);
@@ -108,14 +106,14 @@ public class DurationSplineFunctionFactory {
      * @param watt
      * @param Cr rolling friction coefficient
      * @param ACw
-     * @param rho Air density
      * @param m system mass [driver + bike ]
      * @return velocity (v in [m/s]
      * watt = P air + P roll + P slope
      * P air = 1/2 * Acw * rho * v^3 ; P roll = mg * Cr * v; P slope = mg * slope
      * solved for velocity via cardanic equations
      */
-    private double getFrictionBasedVelocity(double slope, double watt, double Cr, double ACw, double rho, double m ){
+    private double getFrictionBasedVelocity(double slope, double watt, double Cr, double ACw, double m ){
+        double rho = 1.2;
         double mg = m*9.81;
         double ACwr = 0.5 * ACw * rho;
         double eta = 0.95;
