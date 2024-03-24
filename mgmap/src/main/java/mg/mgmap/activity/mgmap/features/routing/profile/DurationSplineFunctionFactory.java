@@ -56,12 +56,12 @@ public class DurationSplineFunctionFactory {
                 if (surfaceLevel <= 3){
                     ACw = 0.4 + 0.1 * surfaceLevel;
                     Cr = 0.005 + 0.002*surfaceLevel;
-                    fr = 1 - fdown/5;
+                    fr = 1 - fdown/6;
                     fdown = fdown*(3+surfaceLevel*0.5);
                 } else {
                     ACw = 0.4 + fdown/3 + 0.2 * ( surfaceLevel - 3) ;
                     Cr = 0.015*fdown/3 + 0.01 * (surfaceLevel - 3);
-                    fr = 1 - fdown/4;
+                    fr = 1 - fdown/5;
                     fdown =  fdown*(3+surfaceLevel*0.5);
                 }
             } else {
