@@ -115,8 +115,8 @@ public class CostCalculatorMTB implements CostCalculator {
                 deltaDn = 2;
             } else {
                 TagEval.Factors factors = TagEval.getFactors(wayTagEval, surfaceCat);
-                surfaceCat = (surfaceCat == 0) ? factors.surfaceCat : surfaceCat;
-                double distFactor = (surfaceCat == 0) ? factors.distFactor*1.2 : factors.distFactor ;
+                surfaceCat = factors.surfaceCat;
+                double distFactor = (surfaceCat == 0) ? factors.distFactor*1.3 : factors.distFactor ;
                 mfud = distFactor;
                 mfdd = distFactor;
             }

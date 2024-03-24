@@ -52,18 +52,16 @@ public class DurationSplineFunctionFactory {
             double fdown;
             double fr;
             if (bicType == 1){
-                fdown = 1.75/(slevel+0.5);
+                ACw = 0.4 + surfaceLevel * 0.05 ;
+                fdown = Math.exp(-(slevel-1)*Math.log(1.6));
                 if (surfaceLevel <= 3){
-                    ACw = 0.4 + 0.1 * surfaceLevel;
                     Cr = 0.005 + 0.002*surfaceLevel;
-                    fr = 1 - fdown/6;
-                    fdown = fdown*(3+surfaceLevel*0.5);
-                } else {
-                    ACw = 0.4 + fdown/3 + 0.2 * ( surfaceLevel - 3) ;
-                    Cr = 0.015*fdown/3 + 0.01 * (surfaceLevel - 3);
                     fr = 1 - fdown/5;
-                    fdown =  fdown*(3+surfaceLevel*0.5);
+                } else {
+                    Cr = 0.02 + 0.015*fdown  + 0.01*(surfaceLevel - 3);
+                    fr = 1.05 - fdown/2;
                 }
+                fdown =  fdown*(3.5+surfaceLevel*0.6);
             } else {
                 if (surfaceLevel <= 2){
                     ACw = 0.45 + 0.1 * surfaceLevel;
@@ -72,7 +70,7 @@ public class DurationSplineFunctionFactory {
                     fdown = 2.5 + 0.5*surfaceLevel;
                 } else {
                     ACw = 0.8 + 0.3 * ( surfaceLevel - 3);
-                    Cr = 0.03 + 0.015 * (surfaceLevel - 3);
+                    Cr = 0.02 + 0.015 * (surfaceLevel - 3);
                     fr = 0.6;
                     fdown = 3.5 + (surfaceLevel - 2);
                 }
