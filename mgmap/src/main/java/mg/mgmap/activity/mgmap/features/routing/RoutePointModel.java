@@ -40,6 +40,7 @@ public class RoutePointModel {
     ArrayList<ApproachModel> approaches;
     ApproachModel selectedApproach;
     BBox approachBBox;
+    boolean aborted;
 
     public RoutePointModel(PointModel pointModel){
         this.mtlp = pointModel;

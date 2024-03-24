@@ -161,7 +161,8 @@ public class RoutingEngine {
                             PointModel approachFirst = prev.getApproach().getApproachNode();
                             PointModel approachLast = current.getApproach().getApproachNode();
                             if ((PointModelUtil.compareTo(pmFirst, approachFirst) == 0) &&
-                                    (PointModelUtil.compareTo(pmLast, approachLast) == 0))
+                                    (PointModelUtil.compareTo(pmLast, approachLast) == 0) &&
+                                    !current.aborted)
                                 bRecalcRoute = false;
                         }
                     }
@@ -172,9 +173,13 @@ public class RoutingEngine {
 
                 if (bRecalcRoute){
                     routeModified = true;
+                    current.aborted = false;
                     current.newMPM = calcRouting(prev, current, current.routingHints, currentRelaxedNodes);
                 }
-                if (refreshRequired.get() > 0) break;
+                if (refreshRequired.get() > 0) {
+                    current.aborted = true;
+                    break;
+                }
             }
             if (refreshRequired.get() > 0) {
                 routeModified = true;
