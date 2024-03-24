@@ -12,7 +12,7 @@ public class MemoryUtil {
         long freeMem = Runtime.getRuntime().freeMemory();
         long totalFreeMem = maxMem - totalMem + freeMem;
         long freeMemPercent =  (totalFreeMem*100) /maxMem;
-        mgLog.d("freeMemPercent="+freeMemPercent);
+        mgLog.d("freeMemPercent="+freeMemPercent+ " maxMem="+maxMem);
         return freeMemPercent < threshold;
     }
 

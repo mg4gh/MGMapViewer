@@ -23,7 +23,6 @@ import mg.mgmap.generic.util.basic.MemoryUtil;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.TreeMap;
 
 
 /**
@@ -35,19 +34,19 @@ public class GGraphMulti extends GGraph {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final GGraphTileFactory gGraphTileFactory;
-    private final TreeMap<Integer, GGraphTile> gGraphTileMap = new TreeMap<>();
     ArrayList<GOverlayNeighbour> overlayNeighbours = new ArrayList<>(); // used for neighbour tile connections and for approaches
+    private int useCnt = 0;
 
     public GGraphMulti(GGraphTileFactory gGraphTileFactory, ArrayList<GGraphTile> gGraphTiles){
         this.gGraphTileFactory = gGraphTileFactory;
         for (GGraphTile gGraphTile : gGraphTiles){
-            gGraphTileMap.put(GGraphTileFactory.getKey(gGraphTile.tile.tileX,gGraphTile.tile.tileY), gGraphTile);
+            use(gGraphTile);
             connectGGraphTile(gGraphTile);
         }
     }
 
     public int getTileCount(){
-        return gGraphTileMap.values().size();
+        return useCnt;
     }
 
     /**
@@ -60,8 +59,10 @@ public class GGraphMulti extends GGraph {
     @Override
     public ArrayList<GNode> getNodes() {
         ArrayList<GNode> nodes = new ArrayList<>( super.getNodes() );
-        for (GGraphTile gGraphTile : gGraphTileMap.values()){
-            nodes.addAll( gGraphTile.getNodes() );
+        for (GGraphTile gGraphTile : gGraphTileFactory.getCached()){
+            if (gGraphTile.used){
+                nodes.addAll( gGraphTile.getNodes() );
+            }
         }
         return nodes;
     }
@@ -105,31 +106,33 @@ public class GGraphMulti extends GGraph {
 
     // Returns true, if graph is extended
     private boolean checkGGraphTileNeighbour(GNode node, byte border){
+        boolean bRes = false;
         if ( (node.borderNode & border) != 0 ) {
-            GGraphTile gGraphTile = gGraphTileMap.get(node.tileIdx);
-            assert(gGraphTile != null) : "Node tileIdx="+node.tileIdx+" "+(node.tileIdx>>16)+" "+(node.tileIdx & 0xFFFF)+" "+gGraphTileMap.size()+" "+node.borderNode;
-            int tileX = gGraphTile.getTileX() + GNode.deltaX(border);
-            int tileY = gGraphTile.getTileY() + GNode.deltaY(border);
-            Integer neighbourIdx = GGraphTileFactory.getKey(tileX, tileY);
-            GGraphTile gGraphTileNeighbour = gGraphTileMap.get(neighbourIdx);
+            int tileX = node.tileIdx>>16;
+            int tileY = node.tileIdx & 0xFFFF;
+            GGraphTile gGraphTile = gGraphTileFactory.getGGraphTile(tileX, tileY, false);
+            assert(gGraphTile != null) : "Node tileIdx="+node.tileIdx+" "+(node.tileIdx>>16)+" "+(node.tileIdx & 0xFFFF)+" "+useCnt+" "+node.borderNode;
+            int tileXn = gGraphTile.getTileX() + GNode.deltaX(border);
+            int tileYn = gGraphTile.getTileY() + GNode.deltaY(border);
+            GGraphTile gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileXn, tileYn, false);
+
             if (gGraphTileNeighbour == null){
-                mgLog.d(String.format(Locale.ENGLISH, "border=%d tileX=%d tileY=%d",border,tileX,tileY));
-                gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(border, tileX, tileY);
-                gGraphTileMap.put(neighbourIdx, gGraphTileNeighbour);
-                gGraphTileNeighbour.resetNodeRefs();
+                mgLog.d(String.format(Locale.ENGLISH, "border=%d tileX=%d tileY=%d",border,tileXn,tileYn));
+                gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileXn, tileYn, true);
                 connectGGraphTile(gGraphTileNeighbour);
-                mgLog.d("size: "+gGraphTileMap.size());
-                return true;
+                bRes = true;
             }
+            use(gGraphTileNeighbour);
         }
-        return false;
+
+        return bRes;
     }
 
     private void connectGGraphTile(GGraphTile newGGraphTile){
-        connectTiles(gGraphTileMap.get(GGraphTileFactory.getKey(newGGraphTile.getTileX()-1,newGGraphTile.getTileY())), newGGraphTile, true);
-        connectTiles(newGGraphTile, gGraphTileMap.get(GGraphTileFactory.getKey(newGGraphTile.getTileX()+1,newGGraphTile.getTileY())), true);
-        connectTiles(gGraphTileMap.get(GGraphTileFactory.getKey(newGGraphTile.getTileX(),newGGraphTile.getTileY()-1)), newGGraphTile, false);
-        connectTiles(newGGraphTile, gGraphTileMap.get(GGraphTileFactory.getKey(newGGraphTile.getTileX(),newGGraphTile.getTileY()+1)), false);
+        connectTiles(gGraphTileFactory.getGGraphTile(newGGraphTile.getTileX()-1,newGGraphTile.getTileY(), false), newGGraphTile, true);
+        connectTiles(newGGraphTile, gGraphTileFactory.getGGraphTile(newGGraphTile.getTileX()+1,newGGraphTile.getTileY(),false), true);
+        connectTiles(gGraphTileFactory.getGGraphTile(newGGraphTile.getTileX(),newGGraphTile.getTileY()-1, false), newGGraphTile, false);
+        connectTiles(newGGraphTile, gGraphTileFactory.getGGraphTile(newGGraphTile.getTileX(),newGGraphTile.getTileY()+1, false), false);
     }
 
     private void connectTiles(GGraphTile gGraphTile1, GGraphTile gGraphTile2,boolean horizontal){ // horizontal true: gGraphTile1 is left, gGraphTile2 is right - false: gGraphTile1 is above, gGraphTile2 is below
@@ -194,9 +197,20 @@ public class GGraphMulti extends GGraph {
             mgLog.d(()->"remainings1 " + remainingNodes1);
             mgLog.d(()->"remainings2 " + remainingNodes2);
         }
+        gGraphTile1.neighbourTiles[horizontal?GNode.BORDER_NODE_EAST:GNode.BORDER_NODE_SOUTH] = gGraphTile2;
+        gGraphTile2.neighbourTiles[horizontal?GNode.BORDER_NODE_WEST:GNode.BORDER_NODE_NORTH] = gGraphTile1;
     }
 
     private void connect(GNode node1, GNode node2){
+        GNeighbour n12 = new GNeighbour(node2,null);
+        GNeighbour n21 = new GNeighbour(node1,null);
+        n12.setReverse(n21);
+        n21.setReverse(n12);
+        node1.addNeighbour(n12);
+        node2.addNeighbour(n21);
+    }
+
+    private void connect2(GNode node1, GNode node2){
         GNeighbour n12 = new GNeighbour(node2,null);
         GNeighbour n21 = new GNeighbour(node1,null);
         n12.setReverse(n21);
@@ -207,7 +221,29 @@ public class GGraphMulti extends GGraph {
 
     public void createOverlaysForApproach(ApproachModel approach){
         super.getNodes().add(approach.getApproachNode()); // take super.getNodes() to get the node list of the multi graph
-        connect(approach.getNode1(), approach.getApproachNode());
-        connect(approach.getNode2(), approach.getApproachNode());
+        connect2(approach.getNode1(), approach.getApproachNode());
+        connect2(approach.getNode2(), approach.getApproachNode());
+    }
+
+    private void use(GGraphTile gGraphTile){
+        if (!gGraphTile.used){
+            gGraphTile.resetNodeRefs();
+            gGraphTile.used = true;
+            useCnt++;
+            mgLog.d("use tileX="+gGraphTile.getTileX()+" tileY="+gGraphTile.getTileY()+" size: "+useCnt);
+        }
+    }
+
+    public void finalizeUsage(){
+        mgLog.d("finalizeUsage A cntUsed="+cntUsed());
+        for (GGraphTile gGraphTile : gGraphTileFactory.getCached()){
+            gGraphTile.used = false;
+        }
+        useCnt = 0;
+        mgLog.d("finalizeUsage E cntUsed="+cntUsed());
+    }
+
+    public int cntUsed(){
+        return (int)gGraphTileFactory.getCached().stream().filter(f->f.used).count();
     }
 }

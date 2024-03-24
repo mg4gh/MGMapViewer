@@ -6,6 +6,7 @@ import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.reader.MapFile;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +33,7 @@ import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.util.gpx.GpxExporter;
 
 
 public class RoutingTest {
@@ -128,18 +130,34 @@ public class RoutingTest {
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
             System.out.printf(Locale.ENGLISH, "%s x=%03d started%n",sdf.format(new Date()),x );
-            GNode gStart = gGraphTileFactory.getGGraphTile(17084+x/2, 11160+x).getNodes().get(5);
-            GNode gEnd = gGraphTileFactory.getGGraphTile(17102+x/2, 11179+x).getNodes().get(5);
-
-            ArrayList<GGraphTile> gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
-            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
-            GGraphMulti multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
-
 
             RoutingProfile rp = new TrekkingBike();
+            ArrayList<GGraphTile> gGraphTiles;
+            GGraphMulti multi;
+            GNode gStart;
+            GNode gEnd;
+            int tileXStart = 17084;
+            int tileYStart = 11160;
+            int tileXEnd = 17102;
+            int tileYEnd = 11179;
 
+            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getNodes().get(5);
+            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getNodes().get(5);
+            gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
+            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
+            multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
             MultiPointModel mpm1 = performSearch(new BidirectionalAStar(multi, rp), gStart, gEnd);
+            multi.finalizeUsage();
+            gGraphTileFactory.serviceCache();
+
+            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getNodes().get(5);
+            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getNodes().get(5);
+            gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
+            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
+            multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
             MultiPointModel mpm2 = performSearch(new AStar(multi, rp), gStart, gEnd);
+            multi.finalizeUsage();
+            gGraphTileFactory.serviceCache();
 
             Assert.assertEquals(mpm1.size(), mpm2.size());
             for (int i=0; i<mpm1.size(); i++){
@@ -166,25 +184,40 @@ public class RoutingTest {
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
             System.out.printf(Locale.ENGLISH, "%s x=%03d started%n",sdf.format(new Date()),x );
-            GNode gStart = gGraphTileFactory.getGGraphTile(17184+x/2, 11160+x).getNodes().get(5);
-            GNode gEnd = gGraphTileFactory.getGGraphTile(17202+x/2, 11179+x).getNodes().get(5);
-
-            ArrayList<GGraphTile> gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
-            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
-            GGraphMulti multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
-
 
             RoutingProfile rp = new TrekkingBike();
+            ArrayList<GGraphTile> gGraphTiles;
+            GGraphMulti multi;
+            GNode gStart;
+            GNode gEnd;
+            int tileXStart = 17184;
+            int tileYStart = 11160;
+            int tileXEnd = 17202;
+            int tileYEnd = 11179;
 
+            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getNodes().get(5);
+            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getNodes().get(5);
+            gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
+            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
+            multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
             MultiPointModel mpm1 = performSearch(new BidirectionalAStar(multi, rp), gStart, gEnd);
+            multi.finalizeUsage();
+            gGraphTileFactory.serviceCache();
+
+            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getNodes().get(5);
+            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getNodes().get(5);
+            gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
+            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
+            multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
             MultiPointModel mpm2 = performSearch(new AStar(multi, rp), gStart, gEnd);
+            multi.finalizeUsage();
+            gGraphTileFactory.serviceCache();
 
             Assert.assertEquals(mpm1.size(), mpm2.size());
             for (int i=0; i<mpm1.size(); i++){
                 Assert.assertEquals(mpm1.get(i),mpm2.get(i));
             }
         }
-
     }
 
 
@@ -195,4 +228,45 @@ public class RoutingTest {
         System.out.println(routingAlg.getResult().replaceAll("\n","    "));
         return mpm;
     }
+
+
+    @Test
+    public void _04_routing() throws Exception{
+        PointModelUtil.init(32);
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+        MGLog.setUnittest(true);
+
+        RoutingContext interactiveRoutingContext = new RoutingContext(
+                1000000,
+                false, // no extra snap, since FSMarker snaps point zoom level dependent
+                10, // accept long detours in interactive mode
+                1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
+
+        ElevationProvider elevationProvider = new ElevationProviderImplHelper();
+        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
+
+        MapDataStore mds = new MapFile(mapFile, "de");
+        WayProvider wayProvider = new WayProviderHelper(mds);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
+
+        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext);
+        routingEngine.setRoutingProfile(new TrekkingBike());
+
+        {   // einfache Strecke Nahe Spyrer Hof
+            WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
+            mtl.startTrack(1L);
+            mtl.startSegment(2L);
+            mtl.addPoint(new PointModelImpl(49.405697,8.679110));
+            mtl.addPoint(new PointModelImpl(48.817059,9.060983));
+
+            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
+            String statistic = rotl.getTrackStatistic().toString();
+            System.out.println( statistic);
+            File gpxFile = new File("src/test/assets/temp_local/test.gpx"); // !!! gpx is not uploaded to git (test result)
+
+            GpxExporter.export(new PrintWriter(gpxFile), rotl);
+        }
+    }
+
 }

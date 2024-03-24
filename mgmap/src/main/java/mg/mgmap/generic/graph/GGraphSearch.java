@@ -36,10 +36,4 @@ public abstract class GGraphSearch {
         return path;
     }
 
-    protected void resetNodeRefs(){
-        for (GNode node : graph.getNodes()){
-            node.setNodeRef(null);
-        }
-    }
-
 }

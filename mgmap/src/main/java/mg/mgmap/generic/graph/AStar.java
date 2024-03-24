@@ -48,14 +48,15 @@ public class AStar extends GGraphSearch{
 
     public MultiPointModel perform(GNode source, GNode target, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
         prioQueue = new TreeSet<>();
-        resetNodeRefs();
         if (relaxedList != null) relaxedList.clear();
 
         this.target = target;
         long tStart = System.currentTimeMillis();
         GNodeRef refSource = new GNodeRef(source,0,null,null, routingProfile.heuristic(source,target));
+        source.resetNodeRefs();
         source.setNodeRef(refSource);
         prioQueue.add(refSource);
+        target.resetNodeRefs();
         mgLog.d(()->String.format(Locale.ENGLISH, "Source: lat=%.6f lon=%.6f ele=%.2f cost=%.2f heuristic=%.2f hcost=%.2f",source.getLat(),source.getLon(),source.getEle(),
                 refSource.getCost(),refSource.getHeuristic(),refSource.getHeuristicCost()));
         mgLog.d(()->String.format(Locale.ENGLISH, "Target: lat=%.6f lon=%.6f ele=%.2f",target.getLat(),target.getLon(),target.getEle()));

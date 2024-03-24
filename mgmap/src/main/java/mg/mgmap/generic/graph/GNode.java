@@ -52,6 +52,15 @@ public class GNode extends PointModelImpl {
             default: return 0;
         }
     }
+    public static byte oppositeBorder(byte border){
+        switch (border){
+            case BORDER_NODE_WEST: return BORDER_NODE_EAST;
+            case BORDER_NODE_EAST: return BORDER_NODE_WEST;
+            case BORDER_NODE_NORTH: return BORDER_NODE_SOUTH;
+            case BORDER_NODE_SOUTH: return BORDER_NODE_NORTH;
+            default: return 0;
+        }
+    }
 
     public GNode(double latitude, double longitude, float ele, float eleAcc, double cost){
         super(latitude, longitude, ele, eleAcc);
@@ -102,13 +111,17 @@ public class GNode extends PointModelImpl {
 
     public void setNodeRef(GNodeRef nodeRef) {
         if (nodeRef == null){
-            this.nodeRef = null;
-            nodeReverseRef = null;
+            resetNodeRefs();
         } else if (nodeRef.isReverse()){
             nodeReverseRef = nodeRef;
         } else {
             this.nodeRef = nodeRef;
         }
+    }
+
+    public void resetNodeRefs(){
+        this.nodeRef = null;
+        nodeReverseRef = null;
     }
 
     public void removeNeighbourNode(GNode neighbourNode){
@@ -122,5 +135,21 @@ public class GNode extends PointModelImpl {
         }
     }
 
+    public void removeNeighbourNode(int tileIdx){
+        GNeighbour nextNeighbour = this.neighbour;
+        GNeighbour lastNeighbour = nextNeighbour;
+        while (nextNeighbour.getNextNeighbour() != null) {
+            nextNeighbour = nextNeighbour.getNextNeighbour();
+            if (nextNeighbour.getNeighbourNode().tileIdx == tileIdx){
+                lastNeighbour.setNextNeighbour(nextNeighbour.getNextNeighbour());
+            } else {
+                lastNeighbour = nextNeighbour;
+            }
+        }
+    }
 
+
+    public GGraphTile getTile(GGraphTileFactory gFactory){
+        return gFactory.getGGraphTile(tileIdx>>16, tileIdx&0xFFFF);
+    }
 }

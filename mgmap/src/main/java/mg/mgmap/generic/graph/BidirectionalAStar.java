@@ -53,19 +53,20 @@ public class BidirectionalAStar extends GGraphSearch{
 
     public MultiPointModel perform(GNode source, GNode target, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
         prioQueue = new TreeSet<>();
-        resetNodeRefs();
         if (relaxedList != null) relaxedList.clear();
 
         this.source = source;
         this.target = target;
         long tStart = System.currentTimeMillis();
         GNodeRef refSource = new GNodeRef(source,0,null,null, heuristic(false, source));
+        source.resetNodeRefs();
         source.setNodeRef(refSource);
         prioQueue.add(refSource);
         mgLog.d(()->String.format(Locale.ENGLISH, "Source: lat=%.6f lon=%.6f ele=%.2f cost=%.2f heuristic=%.2f hcost=%.2f",source.getLat(),source.getLon(),source.getEle(),
                 refSource.getCost(),refSource.getHeuristic(),refSource.getHeuristicCost()));
         GNodeRef refTarget = new GNodeRef(target,0,null,null, heuristic(true, target));
         refTarget.setReverse(true);
+        target.resetNodeRefs();
         target.setNodeRef(refTarget);
         prioQueue.add(refTarget);
         mgLog.d(()->String.format(Locale.ENGLISH, "Target: lat=%.6f lon=%.6f ele=%.2f cost=%.2f heuristic=%.2f hcost=%.2f",target.getLat(),target.getLon(),target.getEle(),
@@ -73,13 +74,22 @@ public class BidirectionalAStar extends GGraphSearch{
 
         GNodeRef ref = prioQueue.first();
         GNodeRef reverseRef;
-        boolean lowMemory = false;
         double bestMatchCost = Double.MAX_VALUE;
-        while ((ref.getHeuristicCost() <= costLimit/2) && (!lowMemory)){ // abort  if target reached or if there are no more nodes to settle or costLimit reached or lowMemory
+        while (true){
+            if (ref.getHeuristicCost() > costLimit/2){ // if costLimit reached
+                mgLog.i("exit perform 5 cost limit reached: ref.getHeuristicCost()="+ref.getHeuristicCost()+" costLimit/2="+(costLimit/2));
+                break;
+            }
             if (ref.getNode().getNodeRef(ref.isReverse()) == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
-                if (refreshRequired.get() > 0) break;
+                if (refreshRequired.get() > 0) {
+                    mgLog.i("exit perform 3 refresh required");
+                    break;
+                }
                 GNode node = ref.getNode();
-                lowMemory = graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
+                if (graph.preNodeRelax(node)) { // add lazy expansion of GGraphMulti
+                    mgLog.i("exit perform 4 low memory");
+                    break;
+                }
                 GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNeighbour directedNeighbour = ref.isReverse()?neighbour.getReverse():neighbour;
@@ -122,9 +132,13 @@ public class BidirectionalAStar extends GGraphSearch{
                 }
             }
             ref = prioQueue.higher(ref);
-            if (ref == null) break; // no more nodes to handle - no path found
+            if (ref == null) {
+                mgLog.i("exit perform 2 ref=null, no more nodes to handle, no path found");
+                break; // no more nodes to handle - no path found
+            }
             reverseRef = ref.getNode().getNodeRef(!ref.isReverse());
             if ((reverseRef != null) && (reverseRef.isSetteled())) { // match found
+                mgLog.i("exit perform 1 refNode="+ref.getNode()+" ref="+getRefDetails(ref)+" revRef="+getRefDetails(reverseRef));
                 break;
             }
         }
@@ -194,4 +208,10 @@ public class BidirectionalAStar extends GGraphSearch{
         if ((aMatchNode == null) || (aMatchNode.getNodeRef()==null) || (aMatchNode.getNodeRef(true)== null)) return Double.MAX_VALUE;
         return aMatchNode.getNodeRef().getCost()+aMatchNode.getNodeRef(true).getCost();
     }
+
+    private String getRefDetails(GNodeRef ref){
+        if (ref == null) return "";
+        return String.format(Locale.ENGLISH, " %s settled=%b cost=%.2f heuristic=%.2f hcost=%.2f",ref.isReverse()?"rv":"fw",ref.isSetteled(),ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost());
+    }
+
 }

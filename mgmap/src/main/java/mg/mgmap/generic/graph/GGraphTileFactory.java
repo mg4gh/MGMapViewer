@@ -39,7 +39,7 @@ public class GGraphTileFactory {
     final static int CACHE_LIMIT = 2000;
     private final byte ZOOM_LEVEL = 15;
     private final int TILE_SIZE = 256;
-    static final int LOW_MEMORY_THRESHOLD = 5;
+    static final int LOW_MEMORY_THRESHOLD = 1;
 
     static int getKey(int tileX,int tileY){
         return ( tileX <<16) + tileY;
@@ -48,7 +48,7 @@ public class GGraphTileFactory {
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
     private boolean wayDetails;
-    GGraphTileCache gGraphTileCache;
+    GTileCache gTileCache;
 
     public GGraphTileFactory(){}
 
@@ -57,17 +57,17 @@ public class GGraphTileFactory {
         this.elevationProvider = elevationProvider;
         this.wayDetails = wayDetails;
 
-        gGraphTileCache = new GGraphTileCache(this);
+        gTileCache = new GTileCache(CACHE_LIMIT);
         return this;
     }
 
     public void onDestroy(){
         wayProvider = null;
-        gGraphTileCache = null;
+        gTileCache = null;
     }
 
     public void resetCosts(){
-        for (GGraphTile graph : gGraphTileCache.getAllTiles()){
+        for (GGraphTile graph : gTileCache.getAll()){
              for (GNode node : graph.getNodes()){
                  GNeighbour neighbour = node.getNeighbour();
                  while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null) {
@@ -82,7 +82,19 @@ public class GGraphTileFactory {
     }
 
     public void clearCache(){
-        gGraphTileCache.clear();
+        gTileCache.clear();
+    }
+
+    public void serviceCache(){
+        try {
+            gTileCache.service();
+        } catch (Exception e) {
+            mgLog.e(e);
+        }
+    }
+
+    ArrayList<GGraphTile> getCached(){
+        return gTileCache.getAll();
     }
 
     public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){
@@ -123,15 +135,20 @@ public class GGraphTileFactory {
     }
 
     public GGraphTile getGGraphTile(int tileX, int tileY){
-        return getGGraphTile((byte)0, tileX, tileY);
+        return getGGraphTile(tileX, tileY, true);
     }
-    public GGraphTile getGGraphTile(byte originatorBorder, int tileX, int tileY){
-        return gGraphTileCache.get(originatorBorder, tileX, tileY);
+    public GGraphTile getGGraphTile(int tileX, int tileY, boolean load){
+        GGraphTile gGraphTile = gTileCache.get(getKey(tileX, tileY));
+        if (load && (gGraphTile == null)){
+            gGraphTile = loadGGraphTile(tileX, tileY);
+            gTileCache.put(GGraphTileFactory.getKey(tileX, tileY), gGraphTile);
+        }
+        return gGraphTile;
     }
 
     @SuppressWarnings("CommentedOutCode")
-    GGraphTile loadGGraphTile(int tileX, int tileY){
-        mgLog.d(()->"Load tileX=" + tileX + " tileY=" + tileY + " (" + gGraphTileCache.size() + ")");
+    private GGraphTile loadGGraphTile(int tileX, int tileY){
+        mgLog.d(()->"Load tileX=" + tileX + " tileY=" + tileY + " (" + gTileCache.size() + ")");
         Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
         GGraphTile gGraphTile = new GGraphTile(elevationProvider, tile);
         for (Way way : wayProvider.getWays(tile)) {

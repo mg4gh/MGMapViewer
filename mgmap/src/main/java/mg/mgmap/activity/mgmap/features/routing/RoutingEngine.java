@@ -327,6 +327,11 @@ public class RoutingEngine {
             }
         } catch (Exception e) {
             mgLog.e(e);
+        } finally {
+            if (multi != null) {
+                multi.finalizeUsage();
+            }
+            gFactory.serviceCache();
         }
         mpm.setRoute(mpm.size() != 0);
 
@@ -401,7 +406,6 @@ public class RoutingEngine {
         WriteablePointModel pmApproach = new TrackLogPoint();
 
         ArrayList<GGraphTile> tiles = getGGraphTileList(mtlpBBox);
-        GGraphMulti multi = new GGraphMulti(gFactory, tiles);
         for (GGraphTile gGraphTile : tiles){
             for (GNode node : gGraphTile.getNodes()) {
 
@@ -431,7 +435,8 @@ public class RoutingEngine {
         for (int appIdx=0; appIdx<listApproaches.size(); appIdx++){
             ApproachModel approach = listApproaches.get(appIdx);
             if (!dropApproaches.contains( approach )){
-                ArrayList<GNode> segmentNodes = multi.segmentNodes(approach.getNode1(), approach.getNode2(), closeThreshold);
+                GGraphTile gGraphTile = approach.getNode1().getTile(gFactory);
+                ArrayList<GNode> segmentNodes = gGraphTile.segmentNodes(approach.getNode1(), approach.getNode2(), closeThreshold);
                 for (int idx=appIdx+1; idx<listApproaches.size(); idx++){
                     ApproachModel other = listApproaches.get(idx);
                     if (segmentNodes.contains(other.getNode1()) && segmentNodes.contains(other.getNode2())){
@@ -440,7 +445,6 @@ public class RoutingEngine {
                 }
             }
         }
-//        approaches.removeAll(dropApproaches);
         dropApproaches.forEach(approaches::remove); // seems to have better performance
         return approaches;
     }

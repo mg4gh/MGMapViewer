@@ -42,6 +42,9 @@ public class GGraphTile extends GGraph {
     final BBox tbBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
+    GGraphTile[] neighbourTiles = new GGraphTile[GNode.BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
+    boolean used = false; // used for cache - do not delete from cache
+    long accessTime = 0; // used for cache
 
     GGraphTile(ElevationProvider elevationProvider, Tile tile){
         this.elevationProvider = elevationProvider;
@@ -152,8 +155,23 @@ public class GGraphTile extends GGraph {
 
     void resetNodeRefs(){
         for (GNode node : getNodes()){
-            node.setNodeRef(null);
+            node.resetNodeRefs();
         }
+    }
+
+    /**
+     * @param tileIdx Tile to be dropped from cache - so drop all references to this tileIdx
+     * @param border tileIdx border that point to this gGraphTile
+     */
+    void dropNeighboursToTile(int tileIdx, byte border){
+        byte ownBorder = GNode.oppositeBorder(border);
+        for (GNode node : getNodes()){
+            if ((node.borderNode & ownBorder) != 0){
+                node.removeNeighbourNode(tileIdx);
+            }
+        }
+        assert (neighbourTiles[ownBorder].tileIdx == tileIdx):"neighbourTiles[ownBorder].tileIdx"+neighbourTiles[ownBorder].tileIdx+" tileIdx="+tileIdx;
+        neighbourTiles[ownBorder] = null;
     }
 
     @NonNull
