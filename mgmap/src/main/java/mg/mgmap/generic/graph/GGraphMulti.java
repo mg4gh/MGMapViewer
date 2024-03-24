@@ -34,7 +34,7 @@ public class GGraphMulti extends GGraph {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final GGraphTileFactory gGraphTileFactory;
-    ArrayList<GOverlayNeighbour> overlayNeighbours = new ArrayList<>(); // used for neighbour tile connections and for approaches
+//    ArrayList<GOverlayNeighbour> overlayNeighbours = new ArrayList<>(); // used for neighbour tile connections and for approaches
     private int useCnt = 0;
 
     public GGraphMulti(GGraphTileFactory gGraphTileFactory, ArrayList<GGraphTile> gGraphTiles){
@@ -67,27 +67,10 @@ public class GGraphMulti extends GGraph {
         return nodes;
     }
 
-    /**
-     * Redefines simple implementation of GGraph under consideration of overlayNeighbours
-     * @param node node for that the neighbours can be iterated with this method
-     * @param neighbour last neighbour of node in the iteration of neighbours
-     * @return next neighbour
-     */
     public GNeighbour getNextNeighbour(GNode node, GNeighbour neighbour){
-        GNeighbour res = neighbour.getNextNeighbour();
-        if (res == null){
-            for (GOverlayNeighbour overlayNeighbour : overlayNeighbours){
-                if ((overlayNeighbour.node == node) && (overlayNeighbour.neighbour == neighbour)){
-                    res = overlayNeighbour.nextNeighbour;
-                }
-            }
-        }
-        return res;
+        return neighbour.getNextNeighbour();
     }
 
-    public void addNextNeighbour(GNode node, GNeighbour neighbour, GNeighbour nextNeighbour){
-        overlayNeighbours.add(new GOverlayNeighbour(node, neighbour, nextNeighbour));
-    }
 
     // return true, if routing should be aborted due to low memory
     boolean preNodeRelax(GNode node){
@@ -201,28 +184,13 @@ public class GGraphMulti extends GGraph {
         gGraphTile2.neighbourTiles[horizontal?GNode.BORDER_NODE_WEST:GNode.BORDER_NODE_NORTH] = gGraphTile1;
     }
 
-    private void connect(GNode node1, GNode node2){
+    public void connect(GNode node1, GNode node2){
         GNeighbour n12 = new GNeighbour(node2,null);
         GNeighbour n21 = new GNeighbour(node1,null);
         n12.setReverse(n21);
         n21.setReverse(n12);
         node1.addNeighbour(n12);
         node2.addNeighbour(n21);
-    }
-
-    private void connect2(GNode node1, GNode node2){
-        GNeighbour n12 = new GNeighbour(node2,null);
-        GNeighbour n21 = new GNeighbour(node1,null);
-        n12.setReverse(n21);
-        n21.setReverse(n12);
-        addNextNeighbour(node1,getLastNeighbour(node1),n12);
-        addNextNeighbour(node2,getLastNeighbour(node2),n21);
-    }
-
-    public void createOverlaysForApproach(ApproachModel approach){
-        super.getNodes().add(approach.getApproachNode()); // take super.getNodes() to get the node list of the multi graph
-        connect2(approach.getNode1(), approach.getApproachNode());
-        connect2(approach.getNode2(), approach.getApproachNode());
     }
 
     private void use(GGraphTile gGraphTile){

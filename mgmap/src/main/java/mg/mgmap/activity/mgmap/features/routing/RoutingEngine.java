@@ -292,15 +292,20 @@ public class RoutingEngine {
         mgLog.i("start "+gStart+" end "+gEnd);
 
         GGraphMulti multi = null;
-
+        ApproachModel sourceApproachModel = null;
+        ApproachModel targetApproachModel = null;
         try {
             if ((gStart != null) && (gEnd != null)){
                 ArrayList<GGraphTile> gGraphTiles = getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
                 gGraphTiles.addAll(getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
                 multi = new GGraphMulti(gFactory, gGraphTiles);
 
-                multi.createOverlaysForApproach(validateApproachModel(source.selectedApproach));
-                multi.createOverlaysForApproach(validateApproachModel(target.selectedApproach));
+                sourceApproachModel = validateApproachModel(source.selectedApproach);
+                targetApproachModel = validateApproachModel(target.selectedApproach);
+                multi.connect(gStart,sourceApproachModel.getNode1());
+                multi.connect(gStart,sourceApproachModel.getNode2());
+                multi.connect(gEnd,targetApproachModel.getNode1());
+                multi.connect(gEnd,targetApproachModel.getNode2());
 
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
@@ -337,6 +342,16 @@ public class RoutingEngine {
                 multi.finalizeUsage();
             }
             gFactory.serviceCache();
+            if (sourceApproachModel != null){
+                sourceApproachModel.getNode1().removeNeighbourNode(0);
+                sourceApproachModel.getNode2().removeNeighbourNode(0);
+                gStart.getNeighbour().setNextNeighbour(null);
+            }
+            if (targetApproachModel != null){
+                targetApproachModel.getNode1().removeNeighbourNode(0);
+                targetApproachModel.getNode2().removeNeighbourNode(0);
+                gEnd.getNeighbour().setNextNeighbour(null);
+            }
         }
         mpm.setRoute(mpm.size() != 0);
 
