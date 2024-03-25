@@ -121,6 +121,7 @@ public class FSRouting extends FeatureService {
     private final ArrayList<ExtendedTextView> profileETVs = new ArrayList<>();
     private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
     private MultiPointView routingIntermediate = null;
+    private final Pref<String> prefRoutingAlgorithm = getPref(R.string.FSRouting_routing_algorithm_key, "BidirectionalAStar");
 
 
     private ViewGroup dashboardRoute = null;
@@ -133,7 +134,7 @@ public class FSRouting extends FeatureService {
         super(mgActivity);
         this.gFactory = gFactory;
         application = getApplication();
-        routingEngine = new RoutingEngine(gFactory, interactiveRoutingContext);
+        routingEngine = new RoutingEngine(gFactory, interactiveRoutingContext, prefRoutingAlgorithm.getValue());
         ttRefreshTime = 50;
         mtlSupportProvider = new AdvancedMtlSupportProvider();
         fsMarker.mtlSupportProvider = mtlSupportProvider;

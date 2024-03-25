@@ -55,7 +55,7 @@ public class RoutingTest {
         WayProvider wayProvider = new WayProviderHelper(mds);
         GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
 
-        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext);
+        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, "");
         routingEngine.setRoutingProfile(new ShortestDistance());
 
         {   // einfache Strecke Nahe Spyrer Hof
@@ -250,7 +250,7 @@ public class RoutingTest {
         WayProvider wayProvider = new WayProviderHelper(mds);
         GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
 
-        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext);
+        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, "");
         routingEngine.setRoutingProfile(new TrekkingBike());
 
         {   // einfache Strecke Nahe Spyrer Hof

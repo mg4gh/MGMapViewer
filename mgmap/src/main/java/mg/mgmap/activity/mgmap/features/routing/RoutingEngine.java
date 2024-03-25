@@ -15,6 +15,7 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,10 +57,12 @@ public class RoutingEngine {
     RoutingProfile routingProfile;
     final AtomicInteger refreshRequired = new AtomicInteger(0);
     private GGraphSearch gGraphSearch = null;
+    String routingAlgorithm;
 
-    public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext){
+    public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext, String routingAlgorithm){
         this.gFactory = gFactory;
         this.routingContext = routingContext;
+        this.routingAlgorithm = routingAlgorithm;
     }
 
     public RoutingContext getRoutingContext() {
@@ -305,8 +308,17 @@ public class RoutingEngine {
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
                 // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
-//                gGraphSearch = new AStar(multi, routingProfile);
-                gGraphSearch = new BidirectionalAStar(multi, routingProfile);
+                try {
+                    Class<?> clazz = Class.forName("mg.mgmap.generic.graph."+routingAlgorithm);
+                    Constructor<?> constructor = clazz.getConstructor(GGraphMulti.class, RoutingProfile.class);
+                    Object object = constructor.newInstance(multi, routingProfile);
+                    if (object instanceof GGraphSearch) {
+                        gGraphSearch = (GGraphSearch) object;
+                    }
+                } catch (Exception e) {
+                    mgLog.e(e);
+                    gGraphSearch = new BidirectionalAStar(multi, routingProfile); // fallback
+                }
                 for (PointModel pm : gGraphSearch.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes)){
                     mpm.addPoint( pm );
                 }
