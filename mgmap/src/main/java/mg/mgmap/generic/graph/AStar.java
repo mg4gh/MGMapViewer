@@ -65,7 +65,7 @@ public class AStar extends GGraphSearch{
         boolean lowMemory = false;
         while ((ref != null) && (ref.getNode() != target) && (ref.getHeuristicCost() <= costLimit) && (!lowMemory)){ // abort  if target reached or if there are no more nodes to settle or costLimit reached or lowMemory
             if (ref.getNode().getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
-                if (refreshRequired.get() > 0) break;
+                if (refreshRequired.get() != 0) break;
                 GNode node = ref.getNode();
                 lowMemory = graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
                 GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours

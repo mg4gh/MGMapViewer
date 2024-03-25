@@ -81,7 +81,7 @@ public class BidirectionalAStar extends GGraphSearch{
                 break;
             }
             if (ref.getNode().getNodeRef(ref.isReverse()) == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
-                if (refreshRequired.get() > 0) {
+                if (refreshRequired.get() != 0) {
                     mgLog.i("exit perform 3 refresh required");
                     break;
                 }

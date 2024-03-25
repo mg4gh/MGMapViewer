@@ -171,6 +171,10 @@ public class FSRouting extends FeatureService {
                         }
 
                     } else { //just to make sure, nothing is left
+                        if (refreshRequired.get() != 0){
+                            mgLog.d("reset refreshRequired from "+refreshRequired.get()+" to 0");
+                            refreshRequired.set(0);
+                        }
                         if (dndVisualisationLayer != null){
                             dndVisualisationLayer = null;
                             doRefresh();
@@ -351,10 +355,7 @@ public class FSRouting extends FeatureService {
                 prefRoutingProfileId.setValue(id);
             } else {
                 if (prefCalcRouteInProgress.getValue()){
-                    TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-                    if (mtl != null){
-                        mtl.setRoutingProfileId("invalid");
-                    }
+                    routingEngine.refreshRequired.set(-1100);
                 }
             }
             routingEngine.refreshRequired.incrementAndGet();
@@ -424,8 +425,7 @@ public class FSRouting extends FeatureService {
             if (prefCalcRouteInProgress.getValue()){
                 TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
                 if (mtl != null){
-                    mtl.setRoutingProfileId("invalid");
-                    routingEngine.refreshRequired.incrementAndGet();
+                    routingEngine.refreshRequired.set(-1000);
                     mgLog.w("abort routing due to onTrimMemory callback with TRIM_MEMORY_RUNNING_CRITICAL");
                 }
             }

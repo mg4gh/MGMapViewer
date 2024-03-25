@@ -176,12 +176,12 @@ public class RoutingEngine {
                     current.aborted = false;
                     current.newMPM = calcRouting(prev, current, current.routingHints, currentRelaxedNodes);
                 }
-                if (refreshRequired.get() > 0) {
+                if (refreshRequired.get() != 0) {
                     current.aborted = true;
                     break;
                 }
             }
-            if (refreshRequired.get() > 0) {
+            if (refreshRequired.get() != 0) {
                 routeModified = true;
                 break;
             }
@@ -266,11 +266,6 @@ public class RoutingEngine {
             for (PointModel unusedMtlp : rpmKeys){
                 routePointMap.remove(unusedMtlp);
             }
-
-            if ((refreshRequired.get()>0) && ("invalid".equals(mtl.getRoutingProfileId()))){ // if routing was just aborted, then it should not be triggered automatically again
-                refreshRequired.getAndDecrement();
-            }
-
         } else {
             mgLog.d("route unchanged");
         }
