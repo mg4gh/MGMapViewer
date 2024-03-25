@@ -253,7 +253,7 @@ public class RoutingTest {
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, "");
         routingEngine.setRoutingProfile(new TrekkingBike());
 
-        {   // einfache Strecke Nahe Spyrer Hof
+        {
             WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
             mtl.startTrack(1L);
             mtl.startSegment(2L);
