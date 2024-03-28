@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class DurationSplineFunctionFactory {
     static DurationSplineFunctionFactory durationSplineFunctionFactory = new DurationSplineFunctionFactory();
 
-    private class Id {
+    private static class Id {
         private final short[] ids;
         Id(short[] ids){
             this.ids = ids;
@@ -27,7 +27,7 @@ public class DurationSplineFunctionFactory {
             return Arrays.equals(ids, other.ids);
         }
     }
-    private HashMap<Id,CubicSpline> map = new HashMap<>();
+    private final HashMap<Id,CubicSpline> map = new HashMap<>();
 
     public static DurationSplineFunctionFactory getInst(){
         return durationSplineFunctionFactory;
@@ -49,19 +49,21 @@ public class DurationSplineFunctionFactory {
             }
             double ACw;
             double Cr;
+            double fd;
             double fdown;
             double fr;
             if (bicType == 1){
                 ACw = 0.4 + surfaceLevel * 0.05 ;
-                fdown = Math.exp(-(slevel-1)*Math.log(1.6));
+//                fd = Math.exp(-(slevel-2)*Math.log(Math.sqrt(2.0)))/1.6;
+                fd = 1.104 - slevel/4.53;
+
                 if (surfaceLevel <= 3){
-                    Cr = 0.005 + 0.002*surfaceLevel;
-                    fr = 1 - fdown/5;
+                    Cr = 0.005 + 0.004*surfaceLevel;
                 } else {
-                    Cr = 0.02 + 0.015*fdown  + 0.01*(surfaceLevel - 3);
-                    fr = 1.05 - fdown/2;
+                    Cr = 0.015 + 0.015*fd  + 0.01*(surfaceLevel - 4);
                 }
-                fdown =  fdown*(3.5+surfaceLevel*0.6);
+                fr = 1.1 - fd * (0.5+surfaceLevel/20.0);
+                fdown =  fd*(3.5+surfaceLevel*0.6);
             } else {
                 if (surfaceLevel <= 2){
                     ACw = 0.45 + 0.1 * surfaceLevel;
@@ -88,22 +90,16 @@ public class DurationSplineFunctionFactory {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            double[] t = new double[80];
-            double slope = -0.21;
-            for (int i = 0; i < t.length; i++) {
-                t[i] = cubicSpline.calc(slope);
-                slope = slope + 0.01;
-            }
         }
         return cubicSpline;
     }
 
     /**
-     * see https://www.michael-konczer.com/de/training/rechner/rennrad-leistung-berechnen
-     * @param slope
-     * @param watt
+     * see <a href="https://www.michael-konczer.com/de/training/rechner/rennrad-leistung-berechnen">...</a>
+     * @param slope slope of the trail
+     * @param watt power measured in watt
      * @param Cr rolling friction coefficient
-     * @param ACw
+     * @param ACw Surface times dimensionless air resistance coefficient
      * @param m system mass [driver + bike ]
      * @return velocity (v in [m/s]
      * watt = P air + P roll + P slope

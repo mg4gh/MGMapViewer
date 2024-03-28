@@ -3,14 +3,14 @@ package mg.mgmap.activity.mgmap.features.routing.profile;
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class TagEval {
-    private TagEval(){};
+    private TagEval(){}
 
-    protected static boolean getAccessible(WayAttributs wayTagEval) {
-        return wayTagEval.highway!= null && ! ("private".equals(wayTagEval.bicycle) || (("private".equals(wayTagEval.access) ||
+    protected static boolean getNoAccess(WayAttributs wayTagEval) {
+        return wayTagEval.highway == null || ("private".equals(wayTagEval.bicycle) || (("private".equals(wayTagEval.access) ||
                 "acc_no".equals(wayTagEval.access)) && !("bic_yes".equals(wayTagEval.bicycle) ||
                 "bic_designated".equals(wayTagEval.bicycle) || "bic_permissive".equals(wayTagEval.bicycle) ||
                 "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) ||
-                wayTagEval.mtbScaleUp != null || wayTagEval.mtbScale != null )) ||
+                wayTagEval.mtbScaleUp != null || wayTagEval.mtbScale != null)) ||
                 "motorway".equals(wayTagEval.highway) || "trunk".equals(wayTagEval.highway));
     }
 
