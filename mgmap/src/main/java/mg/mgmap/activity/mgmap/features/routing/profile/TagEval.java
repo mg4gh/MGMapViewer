@@ -106,7 +106,7 @@ public class TagEval {
             } else  distFactor = 1.15;
             surfaceCat = 1;
         } else if ("footway".equals(wayTagEval.highway) || "pedestrian".equals(wayTagEval.highway)) {
-            surfaceCat = 2;
+            surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )
                 distFactor = 1.0;
             else if ("bic_yes".equals(wayTagEval.bicycle))
@@ -117,9 +117,9 @@ public class TagEval {
                 distFactor = 3.0;
         } else if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
             distFactor = 1;
-            surfaceCat = 2;
+            surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
         } else if ("service".equals(wayTagEval.highway)) {
-            surfaceCat = 2;
+            surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
             if ("bic_destination".equals(wayTagEval.bicycle))
                 distFactor = 1.0;
             else if ( "no".equals(wayTagEval.access) || "bic_no".equals(wayTagEval.bicycle))
@@ -128,10 +128,10 @@ public class TagEval {
                 distFactor = 1.5;
         } else if ("construction".equals(wayTagEval.highway)){
             distFactor = 10;
-            surfaceCat = 3;
+            surfaceCat = 4;
         } else {
             distFactor = 1.3;
-            surfaceCat = 2;
+            surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
         }
 
         return new Factors(distFactor, surfaceCat);
