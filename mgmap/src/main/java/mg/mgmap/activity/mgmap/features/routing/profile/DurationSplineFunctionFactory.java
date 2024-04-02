@@ -87,9 +87,9 @@ public class DurationSplineFunctionFactory {
                 double fu = 9.0;
                 double fd = 10.5;
                 double off = 0.1;
-                double vbase = 5.35 - 0.1*surfaceLevel;
+                double vbase = 5.25 - 0.1*surfaceLevel;
                 double t_base = 3.6/vbase;
-                double t_m10Pcnt = t_base/1.35;
+                double t_m10Pcnt = t_base/1.3;
 
                 slopes = new double[]{-0.5, -0.3, -0.075, 0.0, 0.2, 0.5};
                 durations = new double[slopes.length];
