@@ -459,6 +459,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     GpxExporter.export(persistenceManager, trackLog);
                     application.getMetaDataUtil().createMetaData(trackLog);
                 }
+                reworkObserver.propertyChange(null);
                 prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync
             }
         };
