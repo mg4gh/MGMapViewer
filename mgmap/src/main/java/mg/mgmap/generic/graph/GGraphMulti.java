@@ -104,6 +104,8 @@ public class GGraphMulti extends GGraph {
                 gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileXn, tileYn, true);
                 connectGGraphTile(gGraphTileNeighbour);
                 bRes = true;
+            } else if (!gGraphTileNeighbour.used){
+                connectGGraphTile(gGraphTileNeighbour);
             }
             use(gGraphTileNeighbour);
         }
@@ -119,8 +121,18 @@ public class GGraphMulti extends GGraph {
     }
 
     private void connectTiles(GGraphTile gGraphTile1, GGraphTile gGraphTile2,boolean horizontal){ // horizontal true: gGraphTile1 is left, gGraphTile2 is right - false: gGraphTile1 is above, gGraphTile2 is below
-        if ((gGraphTile1 == null) || (gGraphTile2 == null)) return;
-
+        if ((gGraphTile1 == null) || (gGraphTile2 == null)) return; // cannot connect yet
+        if ((gGraphTile1.neighbourTiles[horizontal?GNode.BORDER_NODE_EAST:GNode.BORDER_NODE_SOUTH] == gGraphTile2) &&
+                (gGraphTile2.neighbourTiles[horizontal?GNode.BORDER_NODE_WEST:GNode.BORDER_NODE_NORTH] == gGraphTile1)){ // tiles already connected
+            return;
+        }
+        if ((gGraphTile1.neighbourTiles[horizontal?GNode.BORDER_NODE_EAST:GNode.BORDER_NODE_SOUTH] != null) ||
+                (gGraphTile2.neighbourTiles[horizontal?GNode.BORDER_NODE_WEST:GNode.BORDER_NODE_NORTH] != null)){ // inconsistency detected!!!!
+            mgLog.e("connectTiles failed"+gGraphTile1.getTileX()+","+gGraphTile1.getTileY()+" "+gGraphTile2.getTileX()+","+gGraphTile2.getTileY()+" "+horizontal);
+            mgLog.e("found="+gGraphTile1.neighbourTiles[horizontal?GNode.BORDER_NODE_EAST:GNode.BORDER_NODE_SOUTH]+" expected="+gGraphTile2);
+            mgLog.e("found="+gGraphTile2.neighbourTiles[horizontal?GNode.BORDER_NODE_WEST:GNode.BORDER_NODE_NORTH]+" expected="+gGraphTile1);
+            throw new IllegalArgumentException("inconsistent neighbour tiles - check logfile for more details.");
+        }
         double connectAt = (horizontal)?gGraphTile1.tbBox.maxLongitude:gGraphTile1.tbBox.minLatitude;
         if (horizontal? (connectAt!=gGraphTile2.tbBox.minLongitude):(connectAt!=gGraphTile2.tbBox.maxLatitude)){
             throw new IllegalArgumentException("cannot connectHorizontal Tiles with BB " + gGraphTile1.tbBox +" and "+gGraphTile2.tbBox);
