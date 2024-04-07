@@ -1,3 +1,9 @@
+0.9.8-26.0
+- bidirectional AStar
+- longer routing distances
+- more routing profiles
+- remaining duration in routing
+- ... much more
 - new Feature: qc button to reverse direction of MTL
 - remove FSRemainings, logically replaced by FSTrackDetails
 - replace menu animation timeout with menu animation duration setting
