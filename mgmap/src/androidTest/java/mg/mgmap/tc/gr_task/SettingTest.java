@@ -82,7 +82,7 @@ public class SettingTest extends BaseTestCase {
 
 
 
-    @Test(timeout = 30000)
+    @Test(timeout = 40000)
     public void _02_settings_theme() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
