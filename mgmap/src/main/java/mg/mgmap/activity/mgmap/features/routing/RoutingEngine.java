@@ -350,13 +350,21 @@ public class RoutingEngine {
             }
             gFactory.serviceCache();
             if (sourceApproachModel != null){
-                sourceApproachModel.getNode1().removeNeighbourNode(0);
-                sourceApproachModel.getNode2().removeNeighbourNode(0);
+                if (sourceApproachModel.getNode1() != null){
+                    sourceApproachModel.getNode1().removeNeighbourNode(0);
+                }
+                if (sourceApproachModel.getNode2() != null){
+                    sourceApproachModel.getNode2().removeNeighbourNode(0);
+                }
                 gStart.getNeighbour().setNextNeighbour(null);
             }
             if (targetApproachModel != null){
-                targetApproachModel.getNode1().removeNeighbourNode(0);
-                targetApproachModel.getNode2().removeNeighbourNode(0);
+                if (targetApproachModel.getNode1() != null){
+                    targetApproachModel.getNode1().removeNeighbourNode(0);
+                }
+                if (targetApproachModel.getNode2() != null){
+                    targetApproachModel.getNode2().removeNeighbourNode(0);
+                }
                 gEnd.getNeighbour().setNextNeighbour(null);
             }
         }
@@ -439,7 +447,7 @@ public class RoutingEngine {
                 GNeighbour neighbour = node.getNeighbour();
                 while ((neighbour = gGraphTile.getNextNeighbour(node, neighbour)) != null) {
                     GNode neighbourNode = neighbour.getNeighbourNode();
-                    if (PointModelUtil.compareTo(node, neighbourNode) < 0){ // neighbour relations exist in both direction - here we can reduce to one
+                    if (GNode.sameTile(node, neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
                         BBox bBoxPart = new BBox().extend(node).extend(neighbourNode);
                         boolean bIntersects = mtlpBBox.intersects(bBoxPart);
                         if (bIntersects){ // ok, is candidate for close

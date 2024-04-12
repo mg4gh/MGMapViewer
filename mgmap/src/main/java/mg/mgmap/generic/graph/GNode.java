@@ -152,4 +152,8 @@ public class GNode extends PointModelImpl {
     public GGraphTile getTile(GGraphTileFactory gFactory){
         return gFactory.getGGraphTile(tileIdx>>16, tileIdx&0xFFFF);
     }
+
+    public static boolean sameTile(GNode node1, GNode node2){
+        return node1.tileIdx == node2.tileIdx;
+    }
 }

@@ -140,7 +140,7 @@ public class FSGraphDetails extends FeatureService {
                 GNeighbour neighbour = node.getNeighbour();
                 while ((neighbour = gGraphTile.getNextNeighbour(node, neighbour)) != null) {
                     GNode neighbourNode = neighbour.getNeighbourNode();
-                    if (PointModelUtil.compareTo(node, neighbourNode) < 0){ // neighbour relations exist in both direction - here we can reduce to one
+                    if (GNode.sameTile(node,neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
                         BBox bBoxPart = new BBox().extend(node).extend(neighbourNode);
 
                         boolean bIntersects = bBoxTap.intersects(bBoxPart);
@@ -167,15 +167,17 @@ public class FSGraphDetails extends FeatureService {
 
             GNode lastNode = null;
             for (GNode node : nodes){
-                multiPointModel.addPoint(node);
-                if (lastNode != null){
-                    final GNode last = lastNode;
-                    double distance = PointModelUtil.distance(last,node);
-                    double verticalDistance = PointModelUtil.verticalDistance(last, node);
-                    mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost()));
+                if (GNode.sameTile(bestNode,node)){
+                    multiPointModel.addPoint(node);
+                    if (lastNode != null){
+                        final GNode last = lastNode;
+                        double distance = PointModelUtil.distance(last,node);
+                        double verticalDistance = PointModelUtil.verticalDistance(last, node);
+                        mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost()));
+                    }
+                    mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
+                    lastNode = node;
                 }
-                mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
-                lastNode = node;
             }
         }
         return (bestTile==null)?null:bestTile.getTileBBox();
