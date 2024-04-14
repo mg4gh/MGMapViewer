@@ -300,7 +300,7 @@ public class FSSearch extends FeatureService {
     public boolean isPosBasedSearch(){
         return prefPosBasedSearch.getValue();
     }
-    public boolean showSearchDeatils(){
+    public boolean showSearchDetails(){
         return prefSearchResultDetails.getValue();
     }
 

@@ -114,7 +114,7 @@ public class SearchView extends LinearLayout {
                     private boolean showLong=true;
                     @Override
                     public void onClick(View v) {
-                        doubleClickTimeout = fsSearch.showSearchDeatils()?250:10;
+                        doubleClickTimeout = fsSearch.showSearchDetails()?250:10;
                         super.onClick(v);
                     }
                     @Override
@@ -123,7 +123,7 @@ public class SearchView extends LinearLayout {
                     }
                     @Override
                     public void onDoubleClick(View view) {
-                        if (fsSearch.showSearchDeatils() && (sr.longResultText != null)){
+                        if (fsSearch.showSearchDetails() && (sr.longResultText != null)){
                             if (showLong){
                                 tv.setText(sr.longResultText);
                             } else {
