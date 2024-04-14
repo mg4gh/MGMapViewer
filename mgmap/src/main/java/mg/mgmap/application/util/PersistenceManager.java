@@ -470,16 +470,16 @@ public class PersistenceManager {
             if (group != null){
                 configDir = new File(configDir, group);
                 if (!configDir.exists()){
-                    mgLog.w("configDir not found: "+configDir.getAbsolutePath());
+                    mgLog.i("configDir not found: "+configDir.getAbsolutePath());
                 }
             }
-            File configFile = new File(configDir, name );
-            if (configFile.exists()){
-                FileInputStream fis = new FileInputStream(configFile);
-                props.load( fis );
-                fis.close();
-            } else {
-                mgLog.w("configFile not found: "+configFile.getAbsolutePath());
+            File[] configFiles = configDir.listFiles((dir, filename) -> filename.matches(name));
+            if (configFiles != null){
+                for (File configFile : configFiles){
+                    try (FileInputStream fis = new FileInputStream(configFile)){
+                        props.load( fis );
+                    }
+                }
             }
         } catch (Exception e) {
             mgLog.e(e);

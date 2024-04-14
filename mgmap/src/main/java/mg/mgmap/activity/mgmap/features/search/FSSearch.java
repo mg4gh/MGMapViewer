@@ -61,14 +61,20 @@ public class FSSearch extends FeatureService {
     private final Pref<Boolean> prefShowSearchResult = getPref(R.string.FSSearch_qc_showSearchResult, false);
     private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
     private final Pref<String> prefSearchPos = getPref(R.string.FSSearch_pref_SearchPos2, "");
-    private final Pref<Boolean> prefPosBasedSearch = getPref(R.string.FSSearch_pref_PosBasedSearch, true);
+    private final Pref<Boolean> prefPosBasedSearch = getPref(R.string.FSSearch_pref_PosBasedSearch, false);
     private final Pref<Boolean> prefSearchResultDetails = getPref(R.string.FSSearch_pref_SearchDetails_key, false);
     private final Pref<Boolean> prefReverseSearchOn = getPref(R.string.FSSearch_reverseSearchOn, false);
+    private final Pref<Boolean> prefLocationBasedSearchOn = getPref(R.string.FSSearch_locationBasedSearchOn, false);
 
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
         prefSearchOn.setValue(false);
         setSearchProvider();
+        //noinspection ConstantValue
+        if (BuildConfig.FLAVOR.equals("mg4gh")){
+            prefReverseSearchOn.setValue(true);
+            prefLocationBasedSearchOn.setValue(true);
+        }
 
         searchView = new SearchView(mmActivity.getApplicationContext(), this);
         searchView.init(mmActivity);
@@ -143,6 +149,7 @@ public class FSSearch extends FeatureService {
         } else if ("posBasedSearch".equals(info)){
             etv.setData(prefPosBasedSearch,R.drawable.search_pos2,R.drawable.search_pos1);
             etv.setPrAction(prefPosBasedSearch);
+            etv.setDisabledData(prefLocationBasedSearchOn, R.drawable.search_pos_dis);
             etv.setHelp(r(R.string.FSRecording_qcPosBasedSearch_help)).setHelp(r(R.string.FSRecording_qcPosBasedSearch_help1),r(R.string.FSRecording_qcPosBasedSearch_help2));
         }
         return etv;
@@ -200,8 +207,7 @@ public class FSSearch extends FeatureService {
 
         @Override
         public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
-            //noinspection ConstantConditions
-            if (BuildConfig.FLAVOR.equals("mg4gh") || prefReverseSearchOn.getValue()){
+            if (prefReverseSearchOn.getValue()){
                 PointModel pos = new PointModelImpl(tapLatLong);
                 mgLog.i("rev Geocode: pos="+pos);
                 long timestamp = System.currentTimeMillis();
@@ -230,6 +236,7 @@ public class FSSearch extends FeatureService {
     }
 
     private void doSearch(String text, int actionId){
+        if (text.length() < 3) return; // text too short
         long timestamp = System.currentTimeMillis();
         triggerTTHideKeyboard();
         mgLog.i("text="+text+" actionId="+actionId+" timestamp="+timestamp);
@@ -298,7 +305,7 @@ public class FSSearch extends FeatureService {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isPosBasedSearch(){
-        return prefPosBasedSearch.getValue();
+        return prefPosBasedSearch.getValue() && prefLocationBasedSearchOn.getValue();
     }
     public boolean showSearchDetails(){
         return prefSearchResultDetails.getValue();
@@ -319,7 +326,6 @@ public class FSSearch extends FeatureService {
         Pattern p1 = Pattern.compile("geo:"+d+","+d);
         Pattern p2 = Pattern.compile("geo:"+d+","+d+"\\?z=([12]?[0-9])");
         Pattern p3 = Pattern.compile("geo:"+d+","+d+"\\?q="+d+","+d+"(\\(([^\\)]+)\\))?");
-//        Pattern p3 = Pattern.compile("geo:0,0\\?q="+d+","+d+"\\(([^\\)]+)\\)");
         Pattern p4 = Pattern.compile("geo:0,0\\?q=(.*)");
 
         double lat = PointModel.NO_LAT_LONG;
@@ -364,7 +370,7 @@ public class FSSearch extends FeatureService {
             searchPos.setLabel(label);
             setSearchResult(searchPos);
         } else {
-            if (qString != null){
+            if ((qString != null) && (qString.length() >= 1)){
                 prefPosBasedSearch.setValue(false);
                 setSearchProvider();
                 searchView.searchText.setText(qString);

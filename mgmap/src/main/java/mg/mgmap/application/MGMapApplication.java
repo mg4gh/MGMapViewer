@@ -162,7 +162,6 @@ public class MGMapApplication extends Application {
         CC.init(this);
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
-        Setup.loadPropertiesToPreferences(getSharedPreferences(), persistenceManager.getConfigProperties(null, "preferences.properties"));
 
         hgtProvider = new HgtProvider(this, persistenceManager, getAssets()); // for hgt file handling
         elevationProvider = new ElevationProviderImpl(hgtProvider); // for height data handling

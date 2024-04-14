@@ -6,14 +6,14 @@
 
 
     <path
-        android:strokeColor="#FFFFFFFF"
+        android:strokeColor="#FFC0C0C0"
         android:strokeWidth="2"
         android:fillColor="#00000000"
         android:pathData="M6.5,9 a6,6,0 1 1 11.6,0 l-5.83,12 l-5.83,-12.2 "
         />
 
     <path
-        android:strokeColor="#FFFFFFFF"
+        android:strokeColor="#FFC0C0C0"
         android:strokeWidth="2"
         android:fillColor="#00000000"
         android:pathData="M12.4,5.5 m0,0 a2,2,0 1 0 0.001,0 "

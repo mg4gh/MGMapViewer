@@ -52,6 +52,7 @@
     <string name="MGMapApplication_pref_Developer">MGMapApplication.Developer</string>
     <string name="MGMapApplication_pref_MetaData_loading">MGMapApplication.MetaDataLoading</string>
     <string name="MGMapApplication_pref_Pwd">MGMapApplication.pwd</string>
+    <string name="MGMapActivity_trigger_recreate">MGMapActivity.triggerRecreate</string>
 
     <string name="my_rendertheme_menu_key">myrenderthememenu</string>
 

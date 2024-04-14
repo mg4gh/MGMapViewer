@@ -22,4 +22,5 @@
     <string name="FSSearch_pref_SearchDetails_desc">Visualize search details on double click</string>
 
     <string name="FSSearch_reverseSearchOn">FSSearch.reverseSearchOn</string>
+    <string name="FSSearch_locationBasedSearchOn">FSSearch.locationBasedSearchOn</string>
 </resources>
