@@ -6,6 +6,9 @@ The feature "Geocode" provides the ability to search
 - a location (lat,lon) by name (with and without a given base location) and
 - an entity (address/street/amenity/POI) by a given location.
 
+Since google claims the search location would be the precise location (which is obviously only the case, when you do a geocode request on your current position), this transfer is by default disabled.
+If you want to use it, simply install following [geocode.zip](mgmap-install://mg4gh.github.io/MGMapViewer/Features/FurtherFeatures/Geogode/geocode.zip) configuration.
+
 So obviously there is the need of a kind of database to support this feature.
 Depending on whether the geocoding search is limited to some special Points (POIs) or whether 
 this search shell be able to find each address, the amount of data and the required processing power may 
@@ -107,7 +110,7 @@ switch on again the "show search result mode" (<img src="../../../icons/group_se
 In this case you'll get again the orange circle and the map will be aligned to this position.
 
 
-#### Forward search - location based and none location based
+#### <a name="fsls">Forward</a> search - location based and none location based
 
 You may have noticed the <img src="../../../icons/search_pos2.svg" width="24"/> icon in front of the search text. As the state visualisation chapter explains, 
 this reflects that the location based search is switched on.
