@@ -7,7 +7,7 @@ The feature "Geocode" provides the ability to search
 - an entity (address/street/amenity/POI) by a given location.
 
 Since google claims the search location would be the precise location (which is obviously only the case, when you do a geocode request on your current position), this transfer is by default disabled.
-If you want to use it, simply install following [geocode.zip](mgmap-install://mg4gh.github.io/MGMapViewer/Features/FurtherFeatures/Geogode/geocode.zip) configuration.
+If you want to use it, simply install following [geocode.zip](mgmap-install://mg4gh.github.io/MGMapViewer/Features/FurtherFeatures/Geocode/geocode.zip) configuration.
 
 So obviously there is the need of a kind of database to support this feature.
 Depending on whether the geocoding search is limited to some special Points (POIs) or whether 
