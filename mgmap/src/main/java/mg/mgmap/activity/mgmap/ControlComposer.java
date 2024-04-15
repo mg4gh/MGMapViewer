@@ -160,7 +160,7 @@ public class ControlComposer {
         createQC(activity, FSSearch.class,qcss[2],"posBasedSearch",gos.get(0)).setId(R.id.mi_search_posBased);
         createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0)).setId(R.id.mi_search_empty2);
         createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0)).setId(R.id.mi_search_empty3);
-        createQC(activity, FSControl.class,qcss[2],"empty",gos.get(0)).setId(R.id.mi_search_empty4);
+        createQC(activity, FSSearch.class,qcss[2],"selpro",gos.get(0)).setId(R.id.mi_search_empty4);
 
         createQC(activity, FSControl.class,qcss[3],"help").setId(R.id.mi_marker_help);
         createQC(activity, FSRouting.class,qcss[3],"routingSave",gos.get(0)).setId(R.id.mi_routing_save);

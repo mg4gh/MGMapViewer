@@ -14,26 +14,33 @@
  */
 package mg.mgmap.activity.mgmap.features.search;
 
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mg.mgmap.BuildConfig;
+import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.util.MapViewUtility;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
+import mg.mgmap.activity.settings.SearchProviderListPreference;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -65,6 +72,8 @@ public class FSSearch extends FeatureService {
     private final Pref<Boolean> prefSearchResultDetails = getPref(R.string.FSSearch_pref_SearchDetails_key, false);
     private final Pref<Boolean> prefReverseSearchOn = getPref(R.string.FSSearch_reverseSearchOn, false);
     private final Pref<Boolean> prefLocationBasedSearchOn = getPref(R.string.FSSearch_locationBasedSearchOn, false);
+    private final Pref<Boolean> prefQCSelectSearchProvider = new Pref<>(false);
+
 
     public FSSearch(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -132,6 +141,7 @@ public class FSSearch extends FeatureService {
         prefSearchOn.addObserver(refreshObserver);
         prefSearchPos.onChange();
         prefShowSearchResult.onChange();
+        prefQCSelectSearchProvider.addObserver(v->selectSearchProvider());
     }
 
     @Override
@@ -154,6 +164,10 @@ public class FSSearch extends FeatureService {
             etv.setPrAction(prefPosBasedSearch);
             etv.setDisabledData(prefLocationBasedSearchOn, R.drawable.search_pos_dis);
             etv.setHelp(r(R.string.FSRecording_qcPosBasedSearch_help)).setHelp(r(R.string.FSRecording_qcPosBasedSearch_help1),r(R.string.FSRecording_qcPosBasedSearch_help2));
+        } else if ("selpro".equals(info)){
+            etv.setData(R.drawable.settings);
+            etv.setHelp("Select search provider");
+            etv.setPrAction(prefQCSelectSearchProvider);
         }
         return etv;
     }
@@ -386,4 +400,45 @@ public class FSSearch extends FeatureService {
         }
     }
 
+    private void selectSearchProvider(){
+        Context context = getActivity();
+        DialogView dialogView = getActivity().findViewById(R.id.dialog_parent);
+
+        RadioGroup radioGroup = new RadioGroup(context);
+        String[] searchProviders = SearchProviderListPreference.getSearchProviders(getApplication());
+        ArrayList<Integer> checkedList = new ArrayList<>();
+        for (String searchProvider : searchProviders) {
+            RadioButton rb1 = new RadioButton(context);
+            if ((searchProvider != null) && (searchProvider.length() > 0)) {
+                rb1.setText(searchProvider);
+                rb1.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+                rb1.setId(searchProvider.hashCode());
+                rb1.setPadding(ControlView.dp(10), ControlView.dp(10), ControlView.dp(10), ControlView.dp(10));
+                radioGroup.addView(rb1);
+            }
+        }
+        checkedList.add(0, prefSearchProvider.getValue().hashCode());
+        radioGroup.check(checkedList.get(0));
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> checkedList.add(0, checkedId));
+
+        dialogView.lock(() -> dialogView
+                .setTitle("Select Search Provider")
+                .setContentView(radioGroup)
+                .setPositive("OK", evt -> {
+                    for (String searchProvider : searchProviders) {
+                        if (searchProvider.hashCode() == checkedList.get(0)){
+                            prefSearchProvider.setValue(searchProvider);
+                            setSearchProvider();
+                            if (prefSearchOn.getValue()){
+                                doSearch(searchView.searchText.getText().toString().trim(), EditorInfo.IME_ACTION_SEARCH);
+                            }
+
+                            break;
+                        }
+                    }
+                })
+                .setNegative("Cancel", null)
+                .show());
+
+    }
 }

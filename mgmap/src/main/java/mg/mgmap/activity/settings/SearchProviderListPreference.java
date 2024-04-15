@@ -33,12 +33,7 @@ public class SearchProviderListPreference extends ListPreference {
         this.setSummaryProvider(SimpleSummaryProvider.getInstance());
 
         if (context.getApplicationContext() instanceof MGMapApplication) {
-            MGMapApplication application = (MGMapApplication) context.getApplicationContext();
-            String[] searchCfgs = application.getPersistenceManager().getSearchConfigNames();
-            String[] searchProviders = new String[searchCfgs.length];
-            for (int i=0; i<searchCfgs.length; i++){
-                searchProviders[i] = searchCfgs[i].replaceAll(".cfg$", "");
-            }
+            String[] searchProviders = getSearchProviders((MGMapApplication) context.getApplicationContext());
             setEntries(searchProviders);
             setEntryValues(searchProviders);
 
@@ -53,5 +48,14 @@ public class SearchProviderListPreference extends ListPreference {
     protected void onClick() {
         mgLog.i("key="+getKey()+" value="+getValue());
         super.onClick();
+    }
+
+    public static String[] getSearchProviders(MGMapApplication application){
+        String[] searchCfgs = application.getPersistenceManager().getSearchConfigNames();
+        String[] searchProviders = new String[searchCfgs.length];
+        for (int i=0; i<searchCfgs.length; i++){
+            searchProviders[i] = searchCfgs[i].replaceAll(".cfg$", "");
+        }
+        return searchProviders;
     }
 }
