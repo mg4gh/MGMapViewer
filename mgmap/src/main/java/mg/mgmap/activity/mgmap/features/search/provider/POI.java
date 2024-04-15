@@ -38,6 +38,7 @@ import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 
+/** @noinspection unused*/
 public class POI extends SearchProvider {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -101,10 +102,35 @@ public class POI extends SearchProvider {
                 HashMap<String, String> subMap = new HashMap<>();
 
                 db = SQLiteDatabase.openDatabase(poiFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+                String version;
+                {
+                    Cursor vcursor = db.rawQuery("select value from metadata where (metadata.name  == \"version\");", null);
+                    mgLog.d("vcursor "+vcursor.getCount());
+                    vcursor.moveToNext();
+                    version = vcursor.getString(0);
+                    mgLog.d("version="+version);
+                }
 
-                String select = "SELECT poi_data.id,poi_data.data,poi_index.id,poi_index.minLat,poi_index.maxLat,poi_index.minLon,poi_index.maxLon FROM poi_data INNER JOIN poi_index ON poi_data.id=poi_index.id  ";
-                String posMatch = String.format(Locale.ENGLISH, " ( (minLat>%.6f) AND (minLon>%.6f) AND (maxLat<%.6f) AND (maxLon<%.6f) )",
-                        bBox.minLatitude,bBox.minLongitude,bBox.maxLatitude,bBox.maxLongitude);
+
+                String select, posMatch;
+                int latIdx, lonIdx;
+                if ("2".equals(version)){
+                    select = "SELECT poi_data.id,poi_data.data,poi_index.id,poi_index.minLat,poi_index.maxLat,poi_index.minLon,poi_index.maxLon FROM poi_data INNER JOIN poi_index ON poi_data.id=poi_index.id  ";
+                    posMatch = String.format(Locale.ENGLISH, " ( (minLat>%.6f) AND (minLon>%.6f) AND (maxLat<%.6f) AND (maxLon<%.6f) )",
+                            bBox.minLatitude,bBox.minLongitude,bBox.maxLatitude,bBox.maxLongitude);
+                    latIdx = 3;
+                    lonIdx = 5;
+                } else if ("3".equals(version)){
+                    select = "SELECT poi_data.id,poi_data.data,poi_index.id,poi_index.lat,poi_index.lon FROM poi_data INNER JOIN poi_index ON poi_data.id=poi_index.id  ";
+                    posMatch = String.format(Locale.ENGLISH, " ( (lat>%.6f) AND (lon>%.6f) AND (lat<%.6f) AND (lon<%.6f) )",
+                            bBox.minLatitude,bBox.minLongitude,bBox.maxLatitude,bBox.maxLongitude);
+                    latIdx = 3;
+                    lonIdx = 4;
+                } else {
+                    mgLog.e("unknown database version="+version);
+                    return;
+                }
+
                 String[] textPart = request.text.split(" ");
                 StringBuilder textMatch = new StringBuilder(" AND ");
                 for (String part : textPart){
@@ -180,8 +206,8 @@ public class POI extends SearchProvider {
 
 
 
-                    double lat = cursor.getDouble(3);
-                    double lon = cursor.getDouble(5);
+                    double lat = cursor.getDouble(latIdx);
+                    double lon = cursor.getDouble(lonIdx);
                     PointModel pos = new PointModelImpl(lat,lon);
                     mgLog.i(id+" "+pos+" "+res);
 
