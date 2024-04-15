@@ -27,12 +27,12 @@ You can configure three different routing algorithms:
 - [BidirectionalAStar](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainTrackFeatures/Routing/routing_bidirectionalastar.zip) (AStar with search in both directions, delivers optimal result)
 - [BidirectionalAStarFNO](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainTrackFeatures/Routing/routing_bidirectionalastarfno.zip) (AStar with search in both directions, faster, but may deliver none optimal result)
 
+For BidirectionalAStar it looks like this:
+```
+#FSRouting.RoutingAlgorithm=AStar
+FSRouting.RoutingAlgorithm=BidirectionalAStar
+#FSRouting.RoutingAlgorithm=BidirectionalAStarFNO
+```
 
-```
-FSSearch.reverseSearchOn=Boolean:true
-FSSearch.locationBasedSearchOn=Boolean:true
-```
-From the device you can use this link create this configuration: 
-[geocode.zip](mgmap-install://mg4gh.github.io/MGMapViewer/Features/FurtherFeatures/Geocode/geocode.zip)
 
 <small><small>[Back to Index](../../../index.md)</small></small>
