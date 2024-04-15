@@ -61,7 +61,7 @@ public class FSControl extends FeatureService {
     private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
     private final Pref<Boolean> prefMenuOneLine;
     private final Pref<String> prefMenuAnimationTimeout;
-    private final int totalWidth;
+    private int totalWidth;
     private final Drawable qcBackground;
     private final Drawable qcLightBackground;
 
@@ -125,7 +125,6 @@ public class FSControl extends FeatureService {
     public FSControl(MGMapActivity activity){
         super(activity);
 
-        totalWidth = getActivity().getResources().getDisplayMetrics().widthPixels;
         qcBackground = getDrawable(R.drawable.shape);
         qcLightBackground = getDrawable(R.drawable.shape_mu);
 
@@ -328,6 +327,7 @@ public class FSControl extends FeatureService {
     }
 
     void setQCVisibility(){
+        totalWidth = getActivity().getResources().getDisplayMetrics().widthPixels;
         for (int idx=0; idx<qcss.length; idx++){
             ViewGroup qcs = qcss[idx];
             if (prefQcs.getValue() == idx){ // should be visible
