@@ -62,7 +62,7 @@ There [application design document](./more/add.pdf) provides an extensive descri
 - [search details](./Features/DeveloperFeatures/SearchDetails/searchdetails.md): provide search details
 - [power saving alarm](./Features/DeveloperFeatures/PowerSavingAlarm/powersaving.md): trigger an acustic alarm in case of a potential power saving problem
 - [developer documentation](./Features/DeveloperFeatures/DeveloperDocumentation/developer.md) provides more information for developers
-- [preferences](./Features/DeveloperFeatures/preferences/preferences.md) manual setting of shared preferences
+- [preferences](./Features/DeveloperFeatures/Preferences/preferences.md) manual setting of shared preferences
 
 # Download latest apk
 Here you can [download](./download.md) latest apk.
