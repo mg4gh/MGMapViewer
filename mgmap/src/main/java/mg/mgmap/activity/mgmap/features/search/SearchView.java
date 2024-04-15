@@ -16,11 +16,12 @@ package mg.mgmap.activity.mgmap.features.search;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -47,6 +48,8 @@ public class SearchView extends LinearLayout {
     }
 
     EditText searchText = null;
+    ImageView posBasedSearchIcon = null;
+    ImageView keyboardIconView = null;
     ArrayList<TextView> searchResults = new ArrayList<>();
     private static final int NUM_SEARCH_RESULTS = 5;
 
@@ -57,16 +60,41 @@ public class SearchView extends LinearLayout {
         setOrientation(LinearLayout.VERTICAL);
         setVisibility(INVISIBLE);
 
+        LinearLayout searchTextLine = new LinearLayout(context);
+        searchTextLine.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        searchTextLine.setOrientation(LinearLayout.HORIZONTAL);
+        this.addView(searchTextLine);
 
-        searchText = new EditText(context);
-        searchText.setId(R.id.search_edit_text);
-        searchText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        searchText.setHint("Search Text");
-        searchText.setHintTextColor(CC.getColor(R.color.CC_GRAY100_A150));
-        searchText.setSingleLine(true);
-        searchText.setSelectAllOnFocus(true);
-        this.addView(searchText);
+        {
+            posBasedSearchIcon = new ImageView(context);
+            posBasedSearchIcon.setImageResource(R.drawable.search_pos_dis);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ControlView.dp(40),ControlView.dp(32));
+            params.gravity = Gravity.CENTER_VERTICAL | Gravity.START;
+            posBasedSearchIcon.setLayoutParams(params);
+            posBasedSearchIcon.setOnClickListener(v -> fsSearch.prefPosBasedSearch.toggle());
+            searchTextLine.addView(posBasedSearchIcon);
+        }
+        {
+            searchText = new EditText(context);
+            searchText.setId(R.id.search_edit_text);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.weight = 10;
+            searchText.setLayoutParams(params);
+            searchText.setHint("Search Text");
+            searchText.setHintTextColor(CC.getColor(R.color.CC_GRAY100_A150));
+            searchText.setSingleLine(true);
+            searchText.setSelectAllOnFocus(true);
+            searchTextLine.addView(searchText);
+        }
+        {
+            keyboardIconView = new ImageView(context);
+            keyboardIconView.setImageResource(R.drawable.keyboard1);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ControlView.dp(40),ControlView.dp(32));
+            params.gravity = Gravity.CENTER_VERTICAL;
+            keyboardIconView.setLayoutParams(params);
+            searchTextLine.addView(keyboardIconView);
+        }
 
         for (int i=0; i<NUM_SEARCH_RESULTS; i++){
             TextView textView = new TextView(context);
@@ -82,12 +110,8 @@ public class SearchView extends LinearLayout {
         resetSearchResults();
     }
 
-    void setPosBasedSearchIcon(boolean posBasedSearch){
-        Drawable drawable = fsSearch.getDrawable( posBasedSearch?R.drawable.search_pos2:R.drawable.search_pos1 );
-        if (drawable != null){
-            drawable.setBounds(0,0, ControlView.dp(24),ControlView.dp(24));
-            searchText.setCompoundDrawables(drawable,null,null,null);
-        }
+    void setPosBasedSearchIcon(boolean posBasedSearch, boolean locationBasedSearchOn){
+        posBasedSearchIcon.setImageResource(locationBasedSearchOn?(posBasedSearch?R.drawable.search_pos2:R.drawable.search_pos1):R.drawable.search_pos_dis);
     }
 
     public SearchView(Context context, AttributeSet attributeSet) {

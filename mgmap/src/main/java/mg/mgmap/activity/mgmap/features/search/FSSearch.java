@@ -61,7 +61,7 @@ public class FSSearch extends FeatureService {
     private final Pref<Boolean> prefShowSearchResult = getPref(R.string.FSSearch_qc_showSearchResult, false);
     private final Pref<Boolean> prefShowSearchResultEnabled = new Pref<>(false);
     private final Pref<String> prefSearchPos = getPref(R.string.FSSearch_pref_SearchPos2, "");
-    private final Pref<Boolean> prefPosBasedSearch = getPref(R.string.FSSearch_pref_PosBasedSearch, false);
+    final Pref<Boolean> prefPosBasedSearch = getPref(R.string.FSSearch_pref_PosBasedSearch, false);
     private final Pref<Boolean> prefSearchResultDetails = getPref(R.string.FSSearch_pref_SearchDetails_key, false);
     private final Pref<Boolean> prefReverseSearchOn = getPref(R.string.FSSearch_reverseSearchOn, false);
     private final Pref<Boolean> prefLocationBasedSearchOn = getPref(R.string.FSSearch_locationBasedSearchOn, false);
@@ -78,7 +78,7 @@ public class FSSearch extends FeatureService {
 
         searchView = new SearchView(mmActivity.getApplicationContext(), this);
         searchView.init(mmActivity);
-        searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue());
+        searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue(), prefLocationBasedSearchOn.getValue());
         RelativeLayout mainView = mmActivity.findViewById(R.id.mainView);
         mainView.addView(searchView);
         getControlView().variableVerticalOffsetViews.add(searchView);
@@ -102,10 +102,13 @@ public class FSSearch extends FeatureService {
                 doSearch(searchText.getText().toString().trim(), -1);
             }
         });
-        searchText.setOnClickListener(v -> triggerTTHideKeyboard());
+        searchText.setOnClickListener(v -> {
+            showKeyboard();
+            triggerTTHideKeyboard();
+        });
 
         prefPosBasedSearch.addObserver(e -> {
-            searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue());
+            searchView.setPosBasedSearchIcon(prefPosBasedSearch.getValue(), prefLocationBasedSearchOn.getValue());
             if (prefSearchOn.getValue()){
                 doSearch(searchText.getText().toString().trim(), EditorInfo.IME_ACTION_SEARCH);
             }
@@ -266,12 +269,16 @@ public class FSSearch extends FeatureService {
         }
     }
 
-    private void hideKeyboard(){
+    void hideKeyboard(){
         KeyboardUtil.hideKeyboard(searchView.searchText);
+        searchView.keyboardIconView.setImageResource(R.drawable.keyboard1);
+        searchView.keyboardIconView.setOnClickListener(v->showKeyboard());
     }
 
-    private void showKeyboard(){
+    void showKeyboard(){
         KeyboardUtil.showKeyboard(searchView.searchText);
+        searchView.keyboardIconView.setImageResource(R.drawable.keyboard2);
+        searchView.keyboardIconView.setOnClickListener(v->hideKeyboard());
     }
 
     public void setSearchResult(PointModel pmSearchResult) {
