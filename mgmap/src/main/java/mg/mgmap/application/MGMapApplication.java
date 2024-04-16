@@ -304,7 +304,7 @@ public class MGMapApplication extends Application {
                         mgLog.i("Log supervision Timeout exceeded by factor 1.5; lastCheck="+lastCheck+" now="+now);
                         if (escalationCnt[2] != 0){ // there is a new pressure changed event
                             float lastHeight = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  escalationCnt[1]/1000f);
-                            float currentHeight = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  escalationCnt[1]/1000f);
+                            float currentHeight = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  escalationCnt[3]/1000f);
                             if (Math.abs(lastHeight-currentHeight) > 5){ // there is some height movement as indicator that position is changing
                                 escalationCnt[0]++;
                                 mgLog.i("escalationCnt="+ Arrays.toString(escalationCnt));
