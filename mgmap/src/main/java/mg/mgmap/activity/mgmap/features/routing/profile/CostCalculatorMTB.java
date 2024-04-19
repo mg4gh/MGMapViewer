@@ -33,8 +33,8 @@ public class CostCalculatorMTB implements CostCalculator {
         short surfaceCat = TagEval.getSurfaceCat(wayTagEval);
 //        surfaceCat = ( surfaceCat == 0) ? 4: surfaceCat;
         if (TagEval.getNoAccess(wayTagEval)) {
-            mfud = 4;
-            mfdd = 4;
+            mfud = 10;
+            mfdd = 10;
             surfaceCat = 4;
         } else {
             if (wayTagEval.mtbScaleUp != null) {
