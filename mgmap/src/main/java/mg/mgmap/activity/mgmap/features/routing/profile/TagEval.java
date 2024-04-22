@@ -1,5 +1,7 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
+import android.util.Log;
+
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class TagEval {
@@ -46,7 +48,7 @@ public class TagEval {
             }
         }
         short type = 0;
-        if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
+        if ("track".equals(wayTagEval.highway) ) {
             if (wayTagEval.trackType != null) {
                 switch (wayTagEval.trackType) {
                     case "grade1":
@@ -64,7 +66,11 @@ public class TagEval {
                     default:
                         type = 5;
                 }
-            } else if ("unclassified".equals(wayTagEval.highway)) type = 1;
+            }
+        } else if ("unclassified".equals(wayTagEval.highway))
+            type = 1;
+        if ( "unclassified".equals(wayTagEval.highway) && wayTagEval.trackType != null){
+            Log.e("TagEval","tracktype && unclassified");
         }
         return (type > 0) ? type : surfaceCat;
     }

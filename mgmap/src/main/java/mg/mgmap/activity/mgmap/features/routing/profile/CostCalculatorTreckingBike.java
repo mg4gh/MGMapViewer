@@ -29,6 +29,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
              surfaceCat = 2;
         } else {
             if ("path".equals(wayTagEval.highway)) {
+                surfaceCat = (surfaceCat>0) ? surfaceCat :4;
                 if (surfaceCat <= 1  || (surfaceCat == 2 && ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)))) {
                     distFactor = 1.1;
                     deltaSlope = 0;
