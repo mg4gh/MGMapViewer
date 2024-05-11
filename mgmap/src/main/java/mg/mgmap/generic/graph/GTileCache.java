@@ -19,18 +19,24 @@ public class GTileCache {
     TreeMap<Integer, GGraphTile> tileMap = new TreeMap<>();
     TreeMap<Long, Integer> accessMap = new TreeMap<>();
 
-    synchronized void put(int tileIdx, GGraphTile tile){
+    synchronized void put (int tileX, int tileY, GGraphTile tile){
+        int tileIdx = GGraphTileFactory.getKey(tileX,tileY);
         GGraphTile cacheTile = tileMap.put(tileIdx, tile);
         if (cacheTile != null){
             accessMap.remove(cacheTile.accessTime);
         }
+        GTileConnector.connect(get( tileX-1,tileY), tile, true);
+        GTileConnector.connect(tile, get( tileX+1,tileY), true);
+        GTileConnector.connect(get( tileX,tileY-1), tile, false);
+        GTileConnector.connect(tile, get( tileX,tileY+1), false);
         long now = System.nanoTime();
         tile.accessTime = now;
         accessMap.put(now, tileIdx);
         service();
     }
 
-    synchronized GGraphTile get(int tileIdx){
+    synchronized GGraphTile get(int tileX, int tileY){
+        int tileIdx = GGraphTileFactory.getKey(tileX,tileY);
         GGraphTile cacheTile = tileMap.get(tileIdx);
         if (cacheTile != null){
             accessMap.remove(cacheTile.accessTime);
@@ -66,10 +72,10 @@ public class GTileCache {
                 } else {
                     accessMap.remove(firstAccessEntry.getKey());
                     tileMap.remove(firstAccessEntry.getValue());
-                    cleanupNeighbourTile(oldestTile,GNode.BORDER_NODE_WEST);
-                    cleanupNeighbourTile(oldestTile,GNode.BORDER_NODE_NORTH);
-                    cleanupNeighbourTile(oldestTile,GNode.BORDER_NODE_EAST);
-                    cleanupNeighbourTile(oldestTile,GNode.BORDER_NODE_SOUTH);
+                    GTileConnector.disconnect(oldestTile,GNode.BORDER_NODE_WEST);
+                    GTileConnector.disconnect(oldestTile,GNode.BORDER_NODE_NORTH);
+                    GTileConnector.disconnect(oldestTile,GNode.BORDER_NODE_EAST);
+                    GTileConnector.disconnect(oldestTile,GNode.BORDER_NODE_SOUTH);
                 }
             } else {
                 mgLog.e("tileMap.size()="+tileMap.size()+" accessMap.size()="+accessMap.size());
@@ -78,13 +84,6 @@ public class GTileCache {
         }
         if (accessMap.size() != initialSize){
             mgLog.d("cleanup initialSize="+initialSize + " currentSize="+tileMap.size());
-        }
-    }
-
-    private void cleanupNeighbourTile(GGraphTile gGraphTile, byte border){
-        GGraphTile neighbourTile = gGraphTile.neighbourTiles[border];
-        if (neighbourTile != null){
-            neighbourTile.dropNeighboursToTile(gGraphTile.tileIdx, border);
         }
     }
 

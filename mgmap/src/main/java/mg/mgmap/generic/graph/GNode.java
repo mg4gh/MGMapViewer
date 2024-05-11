@@ -124,6 +124,15 @@ public class GNode extends PointModelImpl {
         nodeReverseRef = null;
     }
 
+    public void bidirectionalConnect(GNode neighbourNode){
+        GNeighbour neighbour = new GNeighbour(neighbourNode,null);
+        GNeighbour reverseNeighbour = new GNeighbour(this,null);
+        neighbour.setReverse(reverseNeighbour);
+        reverseNeighbour.setReverse(neighbour);
+        this.addNeighbour(neighbour);
+        neighbourNode.addNeighbour(reverseNeighbour);
+    }
+
     public void removeNeighbourNode(GNode neighbourNode){
         GNeighbour nextNeighbour = this.neighbour;
         while (nextNeighbour.getNextNeighbour() != null) {

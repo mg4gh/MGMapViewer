@@ -138,10 +138,10 @@ public class GGraphTileFactory {
         return getGGraphTile(tileX, tileY, true);
     }
     public GGraphTile getGGraphTile(int tileX, int tileY, boolean load){
-        GGraphTile gGraphTile = gTileCache.get(getKey(tileX, tileY));
+        GGraphTile gGraphTile = gTileCache.get(tileX, tileY);
         if (load && (gGraphTile == null)){
             gGraphTile = loadGGraphTile(tileX, tileY);
-            gTileCache.put(GGraphTileFactory.getKey(tileX, tileY), gGraphTile);
+            gTileCache.put(tileX, tileY, gGraphTile);
         }
         return gGraphTile;
     }

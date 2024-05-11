@@ -159,24 +159,9 @@ public class GGraphTile extends GGraph {
         }
     }
 
-    /**
-     * @param tileIdx Tile to be dropped from cache - so drop all references to this tileIdx
-     * @param border tileIdx border that point to this gGraphTile
-     */
-    void dropNeighboursToTile(int tileIdx, byte border){
-        byte ownBorder = GNode.oppositeBorder(border);
-        for (GNode node : getNodes()){
-            if ((node.borderNode & ownBorder) != 0){
-                node.removeNeighbourNode(tileIdx);
-            }
-        }
-        assert (neighbourTiles[ownBorder].tileIdx == tileIdx):"neighbourTiles[ownBorder].tileIdx"+neighbourTiles[ownBorder].tileIdx+" tileIdx="+tileIdx;
-        neighbourTiles[ownBorder] = null;
-    }
-
     @NonNull
     @Override
     public String toString() {
-        return "GGraphTile-"+tbBox.toString();
+        return "GGraphTile-("+getTileX()+","+getTileY()+")";
     }
 }
