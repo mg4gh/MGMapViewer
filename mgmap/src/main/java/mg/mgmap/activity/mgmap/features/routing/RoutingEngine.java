@@ -300,10 +300,10 @@ public class RoutingEngine {
 
                 sourceApproachModel = validateApproachModel(source.selectedApproach);
                 targetApproachModel = validateApproachModel(target.selectedApproach);
-                multi.connect(gStart,sourceApproachModel.getNode1());
-                multi.connect(gStart,sourceApproachModel.getNode2());
-                multi.connect(gEnd,targetApproachModel.getNode1());
-                multi.connect(gEnd,targetApproachModel.getNode2());
+                gStart.bidirectionalConnect(sourceApproachModel.getNode1());
+                gStart.bidirectionalConnect(sourceApproachModel.getNode2());
+                gEnd.bidirectionalConnect(targetApproachModel.getNode1());
+                gEnd.bidirectionalConnect(targetApproachModel.getNode2());
 
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
