@@ -63,12 +63,11 @@ public class RouteOptimizer2 {
                 MultiPointModelImpl route = routingEngine.calcRouting(rpmSource, rpmTarget);
                 if (!route.isRoute()) continue;
 
-                assert (rpmSource.getApproachNode() == route.get(0));
-                assert (rpmTarget.getApproachNode() == route.get(route.size()-1));
+                assert (rpmSource.getApproachNode().getLaLo() == route.get(0).getLaLo());
+                assert (rpmTarget.getApproachNode().getLaLo() == route.get(route.size()-1).getLaLo());
 
                 boolean fits = true;
                 for (int idx=current+1; idx<currentEnd; idx++){
-//                    double maxDistance = PointModelUtil.getCloseThreshold()*1.2;
                     double maxDistance = routingEngine.getRoutingContext().approachLimit*1.2;
                     TrackLogRefApproach bestMatch = new TrackLogRefApproach(null, -1, maxDistance );
                     PointModelUtil.getBestDistance(route,segment.get(idx),bestMatch);
