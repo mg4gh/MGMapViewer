@@ -32,7 +32,7 @@ public class GTileCache {
         long now = System.nanoTime();
         tile.accessTime = now;
         accessMap.put(now, tileIdx);
-        service();
+        service2();
     }
 
     synchronized GGraphTile get(int tileX, int tileY){
@@ -42,7 +42,8 @@ public class GTileCache {
             accessMap.remove(cacheTile.accessTime);
             long now = System.nanoTime();
             cacheTile.accessTime = now;
-            accessMap.put(now, tileIdx);
+            if (!cacheTile.used)
+                accessMap.put(now, tileIdx);
         }
         return cacheTile;
     }
@@ -60,30 +61,38 @@ public class GTileCache {
         return tileMap.size();
     }
 
-    void service(){
+    void service(){ // full service => rebuild accessMap based on tileMap
+        accessMap.clear();
+        for (GGraphTile tile : tileMap.values()){
+            accessMap.put(tile.accessTime, tile.tileIdx);
+        }
+        service2();
+    }
+
+    private void service2(){
         int initialSize = tileMap.size();
         while (tileMap.size() > limit){
-            Map.Entry<Long, Integer> firstAccessEntry = accessMap.firstEntry();
-            if (firstAccessEntry != null){
-                GGraphTile oldestTile = tileMap.get(firstAccessEntry.getValue());
-                assert (oldestTile != null);
-                if (oldestTile.used) {
-                    break;
+            Map.Entry<Long, Integer> entry = accessMap.firstEntry();
+            if ((entry != null) && (accessMap.size() >= 2)){ // accessMap.size() >= 2 ensures that the recently added tile isn't removed from cache
+                GGraphTile tile = tileMap.get(entry.getValue());
+                assert (tile != null);
+                if (tile.used) {
+                    accessMap.remove(tile.accessTime); // remove tile from access map, since cleanup is not allowed as long as it is used
                 } else {
-                    accessMap.remove(firstAccessEntry.getKey());
-                    tileMap.remove(firstAccessEntry.getValue());
-                    GTileConnector.disconnect(oldestTile,GNode.BORDER_NODE_WEST);
-                    GTileConnector.disconnect(oldestTile,GNode.BORDER_NODE_NORTH);
-                    GTileConnector.disconnect(oldestTile,GNode.BORDER_NODE_EAST);
-                    GTileConnector.disconnect(oldestTile,GNode.BORDER_NODE_SOUTH);
+                    accessMap.remove(entry.getKey());
+                    tileMap.remove(entry.getValue());
+                    GTileConnector.disconnect(tile,GNode.BORDER_NODE_WEST);
+                    GTileConnector.disconnect(tile,GNode.BORDER_NODE_NORTH);
+                    GTileConnector.disconnect(tile,GNode.BORDER_NODE_EAST);
+                    GTileConnector.disconnect(tile,GNode.BORDER_NODE_SOUTH);
+//                    mgLog.d("remove from cache: tileX="+tile.getTileX()+" tileY="+tile.getTileY()+" access="+tile.accessTime);
                 }
             } else {
-                mgLog.e("tileMap.size()="+tileMap.size()+" accessMap.size()="+accessMap.size());
                 break;
             }
         }
-        if (accessMap.size() != initialSize){
-            mgLog.d("cleanup initialSize="+initialSize + " currentSize="+tileMap.size());
+        if (tileMap.size() != initialSize){
+            mgLog.d("cleanup initialTileMapSize="+initialSize + " tileMapSize="+tileMap.size()+" accessMapSize="+accessMap.size());
         }
     }
 

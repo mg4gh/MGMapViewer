@@ -104,6 +104,7 @@ public class GTileConnector {
         for (GNode node : neighbourTile.getNodes()){
             if ((node.borderNode & neighboursBorder) != 0){
                 node.removeNeighbourNode(gGraphTile.tileIdx);
+                node.resetNodeRefs();
             }
         }
         assert (neighbourTile.neighbourTiles[neighboursBorder].tileIdx == gGraphTile.tileIdx)

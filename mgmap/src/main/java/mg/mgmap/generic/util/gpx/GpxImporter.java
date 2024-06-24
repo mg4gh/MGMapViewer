@@ -95,6 +95,7 @@ public class GpxImporter {
                     double lat = Double.parseDouble(Objects.requireNonNull(getStringAttribute("lat")));
                     double lon = Double.parseDouble(Objects.requireNonNull(getStringAttribute("lon")));
                     tlp = TrackLogPoint.createLogPoint(lat, lon);
+                    elevationProvider.setElevation(tlp); // try to enrich data with hgt height information
                     if (referencedTrackLog != null){
                         referencedTrackLog.getTrackLogSegment(0).addPoint(tlp);
                     }
