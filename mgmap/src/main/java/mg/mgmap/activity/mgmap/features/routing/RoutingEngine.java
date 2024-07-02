@@ -401,14 +401,12 @@ public class RoutingEngine {
 
                     while ((neighbour = multi.getNextNeighbour(pmgCurrent, neighbour)) != null) {
                         hint.numberOfPathes++;
-                        if (neighbour.getNeighbourNode().equals(hint.pmPrev)) continue;
-                        if (neighbour.getNeighbourNode().equals(hint.pmNext)) continue;
-                        if ((idx == 1) && (multi.oppositeNode((GNode)hint.pmPrev,(GNode)hint.pmCurrent) == neighbour.getNeighbourNode())){
-                            hint.numberOfPathes--; // don't count, if add. neighbour is just related to approach overlays
+                        // overlays to approach nodes are already removed
+                        // use approach segments as path, but not as concurrent path with degree calculation
+                        if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbour.getNeighbourNode()))){
                             continue;
                         }
-                        if ((idx == mpm.size()-2) && (multi.oppositeNode((GNode)hint.pmNext,(GNode)hint.pmCurrent) == neighbour.getNeighbourNode())){
-                            hint.numberOfPathes--; // don't count, if add. neighbour is just related to approach overlays
+                        if ((idx == mpm.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbour.getNeighbourNode()))){
                             continue;
                         }
 
