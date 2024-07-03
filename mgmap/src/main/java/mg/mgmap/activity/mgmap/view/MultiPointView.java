@@ -59,7 +59,9 @@ public class MultiPointView extends MVLayer {
     @Override
     public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
         try {
-            drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
+            if (getMapViewUtility().getTrackVisibility()){
+                drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
+            }
         } catch (Exception e) {
             mgLog.e(e);
         }

@@ -122,6 +122,7 @@
     <string name="activity_param_key">mg.mgmap.args</string>
 
     <string name="preferences_sftp_uploadGpxTrigger">Sftp.uploadGpxTrigger</string>
+    <string name="preferences_tracks_visible">prefTracksVisible</string>
 
     <string name="unique_work_name">MGMapViewerApp.UniqueWorkName</string>
 

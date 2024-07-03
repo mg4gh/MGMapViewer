@@ -25,6 +25,7 @@ import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -164,5 +165,9 @@ public class MapViewUtility {
     public void setScaleBarVisibility(boolean visibility){
         mapView.getMapScaleBar().setVisible(visibility);
         mapView.invalidate();
+    }
+
+    public boolean getTrackVisibility(){
+        return ((MGMapActivity)context).getTrackVisibility();
     }
 }
