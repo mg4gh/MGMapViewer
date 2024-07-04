@@ -49,8 +49,15 @@ public class PointModelUtil {
 
     public static double distance(PointModel pm1, PointModel pm2) {
         if ((pm1 == null) || (pm2 == null)) return 0;
-        return distance(pm1.getLat(), pm1.getLon(), pm2.getLat(), pm2.getLon() );
+        double dist = distance(pm1.getLat(), pm1.getLon(), pm2.getLat(), pm2.getLon() );
+        double vdist = verticalDistance(pm1, pm2);
+        double res = dist;
+        if (vdist > dist* 0.01){
+            res = Math.sqrt( dist*dist + vdist*vdist );
+        }
+        return res;
     }
+
     public static double distance(double lat1, double long1, double lat2, double long2) {
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(long2 - long1);
