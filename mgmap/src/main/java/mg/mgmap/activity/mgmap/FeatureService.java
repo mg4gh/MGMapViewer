@@ -34,6 +34,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 
+import mg.mgmap.generic.model.MultiPointModelImpl;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.MVGroupLayer;
@@ -73,6 +76,7 @@ public class FeatureService {
     protected GroupLayer fsLayers = new GroupLayer();
     protected MVGroupLayer fsControlLayers = new MVGroupLayer();
     protected String logName;
+    public static final double ENUMERATION_DISTANCE = 1000;
 
     public FeatureService(MGMapActivity activity){
         this.activity = activity;
@@ -161,16 +165,43 @@ public class FeatureService {
         showTrack(trackLog,paint,showGL,pointRadius, false);
     }
 
-    protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius, boolean showIntermediates){
+    protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius, boolean showIntermediates) {
+        this.showTrack(trackLog,paint, showGL, pointRadius, showIntermediates, false);
+    }
+
+    protected void showTrack(TrackLog trackLog, Paint paint, boolean showGL, int pointRadius, boolean showIntermediates, boolean enumeratePoints){
+        if (trackLog == null) return;
         if (pointRadius < 0 ) pointRadius = MultiPointView.POINT_RADIUS;
+        MultiPointModelImpl enumeratedPoints = new MultiPointModelImpl();
+        double totalLength = 0;
         for (int idx = 0; idx<trackLog.getNumberOfSegments(); idx++){
             TrackLogSegment segment = trackLog.getTrackLogSegment(idx);
-            MultiPointView layer = (showGL)?new MultiPointGLView(segment, paint):new MultiPointView(segment, paint);
-            if (showGL) layer.setStrokeIncrease(1.35);
+            if (enumeratePoints && (segment.size() > 0)){
+                PointModel lastPM = segment.get(0);
+                for (PointModel pm : segment){
+                    double length = PointModelUtil.distance(lastPM, pm);
+                    for (int enumarationCnt = (int)(totalLength/ENUMERATION_DISTANCE)+1; enumarationCnt <= (int)((totalLength+length)/ENUMERATION_DISTANCE); enumarationCnt++ ){
+                        enumeratedPoints.addPoint(PointModelUtil.interpolate(lastPM, pm, enumarationCnt*ENUMERATION_DISTANCE - totalLength));
+                    }
+                    lastPM = pm;
+                    totalLength += length;
+                }
+            } else {
+                MultiPointView layer = (showGL)?new MultiPointGLView(segment, paint):new MultiPointView(segment, paint);
+                if (showGL) layer.setStrokeIncrease(1.35);
+                layer.setPointRadius(pointRadius);
+                layer.setShowIntermediates(showIntermediates);
+                register(layer);
+            }
+        }
+        if (enumeratePoints){
+            MultiPointView layer = new MultiPointView(enumeratedPoints, paint);
             layer.setPointRadius(pointRadius);
             layer.setShowIntermediates(showIntermediates);
+            layer.setEnumeratePoints(true);
             register(layer);
         }
+
     }
 
 

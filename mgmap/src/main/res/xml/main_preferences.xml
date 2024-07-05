@@ -83,14 +83,11 @@
             app:title="@string/preferences_display_fullscreen_offset_title"
             app:iconSpaceReserved="false"
             />
-        <EditTextPreference
-            app:defaultValue="0"
-            app:key="@string/preferences_display_none_fullscreen_offset_key"
-            app:dialogTitle="@string/preferences_display_none_fullscreen_offset_title"
-            app:dialogMessage="@string/preferences_display_none_fullscreen_offset_desc2"
-            android:inputType="number"
-            app:summary="@string/preferences_display_none_fullscreen_offset_desc"
-            app:title="@string/preferences_display_none_fullscreen_offset_title"
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_display_show_km_key"
+            app:title="@string/preferences_display_show_km_title"
+            app:summary="@string/preferences_display_show_km_desc"
             app:iconSpaceReserved="false"
             />
         <SwitchPreference
