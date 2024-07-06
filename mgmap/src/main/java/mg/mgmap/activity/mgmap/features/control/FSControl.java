@@ -105,10 +105,14 @@ public class FSControl extends FeatureService {
         activity.startActivity(intent);
     };
     Observer exitObserver = (e) -> {
-        getActivity().finishAndRemoveTask();
-        if (getApplication().baseConfig.getMode() == BaseConfig.Mode.NORMAL){
-            System.exit(0);
-        }
+        getPref(R.string.FSPosition_pref_GpsOn, false).setValue(false);
+        getApplication().startTrackLoggerService(getActivity(),false);
+        getTimer().postDelayed(()->{
+            getActivity().finishAndRemoveTask();
+            if (getApplication().baseConfig.getMode() == BaseConfig.Mode.NORMAL){
+                System.exit(0);
+            }
+        },500);
     };
     Observer themesObserver = (e) -> {
         MGMapActivity activity = getActivity();
