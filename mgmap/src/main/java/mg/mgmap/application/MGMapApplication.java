@@ -280,6 +280,7 @@ public class MGMapApplication extends Application {
             registerActivityLifecycleCallbacks(new ActivityLifecycleAdapter() {
                 @Override
                 public void onActivityResumed(@NonNull Activity activity) {
+                    super.onActivityResumed(activity);
                     escalationCnt[0] =  0; // escalation is reset whenever any activity is resumed
                     finishAlarm();
                 }
