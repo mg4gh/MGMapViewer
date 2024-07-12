@@ -548,6 +548,7 @@ public class FSRouting extends FeatureService {
                 mgLog.i("optimize Pos "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm",pos.getNeighbour().getCost()));
                 wpm.setLat(pos.getLat());
                 wpm.setLon(pos.getLon());
+                wpm.setEle(pos.getEle());
             } else {
                 mgLog.i("optimize Pos "+wpm + " no approach");
             }
