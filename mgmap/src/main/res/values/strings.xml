@@ -83,6 +83,9 @@
     <string name="preferences_display_none_fullscreen_offset_title">Vertical none fullscreen offset</string>
     <string name="preferences_display_none_fullscreen_offset_desc">Vertical offset in none fullscreen mode - used for dashboard and search text.</string>
     <string name="preferences_display_none_fullscreen_offset_desc2">Vertical offset in none fullscreen mode - used for dashboard and search text. Helpful, if dashboard gesture is in conflict with system gesture.</string>
+    <string name="preferences_display_show_km_key">pref_show_km_marks</string>
+    <string name="preferences_display_show_km_title">Show km mark</string>
+    <string name="preferences_display_show_km_desc">Show km marker for selected and route TrackLog.</string>
 
     <string name="preferences_hprof_gl_key">hprof_gl</string>
     <string name="preferences_hprof_gl_title">Ascent height profile</string>
@@ -122,6 +125,7 @@
     <string name="activity_param_key">mg.mgmap.args</string>
 
     <string name="preferences_sftp_uploadGpxTrigger">Sftp.uploadGpxTrigger</string>
+    <string name="preferences_tracks_visible">prefTracksVisible</string>
 
     <string name="unique_work_name">MGMapViewerApp.UniqueWorkName</string>
 

@@ -55,6 +55,15 @@ public class RoutePointModel {
         return (selectedApproach == null)?null:selectedApproach.getApproachNode();
     }
 
+    /** @noinspection RedundantIfStatement*/
+    public boolean verifyApproach(PointModel node1, PointModel approachNode, PointModel node2){
+        if (selectedApproach == null) return false;
+        if (selectedApproach.getApproachNode() != approachNode) return false;
+        if ((node1 == selectedApproach.getNode1()) && (node2 == selectedApproach.getNode2())) return true;
+        if ((node1 == selectedApproach.getNode2()) && (node2 == selectedApproach.getNode1())) return true;
+        return false;
+    }
+
     public PointModel getMtlp() {
         return mtlp;
     }

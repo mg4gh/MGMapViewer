@@ -183,7 +183,7 @@ public class FSRouting extends FeatureService {
                     }
 
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    mgLog.e(e);
                 }
             }
             mgLog.d("routeCalcThread terminating");
@@ -448,7 +448,10 @@ public class FSRouting extends FeatureService {
         }
         showTrack(rotl,prefRouteGL,PAINT_STROKE_GL,PAINT_ROUTE_STROKE, prefAlphaRotl.getValue(), 0);
         if (mtl != null){
-            showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  (int)(DisplayModel.getDeviceScaleFactor()*6.0f), true);
+            showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  6, true);
+        }
+        if ((prefZoomLevel.getValue() >= 12) && getPref(R.string.preferences_display_show_km_key, false).getValue()){
+            showTrack(rotl,CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()),false, 3, true, true);
         }
         getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, calcRemainingStatistic(rotl));
 
@@ -540,11 +543,12 @@ public class FSRouting extends FeatureService {
         public void optimizePosition(WriteablePointModel wpm, double threshold) {
             mgLog.d("pos="+wpm+" threshold="+threshold);
             TreeSet<ApproachModel> approaches = routingEngine.calcApproaches(wpm, (int)threshold);
-            if (approaches.size() > 0){
+            if (!approaches.isEmpty()){
                 GNode pos = approaches.first().getApproachNode();
                 mgLog.i("optimize Pos "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm",pos.getNeighbour().getCost()));
                 wpm.setLat(pos.getLat());
                 wpm.setLon(pos.getLon());
+                wpm.setEle(pos.getEle());
             } else {
                 mgLog.i("optimize Pos "+wpm + " no approach");
             }

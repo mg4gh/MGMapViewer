@@ -259,7 +259,7 @@ public class MGMapApplication extends Application {
                             recordingTrackLogObservable.getTrackLog().addPoint(pointModel);
                             mgLog.v("handle TrackLogPoints: Processed "+pointModel);
                         }
-                        if (logPoints2process.size() == 0){ // trigger lastPositionsObservable only for the latest point in the queue
+                        if (logPoints2process.isEmpty()){ // trigger lastPositionsObservable only for the latest point in the queue
                             lastPositionsObservable.handlePoint(pointModel);
                         }
                     }
@@ -280,6 +280,7 @@ public class MGMapApplication extends Application {
             registerActivityLifecycleCallbacks(new ActivityLifecycleAdapter() {
                 @Override
                 public void onActivityResumed(@NonNull Activity activity) {
+                    super.onActivityResumed(activity);
                     escalationCnt[0] =  0; // escalation is reset whenever any activity is resumed
                     finishAlarm();
                 }
@@ -307,6 +308,7 @@ public class MGMapApplication extends Application {
                             float currentHeight = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,  escalationCnt[3]/1000f);
                             if (Math.abs(lastHeight-currentHeight) > 5){ // there is some height movement as indicator that position is changing
                                 escalationCnt[0]++;
+                                escalationCnt[1] = escalationCnt[3]; // set new last height value
                                 mgLog.i("escalationCnt="+ Arrays.toString(escalationCnt));
                             }
                         }
@@ -582,7 +584,7 @@ public class MGMapApplication extends Application {
         if (!bgJobs.isEmpty()){
             bgJobs.addAll(jobs);
         } else { // bgJobs is empty
-            if (jobs.size() > 0){ // and if there are new jobs
+            if (!jobs.isEmpty()){ // and if there are new jobs
                 bgJobs.addAll(jobs);
                 startBgService();
             }
@@ -595,7 +597,7 @@ public class MGMapApplication extends Application {
     }
 
     public synchronized BgJob getBgJob(){
-        if (bgJobs.size() > 0){
+        if (!bgJobs.isEmpty()){
             return bgJobs.remove(0);
         }
         return null;
@@ -615,7 +617,7 @@ public class MGMapApplication extends Application {
                 break;
             }
         }
-        return ""+ totalBgJobs()+res;
+        return totalBgJobs() +res;
     }
 
     public synchronized void addActiveJob(BgJob job){

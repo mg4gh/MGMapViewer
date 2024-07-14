@@ -154,6 +154,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private GGraphTileFactory gGraphTileFactory = null;
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
     private final PropertyChangeListener prefGpsObserver = (e) -> triggerTrackLoggerService();
+    private Pref<Boolean> prefTracksVisible;
 
     public MGMapApplication getMGMapApplication(){
         return application;
@@ -177,6 +178,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     public GGraphTileFactory getGGraphTileFactory() {
         return gGraphTileFactory;
     }
+    public boolean getTrackVisibility(){ return prefTracksVisible.getValue(); }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -243,6 +245,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.prefGps.onChange();
         prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> new GpxSyncUtil().trySynchronisation(application));
 //        prefCache.dumpPrefs();
+        prefTracksVisible = prefCache.get(R.string.preferences_tracks_visible, true);
+        prefTracksVisible.addObserver(pcl -> getFS(FSAvailableTrackLogs.class).redraw());
     }
 
     @Override
@@ -796,6 +800,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 if (toggleGlOnMatch(bestMatch, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog(), prefCache.get(R.string.FSATL_pref_stlGl, false))) return true;
                 if (toggleGlOnMatch(bestMatch, application.recordingTrackLogObservable.getTrackLog(), prefCache.get(R.string.FSRecording_pref_rtlGl, false))) return true;
                 if (toggleGlOnMatch(bestMatch, application.routeTrackLogObservable.getTrackLog(), prefCache.get(R.string.FSRouting_pref_RouteGL, false))) return true;
+                if (prefTracksVisible.getValue()){
+                    prefTracksVisible.setValue(Boolean.FALSE);
+                    FeatureService.getTimer().postDelayed(() -> prefTracksVisible.setValue(Boolean.TRUE), 1200);
+                    return true;
+                }
                 return super.onLongPress(point);
             }
 

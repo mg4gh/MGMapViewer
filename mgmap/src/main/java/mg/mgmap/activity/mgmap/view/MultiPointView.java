@@ -15,6 +15,8 @@
 package mg.mgmap.activity.mgmap.view;
 
 import org.mapsforge.core.graphics.Canvas;
+import org.mapsforge.core.graphics.FontFamily;
+import org.mapsforge.core.graphics.FontStyle;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Path;
@@ -25,8 +27,10 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
 
+import mg.mgmap.R;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.basic.MGLog;
 
 /**
@@ -44,6 +48,9 @@ public class MultiPointView extends MVLayer {
     protected boolean showIntermediates = false;
     protected boolean showPointsOnly = false;
     protected int pointRadius = POINT_RADIUS;
+    protected boolean enumeratePoints = false;
+    private Paint paintText;
+    private Paint paintTextBg;
 
     protected final MultiPointModel model;
 
@@ -59,7 +66,9 @@ public class MultiPointView extends MVLayer {
     @Override
     public synchronized void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
         try {
-            drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
+            if (getMapViewUtility().getTrackVisibility()){
+                drawModel(model, boundingBox, zoomLevel, canvas, topLeftPoint);
+            }
         } catch (Exception e) {
             mgLog.e(e);
         }
@@ -86,13 +95,15 @@ public class MultiPointView extends MVLayer {
 
             Path path = this.graphicFactory.createPath();
 
+            int cnt = 1;
             PointModel pm = iterator.next();
             int x = lon2canvasX(pm.getLon());
             int y = lat2canvasY(pm.getLat());
             path.moveTo(x, y);
-            drawPoint(canvas, x,y, zoomLevel);
+            drawPoint(canvas, x,y, zoomLevel, cnt);
 
             while (iterator.hasNext()) {
+                cnt++;
                 pm = iterator.next();
                 x = lon2canvasX(pm.getLon());
                 y = lat2canvasY(pm.getLat());
@@ -102,7 +113,7 @@ public class MultiPointView extends MVLayer {
                     path.moveTo(x, y);
                 }
                 if ( (! iterator.hasNext()) || showIntermediates ){
-                    drawPoint(canvas, x,y, zoomLevel);
+                    drawPoint(canvas, x,y, zoomLevel, cnt);
                 }
             }
 
@@ -118,9 +129,29 @@ public class MultiPointView extends MVLayer {
         }
     }
 
-    private void drawPoint(Canvas canvas, int x, int y, byte zoomLevel){
+    private void drawPoint(Canvas canvas, int x, int y, byte zoomLevel, int cnt){
         if (pointRadius > 0){
-            canvas.drawCircle(x, y, (int)(pointRadius* getScale(zoomLevel)), this.paintStroke);
+            canvas.drawCircle(x, y, (int)(displayModel.getScaleFactor() * pointRadius* getScale(zoomLevel)), enumeratePoints?CC.getFillPaint(R.color.CC_WHITE):this.paintStroke);
+            if (enumeratePoints){
+                drawEnumeration(canvas, x, y, zoomLevel, cnt);
+            }
+        }
+    }
+    private void drawEnumeration(Canvas canvas, int x, int y, byte zoomLevel, int enumeration){
+        if (paintText == null){
+            paintText = CC.getFillPaint(R.color.CC_WHITE);
+            paintText.setColor(paintStroke.getColor());
+            paintText.setTypeface(FontFamily.DEFAULT, FontStyle.BOLD);
+            paintTextBg = CC.getStrokePaint(R.color.CC_WHITE, 10);
+            paintTextBg.setTypeface(FontFamily.DEFAULT, FontStyle.BOLD);
+            int textSize = (int)(displayModel.getScaleFactor() * pointRadius* getScale(zoomLevel) *5);
+            paintText.setTextSize(textSize);
+            paintTextBg.setTextSize(textSize);
+        }
+        if (pointRadius > 0){
+            int diff = (int)(0.8 * displayModel.getScaleFactor() * pointRadius* getScale(zoomLevel));
+            canvas.drawText(""+enumeration, x+diff, y-diff, paintTextBg);
+            canvas.drawText(""+enumeration, x+diff, y-diff, paintText);
         }
     }
 
@@ -143,7 +174,9 @@ public class MultiPointView extends MVLayer {
         this.pointRadius = pointRadius;
     }
 
-
+    public void setEnumeratePoints(boolean enumeratePoints) {
+        this.enumeratePoints = enumeratePoints;
+    }
 
     protected float getScale(byte zoomLevel){
         return (float) Math.pow(this.strokeIncrease, Math.max(zoomLevel - STROKE_MIN_ZOOM, 0));

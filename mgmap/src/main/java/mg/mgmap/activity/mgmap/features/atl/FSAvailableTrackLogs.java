@@ -38,6 +38,7 @@ public class FSAvailableTrackLogs extends FeatureService {
 
     private final Paint PAINT_STROKE_ATL = CC.getStrokePaint(R.color.CC_GREEN, getMapViewUtility().getTrackWidth());
     private final Paint PAINT_STROKE_STL = CC.getStrokePaint(R.color.CC_BLUE, getMapViewUtility().getTrackWidth());
+    private final Paint PAINT_STROKE_STL2 = CC.getFillPaint(R.color.CC_BLUE);
     private final Paint PAINT_STROKE_STL_GL = CC.getStrokePaint(R.color.CC_GRAY100_A100, getMapViewUtility().getTrackWidth()*1.4f);
 
     private final Pref<Boolean> prefStlGl = getPref(R.string.FSATL_pref_stlGl, false);
@@ -153,6 +154,9 @@ public class FSAvailableTrackLogs extends FeatureService {
         if (trackLog!= null){
             assert (available.getAvailableTrackLogs().contains(trackLog));
             showTrack(trackLog,prefStlGl,PAINT_STROKE_STL_GL,PAINT_STROKE_STL, prefAlphaStl.getValue(), -1);
+            if ((getPref(R.string.FSBeeline_pref_ZoomLevel, 15).getValue() >= 12) && getPref(R.string.preferences_display_show_km_key, false).getValue()){
+                showTrack(trackLog,CC.getAlphaCloneFill(PAINT_STROKE_STL2, prefAlphaStl.getValue()),false, 3, true, true);
+            }
             getControlView().setDashboardValue(true, dashboardStl ,trackLog.getTrackStatistic());
             int segIdx = available.getSelectedTrackLogRef().getSegmentIdx();
             getControlView().setDashboardValue(trackLog.getNumberOfSegments()>1, dashboardStls,(segIdx>=0)?trackLog.getTrackLogSegment(segIdx).getStatistic():null);

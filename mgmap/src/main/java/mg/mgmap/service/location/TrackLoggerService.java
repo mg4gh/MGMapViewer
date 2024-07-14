@@ -101,7 +101,7 @@ public class TrackLoggerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        mgLog.i("onStartCommand");
         application = (MGMapApplication)getApplication();
 
         if (prefGps.getValue()){
@@ -130,7 +130,7 @@ public class TrackLoggerService extends Service {
             } catch (NumberFormatException e) {
                 mgLog.e(e);
             }
-            mgLog.i("smoothingPeriod="+barometerSmoothingPeriod);
+            mgLog.i("activateService smoothingPeriod="+barometerSmoothingPeriod);
             barometerListener = new BarometerListener(application,  SensorManager.SENSOR_DELAY_FASTEST, barometerSmoothingPeriod);
             boolean prefFused = prefCache.get(R.string.FSPosition_pref_FusedLocationProvider, false).getValue();
             locationListener = prefFused?new FusedLocationListener(application, this):new GnssLocationListener(application, this);
@@ -145,9 +145,12 @@ public class TrackLoggerService extends Service {
     }
     protected void deactivateService(){
         try {
+            mgLog.i("deactivateService");
             stopForeground(STOP_FOREGROUND_REMOVE);
             if (locationListener != null) locationListener.deactivate();
             if (barometerListener != null) barometerListener.deactivate();
+            Intent intent = new Intent(this, TrackLoggerService.class);
+            stopService(intent);
         } catch (Exception e) {
             mgLog.e(e);
         }

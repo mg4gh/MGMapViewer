@@ -13,6 +13,7 @@ System.out.println("************************************************************
 def versionMajor = "0.9.8"
 String outputFileNameBundle
 String parentProjectDir = new File("${projectDir}").getParent()
+String buildDir = getProjectDir().toString() + "/build"
 
 File versionPropsFile = file('version.properties')
 int mgBuildNbr = 1
@@ -53,7 +54,7 @@ afterEvaluate {
         dependsOn assembleDebug
         group = "Execution"
         description = "Run the main class with JavaExecTask"
-        classpath += files(getBuildDir().toString() + "/intermediates/javac/mg4ghDebug/classes/")
+        classpath += files(getProjectDir().toString() + "/build/intermediates/javac/mg4ghDebug/compileMg4ghDebugJavaWithJavac/classes/")
         classpath += files(getProjectDir().toString() + "/libs/jsch-0.1.55.jar")
         getMainClass().set("mg.mgmap.generic.util.SshBuild")
         args = [files("$projectDir/../.ssh/config.properties").first(), "apk", ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/mg4gh/debug/*.apk").first(), files("$buildDir/outputs/apk/mg4gh/debug/*.sha256").first()]
@@ -71,12 +72,13 @@ afterEvaluate {
         android.buildTypes.configureEach { buildType ->
             def buildTypeCap = ("${buildType.name}").capitalize()
             def buildVariant = "${flavor.name}${buildTypeCap}"
+            def compilePathPart = "compile" + ("${buildVariant}").capitalize() + "JavaWithJavac"
 
             tasks.register("${buildVariant}GenerateSHA", JavaExec) {
                 dependsOn "assemble${buildTypeCap}"
                 group = "Execution"
                 description = "Run the main class with JavaExecTask"
-                classpath += files(getBuildDir().toString() + "/intermediates/javac/${buildVariant}/classes/")
+                classpath = files(getProjectDir().toString() + "/build/intermediates/javac/${buildVariant}/${compilePathPart}/classes/")
                 getMainClass().set("mg.mgmap.generic.util.SHA256")
                 args files("${buildDir}/outputs/apk/${flavor.name}/${buildType.name}")
             }
@@ -261,6 +263,9 @@ android {
         unitTests.returnDefaultValues = true
     }
     namespace 'mg.mgmap'
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 // workaround (to prevent duplicate class error) after update to
@@ -275,7 +280,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.preference:preference:1.2.1'
     api 'net.sf.kxml:kxml2:2.3.0'
 
@@ -289,7 +294,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 //    implementation 'com.jcraft:jsch:0.1.55' // copied to libs folder of project -> access during project build
 
-    implementation 'com.google.android.gms:play-services-location:21.2.0'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
 
     implementation 'org.mapsforge:mapsforge-map-android:0.21.0'
     implementation 'org.mapsforge:mapsforge-themes:0.21.0'
@@ -301,14 +306,14 @@ dependencies {
 //    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
 //    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation "androidx.test:core:1.5.0"
+    androidTestImplementation "androidx.test:core:1.6.1"
 
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.5.1"
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.6.1"
+    androidTestImplementation 'androidx.test:runner:1.6.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
 //    androidTestImplementation "com.squareup.leakcanary:leakcanary-android-instrumentation:2.10"
