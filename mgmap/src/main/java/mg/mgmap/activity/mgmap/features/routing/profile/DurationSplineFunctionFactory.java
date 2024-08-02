@@ -45,16 +45,20 @@ public class DurationSplineFunctionFactory {
                 slopes = new double[]{-0.4, -0.2, -0.05, 0, 0.05, 0.10, 0.24,0.6};
                 durations = new double[slopes.length];
                 double watt;
+                double watt0;
                 double ACw;
                 double Cr;
                 double fd;
+                double highdowndoffset;
                 double fdown;
                 double fr;
                 double f1u;
                 double f2u;
                 if (bicType == 1){
                     watt = 90 + 35*klevel;
+                    watt0 = watt;
                     ACw = 0.4 + surfaceLevel * 0.05 ;
+                    highdowndoffset = 0.075;
 //                fd = Math.exp(-(slevel-2)*Math.log(Math.sqrt(2.0)))/1.6;
 //                    fd = 1.104 - slevel/4.53;
                     fd = 1.1 - slevel/4.55;
@@ -65,6 +69,7 @@ public class DurationSplineFunctionFactory {
                     }
 //                    Cr = 0.004 + 0.002*surfaceLevel;
                     fr = 1.1 - fd * (0.5+surfaceLevel/20.0);
+//                    fr = 0.715+0.045*slevel-0.08375*surfaceLevel+0.02375*slevel*surfaceLevel;
                     f1u = 1.0 + 0.5*surfaceLevel*surfaceLevel/16.0;
                     f2u = 1.2 + 1.4*surfaceLevel*surfaceLevel/16.0;
                     fdown =  fd*(3.5+surfaceLevel*0.6);
@@ -72,25 +77,29 @@ public class DurationSplineFunctionFactory {
                     slopes[6] = 0.24+0.02*klevel;
                 } else { //if (bicType ==3) {
                     watt = 130;
+                    watt0 = (surfaceLevel <= 1) ? 100 : watt;
                     if (surfaceLevel <= 2) {
                         ACw = 0.45 + 0.1 * surfaceLevel;
                         Cr = 0.004 + 0.001 * surfaceLevel;
-                        fr = 0.85 - 0.075 * surfaceLevel;
-                        fdown = 2.5 + 0.5 * surfaceLevel;
+                        fr = 0.875 - 0.075 * surfaceLevel;
+                        highdowndoffset = 0.0;
+                        fdown = 2.5 + 0.5*surfaceLevel;
                     } else {
                         ACw = 0.8 + 0.3 * (surfaceLevel - 3);
                         Cr = 0.02 + 0.015 * (surfaceLevel - 3);
                         fr = 0.6;
-                        fdown = 3.5 + (surfaceLevel - 2);
+                        highdowndoffset = -0.1;
+                        fdown = 6 + 2*(surfaceLevel - 3);
                     }
                     f1u = 1.2;
                     f2u = 2.5;
                 }
                 double m = 90;
-                durations[0] = (-slopes[0]-0.075)*fdown;
+                durations[0] = (-slopes[0]-highdowndoffset)*fdown;
                 durations[1] = (-slopes[1]-0.075)*fdown;
                 durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, m) * fr);
-                for (int i = 3; i < slopes.length - 2; i++) {
+                durations[3] = 1 / getFrictionBasedVelocity(slopes[3], watt0, Cr, ACw, m);
+                for (int i = 4; i < slopes.length - 2; i++) {
                     durations[i] = 1 / getFrictionBasedVelocity(slopes[i], watt, Cr, ACw, m);
                 }
                 durations[6] = f1u /  getFrictionBasedVelocity(slopes[6], watt, Cr, ACw, m)  ;
