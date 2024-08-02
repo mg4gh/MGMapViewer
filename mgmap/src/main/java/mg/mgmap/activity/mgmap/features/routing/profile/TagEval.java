@@ -72,7 +72,11 @@ public class TagEval {
         if ( "unclassified".equals(wayTagEval.highway) && wayTagEval.trackType != null){
             Log.e("TagEval","tracktype && unclassified");
         }
-        return (type > 0) ? type : surfaceCat;
+//        double sc = (type + surfaceCat)/2.0;
+//        double sc1 = Math.ceil(sc);
+//        short scs = (short) sc1;
+        return (type>0 && surfaceCat>0) ? (short) Math.ceil ((double) (type + surfaceCat)/2.0): (type>0)?type:surfaceCat;
+//        return  (short) Math.ceil ((double) (type + surfaceCat)/2.0); //(type > 0) ? type : surfaceCat;
     }
     protected static Factors getFactors(WayAttributs wayTagEval, short surfaceCat){
         double distFactor ;
@@ -116,7 +120,7 @@ public class TagEval {
             } else  distFactor = 1.15;
             surfaceCat = 1;
         } else if ("footway".equals(wayTagEval.highway) || "pedestrian".equals(wayTagEval.highway)) {
-            surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
+            surfaceCat = (surfaceCat < 1) ? 2 : surfaceCat;
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )
                 distFactor = 1.0;
             else if ("bic_yes".equals(wayTagEval.bicycle))
@@ -127,9 +131,9 @@ public class TagEval {
                 distFactor = 3.0;
         } else if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
             distFactor = 1;
-            surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
+            surfaceCat = (surfaceCat < 1) ? 2 : surfaceCat;
         } else if ("service".equals(wayTagEval.highway)) {
-            surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
+            surfaceCat = (surfaceCat < 1) ? 2 : surfaceCat;
             if ("bic_destination".equals(wayTagEval.bicycle))
                 distFactor = 1.0;
             else if ( "no".equals(wayTagEval.access) || "bic_no".equals(wayTagEval.bicycle))

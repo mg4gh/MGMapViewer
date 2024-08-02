@@ -38,7 +38,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                     deltaSlope = 1.0;
                 } else if ("bic_yes".equals(wayTagEval.bicycle) && surfaceCat == 2) {
                     distFactor = 1.5;
-                    deltaSlope = 1.5;
+                    deltaSlope = 1.0;
                 } else if ("bic_yes".equals(wayTagEval.bicycle) || "bic_designated".equals(wayTagEval.bicycle)) {
                     distFactor = 2;
                     deltaSlope = 1.5;
@@ -57,6 +57,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                 } else if (surfaceCat == 2 || surfaceCat == 3 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1.2;
                     deltaSlope = 0.5;
+//                    surfaceCat = 2;
                 } else if (surfaceCat==3 || "bic_designated".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
                     distFactor = 1.8;
                     deltaSlope = 1.0;
@@ -120,12 +121,12 @@ public class CostCalculatorTreckingBike implements CostCalculator {
 
     @Override
     public long getDuration(double dist, float vertDist) {
-/*       if (dist >= 0.00001) {
+       if (dist >= 0.00001) {
            double slope = vertDist / dist;
            double spm = DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(slope);
            double v = 3.6/spm;
            mgLog.d("DurationCalc - Slope:" + slope + " v:" + v + " time:" + spm*dist + " dist:" + dist + " surfaceCat:" + surfaceCat + " mfd:" + mfd);
-       } */
+       }
        return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(vertDist/dist)) : 0;
     }
 
