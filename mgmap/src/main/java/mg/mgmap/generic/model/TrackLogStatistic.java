@@ -248,7 +248,7 @@ public class TrackLogStatistic {
 
     public void finalizeStatistic(){
         if ((lastPoint4Distance != null) && (lastPoint4GainLoss != null)){
-            float diff = PointModelUtil.verticalDistance(lastPoint4GainLoss,lastPoint4Distance) -lastSmoothing4GainLoss;
+            float diff = PointModelUtil.verticalDistance(lastPoint4GainLoss,lastPoint4Distance) +lastSmoothing4GainLoss;
             if (diff > 0){
                 gain += diff;
             } else {
