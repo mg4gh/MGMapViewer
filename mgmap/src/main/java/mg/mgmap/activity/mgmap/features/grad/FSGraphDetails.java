@@ -173,7 +173,7 @@ public class FSGraphDetails extends FeatureService {
                         final GNode last = lastNode;
                         double distance = PointModelUtil.distance(last,node);
                         double verticalDistance = PointModelUtil.verticalDistance(last, node);
-                        mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost()));
+                        mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost(),last.getNeighbour(node).getWayAttributs().toDetailedString()));
                     }
                     mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
                     lastNode = node;

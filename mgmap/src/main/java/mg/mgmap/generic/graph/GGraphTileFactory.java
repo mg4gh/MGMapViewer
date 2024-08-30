@@ -27,6 +27,8 @@ import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.TrackLogStatistic;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -48,14 +50,16 @@ public class GGraphTileFactory {
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
     private boolean wayDetails;
+    Pref<Boolean> prefSmooth4Routing;
     GTileCache gTileCache;
 
     public GGraphTileFactory(){}
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails){
+    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails, Pref<Boolean> prefSmooth4Routing){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
         this.wayDetails = wayDetails;
+        this.prefSmooth4Routing = prefSmooth4Routing;
 
         gTileCache = new GTileCache(CACHE_LIMIT);
         return this;
@@ -120,7 +124,7 @@ public class GGraphTileFactory {
                 mgLog.e("totalTiles exceeds CACHE_LIMIT: totalTiles="+ totalTiles+" CACHE_LIMIT="+ CACHE_LIMIT);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            mgLog.e(e);
         }
         return tileList;
     }
@@ -141,6 +145,9 @@ public class GGraphTileFactory {
         GGraphTile gGraphTile = gTileCache.get(tileX, tileY);
         if (load && (gGraphTile == null)){
             gGraphTile = loadGGraphTile(tileX, tileY);
+            if (prefSmooth4Routing.getValue()){
+                smoothGGraphTile(gGraphTile);
+            }
             gTileCache.put(tileX, tileY, gGraphTile);
         }
         return gGraphTile;
@@ -254,4 +261,147 @@ public class GGraphTileFactory {
         graph.getNodes().remove(nNode);
     }
 
+    private void smoothGGraphTile(GGraphTile tile){
+        ArrayList<GNeighbour> smoothNeighbourList = new ArrayList<>();
+        for (GNode aNode : tile.getNodes()){
+            boolean fix = true;
+            if (aNode.countNeighbours() == 2){
+                GNeighbour firstNeighbour = aNode.getNeighbour().getNextNeighbour();
+                GNeighbour secondNeighbour = firstNeighbour.getNextNeighbour();
+                if (firstNeighbour.getWayAttributs() == secondNeighbour.getWayAttributs()){
+                    fix = false;
+                }
+            }
+            aNode.setFlag(GNode.FLAG_FIX, fix);
+            aNode.setFlag(GNode.FLAG_VISITED, false);
+            aNode.setFlag(GNode.FLAG_HEIGHT_RELEVANT, fix);
+        }
+        for (GNode aNode : tile.getNodes()) { // iterate over all nodes
+            if (aNode.isFlag(GNode.FLAG_FIX)){
+                GNode minHeightPoint;
+                GNode maxHeightPoint;
+                GNeighbour aNeighbour = aNode.getNeighbour();
+                while (aNeighbour.getNextNeighbour() != null) { // iterate over all neighbours
+                    aNeighbour = aNeighbour.getNextNeighbour();
+
+                    GNeighbour neighbour = aNeighbour;
+                    GNode neighbourNode = neighbour.getNeighbourNode();
+                    if (neighbourNode.isFlag(GNode.FLAG_VISITED)) continue; // this path is already handled
+                    int neighbourNodeIdx;
+                    // reset smoothNodeList
+                    smoothNeighbourList.clear();
+                    smoothNeighbourList.add(aNode.getNeighbour()); // neighbour with getNeighbourNode = node
+                    float minHeight = aNode.getEle();
+                    float maxHeight = aNode.getEle();
+                    minHeightPoint = aNode;
+                    maxHeightPoint = aNode;
+                    int minHeightPointIdx = 0;
+                    int maxHeightPointIdx = 0;
+                    GNode lastHeightRelevantPoint = aNode;
+                    int lastHeightRelevantPointIdx = 0;
+                    int signumLastHeightInterval = 0;
+                    int signumHeightInterval = 0;
+
+                    while (true){
+                        neighbourNode.setFlag(GNode.FLAG_VISITED, true);
+                        neighbourNodeIdx = smoothNeighbourList.size();
+                        smoothNeighbourList.add(neighbour);
+                        if (neighbourNode.getEle() < minHeight){
+                            minHeightPoint = neighbourNode;
+                            minHeight = neighbourNode.getEle();
+                            minHeightPointIdx = neighbourNodeIdx;
+                        }
+                        if (neighbourNode.getEle() > maxHeight){
+                            maxHeightPoint = neighbourNode;
+                            maxHeight = neighbourNode.getEle();
+                            maxHeightPointIdx = neighbourNodeIdx;
+                        }
+
+                        if ( (maxHeight - minHeight >= TrackLogStatistic.ELE_THRESHOLD_ELSE) && (distance(smoothNeighbourList, minHeightPointIdx, maxHeightPointIdx) > PointModelUtil.getCloseThreshold()/2d)){
+                            neighbourNode.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
+                            if ( maxHeight == neighbourNode.getEle() ){
+                                signumHeightInterval = 1;
+                                if (minHeightPoint != lastHeightRelevantPoint){
+                                    if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX)){
+                                        minHeightPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
+                                        if (distance (smoothNeighbourList, lastHeightRelevantPointIdx, minHeightPointIdx) <  PointModelUtil.getCloseThreshold()/2d){
+                                            if ( signumLastHeightInterval == Math.signum( minHeightPoint.getEle() - lastHeightRelevantPoint.getEle() ) ) lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset height relevance
+                                        }
+                                    }
+
+                                }
+                            }
+                            if ( minHeight == neighbourNode.getEle() ){
+                                signumHeightInterval = -1;
+                                if (maxHeightPoint != lastHeightRelevantPoint){
+                                    if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX)) {
+                                        maxHeightPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
+                                        if (distance (smoothNeighbourList, lastHeightRelevantPointIdx, maxHeightPointIdx) < PointModelUtil.getCloseThreshold()/2d){
+                                            if ( signumLastHeightInterval == Math.signum( maxHeightPoint.getEle() - lastHeightRelevantPoint.getEle() ) ) lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset height relevance
+                                        }
+                                    }
+                                }
+                            }
+                            lastHeightRelevantPoint = neighbourNode;
+                            lastHeightRelevantPointIdx = neighbourNodeIdx;
+                            signumLastHeightInterval = signumHeightInterval;
+                            minHeight = neighbourNode.getEle();
+                            maxHeight = neighbourNode.getEle();
+                            minHeightPoint = neighbourNode;
+                            maxHeightPoint = neighbourNode;
+
+                        }
+                        if (neighbourNode.isFlag(GNode.FLAG_FIX)) break; // main exit from loop!
+
+                        neighbour = tile.oppositeNeighbour(neighbourNode, neighbour.getReverse());
+                        neighbourNode = neighbour.getNeighbourNode();
+                    } // while true
+                    if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX) &&
+                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx, neighbourNodeIdx) < PointModelUtil.getCloseThreshold()/2d)){
+                        lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset last heightRelevantPoint in this segment - otherwise the remaining
+                    }
+
+                    mgLog.v(()->smoothNeighbourList.get(0).getNeighbourNode()+" --- "+smoothNeighbourList.get(smoothNeighbourList.size()-1).getNeighbourNode()+" ("+smoothNeighbourList.size()+")");
+
+                    if (smoothNeighbourList.size() <= 2) continue;
+
+                    int startIdx = 0;
+                    while (startIdx < smoothNeighbourList.size() -1){
+                        int endIdx = startIdx;
+                        while ((startIdx == endIdx) || !smoothNeighbourList.get(endIdx).getNeighbourNode().isFlag(GNode.FLAG_HEIGHT_RELEVANT)){
+                            endIdx++;
+                        }
+                        float startHeight = smoothNeighbourList.get(startIdx).getNeighbourNode().getEle();
+                        float endHeight = smoothNeighbourList.get(endIdx).getNeighbourNode().getEle();
+                        double totalDistance = distance(smoothNeighbourList, startIdx, endIdx);
+
+                        endIdx = startIdx;
+                        double distance = 0;
+                        while ((startIdx == endIdx) || !smoothNeighbourList.get(endIdx).getNeighbourNode().isFlag(GNode.FLAG_HEIGHT_RELEVANT)){
+                            endIdx++;
+                            GNode endNode = smoothNeighbourList.get(endIdx).getNeighbourNode();
+                            if (!endNode.isFlag(GNode.FLAG_HEIGHT_RELEVANT)){
+                                distance += smoothNeighbourList.get(endIdx).getDistance();
+                                float height = (float)PointModelUtil.interpolate (0, totalDistance, startHeight, endHeight, distance);
+                                endNode.fixEle( height );
+                            }
+                        }
+
+                        startIdx = endIdx;
+                    }
+                } // iterate over all neighbours
+            } // if (aNode.isFlag(GNode.FLAG_FIX))
+        } // iterate over all nodes
+    }
+
+    private double distance(ArrayList<GNeighbour> smoothNeighbourList, int idx1, int idx2){
+        if (idx1 > idx2){
+            return distance(smoothNeighbourList, idx2, idx1);
+        }
+        double distance = 0;
+        for (int idx=idx1+1; idx <= idx2; idx++){
+            distance += smoothNeighbourList.get(idx).getDistance();
+        }
+        return distance;
+    }
 }

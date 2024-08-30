@@ -42,15 +42,6 @@ public class GGraph{
         return neighbour.getNextNeighbour();
     }
 
-    public GNeighbour getLastNeighbour(GNode node) {
-        GNeighbour neighbour = node.getNeighbour();
-        GNeighbour lastNeighbour = neighbour;
-        while ((neighbour = getNextNeighbour(node, neighbour)) != null) {
-            lastNeighbour = neighbour;
-        }
-        return lastNeighbour;
-    }
-
     /* returns oppositeNode - means the node has exactly 2 neighbours, where neighbourNode is one and the returned value is the other neighbour.
         returns null, if there is not exactly one other neighbour.
     */
@@ -60,7 +51,7 @@ public class GGraph{
         if (firstNeighbour == null) return null; // found no neighbour
         GNeighbour secondNeighbour = getNextNeighbour(node, firstNeighbour);
         if (secondNeighbour == null) return null; // found just one neighbour
-        if (getNextNeighbour(node, secondNeighbour) != null) return null; // found third neighbour
+        if (secondNeighbour.getNextNeighbour() != null) return null; // found third neighbour
         if (firstNeighbour.getNeighbourNode() == neighbourNode){
             return secondNeighbour.getNeighbourNode();
         }
@@ -70,6 +61,24 @@ public class GGraph{
         return null; // should not happen (given neighbourNode is not neighbour to node
     }
 
+    /* returns oppositeNeighbour - means also the node has exactly 2 neighbours, where givenNeighbour is one and the returned value is the other neighbour.
+        returns null, if there is not exactly one other neighbour.
+    */
+    public GNeighbour oppositeNeighbour(GNode node, GNeighbour givenNeighbour){
+        GNeighbour neighbour = node.getNeighbour();
+        GNeighbour firstNeighbour = getNextNeighbour(node, neighbour);
+        if (firstNeighbour == null) return null; // found no neighbour
+        GNeighbour secondNeighbour = getNextNeighbour(node, firstNeighbour);
+        if (secondNeighbour == null) return null; // found just one neighbour
+        if (secondNeighbour.getNextNeighbour() != null) return null; // found third neighbour
+        if (firstNeighbour == givenNeighbour){
+            return secondNeighbour;
+        }
+        if (secondNeighbour == givenNeighbour){
+            return firstNeighbour;
+        }
+        return null; // should not happen (given neighbourNode is not neighbour to node
+    }
 
     public ArrayList<GNode> segmentNodes(GNode node1, GNode node2, int closeThreshold){
         ArrayList<GNode> segmentNodes = new ArrayList<>();

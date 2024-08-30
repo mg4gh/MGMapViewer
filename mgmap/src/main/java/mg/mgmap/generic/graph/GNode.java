@@ -39,6 +39,11 @@ public class GNode extends PointModelImpl {
     public static final byte BORDER_NODE_EAST  = 0x02;
     public static final byte BORDER_NODE_SOUTH = 0x01;
 
+    byte flags = 0; // used for tile height smoothing
+    public static final byte FLAG_FIX               = 0x01;
+    public static final byte FLAG_VISITED           = 0x02;
+    public static final byte FLAG_HEIGHT_RELEVANT   = 0x04;
+
     public static int deltaX(byte border){
         switch (border){
             case BORDER_NODE_WEST: return -1;
@@ -168,5 +173,20 @@ public class GNode extends PointModelImpl {
 
     public static boolean sameTile(GNode node1, GNode node2){
         return node1.tileIdx == node2.tileIdx;
+    }
+
+    public boolean isFlag(byte flag){
+        return (flags & flag) != 0;
+    }
+    public void setFlag(byte flag, boolean value){
+        if (value){
+            flags |= flag;
+        } else {
+            flags &= (byte)(flag ^ 0xFF);
+        }
+    }
+
+    public void fixEle(float ele){
+        this.ele = ele;
     }
 }
