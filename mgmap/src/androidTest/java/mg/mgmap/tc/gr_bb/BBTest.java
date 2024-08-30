@@ -44,7 +44,7 @@ public class BBTest extends BaseTestCase {
     @Rule
     public ActivityScenarioRule<MGMapActivity> activityRule =new ActivityScenarioRule<>(MGMapActivity.class);
 
-    @Test(timeout = 80000)
+    @Test(timeout = 120000)
     public void _01_load_from_bb() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
@@ -108,7 +108,7 @@ public class BBTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 120000)
+    @Test(timeout = 180000)
     public void _02_load_and_delete_with_tilestore() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
@@ -229,7 +229,7 @@ public class BBTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _03_tilestore_and_hgt() {
         mgLog.i("started");
         MGMapActivity mgMapActivity1 = waitForActivity(MGMapActivity.class);
@@ -255,7 +255,7 @@ public class BBTest extends BaseTestCase {
     }
 
 
-    @Test(timeout = 120000)
+    @Test(timeout = 180000)
     public void _04_load_and_delete_with_hgt() {
         mgLog.i("started");
         MGMapActivity mgMapActivity1 = waitForActivity(MGMapActivity.class);

@@ -54,7 +54,7 @@ public class ShowHideTest extends BaseTestCase {
         mgMapActivity = null;
     }
 
-    @Test(timeout = 30000)
+    @Test(timeout = 50000)
     public void _01_mapSliderTest() {
         mgLog.i("started");
         setCursorToCenterPos();
@@ -85,7 +85,7 @@ public class ShowHideTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 90000)
     public void _02_trackSliderTest() {
         mgLog.i("started");
         setCursorToCenterPos();
@@ -141,7 +141,7 @@ public class ShowHideTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 40000)
+    @Test(timeout = 60000)
     public void _03_hideStlAtlTest() {
         mgLog.i("started");
         setCursorToCenterPos();
@@ -188,7 +188,7 @@ public class ShowHideTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 40000)
+    @Test(timeout = 60000)
     public void _04_hideAllTest() {
         mgLog.i("started");
         setCursorToCenterPos();

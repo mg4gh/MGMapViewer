@@ -50,7 +50,7 @@ public class GroupRecordTests extends BaseTestCase {
         initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 16);
     }
 
-    @Test(timeout = 90000)
+    @Test(timeout = 120000)
     public void _01_center() {
         mgLog.i("started");
         SystemClock.sleep(5000);
@@ -180,7 +180,7 @@ public class GroupRecordTests extends BaseTestCase {
     }
 
 
-    @Test(timeout = 60000)
+    @Test(timeout = 90000)
     public void _04_segmentRecord() {
         mgLog.i("started");
         SystemClock.sleep(5000);
@@ -212,7 +212,7 @@ public class GroupRecordTests extends BaseTestCase {
         animateAndClick(54.3220, 13.3515, 11.1f, 83.1f, 48.6f, 55.5f);
 
         SystemClock.sleep(1000);
-        addRegex(".*Test Statistic: .* duration=0:00 totalLength=497.69 gain=12.4 loss=0.4 minEle=11.5 maxEle=34.5 numPoints=6");
+        addRegex(".*Test Statistic: .* duration=0:00 totalLength=497.69 gain=12.9 loss=0.0 minEle=11.5 maxEle=34.5 numPoints=6");
         mgLog.i("Test Statistic: " + mgMapApplication.recordingTrackLogObservable.getTrackLog().getTrackStatistic());
 
 

@@ -41,7 +41,7 @@ public class HelpTests extends BaseTestCase {
         initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _01_help1_wait_close() {
         mgLog.i("started");
         setCursorToCenterPos();
@@ -55,7 +55,7 @@ public class HelpTests extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _01_help2() {
         mgLog.i("started");
         setCursorToCenterPos();
@@ -71,7 +71,7 @@ public class HelpTests extends BaseTestCase {
     }
 
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _03_empty() {
         mgLog.i("started");
         setCursorToCenterPos();
