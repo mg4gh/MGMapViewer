@@ -247,7 +247,8 @@ public class RoutingEngine {
                                         neighbour = ((GNode)lastPM).getNeighbour((GNode)pm);
                                     }
                                     if (lastPM != null) {
-                                        timestamp += routingProfile.getDuration((neighbour == null) ? null : neighbour.getWayAttributs(), lastPM, pmr);
+//                                        timestamp += routingProfile.getDuration((neighbour == null) ? null : neighbour.getWayAttributs(), lastPM, pmr);
+                                        timestamp += routingProfile.getDuration(lastPM, neighbour, pmr);
                                     }
                                     pmr.setTimestamp(timestamp);
                                     routeTrackLog.addPoint(pmr);

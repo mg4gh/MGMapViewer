@@ -98,7 +98,8 @@ public class BidirectionalAStar extends GGraphSearch{
                     GNode directedNeighbourNode = ref.isReverse()?node:neighbourNode;
                     double costToNeighbour = directedNeighbour.getCost();
                     if (costToNeighbour < 0){
-                        costToNeighbour = routingProfile.getCost(directedNeighbour.getWayAttributs(), directedNode, directedNeighbourNode, directedNeighbour.isPrimaryDirection());
+//                        costToNeighbour = routingProfile.getCost(directedNeighbour.getWayAttributs(), directedNode, directedNeighbourNode, directedNeighbour.isPrimaryDirection());
+                        costToNeighbour = routingProfile.getCost(directedNode, directedNeighbour,  directedNeighbourNode);
                         directedNeighbour.setCost(costToNeighbour);
                     }
                     double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path

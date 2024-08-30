@@ -15,6 +15,7 @@
 package mg.mgmap.generic.graph;
 
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.PointModelUtil;
 
 /**
  * This class is the basis for a node in a graph.
@@ -131,6 +132,9 @@ public class GNode extends PointModelImpl {
         reverseNeighbour.setReverse(neighbour);
         this.addNeighbour(neighbour);
         neighbourNode.addNeighbour(reverseNeighbour);
+        double distance = PointModelUtil.distance(this, neighbourNode);
+        neighbour.setDistance(distance);
+        reverseNeighbour.setDistance(distance);
     }
 
     public void removeNeighbourNode(GNode neighbourNode){
