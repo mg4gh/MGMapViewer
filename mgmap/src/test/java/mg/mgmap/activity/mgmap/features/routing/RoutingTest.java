@@ -31,6 +31,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteableTrackLog;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxExporter;
@@ -53,7 +54,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<Boolean>(false));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, "");
         routingEngine.setRoutingProfile(new ShortestDistance());
@@ -125,7 +126,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<Boolean>(false));
 
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
@@ -179,7 +180,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<Boolean>(false));
 
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
@@ -248,7 +249,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<Boolean>(false));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, "");
         routingEngine.setRoutingProfile(new TrekkingBike());

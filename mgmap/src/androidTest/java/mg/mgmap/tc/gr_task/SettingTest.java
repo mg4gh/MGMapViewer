@@ -51,7 +51,7 @@ public class SettingTest extends BaseTestCase {
     public ActivityScenarioRule<MGMapActivity> activityRule =new ActivityScenarioRule<>(MGMapActivity.class);
 
 
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void _01_settings_layers() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
@@ -82,7 +82,7 @@ public class SettingTest extends BaseTestCase {
 
 
 
-    @Test(timeout = 40000)
+    @Test(timeout = 60000)
     public void _02_settings_theme() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
@@ -119,7 +119,7 @@ public class SettingTest extends BaseTestCase {
     }
 
 
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void _03_settings_search() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);

@@ -32,7 +32,7 @@ public class TrackLogStatistic {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
 
     private static final float ELE_THRESHOLD_BARO = 1.9f; // in meter
-    private static final float ELE_THRESHOLD_ELSE = 3f; // in meter
+    public static final float ELE_THRESHOLD_ELSE = 3f; // in meter
     public static final Map<Integer,String> SEGMENT_IDS = Map.of(
             -1,"All",
             -2,"R",
@@ -248,7 +248,7 @@ public class TrackLogStatistic {
 
     public void finalizeStatistic(){
         if ((lastPoint4Distance != null) && (lastPoint4GainLoss != null)){
-            float diff = PointModelUtil.verticalDistance(lastPoint4GainLoss,lastPoint4Distance) -lastSmoothing4GainLoss;
+            float diff = PointModelUtil.verticalDistance(lastPoint4GainLoss,lastPoint4Distance) +lastSmoothing4GainLoss;
             if (diff > 0){
                 gain += diff;
             } else {

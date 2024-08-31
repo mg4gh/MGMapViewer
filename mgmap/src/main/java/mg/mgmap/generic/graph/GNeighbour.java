@@ -22,6 +22,7 @@ public class GNeighbour{
 
     private final GNode neighbourNode;
     private double cost;
+    private double distance = -1;
     private GNeighbour nextNeighbour = null;
     private WayAttributs wayAttributs = null;
     private boolean primaryDirection = true;
@@ -50,6 +51,13 @@ public class GNeighbour{
     }
     public void setCost(double cost){
         this.cost = cost;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     public GNeighbour getNextNeighbour() {

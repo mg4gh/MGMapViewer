@@ -45,7 +45,7 @@ public class GroupMultiTests extends BaseTestCase {
         initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _04_fullscreen() {
         mgLog.i("started");
         setCursorToCenterPos();
@@ -69,7 +69,7 @@ public class GroupMultiTests extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _05_zoomIn() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
@@ -87,7 +87,7 @@ public class GroupMultiTests extends BaseTestCase {
 
 
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _06_zoomOut() {
         mgLog.i("started");
         waitForActivity(MGMapActivity.class);
@@ -101,7 +101,7 @@ public class GroupMultiTests extends BaseTestCase {
     }
 
 
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void _07_home() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);

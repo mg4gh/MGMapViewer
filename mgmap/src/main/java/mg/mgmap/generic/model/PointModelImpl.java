@@ -29,7 +29,7 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
 
     int la = LaLo.d2md(NO_LAT_LONG);
     int lo = LaLo.d2md(NO_LAT_LONG);
-    float ele = NO_ELE;
+    protected float ele = NO_ELE; // allow derived class to access ele (needed for smoothing process of GGraphTile to fixEle in GNode)
     float eleAcc = NO_ACC;
 
     public static PointModelImpl createFromLaLo(long lalo){
