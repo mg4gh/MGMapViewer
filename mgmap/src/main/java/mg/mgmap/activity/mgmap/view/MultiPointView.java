@@ -131,9 +131,13 @@ public class MultiPointView extends MVLayer {
 
     private void drawPoint(Canvas canvas, int x, int y, byte zoomLevel, int cnt){
         if (pointRadius > 0){
-            canvas.drawCircle(x, y, (int)(displayModel.getScaleFactor() * pointRadius* getScale(zoomLevel)), enumeratePoints?CC.getFillPaint(R.color.CC_WHITE):this.paintStroke);
             if (enumeratePoints){
-                drawEnumeration(canvas, x, y, zoomLevel, cnt);
+                if (zoomLevel >= 12) {
+                    canvas.drawCircle(x, y, (int)(displayModel.getScaleFactor() * pointRadius* getScale(zoomLevel)), enumeratePoints?CC.getFillPaint(R.color.CC_WHITE):this.paintStroke);
+                    drawEnumeration(canvas, x, y, zoomLevel, cnt);
+                }
+            } else {
+                canvas.drawCircle(x, y, (int)(displayModel.getScaleFactor() * pointRadius* getScale(zoomLevel)), enumeratePoints?CC.getFillPaint(R.color.CC_WHITE):this.paintStroke);
             }
         }
     }
