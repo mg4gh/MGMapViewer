@@ -57,7 +57,6 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                 } else if (surfaceCat == 2 || surfaceCat == 3 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
                     distFactor = 1.2;
                     deltaSlope = 0.5;
-//                    surfaceCat = 2;
                 } else if (surfaceCat==3 || "bic_designated".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
                     distFactor = 1.8;
                     deltaSlope = 1.0;
@@ -66,7 +65,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                     deltaSlope = 2.5;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
-                surfaceCat = 10;
+                surfaceCat = 6;
                 if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
                     distFactor = 5.0;
                 else
@@ -77,7 +76,11 @@ public class CostCalculatorTreckingBike implements CostCalculator {
                 distFactor = factors.distFactor;
             }
         }
+        if (surfaceCat>6) {
+            mgLog.e("Wrong surface Cat:"+ surfaceCat + " ,Tag.highway:" + wayTagEval.highway + " ,Tag.trackType:" + wayTagEval.trackType);
+        }
         this.surfaceCat = surfaceCat;
+
         mfd =  distFactor;
         mUpSlopeLimit = profile.mUpSlopeLimit * (1-fl*deltaSlope);
         mDelta =  (1-fl*deltaSlope);

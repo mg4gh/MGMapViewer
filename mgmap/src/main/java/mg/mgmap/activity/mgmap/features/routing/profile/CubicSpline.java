@@ -46,24 +46,38 @@ public class CubicSpline {
             b[j] = (y[j + 1] - y[j])/h[j] - h[j] * (c[j+1] + 2.0*c[j])/3.0;
             d[j] = (c[j+1] - c[j]) / (3.0* h[j]);
         }
-        polynominals = new double[n][4];
+        polynominals = new double[n+2][4];
+        polynominals[0][0] = y[0];
+        polynominals[0][1] = b[0];
+        polynominals[0][2] = 0.0;
+        polynominals[0][3] = 0.0;
         for ( int i = 0; i< n;i++){
-            polynominals[i][0] = y[i];
-            polynominals[i][1] = b[i];
-            polynominals[i][2] = c[i];
-            polynominals[i][3] = d[i];
+            polynominals[i+1][0] = y[i];
+            polynominals[i+1][1] = b[i];
+            polynominals[i+1][2] = c[i];
+            polynominals[i+1][3] = d[i];
         }
+        double x1 = this.x[n] - this.x[n-1];
+        double x2 = x1*x1;
+        polynominals[n+1][0] = y[n] ;
+        polynominals[n+1][1] = polynominals[n][1] + 2* polynominals[n][2]*x1 + 3*polynominals[n][3]*x2;
+        polynominals[n+1][2] = 0.0;
+        polynominals[n+1][3] = 0.0;
     }
 
     public double calc(double x){
-        int i = -1;
-        do {
-            i = i + 1;
-        } while (i < this.x.length - 2 && this.x[i+1] < x ); //x.length - 2 = n - 1 !
-        double x1 = x - this.x[i];
+        int i = 1;
+        int in;
+        if ( x < this.x[0])
+            in = 0;
+        else {
+            while (this.x[i]< x) i = i + 1;
+            in = i;
+        }
+        double x1 = x - this.x[i-1];
         double x2 = x1*x1;
         double x3 = x2*x1;
-        return polynominals[i][0] + polynominals[i][1]*x1 +polynominals[i][2]*x2 + polynominals[i][3]*x3;
+        return polynominals[in][0] + polynominals[in][1]*x1 +polynominals[in][2]*x2 + polynominals[in][3]*x3;
     }
 
 }

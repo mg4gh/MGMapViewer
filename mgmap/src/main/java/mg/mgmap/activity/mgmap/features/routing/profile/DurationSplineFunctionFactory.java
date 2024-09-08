@@ -42,8 +42,8 @@ public class DurationSplineFunctionFactory {
             double[] slopes ;
             double[] durations;
             if (bicType > 0) {
-                slopes = new double[]{-0.4, -0.2, -0.05, 0, 0.05, 0.10, 0.24,0.6};
-                durations = new double[slopes.length];
+//                slopes = new double[]{-0.4, -0.2, -0.05, 0, 0.05, 0.10, 0.24,0.6};
+//                durations = new double[slopes.length];
                 double watt;
                 double watt0;
                 double ACw;
@@ -54,9 +54,11 @@ public class DurationSplineFunctionFactory {
                 double fr;
                 double f1u;
                 double f2u;
+                double m = 90;
                 if (bicType == 1){
+                    slopes = new double[]{-0.4, -0.2, -0.05, 0, 0.05, 0.10, 0.24,0.6};
+                    durations = new double[slopes.length];
                     watt = 90 + 35*klevel;
-                    watt0 = watt;
                     ACw = 0.4 + surfaceLevel * 0.05 ;
                     highdowndoffset = 0.075;
 //                fd = Math.exp(-(slevel-2)*Math.log(Math.sqrt(2.0)))/1.6;
@@ -75,35 +77,57 @@ public class DurationSplineFunctionFactory {
                     fdown =  fd*(3.5+surfaceLevel*0.6);
                     slopes[5] = 0.07+0.015*klevel;
                     slopes[6] = 0.24+0.02*klevel;
-                } else { //if (bicType ==3) {
-                    watt = 130;
-                    watt0 = (surfaceLevel <= 1) ? 100 : watt;
-                    if (surfaceLevel <= 2) {
-                        ACw = 0.45 + 0.1 * surfaceLevel;
-                        Cr = 0.004 + 0.001 * surfaceLevel;
-                        fr = 0.875 - 0.075 * surfaceLevel;
-                        highdowndoffset = 0.0;
-                        fdown = 2.5 + 0.5*surfaceLevel;
-                    } else {
-                        ACw = 0.8 + 0.3 * (surfaceLevel - 3);
-                        Cr = 0.02 + 0.015 * (surfaceLevel - 3);
-                        fr = 0.6;
-                        highdowndoffset = -0.1;
-                        fdown = 6 + 2*(surfaceLevel - 3);
+                    durations[0] = (-slopes[0]-highdowndoffset)*fdown;
+                    durations[1] = (-slopes[1]-0.075)*fdown;
+                    durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, m) * fr);
+                    for (int i = 3; i < slopes.length - 2; i++) {
+                        durations[i] = 1 / getFrictionBasedVelocity(slopes[i], watt, Cr, ACw, m);
                     }
-                    f1u = 1.2;
-                    f2u = 2.5;
+                    durations[6] = f1u /  getFrictionBasedVelocity(slopes[6], watt, Cr, ACw, m)  ;
+                    durations[7] = f2u /  getFrictionBasedVelocity(slopes[7], watt, Cr, ACw, m)  ;
+                } else { //if (bicType ==3) {
+                    watt0 = 90.0 ;
+                    watt = 130.0;
+                    ACw = 0.45;
+                    fr = 1.0;
+                    if (surfaceLevel <= 2) {
+//                      ACw = 0.45 + 0.1 * surfaceLevel;
+                        Cr = 0.0035 + 0.0015 * surfaceLevel;
+//                      fr = 0.875 - 0.075 * surfaceLevel;
+                        highdowndoffset = 0.0;
+                        fdown = 3.5 + 0.5*surfaceLevel;
+//                        fdown = 2.5 + 0.5*surfaceLevel;
+                    } else {
+//                        ACw = 0.8 + 0.3 * (surfaceLevel - 3);
+                        Cr = 0.012 + 0.023 * (surfaceLevel - 3);
+ //                       fr = 1.0; // 0.6;
+                        highdowndoffset = -0.1;
+                        fdown = 8.0 + (surfaceLevel - 3);
+//                        fdown = 6 + 2*(surfaceLevel - 3);
+                    }
+                    int i0;
+                    if (surfaceLevel <= 3) {
+                        slopes = new double[]{-10.0, -0.6, -0.2, 50.0, 0.0, 0.1, 0.6,10.0};
+                        durations = new double[slopes.length];
+                        double[] freeRollSlope = new double[] {-0.049,-0.033,-0.0195,-0.0215};
+                        slopes[3] = freeRollSlope[surfaceLevel];
+                        durations[3] = 1 / (getFrictionBasedVelocity(slopes[3], 0.0, Cr, ACw, m));
+                        i0 = 4;
+                    } else {
+                        slopes = new double[]{-10.0, -0.6,-0.2, 0.0, 0.1, 0.6,10.0};
+                        durations = new double[slopes.length];
+                        i0 = 3;
+                    }
+                    durations[0] = (-slopes[0]-highdowndoffset+0.4)*fdown;
+                    durations[1] = (-slopes[1]-highdowndoffset)*fdown;
+                    durations[2] = (-slopes[2]-0.075)*fdown;
+                    durations[i0] = 1 / getFrictionBasedVelocity(slopes[i0], watt0, Cr, ACw, m);
+                    for (int i = i0+1; i < slopes.length - 2; i++) {
+                        durations[i] = 1 / getFrictionBasedVelocity(slopes[i], watt, Cr, ACw, m);
+                    }
+                    durations[slopes.length-2] = 1.5 /  getFrictionBasedVelocity(slopes[slopes.length-2], watt, Cr, ACw, m)  ;
+                    durations[slopes.length-1] = 1.8 /  getFrictionBasedVelocity(slopes[slopes.length-1], watt, Cr, ACw, m)  ;
                 }
-                double m = 90;
-                durations[0] = (-slopes[0]-highdowndoffset)*fdown;
-                durations[1] = (-slopes[1]-0.075)*fdown;
-                durations[2] = 1 / (getFrictionBasedVelocity(slopes[2], watt, Cr, ACw, m) * fr);
-                durations[3] = 1 / getFrictionBasedVelocity(slopes[3], watt0, Cr, ACw, m);
-                for (int i = 4; i < slopes.length - 2; i++) {
-                    durations[i] = 1 / getFrictionBasedVelocity(slopes[i], watt, Cr, ACw, m);
-                }
-                durations[6] = f1u /  getFrictionBasedVelocity(slopes[6], watt, Cr, ACw, m)  ;
-                durations[7] = f2u /  getFrictionBasedVelocity(slopes[7], watt, Cr, ACw, m)  ;
             } else { // bicType == 0 -> hiking
                 double fu = 9.0;
                 double fd = 10.5;
