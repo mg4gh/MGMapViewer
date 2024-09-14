@@ -71,13 +71,40 @@ public class CubicSpline {
         if ( x < this.x[0])
             in = 0;
         else {
-            while (this.x[i]< x) i = i + 1;
+            while (x > this.x[i] && i < this.x.length - 1 ) i = i + 1;
             in = i;
         }
         double x1 = x - this.x[i-1];
         double x2 = x1*x1;
         double x3 = x2*x1;
         return polynominals[in][0] + polynominals[in][1]*x1 +polynominals[in][2]*x2 + polynominals[in][3]*x3;
+    }
+
+    public double calcSlope(double x){
+        int i = 1;
+        int in;
+        if ( x < this.x[0])
+            in = 0;
+        else {
+            while (x > this.x[i] && i < this.x.length - 1 ) i = i + 1;
+            in = i;
+        }
+        double x1 = x - this.x[i-1];
+        double x2 = x1*x1;
+        return polynominals[in][1] + 2* polynominals[in][2]*x1 + 3*polynominals[in][3]*x2;
+    }
+
+    public double calcCurve(double x){
+        int i = 1;
+        int in;
+        if ( x < this.x[0])
+            in = 0;
+        else {
+            while (x > this.x[i] && i < this.x.length - 1 ) i = i + 1;
+            in = i;
+        }
+        double x1 = x - this.x[i-1];
+       return 2*polynominals[in][2] + 6*polynominals[in][3]*x1;
     }
 
 }
