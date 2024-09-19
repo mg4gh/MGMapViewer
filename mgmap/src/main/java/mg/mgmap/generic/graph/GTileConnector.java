@@ -51,7 +51,7 @@ public class GTileConnector {
         for (GNode node1 : borderNodes1){
             for (GNode node2 : borderNodes2){
                 if ( (horizontal?Math.abs( node1.getLat() - node2.getLat() ):Math.abs( node1.getLon() - node2.getLon() )) <= threshold){ //distance less than 0.5m -> connect nodes
-                    node1.bidirectionalConnect(node2);
+                    node1.bidirectionalConnect(node2, null);
                     remainingNodes1.remove(node1);
                     remainingNodes2.remove(node2);
                 }
@@ -73,7 +73,7 @@ public class GTileConnector {
                         if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approachPoint,0)) continue; // approach not found try next points
                         if (PointModelUtil.distance(approachPoint,node2) > CONNECT_THRESHOLD_METER) continue;
                         mgLog.d(()->"OK, connect: node1 " + node1 + " node1neighbour " + node1Neighbour + " node2 " + node2 + " node2neighbour " + node2Neighbour);
-                        node1.bidirectionalConnect(node2);
+                        node1.bidirectionalConnect(node2, null);
                         stillRemainingNodes1.remove(node1);
                         stillRemainingNodes2.remove(node2);
                     }
