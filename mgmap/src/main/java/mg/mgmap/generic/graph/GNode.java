@@ -131,8 +131,9 @@ public class GNode extends PointModelImpl {
     }
 
     public void bidirectionalConnect(GNode neighbourNode){
-        GNeighbour neighbour = new GNeighbour(neighbourNode,null);
-        GNeighbour reverseNeighbour = new GNeighbour(this,null);
+        WayAttributs wayAttributs = null; //neighbourNode.getNeighbour().getNextNeighbour().getWayAttributs();
+        GNeighbour neighbour = new GNeighbour(neighbourNode,wayAttributs);
+        GNeighbour reverseNeighbour = new GNeighbour(this,wayAttributs);
         neighbour.setReverse(reverseNeighbour);
         reverseNeighbour.setReverse(neighbour);
         this.addNeighbour(neighbour);

@@ -113,12 +113,12 @@ public class TagEval {
             else
                 distFactor = 1.5;
         } else if ("residential".equals(wayTagEval.highway)||"living_street".equals(wayTagEval.highway)) {
+            surfaceCat = (surfaceCat>0) ? surfaceCat :1;
             if ("bic_destination".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) ) {
                 distFactor = 1.0;
-            } else if( surfaceCat > 2){
-                distFactor = 1.5;
+ /*           } else if( surfaceCat > 2){
+                distFactor = 1.5; */
             } else  distFactor = 1.15;
-            surfaceCat = 1;
         } else if ("footway".equals(wayTagEval.highway) || "pedestrian".equals(wayTagEval.highway)) {
             surfaceCat = (surfaceCat < 1) ? 2 : surfaceCat;
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )

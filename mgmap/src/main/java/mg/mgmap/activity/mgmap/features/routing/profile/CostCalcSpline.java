@@ -43,6 +43,13 @@ public class CostCalcSpline implements CostCalculator {
 
     @Override
     public long getDuration(double dist, float vertDist) {
+        if (dist >= 0.00001) {
+            double slope = vertDist / dist;
+            double spm = cubicSpline.calc(slope);
+            double v = 3.6/spm;
+            mgLog.d("DurationCalc - Slope:" + slope + " v:" + v + " time:" + spm*dist + " dist:" + dist );
+//                       mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost(),last.getNeighbour(node).getWayAttributs().toDetailedString()));
+        }
         return (dist >= 0.00001) ? (long) (1000 * dist * cubicSpline.calc(vertDist / dist)) : 0;
     }
 
@@ -54,14 +61,14 @@ public class CostCalcSpline implements CostCalculator {
             double ACw = 0.45;
             double fdown = 8.5;
             double m = 90;
-            double [] cr = new double[] {0.0035,0.005,0.0065,0.02,0.04,0.075,0.15};
-            double [] highdowndoffset = new double[] {0.15,0.142,0.13,0.12,0.1,0.08,-0.03};
+            double [] cr = new double[] {0.0035,0.005,0.0065,0.015,0.04,0.075,0.15};
+            double [] highdowndoffset = new double[] {0.15,0.142,0.13,0.11,0.1,0.08,-0.03};
             double[] relSlope;
             double[] slopes;
             double[] durations;
             if (surfaceLevel <= 3) {
                 slopes = new double[]{ -0.6,-0.4,-0.2, -0.02, 0.0, 0.08, 0.2, 0.4};
-                relSlope = new double[]{2.2,2.3,1.05,0.9};
+                relSlope = new double[]{2.2,2.3,1.05,1.0};
                 durations = new double[slopes.length];
                 durations[4] = 1 / getFrictionBasedVelocity(0.0, watt0, cr[surfaceLevel], ACw, m);
                 durations[3] = durations[4] + slopes[3]*relSlope[surfaceLevel];

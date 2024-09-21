@@ -22,33 +22,28 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
         short surfaceCat = TagEval.getSurfaceCat(wayTagEval);
         if (TagEval.getNoAccess(wayTagEval)){
             distFactor = 10;
-            surfaceCat = 2;
+            surfaceCat = (surfaceCat>0) ? surfaceCat :2;
         } else {
             if ("path".equals(wayTagEval.highway)) {
-                surfaceCat = (surfaceCat>0) ? surfaceCat :4;
-                if (surfaceCat <= 1  || (surfaceCat == 2 && ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)))) {
+                surfaceCat = (surfaceCat<=0) ? 4: (surfaceCat == 1) ? 2 : surfaceCat;
+                if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
                     distFactor = 1.1;
-                } else if ( ("bic_designated".equals(wayTagEval.bicycle) && surfaceCat == 2 ) ||"lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)){
+                } else if ("bic_designated".equals(wayTagEval.bicycle)) {
                     distFactor = 1.5;
-                } else if ("bic_yes".equals(wayTagEval.bicycle) && surfaceCat == 2) {
+                } else if ("bic_yes".equals(wayTagEval.bicycle) ) {
                     distFactor = 1.5;
-                } else if ("bic_yes".equals(wayTagEval.bicycle) || "bic_designated".equals(wayTagEval.bicycle)) {
-                    distFactor = 2;
                 } else {
-                    distFactor = 10;
+                    distFactor = 2;
                 }
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
                 surfaceCat = (surfaceCat>0) ? surfaceCat :4;
-                if ( surfaceCat ==1  && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
+                if ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) ) {
                     distFactor = 1.0;
-                } else if ( surfaceCat ==1 || surfaceCat == 2 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
-                    distFactor = 1.05;
-                } else if (surfaceCat == 2 || surfaceCat == 3 && ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )) {
-                    distFactor = 1.2;
-                } else if (surfaceCat==3 || "bic_designated".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
-                    distFactor = 1.8;
+                    surfaceCat = (surfaceCat>2) ? (short) (surfaceCat-1):surfaceCat;
+                } else if ( "bic_designated".equals(wayTagEval.bicycle) ) {
+                    distFactor = 1.1;
                 } else {
-                    distFactor = 2.5;
+                    distFactor = 1.5;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
                 surfaceCat = 6;
@@ -76,6 +71,7 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
             return mfd*dist*surfaceCatSpline.calc(vertDist / dist) + dist * 5;
         else
             return mfd*dist*surfaceCatSpline.calc(vertDist / dist);
+//        return dist*surfaceCatSpline.calc(vertDist / dist);
     }
 
     public double heuristic(double dist, float vertDist) {
