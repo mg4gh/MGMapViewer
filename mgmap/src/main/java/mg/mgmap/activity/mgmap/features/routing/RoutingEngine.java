@@ -301,10 +301,8 @@ public class RoutingEngine {
 
                 sourceApproachModel = validateApproachModel(source.selectedApproach);
                 targetApproachModel = validateApproachModel(target.selectedApproach);
-                gStart.bidirectionalConnect(sourceApproachModel.getNode1());
-                gStart.bidirectionalConnect(sourceApproachModel.getNode2());
-                gEnd.bidirectionalConnect(targetApproachModel.getNode1());
-                gEnd.bidirectionalConnect(targetApproachModel.getNode2());
+                connectApproach2Graph(sourceApproachModel);
+                connectApproach2Graph(targetApproachModel);
 
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
@@ -481,6 +479,16 @@ public class RoutingEngine {
         }
         dropApproaches.forEach(approaches::remove); // seems to have better performance
         return approaches;
+    }
+
+    private void connectApproach2Graph(ApproachModel approach){
+        GNode approachNode = approach.getApproachNode();
+        GNode node1 = approach.getNode1();
+        GNode node2 = approach.getNode2();
+        GNeighbour neighbour12 = node1.getNeighbour(node2);
+        GNeighbour neighbour21 = neighbour12.getReverse();
+        node1.bidirectionalConnect(approachNode, neighbour12);
+        node2.bidirectionalConnect(approachNode, neighbour21);
     }
 
     public HashMap<PointModel, RoutePointModel> getRoutePointMap() {

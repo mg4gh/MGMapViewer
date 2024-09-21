@@ -219,6 +219,9 @@ public class GGraphTileFactory {
 //                    graph.addSegment(iNode, nNode);
 
                 int nNeighbours = nNode.countNeighbours();
+                if ((iNeighbours == 0) || (nNeighbours == 0)) { // don't connect, if a node has no neighbours (might occur due to former reduceGraph action)
+                    continue;
+                }
                 if ((iNeighbours == 1) && (nNeighbours == 1)) { // 1:1 connect -> no routing hint problem
                     gGraphTile.addSegment(null,iNode, nNode);
                     continue;
@@ -233,6 +236,7 @@ public class GGraphTileFactory {
                 }
                 if ((iNeighbours == 1) && (nNeighbours == 2)) { // 1:2 connect -> might give routing hint problem
                     reduceGraph(gGraphTile, nNode, iNode); // drop iNode; move neighbour form iNode to nNode
+                    iNeighbours = 0; // just in case there is a second close nNode
                     continue;
                 }
                 // else (n:m) accept routing hint issue
@@ -259,6 +263,7 @@ public class GGraphTileFactory {
             graph.addSegment(nextNeighbour.getWayAttributs(),iNode, nextNeighbour.getNeighbourNode());
         }
         graph.getNodes().remove(nNode);
+        nNode.getNeighbour().setNextNeighbour(null);
     }
 
     private void smoothGGraphTile(GGraphTile tile){
