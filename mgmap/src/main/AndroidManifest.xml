@@ -18,6 +18,12 @@
     <uses-feature
         android:name="android.hardware.sensor.barometer"
         android:required="false" />
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
 
     <application
         android:name="mg.mgmap.application.MGMapApplication"
@@ -154,6 +160,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
+
 
     </application>
 
