@@ -30,6 +30,7 @@ import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.graph.GNeighbour;
 import mg.mgmap.generic.graph.GNode;
+import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
@@ -385,10 +386,9 @@ public class RoutingEngine {
                     PointModel pm1 = mpm.get(1);
 
                     if (((d1 > d2) && (Math.abs(d1-(d2+d))<0.1)) || ((d1 <= d2) && (Math.abs(d2-(d1+d))<0.1))){
-                        GNeighbour lastNeighbour = null;
-                        if ((mpm.get(0) instanceof  GNode) && (mpm.get(1) instanceof GNode)){
-                            lastNeighbour = ((GNode)mpm.get(0)).getNeighbour((GNode)mpm.get(1));
-                        }
+                        // lastNeighbour will only be used for duration calculation - only distance and wayAttributes are used - so incorrect neighbour object doesn't matter
+                        GNeighbour lastNeighbour = ((GNode)mpmRaw.get(0)).getNeighbour((GNode)mpmRaw.get(1));
+                        lastNeighbour.setDistance(PointModelUtil.distance(mpm.get(0),mpm.get(2)));
                         duration = routingProfile.getDuration(mpm.get(0), lastNeighbour, mpm.get(2));
                         if (mpm.get(2) instanceof ExtendedPointModelImpl<?>){
                             ((ExtendedPointModelImpl<?>)mpm.get(2)).setTimestamp(duration);
