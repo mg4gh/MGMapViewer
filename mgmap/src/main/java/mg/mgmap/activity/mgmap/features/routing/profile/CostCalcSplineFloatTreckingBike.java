@@ -6,19 +6,19 @@ import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.util.basic.MGLog;
 
-public class CostCalcSplineTreckingBike implements CostCalculator {
+public class CostCalcSplineFloatTreckingBike implements CostCalculator {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
-    private final double mfd;
+    private final float mfd;
     private final boolean oneway;
-    private final CubicSpline surfaceCatSpline;
+    private final CubicSplineFloat surfaceCatSpline;
     private final short surfaceCat;
-    private final CostCalcSpline mProfileCalculator;
+    private final CostCalcSplineFloat mProfileCalculator;
 
-    public CostCalcSplineTreckingBike(WayAttributs wayTagEval, CostCalcSpline profile) {
+    public CostCalcSplineFloatTreckingBike(WayAttributs wayTagEval, CostCalcSplineFloat profile) {
         mProfileCalculator = profile;
         oneway = wayTagEval.onewayBic;
 
-        double  distFactor ;
+        float  distFactor ;
         short surfaceCat = TagEval.getSurfaceCat(wayTagEval);
         if (TagEval.getNoAccess(wayTagEval)){
             distFactor = 10;
@@ -27,34 +27,34 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
             if ("path".equals(wayTagEval.highway)) {
                 surfaceCat = (surfaceCat<=0) ? 4: (surfaceCat == 1) ? 2 : surfaceCat;
                 if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
-                    distFactor = 1.1;
+                    distFactor = 1.1f;
                 } else if ("bic_designated".equals(wayTagEval.bicycle)) {
-                    distFactor = 1.5;
+                    distFactor = 1.5f;
                 } else if ("bic_yes".equals(wayTagEval.bicycle) ) {
-                    distFactor = 1.5;
+                    distFactor = 1.5f;
                 } else {
                     distFactor = 2;
                 }
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
                 surfaceCat = (surfaceCat>0) ? surfaceCat :4;
                 if ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) ) {
-                    distFactor = 1.0;
+                    distFactor = 1.0f;
                     surfaceCat = (surfaceCat>2) ? (short) (surfaceCat-1):surfaceCat;
                 } else if ( "bic_designated".equals(wayTagEval.bicycle) ) {
-                    distFactor = 1.1;
+                    distFactor = 1.1f;
                 } else {
-                    distFactor = 1.5;
+                    distFactor = 1.5f;
                 }
             } else if ("steps".equals(wayTagEval.highway)) {
                 surfaceCat = 6;
                 if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
-                    distFactor = 5.0;
+                    distFactor = 5.0f;
                 else
-                    distFactor = 20;
+                    distFactor = 20f;
             } else {
                 TagEval.Factors factors = TagEval.getFactors(wayTagEval, surfaceCat);
                 surfaceCat = factors.surfaceCat;
-                distFactor = factors.distFactor;
+                distFactor = (float) factors.distFactor;
             }
         }
         if (surfaceCat>6) {
@@ -68,9 +68,9 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
 
     public double calcCosts(double dist, float vertDist, boolean primaryDirection){
         if ( oneway && !primaryDirection)
-            return mfd*dist*surfaceCatSpline.calc(vertDist / dist) + dist * 5;
+            return mfd*dist*surfaceCatSpline.calc(vertDist / (float) dist) + dist * 5;
         else
-            return mfd*dist*surfaceCatSpline.calc(vertDist / dist);
+            return mfd*dist*surfaceCatSpline.calc(vertDist / (float) dist);
 //        return dist*surfaceCatSpline.calc(vertDist / dist);
     }
 
@@ -82,12 +82,12 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
     @Override
     public long getDuration(double dist, float vertDist) {
 /*        if (dist >= 0.00001) {
-            double slope = vertDist / dist;
+            float slope = vertDist / (float) dist;
             double spm = surfaceCatSpline.calc(slope);
             double v = 3.6/spm;
             mgLog.d("DurationCalc - Slope:" + slope + " v:" + v + " time:" + spm*dist + " dist:" + dist + " surfaceCat:" + surfaceCat + " mfd:" + mfd);
         } */
-        return ( dist >= 0.00001) ? (long) ( 1000 * dist * surfaceCatSpline.calc(vertDist/dist)) : 0;
+        return ( dist >= 0.00001) ? (long) ( 1000 * dist * surfaceCatSpline.calc(vertDist/(float) dist)) : 0;
     }
 
 }

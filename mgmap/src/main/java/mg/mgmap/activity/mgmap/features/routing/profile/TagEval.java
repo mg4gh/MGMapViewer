@@ -5,6 +5,8 @@ import android.util.Log;
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class TagEval {
+    public static double minDistfSc0 = 1.21;
+
     private TagEval(){}
 
     protected static boolean getNoAccess(WayAttributs wayTagEval) {
@@ -78,7 +80,7 @@ public class TagEval {
         return (type>0 && surfaceCat>0) ? (short) Math.ceil ((double) (type + surfaceCat)/2.0): (type>0)?type:surfaceCat;
 //        return  (short) Math.ceil ((double) (type + surfaceCat)/2.0); //(type > 0) ? type : surfaceCat;
     }
-    protected static Factors getFactors(WayAttributs wayTagEval, short surfaceCat){
+    protected static Factors getFactors(WayAttributs wayTagEval, short surfaceCat) {
         double distFactor ;
         if ("cycleway".equals(wayTagEval.highway)) {
             surfaceCat = (surfaceCat>0) ? surfaceCat :1;
@@ -147,7 +149,8 @@ public class TagEval {
             distFactor = 1.3;
             surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
         }
-
+        if ( surfaceCat == 0 && distFactor < minDistfSc0 )
+            throw new RuntimeException("distFactor for surfaceLevel 0 too small");
         return new Factors(distFactor, surfaceCat);
     }
 
