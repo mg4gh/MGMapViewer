@@ -3,44 +3,46 @@ package mg.mgmap.activity.mgmap.features.routing.profile;
 import static java.lang.Math.abs;
 
 public class CubicSplineHeuristic {
-    private final double mUpSlopeLimit; //  up to this slope base Costs
-    private final double mUpHeuSlope;
-    private final double mUpHeuInterc;
-    private final double mDnSlopeLimit ;
-    private final double mDnHeuSlope;
-    private final double mDnHeuInterc;
+    private final float mUpSlopeLimit; //  up to this slope base Costs
+    private final float mDnSlopeLimit ;
     private final CubicSpline cubicSpline;
 
 
-    protected CubicSplineHeuristic(CubicSpline cubicSpline, double lowstart, double highstart){
+    /* given two points with a distance d and vertical distance v and a continuously differentiable
+       cost function of the elevation f(e) = f(v/d) (given here as a cubicSpline function) and the costs from source to target point is
+       given by: c(d,v) = d*f(v/d). If the vertical distance is given and constant, one can vary the path to the
+       target and thereby increase the distance. A criteria of this minimum cost is that the first
+       derivative varying d is 0, c'(d) = f(v/d) - d * f'(d) v/d^2 = f(e) - f'(e)*e = 0 or
+       f(e) = f'(e)*e. This is a tangent on f(e) crossing the origin.
+       If f(e) has a single minimum and curvature is positive (f''(e)>=0), there will be two such
+       tangents. So a heuristic is given by the two tangents above and below the touch points of those tangents
+       and by f(e) between those touch points.
+       Equations solved via Newton Iteration.
+     */
+
+    protected CubicSplineHeuristic(CubicSpline cubicSpline, float lowstart, float highstart){
         this.cubicSpline = cubicSpline;
         mUpSlopeLimit = solve(highstart,cubicSpline);
-        mUpHeuSlope  = cubicSpline.calcSlope(mUpSlopeLimit);
-        mUpHeuInterc = cubicSpline.calc(mUpSlopeLimit) - mUpHeuSlope*mUpSlopeLimit;
         mDnSlopeLimit = solve(lowstart,cubicSpline);
-        mDnHeuSlope  = cubicSpline.calcSlope(mDnSlopeLimit);
-        mDnHeuInterc = cubicSpline.calc(mDnSlopeLimit) - mDnHeuSlope*mDnSlopeLimit;
     }
 
-    protected double heuristic (double slope){
-        if (slope <= mDnSlopeLimit)
-            return mDnHeuInterc + slope * mDnHeuSlope;
-        else if (slope >= mUpSlopeLimit)
-            return mUpHeuInterc + slope * mUpHeuSlope;
-        else
-            return cubicSpline.calc(slope);
+    protected CubicSpline getCubicSplineHeuristic(){
+        // cut out a new cubic spline out of the existing one using the to touch points of the tangents
+        return cubicSpline.getCutCubicSpline(mDnSlopeLimit,mUpSlopeLimit);
     }
 
-    private double solve( double xs, CubicSpline cubicSpline){
-        double a;
-        double as;
-        double xsp;
+ // Newton iteration to find tangent
+    private float solve( float xs, CubicSpline cubicSpline){
+        float a;
+        float as;
+        float xsp;
+        float minval = 0.0001f;
         do {
             xsp = xs;
-            a = cubicSpline.calc(xsp) - cubicSpline.calcSlope(xsp)*xsp - 0.001;
+            a = cubicSpline.calc(xsp) - cubicSpline.calcSlope(xsp)*xsp - minval;
             as = -cubicSpline.calcCurve(xsp) * xsp;
             xs = xsp - a / as;
-        } while ( abs(xs-xsp)>0.0001);
+        } while ( a > minval || a < -minval);
         return xs;
     }
 }

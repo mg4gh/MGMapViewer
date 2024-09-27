@@ -2,27 +2,25 @@ package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import static java.lang.Math.abs;
 
-import android.util.Log;
-
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.util.basic.MGLog;
 
-public class CostCalcSpline implements CostCalculator {
+public class CostCalcSplineDouble implements CostCalculator {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private static double lowstart = -0.1;
     private static double highstart = 0.02;
 
 
-    private final CubicSpline cubicSpline;
-    private final CubicSplineHeuristic cubicSplineHeuristic;
-    private final CubicSpline[] SurfaceCatSpline = new CubicSpline[7];
+    private final CubicSplineDouble cubicSpline;
+    private final CubicSplineHeuristicDouble cubicSplineHeuristic;
+    private final CubicSplineDouble[] SurfaceCatSpline = new CubicSplineDouble[7];
 
 
-    protected CostCalcSpline() {
+    protected CostCalcSplineDouble() {
         cubicSpline = getDurationSpline((short) 0);
-        cubicSplineHeuristic = new CubicSplineHeuristic(cubicSpline,lowstart,highstart);
+        cubicSplineHeuristic = new CubicSplineHeuristicDouble(cubicSpline,lowstart,highstart);
     }
 
 
@@ -53,8 +51,8 @@ public class CostCalcSpline implements CostCalculator {
         return (dist >= 0.00001) ? (long) (1000 * dist * cubicSpline.calc(vertDist / dist)) : 0;
     }
 
-    protected CubicSpline getDurationSpline( short surfaceLevel){
-        CubicSpline cubicSpline = SurfaceCatSpline[surfaceLevel];
+    protected CubicSplineDouble getDurationSpline(short surfaceLevel){
+        CubicSplineDouble cubicSpline = SurfaceCatSpline[surfaceLevel];
         if (cubicSpline == null) {
             double watt0 = 90.0 ;
             double watt = 130.0;
@@ -84,7 +82,7 @@ public class CostCalcSpline implements CostCalculator {
             durations[slopes.length-2] = 1.5 /  getFrictionBasedVelocity(slopes[slopes.length-2], watt, cr[surfaceLevel], ACw, m)  ;
             durations[slopes.length-1] = 3.0 /  getFrictionBasedVelocity(slopes[slopes.length-1], watt, cr[surfaceLevel], ACw, m)  ;
             try {
-                cubicSpline = new CubicSpline(slopes, durations);
+                cubicSpline = new CubicSplineDouble(slopes, durations);
                 SurfaceCatSpline[surfaceLevel] = cubicSpline;
                 if (this.cubicSplineHeuristic !=  null){
                     checkHeuristic(cubicSpline, surfaceLevel);
@@ -97,12 +95,12 @@ public class CostCalcSpline implements CostCalculator {
     }
 
 
-    private boolean checkHeuristic( CubicSpline cubicSpline, short surfaceLevel) throws Exception {
+    private boolean checkHeuristic(CubicSplineDouble cubicSpline, short surfaceLevel) throws Exception {
         double xs = lowstart - 0.1;
         do {
             xs = xs + 0.001;
             if (cubicSplineHeuristic.heuristic(xs) > cubicSpline.calc(xs)) {
-                throw new Exception("CubicSpline of surfaceLevel "+  surfaceLevel + " smaller than heuristic at slope: " + xs);
+                throw new Exception("CubicSplineDouble of surfaceLevel "+  surfaceLevel + " smaller than heuristic at slope: " + xs);
             }
         } while (xs < highstart + 0.2);
         return true;

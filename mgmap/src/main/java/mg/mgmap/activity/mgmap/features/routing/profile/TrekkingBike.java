@@ -6,19 +6,12 @@ import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class TrekkingBike extends RoutingProfile {
-/*    public TrekkingBike( ) {
+    public TrekkingBike( ) {
         super(new CostCalculatorTwoPieceFunc( (short)1,(short)0, (short)3));
     }
 
     protected CostCalculator getCostCalculator(CostCalculator profileCalculator, WayAttributs wayAttributs) {
         return new CostCalculatorTreckingBike(wayAttributs, (CostCalculatorTwoPieceFunc) profileCalculator);
-    } */
-    public TrekkingBike( ) {
-    super(new CostCalcSplineFloat( ));
-}
-
-    protected CostCalculator getCostCalculator(CostCalculator profileCalculator, WayAttributs wayAttributs) {
-        return new CostCalcSplineFloatTreckingBike(wayAttributs, (CostCalcSplineFloat) profileCalculator);
     }
     @Override
     public int getIconIdActive() {

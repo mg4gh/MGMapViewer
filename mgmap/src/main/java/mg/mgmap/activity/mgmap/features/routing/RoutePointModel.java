@@ -15,7 +15,6 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeSet;
 
 import mg.mgmap.generic.graph.GNode;
@@ -26,12 +25,14 @@ import mg.mgmap.generic.model.PointModel;
 
 /** A model point of the route. Most important property is the reference to the corresponding
  * MarkerTrackLogPoint (PointModel). Additionally it keeps a reference to a MultiPointModel
- * that represents the route between the previous MarkerTrackLogPoint and this one.
+ * that represents the route between the previous MarkerTrackLogPoint and this one. This is not
+ * just the list of GNode instances - instead it is a list of ExtendedPointModelImpl instances with generic
+ * type RoutingHint. These points contain already the routing hints as an extent object
+ * and they also contain the relative amount of time from the beginning of this route. <br>
  * Finally it contains references to the approaches of this MarkerTrackLogPoint.
  * */
 public class RoutePointModel {
 
-    HashMap<PointModel, RoutingHint> routingHints = new HashMap<>();
     MultiPointModelImpl currentMPM = null;
     MultiPointModelImpl newMPM = null;
     PointModel mtlp;

@@ -42,7 +42,7 @@ public class CostCalculatorTwoPieceFunc implements CostCalculator {
     protected final short mKlevel;
     protected final short mSlevel;
     protected final short mBicType;
-    private final CubicSpline cubicSpline;
+    private final CubicSplineDouble cubicSpline;
 
 
     protected CostCalculatorTwoPieceFunc(short kLevel, short sLevel, short bicType) {

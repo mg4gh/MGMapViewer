@@ -19,7 +19,6 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,6 +32,7 @@ import mg.mgmap.generic.graph.GNeighbour;
 import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.ExtendedPointModelImpl;
+import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -177,7 +177,7 @@ public class RoutingEngine {
                 if (bRecalcRoute){
                     routeModified = true;
                     current.aborted = false;
-                    current.newMPM = calcRouting(prev, current, current.routingHints, currentRelaxedNodes);
+                    current.newMPM = calcRouting(prev, current, currentRelaxedNodes);
                 }
                 if (refreshRequired.get() != 0) {
                     current.aborted = true;
@@ -239,23 +239,27 @@ public class RoutingEngine {
                         rpm.currentMPM = rpm.newMPM;
                         if (rpm.newMPM != null){
                             rpm.currentDistance = PointModelUtil.distance(rpm.currentMPM);
+                            long mpmDuration = 0;
                             for (PointModel pm : rpm.newMPM){
-                                if (pm != lastPM){ // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
-                                    ExtendedPointModelImpl<RoutingHint> pmr = new ExtendedPointModelImpl<>(pm,rpm.routingHints.get(pm));
-                                    GNeighbour neighbour = null;
-                                    if ((lastPM instanceof  GNode) && (pm instanceof GNode)){
-                                        neighbour = ((GNode)lastPM).getNeighbour((GNode)pm);
+                                if ((lastPM == null) || (pm.getLaLo() != lastPM.getLaLo())) { // don't add, if the same point already exists (connecting point of two routes should belong to the first one)
+                                    RoutingHint hint = null;
+                                    if (pm instanceof ExtendedPointModelImpl<?>) {
+                                        //noinspection unchecked
+                                        ExtendedPointModelImpl<RoutingHint> epm = (ExtendedPointModelImpl<RoutingHint>) pm;
+                                        hint = epm.getExtent();
+                                        mpmDuration = epm.getTimestamp();
                                     }
-                                    if (lastPM != null) {
-//                                        timestamp += routingProfile.getDuration((neighbour == null) ? null : neighbour.getWayAttributs(), lastPM, pmr);
-                                        timestamp += routingProfile.getDuration(lastPM, neighbour, pmr);
-                                    }
-                                    pmr.setTimestamp(timestamp);
-                                    routeTrackLog.addPoint(pmr);
-                                    routePointMap2.put(pmr,rpm);
+                                    ExtendedPointModelImpl<RoutingHint> epmr = new ExtendedPointModelImpl<>(pm, hint);
+                                    epmr.setTimestamp(timestamp + mpmDuration);
+                                    routeTrackLog.addPoint(epmr);
+                                    routePointMap2.put(epmr, rpm);
+
+
                                 }
                                 lastPM = pm;
+
                             }
+                            timestamp += mpmDuration;
                         }
                     }
                 }
@@ -277,11 +281,10 @@ public class RoutingEngine {
     }
 
     MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target) {
-        return calcRouting(source,target,null,null);
+        return calcRouting(source,target,null);
     }
 
-    @SuppressWarnings("ReplaceNullCheck")
-    MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target, Map<PointModel, RoutingHint> hints, ArrayList<PointModel> relaxedNodes){
+    MultiPointModelImpl calcRouting(RoutePointModel source, RoutePointModel target, ArrayList<PointModel> relaxedNodes){
 
         MultiPointModelImpl mpm = new MultiPointModelImpl();
         mgLog.d("Start");
@@ -318,11 +321,61 @@ public class RoutingEngine {
                     mgLog.e(e);
                     gGraphSearch = new BidirectionalAStar(multi, routingProfile); // fallback
                 }
-                for (PointModel pm : gGraphSearch.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes)){
-                    mpm.addPoint( pm );
-                }
+                MultiPointModel mpmRaw = gGraphSearch.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes);
                 mgLog.i(gGraphSearch.getResult());
                 gGraphSearch = null;
+
+                long duration = -1;
+                for (int idx=0; idx < mpmRaw.size(); idx++){
+                    RoutingHint hint = null;
+                    if (idx == 0){
+                        duration = 0;
+                    } else {
+                        GNeighbour lastNeighbour = null;
+                        if ((mpmRaw.get(idx-1) instanceof  GNode) && (mpmRaw.get(idx) instanceof GNode)){
+                            lastNeighbour = ((GNode)mpmRaw.get(idx-1)).getNeighbour((GNode)mpmRaw.get(idx));
+                        }
+                        duration += routingProfile.getDuration(mpmRaw.get(idx-1), lastNeighbour, mpmRaw.get(idx));
+
+                        if (idx < mpmRaw.size()-1){
+                            hint = new RoutingHint();
+                            hint.pmPrev = mpmRaw.get(idx-1);
+                            hint.pmCurrent = mpmRaw.get(idx);
+                            hint.pmNext = mpmRaw.get(idx+1);
+
+                            hint.directionDegree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,hint.pmNext);
+
+                            hint.nextLeftDegree = -1;
+                            hint.nextRightDegree = 361;
+                            if (hint.pmCurrent instanceof GNode) {
+                                GNode pmgCurrent = (GNode) hint.pmCurrent;
+                                GNeighbour neighbour = pmgCurrent.getNeighbour();
+
+                                while ((neighbour = multi.getNextNeighbour(pmgCurrent, neighbour)) != null) {
+                                    if (sourceApproachModel.getApproachNode() == neighbour.getNeighbourNode()) continue; // skip neighbour to source approach node
+                                    if (targetApproachModel.getApproachNode() == neighbour.getNeighbourNode()) continue; // skip neighbour to target approach node
+                                    hint.numberOfPathes++;
+                                    // use approach segments as path, but not as concurrent path with degree calculation
+                                    if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbour.getNeighbourNode()))){
+                                        continue;
+                                    }
+                                    if ((idx == mpmRaw.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbour.getNeighbourNode()))){
+                                        continue;
+                                    }
+
+                                    double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getNeighbourNode());
+                                    if ((hint.nextLeftDegree < degree) && (degree < hint.directionDegree)) hint.nextLeftDegree = degree;
+                                    if ((hint.directionDegree < degree) && (degree < hint.nextRightDegree)) hint.nextRightDegree = degree;
+                                }
+                            }
+
+                        }
+                    }
+                    ExtendedPointModelImpl<RoutingHint> epm = new ExtendedPointModelImpl<>(mpmRaw.get(idx),hint);
+                    epm.setTimestamp(duration);
+                    mpm.addPoint(epm);
+                }
+
 
                 // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
                 if (mpm.size() == 3){
@@ -330,14 +383,17 @@ public class RoutingEngine {
                     double d1 = PointModelUtil.distance(mpm.get(0), mpm.get(1) );
                     double d2 = PointModelUtil.distance(mpm.get(1), mpm.get(2) );
                     PointModel pm1 = mpm.get(1);
-                    if (d1 > d2){
-                        if (Math.abs(d1-(d2+d))<0.1){
-                            mpm.removePoint(pm1);
+
+                    if (((d1 > d2) && (Math.abs(d1-(d2+d))<0.1)) || ((d1 <= d2) && (Math.abs(d2-(d1+d))<0.1))){
+                        GNeighbour lastNeighbour = null;
+                        if ((mpm.get(0) instanceof  GNode) && (mpm.get(1) instanceof GNode)){
+                            lastNeighbour = ((GNode)mpm.get(0)).getNeighbour((GNode)mpm.get(1));
                         }
-                    } else {
-                        if (Math.abs(d2-(d1+d))<0.1){
-                            mpm.removePoint(pm1);
+                        duration = routingProfile.getDuration(mpm.get(0), lastNeighbour, mpm.get(2));
+                        if (mpm.get(2) instanceof ExtendedPointModelImpl<?>){
+                            ((ExtendedPointModelImpl<?>)mpm.get(2)).setTimestamp(duration);
                         }
+                        mpm.removePoint(pm1);
                     }
                 }
             }
@@ -370,52 +426,12 @@ public class RoutingEngine {
         mpm.setRoute(mpm.size() != 0);
 
         if (mpm.size() == 0) { // no routing required or routing not possible due to missing approach or no route found
-            if (gStart != null){
-                mpm.addPoint(gStart);
-            } else {
-                mpm.addPoint(new PointModelImpl(source.mtlp));
-            }
-            if (gEnd != null){
-                mpm.addPoint(gEnd);
-            } else {
-                mpm.addPoint(new PointModelImpl(target.mtlp));
-            }
-        }
+            ExtendedPointModelImpl<RoutingHint> epm0 = new ExtendedPointModelImpl<>((gStart==null)?source.mtlp:gStart, null);
+            mpm.addPoint(epm0);
 
-        if ((multi != null) && (hints != null)){
-            hints.clear();
-            for (int idx=1; idx < mpm.size()-1; idx++){
-                RoutingHint hint = new RoutingHint();
-                hint.pmPrev = mpm.get(idx-1);
-                hint.pmCurrent = mpm.get(idx);
-                hint.pmNext = mpm.get(idx+1);
-
-                hint.directionDegree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,hint.pmNext);
-
-                hint.nextLeftDegree = -1;
-                hint.nextRightDegree = 361;
-                if (hint.pmCurrent instanceof GNode) {
-                    GNode pmgCurrent = (GNode) hint.pmCurrent;
-                    GNeighbour neighbour = pmgCurrent.getNeighbour();
-
-                    while ((neighbour = multi.getNextNeighbour(pmgCurrent, neighbour)) != null) {
-                        hint.numberOfPathes++;
-                        // overlays to approach nodes are already removed
-                        // use approach segments as path, but not as concurrent path with degree calculation
-                        if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbour.getNeighbourNode()))){
-                            continue;
-                        }
-                        if ((idx == mpm.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbour.getNeighbourNode()))){
-                            continue;
-                        }
-
-                        double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getNeighbourNode());
-                        if ((hint.nextLeftDegree < degree) && (degree < hint.directionDegree)) hint.nextLeftDegree = degree;
-                        if ((hint.directionDegree < degree) && (degree < hint.nextRightDegree)) hint.nextRightDegree = degree;
-                    }
-                }
-                hints.put(hint.pmCurrent, hint);
-            }
+            ExtendedPointModelImpl<RoutingHint> epm1 = new ExtendedPointModelImpl<>((gEnd==null)?target.mtlp:gEnd, null);
+            epm1.setTimestamp(routingProfile.getDuration(epm0, null, epm1));
+            mpm.addPoint(epm1);
         }
         mgLog.d("End");
         return mpm;
