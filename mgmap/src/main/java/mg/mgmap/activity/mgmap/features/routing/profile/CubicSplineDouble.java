@@ -1,32 +1,32 @@
 package mg.mgmap.activity.mgmap.features.routing.profile;
 
 /**
- * computes natural cubic spline. Algorithm: https://en.wikipedia.org/wiki/Spline_(mathematics)
+ * computes natural cubic spline. Algorithm: <a href="https://en.wikipedia.org/wiki/Spline_(mathematics)">...</a>
  */
 public class CubicSplineDouble {
 
     private final double[][] polynominals;
     private final double[] x;
-    public CubicSplineDouble(double x[], double y[]) throws Exception {
+    public CubicSplineDouble(double[] x, double[] y) throws Exception {
         if  ( x.length < 3 ) {
             throw new Exception("input array too short");
         } else if ( x.length != y.length ) {
             throw new Exception("x and y vector size don't match");
         }
         double min = - Double.MAX_VALUE;
-        for ( int i = 0; i<x.length; i++){
-            if (x[i] <= min) throw new Exception("x not sorted in ascending order");
-            min = x[i];
+        for (double v : x) {
+            if (v <= min) throw new Exception("x not sorted in ascending order");
+            min = v;
         }
         this.x = x;
         int n = x.length - 1;
 
-        double h[] = new double[n];
+        double[] h = new double[n];
         for (int i = 0; i < n; i++) {
             h[i] = x[i+1] - x[i];
         }
-        double mu[] = new double[n];
-        double z[] = new double[n+1];
+        double[] mu = new double[n];
+        double[] z = new double[n+1];
         mu[0] = 0.0;
         z[0] = 0.0;
         double l;
@@ -36,9 +36,9 @@ public class CubicSplineDouble {
             z[i] = (3.0 * (y[i+1] * h[i-1] - y[i] * (x[i+1] - x[i-1])+ y[i-1] * h[i]) /
                     (h[i-1] * h[i]) - h[i-1] * z[i-1])/ l;
         }
-        double b[] = new double[n];
-        double c[] = new double[n+1];
-        double d[] = new double[n];
+        double[] b = new double[n];
+        double[] c = new double[n+1];
+        double[] d = new double[n];
         z[n] = 0.0;
         c[n] = 0.0;
         for (int j = n -1; j >=0; j--) {

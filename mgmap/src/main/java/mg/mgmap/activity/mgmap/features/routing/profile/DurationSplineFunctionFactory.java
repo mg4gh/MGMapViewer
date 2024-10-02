@@ -89,7 +89,6 @@ public class DurationSplineFunctionFactory {
                     watt0 = 90.0 ;
                     watt = 130.0;
                     ACw = 0.45;
-                    fr = 1.0;
                     if (surfaceLevel <= 2) {
 //                      ACw = 0.45 + 0.1 * surfaceLevel;
                         Cr = 0.0035 + 0.0015 * surfaceLevel;

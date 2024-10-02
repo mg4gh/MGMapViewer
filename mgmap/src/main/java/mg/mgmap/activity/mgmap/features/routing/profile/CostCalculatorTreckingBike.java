@@ -2,6 +2,8 @@ package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import static java.lang.Math.abs;
 import java.lang.invoke.MethodHandles;
+import java.util.Locale;
+
 import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -128,7 +130,7 @@ public class CostCalculatorTreckingBike implements CostCalculator {
            double slope = vertDist / dist;
            double spm = DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(slope);
            double v = 3.6/spm;
-           mgLog.d("DurationCalc - Slope:" + slope + " v:" + v + " time:" + spm*dist + " dist:" + dist + " surfaceCat:" + surfaceCat + " mfd:" + mfd);
+           mgLog.d(()-> String.format(Locale.ENGLISH, "DurationCalc: Slope=%.2f v=%.2f time=%.2f dist=%.2f",100f*slope,v,spm*dist,dist));
        }
        return ( dist >= 0.00001) ? (long) ( 1000 * dist * DurationSplineFunctionFactory.getInst().getDurationSplineFunction(mProfileCalculator.mKlevel,mProfileCalculator.mSlevel,surfaceCat,mProfileCalculator.mBicType).calc(vertDist/dist)) : 0;
     }

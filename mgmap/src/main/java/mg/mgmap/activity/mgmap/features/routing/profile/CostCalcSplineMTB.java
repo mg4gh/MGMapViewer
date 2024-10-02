@@ -2,20 +2,19 @@ package mg.mgmap.activity.mgmap.features.routing.profile;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Locale;
-
 import mg.mgmap.activity.mgmap.features.routing.CostCalculator;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.util.basic.MGLog;
 
-public class CostCalcSplineTreckingBike implements CostCalculator {
+public class CostCalcSplineMTB implements CostCalculator {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private final float mfd;
     private final boolean oneway;
     private final CubicSpline surfaceCatSpline;
     private final short surfaceCat;
-    private final CostCalcSplineProfileTreckingBike mProfileCalculator;
+    private final CostCalcSplineProfileMTB mProfileCalculator;
 
-    public CostCalcSplineTreckingBike(WayAttributs wayTagEval, CostCalcSplineProfileTreckingBike profile) {
+    public CostCalcSplineMTB(WayAttributs wayTagEval, CostCalcSplineProfileMTB profile) {
         mProfileCalculator = profile;
         oneway = wayTagEval.onewayBic;
 
@@ -26,36 +25,25 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
             surfaceCat = (surfaceCat>0) ? surfaceCat :2;
         } else {
             if ("path".equals(wayTagEval.highway)) {
-                surfaceCat = (surfaceCat<=0) ? 4: (surfaceCat == 1) ? 2 : surfaceCat;
-                if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network)) {
-                    distFactor = 1.1f;
-                } else if ("bic_designated".equals(wayTagEval.bicycle)) {
-                    distFactor = 1.5f;
-                } else if ("bic_yes".equals(wayTagEval.bicycle) ) {
-                    distFactor = 1.5f;
-                } else {
-                    distFactor = 2;
-                }
+                surfaceCat = (surfaceCat<=0) ? 4: surfaceCat;
+                if (surfaceCat == 1){
+                    distFactor = 1.2f;
+                    surfaceCat = 2;
+                } else
+                    distFactor = 1f;
             } else if ("track".equals(wayTagEval.highway) || "unclassified".equals(wayTagEval.highway)) {
                 surfaceCat = (surfaceCat>0) ? surfaceCat :4;
-                if ( "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) ) {
-                    distFactor = 1.0f;
-                    surfaceCat = (surfaceCat>2) ? (short) (surfaceCat-1):surfaceCat;
-                } else if ( "bic_designated".equals(wayTagEval.bicycle) ) {
-                    distFactor = 1.1f;
-                } else {
-                    distFactor = 1.5f;
-                }
+                distFactor = 1.25f;
             } else if ("steps".equals(wayTagEval.highway)) {
                 surfaceCat = 6;
                 if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network))
-                    distFactor = 5.0f;
+                    distFactor = 1f;
                 else
-                    distFactor = 20f;
+                    distFactor = 2f;
             } else {
                 TagEval.Factors factors = TagEval.getFactors(wayTagEval, surfaceCat);
                 surfaceCat = factors.surfaceCat;
-                distFactor = (float) factors.distFactor;
+                distFactor = (float) ((surfaceCat <= 2) ? factors.distFactor*1.3d : factors.distFactor );
             }
         }
         if (surfaceCat>6) {
@@ -89,5 +77,4 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
         }
         return ( dist >= 0.00001) ? (long) ( 1000 * dist * surfaceCatSpline.calc(vertDist/(float) dist)) : 0;
     }
-
 }
