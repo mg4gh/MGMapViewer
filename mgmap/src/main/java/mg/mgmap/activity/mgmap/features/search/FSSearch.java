@@ -239,7 +239,7 @@ public class FSSearch extends FeatureService {
 
     private void setSearchProvider(){
         try {
-            this.searchProvider = (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+prefSearchProvider.getValue()).newInstance();
+            this.searchProvider = (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+prefSearchProvider.getValue()).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             mgLog.e(e);
         }

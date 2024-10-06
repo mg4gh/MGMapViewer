@@ -52,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
                 try {
                     mgLog.i("open PreferenceFragment " + clazzname);
                     Class<?> clazz = Class.forName(clazzname);
-                    Object obj = clazz.newInstance();
+                    Object obj = clazz.getDeclaredConstructor().newInstance();
                     if (obj instanceof PreferenceFragmentCompat) {
                         pfc = (PreferenceFragmentCompat) obj;
                     }
