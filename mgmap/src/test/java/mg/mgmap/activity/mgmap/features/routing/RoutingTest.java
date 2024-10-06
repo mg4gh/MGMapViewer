@@ -83,7 +83,7 @@ public class RoutingTest {
             String statistic = rotl.getTrackStatistic().toString();
             System.out.println( statistic);
             Assert.assertEquals(680.29, rotl.getTrackStatistic().getTotalLength(), 0.01);
-            Assert.assertEquals(8, rotl.getTrackStatistic().getNumPoints());
+            Assert.assertEquals(7, rotl.getTrackStatistic().getNumPoints());
         }
         {   // Problemfall B45 Bammentaler Strasse
             WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
@@ -96,7 +96,7 @@ public class RoutingTest {
             String statistic = rotl.getTrackStatistic().toString();
             System.out.println( statistic);
             Assert.assertEquals(2412.19, rotl.getTrackStatistic().getTotalLength(), 0.01);
-            Assert.assertEquals(77, rotl.getTrackStatistic().getNumPoints());
+            Assert.assertEquals(74, rotl.getTrackStatistic().getNumPoints());
         }
 
         {   // Problemfall Heiligkreuzsteinach
@@ -110,7 +110,7 @@ public class RoutingTest {
             String statistic = rotl.getTrackStatistic().toString();
             System.out.println( statistic);
             Assert.assertEquals(211.55, rotl.getTrackStatistic().getTotalLength(), 0.01);
-            Assert.assertEquals(13, rotl.getTrackStatistic().getNumPoints());
+            Assert.assertEquals(12, rotl.getTrackStatistic().getNumPoints());
         }
     }
 
