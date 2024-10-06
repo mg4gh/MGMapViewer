@@ -44,7 +44,6 @@ import mg.mgmap.activity.settings.SearchProviderListPreference;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
@@ -132,7 +131,7 @@ public class FSSearch extends FeatureService {
         prefShowSearchResult.addObserver(showPositionObserver);
         prefSearchPos.addObserver(showPositionObserver);
 
-        prefSearchPos.addObserver((e) -> prefShowSearchResultEnabled.setValue(!prefSearchPos.getValue().equals("")));
+        prefSearchPos.addObserver((e) -> prefShowSearchResultEnabled.setValue(!prefSearchPos.getValue().isEmpty()));
 
         if (getPref(R.string.MGMapApplication_pref_Restart, true).getValue()){
             prefShowSearchResult.setValue(false);
@@ -216,11 +215,6 @@ public class FSSearch extends FeatureService {
 
 
     public class SearchControlLayer extends ControlMVLayer<Object> {
-
-        @Override
-        protected boolean onTap(WriteablePointModel point) {
-            return false;
-        }
 
         @Override
         public boolean onLongPress(LatLong tapLatLong, Point layerXY, Point tapXY) {
@@ -333,7 +327,7 @@ public class FSSearch extends FeatureService {
     }
 
 
-    /** @noinspection DataFlowIssue, RegExpRedundantEscape */
+    /** @noinspection RegExpRedundantEscape */
     public void processGeoIntent(String sUri){
         mgLog.i("sUri="+sUri);
 
@@ -391,7 +385,7 @@ public class FSSearch extends FeatureService {
             searchPos.setLabel(label);
             setSearchResult(searchPos);
         } else {
-            if ((qString != null) && (qString.length() >= 1)){
+            if ((qString != null) && (!qString.isEmpty())){
                 prefPosBasedSearch.setValue(false);
                 setSearchProvider();
                 searchView.searchText.setText(qString);
@@ -409,7 +403,7 @@ public class FSSearch extends FeatureService {
         ArrayList<Integer> checkedList = new ArrayList<>();
         for (String searchProvider : searchProviders) {
             RadioButton rb1 = new RadioButton(context);
-            if ((searchProvider != null) && (searchProvider.length() > 0)) {
+            if ((searchProvider != null) && (!searchProvider.isEmpty())) {
                 rb1.setText(searchProvider);
                 rb1.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                 rb1.setId(searchProvider.hashCode());
