@@ -7,12 +7,14 @@ import mg.mgmap.generic.graph.WayAttributs;
 
 public class TrekkingBike extends RoutingProfile {
     public TrekkingBike( ) {
-        super(new CostCalculatorTwoPieceFunc( (short)1,(short)0, (short)3));
+        super(new CostCalcSplineProfileTreckingBike( ));
     }
 
     protected CostCalculator getCostCalculator(CostCalculator profileCalculator, WayAttributs wayAttributs) {
-        return new CostCalculatorTreckingBike(wayAttributs, (CostCalculatorTwoPieceFunc) profileCalculator);
+        return new CostCalcSplineTreckingBike(wayAttributs, (CostCalcSplineProfileTreckingBike) profileCalculator);
     }
+
+
     @Override
     public int getIconIdActive() {
         return R.drawable.rp_trekking_a;

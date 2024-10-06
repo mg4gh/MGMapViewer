@@ -27,17 +27,17 @@ public class DurationSplineFunctionFactory {
             return Arrays.equals(ids, other.ids);
         }
     }
-    private final HashMap<Id,CubicSpline> map = new HashMap<>();
+    private final HashMap<Id, CubicSplineDouble> map = new HashMap<>();
 
     public static DurationSplineFunctionFactory getInst(){
         return durationSplineFunctionFactory;
     }
 
 
-    public CubicSpline getDurationSplineFunction(short klevel, short slevel, short surfaceLevel, short bicType){
+    public CubicSplineDouble getDurationSplineFunction(short klevel, short slevel, short surfaceLevel, short bicType){
 
         Id id = new Id(new short[] {klevel,slevel,surfaceLevel,bicType});
-        CubicSpline cubicSpline = map.get(id);
+        CubicSplineDouble cubicSpline = map.get(id);
         if (cubicSpline == null) {
             double[] slopes ;
             double[] durations;
@@ -89,7 +89,6 @@ public class DurationSplineFunctionFactory {
                     watt0 = 90.0 ;
                     watt = 130.0;
                     ACw = 0.45;
-                    fr = 1.0;
                     if (surfaceLevel <= 2) {
 //                      ACw = 0.45 + 0.1 * surfaceLevel;
                         Cr = 0.0035 + 0.0015 * surfaceLevel;
@@ -147,7 +146,7 @@ public class DurationSplineFunctionFactory {
             }
 
             try {
-                cubicSpline = new CubicSpline(slopes, durations);
+                cubicSpline = new CubicSplineDouble(slopes, durations);
                 map.put(id,cubicSpline);
             } catch (Exception e) {
                 throw new RuntimeException(e);

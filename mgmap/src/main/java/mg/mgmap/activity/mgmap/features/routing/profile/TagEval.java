@@ -5,6 +5,8 @@ import android.util.Log;
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class TagEval {
+    public static double minDistfSc0 = 1.21;
+
     private TagEval(){}
 
     protected static boolean getNoAccess(WayAttributs wayTagEval) {
@@ -78,7 +80,7 @@ public class TagEval {
         return (type>0 && surfaceCat>0) ? (short) Math.ceil ((double) (type + surfaceCat)/2.0): (type>0)?type:surfaceCat;
 //        return  (short) Math.ceil ((double) (type + surfaceCat)/2.0); //(type > 0) ? type : surfaceCat;
     }
-    protected static Factors getFactors(WayAttributs wayTagEval, short surfaceCat){
+    protected static Factors getFactors(WayAttributs wayTagEval, short surfaceCat) {
         double distFactor ;
         if ("cycleway".equals(wayTagEval.highway)) {
             surfaceCat = (surfaceCat>0) ? surfaceCat :1;
@@ -113,12 +115,12 @@ public class TagEval {
             else
                 distFactor = 1.5;
         } else if ("residential".equals(wayTagEval.highway)||"living_street".equals(wayTagEval.highway)) {
+            surfaceCat = (surfaceCat>0) ? surfaceCat :1;
             if ("bic_destination".equals(wayTagEval.bicycle) || "lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) ) {
                 distFactor = 1.0;
-            } else if( surfaceCat > 2){
-                distFactor = 1.5;
+ /*           } else if( surfaceCat > 2){
+                distFactor = 1.5; */
             } else  distFactor = 1.15;
-            surfaceCat = 1;
         } else if ("footway".equals(wayTagEval.highway) || "pedestrian".equals(wayTagEval.highway)) {
             surfaceCat = (surfaceCat < 1) ? 2 : surfaceCat;
             if ("lcn".equals(wayTagEval.network) || "rcn".equals(wayTagEval.network) || "icn".equals(wayTagEval.network) )
@@ -147,7 +149,8 @@ public class TagEval {
             distFactor = 1.3;
             surfaceCat = (surfaceCat <= 1) ? 2 : surfaceCat;
         }
-
+        if ( surfaceCat == 0 && distFactor < minDistfSc0 )
+            throw new RuntimeException("distFactor for surfaceLevel 0 too small");
         return new Factors(distFactor, surfaceCat);
     }
 
