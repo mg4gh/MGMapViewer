@@ -458,6 +458,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     mgLog.i("save "+trackLog.getName());
                     GpxExporter.export(persistenceManager, trackLog);
                     application.getMetaDataUtil().createMetaData(trackLog);
+                    application.getMetaDataUtil().writeMetaData(application.getPersistenceManager().openMetaOutput(trackLog.getName()), trackLog);
                 }
                 reworkObserver.propertyChange(null);
                 prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle(); // new gpx => trigger sync

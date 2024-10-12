@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
 
+import java.io.FileOutputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -393,6 +394,7 @@ public class FSRouting extends FeatureService {
                 mgLog.i("save "+trackLog.getName());
                 GpxExporter.export(application.getPersistenceManager(), trackLog);
                 application.getMetaDataUtil().createMetaData(trackLog);
+                getApplication().getMetaDataUtil().writeMetaData(getApplication().getPersistenceManager().openMetaOutput(trackLog.getName()), trackLog);
             });
             etv.setDisabledData(prefRouteSavable, R.drawable.save2);
             etv.setHelp("save marker track with route");
