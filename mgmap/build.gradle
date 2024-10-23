@@ -55,7 +55,7 @@ afterEvaluate {
         group = "Execution"
         description = "Run the main class with JavaExecTask"
         classpath += files(getProjectDir().toString() + "/build/intermediates/javac/mg4ghDebug/compileMg4ghDebugJavaWithJavac/classes/")
-        classpath += files(getProjectDir().toString() + "/libs/jsch-0.1.55.jar")
+        classpath += files(getProjectDir().toString() + "/libs/jsch-0.2.20.jar")
         getMainClass().set("mg.mgmap.generic.util.SshBuild")
         args = [files("$projectDir/../.ssh/config.properties").first(), "apk", ".*\\.apk(\\.sha256)?", files("$buildDir/outputs/apk/mg4gh/debug/*.apk").first(), files("$buildDir/outputs/apk/mg4gh/debug/*.sha256").first()]
 
