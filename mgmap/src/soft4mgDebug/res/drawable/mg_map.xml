@@ -4,12 +4,11 @@
     android:viewportHeight="48.0"
     android:viewportWidth="48.0">
 
-
     <path
-        android:strokeColor="#FF00AA00"
-        android:strokeWidth="4"
+        android:strokeColor="#FFCCDDCC"
+        android:strokeWidth="3"
         android:fillColor="#FFCCDDCC"
-        android:pathData="M24,2 m0,0 a22,22,0 1 0 0.001,0 "
+        android:pathData="M24.25,3 m0,0 a21.25,21.25,0 1 0 0.001,0 "
         />
 
     <path
@@ -17,8 +16,8 @@
         android:strokeWidth="1.5"
         android:fillColor="#0000AA00"
         android:pathData="
-            M17,20 l0,-8 l1,0 l2,3 l2,-3 l1,0 l0,8
-            M31,12 l-4.5,0 l0,7.25 l4,0 l0,-3.5 l-2,0"
+            M17.5,20 l0,-8 l1,0 l2,3 l2,-3 l1,0 l0,8
+            M31.5,12 l-4.5,0 l0,7.25 l4,0 l0,-3.5 l-2,0"
         />
 
     <path
@@ -26,32 +25,20 @@
         android:strokeWidth="1.5"
         android:fillColor="#0000AA00"
         android:pathData="
-            M13,34.5 l0,-8.5 l1,0 l2,3 l2,-3 l1,0 l0,8.5
-            M23,34.5 l0,-7 l2,-1.5 l2,1.5 l0,7 l0,-4 l-4,0
-            M31,34.5 l0,-8.5 l3,0 l1,1 l0,2 l-1,1 l-3,0"
+            M13.5,34.5 l0,-8.5 l1,0 l2,3 l2,-3 l1,0 l0,8.5
+            M23.5,34.5 l0,-7 l2,-1.5 l2,1.5 l0,7 l0,-4 l-4,0
+            M31.5,34.5 l0,-8.5 l3,0 l1,1 l0,2 l-1,1 l-3,0
+            "
         />
 
     <path
         android:strokeColor="#FF00AA00"
-        android:strokeWidth=".01"
-        android:fillColor="#00CCDDCC"
+        android:strokeWidth="1.5"
+        android:fillColor="#FF00AA00"
         android:pathData="
-                M24,0.05 m0,0 a1.95,1.95,0 1 0 0.001,0
-                M20,0.45 m0,0 a1.95,1.95,0 1 0 0.001,0
-                M28,0.45 m0,0 a1.95,1.95,0 1 0 0.001,0
-        "
+            M21.6,38.05 m0,0 a1.95,1.95,0 1 0 0.001,0
+            M29.,38.05 m0,0 a1.95,1.95,0 1 0 0.001,0
+            "
         />
-
-    <path
-        android:strokeColor="#FF00AA00"
-        android:strokeWidth=".01"
-        android:fillColor="#FFCCDDCC"
-        android:pathData="
-                M28,43.65 m0,0 a1.95,1.95,0 1 0 0.001,0
-                M20,43.65 m0,0 a1.95,1.95,0 1 0 0.001,0
-                M24,44.05 m0,0 a1.95,1.95,0 1 0 0.001,0
-        "
-        />
-
 
 </vector>
