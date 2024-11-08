@@ -14,6 +14,15 @@
  */
 package mg.mgmap.activity.mgmap.features.tilestore;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
+
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.layer.queue.Job;
@@ -22,11 +31,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -34,6 +43,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
+import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
@@ -41,6 +51,7 @@ import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.view.DialogView;
 
 @SuppressWarnings("IOStreamConstructor")
 public class TileStoreLoader {
@@ -72,33 +83,83 @@ public class TileStoreLoader {
                     activity.getPrefCache().get(R.string.FSPosition_pref_RefreshMapView, false).toggle(); //after Tile downloads/drops this helps to make downloaded tiles visible
                 }
                 mgLog.d("allowRetry="+allowRetry);
-                return (fail == total) && (new File(storeDir, "retry.json").exists()) && allowRetry;
+                return (fail == total) && (xmlTileSource.config.cookiesDomain != null) && allowRetry;
             }
 
+            @SuppressLint("SetJavaScriptEnabled")
             @Override
             public void retry(BgJobGroup jobGroup) {
                 allowRetry = false;
-                mgLog.d("allowRetry="+allowRetry);
-                new Thread(() -> {
-                    try {
-                        FileInputStream is = new FileInputStream(new File(storeDir, "retry.json"));
-                        FileOutputStream os = new FileOutputStream(new File(storeDir, "cookies.json"));
-                        File fProps = new File(storeDir, "param.properties");
-                        File fPropsTxt = new File(storeDir, "param.properties.txt"); // some apps add ".txt" manager during download - clean this up
-                        if (!fProps.exists() && fPropsTxt.exists()) fPropsTxt.renameTo(fProps);
-                        Properties props = new Properties();
-                        props.load( new FileInputStream(fProps) );
-                        if (new DynamicHandler(is, os, props).run()){
-                            init();
+                try {
+                    DialogView dialogView = activity.findViewById(R.id.dialog_parent);
+                    WebView myWebView = new WebView(activity);
+                    myWebView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dialogView.getHeight()-activity.getControlView().getStatusBarHeight()-activity.getControlView().getNavigationBarHeight()-ControlView.dp(120)));
+                    myWebView.getSettings().setJavaScriptEnabled(true);
+                    myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+
+                    myWebView.setWebViewClient(new WebViewClient(){
+                        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                            if (request.getUrl().toString().contains(xmlTileSource.config.cookiesDomain)) {
+                                return false; // stay within webView
+                            }
+                            // Otherwise, open default browser to handle URLs.
+                            Intent intent = new Intent(Intent.ACTION_VIEW, request.getUrl());
+                            activity.startActivity(intent);
+                            return true;
                         }
-                        jobGroup.doit(); // this is the real retry
-                    } catch (Exception e) {
-                        mgLog.e(e);
-                    }
-                }).start();
+                        @Override
+                        public void onPageFinished(WebView view, String url) {
+                            super.onPageFinished(view, url);
+                            mgLog.d(url);
+                            for (XmlTileSourceConfig.AutoFill autoFill : xmlTileSource.config.autoFills){
+                                if ((url != null) && (autoFill.urlPattern() != null) && url.startsWith(autoFill.urlPattern())){
+                                    view.loadUrl("javascript:(function() { document.getElementById('"+autoFill.id()+"').value = '" + autoFill.value() + "'; ;})()");
+                                }
+                            }
+                        }
+                    });
+                    myWebView.loadUrl(xmlTileSource.config.cookiesURL);
+                    dialogView.lock(() -> dialogView
+                            .setTitle("Create cookies")
+                            .setContentView(myWebView)
+                            .setLogPrefix("tsl")
+                            .setPositive("Done", evt -> {
+                                saveCookiesAndInit();
+                                jobGroup.doit(); // this is the real retry
+                            })
+                            .setNegative( "Abort", null)
+                            .show());
+
+                } catch (Exception e) {
+                    mgLog.e(e);
+                }
 
             }
         });
+    }
+
+    private void saveCookiesAndInit(){
+        String cookies = CookieManager.getInstance().getCookie(xmlTileSource.config.cookiesDomain);
+        mgLog.d( cookies);
+        String nl = System.lineSeparator();
+        StringBuilder sb = new StringBuilder("[").append(nl);
+        String[] cookiesA = cookies.split("; ");
+        for (int i=0; i<cookiesA.length; i++){
+            String[] part = cookiesA[i].split("=");
+            sb.append("{").append(nl);
+            sb.append("    \"Name raw\": \"").append(part[0]).append("\",").append(nl);
+            sb.append("    \"Content raw\": \"").append(part[1]).append("\"").append(nl);
+            sb.append("}");
+            if ( (i+1) < cookiesA.length ) sb.append(","); // if not the last
+            sb.append(nl);
+        }
+        sb.append("]").append(nl);
+        try (FileOutputStream fos = new FileOutputStream(new File(storeDir, "cookies.json"))){
+            PrintWriter pw = new PrintWriter(fos);
+            pw.println(sb);
+            pw.close();
+            init(); // rerun init to reflect content of new cookies in config.connRequestProperties
+        } catch (Exception e){ mgLog.e(e);}
     }
 
     private void init() throws Exception {

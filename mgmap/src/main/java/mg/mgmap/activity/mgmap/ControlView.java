@@ -115,6 +115,12 @@ public class ControlView extends RelativeLayout {
     public MGMapApplication getApplication(){
         return application;
     }
+    public int getStatusBarHeight(){
+        return statusBarHeight;
+    }
+    public int getNavigationBarHeight(){
+        return navigationBarHeight;
+    }
 
     public static int dp(float f){
         return (int) (f * DisplayModel.getDeviceScaleFactor());

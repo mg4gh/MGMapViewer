@@ -14,10 +14,13 @@
  */
 package mg.mgmap.activity.mgmap.features.tilestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class XmlTileSourceConfig {
+
+    public record AutoFill(String urlPattern, String id, String value){}
 
     String name;
     String[] hostnames;
@@ -31,6 +34,10 @@ public class XmlTileSourceConfig {
     Map<String, String> connRequestProperties = null;
     int connectTimeout = -1;
     boolean storeTypeFiles = false;
+
+    String cookiesDomain;
+    String cookiesURL;
+    ArrayList<AutoFill> autoFills = new ArrayList<>();
 
     public XmlTileSourceConfig(String name){
         this.name = name;

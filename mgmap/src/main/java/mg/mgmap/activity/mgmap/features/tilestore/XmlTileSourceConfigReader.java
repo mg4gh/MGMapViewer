@@ -65,6 +65,13 @@ public class XmlTileSourceConfigReader {
                         config.setConnRequestProperty(key, value);
                     }
                 }
+                if ("cookies".equals(qName)) {
+                    config.cookiesDomain = getStringAttribute("domain");
+                    config.cookiesURL = getStringAttribute("url");
+                }
+                if ("autofill".equals(qName)) {
+                    config.autoFills.add(new XmlTileSourceConfig.AutoFill(getStringAttribute("URLPattern"),getStringAttribute("id"),getStringAttribute("value")));
+                }
 
                 text = null;
 

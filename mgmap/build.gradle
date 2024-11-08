@@ -315,6 +315,8 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.6.1'
     androidTestImplementation 'androidx.test:rules:1.6.1'
 
+    implementation ("androidx.webkit:webkit:1.12.1")
+
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
 //    androidTestImplementation "com.squareup.leakcanary:leakcanary-android-instrumentation:2.10"
 }
