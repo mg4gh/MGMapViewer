@@ -162,6 +162,12 @@ public class DialogView extends RelativeLayout {
         }
         return this;
     }
+    public boolean setEnablePositive(boolean enabled){
+        if (positiveETV == null) return false;
+        mgLog.d("positiveETV.isEnabled="+positiveETV.isEnabled());
+        positiveETV.setEnabled(enabled);
+        return true;
+    }
     public DialogView setNegative(String buttonText, Observer action){
         if (buttonText != null){
             negativeETV = createButton(buttonText, R.id.bt_dialog_negative, logPrefix+"btNegative", action);

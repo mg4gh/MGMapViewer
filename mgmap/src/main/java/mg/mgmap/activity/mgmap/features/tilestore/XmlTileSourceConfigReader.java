@@ -68,6 +68,8 @@ public class XmlTileSourceConfigReader {
                 if ("cookies".equals(qName)) {
                     config.cookiesDomain = getStringAttribute("domain");
                     config.cookiesURL = getStringAttribute("url");
+                    String required = getStringAttribute("required");
+                    config.cookiesRequired = (required==null)?null:required.split(",");
                 }
                 if ("autofill".equals(qName)) {
                     config.autoFills.add(new XmlTileSourceConfig.AutoFill(getStringAttribute("URLPattern"),getStringAttribute("id"),getStringAttribute("value")));

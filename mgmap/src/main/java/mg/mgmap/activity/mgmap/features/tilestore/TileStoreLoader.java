@@ -16,6 +16,7 @@ package mg.mgmap.activity.mgmap.features.tilestore;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Handler;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
@@ -33,7 +34,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -66,7 +69,26 @@ public class TileStoreLoader {
     public XmlTileSource xmlTileSource;
     BgJobGroup jobGroup;
 
-    public TileStoreLoader(MGMapActivity activity, MGMapApplication application, MGTileStore mgTileStore) throws Exception {
+    private class TimerTaskEnableDone implements Runnable{
+        DialogView dialogView;
+        Handler timer;
+        private TimerTaskEnableDone(DialogView dialogView, Handler timer){
+            this.dialogView = dialogView;
+            this.timer = timer;
+        }
+        @Override
+        public void run() {
+            String cookies = CookieManager.getInstance().getCookie(xmlTileSource.config.cookiesDomain);
+            mgLog.d("cookies="+cookies);
+            boolean check = checkRequiredCookies(cookies);
+            boolean enableWorked = dialogView.setEnablePositive(check);
+            if (!check && enableWorked){
+                timer.postDelayed(this, 1000);
+            }
+        }
+    }
+
+    public TileStoreLoader(MGMapActivity activity, MGMapApplication application, MGTileStore mgTileStore, final Handler timer) throws Exception {
         this.activity = activity;
         this.application = application;
         this.mgTileStore = mgTileStore;
@@ -91,6 +113,7 @@ public class TileStoreLoader {
             public void retry(BgJobGroup jobGroup) {
                 allowRetry = false;
                 try {
+                    CookieManager.getInstance().removeAllCookies(null);
                     DialogView dialogView = activity.findViewById(R.id.dialog_parent);
                     WebView myWebView = new WebView(activity);
                     myWebView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dialogView.getHeight()-activity.getControlView().getStatusBarHeight()-activity.getControlView().getNavigationBarHeight()-ControlView.dp(120)));
@@ -124,12 +147,15 @@ public class TileStoreLoader {
                             .setContentView(myWebView)
                             .setLogPrefix("tsl")
                             .setPositive("Done", evt -> {
-                                saveCookiesAndInit();
+                                String cookies = CookieManager.getInstance().getCookie(xmlTileSource.config.cookiesDomain);
+                                saveCookiesAndInit(cookies);
                                 jobGroup.doit(); // this is the real retry
                             })
                             .setNegative( "Abort", null)
                             .show());
 
+                    dialogView.setEnablePositive(false);
+                    timer.postDelayed(new TimerTaskEnableDone(dialogView, timer), 200);
                 } catch (Exception e) {
                     mgLog.e(e);
                 }
@@ -138,8 +164,7 @@ public class TileStoreLoader {
         });
     }
 
-    private void saveCookiesAndInit(){
-        String cookies = CookieManager.getInstance().getCookie(xmlTileSource.config.cookiesDomain);
+    private void saveCookiesAndInit(String cookies){
         mgLog.d( cookies);
         String nl = System.lineSeparator();
         StringBuilder sb = new StringBuilder("[").append(nl);
@@ -160,6 +185,18 @@ public class TileStoreLoader {
             pw.close();
             init(); // rerun init to reflect content of new cookies in config.connRequestProperties
         } catch (Exception e){ mgLog.e(e);}
+    }
+
+    private boolean checkRequiredCookies(String cookies){
+        List<String> requiredList = new ArrayList<>( List.of(xmlTileSource.config.cookiesRequired));
+        if (cookies != null){
+            String[] cookiesA = cookies.split("; ");
+            for (String s : cookiesA) {
+                String[] part = s.split("=");
+                requiredList.remove(part[0]);
+            }
+        }
+        return requiredList.isEmpty();
     }
 
     private void init() throws Exception {

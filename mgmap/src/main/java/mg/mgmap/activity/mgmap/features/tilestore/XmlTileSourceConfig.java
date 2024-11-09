@@ -37,6 +37,7 @@ public class XmlTileSourceConfig {
 
     String cookiesDomain;
     String cookiesURL;
+    String[] cookiesRequired;
     ArrayList<AutoFill> autoFills = new ArrayList<>();
 
     public XmlTileSourceConfig(String name){

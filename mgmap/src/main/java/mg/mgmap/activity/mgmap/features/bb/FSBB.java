@@ -355,7 +355,7 @@ public class FSBB extends FeatureService {
     private void tsAction(boolean bDrop, boolean bAll){
         for (MGTileStore ts : tss){
             try {
-                TileStoreLoader tileStoreLoader = new TileStoreLoader(getActivity(), getApplication(), ts);
+                TileStoreLoader tileStoreLoader = new TileStoreLoader(getActivity(), getApplication(), ts, getTimer());
                 if (bDrop){
                     tileStoreLoader.dropFromBB(getBBox());
                 } else {
