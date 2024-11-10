@@ -152,6 +152,7 @@ public class TileStoreLoader {
                                 jobGroup.doit(); // this is the real retry
                             })
                             .setNegative( "Abort", null)
+                            .setMaximize(true)
                             .show());
 
                     dialogView.setEnablePositive(false);

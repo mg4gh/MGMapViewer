@@ -22,6 +22,8 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.ControlView;
+import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
@@ -41,6 +43,7 @@ public class DialogView extends RelativeLayout {
     private ExtendedTextView positiveETV = null;
     private ExtendedTextView negativeETV = null;
     private String logPrefix = "";
+    private boolean maximize = false;
     private final int defaultPadding = ControlView.dp(10);
 
     private final Observer dismissObserver = evt -> reset();
@@ -79,6 +82,7 @@ public class DialogView extends RelativeLayout {
         positiveETV = null;
         negativeETV = null;
         logPrefix = "";
+        maximize = false;
         KeyboardUtil.hideKeyboard(this);
         mgLog.i("try unlock "+this.getContext());
         synchronized (this){
@@ -191,6 +195,11 @@ public class DialogView extends RelativeLayout {
         return this;
     }
 
+    public DialogView setMaximize(boolean maximize){
+        this.maximize = maximize;
+        return this;
+    }
+
     protected ExtendedTextView createButton(String text, int viewId, String logName, Observer observer){
         ExtendedTextView etv = new ExtendedTextView(getContext());
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
@@ -213,9 +222,23 @@ public class DialogView extends RelativeLayout {
     }
 
     public DialogView show(){
+        int width = getWidth(), height = getHeight();
+        boolean fullscreen = MGMapApplication.getByContext(getContext()).getSharedPreferences().getBoolean(getContext().getResources().getString(R.string.FSControl_qcFullscreenOn), true);
+        if ( getContext() instanceof MGMapActivity mgMapActivity){
+            height -= mgMapActivity.getControlView().getNavigationBarHeight() + mgMapActivity.getControlView().getStatusBarHeight();
+        }
+        mgLog.d((getContext() instanceof MGMapActivity?"MgMapActivity":"OtherActivity")+ " fullscreen="+fullscreen+ " width="+width+" height="+height);
+
         LinearLayout llDialog = new LinearLayout(getContext());
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(defaultPadding*2,defaultPadding,defaultPadding*2,defaultPadding);
+//        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams params;
+        if (maximize){
+            params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,height);
+            params.setMargins(0,0,0,0);  // TODO: is this necessary (or anyway default)???
+        } else {
+            params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(defaultPadding*2,defaultPadding,defaultPadding*2,defaultPadding);
+        }
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
         llDialog.setLayoutParams(params);
 
@@ -228,6 +251,12 @@ public class DialogView extends RelativeLayout {
             llDialog.addView(messageView);
         }
         if (contentView != null){
+            if (maximize){
+                LinearLayout.LayoutParams cvParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                cvParams.height = 0;
+                cvParams.weight = 1;
+                contentView.setLayoutParams(cvParams);
+            }
             llDialog.addView(contentView);
         }
 
