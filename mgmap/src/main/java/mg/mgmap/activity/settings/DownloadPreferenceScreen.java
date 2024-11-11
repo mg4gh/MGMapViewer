@@ -14,13 +14,18 @@
  */
 package mg.mgmap.activity.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 
 import com.jcraft.jsch.ChannelSftp;
@@ -33,6 +38,7 @@ import java.util.Objects;
 import java.util.Vector;
 
 import mg.mgmap.BuildConfig;
+import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
 import mg.mgmap.generic.util.BgJob;
@@ -44,6 +50,7 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.util.Zipper;
 import mg.mgmap.generic.util.hints.HintInitialMapDownload2;
+import mg.mgmap.generic.view.DialogView;
 
 public class DownloadPreferenceScreen extends MGPreferenceScreen {
 
@@ -62,8 +69,8 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
         super.onResume();
 
         setBrowseIntent(R.string.preferences_dl_maps_wd_key, R.string.url_oam_dl, new HintInitialMapDownload2(getActivity()));
-        setBrowseIntent(R.string.preferences_dl_maps_eu_key, R.string.url_oam_dl_eu, new HintInitialMapDownload2(getActivity()));
-        setBrowseIntent(R.string.preferences_dl_maps_de_key, R.string.url_oam_dl_de, new HintInitialMapDownload2(getActivity()));
+        findPreference(getResources().getString(R.string.preferences_dl_maps_eu_key)).setOnPreferenceClickListener(l -> showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_eu),1250));
+        findPreference(getResources().getString(R.string.preferences_dl_maps_de_key)).setOnPreferenceClickListener(l -> showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_de),1500));
 
         setBrowseIntent(R.string.preferences_dl_theme_el_key, R.string.url_oam_th_el);
 
@@ -72,9 +79,8 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
         setSWLocalOCL();
 
         Context context = requireContext().getApplicationContext();
-        if (context instanceof MGMapApplication) {
-            MGMapApplication application = (MGMapApplication) context;
-            if (application.getPersistenceManager().getConfigProperties(null, LOCAL_APK_SYNC_PROPERTIES).size() == 0){
+        if (context instanceof MGMapApplication application) {
+            if (application.getPersistenceManager().getConfigProperties(null, LOCAL_APK_SYNC_PROPERTIES).isEmpty()){
                 Preference prefSwLocal = findPreference( getResources().getString(R.string.preferences_dl_sw_local_key) );
                 assert prefSwLocal != null;
                 prefSwLocal.setVisible(false);
@@ -87,6 +93,47 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
         prefSw.setSummary("Current Version: "+ BuildConfig.VERSION_NAME);
     }
 
+    @SuppressLint({"","SetJavaScriptEnabled"})
+    private boolean showDownloadAsWebViewInDialog(String sUrl, int scrollY){
+        FragmentActivity activity = requireActivity();
+        DialogView dialogView = activity.findViewById(R.id.dialog_parent);
+        WebView myWebView = new WebView(activity);
+        myWebView.getSettings().setJavaScriptEnabled(true);
+        myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+
+        myWebView.setWebViewClient(new WebViewClient(){
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                if (request.getUrl().toString().matches("https://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/.*.zip")) {
+                    Intent intent = new Intent(getContext(), MGMapActivity.class);
+                    intent.setData(Uri.parse( request.getUrl().toString().replace("https:","mf-v4-map:") ));
+                    startActivity(intent);
+                    return false; // stay within webView
+                }
+                if (request.getUrl().toString().startsWith("https://www.openandromaps.org/downloads")) {
+                    return false; // stay within webView
+                }
+                // Otherwise, open default browser to handle URLs.
+                Intent intent = new Intent(Intent.ACTION_VIEW, request.getUrl());
+                activity.startActivity(intent);
+                return true;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                mgLog.d(url);
+                myWebView.scrollTo(0,scrollY);
+            }
+        });
+        myWebView.loadUrl(sUrl);
+        dialogView.lock(() -> dialogView
+                .setTitle("Download map")
+                .setContentView(myWebView)
+                .setLogPrefix("dps")
+                .setMaximize(true)
+                .show());
+        return true;
+    }
 
     private void setSWLatestOCL(){
         Preference prefSwLatest = findPreference( getResources().getString(R.string.preferences_dl_sw_latest_key) );
@@ -95,8 +142,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
             @Override
             public boolean onPreferenceClick(@NonNull androidx.preference.Preference preference) {
                 Context context = requireContext().getApplicationContext();
-                if (context instanceof MGMapApplication) {
-                    MGMapApplication application = (MGMapApplication) context;
+                if (context instanceof MGMapApplication application) {
                     SettingsActivity activity = (SettingsActivity) getActivity();
                     BgJobGroup bgJobGroup = new BgJobGroup(application, activity, Objects.requireNonNull(prefSwLatest.getTitle()).toString(), new BgJobGroupCallback(){} );
                     BgJob job = new BgJob() {
@@ -130,8 +176,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
         assert prefSwLocal != null;
         prefSwLocal.setOnPreferenceClickListener(preference -> {
             Context context = requireContext().getApplicationContext();
-            if (context instanceof MGMapApplication) {
-                MGMapApplication application = (MGMapApplication) context;
+            if (context instanceof MGMapApplication application) {
                 SettingsActivity activity = (SettingsActivity) requireActivity();
 
                 BgJobGroup bgJobGroup = new BgJobGroup(application, activity, Objects.requireNonNull(prefSwLocal.getTitle()).toString(), new BgJobGroupCallback(){} );
@@ -143,7 +188,6 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                         persistenceManager.cleanApkDir();
 
                         new Sftp(new File(persistenceManager.getConfigDir(),LOCAL_APK_SYNC_PROPERTIES)){
-                            @SuppressWarnings("unchecked")
                             @Override
                             protected void doCopy() throws SftpException {
                                 channelSftp.lcd(persistenceManager.getApkDir().getAbsolutePath());

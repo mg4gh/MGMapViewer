@@ -18,7 +18,7 @@
 
     <string name="preferences_dl_maps_wd_key">DldMapsKey</string>
     <string name="preferences_dl_maps_wd_title">World</string>
-    <string name="preferences_dl_maps_wd_desc">Download Maps from world</string>
+    <string name="preferences_dl_maps_wd_desc">Download Maps from world (via Browser)</string>
 
     <string name="preferences_dl_maps_eu_key">DldMapsEUKey</string>
     <string name="preferences_dl_maps_eu_title">Europa</string>
