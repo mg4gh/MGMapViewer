@@ -185,6 +185,7 @@ public class TileStoreLoader {
     }
 
     private boolean checkRequiredCookies(String cookies){
+        if (xmlTileSource.config.cookiesRequired == null) return true;
         List<String> requiredList = new ArrayList<>( List.of(xmlTileSource.config.cookiesRequired));
         if (cookies != null){
             String[] cookiesA = cookies.split("; ");
