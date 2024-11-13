@@ -248,6 +248,16 @@ public class PersistenceManager {
         File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
         return file.exists();
     }
+    public boolean isGpxOlderThanMeta(String filename){
+        File gpxFile = getAbsoluteFile(trackGpxDir, filename, ".gpx");
+        File metaFile = getAbsoluteFile(trackMetaDir, filename, ".meta");
+        assert gpxFile.exists();
+        if (metaFile.exists()){
+            return gpxFile.lastModified() <= metaFile.lastModified();
+        } else {
+            return false;
+        }
+    }
     public PrintWriter openGpxOutput(String filename) {
         try {
             File file = getAbsoluteFile(trackGpxDir, filename, ".gpx");
@@ -406,7 +416,7 @@ public class PersistenceManager {
                 }
             }
         } catch (IOException e) { // should not happen
-            e.printStackTrace();
+            mgLog.e(e);
             buf = new byte[0]; // but if so, prevent accessing inconsistent data
         }
         return buf;

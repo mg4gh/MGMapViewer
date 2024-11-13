@@ -14,7 +14,6 @@
  */
 package mg.mgmap.application.util;
 
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -39,7 +38,8 @@ public class ExtrasUtil {
             newGpxNames.removeAll(metaNames);
             metaNames.removeAll(gpxNames); // remove meta files without corresponding gpx
 
-            for (String name : newGpxNames){
+            for (String name : gpxNames){
+                if (persistenceManager.isGpxOlderThanMeta(name)) continue;
                 mgLog.i("Create meta file for "+name );
                 try (InputStream gpxIs = persistenceManager.openGpxInput(name)){
                     TrackLog trackLog = new GpxImporter(elevationProvider).parseTrackLog(name, gpxIs);
