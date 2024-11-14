@@ -16,6 +16,7 @@
         select the entry \"Android mf-V4-map\" and click on the button \"Install others\"
     </string>
 
+    <string name="preferences_dl_maps_direct">DownloadMapsDirect</string>
     <string name="preferences_dl_maps_wd_key">DldMapsKey</string>
     <string name="preferences_dl_maps_wd_title">World</string>
     <string name="preferences_dl_maps_wd_desc">Download Maps from world (via Browser)</string>
@@ -52,4 +53,6 @@
     <string name="preferences_dl_sw_other_title">Download other apk</string>
     <string name="preferences_dl_sw_other_desc">Download the other apk from https://github.com/mg4gh/MGMapViewer</string>
 
+    <string name="button_dl">Download</string>
+    <string name="button_dl_open">Open</string>
 </resources>

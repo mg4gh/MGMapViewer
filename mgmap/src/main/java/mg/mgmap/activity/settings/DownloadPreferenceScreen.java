@@ -44,6 +44,7 @@ import mg.mgmap.R;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
+import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.SHA256;
 import mg.mgmap.generic.util.Sftp;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -57,10 +58,12 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private static final String LOCAL_APK_SYNC_PROPERTIES = "apk_sync.properties";
+    private PrefCache prefCache;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(requireContext()).getPreferencesName());
+        prefCache = MGMapApplication.getByContext(requireContext()).getPrefCache();
         setPreferencesFromResource(R.xml.download_preferences, rootKey);
     }
 
@@ -68,9 +71,15 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
     public void onResume() {
         super.onResume();
 
-        setBrowseIntent(R.string.preferences_dl_maps_wd_key, R.string.url_oam_dl, new HintInitialMapDownload2(getActivity()));
-        findPreference(getResources().getString(R.string.preferences_dl_maps_eu_key)).setOnPreferenceClickListener(l -> showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_eu),1250));
-        findPreference(getResources().getString(R.string.preferences_dl_maps_de_key)).setOnPreferenceClickListener(l -> showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_de),1500));
+        if (prefCache.get(R.string.preferences_dl_maps_direct, false).getValue()){
+            findPreference(getResources().getString(R.string.preferences_dl_maps_wd_key)).setOnPreferenceClickListener(l -> new DownloadMaps(getActivity()).downloadMenu("https://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/"));
+            findPreference(getResources().getString(R.string.preferences_dl_maps_eu_key)).setOnPreferenceClickListener(l -> new DownloadMaps(getActivity()).downloadMenu("https://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/europe/"));
+            findPreference(getResources().getString(R.string.preferences_dl_maps_de_key)).setOnPreferenceClickListener(l -> new DownloadMaps(getActivity()).downloadMenu("https://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/germany/"));
+        } else {
+            setBrowseIntent(R.string.preferences_dl_maps_wd_key, R.string.url_oam_dl, new HintInitialMapDownload2(getActivity()));
+            findPreference(getResources().getString(R.string.preferences_dl_maps_eu_key)).setOnPreferenceClickListener(l -> showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_eu),1250));
+            findPreference(getResources().getString(R.string.preferences_dl_maps_de_key)).setOnPreferenceClickListener(l -> showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_de),1500));
+        }
 
         setBrowseIntent(R.string.preferences_dl_theme_el_key, R.string.url_oam_th_el);
 

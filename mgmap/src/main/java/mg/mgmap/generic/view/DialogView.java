@@ -291,4 +291,8 @@ public class DialogView extends RelativeLayout {
         return this;
     }
 
+    public void cancel(){
+        reset();
+    }
+
 }
