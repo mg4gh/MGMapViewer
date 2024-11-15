@@ -34,5 +34,32 @@ FSRouting.RoutingAlgorithm=BidirectionalAStar
 #FSRouting.RoutingAlgorithm=BidirectionalAStarFNO
 ```
 
+### Direct Map Download
+
+The download of [mapsforge vector maps](../../MainMapFeatures/Mapsforge/mapsforge.md) is done via the [openandromaps](https://www.openandromaps.org/) site. 
+Since this page was recently down and because the location of the maps is in fact an ftp server:
+```
+https://ftp.gwdg.de/pub/misc/openstreetmap
+```
+there is an option download directly from the ftp server.
+For this purpose you can use the preference:
+```
+DownloadMapsDirect=Boolean:true
+```
+
+
+### Sample config
+
+The following sample configuration
+```
+#FSRouting.RoutingAlgorithm=BidirectionalAStarFNO
+FSRouting.RoutingAlgorithm=BidirectionalAStar
+FSSearch.reverseSearchOn=Boolean:true
+FSSearch.locationBasedSearchOn=Boolean:true
+DownloadMapsDirect=Boolean:false
+```
+can be downloaded and installed [here](mgmap-install://mg4gh.github.io/MGMapViewer/Features/DeveloperFeatures/Preferences/config.zip).
+After installation you can use the internal [FileManager](../../FurtherFeatures/FileManager/filemanager.md) to modify these.
+
 
 <small><small>[Back to Index](../../../index.md)</small></small>
