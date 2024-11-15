@@ -558,6 +558,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                             etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
                             return etPassword;
                         }
+                        @Override
+                        public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
+                            BgJobGroupCallback.super.afterGroupFinished(jobGroup, total, success, fail);
+                            prefCache.get(R.string.MGMapActivity_trigger_recreate,"").setValue("trigger recreate at "+System.currentTimeMillis());
+                        }
                     };
                     BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Install zip archive", bgJobGroupCallback );
                     String sUrl = uri.toString().replaceFirst("mgmap-install", "https");
@@ -568,7 +573,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                             Editable edPassword = etPassword.getText();
                             Zipper zipper = new Zipper(edPassword==null?null:edPassword.toString());
                             zipper.unpack(new URL(sUrl), pm.getAppDir(), null, this);
-                            prefCache.get(R.string.MGMapActivity_trigger_recreate,"").setValue("trigger recreate at "+System.currentTimeMillis());
                         }
                     } );
                     bgJobGroup.setConstructed("Download and install "+sUrl);
