@@ -59,7 +59,7 @@ FSSearch.locationBasedSearchOn=Boolean:true
 DownloadMapsDirect=Boolean:false
 ```
 can be downloaded and installed [here](mgmap-install://mg4gh.github.io/MGMapViewer/Features/DeveloperFeatures/Preferences/config.zip).
-After installation you can use the internal [FileManager](../../FurtherFeatures/FileManager/filemanager.md) to modify these.
+After installation you can use the internal [FileManager](../../FurtherFeatures/FileManager/filemanager.md) to modify these preferences.
 
 
 <small><small>[Back to Index](../../../index.md)</small></small>
