@@ -20,6 +20,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.application.MGMapApplication;
@@ -40,7 +42,7 @@ public class GnssLocationListener extends AbstractLocationListener {
         locationManager = (LocationManager) application.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged(@NonNull Location location) {
                 locationChanged(location);
             }
             @Override
@@ -49,12 +51,12 @@ public class GnssLocationListener extends AbstractLocationListener {
             }
 
             @Override
-            public void onProviderEnabled(String s) {
+            public void onProviderEnabled(@NonNull String s) {
                 mgLog.i(s);
             }
 
             @Override
-            public void onProviderDisabled(String s) {
+            public void onProviderDisabled(@NonNull String s) {
                 mgLog.i(s);
             }
         };

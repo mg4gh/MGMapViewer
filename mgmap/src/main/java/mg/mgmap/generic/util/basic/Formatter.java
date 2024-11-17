@@ -162,7 +162,7 @@ public class Formatter {
                     text = String.format(Locale.ENGLISH, "%d:%02d:%02d", hours, minutes, seconds);
                 }
             }
-            if ("".equals(text)) {
+            if (text.isEmpty()) {
                 text = String.format(Locale.ENGLISH, "%d:%02d", hours, minutes);
             }
         } else if (formatType == FormatType.FORMAT_FILE_SIZE) {

@@ -35,8 +35,8 @@ public abstract class MGTileStore extends TileStore {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     TileCache tileCache = null;
-    protected int tileSize = 256;
-    File storeDir;
+    protected final int tileSize = 256;
+    final File storeDir;
 
     public MGTileStore(File storeDir, String suffix, GraphicFactory graphicFactory){
         super(storeDir, suffix, graphicFactory);

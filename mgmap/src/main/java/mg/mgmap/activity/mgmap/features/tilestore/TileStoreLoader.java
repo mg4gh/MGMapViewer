@@ -58,17 +58,17 @@ public class TileStoreLoader {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public File storeDir;
-    MGMapApplication application;
-    MGMapActivity activity;
-    MGTileStore mgTileStore;
+    public final File storeDir;
+    final MGMapApplication application;
+    final MGMapActivity activity;
+    final MGTileStore mgTileStore;
 
     public XmlTileSource xmlTileSource;
     BgJobGroup jobGroup;
 
     private class TimerTaskEnableDone implements Runnable{
-        DialogView dialogView;
-        Handler timer;
+        final DialogView dialogView;
+        final Handler timer;
         private TimerTaskEnableDone(DialogView dialogView, Handler timer){
             this.dialogView = dialogView;
             this.timer = timer;

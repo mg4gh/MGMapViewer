@@ -17,15 +17,12 @@ package mg.mgmap.generic.util;
 import android.content.Context;
 import android.graphics.Color;
 
-import androidx.core.content.ContextCompat;
-
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -46,18 +43,6 @@ public class CC { // short for ColorConstant
     public static void init(Context context){
         if (context != null) {
             try {
-//                Field[] fields = Class.forName(context.getPackageName()+".R$color").getDeclaredFields();
-//                for(Field field : fields) {
-//                    String colorName = field.getName();
-//                    if (colorName.startsWith("CC_")){
-//                        int colorId = field.getInt(null);
-//                        int color = ContextCompat.getColor(context, colorId);
-//                        colorMap.put(colorId, color);
-//                        mgLog.d(String.format("colorName=%s colorID=%08X color=%08X",colorName,colorId, color));
-//                    }
-//                }
-
-
                 colorMap.put(R.color.CC_BLACK, context.getColor(R.color.CC_BLACK));
                 colorMap.put(R.color.CC_BLACK_A150, context.getColor(R.color.CC_BLACK_A150));
                 colorMap.put(R.color.CC_BLACK_A20, context.getColor(R.color.CC_BLACK_A20));
@@ -153,7 +138,7 @@ public class CC { // short for ColorConstant
 
     public static void initGlPaints(float fAlpha){
         int a = floatAlpha2int(fAlpha);
-        if (glPaints.size() > 0){
+        if (!glPaints.isEmpty()){
             if (Color.alpha(Objects.requireNonNull(glPaints.get(0)).getColor()) == a) return; // alpha unchanged
         }
         int w=6;
@@ -206,7 +191,7 @@ public class CC { // short for ColorConstant
 
 
     public static Paint getGlPaint(float glValue){
-        if (glPaints.size() == 0){ // init paint with default alpha, if not yet done.
+        if (glPaints.isEmpty()){ // init paint with default alpha, if not yet done.
             initGlPaints(0xC0);
         }
         if (glValue > 20) glValue = 20;

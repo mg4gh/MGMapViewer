@@ -157,7 +157,7 @@ public class MGMapApplication extends Application {
 
         this.baseConfig = baseConfig;
 
-        persistenceManager = new PersistenceManager(this, baseConfig.getAppDirName());
+        persistenceManager = new PersistenceManager(this, baseConfig.appDirName());
         startLogging(persistenceManager.getLogDir());
         CC.init(this);
         AndroidGraphicFactory.createInstance(this);
@@ -362,10 +362,10 @@ public class MGMapApplication extends Application {
         if (pLogcat != null) pLogcat.destroy(); // abort logcat and als Logcat supervision thread
 
         if (baseConfig != null){
-            if (!baseConfig.getAppDirName().equals(Setup.APP_DIR_DEFAULT)){
-                File appDir = new File(getExternalFilesDir(null),baseConfig.getAppDirName());
+            if (!baseConfig.appDirName().equals(Setup.APP_DIR_DEFAULT)){
+                File appDir = new File(getExternalFilesDir(null),baseConfig.appDirName());
                 PersistenceManager.deleteRecursivly(appDir);
-                baseConfig.getSharedPreferences().edit().clear().apply();
+                baseConfig.sharedPreferences().edit().clear().apply();
             }
         }
         if (prefCache != null) prefCache.cleanup();
@@ -554,11 +554,11 @@ public class MGMapApplication extends Application {
     }
 
     public SharedPreferences getSharedPreferences(){
-        return baseConfig.getSharedPreferences();
+        return baseConfig.sharedPreferences();
     }
 
     public String getPreferencesName() {
-        return baseConfig.getPreferencesName();
+        return baseConfig.preferencesName();
     }
 
     public Setup getSetup() {

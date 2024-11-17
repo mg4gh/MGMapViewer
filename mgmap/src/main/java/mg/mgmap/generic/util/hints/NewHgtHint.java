@@ -7,7 +7,7 @@ import mg.mgmap.application.util.HgtProvider;
 
 public class NewHgtHint extends AbstractHint implements Runnable{
 
-    HgtProvider hgtProvider;
+    final HgtProvider hgtProvider;
 
     /** This hint helps with the introduction of new hgt data source and provides automatic re-download of hgt data */
     public NewHgtHint(Activity activity, HgtProvider hgtProvider){
@@ -21,7 +21,7 @@ public class NewHgtHint extends AbstractHint implements Runnable{
     @Override
     public boolean checkHintCondition() {
         if (super.checkHintCondition()){
-            if (hgtProvider.getEhgtList().size() > 0){
+            if (!hgtProvider.getEhgtList().isEmpty()){
                 return true;
             } else {
                 prefShowHint.setValue(false);

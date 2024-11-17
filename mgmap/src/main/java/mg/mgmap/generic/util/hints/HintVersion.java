@@ -30,12 +30,16 @@ public class HintVersion extends AbstractHint{
         super(mgMapActivity, R.string.hintVersion);
         title = "MGMapViewer "+BuildConfig.VERSION_NAME.replaceFirst("-.*","");
 
-        spanText = "New and noteworthy:\n" +
-                "- two line menu\n" +
-                "- file manager\n" +
-                "- geo intent\n" +
-                "- Android 14 support\n\n"+
-                "For details check also the changelog\n\n";
+        spanText = """
+                New and noteworthy:
+                - two line menu
+                - file manager
+                - geo intent
+                - Android 14 support
+
+                For details check also the changelog
+
+                """;
         showAlways = true;
 
         prefVersion = mgMapActivity.getPrefCache().get(R.string.FSControl_pref_version_key, "");

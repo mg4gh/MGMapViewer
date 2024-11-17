@@ -36,15 +36,14 @@ public class DownloadMaps {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    FragmentActivity activity;
+    final FragmentActivity activity;
 
     public DownloadMaps(FragmentActivity activity) {
         this.activity = activity;
     }
 
-    public boolean downloadMenu(String baseUrl) {
+    public void downloadMenu(String baseUrl) {
         new Thread(() -> downloadMenuInternal(baseUrl)).start();
-        return true;
     }
     private void downloadMenuInternal(String baseUrl) {
         TableLayout table = null;

@@ -61,7 +61,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
         setEditTextPreferenceNumeric(R.string.FSControl_pref_menu_animation_timeout_key);
     }
 
-    EditTextPreference.OnBindEditTextListener etNumberFormatter = editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+    final EditTextPreference.OnBindEditTextListener etNumberFormatter = editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER);
 
     private void setEditTextPreferenceNumeric(int rid){
         EditTextPreference pref = findPreference(getResources().getString(rid));

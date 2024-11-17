@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.model;
 
+import androidx.annotation.NonNull;
+
 /**
  * Reference on a TrackLog (and a particular Segment of it).
  */
@@ -51,6 +53,7 @@ public class TrackLogRef {
         return trackLog.getTrackLogSegment(segmentIdx);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return

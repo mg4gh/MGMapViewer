@@ -118,8 +118,7 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof PointModelImpl) {
-            PointModelImpl oo = (PointModelImpl) obj;
+        if (obj instanceof PointModelImpl oo) {
             return ((la == oo.la) && (lo == oo.lo) && (ele == oo.ele));
         }
         return false;

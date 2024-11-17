@@ -259,8 +259,7 @@ public class TrackLogStatistic {
 
     private float getEleThreshold(PointModel point){
 
-        if (point instanceof TrackLogPoint) {
-            TrackLogPoint tlp = (TrackLogPoint) point;
+        if (point instanceof TrackLogPoint tlp) {
             if (tlp.getPressureEle() != PointModel.NO_ELE) return ELE_THRESHOLD_BARO;
         }
         return ELE_THRESHOLD_ELSE;

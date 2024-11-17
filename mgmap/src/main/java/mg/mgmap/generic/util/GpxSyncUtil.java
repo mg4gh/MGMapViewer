@@ -26,8 +26,8 @@ public class GpxSyncUtil {
 
     private static final String SYNC_CONFIG = "gpx_sync.properties";
 
-    long lastAction = 0;
-    boolean syncInProgress = false;
+    final long lastAction = 0;
+    final boolean syncInProgress = false;
     
     public void trySynchronisation(MGMapApplication application) {
         long now = System.currentTimeMillis();
@@ -96,13 +96,12 @@ public class GpxSyncUtil {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void calcRemoteMap(ChannelSftp channelSftp, Map<String, Long> map, String subPath) throws SftpException{
-        Vector<ChannelSftp.LsEntry> vLsEntries = channelSftp.ls(channelSftp.pwd()+(subPath.equals("")?"":File.separator)+subPath);
+        Vector<ChannelSftp.LsEntry> vLsEntries = channelSftp.ls(channelSftp.pwd()+(subPath.isEmpty() ?"":File.separator)+subPath);
         for (ChannelSftp.LsEntry lsEntry : vLsEntries){
             if (lsEntry.getAttrs().isDir()){
                 if (!lsEntry.getFilename().equals(".") && !lsEntry.getFilename().equals("..")){
-                    calcRemoteMap(channelSftp, map, subPath+(subPath.equals("")?"":File.separator)+lsEntry.getFilename());
+                    calcRemoteMap(channelSftp, map, subPath+(subPath.isEmpty() ?"":File.separator)+lsEntry.getFilename());
                 }
             } else if (lsEntry.getFilename().endsWith(".gpx")){
                 map.put(subPath+File.separator+lsEntry.getFilename(), (long)lsEntry.getAttrs().getMTime()) ;

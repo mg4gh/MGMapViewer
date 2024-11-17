@@ -71,7 +71,7 @@ public class MapDataStoreUtil implements WayProvider {
     }
 
     public MapDataStore getMapDataStore(){
-        if (mapDataStoreList.size() > 0){
+        if (!mapDataStoreList.isEmpty()){
             return mapDataStoreList.get(0);
         }
         return null;

@@ -80,13 +80,13 @@ public class FSControl extends FeatureService {
     private ViewGroup[] qcss = null; // quick controls groups (index 0 is menu control group and index 1..7 are seven sub action menus)
 
 
-    Observer homeObserver = (e) -> {
+    final Observer homeObserver = (e) -> {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN, null);
         homeIntent.addCategory(Intent.CATEGORY_HOME);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         activity.startActivity(homeIntent);
     };
-    Observer settingsPrefObserver = (e) -> {
+    final Observer settingsPrefObserver = (e) -> {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, SettingsActivity.class);
         String prefScreenClass = MainPreferenceScreen.class.getName();
@@ -94,27 +94,27 @@ public class FSControl extends FeatureService {
         intent.putExtra("FSControl.info", prefScreenClass);
         activity.startActivity(intent);
     };
-    Observer statisticObserver = (e) -> {
+    final Observer statisticObserver = (e) -> {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, TrackStatisticActivity.class);
         activity.startActivity(intent);
     };
-    Observer heightProfileObserver = (e) -> {
+    final Observer heightProfileObserver = (e) -> {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, HeightProfileActivity.class);
         activity.startActivity(intent);
     };
-    Observer exitObserver = (e) -> {
+    final Observer exitObserver = (e) -> {
         getPref(R.string.FSPosition_pref_GpsOn, false).setValue(false);
         getApplication().startTrackLoggerService(getActivity(),false);
         getTimer().postDelayed(()->{
             getActivity().finishAndRemoveTask();
-            if (getApplication().baseConfig.getMode() == BaseConfig.Mode.NORMAL){
+            if (getApplication().baseConfig.mode() == BaseConfig.Mode.NORMAL){
                 System.exit(0);
             }
         },500);
     };
-    Observer themesObserver = (e) -> {
+    final Observer themesObserver = (e) -> {
         MGMapActivity activity = getActivity();
         Intent intent = new Intent(activity, ThemeSettings.class);
         if (activity.getRenderThemeStyleMenu() != null) {
@@ -123,8 +123,8 @@ public class FSControl extends FeatureService {
         activity.startActivity(intent);
     };
 
-    AbstractHint hintInitialMapDownload;
-    AbstractHint hintVersion;
+    final AbstractHint hintInitialMapDownload;
+    final AbstractHint hintVersion;
 
     public FSControl(MGMapActivity activity){
         super(activity);

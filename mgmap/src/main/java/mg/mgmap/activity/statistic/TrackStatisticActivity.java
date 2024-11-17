@@ -86,10 +86,10 @@ public class TrackStatisticActivity extends AppCompatActivity {
         return application;
     }
 
-    Handler timer = new Handler();
-    Runnable ttReworkState = () -> TrackStatisticActivity.this.runOnUiThread(this::reworkState);
+    final Handler timer = new Handler();
+    final Runnable ttReworkState = () -> TrackStatisticActivity.this.runOnUiThread(this::reworkState);
 
-    Observer reworkObserver = (e) -> {
+    final Observer reworkObserver = (e) -> {
         timer.removeCallbacks(ttReworkState);
         timer.postDelayed(ttReworkState,30);
     };
@@ -298,7 +298,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private void reworkState(){
         ArrayList<TrackLog> trackLogs = getSelectedEntries();
         mgLog.i(getNames(trackLogs, false));
-        prefNoneSelected.setValue(trackLogs.size() == 0);
+        prefNoneSelected.setValue(trackLogs.isEmpty());
         prefAllSelected.setValue(visibleEntries.size() == trackLogs.size());
         prefEditAllowed.setValue( trackLogs.size() == 1 );
         boolean bMarker = (trackLogs.size() == 1);
@@ -307,7 +307,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
             if (trackLogs.get(0) == application.markerTrackLogObservable.getTrackLog()) bMarker = false;
         }
         prefMarkerAllowed.setValue(bMarker);
-        boolean bDelete = (trackLogs.size() > 0);
+        boolean bDelete = (!trackLogs.isEmpty());
         if (bDelete){
             if (trackLogs.get(0) == application.recordingTrackLogObservable.getTrackLog()) bDelete = false;
             for (TrackLog trackLog : trackLogs){
@@ -316,14 +316,14 @@ public class TrackStatisticActivity extends AppCompatActivity {
             }
         }
         prefDeleteAllowed.setValue(bDelete);
-        boolean bShare = (trackLogs.size() > 0);
+        boolean bShare = (!trackLogs.isEmpty());
         if (bShare){
             for (TrackLog trackLog : trackLogs){
                 if (!persistenceManager.existsGpx(trackLog.getName())) bShare = false;
             }
         }
         prefShareAllowed.setValue((bShare));
-        prefNoneModified.setValue(getModifiedEntries().size() == 0);
+        prefNoneModified.setValue(getModifiedEntries().isEmpty());
     }
 
     private View.OnClickListener createEditOCL(){
@@ -385,12 +385,12 @@ public class TrackStatisticActivity extends AppCompatActivity {
         return v -> {
             if (!prefNoneSelected.getValue()){
                 ArrayList<TrackLog> trackLogs = getSelectedEntries();
-                if (trackLogs.size() > 0){
+                if (!trackLogs.isEmpty()){
                     TrackLog sel = trackLogs.remove(0);
                     Intent intent = new Intent(TrackStatisticActivity.this, MGMapActivity.class);
                     intent.putExtra("stl",sel.getNameKey());
                     List<String> list = getNames(trackLogs,true);
-                    if (list.size() > 0){
+                    if (!list.isEmpty()){
                         intent.putExtra("atl",list.toString());
                     }
                     intent.setType("mgmap/showTrack");
@@ -420,7 +420,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         return v -> {
             if (prefShareAllowed.getValue()){
                 ArrayList<TrackLog> trackLogs = getSelectedEntries();
-                if (trackLogs.size() > 0){
+                if (!trackLogs.isEmpty()){
                     Intent sendIntent;
                     String title = "Share ...";
                     if (trackLogs.size() == 1){

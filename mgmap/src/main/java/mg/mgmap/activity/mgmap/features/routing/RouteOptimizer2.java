@@ -16,8 +16,8 @@ public class RouteOptimizer2 {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    GGraphTileFactory gFactory;
-    RoutingEngine routingEngine;
+    final GGraphTileFactory gFactory;
+    final RoutingEngine routingEngine;
 
     public RouteOptimizer2(GGraphTileFactory gFactory, RoutingEngine routingEngine){
         this.gFactory = gFactory;

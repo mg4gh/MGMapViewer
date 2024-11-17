@@ -73,12 +73,12 @@ public class ControlView extends RelativeLayout {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    Context context;
+    final Context context;
     MGMapApplication application = null;
     MGMapActivity activity = null;
 
     /** There are five dashboard entries, each with a specific semantic. This ordered list contains these five entries. */
-    ArrayList<ViewGroup> dashboardEntries = new ArrayList<>();
+    final ArrayList<ViewGroup> dashboardEntries = new ArrayList<>();
     /** Parent of the dashboard entries. */
     ViewGroup dashboard;
     ViewGroup trackDetails;
@@ -88,7 +88,7 @@ public class ControlView extends RelativeLayout {
     /** parent object for status line */
     ViewGroup tr_states = null;
     /** List will be filled with all members of the status line */
-    ArrayList<TextView> tvList = new ArrayList<>();
+    final ArrayList<TextView> tvList = new ArrayList<>();
 
     TextView tv_enlarge = null;
     EnlargeControl enlargeControl = null;
@@ -97,7 +97,7 @@ public class ControlView extends RelativeLayout {
     private int navigationBarHeight;
     Pref<String> prefVerticalFullscreenOffset;
     Pref<String> prefVerticalNoneFullscreenOffset;
-    public ArrayList<View> variableVerticalOffsetViews = new ArrayList<>();
+    public final ArrayList<View> variableVerticalOffsetViews = new ArrayList<>();
 
     public ControlView(Context context) {
         super(context);
@@ -288,8 +288,7 @@ public class ControlView extends RelativeLayout {
 
     public void setViewGroupColors(ViewGroup viewGroup, int textColorId, int bgColorId){
         for (int idx=0; idx<viewGroup.getChildCount(); idx++){
-            if (viewGroup.getChildAt(idx) instanceof TextView) {
-                TextView tv = (TextView) viewGroup.getChildAt(idx);
+            if (viewGroup.getChildAt(idx) instanceof TextView tv) {
                 tv.setTextColor(CC.getColor(textColorId));
                 tv.setBackgroundColor(CC.getColor(bgColorId));
             }
@@ -377,8 +376,7 @@ public class ControlView extends RelativeLayout {
         for (int i=0; i<dashboard.getChildCount(); i++) {
             DashboardEntry dashboardEntry = (DashboardEntry) dashboard.getChildAt(i);
             View view = dashboardEntry.getChildAt(0);
-            if (view instanceof ExtendedTextView) {
-                ExtendedTextView evt = (ExtendedTextView) view;
+            if (view instanceof ExtendedTextView evt) {
                 if (evt.getLogName().equals(id)){
                     return dashboardEntry;
                 }
@@ -400,8 +398,7 @@ public class ControlView extends RelativeLayout {
                 if (oldDrawable instanceof Animatable2) {
                     ((Animatable) oldDrawable).stop();
                 }
-                if (newDrawable instanceof Animatable2) {
-                    Animatable2 an2 = (Animatable2) newDrawable;
+                if (newDrawable instanceof Animatable2 an2) {
                     an2.start();
                     an2.registerAnimationCallback(new Animatable2.AnimationCallback() {
                         @Override
@@ -438,8 +435,8 @@ public class ControlView extends RelativeLayout {
     // *************************************************************************************************
 
 
-    HashMap<ViewGroup, ArrayList<LabeledSlider>> labeledSliderMap = new HashMap<>();
-    Observer sliderVisibilityChangeObserver = (e) -> reworkLabeledSliderVisibility();
+    final HashMap<ViewGroup, ArrayList<LabeledSlider>> labeledSliderMap = new HashMap<>();
+    final Observer sliderVisibilityChangeObserver = (e) -> reworkLabeledSliderVisibility();
 
     LabeledSlider createLabeledSlider(ViewGroup parent){
         LabeledSlider labeledSlider = new LabeledSlider(context);

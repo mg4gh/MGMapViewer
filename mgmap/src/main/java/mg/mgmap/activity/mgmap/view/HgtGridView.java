@@ -20,7 +20,7 @@ import mg.mgmap.application.util.HgtProvider;
 
 public class HgtGridView extends Grid {
 
-    private static final Map<Byte, Double> spacingConfig = new HashMap<Byte, Double>() {
+    private static final Map<Byte, Double> spacingConfig = new HashMap<>() {
         {
             put((byte) 5, 1.0);
             put((byte) 6, 1.0);
@@ -37,10 +37,10 @@ public class HgtGridView extends Grid {
         }
     };
 
-    GraphicFactory graphicFactory;
-    MGMapApplication application;
-    Paint hgtAvail;
-    Paint hgtNotAvail;
+    final GraphicFactory graphicFactory;
+    final MGMapApplication application;
+    final Paint hgtAvail;
+    final Paint hgtNotAvail;
 
     public HgtGridView(MGMapApplication application, GraphicFactory graphicFactory, DisplayModel displayModel) {
         super(graphicFactory, displayModel, spacingConfig);
@@ -93,7 +93,7 @@ public class HgtGridView extends Grid {
                     path.lineTo(pixelX2, pixelY2);
                     path.lineTo(pixelX1, pixelY2);
                     path.lineTo(pixelX1, pixelY1);
-                    String hgtName = application.getHgtProvider().getHgtName(HgtProvider.getLower(latitude),HgtProvider.getLower(longitude));
+                    String hgtName = HgtProvider.getHgtName(HgtProvider.getLower(latitude),HgtProvider.getLower(longitude));
                     canvas.drawPath(path, application.getHgtProvider().hgtIsAvailable(hgtName)?hgtAvail:hgtNotAvail);
                 }
             }

@@ -101,8 +101,7 @@ public class DialogView extends RelativeLayout {
     }
 
     private void lock_int(Runnable dialogBuilder) {
-        if (DialogView.this.getContext() instanceof Activity) {
-            Activity activity = (Activity) DialogView.this.getContext();
+        if (DialogView.this.getContext() instanceof Activity activity) {
 
             while (true){
                 mgLog.i("try lock "+this.getContext());

@@ -33,8 +33,8 @@ public class RouteOptimizer {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    GGraphTileFactory gFactory;
-    RoutingEngine routingEngine;
+    final GGraphTileFactory gFactory;
+    final RoutingEngine routingEngine;
 
     public RouteOptimizer(GGraphTileFactory gFactory, RoutingEngine routingEngine){
         this.gFactory = gFactory;
@@ -202,8 +202,7 @@ public class RouteOptimizer {
             s2.score(segment, idx);
             s3.score(segment, idx);
             PointModel pm = segment.get(idx);
-            if (pm instanceof WriteablePointModel) {
-                WriteablePointModel mtlp = (WriteablePointModel) pm;
+            if (pm instanceof WriteablePointModel mtlp) {
                 RoutePointModel rpm = getRoutePointModel(pm);
                 double highScore = 0;
                 StringBuilder log = new StringBuilder();

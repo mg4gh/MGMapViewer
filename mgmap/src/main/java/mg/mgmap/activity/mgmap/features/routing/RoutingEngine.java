@@ -30,7 +30,6 @@ import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.graph.GNeighbour;
 import mg.mgmap.generic.graph.GNode;
-import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
@@ -51,14 +50,14 @@ public class RoutingEngine {
 
     private final GGraphTileFactory gFactory;
 
-    HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
-    HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
+    final HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
+    final HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
     private final ArrayList<PointModel> currentRelaxedNodes = new ArrayList<>();
     private RoutingContext routingContext;
     RoutingProfile routingProfile;
     final AtomicInteger refreshRequired = new AtomicInteger(0);
     private GGraphSearch gGraphSearch = null;
-    String routingAlgorithm;
+    final String routingAlgorithm;
 
     public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext, String routingAlgorithm){
         this.gFactory = gFactory;
@@ -123,9 +122,7 @@ public class RoutingEngine {
         if (routingContext.snap2Way){
             if (rpm.selectedApproach != null){
                 if (PointModelUtil.compareTo(rpm.selectedApproach.getApproachNode() , pm) != 0){
-                    if (pm instanceof WriteablePointModel) {
-                        mgLog.d("");
-                        WriteablePointModel wpm = (WriteablePointModel) pm;
+                    if (pm instanceof WriteablePointModel wpm) {
                         wpm.setLat(rpm.selectedApproach.getApproachNode().getLat());
                         wpm.setLon(rpm.selectedApproach.getApproachNode().getLon());
                         rpm.resetApproaches();
@@ -348,8 +345,7 @@ public class RoutingEngine {
 
                             hint.nextLeftDegree = -1;
                             hint.nextRightDegree = 361;
-                            if (hint.pmCurrent instanceof GNode) {
-                                GNode pmgCurrent = (GNode) hint.pmCurrent;
+                            if (hint.pmCurrent instanceof GNode pmgCurrent) {
                                 GNeighbour neighbour = pmgCurrent.getNeighbour();
 
                                 while ((neighbour = multi.getNextNeighbour(pmgCurrent, neighbour)) != null) {

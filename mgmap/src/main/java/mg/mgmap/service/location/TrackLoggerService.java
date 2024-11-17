@@ -157,7 +157,7 @@ public class TrackLoggerService extends Service {
     }
 
     protected void onNewTrackLogPoint(TrackLogPoint lp) {
-        if (application.baseConfig.getMode() == BaseConfig.Mode.NORMAL){
+        if (application.baseConfig.mode() == BaseConfig.Mode.NORMAL){
             barometerListener.providePressureData(lp);
             setPressureEle(lp);
             if (trackLogPointVerifier.verify(lp)){

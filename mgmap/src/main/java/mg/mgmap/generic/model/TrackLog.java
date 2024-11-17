@@ -25,14 +25,14 @@ import java.util.ArrayList;
 /** A TrackLog consists of multiple TrackLogSegment objects, a total TrackLogStatistic over all segments and a track log name */
 public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
 
-    protected ArrayList<TrackLogSegment> trackLogSegments = new ArrayList<>();
+    protected final ArrayList<TrackLogSegment> trackLogSegments = new ArrayList<>();
     protected TrackLogStatistic trackStatistic = new TrackLogStatistic(-1);
     protected String name = "";
     protected boolean available = true;
     protected boolean modified = false;
     protected TrackLog referencedTrackLog = null;
     protected boolean filterMatched = true;
-    protected Pref<Boolean> prefSelected = new Pref<>(Boolean.FALSE);
+    protected final Pref<Boolean> prefSelected = new Pref<>(Boolean.FALSE);
     protected String routingProfileId = null;
 
     public TrackLogStatistic getTrackStatistic() {

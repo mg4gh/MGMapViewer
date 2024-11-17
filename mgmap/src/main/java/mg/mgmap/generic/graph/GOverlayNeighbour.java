@@ -23,8 +23,8 @@ package mg.mgmap.generic.graph;
 public class GOverlayNeighbour {
 
     GNode node;
-    GNeighbour neighbour;
-    GNeighbour nextNeighbour;
+    final GNeighbour neighbour;
+    final GNeighbour nextNeighbour;
 
     public GOverlayNeighbour(GNode node, GNeighbour neighbour, GNeighbour nextNeighbour) {
         this.node = node;

@@ -5,7 +5,6 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 import java.io.File;
@@ -26,7 +25,7 @@ public abstract class Sftp {
 
     protected Session session;
     protected ChannelSftp channelSftp;
-    protected Properties props;
+    protected final Properties props;
 
     public Sftp(File propFile) throws IOException, JSchException, SftpException{
         props = new Properties();
@@ -76,18 +75,6 @@ public abstract class Sftp {
         }
         if (session != null){
             session.disconnect();
-        }
-    }
-
-    protected SftpATTRS stat(String path) throws SftpException{
-        try {
-            return channelSftp.stat(path);
-        } catch (SftpException e) {
-            if(e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE){
-                return null;
-            } else {
-                throw e; // something else went wrong
-            }
         }
     }
 

@@ -60,11 +60,6 @@ public class GGraphMulti extends GGraph {
         return nodes;
     }
 
-    public GNeighbour getNextNeighbour(GNode node, GNeighbour neighbour){
-        return neighbour.getNextNeighbour();
-    }
-
-
     // return true, if routing should be aborted due to low memory
     boolean preNodeRelax(GNode node){
         if ((node.borderNode != 0) /*&& (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)*/){ // add lazy expansion of GGraphMulti

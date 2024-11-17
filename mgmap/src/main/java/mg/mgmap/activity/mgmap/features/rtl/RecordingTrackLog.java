@@ -71,8 +71,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
         if (pointModel == null) {
             buf.putLong(time);
         } else {
-            if (pointModel instanceof TrackLogPoint) {
-                TrackLogPoint trackLogPoint = (TrackLogPoint) pointModel;
+            if (pointModel instanceof TrackLogPoint trackLogPoint) {
                 trackLogPoint.toByteBuffer(buf);
             }
         }
@@ -144,7 +143,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
         isTrackRecording = true;
 
         if (recordRaw) createRawEntry(RawType.E_START_TRACK, tStartTrack, null);
-        if (name.equals("")) name = Formatter.SDF.format(tStartTrack)+"_GPS";
+        if (name.isEmpty()) name = Formatter.SDF.format(tStartTrack)+"_GPS";
         changed(null);
     }
 
@@ -186,8 +185,7 @@ public class RecordingTrackLog extends WriteableTrackLog {
     private void reworkData(TrackLogSegment segment) {
         ArrayList<TrackLogPoint> listAll = new ArrayList<>();
         for (PointModel pm : segment){
-            if (pm instanceof TrackLogPoint) {
-                TrackLogPoint tlp = (TrackLogPoint) pm;
+            if (pm instanceof TrackLogPoint tlp) {
                 if (tlp.getWgs84ele() != 0){
                     listAll.add(tlp);
                 }

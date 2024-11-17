@@ -39,7 +39,7 @@ public class SearchView extends LinearLayout {
 
     FSSearch fsSearch = null;
     MGMapActivity activity = null;
-    Context context;
+    final Context context;
 
     public SearchView(Context context, FSSearch fsSearch) {
         super(context);
@@ -50,7 +50,7 @@ public class SearchView extends LinearLayout {
     EditText searchText = null;
     ImageView posBasedSearchIcon = null;
     ImageView keyboardIconView = null;
-    ArrayList<TextView> searchResults = new ArrayList<>();
+    final ArrayList<TextView> searchResults = new ArrayList<>();
     private static final int NUM_SEARCH_RESULTS = 5;
 
     @SuppressLint("DiscouragedApi")

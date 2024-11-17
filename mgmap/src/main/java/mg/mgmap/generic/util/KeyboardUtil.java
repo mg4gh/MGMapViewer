@@ -7,6 +7,7 @@ import android.view.inputmethod.InputMethodManager;
 
 public class KeyboardUtil {
 
+    @SuppressWarnings("unused")
     public static void hideKeyboard(Activity activity){
         InputMethodManager inputMethodManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         View focus = activity.getCurrentFocus();
@@ -23,6 +24,7 @@ public class KeyboardUtil {
     }
 
 
+    @SuppressWarnings("unused")
     public static void showKeyboard(Activity activity){
         InputMethodManager inputMethodManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         View focus = activity.getCurrentFocus();

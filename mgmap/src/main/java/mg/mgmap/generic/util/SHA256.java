@@ -6,11 +6,17 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.security.MessageDigest;
 import java.util.Objects;
 
+import mg.mgmap.generic.util.basic.MGLog;
+
 public class SHA256 {
 
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
+    @SuppressWarnings("CallToPrintStackTrace")
     public static void main(String[] args) {
         System.out.println("Hello from SHA256 " + args.length);
         for (String arg : args ){
@@ -38,6 +44,7 @@ public class SHA256 {
         }
     }
 
+
     public static boolean verify(File apkFile){
         boolean res = false;
         try {
@@ -57,7 +64,7 @@ public class SHA256 {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            mgLog.e(e);
         }
         return res;
     }

@@ -77,6 +77,7 @@ public class PointModelUtil {
     }
     /** Check, whether pm has an approach to the segment segmentEnd1-segmentEnd2. Return the closest point in pmResult.
      * Be careful with passing references to pmResult !!*/
+    @SuppressWarnings("UnnecessaryLocalVariable")
     public static boolean findApproach(PointModel pm, PointModel segmentEnd1, PointModel segmentEnd2, WriteablePointModel pmResult, int threshold) {
         double minLat = Math.min(segmentEnd1.getLat(), segmentEnd2.getLat());
         double maxLat = Math.max(segmentEnd1.getLat(), segmentEnd2.getLat());

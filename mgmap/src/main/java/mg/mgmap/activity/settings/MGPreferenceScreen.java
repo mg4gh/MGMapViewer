@@ -49,6 +49,7 @@ public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected void setBrowseIntent(int resId, int uriId, AbstractHint hint){
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(uriId)));
         setIntent(resId, browserIntent, hint);
@@ -59,4 +60,14 @@ public abstract class MGPreferenceScreen extends PreferenceFragmentCompat {
         setIntent(resId, browserIntent, null);
     }
 
+    protected void setPreferenceClickListener(int resId, Runnable r){
+        Preference preference = findPreference(getResources().getString(resId));
+        if (preference != null){
+            preference.setOnPreferenceClickListener(preference1 -> {
+                mgLog.i("onPreferenceClick key="+preference1.getKey());
+                r.run();
+                return false;
+            });
+        }
+    }
 }

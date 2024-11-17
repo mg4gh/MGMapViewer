@@ -56,7 +56,7 @@ public class GeoLatLong extends SearchProvider {
 
         ArrayList<SearchResult> resList = new ArrayList<>();
 
-        if (request.text.equals("")){ // reverse request
+        if (request.text.isEmpty()){ // reverse request
             if (request.actionId == 0){
                 setResults(request, request.pos, resList);
                 setSearchText(String.format(Locale.ENGLISH,"%f, %f", request.pos.getLat(), request.pos.getLon()));
@@ -65,7 +65,7 @@ public class GeoLatLong extends SearchProvider {
             String text = request.text.trim().replaceAll("([EWNS]) ","$1");
             String[] words = text.split("[\\s,]+");
             int idx = 0;
-            if (words[idx].length() == 0){
+            if (words[idx].isEmpty()){
                 idx++;
             }
             double lat = 0, lon = 0;

@@ -21,7 +21,7 @@ public class MetaData {
     public static final int BUF_SIZE = 4096;
     public static final int POINTS_PER_BUF = BUF_SIZE/12  -1 ;
 
-    public BBox bBox = new BBox();
+    public final BBox bBox = new BBox();
     public int numPoints = 0;
     public ByteBuffer buf = null;
 

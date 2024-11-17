@@ -22,7 +22,6 @@ import android.view.WindowManager;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.model.DisplayModel;
 
-import java.io.FileOutputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -292,7 +291,7 @@ public class FSRouting extends FeatureService {
         });
     }
 
-    Runnable ttRoutingIntermediate = this::refreshRoutingIntermediate;
+    final Runnable ttRoutingIntermediate = this::refreshRoutingIntermediate;
     private void refreshRoutingIntermediate(){
         hideIntermediate();
         if (prefCalcRouteInProgress.getValue()) {

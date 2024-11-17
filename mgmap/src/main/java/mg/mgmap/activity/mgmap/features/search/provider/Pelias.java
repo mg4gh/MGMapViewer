@@ -40,6 +40,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 
+@SuppressWarnings("unused") // usage is via reflection
 public class Pelias extends SearchProvider {
 
 
@@ -66,7 +67,7 @@ public class Pelias extends SearchProvider {
                 ArrayList<SearchResult> resList = new ArrayList<>();
 
                 String sUrl;
-                if (request.text.equals("")){
+                if (request.text.isEmpty()){
                     sUrl = String.format(Locale.ENGLISH, "%sreverse?api_key=%s&size=5&point.lon=%.6f&point.lat=%.6f",
                             URL_ORS, apiKey, pm.getLon(), pm.getLat());
                 } else {

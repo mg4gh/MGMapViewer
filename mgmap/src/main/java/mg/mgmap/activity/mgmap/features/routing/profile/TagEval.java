@@ -5,7 +5,7 @@ import android.util.Log;
 import mg.mgmap.generic.graph.WayAttributs;
 
 public class TagEval {
-    public static double minDistfSc0 = 1.21;
+    public static final double minDistfSc0 = 1.21;
 
     private TagEval(){}
 

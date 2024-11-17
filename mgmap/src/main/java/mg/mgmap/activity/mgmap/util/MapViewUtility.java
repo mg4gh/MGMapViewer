@@ -156,8 +156,7 @@ public class MapViewUtility {
         mapView.getMapScaleBar().redrawScaleBar();
     }
     public void setScaleBarColor(int color){
-        if (mapView.getMapScaleBar() instanceof DefaultMapScaleBar) {
-            DefaultMapScaleBar mapScaleBar = (DefaultMapScaleBar) mapView.getMapScaleBar();
+        if (mapView.getMapScaleBar() instanceof DefaultMapScaleBar mapScaleBar) {
             mapScaleBar.setColor(color);
             mapView.getMapScaleBar().redrawScaleBar();
         }

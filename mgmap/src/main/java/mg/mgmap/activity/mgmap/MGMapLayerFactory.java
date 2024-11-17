@@ -130,14 +130,14 @@ public class MGMapLayerFactory {
                 case MAPSFORGE:
                     String language = sharedPreferences.getString(activity.getResources().getString(R.string.preferences_language_key), "");
 
-                    TileCache tileCache = AndroidUtil.createTileCache(activity, "trl_"+key,
+                    TileCache msfTileCache = AndroidUtil.createTileCache(activity, "trl_"+key,
                             mapView.getModel().displayModel.getTileSize(), 1.0f,
                             mapView.getModel().frameBufferModel.getOverdrawFactor() *1.5, false);
-                    activity.addTileCache(tileCache);
+                    activity.addTileCache(msfTileCache);
 
                     MapDataStore mapFile = new MapFile(entryFile, language);
                     TileRendererLayer tileRendererLayer = new TileRendererLayer(
-                            tileCache,  mapFile,
+                            msfTileCache,  mapFile,
                             mapView.getModel().mapViewPosition,
                             true, true, false,
                             AndroidGraphicFactory.INSTANCE
@@ -151,11 +151,11 @@ public class MGMapLayerFactory {
                     InMemoryTileCache memoryTileCache = new InMemoryTileCache(AndroidUtil.getMinimumCacheSize(activity,
                             mapView.getModel().displayModel.getTileSize(),
                             mapView.getModel().frameBufferModel.getOverdrawFactor()*1.5, 1.0f));
-                    tileCache = new TwoLevelTileCache(memoryTileCache, tileStore);
-                    activity.addTileCache(tileCache);
-                    tileStore.registerCache(tileCache);
+                    TileCache mstTileCache = new TwoLevelTileCache(memoryTileCache, tileStore);
+                    activity.addTileCache(mstTileCache);
+                    tileStore.registerCache(mstTileCache);
 
-                    TileStoreLayer tileStoreLayer = new MGTileStoreLayer(tileStore, tileCache,
+                    TileStoreLayer tileStoreLayer = new MGTileStoreLayer(tileStore, mstTileCache,
                             mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE, true);
                     tileStoreLayer.setAlpha(tileStore.getDefaultAlpha());
                     tileStoreLayer.setParentTilesRendering(Parameters.ParentTilesRendering.OFF);
@@ -185,8 +185,7 @@ public class MGMapLayerFactory {
                             properties.load(new FileInputStream(entryFile));
                             Map<Byte, Double> spacingConfig = new HashMap<>();
                             for (Object propName : properties.keySet()){
-                                if (propName instanceof String){
-                                    String sPropName = (String) propName;
+                                if (propName instanceof String sPropName){
                                     if (sPropName.toLowerCase().startsWith("zoomlevel")){
                                         int idx =  9;
                                         if (sPropName.toLowerCase().startsWith("zoomlevel_")) idx =10;
@@ -207,16 +206,14 @@ public class MGMapLayerFactory {
                 mapLayers.put(key, layer);
             }
 
-            if (layer instanceof TileLayer<?>) {
-                TileLayer<?> alphaLayer = (TileLayer<?>) layer;
+            if (layer instanceof TileLayer<?> alphaLayer) {
                 Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,1.0f);
                 prefAlpha.addObserver((e) -> {
                     alphaLayer.setAlpha(prefAlpha.getValue());
                     alphaLayer.requestRedraw();
                 });
             }
-            if (layer instanceof Grid) {
-                Grid alphaLayer = (Grid) layer;
+            if (layer instanceof Grid alphaLayer) {
                 Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,0.2f);
                 prefAlpha.addObserver((e) -> {
                     alphaLayer.setAlpha(prefAlpha.getValue());

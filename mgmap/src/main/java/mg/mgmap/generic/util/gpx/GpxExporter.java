@@ -93,8 +93,7 @@ public class GpxExporter {
                     }
                     if (pm.getTimestamp() != PointModel.NO_TIME){
                         pw.println("\t\t\t\t<time>" + sdf2.format(new Date(pm.getTimestamp())).replace("_","T") + "</time>");
-                        if (pm instanceof TrackLogPoint) {
-                            TrackLogPoint lp = (TrackLogPoint) pm;
+                        if (pm instanceof TrackLogPoint lp) {
                             String cmt = "";
                             cmt += "nmeaAcc=" + String.format(Locale.ENGLISH,"%.1f",lp.getNmeaAcc()) + ",";
                             if (lp.getWgs84ele() != TrackLogPoint.NO_ELE) {

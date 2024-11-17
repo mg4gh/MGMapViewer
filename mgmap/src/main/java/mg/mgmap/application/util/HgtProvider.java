@@ -36,7 +36,7 @@ public class HgtProvider {
 
     private final MGMapApplication application;
     private final PersistenceManager persistenceManager;
-    AssetManager assetManager;
+    final AssetManager assetManager;
 
     /** This contains a list of all hgt files available from ESA or Sonny data */
     private final Properties hgtSize = new Properties();

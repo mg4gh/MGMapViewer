@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import org.mapsforge.map.model.DisplayModel;
 
+import java.util.Objects;
+
 import mg.mgmap.generic.util.ExtendedClickListener;
 
 public class EnlargeControl extends ExtendedClickListener {
@@ -47,18 +49,16 @@ public class EnlargeControl extends ExtendedClickListener {
         timer.removeCallbacks(ttHide); // cancel old timer if exists
         timer.postDelayed(ttHide, 1500);
 
-        if (v instanceof TextView) {
-            TextView tv = (TextView) v;
+        if (v instanceof TextView tv) {
             String text = " "+tv.getText().toString();
             tvEnlarge.setText(text);
-            if (tv.getBackground() instanceof ColorDrawable) {
-                ColorDrawable cd = (ColorDrawable) tv.getBackground();
+            if (tv.getBackground() instanceof ColorDrawable cd) {
                 int colorCode = cd.getColor();
                 tvEnlarge.setBackgroundColor(colorCode);
             }
             Drawable[] ds = tv.getCompoundDrawables();
             if (ds[0] != null){
-                Drawable clone = ds[0].getConstantState().newDrawable();
+                Drawable clone = Objects.requireNonNull(ds[0].getConstantState()).newDrawable();
                 float scale = DisplayModel.getDeviceScaleFactor();
                 clone.setBounds(0,0, (int)(30*scale),(int)(30*scale));
                 tvEnlarge.setCompoundDrawables(clone,null,null,null);

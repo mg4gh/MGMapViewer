@@ -40,6 +40,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 
+@SuppressWarnings("unused") // usage is via reflection
 public class Graphhopper extends SearchProvider {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -64,7 +65,7 @@ public class Graphhopper extends SearchProvider {
                 ArrayList<SearchResult> resList = new ArrayList<>();
 
                 String sUrl;
-                if (request.text.equals("")){
+                if (request.text.isEmpty()){
                     sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&limit=5&reverse=true",
                             URL_ORS, apiKey, pm.getLat(), pm.getLon());
                 } else {

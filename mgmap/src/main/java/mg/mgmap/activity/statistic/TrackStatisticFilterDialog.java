@@ -34,7 +34,7 @@ public class TrackStatisticFilterDialog {
 
     private final int dp2 = ControlView.dp(2);
 
-    TrackStatisticActivity trackStatisticActivity;
+    final TrackStatisticActivity trackStatisticActivity;
 
     public TrackStatisticFilterDialog(TrackStatisticActivity trackStatisticActivity) {
         this.trackStatisticActivity = trackStatisticActivity;
@@ -63,8 +63,7 @@ public class TrackStatisticFilterDialog {
                 .setContentView(table_dialog)
                 .setPositive("OK", evt -> {
                     for (int i=0; i<table_dialog.getChildCount(); i++){
-                        if (table_dialog.getChildAt(i) instanceof Entry<?>) {
-                            Entry<?> entry = (Entry<?>) table_dialog.getChildAt(i);
+                        if (table_dialog.getChildAt(i) instanceof Entry<?> entry) {
                             entry.confirm();
                         }
                     }
@@ -128,11 +127,11 @@ public class TrackStatisticFilterDialog {
 
     private class Entry<T>  extends TableRow{
 
-        Context context;
-        EditPref<T> epPref;
-        CheckBox cbPref;
-        Pref<T> pref;
-        Pref<Boolean> prefOn;
+        final Context context;
+        final EditPref<T> epPref;
+        final CheckBox cbPref;
+        final Pref<T> pref;
+        final Pref<Boolean> prefOn;
 
         private Entry(Context context, String name, Pref<T> pref, Pref<Boolean> prefOn){
             super(context);

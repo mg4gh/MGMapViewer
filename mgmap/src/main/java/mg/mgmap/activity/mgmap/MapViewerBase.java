@@ -50,7 +50,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
     protected MapView mapView;
     protected PreferencesFacade preferencesFacade;
     protected SharedPreferences sharedPreferences;
-    protected List<TileCache> tileCaches = new ArrayList<>();
+    protected final List<TileCache> tileCaches = new ArrayList<>();
     protected List<String> recreatePreferences;
 
     @Override

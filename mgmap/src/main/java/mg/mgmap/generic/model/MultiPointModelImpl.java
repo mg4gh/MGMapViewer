@@ -22,8 +22,8 @@ import java.util.Iterator;
 /** An implementation of a writeable model for multiple points. */
 public class MultiPointModelImpl implements WriteableMultiPointModel{
 
-    protected ArrayList<PointModel> points = new ArrayList<>();
-    protected BBox bBox = new BBox();
+    protected final ArrayList<PointModel> points = new ArrayList<>();
+    protected final BBox bBox = new BBox();
     boolean route = false;
     protected boolean iterateConcurrent = false;
 
@@ -56,8 +56,7 @@ public class MultiPointModelImpl implements WriteableMultiPointModel{
 
     @Override
     public void movePoint(int idx, PointModel toPos) {
-        if (points.get(idx) instanceof WriteablePointModel) {
-            WriteablePointModel wpm = (WriteablePointModel) points.get(idx);
+        if (points.get(idx) instanceof WriteablePointModel wpm) {
             wpm.setLat(toPos.getLat());
             wpm.setLon(toPos.getLon());
             wpm.setEle(toPos.getEle());

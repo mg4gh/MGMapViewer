@@ -91,7 +91,7 @@ public class FSBB extends FeatureService {
     private WriteablePointModel p2 = null;
     private final Runnable ttHide = () -> prefBboxOn.setValue(false);
     private final Runnable ttCheckHgt = this::checkHgtAvailability;
-    long ttHideTime = 30000;
+    final long ttHideTime = 30000;
     private void refreshTTHide(){
         getTimer().removeCallbacks(ttHide);
         getTimer().postDelayed(ttHide,ttHideTime);
@@ -320,8 +320,7 @@ public class FSBB extends FeatureService {
     private ArrayList<MGTileStore> identifyTS(){
         ArrayList<MGTileStore> tss = new ArrayList<>();
         for (Layer layer : getMapLayerFactory().getMapLayers().values()){
-            if (layer instanceof MGTileStoreLayer) {
-                MGTileStoreLayer mgTileStoreLayer = (MGTileStoreLayer) layer;
+            if (layer instanceof MGTileStoreLayer mgTileStoreLayer) {
                 MGTileStore mgTileStore = mgTileStoreLayer.getMGTileStore();
                 if (mgTileStore.hasConfig()){
                     tss.add(mgTileStore);

@@ -6,6 +6,7 @@ import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
  * This class provides a bidirectional AStar, which is: fast - not optimal
  * This means, it might find faster a solution at the price that this solution is not the optimal one.
  */
+@SuppressWarnings("unused") // usage is via reflection
 public class BidirectionalAStarFNO extends BidirectionalAStar{
 
 

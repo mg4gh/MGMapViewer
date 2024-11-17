@@ -58,7 +58,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
     PreferenceCategory renderthemeMenu;
     ThemeSettingsFragment themeSettingsFragment;
 
-    ArrayList<String> themePreferenceKeys = new ArrayList<>(); // store in this list all preference keys used by the renderThemeMenu
+    final ArrayList<String> themePreferenceKeys = new ArrayList<>(); // store in this list all preference keys used by the renderThemeMenu
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preferences,

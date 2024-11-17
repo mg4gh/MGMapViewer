@@ -25,7 +25,7 @@ import mg.mgmap.generic.model.MultiPointModel;
 
 public class MultiMultiPointView extends MultiPointView {
 
-    ArrayList<MultiPointModel> mpms;
+    final ArrayList<MultiPointModel> mpms;
 
     public MultiMultiPointView(ArrayList<MultiPointModel> mpms, Paint paint){
         super(null, paint);

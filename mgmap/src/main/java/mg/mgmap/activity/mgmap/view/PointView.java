@@ -77,7 +77,7 @@ public class PointView extends MVLayer {
         }
 
 
-        if ((text != null) && (text.length() > 0)){
+        if ((text != null) && (!text.isEmpty())){
             int textSize = getTextSize(radiusInPixel);
             paintText.setTextSize(textSize);
             paintTextBg.setTextSize(textSize);

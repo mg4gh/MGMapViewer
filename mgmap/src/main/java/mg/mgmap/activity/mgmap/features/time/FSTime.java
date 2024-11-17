@@ -15,8 +15,6 @@
 package mg.mgmap.activity.mgmap.features.time;
 
 import android.content.Context;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;

@@ -150,8 +150,7 @@ public class FSPosition extends FeatureService {
     private void showPosition(PointModel pm) {
         hidePosition();
 
-        if (pm instanceof TrackLogPoint) {
-            TrackLogPoint trackLogPoint = (TrackLogPoint) pm;
+        if (pm instanceof TrackLogPoint trackLogPoint) {
             PointView accuracyCircle2 = new PointView(pm, PAINT_ACC_STROKE, PAINT_ACC_FILL);
             register(accuracyCircle2);
             accuracyCircle2.setRadiusMeter(trackLogPoint.getNmeaAcc());

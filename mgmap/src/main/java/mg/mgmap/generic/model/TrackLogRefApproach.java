@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.model;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 /** A specific kind of {@link mg.mgmap.generic.model.TrackLogRef} to reference an approach to a TrackLog.
@@ -70,6 +72,7 @@ public class TrackLogRefApproach extends TrackLogRef implements Comparable<Track
         return -1;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return super.toString() +

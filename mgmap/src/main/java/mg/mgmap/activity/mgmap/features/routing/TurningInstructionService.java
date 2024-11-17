@@ -53,9 +53,9 @@ public class TurningInstructionService {
     private ServiceState serviceState = ServiceState.OFF;
     private TextToSpeech tts = null;
 
-    Context context;
-    PrefCache prefCache;
-    MGMapApplication application;
+    final Context context;
+    final PrefCache prefCache;
+    final MGMapApplication application;
 
     public TurningInstructionService(MGMapApplication application, Context context, PrefCache prefCache){
         this.context = context;
@@ -84,14 +84,12 @@ public class TurningInstructionService {
                     serviceState = ServiceState.ON;
                 }
             });
-//            application.lastPositionsObservable.addObserver(refreshObserver);
         }
     }
 
     private void tryStopTTSService(){
         if (serviceState != ServiceState.OFF){
             serviceState  = ServiceState.OFF;
-//            getApplication().lastPositionsObservable.deleteObserver(refreshObserver);
             if (tts != null) {
                 tts.stop();
                 tts.shutdown();
@@ -108,8 +106,6 @@ public class TurningInstructionService {
             if (routeTrackLog == null) return;
 
             if ((tts != null) && (serviceState == ServiceState.ON) && prefGps.getValue()){
-//                PointModel pm = getApplication().lastPositionsObservable.lastGpsPoint;
-
                 mgLog.i("lastGps="+pm);
                 if (pm != null) { // have a new position to handle
                     TrackLogRefApproach bestMatch = routeTrackLog.getBestDistance(pm, THRESHOLD_FAR);

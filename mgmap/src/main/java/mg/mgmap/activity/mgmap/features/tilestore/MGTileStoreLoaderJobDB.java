@@ -29,7 +29,7 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    boolean bOld;
+    final boolean bOld;
 
     public MGTileStoreLoaderJobDB(TileStoreLoader tileStoreLoader, Tile tile, boolean bOld){
         super(tileStoreLoader,tile);
@@ -46,8 +46,7 @@ public class MGTileStoreLoaderJobDB extends MGTileStoreLoaderJob{
         try {
             is = conn.getInputStream();
         } catch (IOException e) {
-            if (conn instanceof HttpURLConnection) {
-                HttpURLConnection httpURLConnection = (HttpURLConnection) conn;
+            if (conn instanceof HttpURLConnection httpURLConnection) {
                 mgLog.d(httpURLConnection.getResponseCode()+" "+httpURLConnection.getResponseMessage()+" "+conn.getURL());
 
                 if (httpURLConnection.getResponseCode() == 404){

@@ -44,7 +44,7 @@ public class InitTest extends BaseTestCase {
     @Rule
     public ActivityScenarioRule<MGMapActivity> activityRule =new ActivityScenarioRule<>(MGMapActivity.class);
 
-    @Test(timeout = 120000)
+    @Test(timeout = 300000)
     public void _01_initFromScratch() {
         mgLog.i("started");
         waitForActivity(MGMapActivity.class);
@@ -60,9 +60,6 @@ public class InitTest extends BaseTestCase {
         AppCompatActivity settingsActivity = waitForActivity(SettingsActivity.class);
         addRegex(".*onPreferenceClick key=DldMapsDEKey.*");
         animateToPrefAndClick(R.string.preferences_dl_maps_de_key);
-
-        addRegex(".*onClick HintInitialMapDownload2_btPositive.*");
-        animateToViewAndClick(R.id.bt_dialog_positive);
 
         SystemClock.sleep(2000); // now you see the browser
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mf-v4-map://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/germany/Berlin.zip"));

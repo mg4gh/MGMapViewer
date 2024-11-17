@@ -37,7 +37,7 @@ public class LabeledSlider extends LinearLayout {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    Context context;
+    final Context context;
     Pref<Float> prefSlider = null;
     Pref<Boolean> prefSliderVisibility = null;
     private final TextView label;

@@ -12,7 +12,7 @@ public class BgJobGroup {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    ArrayList<BgJob> bgJobs = new ArrayList<>();
+    final ArrayList<BgJob> bgJobs = new ArrayList<>();
     protected int successCounter = 0;
     protected int errorCounter = 0;
     protected int jobCounter = 0;
@@ -23,8 +23,8 @@ public class BgJobGroup {
     boolean offerRetries = false;
 
     final BgJobGroupCallback groupCallback;
-    MGMapApplication application;
-    AppCompatActivity activity;
+    final MGMapApplication application;
+    final AppCompatActivity activity;
 
     public BgJobGroup(MGMapApplication application, AppCompatActivity activity, String title, BgJobGroupCallback groupCallback) {
         this.application = application;

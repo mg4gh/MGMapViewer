@@ -1,5 +1,6 @@
 package mg.mgmap.activity.mgmap.features.trad;
 
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.transition.AutoTransition;
@@ -79,10 +80,7 @@ public class TdMarker {
         tdMarkerLayer = new BitmapView(bitmap, wpm, dim);
         return tdMarkerLayer;
     }
-    void unregisterTDService() {
-//        fstd.unregister(tdMarkerLayer); // not needed, since unregisterAll
-//        tdMarkerLayer = null; // may cause a null pointer exception due to concurrent actions, not really needed
-    }
+    void unregisterTDService() { }
 
     public void setPosition(PointModel pm){
         wpm.setLat(pm.getLat());
@@ -103,7 +101,7 @@ public class TdMarker {
         return new PointModelImpl(wpm);
     }
 
-    Runnable homeAnimation = ()->{
+    final Runnable homeAnimation = ()->{
         AutoTransition at = new AutoTransition();
         at.setDuration(FSTrackDetails.MARKER_ANIMATION_DURATION);
         at.addListener(new TransitionListenerAdapter() {
@@ -124,7 +122,7 @@ public class TdMarker {
         setAnimationViewPosition(getTdvImageRect());
     };
 
-    Runnable ttPositionTimeout = ()->{
+    final Runnable ttPositionTimeout = ()->{
         if (tdMarkerLayer.getVisibility()){
             assert (tdMarkerLayer.getVisibility());
             tdMarkerLayer.setVisibility(false);
@@ -153,7 +151,7 @@ public class TdMarker {
 
         if (drawableFg != null){
             android.graphics.Bitmap aBitmap = android.graphics.Bitmap.createBitmap(dim,dim,android.graphics.Bitmap.Config.ARGB_8888);
-            android.graphics.Canvas aCanvas = new android.graphics.Canvas(aBitmap);
+            Canvas aCanvas = new Canvas(aBitmap);
             drawableFg.setBounds(0,0,dim,dim);
             drawableFg.draw(aCanvas);
             bitmap = new AndroidBitmap((aBitmap));

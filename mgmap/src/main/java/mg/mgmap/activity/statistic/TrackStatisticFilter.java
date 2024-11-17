@@ -18,32 +18,30 @@ import java.lang.invoke.MethodHandles;
 import java.util.Calendar;
 
 import mg.mgmap.R;
-import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 public class TrackStatisticFilter {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    PrefCache prefCache;
-    Pref<String> prefFilterNamePart;
-    Pref<Boolean> prefFilterNamePartOn;
-    Pref<Calendar> prefFilterTimeMin;
-    Pref<Boolean> prefFilterTimeMinOn;
-    Pref<Calendar> prefFilterTimeMax;
-    Pref<Boolean> prefFilterTimeMaxOn;
-    Pref<Float> prefFilterLengthMin;
-    Pref<Boolean> prefFilterLengthMinOn;
-    Pref<Float> prefFilterLengthMax;
-    Pref<Boolean> prefFilterLengthMaxOn;
-    Pref<Float> prefFilterGainMin;
-    Pref<Boolean> prefFilterGainMinOn;
-    Pref<Float> prefFilterGainMax;
-    Pref<Boolean> prefFilterGainMaxOn;
+    final PrefCache prefCache;
+    final Pref<String> prefFilterNamePart;
+    final Pref<Boolean> prefFilterNamePartOn;
+    final Pref<Calendar> prefFilterTimeMin;
+    final Pref<Boolean> prefFilterTimeMinOn;
+    final Pref<Calendar> prefFilterTimeMax;
+    final Pref<Boolean> prefFilterTimeMaxOn;
+    final Pref<Float> prefFilterLengthMin;
+    final Pref<Boolean> prefFilterLengthMinOn;
+    final Pref<Float> prefFilterLengthMax;
+    final Pref<Boolean> prefFilterLengthMaxOn;
+    final Pref<Float> prefFilterGainMin;
+    final Pref<Boolean> prefFilterGainMinOn;
+    final Pref<Float> prefFilterGainMax;
+    final Pref<Boolean> prefFilterGainMaxOn;
 
     public TrackStatisticFilter(PrefCache prefCache){
         this.prefCache = prefCache;

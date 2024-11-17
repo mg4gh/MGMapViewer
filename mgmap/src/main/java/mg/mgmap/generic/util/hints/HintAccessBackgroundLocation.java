@@ -10,9 +10,11 @@ public class HintAccessBackgroundLocation extends AbstractHint implements Runnab
         super(activity, R.string.hintAccessBackgroundLocation);
         title = "Access background location";
 
-        spanText = "In the next \"Location permission\" screen you will be asked, when you want to grant this permission. " +
-                "Track recording needs permanent access to location data, otherwise there will be huge gaps in the recorded track.\n\n" +
-                "For proper function select option \"Allow all the time.\" on the next screen.";
+        spanText = """
+                In the next "Location permission" screen you will be asked, when you want to grant this permission. \
+                Track recording needs permanent access to location data, otherwise there will be huge gaps in the recorded track.
+
+                For proper function select option "Allow all the time." on the next screen.""";
         showAlways = true;
     }
 

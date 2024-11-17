@@ -14,8 +14,10 @@ public class HintBatteryUsage extends AbstractHint implements Runnable{
         showOnce = false;
         allowAbort = true;
         title = "Battery Usage";
-        spanText = "Track recording in background requires that the battery usage is not optimized by Android.\n\n" +
-                "For proper function select 'Allow' in the next screen.";
+        spanText = """
+                Track recording in background requires that the battery usage is not optimized by Android.
+
+                For proper function select 'Allow' in the next screen.""";
     }
 
     @Override

@@ -43,8 +43,8 @@ public class MetaDataUtil {
     public static final long MAGIC = 0xAFFEAFFED00FD00FL;
     public static final int VERSION = 0x0200;
 
-    MGMapApplication application;
-    PersistenceManager persistenceManager;
+    final MGMapApplication application;
+    final PersistenceManager persistenceManager;
 
     public MetaDataUtil(MGMapApplication application, PersistenceManager persistenceManager){
         this.application = application;
@@ -71,8 +71,7 @@ public class MetaDataUtil {
                 MetaData metaData = metaDatas.get(mIdx);
 
                 PointModel pm = segment.get(pIdx);
-                if (pm instanceof PointModelImpl) {
-                    PointModelImpl pmi = (PointModelImpl) pm;
+                if (pm instanceof PointModelImpl pmi) {
                     metaData.bBox.extend(pmi);
                     pmi.toBuf(metaData.buf);
                     metaData.numPoints++;
@@ -260,7 +259,7 @@ public class MetaDataUtil {
                 if (buf.getLong() == MAGIC) return buf;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            mgLog.e(e);
         }
         return null;
     }

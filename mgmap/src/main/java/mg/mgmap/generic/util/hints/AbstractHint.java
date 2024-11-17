@@ -12,17 +12,17 @@ import mg.mgmap.generic.util.PrefCache;
 
 public abstract class AbstractHint implements Runnable{
 
-    protected Activity activity;
+    protected final Activity activity;
     protected String title = "";
     protected String spanText = "";
-    protected ArrayList<Runnable> gotItActions = new ArrayList<>();
+    protected final ArrayList<Runnable> gotItActions = new ArrayList<>();
     Pref<Boolean> prefShowHints;
     Pref<Boolean> prefShowHint;
     protected boolean showOnce = true;
     protected boolean allowAbort = false;
     protected boolean showAlways = false;
 
-    protected PrefCache prefCache;
+    protected final PrefCache prefCache;
 
     public AbstractHint(Activity activity, int prefShowHintId){
         this.activity = activity;

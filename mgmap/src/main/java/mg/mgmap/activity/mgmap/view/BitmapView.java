@@ -35,6 +35,7 @@ public class BitmapView extends MVLayer{
         }
     }
 
+    @SuppressWarnings("UnnecessaryLocalVariable")
     public Rect getDrawableRect(){
         if (topLeftPoint == null) return new Rect(1,1,0,0);
         int x = lon2x(pm.getLon());

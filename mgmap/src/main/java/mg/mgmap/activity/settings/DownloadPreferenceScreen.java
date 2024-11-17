@@ -72,13 +72,13 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
         super.onResume();
 
         if (prefCache.get(R.string.preferences_dl_maps_direct, false).getValue()){
-            findPreference(getResources().getString(R.string.preferences_dl_maps_wd_key)).setOnPreferenceClickListener(l -> new DownloadMaps(getActivity()).downloadMenu("https://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/"));
-            findPreference(getResources().getString(R.string.preferences_dl_maps_eu_key)).setOnPreferenceClickListener(l -> new DownloadMaps(getActivity()).downloadMenu("https://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/europe/"));
-            findPreference(getResources().getString(R.string.preferences_dl_maps_de_key)).setOnPreferenceClickListener(l -> new DownloadMaps(getActivity()).downloadMenu("https://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/germany/"));
+            setPreferenceClickListener(R.string.preferences_dl_maps_wd_key,()->new DownloadMaps(getActivity()).downloadMenu(getResources().getString(R.string.url_gwdg_openandromaps)));
+            setPreferenceClickListener(R.string.preferences_dl_maps_eu_key,()->new DownloadMaps(getActivity()).downloadMenu(getResources().getString(R.string.url_gwdg_openandromaps)+"europe/"));
+            setPreferenceClickListener(R.string.preferences_dl_maps_de_key,()->new DownloadMaps(getActivity()).downloadMenu(getResources().getString(R.string.url_gwdg_openandromaps)+"germany/"));
         } else {
             setBrowseIntent(R.string.preferences_dl_maps_wd_key, R.string.url_oam_dl, new HintInitialMapDownload2(getActivity()));
-            findPreference(getResources().getString(R.string.preferences_dl_maps_eu_key)).setOnPreferenceClickListener(l -> showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_eu),1250));
-            findPreference(getResources().getString(R.string.preferences_dl_maps_de_key)).setOnPreferenceClickListener(l -> showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_de),1500));
+            setPreferenceClickListener(R.string.preferences_dl_maps_eu_key,()->showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_eu),1250));
+            setPreferenceClickListener(R.string.preferences_dl_maps_de_key,()->showDownloadAsWebViewInDialog(getResources().getString(R.string.url_oam_dl_de),1500));
         }
 
         setBrowseIntent(R.string.preferences_dl_theme_el_key, R.string.url_oam_th_el);
@@ -103,7 +103,7 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
     }
 
     @SuppressLint({"","SetJavaScriptEnabled"})
-    private boolean showDownloadAsWebViewInDialog(String sUrl, int scrollY){
+    private void showDownloadAsWebViewInDialog(String sUrl, int scrollY){
         FragmentActivity activity = requireActivity();
         DialogView dialogView = activity.findViewById(R.id.dialog_parent);
         WebView myWebView = new WebView(activity);
@@ -141,7 +141,6 @@ public class DownloadPreferenceScreen extends MGPreferenceScreen {
                 .setLogPrefix("dps")
                 .setMaximize(true)
                 .show());
-        return true;
     }
 
     private void setSWLatestOCL(){

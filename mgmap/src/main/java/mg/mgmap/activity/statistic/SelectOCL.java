@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import mg.mgmap.generic.model.TrackLog;
 
 public class SelectOCL implements View.OnClickListener{
-    ArrayList<TrackLog> trackLogs;
-    boolean select;
+    final ArrayList<TrackLog> trackLogs;
+    final boolean select;
 
     public SelectOCL(ArrayList<TrackLog> allVisibleEntries, boolean select){
         this.trackLogs = allVisibleEntries;

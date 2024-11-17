@@ -22,7 +22,7 @@ public class XmlTileSourceConfig {
 
     public record AutoFill(String urlPattern, String id, String value){}
 
-    String name;
+    final String name;
     String[] hostnames;
     String protocol;
     int port;
@@ -38,7 +38,7 @@ public class XmlTileSourceConfig {
     String cookiesDomain;
     String cookiesURL;
     String[] cookiesRequired;
-    ArrayList<AutoFill> autoFills = new ArrayList<>();
+    final ArrayList<AutoFill> autoFills = new ArrayList<>();
 
     public XmlTileSourceConfig(String name){
         this.name = name;

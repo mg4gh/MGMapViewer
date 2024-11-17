@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 public class GGraphTile extends GGraph {
 
-    ElevationProvider elevationProvider;
+    final ElevationProvider elevationProvider;
 
     private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
     final Tile tile;
@@ -42,7 +42,7 @@ public class GGraphTile extends GGraph {
     final BBox tbBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
-    GGraphTile[] neighbourTiles = new GGraphTile[GNode.BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
+    final GGraphTile[] neighbourTiles = new GGraphTile[GNode.BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
     boolean used = false; // used for cache - do not delete from cache
     long accessTime = 0; // used for cache
 

@@ -213,7 +213,7 @@ public class ExtendedTextView extends AppCompatTextView {
                     res = prState1.getValue()?help2:help1;
                 }
             }
-            if ((res!=null) && (res.length() > 0)){
+            if ((res!=null) && (!res.isEmpty())){
                 line2 = System.lineSeparator()+res;
             }
         }

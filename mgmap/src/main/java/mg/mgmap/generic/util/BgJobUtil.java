@@ -22,8 +22,8 @@ import mg.mgmap.generic.view.DialogView;
 
 public class BgJobUtil {
 
-    AppCompatActivity activity;
-    MGMapApplication application;
+    final AppCompatActivity activity;
+    final MGMapApplication application;
 
     public BgJobUtil(AppCompatActivity activity, MGMapApplication application) {
         this.activity = activity;

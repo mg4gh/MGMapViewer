@@ -28,7 +28,7 @@ public class XmlTileSource extends AbstractTileSource {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    XmlTileSourceConfig config;
+    final XmlTileSourceConfig config;
 
     public XmlTileSource(XmlTileSourceConfig config){
         super(config.hostnames, config.port);

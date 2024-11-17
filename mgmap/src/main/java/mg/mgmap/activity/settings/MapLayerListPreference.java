@@ -69,8 +69,7 @@ public class MapLayerListPreference extends ListPreference {
     /** Returns a list of available map layers */
     public String[] getAvailableMapLayers(Context context){
         String[] resa = new String[]{"none"};
-        if (context.getApplicationContext() instanceof MGMapApplication) {
-            MGMapApplication application = (MGMapApplication) context.getApplicationContext();
+        if (context.getApplicationContext() instanceof MGMapApplication application) {
             File mapsDir = application.getPersistenceManager().getMapsDir();
             ArrayList<String> res = new ArrayList<>();
             res.add(resa[0]);

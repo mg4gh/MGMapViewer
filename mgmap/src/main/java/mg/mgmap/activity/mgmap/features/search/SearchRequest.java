@@ -18,11 +18,11 @@ import mg.mgmap.generic.model.PointModel;
 
 public class SearchRequest {
 
-    public String text;
-    public int actionId;
-    public long timestamp;
-    public PointModel pos;
-    public int zoom;
+    public final String text;
+    public final int actionId;
+    public final long timestamp;
+    public final PointModel pos;
+    public final int zoom;
 
     public SearchRequest(String text, int actionId, long timestamp, PointModel pos, int zoom) {
         this.text = text;

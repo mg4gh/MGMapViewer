@@ -38,7 +38,7 @@ import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 
-/** @noinspection unused*/
+@SuppressWarnings("unused") // usage is via reflection
 public class POI extends SearchProvider {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -71,7 +71,7 @@ public class POI extends SearchProvider {
         PointModel pm = request.pos;
         BBox bBox;
 
-        if (request.text.equals("")){ // reverse search
+        if (request.text.isEmpty()){ // reverse search
             bBox = new BBox().extend(pm).extend(100);
         } else {
             int radius = 10 << Math.max(0,  12 - request.zoom);
@@ -137,7 +137,7 @@ public class POI extends SearchProvider {
                     textMatch.append(" instr(lower(data),lower(\"").append(part).append("\")) AND");
                 }
                 textMatch = new StringBuilder(textMatch.toString().replaceAll("AND$", ""));
-                if (request.text.equals("")){
+                if (request.text.isEmpty()){
                     textMatch = new StringBuilder();
                 }
 

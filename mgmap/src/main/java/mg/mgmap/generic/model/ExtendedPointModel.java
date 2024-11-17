@@ -16,6 +16,6 @@ package mg.mgmap.generic.model;
 
 public interface ExtendedPointModel<T> extends PointModel{
 
-    public T getExtent();
+    T getExtent();
 
 }

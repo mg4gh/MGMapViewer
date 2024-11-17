@@ -48,7 +48,7 @@ public class TrackLogSegment extends MultiPointModelImpl{
     }
 
     public PointModel getLastPoint(){
-        if (points.size() > 0){
+        if (!points.isEmpty()){
             return points.get(points.size()-1);
         }
         return null;
@@ -69,11 +69,6 @@ public class TrackLogSegment extends MultiPointModelImpl{
 
     public int getSegmentIdx() {
         return segmentIdx;
-    }
-
-    @Override
-    public BBox getBBox() {
-        return bBox;
     }
 
     public void recalcStatistic(){

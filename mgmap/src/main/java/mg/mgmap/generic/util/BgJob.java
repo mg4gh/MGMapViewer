@@ -21,8 +21,6 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.service.bgjob.BgJobService;
-import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.basic.NameUtil;
 
 public class BgJob {
 
@@ -37,15 +35,11 @@ public class BgJob {
     int progress = 0;
     String text = null;
 
-    public boolean started = false;
-    public boolean finished = false;
-
     public BgJob(){}
 
     public void start(){
         try {
             notification_id = 100+(int)(Math.random()*1000000000);
-            started = true;
             if (group != null){
                 boolean success = false;
                 if ( (group.errorCounter - group.successCounter*3) < 8){
@@ -62,7 +56,6 @@ public class BgJob {
                 mgLog.e(e);
             }
         } finally {
-            finished = true;
             service.notifyUserFinish(notification_id);
         }
     }

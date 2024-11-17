@@ -25,8 +25,8 @@ public class DegreeUtil {
         }
         gms = gms.trim();
         gms = gms.replaceFirst("[dg]","°");
-        gms = gms.replaceFirst("[m]","'");
-        gms = gms.replaceFirst("[s]","''");
+        gms = gms.replaceFirst("m","'");
+        gms = gms.replaceFirst("s","''");
 
         String[] degrees = gms.split("°");
         if (degrees.length > 2) throw new NumberFormatException();
@@ -43,7 +43,7 @@ public class DegreeUtil {
                 second = Double.parseDouble(minutes[1]);
                 if ((second < 0) || (60 <= second)) throw new NumberFormatException();
                 if (minutes.length > 4) throw new NumberFormatException();
-                if ((minutes.length > 2) && ((minutes[2].length() > 0) || (minutes[3].length() > 0))) throw new NumberFormatException();
+                if ((minutes.length > 2) && ((!minutes[2].isEmpty()) || (!minutes[3].isEmpty()))) throw new NumberFormatException();
             }
         }
         return negative * (degree + ( minute / 60.0 ) + ( second / 3600.0 ) );

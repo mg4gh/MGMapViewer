@@ -13,7 +13,7 @@ import java.util.Objects;
 @SuppressLint("ViewConstructor")
 public class EditPref<T> extends androidx.appcompat.widget.AppCompatEditText{
 
-    Pref<T> pref;
+    final Pref<T> pref;
 
     public EditPref(Context context, Pref<T> pref) {
         super(context);

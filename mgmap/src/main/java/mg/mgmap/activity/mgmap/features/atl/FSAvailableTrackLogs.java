@@ -162,8 +162,7 @@ public class FSAvailableTrackLogs extends FeatureService {
             int segIdx = available.getSelectedTrackLogRef().getSegmentIdx();
             getControlView().setDashboardValue(trackLog.getNumberOfSegments()>1, dashboardStls,(segIdx>=0)?trackLog.getTrackLogSegment(segIdx).getStatistic():null);
             TrackLogRef ref = available.getSelectedTrackLogRef();
-            if (ref instanceof TrackLogRefZoom) {
-                TrackLogRefZoom trackLogRefZoom = (TrackLogRefZoom) ref;
+            if (ref instanceof TrackLogRefZoom trackLogRefZoom) {
                 if (trackLogRefZoom.isZoomForBB()){
                     trackLogRefZoom.setZoomForBB(false); // should be applied only once
                     getMapViewUtility().zoomForBoundingBox(trackLog.getBBox());

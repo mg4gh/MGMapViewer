@@ -108,10 +108,10 @@ public class FileManagerActivity extends AppCompatActivity {
         return application;
     }
 
-    Handler timer = new Handler();
-    Runnable ttReworkState = () -> FileManagerActivity.this.runOnUiThread(this::reworkState);
+    final Handler timer = new Handler();
+    final Runnable ttReworkState = () -> FileManagerActivity.this.runOnUiThread(this::reworkState);
 
-    Observer reworkObserver = (e) -> {
+    final Observer reworkObserver = (e) -> {
         timer.removeCallbacks(ttReworkState);
         timer.postDelayed(ttReworkState,30);
     };
@@ -276,7 +276,7 @@ public class FileManagerActivity extends AppCompatActivity {
                     shareUris.addAll(intentUris);
                 }
             }
-            if (shareUris.size() > 0){
+            if (!shareUris.isEmpty()){
                 application.getHintUtil().showHint( new HintShareReceived(this, shareUris.size()) );
             }
 
@@ -326,7 +326,7 @@ public class FileManagerActivity extends AppCompatActivity {
             return true;
         });
         view.getLlRight().setOnClickListener(v -> {
-            if (getSelectedEntries(null).size() > 0){
+            if (!getSelectedEntries(null).isEmpty()){
                 model.getSelected().toggle();
             } else if (model.getFile().isDirectory()){
                 prefPwd.setValue(model.getFile().getAbsolutePath());
@@ -348,12 +348,12 @@ public class FileManagerActivity extends AppCompatActivity {
         ArrayList<FileManagerEntryModel> selectedEntries = getSelectedEntries(flags);
 
         prefSelectAllEnabled.setValue(selectedEntries.size() < allEntries.size());
-        prefSelectNoneEnabled.setValue(selectedEntries.size() > 0);
+        prefSelectNoneEnabled.setValue(!selectedEntries.isEmpty());
         prefEditEnabled.setValue(selectedEntries.size() == 1);
         prefOpenEnabled.setValue((selectedEntries.size() == 1) && (flags[0]));
-        prefShareEnabled.setValue((selectedEntries.size()) > 0 && (flags[0]));
-        prefSaveEnabled.setValue(shareUris.size() > 0);
-        prefDeleteEnabled.setValue((selectedEntries.size() > 0) && (!flags[2]));
+        prefShareEnabled.setValue(!selectedEntries.isEmpty() && (flags[0]));
+        prefSaveEnabled.setValue(!shareUris.isEmpty());
+        prefDeleteEnabled.setValue((!selectedEntries.isEmpty()) && (!flags[2]));
         prefBackEnabled.setValue(true);
     }
 
@@ -581,7 +581,7 @@ public class FileManagerActivity extends AppCompatActivity {
         return v -> {
             if (prefShareEnabled.getValue()){
                 ArrayList<FileManagerEntryModel> entries = getSelectedEntries(null);
-                if (entries.size() > 0){
+                if (!entries.isEmpty()){
                     Intent sendIntent;
                     String title = "Share ...";
                     if (entries.size() == 1){

@@ -138,7 +138,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
      *  @see <a href="../../../images/MGMapViewer_ViewModel.PNG">MGMapActivity_ViewModel</a> */
     ControlView coView = null;
 
-    ArrayList<FeatureService> featureServices = new ArrayList<>();
+    final ArrayList<FeatureService> featureServices = new ArrayList<>();
 
     /** Reference to the renderThemeStyleMenu - will be set due to the callback getCategories
      * form XmlRenderThemeMenuCallback after reading the themes xml file */
@@ -285,8 +285,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         }
         for (Layer layer : mapView.getLayerManager().getLayers()){
-            if (layer instanceof TileDownloadLayer) {
-                TileDownloadLayer tileDownloadLayer = (TileDownloadLayer) layer;
+            if (layer instanceof TileDownloadLayer tileDownloadLayer) {
                 tileDownloadLayer.onResume();
             }
         }
@@ -321,8 +320,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         }
         for (Layer layer : mapView.getLayerManager().getLayers()){
-            if (layer instanceof TileDownloadLayer) {
-                TileDownloadLayer tileDownloadLayer = (TileDownloadLayer) layer;
+            if (layer instanceof TileDownloadLayer tileDownloadLayer) {
                 tileDownloadLayer.onPause();
             }
         }

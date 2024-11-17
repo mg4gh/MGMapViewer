@@ -16,6 +16,7 @@ public class SshBuild {
      * 3.) cleanup regex
      * 4..n) file(s)ToCopy
      */
+    @SuppressWarnings("CallToPrintStackTrace")
     public static void main(String[] args) {
         System.out.println("Hello from SshBuild " + args.length);
         for (String arg : args) {
@@ -29,7 +30,6 @@ public class SshBuild {
                     channelSftp.cd(args[1]);
                     System.out.println("remote pwd: "+channelSftp.pwd());
 
-                    @SuppressWarnings("unchecked")
                     Vector<ChannelSftp.LsEntry> vLsEntries = channelSftp.ls(channelSftp.pwd());
                     for (ChannelSftp.LsEntry lsEntry : vLsEntries){
                         if (!lsEntry.getAttrs().isDir() && lsEntry.getFilename().matches(args[2])){

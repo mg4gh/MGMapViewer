@@ -10,14 +10,15 @@ import mg.mgmap.activity.settings.MapLayerListPreference;
 
 public class HintMapLayerAssignment extends AbstractHint implements Runnable{
 
-    List<String> mapKeys;
+    final List<String> mapKeys;
     public HintMapLayerAssignment(Activity activity, List<String> mapKeys){
         super(activity, R.string.hintMapLayerAssignment);
         this.mapKeys = mapKeys;
         title = "Map layer assignment";
-        spanText = "There are up to five map layers that can be put one over the other with the option to control transparency of each layer. " +
-                "For the typical usage press now \"Select map layer 2\", and then select the downloaded map entry. Once this is done use the Android" +
-                " Back button to go back to the map view.  ";
+        spanText = """
+                There are up to five map layers that can be put one over the other with the option to control transparency of each layer. \
+                For the typical usage press now "Select map layer 2", and then select the downloaded map entry. Once this is done use the Android \
+                Back button to go back to the map view.""";
         addGotItAction(()-> prefShowHint.setValue(false));
     }
 

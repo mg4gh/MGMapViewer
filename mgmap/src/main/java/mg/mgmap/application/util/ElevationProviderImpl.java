@@ -23,7 +23,7 @@ import mg.mgmap.generic.model.WriteablePointModelImpl;
 /** Provide an elevation value for a given position on the .hgt file basis. */
 public class ElevationProviderImpl implements ElevationProvider{
 
-    HgtProvider hgtProvider;
+    final HgtProvider hgtProvider;
 
     public ElevationProviderImpl(HgtProvider hgtProvider){
         this.hgtProvider = hgtProvider;
@@ -51,7 +51,7 @@ public class ElevationProviderImpl implements ElevationProvider{
         if (latitude - iLat == 0){
             iLat--;
         }
-        String hgtName = hgtProvider.getHgtName(iLat,iLon);
+        String hgtName = HgtProvider.getHgtName(iLat,iLon);
         byte[] hgtBuf = hgtProvider.getHgtBuf(hgtName);
         if ((hgtBuf != null) && (hgtBuf.length > 0)){ // hgt files exists (real one or dummy)
             if (hgtBuf.length > 1){ // ok, exists with content (length 1 indicates dummy file for sea level)

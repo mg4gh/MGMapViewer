@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class ObservableImpl implements Observable{
 
-    ArrayList<PropertyChangeListener> propertyChangeListeners = new ArrayList<>();
+    final ArrayList<PropertyChangeListener> propertyChangeListeners = new ArrayList<>();
 
     private final String propertyName;
     private Object value;

@@ -87,8 +87,7 @@ public class PrefCache implements SharedPreferences.OnSharedPreferenceChangeList
 
     public static PrefCache getApplicationPrefCache(Activity activity){
         Application application = activity.getApplication();
-        if (application instanceof MGMapApplication) {
-            MGMapApplication mgMapApplication = (MGMapApplication) application;
+        if (application instanceof MGMapApplication mgMapApplication) {
             return mgMapApplication.getPrefCache();
         }
         return null;

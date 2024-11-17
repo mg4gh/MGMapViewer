@@ -48,8 +48,8 @@ public class FSTrackDetails extends FeatureService {
 
 
     private static final int TD_SIZE = VUtil.dp(60);
-    static long MARKER_ANIMATION_DURATION = 500;
-    static long MARKER_HOME_TIMEOUT = 2000;
+    static final long MARKER_ANIMATION_DURATION = 500;
+    static final long MARKER_HOME_TIMEOUT = 2000;
 
     private final RelativeLayout trackDetailsView;
 

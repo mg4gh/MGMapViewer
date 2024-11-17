@@ -31,7 +31,7 @@ public class HintUtil {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    HashSet<Pref<Boolean>> prefs = new HashSet<>();
+    final HashSet<Pref<Boolean>> prefs = new HashSet<>();
 
     CheckBox cbHideThis = null;
     CheckBox cbHideAll = null;

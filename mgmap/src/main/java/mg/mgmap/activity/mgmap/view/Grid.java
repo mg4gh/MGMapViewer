@@ -35,6 +35,7 @@ import mg.mgmap.generic.util.CC;
 /**
  * The Grid layer draws a geographical grid.
  */
+@SuppressWarnings("UnnecessaryUnicodeEscape")
 public class Grid extends Layer {
     private static String convertCoordinate(double coordinate) {
         StringBuilder sb = new StringBuilder();

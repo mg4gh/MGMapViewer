@@ -16,8 +16,8 @@ public class GTileCache {
         this.limit = limit;
     }
 
-    TreeMap<Integer, GGraphTile> tileMap = new TreeMap<>();
-    TreeMap<Long, Integer> accessMap = new TreeMap<>();
+    final TreeMap<Integer, GGraphTile> tileMap = new TreeMap<>();
+    final TreeMap<Long, Integer> accessMap = new TreeMap<>();
 
     synchronized void put (int tileX, int tileY, GGraphTile tile){
         int tileIdx = GGraphTileFactory.getKey(tileX,tileY);

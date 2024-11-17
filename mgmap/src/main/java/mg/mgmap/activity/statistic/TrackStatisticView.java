@@ -219,8 +219,7 @@ public class TrackStatisticView extends TableLayout {
             view.setBackgroundColor(getResources().getColor( colorId, getContext().getTheme()) );
         }
 
-        if (view instanceof ViewGroup){
-            ViewGroup viewGroup = (ViewGroup)view;
+        if (view instanceof ViewGroup viewGroup){
             for (int idx=0; idx<viewGroup.getChildCount(); idx++){
                 setViewtreeColor(viewGroup.getChildAt(idx), colorId);
             }

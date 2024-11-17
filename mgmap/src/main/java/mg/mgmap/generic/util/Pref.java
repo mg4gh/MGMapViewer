@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public class Pref<T> extends ObservableImpl  {
 
-    public SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
+    public final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
     protected final String key;
     protected T value;
     protected final SharedPreferences sharedPreferences;
@@ -145,7 +145,7 @@ public class Pref<T> extends ObservableImpl  {
         notifyObservers();
     }
 
-    @SuppressWarnings({"unchecked", "WrapperTypeMayBePrimitive"})
+    @SuppressWarnings({"unchecked", "WrapperTypeMayBePrimitive, StringEqualsEmptyString"})
     public T verify(String v){
         try {
             if (v.contains("\n")) throw new ParseException(v, v.indexOf("\n"));

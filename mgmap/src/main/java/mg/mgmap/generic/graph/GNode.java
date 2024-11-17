@@ -45,27 +45,27 @@ public class GNode extends PointModelImpl {
     public static final byte FLAG_HEIGHT_RELEVANT   = 0x04;
 
     public static int deltaX(byte border){
-        switch (border){
-            case BORDER_NODE_WEST: return -1;
-            case BORDER_NODE_EAST: return 1;
-            default: return 0;
-        }
+        return switch (border) {
+            case BORDER_NODE_WEST -> -1;
+            case BORDER_NODE_EAST -> 1;
+            default -> 0;
+        };
     }
     public static int deltaY(byte border){
-        switch (border){
-            case BORDER_NODE_NORTH: return -1;
-            case BORDER_NODE_SOUTH: return 1;
-            default: return 0;
-        }
+        return switch (border) {
+            case BORDER_NODE_NORTH -> -1;
+            case BORDER_NODE_SOUTH -> 1;
+            default -> 0;
+        };
     }
     public static byte oppositeBorder(byte border){
-        switch (border){
-            case BORDER_NODE_WEST: return BORDER_NODE_EAST;
-            case BORDER_NODE_EAST: return BORDER_NODE_WEST;
-            case BORDER_NODE_NORTH: return BORDER_NODE_SOUTH;
-            case BORDER_NODE_SOUTH: return BORDER_NODE_NORTH;
-            default: return 0;
-        }
+        return switch (border) {
+            case BORDER_NODE_WEST -> BORDER_NODE_EAST;
+            case BORDER_NODE_EAST -> BORDER_NODE_WEST;
+            case BORDER_NODE_NORTH -> BORDER_NODE_SOUTH;
+            case BORDER_NODE_SOUTH -> BORDER_NODE_NORTH;
+            default -> 0;
+        };
     }
 
     public GNode(double latitude, double longitude, float ele, float eleAcc, double cost){

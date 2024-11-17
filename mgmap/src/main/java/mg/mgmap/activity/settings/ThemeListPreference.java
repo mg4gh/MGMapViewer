@@ -32,8 +32,7 @@ public class ThemeListPreference extends ListPreference {
         super(context, attrs);
         this.setSummaryProvider(SimpleSummaryProvider.getInstance());
 
-        if (context.getApplicationContext() instanceof MGMapApplication) {
-            MGMapApplication application = (MGMapApplication) context.getApplicationContext();
+        if (context.getApplicationContext() instanceof MGMapApplication application) {
             String[] themes = application.getPersistenceManager().getThemeNames();
 
             setEntries(themes);

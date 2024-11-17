@@ -57,7 +57,7 @@ public class GTileConnector {
                 }
             }
         }
-        if ((remainingNodes1.size() > 0) && ((remainingNodes2.size() > 0))){
+        if ((!remainingNodes1.isEmpty()) && ((!remainingNodes2.isEmpty()))){
             ArrayList<GNode> stillRemainingNodes1 = new ArrayList<>(remainingNodes1);
             ArrayList<GNode> stillRemainingNodes2 = new ArrayList<>(remainingNodes2);
             mgLog.v(remainingNodes1::toString);
@@ -84,7 +84,7 @@ public class GTileConnector {
             remainingNodes2.clear();
             remainingNodes2.addAll(stillRemainingNodes2);
         }
-        if ((remainingNodes1.size() > 0) || ((remainingNodes2.size() > 0))){
+        if ((!remainingNodes1.isEmpty()) || ((!remainingNodes2.isEmpty()))){
             mgLog.d(()->"remainings1 " + remainingNodes1);
             mgLog.d(()->"remainings2 " + remainingNodes2);
         }

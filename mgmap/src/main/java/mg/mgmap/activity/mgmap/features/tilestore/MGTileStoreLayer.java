@@ -21,7 +21,7 @@ import org.mapsforge.map.model.IMapViewPosition;
 
 public class MGTileStoreLayer extends TileStoreLayer {
 
-    MGTileStore mgTileStore;
+    final MGTileStore mgTileStore;
 
     public MGTileStoreLayer(MGTileStore mgTileStore, TileCache tileCache, IMapViewPosition mapViewPosition, GraphicFactory graphicFactory, boolean isTransparent) {
         super(tileCache, mapViewPosition, graphicFactory, isTransparent);

@@ -22,8 +22,8 @@ import mg.mgmap.generic.util.BgJob;
 
 public abstract class MGTileStoreLoaderJob extends BgJob {
 
-    TileStoreLoader tileStoreLoader;
-    Tile tile;
+    final TileStoreLoader tileStoreLoader;
+    final Tile tile;
     URLConnection conn = null;
     String debug = null;
 

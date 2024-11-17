@@ -129,7 +129,7 @@ public class MGLog {
     public void evaluateLevel(){
         String tag = this.tag;
         level = Level.INFO; // default
-        while (tag.length() > 0){
+        while (!tag.isEmpty()){
             if (logConfig.containsKey(tag)){
                 level = logConfig.get(tag);
                 break;

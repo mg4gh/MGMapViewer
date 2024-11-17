@@ -42,8 +42,8 @@ public class MultiPointView extends MVLayer {
     private static final byte STROKE_MIN_ZOOM = 15;
 
     protected final GraphicFactory graphicFactory = AndroidGraphicFactory.INSTANCE;
-    protected boolean keepAligned = false;
-    protected Paint paintStroke;
+    protected final boolean keepAligned = false;
+    protected final Paint paintStroke;
     protected double strokeIncrease = 1.2;
     protected boolean showIntermediates = false;
     protected boolean showPointsOnly = false;

@@ -26,28 +26,28 @@ public class DataView extends View {
     private int textColor = 0x00000000;
 
 
-    Path pathFg = new Path();
-    Path pathStep = new Path();
-    ArrayList<AText> texts = new ArrayList<>();
-    Path pathPos = new Path();
+    final Path pathFg = new Path();
+    final Path pathStep = new Path();
+    final ArrayList<AText> texts = new ArrayList<>();
+    final Path pathPos = new Path();
 
-    float dataStep;
-    int width;
-    int height;
+    final float dataStep;
+    final int width;
+    final int height;
 
 
-    Paint paintFg;
-    Paint paintStep;
-    TextPaint paintText;
-    TextPaint paintBgText;
-    Paint paintPos;
+    final Paint paintFg;
+    final Paint paintStep;
+    final TextPaint paintText;
+    final TextPaint paintBgText;
+    final Paint paintPos;
 
 
     private static class AText{
-        String text;
-        float x;
-        float y;
-        TextPaint paint;
+        final String text;
+        final float x;
+        final float y;
+        final TextPaint paint;
 
         public AText(String text, float x, float y, TextPaint paint) {
             this.text = text;

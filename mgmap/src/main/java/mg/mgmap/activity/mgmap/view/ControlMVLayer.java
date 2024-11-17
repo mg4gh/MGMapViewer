@@ -33,7 +33,7 @@ public abstract class ControlMVLayer<T> extends MVLayer {
 
     private Handler timer = null;
     private final Runnable ttDrag = () -> abortDrag(dragX, dragY);
-    protected long timeoutDrag = 1000;
+    protected final long timeoutDrag = 1000;
 
     public ControlMVLayer(){
         reset();

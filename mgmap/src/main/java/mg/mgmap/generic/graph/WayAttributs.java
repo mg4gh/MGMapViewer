@@ -18,12 +18,12 @@ public class WayAttributs {
 
     public String trackType = null;
     public String network = null;
-    public boolean onewayBic;
+    public final boolean onewayBic;
 //    additional tags that might be used in future
 //    public String service = null;
 //    public String trail_visibility = null;
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
 
     private Object derivedData; // profile specific, will be reset on profile change
 

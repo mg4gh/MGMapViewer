@@ -14,15 +14,8 @@
  */
 package mg.mgmap.generic.util;
 
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.LocalFileHeader;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.model.enums.AesKeyStrength;
-import net.lingala.zip4j.model.enums.CompressionLevel;
-import net.lingala.zip4j.model.enums.CompressionMethod;
-import net.lingala.zip4j.model.enums.EncryptionMethod;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,37 +44,6 @@ public class Zipper {
         this.password = password;
     }
 
-    public File pack(String filePath) throws ZipException
-    {
-        String destinationZipFilePath = filePath + "." + EXTENSION;
-
-        ZipParameters zipParameters = new ZipParameters();
-        zipParameters.setCompressionMethod(CompressionMethod.DEFLATE );
-        zipParameters.setCompressionLevel(CompressionLevel.ULTRA);
-        ZipFile zipFile;
-        if ((password == null) ||(password.equals(""))){
-            zipParameters.setEncryptFiles(false);
-            zipFile = new ZipFile(destinationZipFilePath);
-        } else {
-            zipParameters.setEncryptFiles(true);
-            zipParameters.setEncryptionMethod(EncryptionMethod.AES);
-            zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
-            zipFile = new ZipFile(destinationZipFilePath, password.toCharArray());
-        }
-        zipFile.addFile(new File(filePath), zipParameters);
-        return zipFile.getFile();
-    }
-
-    public void unpack(String sourceZipFilePath, String extractedZipFilePath) throws ZipException {
-        ZipFile zipFile = new ZipFile(sourceZipFilePath);
-
-        if (zipFile.isEncrypted())
-        {
-            zipFile.setPassword(password.toCharArray());
-        }
-        zipFile.extractAll(extractedZipFilePath);
-    }
-
     public void unpack(URL url, File extractedZipFilePath, FilenameFilter filter, BgJob bgJob) throws Exception {
         mgLog.i("extract url="+url+" extractedZipFilePath="+extractedZipFilePath);
 
@@ -89,16 +51,17 @@ public class Zipper {
                 .hostnameVerifier((hostname, session) -> true)
                 .build();
         Request request = new Request.Builder().url(url).build();
-        Response response = client.newCall(request).execute();
-        ResponseBody responseBody = response.body();
-        if (responseBody == null) {
-            mgLog.w("empty response body for download!");
-        } else {
-            bgJob.setMax((int)(responseBody.contentLength()/1000));
-            bgJob.setText("Download "+ url.toString().replaceFirst(".*/",""));
-            bgJob.setProgress(0);
-            InputStream inputStream = responseBody.byteStream();
-            unpack(inputStream, extractedZipFilePath, filter, bgJob);
+        try (Response response = client.newCall(request).execute()){
+            ResponseBody responseBody = response.body();
+            if (responseBody == null) {
+                mgLog.w("empty response body for download!");
+            } else {
+                bgJob.setMax((int)(responseBody.contentLength()/1000));
+                bgJob.setText("Download "+ url.toString().replaceFirst(".*/",""));
+                bgJob.setProgress(0);
+                InputStream inputStream = responseBody.byteStream();
+                unpack(inputStream, extractedZipFilePath, filter, bgJob);
+            }
         }
     }
 
@@ -148,7 +111,8 @@ public class Zipper {
                 mgLog.e(e);
                 try {
                     if (extractedFile.exists()){
-                        extractedFile.delete();
+                        boolean success = extractedFile.delete();
+                        mgLog.d(String.format("Delete File %s - success=%b", extractedFile.getName(), success));
                     }
                 } catch (Exception e1){
                     mgLog.e(e1);

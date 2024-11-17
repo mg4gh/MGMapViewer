@@ -31,7 +31,6 @@ import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Implements a BarometerListener on top of the generic SensorListener.
- *
  * Depending the the particular device there is some smoothing function observed.
  * Setting the speed to a high rate (short time) seems to disable unwanted smoothing of the pressure values.
  * Current assumptions is, that the smoothing works on a fix number of measured values, so the effect
