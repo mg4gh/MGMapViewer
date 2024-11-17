@@ -12,18 +12,19 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 
+import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
 
 public class FusedLocationListener extends AbstractLocationListener {
 
+    private final MGMapApplication application;
     private final LocationCallback locationCallback;
     private final FusedLocationProviderClient fusedLocationClient;
 
     public FusedLocationListener(MGMapApplication application, TrackLoggerService trackLoggerService){
         super(application, trackLoggerService);
+        this.application = application;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(application.getApplicationContext() );
-
-
         locationCallback = new LocationCallback(){
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -36,12 +37,23 @@ public class FusedLocationListener extends AbstractLocationListener {
 
     protected void activate(int minMillis,int minDistance) throws SecurityException{
         super.activate(minMillis, minDistance);
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setMaxWaitTime(minMillis/10);
-        locationRequest.setInterval(minMillis);
-        locationRequest.setFastestInterval(minMillis);
-        locationRequest.setSmallestDisplacement(minDistance);
+        LocationRequest locationRequest;
+        if (application.getPrefCache().get(R.string.preferences_gnss_locationBuilder_key, false).getValue()){
+            LocationRequest.Builder builder = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY);
+            builder.setIntervalMillis(minMillis);
+            builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY); // although Priority.PRIORITY_HIGH_ACCURACY = 100 is given in the constructor, the priority value is PRIORITY_BALANCED_POWER_ACCURACY = 102
+            builder.setMaxUpdateDelayMillis(minMillis);
+            builder.setMinUpdateIntervalMillis(minMillis);
+            builder.setMinUpdateDistanceMeters(minDistance);
+            locationRequest = builder.build();
+        } else {
+            locationRequest = LocationRequest.create();
+            locationRequest.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setMaxWaitTime(minMillis/10);
+            locationRequest.setInterval(minMillis);
+            locationRequest.setFastestInterval(minMillis);
+            locationRequest.setSmallestDisplacement(minDistance);
+        }
         // Register the listener
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
     }

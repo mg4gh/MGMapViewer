@@ -223,6 +223,35 @@
             app:title="@string/preferences_gnss_fused_title"
             app:iconSpaceReserved="false"
             />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_gnss_locationBuilder_key"
+            app:summary="@string/preferences_gnss_locationBuilder_desc"
+            app:title="@string/preferences_gnss_locationBuilder_title"
+            app:iconSpaceReserved="false"
+            />
+        <EditTextPreference
+            app:defaultValue="4000"
+            app:key="@string/preferences_gnss_minMillis_key"
+            app:dialogTitle="@string/preferences_gnss_minMillis_title"
+            app:dialogMessage="@string/preferences_gnss_minMillis_desc"
+            android:inputType="number"
+            app:summary="@string/preferences_gnss_minMillis_desc"
+            app:title="@string/preferences_gnss_minMillis_title"
+            app:iconSpaceReserved="false"
+            />
+        <EditTextPreference
+            app:defaultValue="20"
+            app:key="@string/preferences_gnss_minMeter_key"
+            app:dialogTitle="@string/preferences_gnss_minMeter_title"
+            app:dialogMessage="@string/preferences_gnss_minMeter_desc"
+            android:inputType="number"
+            app:summary="@string/preferences_gnss_minMeter_desc"
+            app:title="@string/preferences_gnss_minMeter_title"
+            app:iconSpaceReserved="false"
+            />
+
+
 
     </PreferenceCategory>
 

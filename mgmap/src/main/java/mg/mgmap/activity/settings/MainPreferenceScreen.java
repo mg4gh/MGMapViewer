@@ -88,8 +88,16 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
         InfoPreferenceScreen.setBuildNumberSummary(prefVersion);
 
         boolean developer = MGMapApplication.getByContext(getContext()).getPrefCache().get(R.string.MGMapApplication_pref_Developer,false).getValue();
-        int[] develeperPrefIds = new int[]{R.string.FSSearch_pref_SearchDetails_key,R.string.preferences_alarm_ps_key,R.string.FSGrad_pref_WayDetails_key,R.string.FSRouting_routing_category_key};
-        for (int prefId : develeperPrefIds){
+        int[] developerPrefIds = new int[]{
+                R.string.FSSearch_pref_SearchDetails_key,
+                R.string.preferences_alarm_ps_key,
+                R.string.FSGrad_pref_WayDetails_key,
+                R.string.FSRouting_routing_category_key,
+                R.string.preferences_gnss_locationBuilder_key,
+                R.string.preferences_gnss_minMeter_key,
+                R.string.preferences_gnss_minMillis_key
+        };
+        for (int prefId : developerPrefIds){
             Preference preference = findPreference(getResources().getString(prefId));
             if (preference != null){
                 preference.setVisible(developer);

@@ -135,8 +135,20 @@ public class TrackLoggerService extends Service {
             boolean prefFused = prefCache.get(R.string.FSPosition_pref_FusedLocationProvider, false).getValue();
             locationListener = prefFused?new FusedLocationListener(application, this):new GnssLocationListener(application, this);
 
+            int minMillis = 4000;
+            int minDistance = 20;
             trackLogPointVerifier = new TrackLogPointVerifier(application);
-            locationListener.activate(4000,20);
+            try {
+                minMillis = Integer.parseInt( prefCache.get(R.string.preferences_gnss_minMillis_key, ""+minMillis).getValue() );
+            } catch (NumberFormatException e){
+                mgLog.e(e.getMessage());
+            }
+            try {
+                minDistance = Integer.parseInt( prefCache.get(R.string.preferences_gnss_minMeter_key, ""+minDistance).getValue() );
+            } catch (NumberFormatException e){
+                mgLog.e(e.getMessage());
+            }
+            locationListener.activate(minMillis, minDistance);
             barometerListener.activate();
         } catch (Exception e) {
             mgLog.e(e);

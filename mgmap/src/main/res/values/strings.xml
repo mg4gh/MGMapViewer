@@ -104,9 +104,20 @@
 
 
     <string name="preferences_cat_gnss_title">GNSS settings</string>
-    <string name="preferences_gnss_fused_gl_key">gnss_fused</string>
     <string name="preferences_gnss_fused_title">Used google fused location provider</string>
     <string name="preferences_gnss_fused_desc">Use the google fused location provider instead of the pure GNSS location provider</string>
+
+    <string name="preferences_gnss_locationBuilder_key">prefGnssLocationRequestBuilder</string>
+    <string name="preferences_gnss_locationBuilder_title">LocationRequest.Builder (developer)</string>
+    <string name="preferences_gnss_locationBuilder_desc">Use LocationRequest.Builder instead of legacy LocationRequest creation. (Test feature - not yet fully working)</string>
+
+    <string name="preferences_gnss_minMillis_key">prefGnssMinMillis</string>
+    <string name="preferences_gnss_minMillis_title">LocationRequest minTime (developer)</string>
+    <string name="preferences_gnss_minMillis_desc">Minimum time between location callbacks (in milliseconds)</string>
+
+    <string name="preferences_gnss_minMeter_key">prefGnssMinMeter</string>
+    <string name="preferences_gnss_minMeter_title">LocationRequest minDistance (developer)</string>
+    <string name="preferences_gnss_minMeter_desc">Minimum distance between location callbacks (in meter)</string>
 
     <string name="preferences_cat_behaviour_title">Behaviour settings</string>
     <string name="preferences_cat_fileMgr_title">File manager settings</string>
