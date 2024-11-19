@@ -58,10 +58,10 @@ public class GpxSyncUtil {
                         Map<String, Long> localMap = walk
                                 .filter(Files::isRegularFile)
                                 .filter(p -> p.toFile().getName().endsWith(".gpx"))
-                                .collect(Collectors.toMap(p -> p.toFile().getAbsolutePath().replaceFirst(localFolder.getAbsolutePath() + "[/\\\\]", ""), p -> p.toFile().lastModified() / 1000));
+                                .collect(Collectors.toMap(p -> p.toFile().getAbsolutePath().replaceFirst(localFolder.getAbsolutePath() , ""), p -> p.toFile().lastModified() / 1000));
 
                         Map<String, Long> remoteMap = new HashMap<>();
-                        calcRemoteMap(channelSftp, remoteMap, "");
+                        calcRemoteMap(channelSftp, remoteMap, File.separator);
 
                         Set<String> commonSet = new TreeSet<>(localMap.keySet());
                         commonSet.retainAll(remoteMap.keySet());
@@ -85,6 +85,19 @@ public class GpxSyncUtil {
 
                         for (String name : localMap.keySet()) {
                             if (!commonSet.contains(name)) {
+                                String[] paths = name.split("/");
+                                String curPath=".";
+                                for (int i=1; i< paths.length-1; i++){
+                                    curPath += File.separator + paths[i];
+                                    try {
+                                        channelSftp.stat(curPath);
+                                    } catch (SftpException e) {
+                                        mgLog.d(String.format("Create remote dir %s in %s",curPath, channelSftp.pwd()));
+                                        channelSftp.mkdir(curPath);
+                                    }
+                                }
+                                mgLog.d(String.format("Sftp put %s%s to %s%s",channelSftp.lpwd(),name,channelSftp.pwd(),name));
+                                name = name.substring(1); // remove leading File.separator
                                 channelSftp.put(name, name);
                             }
                         }
@@ -97,14 +110,14 @@ public class GpxSyncUtil {
     }
 
     public void calcRemoteMap(ChannelSftp channelSftp, Map<String, Long> map, String subPath) throws SftpException{
-        Vector<ChannelSftp.LsEntry> vLsEntries = channelSftp.ls(channelSftp.pwd()+(subPath.isEmpty() ?"":File.separator)+subPath);
+        Vector<ChannelSftp.LsEntry> vLsEntries = channelSftp.ls(channelSftp.pwd()+subPath);
         for (ChannelSftp.LsEntry lsEntry : vLsEntries){
             if (lsEntry.getAttrs().isDir()){
                 if (!lsEntry.getFilename().equals(".") && !lsEntry.getFilename().equals("..")){
-                    calcRemoteMap(channelSftp, map, subPath+(subPath.isEmpty() ?"":File.separator)+lsEntry.getFilename());
+                    calcRemoteMap(channelSftp, map, subPath+lsEntry.getFilename()+File.separator);
                 }
             } else if (lsEntry.getFilename().endsWith(".gpx")){
-                map.put(subPath+File.separator+lsEntry.getFilename(), (long)lsEntry.getAttrs().getMTime()) ;
+                map.put(subPath+lsEntry.getFilename(), (long)lsEntry.getAttrs().getMTime()) ;
             }
         }
     }
