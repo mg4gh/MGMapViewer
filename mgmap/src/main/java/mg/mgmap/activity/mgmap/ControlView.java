@@ -366,7 +366,9 @@ public class ControlView extends RelativeLayout {
             ViewGroup dashboardEntry = (ViewGroup)dashboard.getChildAt(i);
             dashboardEntry.getLocationOnScreen(loc);
             if ((loc[0] < x) && (x < loc[0]+dashboardEntry.getWidth()) && (loc[1] <= y) && (y < loc[1]+dashboardEntry.getHeight())){
-                return ((ExtendedTextView)(dashboardEntry.getChildAt(0))).getLogName();
+                if (Double.parseDouble( ((ExtendedTextView)dashboardEntry.getChildAt(1)).getText().toString().replace("km","") ) > 0.05){ // this requires that the trackLog has at least two points
+                    return ((ExtendedTextView)(dashboardEntry.getChildAt(0))).getLogName();
+                }
             }
         }
         return null;
