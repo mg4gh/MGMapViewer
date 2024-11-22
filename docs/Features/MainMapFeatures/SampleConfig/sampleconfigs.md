@@ -12,7 +12,7 @@ Here you can find sample configuration files:
 - [openstreetmap.org](./openstreetmap.org/config.xml)
 - test \[[testStore1](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testStore1.zip)\] 
        \[[testStore2](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testStore2.zip)\]
-       \[[testStoreProxy](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testStorePorxy.zip)\]
+       \[[testStoreProxy](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testStoreProxy.zip)\]
        \[[testOnlineProxy](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testOnlineProxy.zip)\]
 
 
