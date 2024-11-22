@@ -22,14 +22,13 @@ import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogPoint;
+import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
 
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -39,7 +38,6 @@ import java.util.Objects;
 public class GpxImporter {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
-    private static final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
     private final ElevationProvider elevationProvider;
     private final XmlPullParser pullParser = new KXmlParser();
@@ -156,12 +154,12 @@ public class GpxImporter {
                     try {
                         if (tlp != null){
                             assert text != null;
-                            tlp.setTimestamp( Objects.requireNonNull(sdf2.parse(text.replaceAll("T", "_"))).getTime() );
+                            tlp.setTimestamp( Objects.requireNonNull(Formatter.SDF_GPX.parse(text.replaceAll("T", "_"))).getTime() );
                         }
                         if (meta){
                             assert trackLog != null;
                             assert text != null;
-                            trackLog.getTrackStatistic().setTStart( Objects.requireNonNull(sdf2.parse(text.replaceAll("T", "_"))).getTime() );
+                            trackLog.getTrackStatistic().setTStart( Objects.requireNonNull(Formatter.SDF_GPX.parse(text.replaceAll("T", "_"))).getTime() );
                         }
                     } catch (Exception e) {
                         mgLog.w("Parse time failed: "+e.getMessage());

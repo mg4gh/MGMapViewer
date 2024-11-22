@@ -16,19 +16,21 @@ package mg.mgmap.generic.util.basic;
 
 import android.graphics.Paint;
 
-import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import mg.mgmap.generic.model.PointModel;
 
 public class Formatter {
 
-    public static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
-    public static final SimpleDateFormat SDF1a = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
-    public static final SimpleDateFormat SDF1b = new SimpleDateFormat("dd.MM.yy", Locale.GERMANY);
-    public static final SimpleDateFormat SDF1c = new SimpleDateFormat("dd.MM", Locale.GERMANY);
-    public static final SimpleDateFormat SDF2 = new SimpleDateFormat("HH:mm", Locale.GERMANY);
-    public static final SimpleDateFormat SDF3 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.GERMANY);
+    public static final SDFSynced SDF = new SDFSynced("yyyyMMdd_HHmmss", Locale.GERMANY);
+    public static final SDFSynced SDF1a = new SDFSynced("dd.MM.yyyy", Locale.GERMANY);
+    public static final SDFSynced SDF1b = new SDFSynced("dd.MM.yy", Locale.GERMANY);
+    public static final SDFSynced SDF1c = new SDFSynced("dd.MM", Locale.GERMANY);
+    public static final SDFSynced SDF2 = new SDFSynced("HH:mm", Locale.GERMANY);
+    public static final SDFSynced SDF3 = new SDFSynced("HH:mm:ss.SSS", Locale.GERMANY);
+    public static final SDFSynced SDF_TL = new SDFSynced("dd.MM.yyyy_HH:mm:ss", Locale.GERMANY);
+    public static final SDFSynced SDF_LOG = new SDFSynced("yyyy-MM-dd HH:mm:ss.SSS", Locale.GERMANY);
+    public static final SDFSynced SDF_GPX = new SDFSynced("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
     public enum FormatType {FORMAT_TIME, FORMAT_DISTANCE, FORMAT_DURATION, FORMAT_DATE, FORMAT_INT, FORMAT_HEIGHT, FORMAT_STRING, FORMAT_TIMESTAMP, FORMAT_FILE_SIZE, FORMAT_FILE_SIZE_DIR, FORMAT_FILE_TS}
 
@@ -90,7 +92,7 @@ public class Formatter {
         } else if (formatType == FormatType.FORMAT_DATE) {
             long millis = (Long) value;
             if (millis > 0) {
-                SimpleDateFormat sdf = SDF1c;
+                SDFSynced sdf = SDF1c;
                 if (6*lastDigitWidth+2*lastPointWidth < availableWidth){
                     if (8*lastDigitWidth+2*lastPointWidth < availableWidth){
                         sdf = SDF1a;

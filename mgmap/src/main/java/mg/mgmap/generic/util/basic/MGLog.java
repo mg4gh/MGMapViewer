@@ -3,16 +3,12 @@ package mg.mgmap.generic.util.basic;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TreeMap;
 
 @SuppressWarnings({"unused"})
 public class MGLog {
-
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.GERMANY);
 
     public enum Level { TEST1, TEST2, VERBOSE, DEBUG, INFO, WARN, ERROR, TEST3}
 
@@ -269,7 +265,7 @@ public class MGLog {
 
     private static void println(Level level, String tag, String msg){
         if (isUnittest()){
-            System.out.printf("%s  %s: %s -- %s%n", sdf.format(new Date(System.currentTimeMillis())), level, tag, msg);
+            System.out.printf("%s  %s: %s -- %s%n", Formatter.SDF_LOG.format(new Date(System.currentTimeMillis())), level, tag, msg);
         } else {
             android.util.Log.println(level.ordinal(), tag, msg);
         }

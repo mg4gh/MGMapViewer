@@ -19,15 +19,14 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
+import mg.mgmap.generic.util.basic.Formatter;
+
 public class Pref<T> extends ObservableImpl  {
 
-    public final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
     protected final String key;
     protected T value;
     protected final SharedPreferences sharedPreferences;
@@ -165,7 +164,7 @@ public class Pref<T> extends ObservableImpl  {
                 return (T)res;
             } else if (value instanceof Calendar){
                 Calendar res = Calendar.getInstance();
-                res.setTime(Objects.requireNonNull(sdf.parse(v)));
+                res.setTime(Objects.requireNonNull(Formatter.SDF1a.parse(v)));
                 return (T)res;
             } else {
                 throw new RuntimeException("type not allowed: "+value.getClass().getName());

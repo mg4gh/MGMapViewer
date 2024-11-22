@@ -17,7 +17,6 @@ package mg.mgmap.generic.model;
 import androidx.annotation.NonNull;
 
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
 
@@ -28,8 +27,6 @@ import mg.mgmap.generic.util.basic.Formatter;
  */
 
 public class TrackLogStatistic {
-
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss",Locale.GERMANY);
 
     private static final float ELE_THRESHOLD_BARO = 1.9f; // in meter
     public static final float ELE_THRESHOLD_ELSE = 3f; // in meter
@@ -273,7 +270,7 @@ public class TrackLogStatistic {
     @Override
     public String toString() {
         return super.toString()+" "+String.format(Locale.ENGLISH,"start=%s duration=%s totalLength=%.2f gain=%.1f loss=%.1f minEle=%.1f maxEle=%.1f numPoints=%d",
-                sdf.format(tStart),durationToString(),totalLength,gain,loss,minEle,maxEle, numPoints);
+                Formatter.SDF_TL.format(tStart),durationToString(),totalLength,gain,loss,minEle,maxEle, numPoints);
     }
 
     boolean isFrozen(){

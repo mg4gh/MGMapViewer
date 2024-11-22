@@ -23,9 +23,7 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 
 import java.lang.invoke.MethodHandles;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -38,6 +36,7 @@ import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
@@ -212,9 +211,8 @@ public class FSMarker extends FeatureService {
     }
 
     private void initMarkerTrackLog(){
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMANY);
         long now = System.currentTimeMillis();
-        WriteableTrackLog mtl = new WriteableTrackLog(sdf2.format(new Date(now))+"_MarkerTrack");
+        WriteableTrackLog mtl = new WriteableTrackLog(Formatter.SDF.format(new Date(now))+"_MarkerTrack");
         mtl.startTrack(now);
         mtl.startSegment(now);
         markerTrackLogObservable.setTrackLog(mtl);

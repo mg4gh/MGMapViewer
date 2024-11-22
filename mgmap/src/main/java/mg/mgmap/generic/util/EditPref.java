@@ -10,6 +10,8 @@ import android.view.inputmethod.EditorInfo;
 import java.util.Calendar;
 import java.util.Objects;
 
+import mg.mgmap.generic.util.basic.Formatter;
+
 @SuppressLint("ViewConstructor")
 public class EditPref<T> extends androidx.appcompat.widget.AppCompatEditText{
 
@@ -67,7 +69,7 @@ public class EditPref<T> extends androidx.appcompat.widget.AppCompatEditText{
         if (pref.getValue() instanceof Calendar) {
             @SuppressWarnings("unchecked")
             Pref<Calendar> prefC = (Pref<Calendar>)pref;
-            setText( pref.sdf.format(prefC.getValue().getTime()) );
+            setText( Formatter.SDF1a.format(prefC.getValue().getTime()) );
 
             setOnClickListener(v -> {
                 Calendar c = prefC.verify( Objects.requireNonNull(getText()).toString() ); // get current value to calendar format
@@ -76,7 +78,7 @@ public class EditPref<T> extends androidx.appcompat.widget.AppCompatEditText{
                         (view, year, monthOfYear, dayOfMonth) -> {
                             Calendar calendar = Calendar.getInstance();
                             calendar.set( year, monthOfYear, dayOfMonth);
-                            setText( pref.sdf.format(calendar.getTime()) );
+                            setText( Formatter.SDF1a.format(calendar.getTime()) );
                         },
                         c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();

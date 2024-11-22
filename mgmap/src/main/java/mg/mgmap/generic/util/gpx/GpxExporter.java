@@ -19,11 +19,11 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogPoint;
+import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
 
 import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -34,7 +34,6 @@ import java.util.Locale;
 public class GpxExporter {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
-    private static final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.GERMANY);
 
     public static void export(PersistenceManager persistenceManager, TrackLog trackLog) {
         if (trackLog.getNumberOfSegments() > 0) {
@@ -47,16 +46,12 @@ public class GpxExporter {
     }
 
     public static void export(PrintWriter pw, TrackLog trackLog) {
-//        PrintWriter pw = null;
-//        try {
-//            if (trackLog.getNumberOfSegments() > 0) {
-//                pw = persistenceManager.openGpxOutput(trackLog.getName());
         if (pw != null){
             pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             pw.println("<gpx version=\"1.1\" creator=\"MGMap\">");
             pw.println("\t<metadata>");
             pw.println("\t\t<name>"+trackLog.getName()+"</name>");
-            pw.println("\t\t<time>"+sdf2.format(new Date(trackLog.getTrackStatistic().getTStart())).replace("_","T")+"</time>");
+            pw.println("\t\t<time>"+ Formatter.SDF_GPX.format(new Date(trackLog.getTrackStatistic().getTStart())).replace("_","T")+"</time>");
             TrackLog refTL = trackLog.getReferencedTrackLog();
             if ((refTL != null) && (refTL.getNumberOfSegments() == 1)){ // supposed to be a route - export also the base MarkerTrackPoints
                 pw.println("\t\t<keywords>MGMarkerRoute</keywords>");
@@ -92,7 +87,7 @@ public class GpxExporter {
                         pw.println("\t\t\t\t<ele>" + String.format(Locale.ENGLISH,"%.1f",ele) + "</ele>");
                     }
                     if (pm.getTimestamp() != PointModel.NO_TIME){
-                        pw.println("\t\t\t\t<time>" + sdf2.format(new Date(pm.getTimestamp())).replace("_","T") + "</time>");
+                        pw.println("\t\t\t\t<time>" + Formatter.SDF_GPX.format(new Date(pm.getTimestamp())).replace("_","T") + "</time>");
                         if (pm instanceof TrackLogPoint lp) {
                             String cmt = "";
                             cmt += "nmeaAcc=" + String.format(Locale.ENGLISH,"%.1f",lp.getNmeaAcc()) + ",";
