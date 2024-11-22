@@ -381,7 +381,7 @@ public class FSBB extends FeatureService {
         boolean filtered = false;
         BBox bBox2show = new BBox();
         if (bBox2Load != null){
-            for (TrackLog aTrackLog : getApplication().metaTrackLogs.values()){
+            for (TrackLog aTrackLog : new ArrayList<>( getApplication().metaTrackLogs.values() )){
                 if (aTrackLog.isFilterMatched() || !prefFilterOn.getValue()){
                     if (getApplication().getMetaDataUtil().checkLaLoRecords(aTrackLog, bBox2Load)){
                         getApplication().availableTrackLogsObservable.availableTrackLogs.add(aTrackLog);

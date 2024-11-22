@@ -200,14 +200,8 @@ public class TrackStatisticActivity extends AppCompatActivity {
         addTrackLog(nameKeys, application.recordingTrackLogObservable.getTrackLog());
         addTrackLog(nameKeys, application.routeTrackLogObservable.getTrackLog());
         addTrackLog(nameKeys, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog());
-        for (TrackLog trackLog : application.availableTrackLogsObservable.availableTrackLogs){
-            addTrackLog(nameKeys, trackLog);
-        }
-        synchronized (application.metaTrackLogs){
-            for (TrackLog trackLog : application.metaTrackLogs.values()) {
-                addTrackLog(nameKeys, trackLog);
-            }
-        }
+        application.availableTrackLogsObservable.availableTrackLogs.forEach(trackLog -> addTrackLog(nameKeys, trackLog));
+        application.metaTrackLogs.values().forEach(trackLog -> addTrackLog(nameKeys, trackLog));
         refreshVisibleEntries();
 
         prefFullscreen.onChange();
@@ -226,9 +220,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        for (TrackLog trackLog : application.metaTrackLogs.values()) {
-            trackLog.getPrefSelected().deleteObserver(reworkObserver);
-        }
+        application.metaTrackLogs.values().forEach(trackLog -> trackLog.getPrefSelected().deleteObserver(reworkObserver) );
         ViewGroup qcs = findViewById(R.id.ts_qc);
         qcs.removeAllViews();
         prefCache.cleanup();

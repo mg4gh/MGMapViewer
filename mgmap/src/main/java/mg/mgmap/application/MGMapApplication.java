@@ -72,6 +72,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -106,7 +107,7 @@ public class MGMapApplication extends Application {
     public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>("recordingTrackLog",true);
     public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>("markerTrackLog",false);
     public final TrackLogObservable<WriteableTrackLog> routeTrackLogObservable = new TrackLogObservable<>("routeTrackLog",true);
-    public final TreeMap<String, TrackLog> metaTrackLogs = new TreeMap<>(Collections.reverseOrder());
+    public final Map<String, TrackLog> metaTrackLogs = Collections.synchronizedMap( new TreeMap<>(Collections.reverseOrder()) );
 
     /** queue for new (unhandled) TrackLogPoint objects */
     public final ArrayBlockingQueue<PointModel> logPoints2process = new ArrayBlockingQueue<>(5000);
@@ -339,9 +340,7 @@ public class MGMapApplication extends Application {
 
     public void addMetaDataTrackLog(TrackLog trackLog){
         trackStatisticFilter.checkFilter(trackLog);
-        synchronized (metaTrackLogs){
-            metaTrackLogs.put(trackLog.getNameKey(),trackLog);
-        }
+        metaTrackLogs.put(trackLog.getNameKey(),trackLog);
     }
 
     void cleanup(){

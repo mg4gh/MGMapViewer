@@ -244,7 +244,7 @@ public class TrackStatisticView extends TableLayout {
         if (application.metaTrackLogs.containsValue( trackLog )){
             return trackLog.isSelected()?R.color.CC_GRAY100_A150 :R.color.CC_GRAY100_A100;
         }
-        return trackLog.isSelected()?R.color.CC_BLUE150_A150 :R.color.CC_BLUE100_A100; // should not occur
+        return R.color.CC_BLACK; // should not occur
     }
 
 
