@@ -10,7 +10,10 @@ Here you can find sample configuration files:
 - [opencyclemap.org](./opencyclemap.org/config.xml)
 - [openstreetmap.de](./openstreetmap.de/config.xml)
 - [openstreetmap.org](./openstreetmap.org/config.xml)
-- test \[[testStore](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/test.zip)\]  \[[testStoremP](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testmP.zip)\]
+- test \[[testStore1](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testStore1.zip)\] 
+       \[[testStore2](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testStore2.zip)\]
+       \[[testStoreProxy](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testStorePorxy.zip)\]
+       \[[testOnlineProxy](mgmap-install://mg4gh.github.io/MGMapViewer/Features/MainMapFeatures/SampleConfig/test/testOnlineProxy.zip)\]
 
 
 <small><small>[Back to Index](../../../index.md)</small></small>
