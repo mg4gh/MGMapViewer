@@ -72,6 +72,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -410,10 +411,10 @@ public class MGMapApplication extends Application {
             super("availableTrackLogs");
         }
         TrackLogRef noRef = new TrackLogRef(null,-1);
-        public TreeSet<TrackLog> availableTrackLogs = new TreeSet<>(Collections.reverseOrder());
+        public Set<TrackLog> availableTrackLogs = Collections.synchronizedSet(new TreeSet<>(Collections.reverseOrder()));
         public TrackLogRef selectedTrackLogRef = noRef;
 
-        public TreeSet<TrackLog> getAvailableTrackLogs(){
+        public Set<TrackLog> getAvailableTrackLogs(){
             return availableTrackLogs;
         }
         public TrackLogRef getSelectedTrackLogRef(){
