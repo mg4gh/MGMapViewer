@@ -68,6 +68,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
     private RecyclerView recyclerView = null;
     private TrackStatisticAdapter statisticAdapter = null;
     PrefCache prefCache = null;
+    private final Set<String> allNameKeys = new TreeSet<>();
     private final ArrayList<TrackLog> allEntries = new ArrayList<>();
     private final ArrayList<TrackLog> visibleEntries = new ArrayList<>();
 
@@ -94,6 +95,15 @@ public class TrackStatisticActivity extends AppCompatActivity {
         timer.postDelayed(ttReworkState,30);
     };
 
+    Pref<Boolean> metaLoading;
+    final Observer metaDataObserver = (e) -> {
+        if (!metaLoading.getValue()){ // loading is finished
+            mgLog.d("rework allEntries allEntriesSize="+allEntries.size()+" metaTrackLogsSize="+application.metaTrackLogs.size());
+            application.metaTrackLogs.values().forEach(this::addTrackLog);
+            refreshVisibleEntries();
+        }
+    };
+
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +118,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
         prefCache = new PrefCache(context);
         prefFilterOn = prefCache.get(R.string.Statistic_pref_FilterOn, false);
+        metaLoading = prefCache.get(R.string.MGMapApplication_pref_MetaData_loading, true);
 
         prefFilterOn.addObserver((e) -> {
             if (prefFilterOn.getValue()){
@@ -196,12 +207,12 @@ public class TrackStatisticActivity extends AppCompatActivity {
         super.onResume();
         mgLog.d();
 
-        Set<String> nameKeys = new TreeSet<>();
-        addTrackLog(nameKeys, application.recordingTrackLogObservable.getTrackLog());
-        addTrackLog(nameKeys, application.routeTrackLogObservable.getTrackLog());
-        addTrackLog(nameKeys, application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog());
-        application.availableTrackLogsObservable.availableTrackLogs.forEach(trackLog -> addTrackLog(nameKeys, trackLog));
-        application.metaTrackLogs.values().forEach(trackLog -> addTrackLog(nameKeys, trackLog));
+        addTrackLog(application.recordingTrackLogObservable.getTrackLog());
+        addTrackLog(application.routeTrackLogObservable.getTrackLog());
+        addTrackLog(application.availableTrackLogsObservable.selectedTrackLogRef.getTrackLog());
+        application.availableTrackLogsObservable.availableTrackLogs.forEach(this::addTrackLog);
+        metaLoading.addObserver(metaDataObserver);
+        application.metaTrackLogs.values().forEach(this::addTrackLog);
         refreshVisibleEntries();
 
         prefFullscreen.onChange();
@@ -211,7 +222,9 @@ public class TrackStatisticActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         mgLog.d();
+        metaLoading.deleteObserver(metaDataObserver);
         visibleEntries.clear();
+        allNameKeys.clear();
         allEntries.clear();
         super.onPause();
     }
@@ -268,12 +281,12 @@ public class TrackStatisticActivity extends AppCompatActivity {
 
 
     // nameKeys contains the nameKey values of all tracks, which are already added
-    public void addTrackLog(Set<String> nameKeys, TrackLog trackLog){
+    public void addTrackLog(TrackLog trackLog){
         if (trackLog == null) return;
-        if (nameKeys.contains(trackLog.getNameKey())) return; // this TrackLog is already added
+        if (allNameKeys.contains(trackLog.getNameKey())) return; // this TrackLog is already added
         TrackLogStatistic statistic = trackLog.getTrackStatistic();
         if (statistic.getNumPoints() == 0) return; // don't show empty tracks, especially possible for marker Tracks
-        nameKeys.add(trackLog.getNameKey());
+        allNameKeys.add(trackLog.getNameKey());
 
         allEntries.add(trackLog);
         trackLog.getPrefSelected().addObserver(reworkObserver);

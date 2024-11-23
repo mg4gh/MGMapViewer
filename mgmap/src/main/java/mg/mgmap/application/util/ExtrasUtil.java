@@ -17,8 +17,13 @@ package mg.mgmap.application.util;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.TreeSet;
+import java.util.UUID;
 
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
@@ -28,31 +33,49 @@ public class ExtrasUtil {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public static ArrayList<String> checkCreateMeta(PersistenceManager persistenceManager, MetaDataUtil metaDataUtil, ElevationProvider elevationProvider){
-        mgLog.i();
+    public static ArrayList<String> checkCreateMeta(MGMapApplication mgMapApplication, UUID currentRun){
+        mgLog.i("checkCreateMeta started  - currentRun="+currentRun);
         try {
-            List<String> gpxNames = persistenceManager.getGpxNames();
+            PersistenceManager persistenceManager = mgMapApplication.getPersistenceManager();
+            MetaDataUtil metaDataUtil = mgMapApplication.getMetaDataUtil();
+
+            TreeSet<String> gpxNames = new TreeSet<>(Collections.reverseOrder());
+            gpxNames.addAll( persistenceManager.getGpxNames() );
             List<String> metaNames = persistenceManager.getMetaNames();
 
             ArrayList<String> newGpxNames = new ArrayList<>(gpxNames); // create  meta files for new gpx
             newGpxNames.removeAll(metaNames);
             metaNames.removeAll(gpxNames); // remove meta files without corresponding gpx
 
+            int cntMetaLoaded = 0, cntMetaCreated = 0;
             for (String name : gpxNames){
-                if (persistenceManager.isGpxOlderThanMeta(name)) continue;
-                mgLog.i("Create meta file for "+name );
-                try (InputStream gpxIs = persistenceManager.openGpxInput(name)){
-                    TrackLog trackLog = new GpxImporter(elevationProvider).parseTrackLog(name, gpxIs);
-                    if (trackLog != null){
-                        metaDataUtil.createMetaData(trackLog);
-                        metaDataUtil.writeMetaData(persistenceManager.openMetaOutput(name), trackLog);
-                    }
-                }  catch (Exception e){ mgLog.e(e); }
+                if (mgMapApplication.currentRun != currentRun) break;
+                if (persistenceManager.isGpxOlderThanMeta(name)) {
+                    cntMetaLoaded++;
+                    final TrackLog trackLog = new TrackLog();
+                    trackLog.setName(name);
+                    mgMapApplication.getMetaDataUtil().readMetaData(persistenceManager.openMetaInput(name), trackLog);
+                    mgMapApplication.addMetaDataTrackLog(trackLog);
+                } else {
+                    cntMetaCreated++;
+                    mgLog.d("Create meta file for "+name );
+                    try (InputStream gpxIs = persistenceManager.openGpxInput(name)){
+                        TrackLog trackLog = new GpxImporter(mgMapApplication.getElevationProvider()).parseTrackLog(name, gpxIs);
+                        if (trackLog != null){
+                            trackLog.setModified(false);
+                            metaDataUtil.createMetaData(trackLog);
+                            metaDataUtil.writeMetaData(persistenceManager.openMetaOutput(name), trackLog);
+                        }
+                        mgMapApplication.addMetaDataTrackLog(trackLog);
+                    }  catch (Exception e){ mgLog.e(e); }
+                }
             }
+            mgLog.d(String.format(Locale.ENGLISH,"checkCreateMeta summary gpxNames=%d cntMetaLoaded=%d cntMetaCreated=%d",gpxNames.size(),cntMetaLoaded,cntMetaCreated));
             for (String name : metaNames){
                 mgLog.i("Delete meta file for "+name);
                 persistenceManager.deleteTrack(name);
             }
+            mgLog.i("checkCreateMeta finished  - currentRun="+currentRun);
             return newGpxNames;
         } catch (Exception e) {
             mgLog.e(e);

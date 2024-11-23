@@ -23,8 +23,6 @@ import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.BBox;
@@ -193,30 +191,6 @@ public class MetaDataUtil {
             }
         }
     }
-
-    public void loadMetaData(ArrayList<String> metaNames){
-        mgLog.i("loading meta files started");
-
-        if (metaNames == null){
-            metaNames = persistenceManager.getMetaNames();
-        }
-        int numMetaNames = metaNames.size();
-        ExecutorService executor = Executors.newFixedThreadPool(8);
-        for (String name : metaNames){
-            executor.execute(() -> {
-                final TrackLog trackLog = new TrackLog();
-                trackLog.setName(name);
-                readMetaData(persistenceManager.openMetaInput(name), trackLog);
-                application.addMetaDataTrackLog(trackLog);
-                if (numMetaNames == application.metaTrackLogs.size()){
-                    mgLog.i("loading meta files finished");
-                }
-            });
-        }
-        executor.shutdown();
-        mgLog.i("loading meta files triggered ("+metaNames.size()+").");
-    }
-
 
     public void loadLaLoBufs(TrackLog trackLog){
         try {
