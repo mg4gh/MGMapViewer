@@ -48,27 +48,28 @@ public class ExtrasUtil {
             metaNames.removeAll(gpxNames); // remove meta files without corresponding gpx
 
             int cntMetaLoaded = 0, cntMetaCreated = 0;
+            TrackLog trackLog = null;
             for (String name : gpxNames){
-                if (mgMapApplication.currentRun != currentRun) break;
                 if (persistenceManager.isGpxOlderThanMeta(name)) {
                     cntMetaLoaded++;
-                    final TrackLog trackLog = new TrackLog();
+                    trackLog = new TrackLog();
                     trackLog.setName(name);
                     mgMapApplication.getMetaDataUtil().readMetaData(persistenceManager.openMetaInput(name), trackLog);
-                    mgMapApplication.addMetaDataTrackLog(trackLog);
                 } else {
                     cntMetaCreated++;
                     mgLog.d("Create meta file for "+name );
                     try (InputStream gpxIs = persistenceManager.openGpxInput(name)){
-                        TrackLog trackLog = new GpxImporter(mgMapApplication.getElevationProvider()).parseTrackLog(name, gpxIs);
+                        trackLog = new GpxImporter(mgMapApplication.getElevationProvider()).parseTrackLog(name, gpxIs);
                         if (trackLog != null){
                             trackLog.setModified(false);
                             metaDataUtil.createMetaData(trackLog);
                             metaDataUtil.writeMetaData(persistenceManager.openMetaOutput(name), trackLog);
                         }
-                        mgMapApplication.addMetaDataTrackLog(trackLog);
                     }  catch (Exception e){ mgLog.e(e); }
                 }
+//                mgLog.d(String.format(Locale.ENGLISH, "load metaData trackLog=%s currentRun=%s app.currentRun=%s",name, currentRun, mgMapApplication.currentRun ));
+                if (mgMapApplication.currentRun != currentRun) break; // check correct run immediately before adding to metaData
+                mgMapApplication.addMetaDataTrackLog(trackLog);
             }
             mgLog.d(String.format(Locale.ENGLISH,"checkCreateMeta summary gpxNames=%d cntMetaLoaded=%d cntMetaCreated=%d",gpxNames.size(),cntMetaLoaded,cntMetaCreated));
             for (String name : metaNames){

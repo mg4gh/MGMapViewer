@@ -352,7 +352,7 @@ public class MGMapApplication extends Application {
     void cleanup(){
         UUID lastRun = currentRun;
         currentRun = UUID.randomUUID();
-        mgLog.i("do cleanup now. lastRun="+lastRun);
+        mgLog.i("do cleanup now. lastRun="+lastRun+" currentRun="+currentRun);
         recordingTrackLogObservable.setTrackLog(null);
         markerTrackLogObservable.setTrackLog(null);
         routeTrackLogObservable.setTrackLog(null);
