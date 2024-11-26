@@ -144,11 +144,13 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
                     mapView.getModel().mapViewPosition.setZoomLevel((byte)7);
                     saveMapViewModel();
                 }
-                for (TileCache tileCache : tileCaches) {
-                    try {
-                        tileCache.purge();
-                    } catch (Exception e) {
-                        mgLog.e(e);
+                synchronized (mapView.getLayerManager()){
+                    for (TileCache tileCache : tileCaches) {
+                        try {
+                            tileCache.purge();
+                        } catch (Exception e) {
+                            mgLog.e(e);
+                        }
                     }
                 }
                 MapViewerBase.this.recreate(); // restart activity
