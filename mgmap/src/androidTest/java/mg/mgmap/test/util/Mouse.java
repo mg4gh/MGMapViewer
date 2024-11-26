@@ -31,7 +31,6 @@ public class Mouse {
     }
 
     public static void swipe(float startX, float startY, float endX, float endY,  long delay, long finalDelay, SwipeCB cb) {
-        int steps = (int)(delay/20);
         long downTime = SystemClock.uptimeMillis();
         Instrumentation inst = InstrumentationRegistry.getInstrumentation();
 
@@ -46,15 +45,25 @@ public class Mouse {
             event = MotionEvent.obtain(downTime, downTime+(2), MotionEvent.ACTION_MOVE, startX , startY , 0);
             inst.sendPointerSync(event);
         }
-        for (int i = 1; i < steps; i++) {
-            SystemClock.sleep(delay/steps);
-            event = MotionEvent.obtain(downTime, downTime + (i * delay / steps), MotionEvent.ACTION_MOVE, startX + ((endX - startX) * i) / steps, startY + ((endY - startY) * i) / steps, 0);
-            inst.sendPointerSync(event);
+        while (downTime + delay > SystemClock.uptimeMillis()){
+            long stepStartTime = SystemClock.uptimeMillis();
+            float progress = (float)(stepStartTime - downTime) / delay; // should be 0..1
+            progress = Math.max(0, Math.min(1, progress)); // make sure progress in 0..1
+            float x = startX + ((endX - startX) * progress);
+            float y = startY + ((endY - startY) * progress);
+            event = MotionEvent.obtain(downTime, stepStartTime, MotionEvent.ACTION_MOVE, x, y, 0);
+            // try to make the last step big enough - this should ensure that the last MouseMotion ends really at the target
+            if ( (endX - x)*(endX - x) + (endY - y)*(endY - y) > 500){ // ... so don't send event, if too close to the target
+                inst.sendPointerSync(event);
+            }
             if (cb != null) cb.swipePos((int) event.getX(), (int) event.getY());
         }
-        event = MotionEvent.obtain(downTime, downTime+delay, MotionEvent.ACTION_UP, endX, endY, 0);
+        event = MotionEvent.obtain(downTime, downTime+delay, MotionEvent.ACTION_MOVE, endX, endY, 0);
         inst.sendPointerSync(event);
         if (cb != null) cb.swipePos((int)event.getX(), (int)event.getY());
+        SystemClock.sleep(1000); // rather wait long to prevent fling effect
+        event = MotionEvent.obtain(downTime, downTime+delay+1000, MotionEvent.ACTION_UP, endX, endY, 0);
+        inst.sendPointerSync(event);
         SystemClock.sleep(finalDelay); //The wait is important to scroll
     }
 

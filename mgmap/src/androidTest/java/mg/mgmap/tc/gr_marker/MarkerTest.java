@@ -96,6 +96,39 @@ public class MarkerTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
+//    @Test()
+    public void _02B_marker() {
+        mgLog.i("started");
+        MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.422888, 13.448283), (byte) 14));
+        setCursorToCenterPos();
+        SystemClock.sleep(2000);
+
+        addRegex(".*onClick mi_marker_edit.*");
+        animateToViewAndClick(R.id.menu_marker);
+        animateToViewAndClick(R.id.mi_marker_edit);
+
+        animateToPosAndClick(54.415861,13.447284);
+        SystemClock.sleep(1000);
+
+        for (int i=0; i<100; i++){
+            animateToPosAndClick(54.420327,13.437579);
+            SystemClock.sleep(1000);
+            mgLog.i("Test Statistic 1: ("+i+") " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic());
+            Assert.assertEquals(1046.72, mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 0.01);
+            Assert.assertEquals(2, mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
+
+
+            animateSwipeLatLong(54.420327,13.437579, 54.425327,13.437579);
+            SystemClock.sleep(1000);
+            mgLog.i("Test Statistic 2: ("+i+") " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic());
+            Assert.assertEquals(1796.13, mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 0.01);
+            Assert.assertEquals(2, mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
+
+            animateToPosAndClick(54.425327,13.437579);
+        }
+    }
+
     @Test(timeout = 80000)
     public void _02_marker() {
         mgLog.i("started");
@@ -113,56 +146,56 @@ public class MarkerTest extends BaseTestCase {
         animateToPosAndClick(54.415861,13.447284);
         animateToPosAndClick(54.418657,13.456617);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(1919,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 1: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(1920,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(3,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateToPosAndClick(54.416,13.447);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(1578,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 2: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(1577,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(2,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateSwipeLatLong(54.421981, 13.450780, 54.416,13.447);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(1919,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 3: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(1920,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(3,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateSwipeLatLong(54.420327,13.437579, 54.425327,13.437579);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(2665,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 4: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(2669,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(3,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateToPosAndClick( 54.425327,13.437579);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(894,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 5: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(896,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(2,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateToPosAndClick( 54.425327,13.437579);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(2654,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 6: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(2656,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(3,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateSwipeLatLong(54.425327,13.437579, 54.420327,13.437579);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(2470,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 7: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(2473,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(3,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateToPosAndClick( 54.420327,13.437579);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(894,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 8: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(896,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(2,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         animateToPosAndClick( 54.416044,13.453317);
         SystemClock.sleep(1000);
-        mgLog.i("Test Statistic: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
-        Assert.assertEquals(894,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 3);
+        mgLog.i("Test Statistic 9: " + mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic() );
+        Assert.assertEquals(896,mgMapApplication.routeTrackLogObservable.getTrackLog().getTrackStatistic().getTotalLength(), 1);
         Assert.assertEquals(3,mgMapApplication.markerTrackLogObservable.getTrackLog().getTrackStatistic().getNumPoints());
 
         SystemClock.sleep(2000);

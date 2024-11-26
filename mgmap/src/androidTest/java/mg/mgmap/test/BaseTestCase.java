@@ -173,7 +173,7 @@ public class BaseTestCase {
         SystemClock.sleep(300);
         Point p = new Point();
         setClickVisibility(true);
-        Mouse.swipe(start.x, start.y, end.x, end.y, 1000, 0, (x,y)->{p.x=x;p.y=y;setCursorPos(p);setClickPos(p);});
+        Mouse.swipe(start.x, start.y, end.x, end.y, 2000, 0, (x,y)->{p.x=x;p.y=y;setCursorPos(p);setClickPos(p);});
         setClickVisibility(false);
         return end;
     }
@@ -208,6 +208,7 @@ public class BaseTestCase {
 
     protected Point getClickPos(int viewId){
         View v = waitForView(View.class, viewId);
+        SystemClock.sleep(50);
         return getClickPos(v);
     }
     protected Point getClickPos(View v){
