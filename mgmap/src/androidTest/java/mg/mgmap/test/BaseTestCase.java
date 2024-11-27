@@ -48,6 +48,7 @@ public class BaseTestCase {
 
     protected static Handler timer = new Handler(Looper.getMainLooper());
 
+    protected static int TIMEOUT_ANIMATION = 800;
 
     boolean running = false;
     LogMatcher lm = null;
@@ -145,7 +146,7 @@ public class BaseTestCase {
     }
 
     protected Point animateToPosAndClick(double latitude, double longitude){
-        Point pos = animateTo(getPoint4PointModel(new PointModelImpl(latitude,longitude)),1000);
+        Point pos = animateTo(getPoint4PointModel(new PointModelImpl(latitude,longitude)),TIMEOUT_ANIMATION);
         animateClick(pos);
         return pos;
     }
@@ -173,7 +174,7 @@ public class BaseTestCase {
         SystemClock.sleep(300);
         Point p = new Point();
         setClickVisibility(true);
-        Mouse.swipe(start.x, start.y, end.x, end.y, 2000, 0, (x,y)->{p.x=x;p.y=y;setCursorPos(p);setClickPos(p);});
+        Mouse.swipe(start.x, start.y, end.x, end.y, 2*TIMEOUT_ANIMATION, 0, (x,y)->{p.x=x;p.y=y;setCursorPos(p);setClickPos(p);});
         setClickVisibility(false);
         return end;
     }
@@ -181,12 +182,12 @@ public class BaseTestCase {
 
     protected Point animateToViewAndClick(int viewId){
         mgLog.i("to "+currentActivity.getResources().getResourceName(viewId));
-        Point pos = animateTo(getClickPos(viewId),1000);
+        Point pos = animateTo(getClickPos(viewId),TIMEOUT_ANIMATION);
         animateClick(pos);
         return pos;
     }
     protected Point animateToViewAndClick(View view){
-        Point pos = animateTo(getClickPos(view),1000);
+        Point pos = animateTo(getClickPos(view),TIMEOUT_ANIMATION);
         animateClick(pos);
         return pos;
     }
@@ -194,7 +195,7 @@ public class BaseTestCase {
     protected Point animateToPrefAndClick(int keyId){
         Point pos = PreferenceUtil.getPreferenceCenter(waitForActivity(SettingsActivity.class),keyId);
         assert (pos != null);
-        animateTo(pos, 1000);
+        animateTo(pos, TIMEOUT_ANIMATION);
         animateClick(pos);
         return pos;
     }
@@ -249,7 +250,7 @@ public class BaseTestCase {
     }
 
     protected Point animateTo(Point pos){
-        return animateTo(pos, 1000);
+        return animateTo(pos, TIMEOUT_ANIMATION);
     }
 
     /**
@@ -318,7 +319,7 @@ public class BaseTestCase {
                 testView.getClick().setScaleY(1);
             });
         },600);
-        SystemClock.sleep(1000);
+        SystemClock.sleep(TIMEOUT_ANIMATION);
         mgLog.i("pos "+pos);
         return pos;
     }
