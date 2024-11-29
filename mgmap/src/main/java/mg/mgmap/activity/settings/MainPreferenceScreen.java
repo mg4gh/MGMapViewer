@@ -82,6 +82,8 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
 
         EditTextPreference prefDisplayFullscreenOffset = findPreference(getResources().getString(R.string.preferences_display_fullscreen_offset_key));
         prefDisplayFullscreenOffset.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R);
+        EditTextPreference prefDisplayNoneFullscreenOffset = findPreference(getResources().getString(R.string.preferences_display_none_fullscreen_offset_key));
+        prefDisplayNoneFullscreenOffset.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R);
 
         Preference prefVersion = findPreference(getResources().getString(R.string.preferences_info_version_key));
         assert prefVersion != null;

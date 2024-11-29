@@ -32,6 +32,7 @@ import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
+import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.view.DialogView;
@@ -51,7 +52,7 @@ public class HeightProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.height_profile_activity);
-
+        FullscreenUtil.init(findViewById(R.id.contentView));
     }
 
 
@@ -72,13 +73,13 @@ public class HeightProfileActivity extends AppCompatActivity {
         mgLog.i("started");
         GraphView graph = findViewById(R.id.graph);
         graph.getSeries().clear();
-//        ((MGMapApplication)getApplication()).disposeAlertDialogs(this);
         super.onPause();
         mgLog.i("finished");
     }
 
 
     private void showGraph(boolean showAscentGraph) {
+        FullscreenUtil.enforceState(this);
         GraphView graph = findViewById(R.id.graph);
         graph.setBackgroundColor(0xFFAAAAAA);
         graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {

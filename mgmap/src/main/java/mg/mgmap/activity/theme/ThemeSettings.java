@@ -82,6 +82,7 @@ public class ThemeSettings extends AppCompatActivity implements OnSharedPreferen
         this.prefs = MGMapApplication.getByContext(this).getSharedPreferences();
 
         setContentView(R.layout.theme_settings_activity);
+        FullscreenUtil.init(findViewById(R.id.contentView));
         themeSettingsFragment = new ThemeSettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()

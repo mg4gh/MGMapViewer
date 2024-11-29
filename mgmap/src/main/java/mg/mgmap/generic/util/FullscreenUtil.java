@@ -18,11 +18,15 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Lifecycle;
 
 import java.lang.invoke.MethodHandles;
@@ -35,6 +39,23 @@ import mg.mgmap.generic.util.basic.MGLog;
 public class FullscreenUtil {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
+    public static void init(ViewGroup view){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            view.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@NonNull View v, @NonNull WindowInsets insets) {
+                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams)view.getLayoutParams();
+                    int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+                    int navigationBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+                    params.setMargins(0, statusBarHeight, 0, navigationBarHeight);
+                    view.setLayoutParams(params);
+                    return insets;
+                }
+            });
+        }
+    }
 
     public static void enforceState(AppCompatActivity activity) {
         SharedPreferences sharedPreferences = MGMapApplication.getByContext(activity).getSharedPreferences();
@@ -77,10 +98,12 @@ public class FullscreenUtil {
                 activity.getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
                 WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), false);
                 activity.getWindow().setStatusBarColor(0x60000000);
-                activity.getWindow().setNavigationBarColor(0x60000000);
+                activity.getWindow().setNavigationBarColor((Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM)?0x20909090:0x60000000);
             } else {
                 activity.getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
                 activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+                activity.getWindow().setNavigationBarColor(0xff000000);
+                activity.getWindow().setNavigationBarContrastEnforced(true);
             }
         }
         int newUiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();

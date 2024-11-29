@@ -4,75 +4,84 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/CC_BLACK"
+    >
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/contentView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@color/CC_WHITE">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:orientation="horizontal"
-            android:background="@color/CC_GRAY200"
-            android:baselineAligned="false">
-
-            <HorizontalScrollView
-                android:id="@+id/fileMgrHeadScroll"
-                android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:layout_weight="140"
-                android:paddingTop="2.5dp"
-                tools:ignore="SpeakableTextPresentCheck">
+                android:orientation="horizontal"
+                android:background="@color/CC_GRAY200"
+                android:baselineAligned="false">
 
+                <HorizontalScrollView
+                    android:id="@+id/fileMgrHeadScroll"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="140"
+                    android:paddingTop="2.5dp"
+                    tools:ignore="SpeakableTextPresentCheck">
+
+                    <LinearLayout
+                        android:id="@+id/fileMgrHeadline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
                 <LinearLayout
-                    android:id="@+id/fileMgrHeadline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:id="@+id/fileMgrHeadUp"
+                    android:layout_width="0dp"
+                    android:layout_weight="20"
+                    android:layout_height="45dp"
+                    android:paddingTop="2.5dp"
                     android:orientation="horizontal" />
-            </HorizontalScrollView>
-             <LinearLayout
-                android:id="@+id/fileMgrHeadUp"
-                android:layout_width="0dp"
-                android:layout_weight="20"
-                 android:layout_height="45dp"
-                 android:paddingTop="2.5dp"
-                android:orientation="horizontal" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/fileMgrEntries"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@color/CC_GRAY200"
+                >
+
+            </androidx.recyclerview.widget.RecyclerView>
+
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/fileMgrEntries"
-            android:scrollbars="vertical"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/ts_qc"
+            android:orientation="horizontal"
+            android:background="@color/CC_GRAY200"
+            android:layout_alignParentBottom="true"
+            >
+        </LinearLayout>
+
+        <mg.mgmap.generic.view.DialogView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="@color/CC_GRAY200"
-            >
+            android:id="@+id/dialog_parent"
+            />
 
-        </androidx.recyclerview.widget.RecyclerView>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:id="@+id/ts_qc"
-        android:orientation="horizontal"
-        android:background="@color/CC_GRAY200"
-        android:layout_alignParentBottom="true"
-        >
-    </LinearLayout>
-
-    <mg.mgmap.generic.view.DialogView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/dialog_parent"
-        />
-
-    <mg.mgmap.generic.view.TestView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/testview"
-        />
+        <mg.mgmap.generic.view.TestView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/testview"
+            />
+    </RelativeLayout>
 
 </RelativeLayout>

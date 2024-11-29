@@ -42,6 +42,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+        FullscreenUtil.init(findViewById(R.id.contentView));
 
         prefs = MGMapApplication.getByContext(this).getSharedPreferences();
         PreferenceFragmentCompat pfc = new MainPreferenceScreen();

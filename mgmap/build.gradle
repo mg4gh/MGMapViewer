@@ -156,12 +156,12 @@ afterEvaluate {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         def mgBuildTime = "\"${aBuildDate}\""
         applicationId "mg.mgmap"
         minSdkVersion 26
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode Integer.parseInt("$mgVersionCode")
         versionName "${versionMajor}-${mgVersionCode}.${mgBuildNbr}"
         buildConfigField "String", "BUILD_TIME", "${mgBuildTime}"

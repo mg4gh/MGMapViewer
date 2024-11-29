@@ -124,13 +124,13 @@ public class FileManagerActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         setContentView(R.layout.file_mgr_activity);
+        FullscreenUtil.init(findViewById(R.id.contentView));
         application = (MGMapApplication)getApplication();
         context = this;
         persistenceManager = application.getPersistenceManager();
 
         prefCache = new PrefCache(context);
         File fAppPwd = persistenceManager.getAppDir();
-//        String basePwd = persistenceManager.getBaseDir().getAbsolutePath();
         prefPwd = prefCache.get(R.string.MGMapApplication_pref_Pwd, fAppPwd.getAbsolutePath());
         prefPwd.addObserver((Observer) evt -> {
             File fPwd = new File(prefPwd.getValue());

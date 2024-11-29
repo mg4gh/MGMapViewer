@@ -4,7 +4,7 @@
     android:id="@+id/mainView"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-
+	
     <org.mapsforge.map.android.view.MapView
         android:id="@+id/mapView"
         android:layout_width="fill_parent"
@@ -120,6 +120,15 @@
         android:layout_height="match_parent"
         android:id="@+id/animationview"
         />
+
+    <RelativeLayout
+            android:id="@+id/statusBar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentTop="true"
+			android:visibility="invisible"
+			android:background="#60000000"
+			/>
 
     <mg.mgmap.generic.view.DialogView
         android:layout_width="match_parent"

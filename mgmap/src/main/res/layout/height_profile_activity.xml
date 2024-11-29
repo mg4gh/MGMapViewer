@@ -2,25 +2,34 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:background="@color/CC_BLACK"
+    >
 
-
-    <com.jjoe64.graphview.GraphView
+    <RelativeLayout
+        android:id="@+id/contentView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/graph"
-        />
+        android:background="@color/CC_WHITE">
 
-    <mg.mgmap.generic.view.DialogView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/dialog_parent"
-        />
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/graph"
+            />
 
-    <mg.mgmap.generic.view.TestView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/testview"
-        />
+        <mg.mgmap.generic.view.DialogView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/dialog_parent"
+            />
+
+        <mg.mgmap.generic.view.TestView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/testview"
+            />
+
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -135,7 +135,10 @@ public class FSControl extends FeatureService {
         ttRefreshTime = 10;
         prefFullscreen.addObserver((e) -> {
             FullscreenUtil.enforceState(getActivity(), prefFullscreen.getValue());
-            getControlView().setVerticalOffset( );
+            // starting from Android 11 (API Level R) this functionality is done via ControlView.onApplyWindowInsets()
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R){
+                getControlView().setVerticalOffset( );
+            }
         });
         prefMenuOneLine = getPref(R.string.FSControl_pref_menu_one_line_key, false);
         RelativeLayout base2 = activity.findViewById(R.id.base2);

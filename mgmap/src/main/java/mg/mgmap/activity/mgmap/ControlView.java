@@ -29,6 +29,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -36,6 +37,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.mapsforge.map.model.DisplayModel;
 
@@ -93,8 +95,8 @@ public class ControlView extends RelativeLayout {
     TextView tv_enlarge = null;
     EnlargeControl enlargeControl = null;
 
-    private int statusBarHeight;
-    private int navigationBarHeight;
+    private int statusBarHeight = 0;
+    private int navigationBarHeight = 0;
     Pref<String> prefVerticalFullscreenOffset;
     Pref<String> prefVerticalNoneFullscreenOffset;
     public final ArrayList<View> variableVerticalOffsetViews = new ArrayList<>();
@@ -127,6 +129,24 @@ public class ControlView extends RelativeLayout {
     }
 
 
+    @Override
+    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+        // This method is used starting from Android 11 (API Level R) to control vertical offsets
+        // (previous releases call setVerticalOffset() directly from the prefFullscreenObserver ... see FSControl)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            navigationBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            mgLog.d("statusBarHeight="+statusBarHeight+" navigationBarHeight="+navigationBarHeight);
+
+            if (activity.findViewById(R.id.statusBar) instanceof RelativeLayout statusBarView) {
+                ViewGroup.LayoutParams params = statusBarView.getLayoutParams();
+                params.height = statusBarHeight;
+                statusBarView.setLayoutParams(params);
+            }
+            setVerticalOffset();
+        }
+        return super.onApplyWindowInsets(insets);
+    }
 
     public void init(final MGMapApplication application, final MGMapActivity activity){
         try {
@@ -134,6 +154,13 @@ public class ControlView extends RelativeLayout {
             this.activity = activity;
             ControlComposer controlComposer = new ControlComposer();
             prepareEnlargeControl();
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                // View R.id.statusBar is a background rectangle to the status bar. It compensates that status bar background color cannot cannot set anymore directly.
+                if (activity.findViewById(R.id.statusBar) instanceof RelativeLayout statusBarView) {
+                    statusBarView.setVisibility(VISIBLE);
+                }
+            }
 
             trackDetails = findViewById(R.id.trackDetails);
             routingProfiles = findViewById(R.id.routingProfiles);
@@ -206,11 +233,11 @@ public class ControlView extends RelativeLayout {
         statusBarHeight = (idStatusBarHeight > 0)?activity.getResources().getDimensionPixelSize(idStatusBarHeight):ControlView.dp(24);
         int idNavBarHeight = myResources.getIdentifier( "navigation_bar_height", "dimen", "android");
         navigationBarHeight = (idNavBarHeight > 0)?activity.getResources().getDimensionPixelSize(idNavBarHeight):ControlView.dp(24);
-        mgLog.i("statusBarHeight="+statusBarHeight+" navigationBarHeight"+navigationBarHeight);
+        mgLog.d("statusBarHeight="+statusBarHeight+" navigationBarHeight="+navigationBarHeight);
     }
 
 // *************************************************************************************************
-// ********* EnlargeControl related stuff                                                      **********
+// ********* EnlargeControl related stuff                                                 **********
 // *************************************************************************************************
 
     void prepareEnlargeControl(){

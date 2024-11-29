@@ -3,37 +3,47 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/CC_BLACK"
+    >
+
+    <RelativeLayout
+        android:id="@+id/contentView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/CC_WHITE">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trackStatisticEntries"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/ts_qc"
+            android:orientation="horizontal"
+            android:background="@color/CC_GRAY100_A100"
+            android:layout_alignParentBottom="true"
+            >
+        </LinearLayout>
+
+        <mg.mgmap.generic.view.DialogView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/dialog_parent"
+            />
+
+        <mg.mgmap.generic.view.TestView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/testview"
+            />
+    </RelativeLayout>
     
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/trackStatisticEntries"
-        android:scrollbars="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:id="@+id/ts_qc"
-        android:orientation="horizontal"
-        android:background="@color/CC_GRAY100_A100"
-        android:layout_alignParentBottom="true"
-        >
-    </LinearLayout>
-
-    <mg.mgmap.generic.view.DialogView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/dialog_parent"
-        />
-
-    <mg.mgmap.generic.view.TestView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/testview"
-        />
 
 </RelativeLayout>

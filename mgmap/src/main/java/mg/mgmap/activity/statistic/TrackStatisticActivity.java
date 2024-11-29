@@ -112,6 +112,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         setContentView(R.layout.track_statistic_activity);
+        FullscreenUtil.init(findViewById(R.id.contentView));
         application = (MGMapApplication)getApplication();
         context = this;
         persistenceManager = application.getPersistenceManager();
