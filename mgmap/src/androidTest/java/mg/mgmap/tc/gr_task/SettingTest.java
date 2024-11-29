@@ -55,9 +55,7 @@ public class SettingTest extends BaseTestCase {
     public void _01_settings_layers() {
         mgLog.i("started");
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        mgMapActivity.runOnUiThread(() -> {
-            initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15));
         SystemClock.sleep(2000);
 
         setCursorToCenterPos();
@@ -85,10 +83,9 @@ public class SettingTest extends BaseTestCase {
     @Test(timeout = 60000)
     public void _02_settings_theme() {
         mgLog.i("started");
+        String elevatexy="Elevate5.5";
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        mgMapActivity.runOnUiThread(() -> {
-            initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15);
-        });
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.315814,13.351981),(byte) 15));
         SystemClock.sleep(2000);
         Dimension dim = mgMapActivity.getMapsforgeMapView().getDimension();
 
@@ -101,16 +98,16 @@ public class SettingTest extends BaseTestCase {
         animateSwipeToPos(new Point(dim.width/2,(dim.height*4)/5), new Point(dim.width/2,dim.height/5));
         SystemClock.sleep(2000);
 
-        Assert.assertEquals("Elevate5.2/Elevate.xml", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_theme_key),""));
+        Assert.assertEquals(elevatexy+"/Elevate.xml", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_theme_key),""));
 
         animateToPrefAndClick(R.string.preference_choose_theme_key);
-        onView(allOf(withText("Elevate5.2/Elements.xml"))).perform(click());
-        Assert.assertEquals("Elevate5.2/Elements.xml", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_theme_key),""));
+        onView(allOf(withText(elevatexy+"/Elements.xml"))).perform(click());
+        Assert.assertEquals(elevatexy+"/Elements.xml", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_theme_key),""));
         SystemClock.sleep(2000);
 
-        PreferenceUtil.setPreference(settingsActivity, R.string.preference_choose_theme_key, "Elevate5.2/Elevate.xml");
+        PreferenceUtil.setPreference(settingsActivity, R.string.preference_choose_theme_key, elevatexy+"/Elevate.xml");
         SystemClock.sleep(200);
-        Assert.assertEquals("Elevate5.2/Elevate.xml", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_theme_key),""));
+        Assert.assertEquals(elevatexy+"/Elevate.xml", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_theme_key),""));
         SystemClock.sleep(2000);
 
         Espresso.pressBack();
