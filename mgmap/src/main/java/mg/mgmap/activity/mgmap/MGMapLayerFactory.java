@@ -38,6 +38,7 @@ import java.io.FileInputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -210,14 +211,28 @@ public class MGMapLayerFactory {
                 Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,1.0f);
                 prefAlpha.addObserver((e) -> {
                     alphaLayer.setAlpha(prefAlpha.getValue());
-                    alphaLayer.requestRedraw();
+                    if (alphaLayer.isVisible() && (prefAlpha.getValue()==0)){
+                        alphaLayer.setVisible(false);
+                    } else if (!alphaLayer.isVisible() && (prefAlpha.getValue()>0)){
+                        alphaLayer.setVisible(true);
+                    } else {
+                        alphaLayer.requestRedraw();
+                    }
+                    mgLog.d(String.format(Locale.ENGLISH,"TileLayer visibility: %s visibility=%b alpha=%.2f",key,alphaLayer.isVisible(),prefAlpha.getValue()));
                 });
             }
             if (layer instanceof Grid alphaLayer) {
                 Pref<Float> prefAlpha = activity.getPrefCache().get("alpha_"+key,0.2f);
                 prefAlpha.addObserver((e) -> {
                     alphaLayer.setAlpha(prefAlpha.getValue());
-                    alphaLayer.requestRedraw();
+                    if (alphaLayer.isVisible() && (prefAlpha.getValue()==0)){
+                        alphaLayer.setVisible(false);
+                    } else if (!alphaLayer.isVisible() && (prefAlpha.getValue()>0)){
+                        alphaLayer.setVisible(true);
+                    } else {
+                        alphaLayer.requestRedraw();
+                    }
+                    mgLog.d(String.format(Locale.ENGLISH,"Grid visibility: %s visibility=%b alpha=%.2f",key,alphaLayer.isVisible(),prefAlpha.getValue()));
                 });
             }
         } catch (Exception e) {

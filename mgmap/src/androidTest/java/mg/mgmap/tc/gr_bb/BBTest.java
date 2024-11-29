@@ -25,7 +25,6 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.test.BaseTestCase;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -238,17 +237,24 @@ public class BBTest extends BaseTestCase {
         mgMapActivity1.getPrefCache().get(R.string.Layers_pref_chooseMap4_key, "").setValue("MAPGRID: hgt");
         SystemClock.sleep(5000);
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.422888,13.448283),(byte) 7));
+        mgMapActivity.runOnUiThread(() -> initPos(mgMapActivity, new PointModelImpl(54.8,13.4),(byte) 7));
         setCursorToCenterPos();
 
         addRegex(".*onClick mi_bbox.*");
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
 
+        mgMapApplication.getPrefCache().get(R.string.FSBB_pref_bb_action_layer, 0).setValue("MAPGRID: hgt".hashCode());
         animateToViewAndClick(R.id.menu_bb);
-        Assert.assertFalse(waitForView(ExtendedTextView.class, R.id.mi_load_remain).isEnabled());
-        Assert.assertFalse(waitForView(ExtendedTextView.class, R.id.mi_load_all).isEnabled());
-        Assert.assertFalse(waitForView(ExtendedTextView.class, R.id.mi_delete_all).isEnabled());
+        animateToViewAndClick(R.id.mi_load_remain);
+        addRegex(".*onClick btPositive.*");
+        animateToViewAndClick(R.id.bt_dialog_positive);
+        addRegex(".*onClick bgJobGroupConfirm_Download_height_data_btPositive.*");
+        addRegex(".*successCounter=5  errorCounter=0  jobCounter=5.*");
+        animateToViewAndClick(R.id.bt_dialog_positive);
+        SystemClock.sleep(1000);
+        addRegex(".*onClick bgJobGroupResult_Download_height_data_btPositive.*");
+        animateToViewAndClick(R.id.bt_dialog_positive);
 
         SystemClock.sleep(1000);
 

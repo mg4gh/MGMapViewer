@@ -14,7 +14,11 @@
  */
 package mg.mgmap.activity.mgmap.features.bb;
 
+import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.mapsforge.core.model.Dimension;
@@ -24,13 +28,14 @@ import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.TreeMap;
 
+import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.features.tilestore.MGTileStore;
 import mg.mgmap.activity.mgmap.features.tilestore.MGTileStoreLayer;
 import mg.mgmap.activity.mgmap.features.tilestore.TileStoreLoader;
 import mg.mgmap.application.util.HgtProvider;
@@ -44,6 +49,7 @@ import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.NewHgtHint;
+import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
 
 public class FSBB extends FeatureService {
@@ -55,6 +61,7 @@ public class FSBB extends FeatureService {
     private final Pref<Boolean> prefFilterOn = getPref(R.string.Statistic_pref_FilterOn, false);
     private final Pref<Boolean> prefAutoDlHgt = getPref(R.string.FSBB_pref_autoDlHgt_key, true);
     private final Pref<String> prefAutoDlHgtAsked = getPref(R.string.FSBB_pref_autoDlHgt_AskedList, "");
+    private final Pref<Integer> prefBBActionLayer = getPref(R.string.FSBB_pref_bb_action_layer, 0);
 
     private final Pref<Boolean> triggerLoadFromBB = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(Boolean.FALSE);
@@ -63,7 +70,8 @@ public class FSBB extends FeatureService {
     private final Pref<Boolean> triggerTSLoadAll = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> triggerTSDeleteAll = new Pref<>(Boolean.FALSE);
 
-    private final ArrayList<MGTileStore> tss = identifyTS();
+    private final TreeMap<String, Layer> tsAndHgtLayerEntries = identifyTsAndHgt();
+    private TreeMap<String, Layer> visibleTsAndHgtLayerEntries;
     private boolean initSquare = false;
     final private AbstractHint hgtHint;
 
@@ -72,12 +80,9 @@ public class FSBB extends FeatureService {
 
         triggerBboxOn.addObserver( (e) -> prefBboxOn.toggle());
         triggerLoadFromBB.addObserver( (e) -> loadFromBB());
-        triggerTSLoadRemain.addObserver( (e) -> tsAction(false, false));
-        triggerTSLoadAll.addObserver( (e) -> tsAction(false, true));
-        triggerTSDeleteAll.addObserver( (e) -> tsAction(true, true));
-        triggerTSLoadRemain.addObserver( (e) -> hgtAction(false, false));
-        triggerTSLoadAll.addObserver( (e) -> hgtAction(false, true));
-        triggerTSDeleteAll.addObserver( (e) -> hgtAction(true, true));
+        triggerTSLoadRemain.addObserver( (e) -> action1(false, false));
+        triggerTSLoadAll.addObserver( (e) -> action1(false, true));
+        triggerTSDeleteAll.addObserver( (e) -> action1(true, true));
 
         prefBboxOn.addObserver(refreshObserver);
         prefAutoDlHgt.addObserver((e) -> {
@@ -104,7 +109,12 @@ public class FSBB extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info){
         super.initQuickControl(etv,info);
         if ("group_bbox".equals(info)){
-            etv.setPrAction(new Pref<>(Boolean.FALSE));
+            Pref<Boolean> prefEtvBB = new Pref<>(Boolean.FALSE);
+            prefEtvBB.addObserver(ev->{
+                mgLog.d("prefEtvBB="+prefEtvBB.getValue());
+                doRefreshResumed();
+            });
+            etv.setPrAction(prefEtvBB);
             etv.setData(prefBboxOn,R.drawable.group_bbox1,R.drawable.group_bbox2);
         } else if ("loadFromBB".equals(info)){
             etv.setPrAction(triggerLoadFromBB);
@@ -169,7 +179,8 @@ public class FSBB extends FeatureService {
             hideBB();
         }
         prefLoadFromBBEnabled.setValue(isLoadAllowed());
-        boolean tsOpsAllowed = isLoadAllowed() && ((tss.size() == 1) ^ (identifyHgt()!=null)); // allow if either one TileStore or the hgt layer is visible
+        visibleTsAndHgtLayerEntries = identifyVisibleTsAndHgt();
+        boolean tsOpsAllowed = isLoadAllowed() && !visibleTsAndHgtLayerEntries.isEmpty(); // allow if either one TileStore or the hgt layer is visible
         prefTSActionsEnabled.setValue(tsOpsAllowed);
     }
 
@@ -317,63 +328,102 @@ public class FSBB extends FeatureService {
         return ((p1 != null) && (p2 != null) && (bbcl!= null));
     }
 
-    private ArrayList<MGTileStore> identifyTS(){
-        ArrayList<MGTileStore> tss = new ArrayList<>();
-        for (Layer layer : getMapLayerFactory().getMapLayers().values()){
-            if (layer instanceof MGTileStoreLayer mgTileStoreLayer) {
-                MGTileStore mgTileStore = mgTileStoreLayer.getMGTileStore();
-                if (mgTileStore.hasConfig()){
-                    tss.add(mgTileStore);
+    private TreeMap<String, Layer> identifyTsAndHgt(){
+        TreeMap<String, Layer> layerEntries = new TreeMap<>();
+        for (Map.Entry<String, Layer> entry : getMapLayerFactory().getMapLayers().entrySet()){
+            if (entry.getValue() instanceof MGTileStoreLayer mgTileStoreLayer) {
+                if (mgTileStoreLayer.getMGTileStore().hasConfig()){
+                    layerEntries.put(entry.getKey(), entry.getValue());
                 }
+            } else if (entry.getValue() instanceof HgtGridView) {
+                layerEntries.put(entry.getKey(), entry.getValue());
             }
         }
-        return tss;
+        return layerEntries;
     }
-    private HgtGridView identifyHgt(){
-        for (Layer layer : getMapLayerFactory().getMapLayers().values()){
-            if (layer instanceof HgtGridView) {
-                return (HgtGridView)layer;
+
+    private TreeMap<String, Layer> identifyVisibleTsAndHgt() {
+        TreeMap<String, Layer> visibleTsAndHgtLayerEntries = new TreeMap<>();
+        for (Map.Entry<String, Layer> entry : tsAndHgtLayerEntries.entrySet()) {
+            if (entry.getValue().isVisible()){
+                visibleTsAndHgtLayerEntries.put(entry.getKey(), entry.getValue());
             }
         }
-        return null;
+        return visibleTsAndHgtLayerEntries;
     }
+
 
     void checkHgtAvailability(){
         if (prefAutoDlHgt.getValue()){
-            for (Map.Entry<String, Layer> entry : getMapLayerFactory().getMapLayers().entrySet()){
+            for (Map.Entry<String, Layer> entry : tsAndHgtLayerEntries.entrySet()){
                 if ((entry.getValue() instanceof TileRendererLayer) && (!prefAutoDlHgtAsked.getValue().contains("\"" + entry.getKey() + "\""))){
                     prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" \""+entry.getKey()+"\"");
                     BBox bBox = BBox.fromBoundingBox(((TileRendererLayer)entry.getValue()).getMapDataStore().boundingBox());
                     mgLog.i("layer="+entry.getKey()+" bbox="+bBox);
-                    loadHgt(bBox, false, entry.getKey());
+                    loadHgt(bBox, false, entry.getKey(), null);
                 }
             }
         }
     }
 
-    private void tsAction(boolean bDrop, boolean bAll){
-        for (MGTileStore ts : tss){
-            try {
-                TileStoreLoader tileStoreLoader = new TileStoreLoader(getActivity(), getApplication(), ts, getTimer());
+    private void action1(boolean bDrop, boolean bAll) {
+        if (visibleTsAndHgtLayerEntries.size() >= 2){
+            Context context = getActivity();
+            DialogView dialogView = getActivity().findViewById(R.id.dialog_parent);
+
+            RadioGroup radioGroup = new RadioGroup(context);
+            ArrayList<Integer> checkedList = new ArrayList<>();
+            for (String layerName : visibleTsAndHgtLayerEntries.keySet()) {
+                RadioButton rb = new RadioButton(context);
+                rb.setText(layerName);
+                rb.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+                rb.setId(layerName.hashCode());
+                rb.setPadding(ControlView.dp(10), ControlView.dp(10), ControlView.dp(10), ControlView.dp(10));
+                radioGroup.addView(rb);
+            }
+            radioGroup.check(prefBBActionLayer.getValue());
+            checkedList.add(prefBBActionLayer.getValue());
+            radioGroup.setOnCheckedChangeListener((group, checkedId) -> checkedList.add(0, checkedId));
+
+            dialogView.lock(() -> dialogView
+                    .setTitle("Select Layer")
+                    .setContentView(radioGroup)
+                    .setPositive("OK", evt -> {
+                        prefBBActionLayer.setValue(checkedList.get(0));
+                        for (Map.Entry<String, Layer> entry : tsAndHgtLayerEntries.entrySet()){
+                            if (entry.getKey().hashCode() == checkedList.get(0)){
+                                action2(entry.getValue(), bDrop, bAll);
+                            }
+                        }
+                    })
+                    .setNegative("Cancel", null)
+                    .show());
+        } else if (visibleTsAndHgtLayerEntries.size() == 1){
+            // noinspection ConstantConditions
+            action2(visibleTsAndHgtLayerEntries.firstEntry().getValue(), bDrop, bAll);
+        }
+    }
+
+    private void action2(Layer layer, boolean bDrop, boolean bAll){
+        try {
+            if (layer instanceof MGTileStoreLayer tsLayer){
+                TileStoreLoader tileStoreLoader = new TileStoreLoader(getActivity(), getApplication(), tsLayer.getMGTileStore(), getTimer());
                 if (bDrop){
                     tileStoreLoader.dropFromBB(getBBox());
                 } else {
                     tileStoreLoader.loadFromBB(getBBox(), bAll);
                 }
+            } else if (layer instanceof HgtGridView hgtLayer){
+                if (bDrop){
+                    dropHgt(getBBox(), hgtLayer);
+                } else {
+                    loadHgt(getBBox(),bAll, null, hgtLayer);
+                }
+            }
+        } catch (Exception e) {
+            mgLog.e(e);
+        }
 
-            } catch (Exception e) {
-                mgLog.e(e);
-            }
-        }
-    }
-    private void hgtAction(boolean bDrop, boolean bAll){
-        if (identifyHgt() != null){
-            if (bDrop){
-                dropHgt(getBBox());
-            } else {
-                loadHgt(getBBox(),bAll, null);
-            }
-        }
     }
 
     public boolean loadFromBB(BBox bBox2Load){
@@ -402,7 +452,7 @@ public class FSBB extends FeatureService {
         return changed;
     }
 
-    private void loadHgt(BBox bBox, boolean all, String layerName){
+    private void loadHgt(BBox bBox, boolean all, String layerName, HgtGridView hgtLayer){
         ArrayList<String> hgtNames = new ArrayList<>();
         for (int latitude = PointModelUtil.getLower(bBox.minLatitude); latitude<PointModelUtil.getLower(bBox.maxLatitude)+1; latitude++ ) {
             for (int longitude = PointModelUtil.getLower(bBox.minLongitude); longitude < PointModelUtil.getLower(bBox.maxLongitude) + 1; longitude++) {
@@ -410,10 +460,10 @@ public class FSBB extends FeatureService {
                 hgtNames.add(hgtName);
             }
         }
-        getApplication().getHgtProvider().loadHgt(getActivity(), all, hgtNames, layerName, identifyHgt());
+        getApplication().getHgtProvider().loadHgt(getActivity(), all, hgtNames, layerName, hgtLayer);
     }
 
-    private void dropHgt(BBox bBox){
+    private void dropHgt(BBox bBox, HgtGridView hgtLayer){
         ArrayList<String> hgtNames = new ArrayList<>();
         for (int latitude = PointModelUtil.getLower(bBox.minLatitude); latitude<PointModelUtil.getLower(bBox.maxLatitude)+1; latitude++ ) {
             for (int longitude = PointModelUtil.getLower(bBox.minLongitude); longitude < PointModelUtil.getLower(bBox.maxLongitude) + 1; longitude++) {
@@ -421,7 +471,7 @@ public class FSBB extends FeatureService {
                 hgtNames.add(hgtName);
             }
         }
-        getApplication().getHgtProvider().dropHgt(getActivity(), hgtNames, identifyHgt());
+        getApplication().getHgtProvider().dropHgt(getActivity(), hgtNames, hgtLayer);
     }
 
 
