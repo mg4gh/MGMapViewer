@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.AllOf.allOf;
 
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.SystemClock;
 
@@ -61,9 +62,13 @@ public class InitTest extends BaseTestCase {
         addRegex(".*onPreferenceClick key=DldMapsDEKey.*");
         animateToPrefAndClick(R.string.preferences_dl_maps_de_key);
 
+        SystemClock.sleep(10000); // now you see the browser
+        Point pBerlin = new Point(750,980);
+        animateTo(pBerlin);
         SystemClock.sleep(2000); // now you see the browser
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mf-v4-map://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/germany/Berlin.zip"));
-        intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        animateClick(pBerlin, false); // just do like click
+        Intent intent = new Intent(settingsActivity, MGMapActivity.class);
+        intent.setData(Uri.parse("mf-v4-map://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/germany/Berlin.zip"));
         settingsActivity.startActivity(intent);
 
         waitForActivity(MGMapActivity.class);

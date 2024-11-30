@@ -47,8 +47,8 @@ import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
-import mg.mgmap.generic.util.hints.AbstractHint;
-import mg.mgmap.generic.util.hints.NewHgtHint;
+//import mg.mgmap.generic.util.hints.AbstractHint;
+//import mg.mgmap.generic.util.hints.NewHgtHint;
 import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
 
@@ -74,7 +74,7 @@ public class FSBB extends FeatureService {
     private final TreeMap<String, Layer> tsAndHgtLayerEntries = identifyTsAndHgt();
     private TreeMap<String, Layer> visibleTsAndHgtLayerEntries;
     private boolean initSquare = false;
-    final private AbstractHint hgtHint;
+//    final private AbstractHint hgtHint;
 
     public FSBB(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -89,8 +89,8 @@ public class FSBB extends FeatureService {
         prefAutoDlHgt.addObserver((e) -> {
             if (!prefAutoDlHgt.getValue()) prefAutoDlHgtAsked.setValue("");
         });
-        hgtHint = new NewHgtHint(getActivity(), getApplication().getHgtProvider());
-        hgtHint.addGotItAction(()-> getApplication().getHgtProvider().loadHgt(getActivity(), true, getApplication().getHgtProvider().getEhgtList(), null, null) );
+//        hgtHint = new NewHgtHint(getActivity(), getApplication().getHgtProvider());
+//        hgtHint.addGotItAction(()-> getApplication().getHgtProvider().loadHgt(getActivity(), true, getApplication().getHgtProvider().getEhgtList(), null, null) );
     }
 
     private WriteablePointModel p1 = null;
@@ -151,7 +151,7 @@ public class FSBB extends FeatureService {
         prefBboxOn.setValue(false);
         refreshObserver.onChange();
         getTimer().postDelayed(ttCheckHgt, 100) ;
-        getTimer().postDelayed(hgtHint, 500);
+//        getTimer().postDelayed(hgtHint, 500);
     }
 
     @Override
@@ -356,12 +356,13 @@ public class FSBB extends FeatureService {
 
     void checkHgtAvailability(){
         if (prefAutoDlHgt.getValue()){
-            for (Map.Entry<String, Layer> entry : tsAndHgtLayerEntries.entrySet()){
+            for (Map.Entry<String, Layer> entry : getMapLayerFactory().getMapLayers().entrySet()){
                 if ((entry.getValue() instanceof TileRendererLayer) && (!prefAutoDlHgtAsked.getValue().contains("\"" + entry.getKey() + "\""))){
                     prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" \""+entry.getKey()+"\"");
                     BBox bBox = BBox.fromBoundingBox(((TileRendererLayer)entry.getValue()).getMapDataStore().boundingBox());
                     mgLog.i("layer="+entry.getKey()+" bbox="+bBox);
                     loadHgt(bBox, false, entry.getKey(), null);
+                    break; // cannot handle multiple layers at the same time
                 }
             }
         }

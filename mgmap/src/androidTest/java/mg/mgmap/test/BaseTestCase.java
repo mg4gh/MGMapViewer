@@ -295,13 +295,19 @@ public class BaseTestCase {
         return animateClick(pos);
     }
 
+    protected Point animateClick(Point pos){
+        return animateClick(pos, true);
+    }
+
         /**
          * @param pos position on screen
          */
-    protected Point animateClick(Point pos){
+    protected Point animateClick(Point pos, boolean click){
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         mgLog.i("pos "+pos);
-        timer.postDelayed(()->new Thread(()->Mouse.click(pos)).start(), 200);
+        if (click){
+            timer.postDelayed(()->new Thread(()->Mouse.click(pos)).start(), 200);
+        }
         testView.getActivity().runOnUiThread(() -> {
             testView.setClickPosition(pos);
             setClickVisibility(true);
