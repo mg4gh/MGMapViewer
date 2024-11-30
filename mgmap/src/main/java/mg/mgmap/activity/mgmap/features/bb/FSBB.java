@@ -62,6 +62,7 @@ public class FSBB extends FeatureService {
     private final Pref<Boolean> prefAutoDlHgt = getPref(R.string.FSBB_pref_autoDlHgt_key, true);
     private final Pref<String> prefAutoDlHgtAsked = getPref(R.string.FSBB_pref_autoDlHgt_AskedList, "");
     private final Pref<Integer> prefBBActionLayer = getPref(R.string.FSBB_pref_bb_action_layer, 0);
+    private final Pref<Boolean> prefBBLoadTransparentLayers = getPref(R.string.FSBB_pref_load_transparent_layer, false);
 
     private final Pref<Boolean> triggerLoadFromBB = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(Boolean.FALSE);
@@ -345,7 +346,7 @@ public class FSBB extends FeatureService {
     private TreeMap<String, Layer> identifyVisibleTsAndHgt() {
         TreeMap<String, Layer> visibleTsAndHgtLayerEntries = new TreeMap<>();
         for (Map.Entry<String, Layer> entry : tsAndHgtLayerEntries.entrySet()) {
-            if (entry.getValue().isVisible()){
+            if (entry.getValue().isVisible() || prefBBLoadTransparentLayers.getValue()){
                 visibleTsAndHgtLayerEntries.put(entry.getKey(), entry.getValue());
             }
         }

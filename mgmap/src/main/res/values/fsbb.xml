@@ -8,6 +8,7 @@
     <string name="FSBB_pref_autoDlHgt_desc">Automatic proposal to download height data (hgt files) depending on bounding box of mapsforge map layer.</string>
     <string name="FSBB_pref_autoDlHgt_AskedList">FSBB.auto_download_hgt_asked_list</string>
     <string name="FSBB_pref_bb_action_layer">FSBB.bbActionLayer</string>
+    <string name="FSBB_pref_load_transparent_layer">FSBB.loadTransparent</string>
 
     <string name="FSBB_qcBBox_Help">Bounding Box mode</string>
     <string name="FSBB_qcBBox_Help1">on tap: Switch on</string>
