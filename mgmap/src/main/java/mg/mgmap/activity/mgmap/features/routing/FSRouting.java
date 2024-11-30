@@ -98,8 +98,9 @@ public class FSRouting extends FeatureService {
             1000000, // no limit
             false, // no extra snap, since FSMarker snaps point zoom level dependent
             20, // accept long detours in interactive mode
-            1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
-
+            10); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
+                 // 30.11.24: changed to 10 - new maps may contain slight changes, adopt routes to current map
+                 // but still do not snap - so it's possible to recognize this
 
     private final FSMarker.MtlSupportProvider mtlSupportProvider;
 

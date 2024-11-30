@@ -392,6 +392,8 @@ public class RoutingEngine {
                         mpm.removePoint(pm1);
                     }
                 }
+            } else {
+                mgLog.d("no approach, take bee line");
             }
         } catch (Exception e) {
             mgLog.e(e);
