@@ -567,6 +567,7 @@ public class FileManagerActivity extends AppCompatActivity {
                             } catch (IOException e){
                                 mgLog.e(e);
                             }
+                            prefPwd.changed();
                         })
                         .setNegative("Cancel", null)
                         .show());
