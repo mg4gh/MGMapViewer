@@ -144,7 +144,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
                     mapView.getModel().mapViewPosition.setZoomLevel((byte)7);
                     saveMapViewModel();
                 }
-                synchronized (mapView.getLayerManager()){
+                synchronized (mapView.getLayerManager().getLayers()){
                     for (TileCache tileCache : tileCaches) {
                         try {
                             tileCache.purge();
