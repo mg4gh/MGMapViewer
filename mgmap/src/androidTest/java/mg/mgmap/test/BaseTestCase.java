@@ -106,8 +106,10 @@ public class BaseTestCase {
     }
 
     protected void initPos(MGMapActivity mgMapActivity, PointModel pm, byte zoom){
+        mgLog.d("set pos="+pm+" zoom="+zoom);
         mgMapActivity.getMapViewUtility().setCenter(pm);
         mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setZoomLevel(zoom);
+        mgLog.d("set pos="+pm+" zoom="+zoom+" done");
     }
 
     protected void addRegex(String regex) {
@@ -267,8 +269,13 @@ public class BaseTestCase {
     }
 
     protected PointOfView animateTo(PointOfView pov, int duration){
-        TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         Point pos = pov.point();
+        if ((pos.x < 0) || (pos.x > 1200) || (pos.y < 0) || (pos.y > 2400)){
+            MGLog.ctx(MGLog.Level.DEBUG, 15);
+            assert false;
+        }
+        TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
+
         setCursorVisibility(true);
         int[] tvLoc = new int[2];
         testView.getLocationOnScreen(tvLoc);
