@@ -215,8 +215,13 @@ public class BaseTestCase {
 
     protected PointOfView getClickPos(int viewId){
         View v = waitForView(View.class, viewId);
-        SystemClock.sleep(50);
-        return getClickPos(v);
+        PointOfView lastPov = null, pov;
+        while (!(pov = getClickPos(v)).equals(lastPov)){
+            lastPov = pov;
+            SystemClock.sleep(50);
+        }
+        mgLog.d(lastPov);
+        return pov;
     }
     protected PointOfView getClickPos(View v){
         assert( v.getVisibility() == View.VISIBLE );

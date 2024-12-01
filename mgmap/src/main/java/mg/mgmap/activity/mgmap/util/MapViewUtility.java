@@ -30,6 +30,7 @@ import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Utility for functionality related to the mapsforge MapView.
@@ -78,6 +79,7 @@ public class MapViewUtility {
         double closeThresholdForZoomLevel = PointModelUtil.getCloseThreshold();
         closeThresholdForZoomLevel = closeThresholdForZoomLevel / (1 << 9);
         closeThresholdForZoomLevel = closeThresholdForZoomLevel * (1 << (25 - currentZoomLevel));
+        MGLog.sd("currentZoomLevel="+currentZoomLevel+" closeThreshold="+closeThresholdForZoomLevel * 1.5);
         return closeThresholdForZoomLevel * 1.5;
     }
 

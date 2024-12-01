@@ -126,6 +126,8 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
         FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        assert( fsbb.getP1() != null);
+        assert( fsbb.getP2() != null);
         animateSwipeLatLong(fsbb.getP1(), p1_1);
         animateSwipeLatLong(fsbb.getP2(), p2_1);
 
