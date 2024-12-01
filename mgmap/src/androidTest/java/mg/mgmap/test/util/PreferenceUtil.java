@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.test.BaseTestCase;
 
 public class PreferenceUtil {
 
@@ -30,16 +31,13 @@ public class PreferenceUtil {
         if (keyId != 0){
             String key = settingsActivity.getResources().getString(keyId);
             Fragment f = settingsActivity.getSupportFragmentManager().getFragments().get(0);
-            if (f instanceof PreferenceFragmentCompat) {
-                PreferenceFragmentCompat pfc = (PreferenceFragmentCompat) f; // corresponds to preference screen
+            if (f instanceof PreferenceFragmentCompat pfc) { // corresponds to preference screen
                 Preference preference = pfc.findPreference(key);
                 assert preference != null;
-                if (preference instanceof ListPreference) {
-                    ListPreference listPreference = (ListPreference) preference;
+                if (preference instanceof ListPreference listPreference) {
                     settingsActivity.runOnUiThread(()->listPreference.setValue(valueToSet));
-                } else if (preference instanceof EditTextPreference) {
-                    EditTextPreference listPreference = (EditTextPreference) preference;
-                    settingsActivity.runOnUiThread(()->listPreference.setText(valueToSet));
+                } else if (preference instanceof EditTextPreference textPreference) {
+                    settingsActivity.runOnUiThread(()->textPreference.setText(valueToSet));
                 }
             }
         }
@@ -55,18 +53,16 @@ public class PreferenceUtil {
     }
 
 
-    public static Point getPreferenceCenter(AppCompatActivity settingsActivity, int  keyId) {
+    public static BaseTestCase.PointOfView getPreferenceCenter(AppCompatActivity settingsActivity, int  keyId) {
         String key = settingsActivity.getResources().getString(keyId);
 
         Fragment f = settingsActivity.getSupportFragmentManager().getFragments().get(0);
-        if (f instanceof PreferenceFragmentCompat) {
-            PreferenceFragmentCompat pfc = (PreferenceFragmentCompat) f; // corresponds to preference screen
+        if (f instanceof PreferenceFragmentCompat pfc) { // corresponds to preference screen
 
             RecyclerView rv = pfc.getListView();
             RecyclerView.Adapter<?> ra = rv.getAdapter();
 
-            if (ra instanceof PreferenceGroupAdapter) {
-                PreferenceGroupAdapter pga = (PreferenceGroupAdapter) ra;
+            if (ra instanceof PreferenceGroupAdapter pga) {
                 @SuppressLint("RestrictedApi") int pIdx = pga.getPreferenceAdapterPosition(key);
                 RecyclerView.ViewHolder vh = rv.findViewHolderForAdapterPosition(pIdx);
                 if (vh != null){
@@ -75,7 +71,7 @@ public class PreferenceUtil {
                     v.getLocationOnScreen(loc1);
                     Point pt = new Point(loc1[0] + v.getWidth() / 2, loc1[1] + v.getHeight() / 2 );
                     mgLog.d(pt);
-                    return pt;
+                    return new BaseTestCase.PointOfView(pt, v);
                 }
             }
         }

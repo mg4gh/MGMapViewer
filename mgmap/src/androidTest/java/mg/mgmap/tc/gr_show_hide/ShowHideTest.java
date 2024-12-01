@@ -70,9 +70,10 @@ public class ShowHideTest extends BaseTestCase {
 
         LabeledSlider lsl = waitForView(LabeledSlider.class, R.id.slider_map2);
         Point p0 = lsl.getThumbPos(0);
-        animateTo(p0);
+        PointOfView pov = new PointOfView(p0, lsl);
+        animateTo(pov);
         addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.0");
-        animateClick(p0);
+        animateClick(pov);
         Assert.assertEquals(0.0f, mgMapActivity.getPrefCache().get("alpha_MAPSFORGE: ruegen.map",0f).getValue(), 0.01f);
         SystemClock.sleep(2000);
         addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.2.");
@@ -110,8 +111,9 @@ public class ShowHideTest extends BaseTestCase {
 
         LabeledSlider lslRotl = waitForView(LabeledSlider.class, R.id.slider_rotl);
         Point p0 = lslRotl.getThumbPos(0);
-        animateTo(p0);
-        animateClick(p0);
+        PointOfView pov = new PointOfView(p0, lslRotl);
+        animateTo(pov);
+        animateClick(pov);
         Assert.assertEquals(0.0f, mgMapActivity.getPrefCache().get("FSRouting.alphaRoTL",0f).getValue(), 0.001f);
         SystemClock.sleep(2000);
         addRegex(".*context=MGMapActivity key=FSRouting.alphaRoTL value=0.2.");

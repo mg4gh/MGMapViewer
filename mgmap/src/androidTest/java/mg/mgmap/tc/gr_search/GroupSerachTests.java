@@ -88,7 +88,7 @@ public class GroupSerachTests extends BaseTestCase {
         SystemClock.sleep(1000);
         animateToViewAndClick(R.id.search_result2);
 
-        PointModel pmCenter = getPointModel4Point(getCenterPos());
+        PointModel pmCenter = getPointModel4Point(getCenterPos().point());
         Assert.assertEquals(54.317866, pmCenter.getLat(), 0.00001);
         Assert.assertEquals(13.34888, pmCenter.getLon(), 0.00001);
         SystemClock.sleep(2000);
@@ -137,7 +137,7 @@ public class GroupSerachTests extends BaseTestCase {
         SystemClock.sleep(1000);
         animateToViewAndClick(R.id.search_result1);
 
-        PointModel pmCenter = getPointModel4Point(getCenterPos());
+        PointModel pmCenter = getPointModel4Point(getCenterPos().point());
         Assert.assertEquals(54.317751, pmCenter.getLat(), 0.00001);
         Assert.assertEquals(13.349125, pmCenter.getLon(), 0.00001);
         SystemClock.sleep(2000);
@@ -191,7 +191,7 @@ public class GroupSerachTests extends BaseTestCase {
         SystemClock.sleep(1000);
         animateToViewAndClick(R.id.search_result1);
 
-        PointModel pmCenter = getPointModel4Point(getCenterPos());
+        PointModel pmCenter = getPointModel4Point(getCenterPos().point());
         Assert.assertEquals(54.317257, pmCenter.getLat(), 0.00001);
         Assert.assertEquals(13.348735, pmCenter.getLon(), 0.00001);
         SystemClock.sleep(2000);
@@ -245,7 +245,7 @@ public class GroupSerachTests extends BaseTestCase {
         SystemClock.sleep(1000);
         animateToViewAndClick(R.id.search_result1);
 
-        PointModel pmCenter = getPointModel4Point(getCenterPos());
+        PointModel pmCenter = getPointModel4Point(getCenterPos().point());
         Assert.assertEquals(54.317257, pmCenter.getLat(), 0.00001);
         Assert.assertEquals(13.348735, pmCenter.getLon(), 0.00001);
         SystemClock.sleep(2000);

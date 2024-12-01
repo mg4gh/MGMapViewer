@@ -95,8 +95,10 @@ public class SettingTest extends BaseTestCase {
         animateToViewAndClick(R.id.mi_settings);
         AppCompatActivity settingsActivity = waitForActivity(SettingsActivity.class);
 
-        animateSwipeToPos(new Point(dim.width/2,(dim.height*4)/5), new Point(dim.width/2,dim.height/5));
-        SystemClock.sleep(2000);
+        while (PreferenceUtil.getPreferenceCenter(settingsActivity,R.string.preference_choose_theme_key) == null){
+            animateSwipeToPos(new Point(dim.width/2,(dim.height*4)/5), new Point(dim.width/2,dim.height/5));
+            SystemClock.sleep(1000);
+        }
 
         Assert.assertEquals(elevatexy+"/Elevate.xml", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_theme_key),""));
 

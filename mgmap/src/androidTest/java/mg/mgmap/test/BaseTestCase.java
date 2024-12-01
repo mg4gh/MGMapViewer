@@ -50,6 +50,8 @@ public class BaseTestCase {
 
     protected static int TIMEOUT_ANIMATION = 800;
 
+    public record PointOfView(Point point, View view){}
+
     boolean running = false;
     LogMatcher lm = null;
     protected MGLog.Level level = MGLog.Level.DEBUG;
@@ -141,14 +143,17 @@ public class BaseTestCase {
         }
         SystemClock.sleep(1000);
         currentActivity = activity;
-        setCursorPos(currentPos);
+        TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
+        setCursorPos(new PointOfView(currentPos, testView));
         return activity;
     }
 
-    protected Point animateToPosAndClick(double latitude, double longitude){
-        Point pos = animateTo(getPoint4PointModel(new PointModelImpl(latitude,longitude)),TIMEOUT_ANIMATION);
-        animateClick(pos);
-        return pos;
+    protected PointOfView animateToPosAndClick(double latitude, double longitude){
+        TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
+        PointOfView pov = new PointOfView(getPoint4PointModel(new PointModelImpl(latitude,longitude)), testView);
+        animateTo(pov,TIMEOUT_ANIMATION);
+        animateClick(pov);
+        return pov;
     }
 
     protected void animateSwipeLatLong(double latitudeStart, double longitudeStart, double latitudeEnd, double longitudeEnd){
@@ -170,59 +175,62 @@ public class BaseTestCase {
     }
 
     protected Point animateSwipeToPos(Point start, Point end){
-        animateTo(start);
+        TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
+        animateTo(new PointOfView(start, testView));
         SystemClock.sleep(300);
         Point p = new Point();
         setClickVisibility(true);
-        Mouse.swipe(start.x, start.y, end.x, end.y, 2*TIMEOUT_ANIMATION, 0, (x,y)->{p.x=x;p.y=y;setCursorPos(p);setClickPos(p);});
+        Mouse.swipe(start.x, start.y, end.x, end.y, 2L *TIMEOUT_ANIMATION, 0, (x, y)->{p.x=x;p.y=y;PointOfView pov=new PointOfView(p, testView); setCursorPos(pov);setClickPos(pov);});
         setClickVisibility(false);
         return end;
     }
 
 
-    protected Point animateToViewAndClick(int viewId){
+    protected PointOfView animateToViewAndClick(int viewId){
         mgLog.i("to "+currentActivity.getResources().getResourceName(viewId));
-        Point pos = animateTo(getClickPos(viewId),TIMEOUT_ANIMATION);
-        animateClick(pos);
-        return pos;
+        PointOfView pov = animateTo(getClickPos(viewId),TIMEOUT_ANIMATION);
+        animateClick(pov);
+        return pov;
     }
-    protected Point animateToViewAndClick(View view){
-        Point pos = animateTo(getClickPos(view),TIMEOUT_ANIMATION);
-        animateClick(pos);
-        return pos;
-    }
-
-    protected Point animateToPrefAndClick(int keyId){
-        Point pos = PreferenceUtil.getPreferenceCenter(waitForActivity(SettingsActivity.class),keyId);
-        assert (pos != null);
-        animateTo(pos, TIMEOUT_ANIMATION);
-        animateClick(pos);
-        return pos;
+    protected PointOfView animateToViewAndClick(View view){
+        PointOfView pov = animateTo(getClickPos(view),TIMEOUT_ANIMATION);
+        animateClick(pov);
+        return pov;
     }
 
-    protected Point animateToStatAndClick(String nameMatch){
+    protected PointOfView animateToPrefAndClick(int keyId){
+        PointOfView pov = PreferenceUtil.getPreferenceCenter(waitForActivity(SettingsActivity.class),keyId);
+        assert (pov != null):"Preference with key="+currentActivity.getResources().getString(keyId)+" not found";
+        animateTo(pov, TIMEOUT_ANIMATION);
+        animateClick(pov);
+        return pov;
+    }
+
+    protected PointOfView animateToStatAndClick(String nameMatch){
         AtomicReference<View> viewRef = new AtomicReference<>();
         onView(withId(R.id.trackStatisticEntries))
                 .perform(RecyclerViewActions.actionOnItem(TrackStatisticMatcher.matchTrack(nameMatch), new ViewCallbackAction(viewRef::set)));
         return animateToViewAndClick(viewRef.get());
     }
 
-    protected Point getClickPos(int viewId){
+    protected PointOfView getClickPos(int viewId){
         View v = waitForView(View.class, viewId);
         SystemClock.sleep(50);
         return getClickPos(v);
     }
-    protected Point getClickPos(View v){
+    protected PointOfView getClickPos(View v){
+        assert( v.getVisibility() == View.VISIBLE );
         int[] loc = new int[2];
         v.getLocationOnScreen(loc);
-        return new Point(loc[0]+v.getWidth()/2,loc[1]+v.getHeight()/2);
+        return new PointOfView(new Point(loc[0]+v.getWidth()/2,loc[1]+v.getHeight()/2), v);
     }
 
-    protected Point getCenterPos(){
-        return getClickPos(mg.mgmap.R.id.testview);
+    protected PointOfView getCenterPos(){
+        return getClickPos(R.id.testview);
     }
 
-    protected Point setCursorPos(Point pos ){
+    protected PointOfView setCursorPos(PointOfView pov ){
+        Point pos = pov.point();
         mgLog.d(pos+" "+ getCenterPos());
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
@@ -231,35 +239,31 @@ public class BaseTestCase {
             currentActivity.runOnUiThread(()->testView.setCursorPosition(pos));
         }
         currentPos = pos;
-        return pos;
+        return pov;
     }
 
-    protected Point setClickPos(Point pos){
+    protected PointOfView setClickPos(PointOfView pov){
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
-        mgLog.i("pos "+pos);
+        mgLog.i("pov "+pov);
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-            testView.setClickPosition(pos);
+            testView.setClickPosition(pov.point());
         } else {
-            currentActivity.runOnUiThread(()->testView.setClickPosition(pos));
+            currentActivity.runOnUiThread(()->testView.setClickPosition(pov.point()));
         }
-        return pos;
+        return pov;
     }
 
-    protected Point setCursorToCenterPos(){
+    protected PointOfView setCursorToCenterPos(){
         return setCursorPos(getCenterPos());
     }
 
-    protected Point animateTo(Point pos){
-        return animateTo(pos, TIMEOUT_ANIMATION);
+    protected PointOfView animateTo(PointOfView pov){
+        return animateTo(pov, TIMEOUT_ANIMATION);
     }
 
-    /**
-     * @param pos position on screen
-     * @param duration duration of animation
-     */
-    protected Point animateTo(Point pos, int duration){
+    protected PointOfView animateTo(PointOfView pov, int duration){
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
-
+        Point pos = pov.point();
         setCursorVisibility(true);
         int[] tvLoc = new int[2];
         testView.getLocationOnScreen(tvLoc);
@@ -287,29 +291,29 @@ public class BaseTestCase {
         });
         SystemClock.sleep(duration+200);
         currentPos = pos;
-        return pos;
+        return pov;
     }
 
-    protected Point animateClick(Point pos, Runnable r) {
+    protected PointOfView animateClick(PointOfView pov, Runnable r) {
         timer.postDelayed(()->new Thread(r).start(), 300);
-        return animateClick(pos);
+        return animateClick(pov);
     }
 
-    protected Point animateClick(Point pos){
-        return animateClick(pos, true);
+    protected PointOfView animateClick(PointOfView pov){
+        return animateClick(pov, true);
     }
 
-        /**
-         * @param pos position on screen
-         */
-    protected Point animateClick(Point pos, boolean click){
+    protected PointOfView animateClick(PointOfView pov, boolean click){
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
-        mgLog.i("pos "+pos);
+        mgLog.d("pos="+pov.point()+" view="+pov.view());
         if (click){
-            timer.postDelayed(()->new Thread(()->Mouse.click(pos)).start(), 200);
+            timer.postDelayed(()->new Thread(()->{
+                assert(pov.view().getVisibility()==View.VISIBLE);
+                Mouse.click( pov.point());
+            }).start(), 200);
         }
         testView.getActivity().runOnUiThread(() -> {
-            testView.setClickPosition(pos);
+            testView.setClickPosition(pov.point());
             setClickVisibility(true);
             ObjectAnimator animation = ObjectAnimator.ofFloat(testView.getClick(), "scaleX", 2);
             animation.setDuration(500);                             // ... run the click animation
@@ -326,8 +330,8 @@ public class BaseTestCase {
             });
         },600);
         SystemClock.sleep(TIMEOUT_ANIMATION);
-        mgLog.i("pos "+pos);
-        return pos;
+        mgLog.d("pos="+pov.point());
+        return pov;
     }
 
     protected void setCursorVisibility(boolean cursorVisibility){

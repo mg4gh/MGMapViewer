@@ -87,7 +87,7 @@ public class BBTest extends BaseTestCase {
         assert prefBboxOn.getValue();
 
         PointModelImpl p1_3 = new PointModelImpl(54.427888,13.43528);
-        PointModelImpl p2_3 = new PointModelImpl(54.408888,13.45528);
+        PointModelImpl p2_3 = new PointModelImpl(54.41,13.45528);
         animateSwipeLatLong(fsbb.getP1(), p1_3);
         animateSwipeLatLong(fsbb.getP2(), p2_3);
 

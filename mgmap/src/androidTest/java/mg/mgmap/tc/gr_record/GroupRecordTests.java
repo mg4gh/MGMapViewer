@@ -24,6 +24,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.view.TestView;
 import mg.mgmap.test.BaseTestCase;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -81,29 +82,29 @@ public class GroupRecordTests extends BaseTestCase {
 
         animateSwipeLatLong(54.3220, 13.3515, 54.3220, 13.3545);
         Point p = getPoint4PointModel(new PointModelImpl(54.3220, 13.3515));
-        Assert.assertNotEquals(getCenterPos(), p);
+        Assert.assertNotEquals(getCenterPos().point(), p);
         SystemClock.sleep(5000);
         p = getPoint4PointModel(new PointModelImpl(54.3220, 13.3515));
-        Assert.assertNotEquals(getCenterPos(), p);
+        Assert.assertNotEquals(getCenterPos().point(), p);
         SystemClock.sleep(3000);
         p = getPoint4PointModel(new PointModelImpl(54.3220, 13.3515));
-        Assert.assertEquals(getCenterPos(), p);
+        Assert.assertEquals(getCenterPos().point(), p);
 
         SystemClock.sleep(1000);
 
         animateSwipeLatLong(54.3220, 13.3515, 54.3220, 13.3545);
         p = getPoint4PointModel(new PointModelImpl(54.3220, 13.3515));
-        Assert.assertNotEquals(getCenterPos(), p);
+        Assert.assertNotEquals(getCenterPos().point(), p);
         SystemClock.sleep(4000);
         animateSwipeLatLong(54.3220, 13.3485, 54.3220, 13.3515);
         p = getPoint4PointModel(new PointModelImpl(54.3220, 13.3515));
-        Assert.assertNotEquals(getCenterPos(), p);
+        Assert.assertNotEquals(getCenterPos().point(), p);
         SystemClock.sleep(5000);
         p = getPoint4PointModel(new PointModelImpl(54.3220, 13.3515));
-        Assert.assertNotEquals(getCenterPos(), p);
+        Assert.assertNotEquals(getCenterPos().point(), p);
         SystemClock.sleep(3000);
         p = getPoint4PointModel(new PointModelImpl(54.3220, 13.3515));
-        Assert.assertEquals(getCenterPos(), p);
+        Assert.assertEquals(getCenterPos().point(), p);
 
 
         addRegex(".*onClick mi_gps_toggle.*");
@@ -229,15 +230,17 @@ public class GroupRecordTests extends BaseTestCase {
 
 
     protected void animateAndClick(double lat, double lon, float acc, float wgs84ele, float geoidOffset, float wgs84eleAcc){
+        TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         PointModel pm = new PointModelImpl(lat, lon);
         Point p = getPoint4PointModel(pm);
-        animateTo(p);
+        PointOfView pov = new PointOfView(p, testView);
+        animateTo(pov);
         TrackLogPoint tlp = TrackLogPoint.createGpsLogPoint(System.currentTimeMillis(), lat, lon, acc, wgs84ele, geoidOffset, wgs84eleAcc);
         mgLog.i("tlp="+tlp);
-        animateClick(p, ()->{setCursorVisibility(false); mgMapApplication.logPoints2process.add(tlp);});
+        animateClick(pov, ()->{setCursorVisibility(false); mgMapApplication.logPoints2process.add(tlp);});
         p = getPoint4PointModel(pm); // due to center on new location the "pos" might be changed
-        Assert.assertEquals(mgMapApplication.getPrefCache().get(R.string.FSPosition_pref_Center, true).getValue(), p.equals(getCenterPos()));
-        setCursorPos(getPoint4PointModel(pm));
+        Assert.assertEquals(mgMapApplication.getPrefCache().get(R.string.FSPosition_pref_Center, true).getValue(), p.equals(getCenterPos().point()));
+        setCursorPos(new PointOfView(p, testView));
         setCursorVisibility(true);
     }
 }

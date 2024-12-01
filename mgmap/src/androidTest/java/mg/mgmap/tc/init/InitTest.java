@@ -29,6 +29,7 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.settings.SettingsActivity;
 import mg.mgmap.generic.util.WaitUtil;
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.view.TestView;
 import mg.mgmap.test.BaseTestCase;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -62,11 +63,12 @@ public class InitTest extends BaseTestCase {
         addRegex(".*onPreferenceClick key=DldMapsDEKey.*");
         animateToPrefAndClick(R.string.preferences_dl_maps_de_key);
 
+        TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         SystemClock.sleep(10000); // now you see the browser
-        Point pBerlin = new Point(750,980);
-        animateTo(pBerlin);
+        PointOfView povBerlin = new PointOfView(new Point(750,980), testView);
+        animateTo(povBerlin);
         SystemClock.sleep(2000); // now you see the browser
-        animateClick(pBerlin, false); // just do like click
+        animateClick(povBerlin, false); // just do like click
         Intent intent = new Intent(settingsActivity, MGMapActivity.class);
         intent.setData(Uri.parse("mf-v4-map://ftp.gwdg.de/pub/misc/openstreetmap/openandromaps/mapsV5/germany/Berlin.zip"));
         settingsActivity.startActivity(intent);

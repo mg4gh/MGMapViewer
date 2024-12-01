@@ -1,7 +1,7 @@
 package mg.mgmap.tc.gr_search;
 
-import android.graphics.Point;
 import android.os.SystemClock;
+import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -80,9 +80,10 @@ public class HelpTests extends BaseTestCase {
         animateToViewAndClick(R.id.menu_search);
         animateToViewAndClick(R.id.mi_search_empty2);
         addRegex(".*onClick menu_gps.*"); // next click hits gps menu - this proves that previous click on R.id.mi_search_empty2 directly closed the menu_search
-        Point pGps = getClickPos(R.id.menu_gps);
-        animateTo(pGps, 100);
-        animateClick(pGps);
+        PointOfView povGps = getClickPos(R.id.menu_gps);
+        animateTo(povGps, 100);
+        assert(povGps.view().getVisibility() == View.VISIBLE);
+        animateClick(povGps);
         SystemClock.sleep(1000);
         mgLog.i("finished");
     }
