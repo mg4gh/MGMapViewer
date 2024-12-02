@@ -62,6 +62,9 @@ public class BBTest extends BaseTestCase {
         PointModelImpl p1_1 = new PointModelImpl(54.427888,13.44128);
         PointModelImpl p2_1 = new PointModelImpl(54.421888,13.45528);
         FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        while ((fsbb.getP1() == null) || (fsbb.getP2() == null)) SystemClock.sleep(50);
+        assert( fsbb.getP1() != null);
+        assert( fsbb.getP2() != null);
         animateSwipeLatLong(fsbb.getP1(), p1_1);
         animateSwipeLatLong(fsbb.getP2(), p2_1);
 
@@ -85,6 +88,7 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
         assert prefBboxOn.getValue();
+        while ((fsbb.getP1() == null) || (fsbb.getP2() == null)) SystemClock.sleep(50);
 
         PointModelImpl p1_3 = new PointModelImpl(54.427888,13.43528);
         PointModelImpl p2_3 = new PointModelImpl(54.41,13.45528);
@@ -126,6 +130,7 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.menu_bb);
         animateToViewAndClick(R.id.mi_bbox);
         FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        while ((fsbb.getP1() == null) || (fsbb.getP2() == null)) SystemClock.sleep(50);
         assert( fsbb.getP1() != null);
         assert( fsbb.getP2() != null);
         animateSwipeLatLong(fsbb.getP1(), p1_1);
@@ -282,6 +287,9 @@ public class BBTest extends BaseTestCase {
         PointModelImpl p1_1 = new PointModelImpl(54.9,12.7);
         PointModelImpl p2_1 = new PointModelImpl(54.1,14.3);
         FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        while ((fsbb.getP1() == null) || (fsbb.getP2() == null)) SystemClock.sleep(50);
+        assert( fsbb.getP1() != null);
+        assert( fsbb.getP2() != null);
         animateSwipeLatLong(fsbb.getP1(), p1_1);
         animateSwipeLatLong(fsbb.getP2(), p2_1);
 
