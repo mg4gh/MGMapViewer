@@ -7,6 +7,7 @@ import org.mapsforge.core.graphics.Path;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.core.model.Rotation;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.model.DisplayModel;
 
@@ -65,7 +66,7 @@ public class HgtGridView extends Grid {
 
 
     @Override
-    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
+    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
 
         Double spacing = spacingConfig.get(zoomLevel);
         if (spacing != null){
@@ -98,7 +99,7 @@ public class HgtGridView extends Grid {
                 }
             }
         } // if (spacing != null)
-        super.draw(boundingBox, zoomLevel, canvas, topLeftPoint);
+        super.draw(boundingBox, zoomLevel, canvas, topLeftPoint, rotation);
 
     }
 

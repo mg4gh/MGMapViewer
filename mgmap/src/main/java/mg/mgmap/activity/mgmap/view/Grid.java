@@ -22,6 +22,7 @@ package mg.mgmap.activity.mgmap.view;
 import org.mapsforge.core.graphics.*;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.core.model.Rotation;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.model.DisplayModel;
@@ -126,7 +127,7 @@ public class Grid extends Layer {
     }
 
     @Override
-    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
+    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
         if (spacingConfig.containsKey(zoomLevel)) {
             Double spacing = spacingConfig.get(zoomLevel);
             if (spacing != null){

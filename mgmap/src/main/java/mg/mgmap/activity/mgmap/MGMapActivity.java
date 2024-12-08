@@ -54,7 +54,7 @@ import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import org.mapsforge.map.rendertheme.InternalRenderTheme;
+import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
@@ -715,7 +715,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             if ((e.getMessage()!=null) && (!e.getMessage().contains("invalid.xml"))){
                 mgLog.e(e.getMessage());
             }
-            return InternalRenderTheme.DEFAULT;
+            return MapsforgeThemes.DEFAULT;
         }
     }
 
