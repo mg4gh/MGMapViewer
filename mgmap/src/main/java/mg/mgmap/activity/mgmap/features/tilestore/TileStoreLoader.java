@@ -129,12 +129,9 @@ public class TileStoreLoader {
                         @Override
                         public void onPageFinished(WebView view, String url) {
                             super.onPageFinished(view, url);
+                            // this might be used, if autofill fields are renamed
+                            // view.saveWebArchive(new File(application.getPersistenceManager().getLogDir(),"abc_"+System.currentTimeMillis()+".war").getAbsolutePath());
                             mgLog.d(url);
-                            for (XmlTileSourceConfig.AutoFill autoFill : xmlTileSource.config.autoFills){
-                                if ((url != null) && (autoFill.urlPattern() != null) && url.startsWith(autoFill.urlPattern())){
-                                    view.loadUrl("javascript:(function() { document.getElementById('"+autoFill.id()+"').value = '" + autoFill.value() + "'; ;})()");
-                                }
-                            }
                         }
                     });
                     myWebView.loadUrl(xmlTileSource.config.cookiesURL);
@@ -148,6 +145,11 @@ public class TileStoreLoader {
                                 jobGroup.doit(); // this is the real retry
                             })
                             .setNegative( "Abort", null)
+                            .setNeutral("Fill",evt ->{
+                                for (XmlTileSourceConfig.AutoFill autoFill : xmlTileSource.config.autoFills){
+                                    myWebView.loadUrl("javascript:(function() { document.getElementById('"+autoFill.id()+"').value = '" + autoFill.value() + "'; ;})()");
+                                }
+                            })
                             .setMaximize(true)
                             .show());
 
