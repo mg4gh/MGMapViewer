@@ -14,9 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.util;
 
-import android.content.res.AssetManager;
-
-import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
 
@@ -44,20 +41,6 @@ public class OpenAndroMapsUtil {
                 super.doJob();
                 Zipper zipper = new Zipper(null);
                 zipper.unpack(url, persistenceManager.getThemesDir(), null, this);
-            }
-        };
-    }
-
-    public static BgJob createBgJobsFromAssetTheme(PersistenceManager persistenceManager, AssetManager assetManager, String assetName, String assetDir) {
-        return new BgJob() {
-            @Override
-            protected void doJob() throws Exception {
-                super.doJob();
-                Zipper zipper = new Zipper(null);
-                this.setMax(1500);
-                this.setText("Unzip theme "+assetName);
-                this.setProgress(0);
-                zipper.unpack(assetManager.open(assetName), new File(persistenceManager.getThemesDir(),assetDir), null, this);
             }
         };
     }

@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Space;
@@ -77,6 +78,9 @@ public class DialogView extends RelativeLayout {
         setClickable(false);
         title = null;
         messageView = null;
+        if (contentView instanceof WebView webView){
+            webView.destroy();
+        }
         contentView = null;
         neutralETV = null;
         positiveETV = null;
@@ -229,7 +233,6 @@ public class DialogView extends RelativeLayout {
         mgLog.d((getContext() instanceof MGMapActivity?"MgMapActivity":"OtherActivity")+ " fullscreen="+fullscreen+ " width="+width+" height="+height);
 
         LinearLayout llDialog = new LinearLayout(getContext());
-//        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
         RelativeLayout.LayoutParams params;
         if (maximize){
             params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,height);

@@ -159,7 +159,7 @@ public class GGraphTileFactory {
         Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
         GGraphTile gGraphTile = new GGraphTile(elevationProvider, tile);
         for (Way way : wayProvider.getWays(tile)) {
-            if (wayProvider.isHighway(way)){
+            if (wayProvider.isWayForRouting(way)){
 
                 WayAttributs wayAttributs = new WayAttributs(way);
                 gGraphTile.addLatLongs( wayAttributs, way.latLongs[0]);

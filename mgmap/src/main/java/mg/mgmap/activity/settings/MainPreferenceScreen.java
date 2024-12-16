@@ -21,23 +21,15 @@ import android.text.InputType;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 
-import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import mg.mgmap.BuildConfig;
 import mg.mgmap.R;
-import mg.mgmap.activity.mgmap.MGMapLayerFactory;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
-import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.hints.HintMapLayerAssignment;
 
 public class MainPreferenceScreen extends MGPreferenceScreen {
 
-    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
     private PrefCache prefCache;
 
     @SuppressWarnings("ConstantConditions")
@@ -46,14 +38,8 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
         getPreferenceManager().setSharedPreferencesName(MGMapApplication.getByContext(getContext()).getPreferencesName());
         setPreferencesFromResource(R.xml.main_preferences, rootKey);
 
-        try {
-            MGMapApplication application = (MGMapApplication) requireActivity().getApplication();
-            prefCache = application.getPrefCache();
-            List<String> mapKeys = MGMapLayerFactory.getMapLayerKeys(getContext()).stream().map(key->prefCache.get(key,"").getValue()).collect(Collectors.toList());
-            application.getHintUtil().showHint( new HintMapLayerAssignment(getActivity(), mapKeys) );
-        } catch (Exception e) {
-            mgLog.e(e);
-        }
+        MGMapApplication application = (MGMapApplication) requireActivity().getApplication();
+        prefCache = application.getPrefCache();
 
         setEditTextPreferenceNumeric(R.string.preferences_display_fullscreen_offset_key);
         setEditTextPreferenceNumeric(R.string.preferences_pressure_smoothing_gl_key);

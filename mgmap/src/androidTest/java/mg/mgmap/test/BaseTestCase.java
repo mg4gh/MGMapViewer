@@ -31,6 +31,7 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.MGMapApplicationHelper;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.test.util.ActivitySupervision;
 import mg.mgmap.test.util.LogMatcher;
 import mg.mgmap.R;
@@ -57,6 +58,7 @@ public class BaseTestCase {
     protected MGLog.Level level = MGLog.Level.DEBUG;
     private ArrayList<String> regexs = null;
     private ArrayList<String> matches = null;
+    protected Pref<Boolean> prefMenuInflated;
 
     protected MGMapApplication mgMapApplication;
     protected AssetManager androidTestAssets;
@@ -84,6 +86,7 @@ public class BaseTestCase {
         regexs = new ArrayList<>();
         matches = new ArrayList<>();
         lm.startMatch(regexs, matches);
+        prefMenuInflated = mgMapApplication.getPrefCache().get(R.string.FSControl_pref_menu_inflated, false);
         mgLog.i(this.getClass().getName() + "." + name.getMethodName() + " start");
     }
 
@@ -120,7 +123,7 @@ public class BaseTestCase {
         View view;
         while (((view = currentActivity.findViewById(viewId)) == null) || (view.getVisibility() != View.VISIBLE)
                 || (view.getWidth() == 0) || (view.getHeight() == 0)) {
-            SystemClock.sleep(100);
+            SystemClock.sleep(20);
         }
         if (timeout > 0) {
             SystemClock.sleep(timeout);
@@ -131,6 +134,12 @@ public class BaseTestCase {
 
     protected  <T> T waitForView(Class<T> clazz, int viewId) {
         return waitForView(clazz, viewId, 0);
+    }
+
+    protected void waitForPref(Pref<Boolean> pref, boolean expected){
+        while (pref.getValue() != expected){
+            SystemClock.sleep(20);
+        }
     }
 
     protected  <T extends Activity> T waitForActivity(Class<T> clazz) {
@@ -187,6 +196,11 @@ public class BaseTestCase {
         return end;
     }
 
+    protected void animateMenu(int viewIdMenu, int viewIdMenuItem){
+        animateToViewAndClick(viewIdMenu);
+        waitForPref(prefMenuInflated, true);
+        animateToViewAndClick(viewIdMenuItem);
+    }
 
     protected PointOfView animateToViewAndClick(int viewId){
         mgLog.i("to "+currentActivity.getResources().getResourceName(viewId));

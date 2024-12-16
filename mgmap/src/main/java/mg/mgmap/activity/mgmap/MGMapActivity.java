@@ -43,9 +43,9 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.datastore.MapDataStore;
 
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.Layers;
@@ -54,7 +54,6 @@ import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
@@ -196,22 +195,21 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         }
         setContentView(R.layout.mgmapactivity);
 
+        initTheme();
+        initMapsforgeNumRenderThreads();
         PointModelUtil.init(getResources().getInteger(R.integer.CLOSE_THRESHOLD));
 
         mapLayerFactory = new MGMapLayerFactory(this);
+        mapDataStoreUtil = new MapDataStoreUtil();
 
         prefCache = new PrefCache(this);
 
         initMapView();
         createLayers();
 
-        mapDataStoreUtil = new MapDataStoreUtil().onCreate(mapLayerFactory, sharedPreferences); // includes init of mapLayerKeys with "none"
-        String themeKey = getResources().getString(R.string.preference_choose_theme_key);
-        getSharedPreferences().edit().putString(themeKey, sharedPreferences.getString(themeKey, "Elevate5.2/Elevate.xml") ).apply(); // set default for theme
         initSharedPreferencesDone(); // after MapDatastoreUtil creation
         mapViewUtility = new MapViewUtility(this, mapView);
         initializePosition();
-        mgLog.i("Tilesize initial " + this.mapView.getModel().displayModel.getTileSize());
 
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
@@ -345,6 +343,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         application.prefGps.deleteObserver(prefGpsObserver);
 
+        mapView.getLayerManager().getLayers().clear(); // cleanup TileRendererLayer (incl DatabaseRenderer etc)
         mapView.destroyAll();
         mapDataStoreUtil.onDestroy();
         gGraphTileFactory.onDestroy();
@@ -502,16 +501,14 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         @Override
                         public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
                             if (success > 0){
-                                Intent intent = new Intent(MGMapActivity.this, SettingsActivity.class);
-                                intent.putExtra("FSControl.info", MainPreferenceScreen.class.getName());
-                                startActivity(intent);
+                                prefCache.get(R.string.MGMapActivity_trigger_recreate,"").setValue("trigger recreate at "+System.currentTimeMillis()+" due to download map: "+uri);
                             }
                         }
                     }){
                         @Override
                         public String getResultDetails() {
                             if (successCounter > 0){
-                                return super.getDetails() + " finished successful.\n\n Now you can assign this map to a layer";
+                                return super.getDetails() + " finished successful.";
                             } else {
                                 return super.getResultDetails();
                             }
@@ -679,24 +676,48 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
 
 
+    protected void initTheme(){
+        mgLog.d("Theme Asset handling - started");
+        try {
+            //noinspection DataFlowIssue
+            for (String assetName : getAssets().list("")){
+                if (assetName.matches("Elevate.+\\.zip")){ // assume there is only one Elevate<x.y>.zip in the assets path - otherwise entries should be handled sorted
+                    String assetDir = assetName.replace(".zip", "");
+                    if (!new File(application.getPersistenceManager().getThemesDir(), assetDir).exists()){
+                        Zipper zipper = new Zipper(null);
+                        zipper.unpack(application.getAssets().open("Elevate5.5.zip"), new File(application.getPersistenceManager().getThemesDir(),"Elevate5.5"), null, null);
+                        if (getSharedPreferences().getString(getResources().getString(R.string.preference_choose_theme_key),"Elevate.xml").endsWith("Elevate.xml")){
+                            getSharedPreferences().edit().putString(getResources().getString(R.string.preference_choose_theme_key), assetDir+"/Elevate.xml").apply();
+                        }
+                    } else {
+                        mgLog.d("Theme Asset handling - already installed: "+assetName);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            mgLog.e(e);
+        }
+        mgLog.d("Theme Asset handling - finished");
+    }
 
-    /**
-     * There are are three cases distinguished:
-     * 1.) take last position - if it is inside of a Mapsforge Map (of any map layer)
-     * 2.) else take the first Mapsforge Map (in the sequece of map layers) and take the startPosition+startZoom from this
-     * 3.) else take a hardcoded fix position in Heidelberg :-)
-     */
+    public void initMapsforgeNumRenderThreads(){
+        int numRenderThreads = 0;
+        try {
+            numRenderThreads = Integer.parseInt( getSharedPreferences().getString(getResources().getString(R.string.preferences_mapsforge_renderThreads),"-111") );
+        } catch (NumberFormatException e) {
+            mgLog.e(e.getMessage());
+        }
+        if (numRenderThreads > 0){
+            Parameters.NUMBER_OF_THREADS = numRenderThreads;
+        }
+        mgLog.d("Mapsforge number of render threads: Parameters.NUMBER_OF_THREADS="+Parameters.NUMBER_OF_THREADS);
+    }
+
     protected void initializePosition() {
         IMapViewPosition mvp = mapView.getModel().mapViewPosition;
-        if (mapDataStoreUtil.getMapDataStore(new BBox().extend(mapViewUtility.getCenter())) == null){ // current position is no inside any Mapsforge Map layer
-            MapDataStore mds = mapDataStoreUtil.getMapDataStore();
-            if (mds != null){ // is there any mapsforge layer
-                mapViewUtility.setCenter(MapViewUtility.getMapDataStoreCenter(mds));
-                mvp.setZoomLevel(mds.startZoomLevel());
-            } else {
-                mapViewUtility.setCenter(new PointModelImpl(49.4057, 8.6789));
-                mvp.setZoomLevel((byte)15);
-            }
+        if ((mvp.getCenter().getLatitude() == 0) && (mvp.getCenter().getLongitude() == 0)){
+            mapViewUtility.setCenter(new PointModelImpl(49.4057, 8.6789));
+            mvp.setZoomLevel((byte)5);
         }
         mvp.setZoomLevelMax(MapViewUtility.ZOOM_LEVEL_MAX);
         mvp.setZoomLevelMin(MapViewUtility.ZOOM_LEVEL_MIN);
@@ -706,17 +727,18 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
 
     protected XmlRenderTheme getRenderTheme() {
+        String themeName = "";
         try {
             File theme = new File(application.getPersistenceManager().getThemesDir(), sharedPreferences.getString(getResources().getString(R.string.preference_choose_theme_key), "invalid.xml"));
+            themeName = theme.getAbsolutePath();
             ExternalRenderTheme renderTheme = new ExternalRenderTheme( theme.getAbsolutePath() );
             renderTheme.setMenuCallback(this);
             return renderTheme;
         } catch (FileNotFoundException e) {
-            if ((e.getMessage()!=null) && (!e.getMessage().contains("invalid.xml"))){
-                mgLog.e(e.getMessage());
-            }
-            return MapsforgeThemes.DEFAULT;
+            mgLog.e("Theme not found: "+themeName);
+            mgLog.e(e.getMessage());
         }
+        return null;
     }
 
     public XmlRenderThemeStyleMenu getRenderThemeStyleMenu(){

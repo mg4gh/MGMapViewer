@@ -33,7 +33,6 @@ import mg.mgmap.BuildConfig;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.util.CC;
-import mg.mgmap.activity.mgmap.util.OpenAndroMapsUtil;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
 import mg.mgmap.application.util.ActivityLifecycleAdapter;
 import mg.mgmap.application.util.ElevationProvider;
@@ -50,8 +49,6 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.util.BgJob;
-import mg.mgmap.generic.util.BgJobGroup;
-import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
@@ -206,43 +203,13 @@ public class MGMapApplication extends Application {
 
 
 
-        // initialize Theme and MetaData (as used from AvailableTrackLogs service and statistic)
+        // initialize MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(() -> {
             UUID uuid = currentRun;
-            Pref<Boolean> metaLoading = prefCache.get(R.string.MGMapApplication_pref_MetaData_loading, true);
-            metaLoading.setValue(true);
-            mgLog.i("Theme Asset handling - started");
-            try {
-                //noinspection DataFlowIssue
-                for (String assetName : getAssets().list("")){
-                    if (assetName.matches("Elevate.+\\.zip")){ // assume there is only one Elevate<x.y>.zip in the assets path - otherwise entries should be handled sorted
-                        String assetDir = assetName.replace(".zip", "");
-                        if (!new File(persistenceManager.getThemesDir(), assetDir).exists()){
-                            mgLog.i("Theme Asset handling - install: "+assetName);
-                            BgJobGroup jobGroup = new BgJobGroup(this, null, null, new BgJobGroupCallback() {
-                                @Override
-                                public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
-                                    if (getSharedPreferences().getString(getResources().getString(R.string.preference_choose_theme_key),"Elevate.xml").endsWith("Elevate.xml")){
-                                        getSharedPreferences().edit().putString(getResources().getString(R.string.preference_choose_theme_key), assetDir+"/Elevate.xml").apply();
-                                    }
-                                }
-                            });
-                            jobGroup.addJob( OpenAndroMapsUtil.createBgJobsFromAssetTheme(persistenceManager, getAssets(), assetName, assetDir) );
-                            jobGroup.setConstructed(null);
-
-                        } else {
-                            mgLog.i("Theme Asset handling - already installed: "+assetName);
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                mgLog.e(e);
-            }
-            mgLog.i("Theme Asset handling - finished");
-            if (uuid == currentRun) {
-                checkCreateLoadMetaData(false);
-            }
-            metaLoading.setValue(false);
+            Pref<Boolean> prefMetaLoading = prefCache.get(R.string.MGMapApplication_pref_MetaData_loading, true);
+            prefMetaLoading.setValue(true);
+            checkCreateLoadMetaData(false);
+            prefMetaLoading.setValue(false);
         }).start();
 
         // initialize handling of new points from TrackLoggerService

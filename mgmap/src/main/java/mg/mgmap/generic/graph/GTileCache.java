@@ -61,7 +61,7 @@ public class GTileCache {
         return tileMap.size();
     }
 
-    void service(){ // full service => rebuild accessMap based on tileMap
+    synchronized void service(){ // full service => rebuild accessMap based on tileMap
         accessMap.clear();
         for (GGraphTile tile : tileMap.values()){
             accessMap.put(tile.accessTime, tile.tileIdx);

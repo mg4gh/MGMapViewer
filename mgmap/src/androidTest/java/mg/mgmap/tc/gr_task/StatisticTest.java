@@ -51,8 +51,7 @@ public class StatisticTest extends BaseTestCase {
 
         setCursorToCenterPos();
         addRegex(".*onClick mi_statistic.*");
-        animateToViewAndClick(R.id.menu_task);
-        animateToViewAndClick(R.id.mi_statistic);
+        animateMenu(R.id.menu_task, R.id.mi_statistic);
         waitForActivity(TrackStatisticActivity.class);
 
         animateSwipeToPos(new Point(500,1000), new Point(500,300));

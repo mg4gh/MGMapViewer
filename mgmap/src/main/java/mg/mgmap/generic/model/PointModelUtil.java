@@ -351,4 +351,42 @@ public class PointModelUtil {
         return pm2.getEle() - pm1.getEle();
     }
 
+    /**
+     *
+     * @param pm1 start first line
+     * @param pm2 end first line
+     * @param pm3 start second line
+     * @param pm4 end second line
+     * @param threshold threshold to consider a point close to another line
+     * @return true, if second line is basically an overlapping continuation of first line
+     *
+     */
+    public static boolean isOverlappingLine(PointModel pm1, PointModel pm2, PointModel pm3, PointModel pm4, int threshold){
+        WriteablePointModel wpm = new WriteablePointModelImpl();
+        return (findApproach(pm3, pm1, pm2, wpm, threshold) &&
+                findApproach(pm2, pm3, pm4, wpm, threshold) &&
+                findApproach(pm2, pm1, pm4, wpm, threshold) &&
+                findApproach(pm3, pm1, pm4, wpm, threshold));
+    }
+
+    /**
+     * Adopted from <a href="http://alienryderflex.com/polygon/">http://alienryderflex.com/polygon/</a>
+     * @param pm point to check
+     * @param mpm polygon
+     * @return true, if point is inside the polygon
+     */
+    public static boolean pointInPolygon(PointModel pm, MultiPointModel mpm) {
+        int i, j= mpm.size()-1 ;
+        boolean oddNodes = false;
+
+        for (i=0; i<mpm.size(); i++) {
+            if (( (mpm.get(i).getLat() < pm.getLat()) && (mpm.get(j).getLat() >= pm.getLat())
+                    ||   (mpm.get(j).getLat() < pm.getLat()) && (mpm.get(i).getLat() >= pm.getLat()))
+                    &&  (mpm.get(i).getLon()<=pm.getLon() || mpm.get(j).getLon()<=pm.getLon())) {
+                oddNodes^=(mpm.get(i).getLon()+(pm.getLat()-mpm.get(i).getLat())/(mpm.get(j).getLat()-mpm.get(i).getLat())*(mpm.get(j).getLon()-mpm.get(i).getLon())<pm.getLon());
+            }
+            j=i;
+        }
+        return oddNodes;
+    }
 }

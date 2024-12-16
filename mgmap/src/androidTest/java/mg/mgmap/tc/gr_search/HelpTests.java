@@ -46,8 +46,7 @@ public class HelpTests extends BaseTestCase {
         mgLog.i("started");
         setCursorToCenterPos();
         addRegex(".*onClick mi_search_help.*");
-        animateToViewAndClick(R.id.menu_search);
-        animateToViewAndClick(R.id.mi_search_help);
+        animateMenu(R.id.menu_search, R.id.mi_search_help);
         SystemClock.sleep(4000);
         addRegex(".*onClick help1_close.*");
         animateToViewAndClick(R.id.help1_close);
@@ -60,8 +59,7 @@ public class HelpTests extends BaseTestCase {
         mgLog.i("started");
         setCursorToCenterPos();
         addRegex(".*onClick mi_search_help.*");
-        animateToViewAndClick(R.id.menu_search);
-        animateToViewAndClick(R.id.mi_search_help);
+        animateMenu(R.id.menu_search, R.id.mi_search_help);
 
         animateToViewAndClick(R.id.testview); // nothing happens
         addRegex(".*onClick mi_search_empty2.*");
@@ -77,8 +75,7 @@ public class HelpTests extends BaseTestCase {
         setCursorToCenterPos();
         addRegex(".*onClick mi_search_empty2.*");
         addRegex(".*context=MGMapActivity key=FSControl.qc_selector value=0.*");
-        animateToViewAndClick(R.id.menu_search);
-        animateToViewAndClick(R.id.mi_search_empty2);
+        animateMenu(R.id.menu_search, R.id.mi_search_empty2);
         addRegex(".*onClick menu_gps.*"); // next click hits gps menu - this proves that previous click on R.id.mi_search_empty2 directly closed the menu_search
         PointOfView povGps = getClickPos(R.id.menu_gps);
         animateTo(povGps, 100);

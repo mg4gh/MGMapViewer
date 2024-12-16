@@ -45,7 +45,6 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.hints.AbstractHint;
 import mg.mgmap.generic.util.hints.HintInitialMapDownload;
-import mg.mgmap.generic.util.hints.HintVersion;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.generic.view.VUtil;
 
@@ -59,6 +58,7 @@ public class FSControl extends FeatureService {
 
     private final Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
     private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
+    public  final Pref<Boolean> prefMenuInflated = getPref(R.string.FSControl_pref_menu_inflated, false);
     private final Pref<Boolean> prefMenuOneLine;
     private final Pref<String> prefMenuAnimationTimeout;
     private int totalWidth;
@@ -124,7 +124,6 @@ public class FSControl extends FeatureService {
     };
 
     final AbstractHint hintInitialMapDownload;
-    final AbstractHint hintVersion;
 
     public FSControl(MGMapActivity activity){
         super(activity);
@@ -191,11 +190,6 @@ public class FSControl extends FeatureService {
             activity.startActivity(intent);
         });
         hintInitialMapDownload = new HintInitialMapDownload(getActivity());
-        Runnable rSetVersion = () -> getPref(R.string.FSControl_pref_version_key, "").setValue(HintVersion.currentVersion());
-        if (hintInitialMapDownload.checkHintCondition()){
-            rSetVersion.run();
-        }
-        hintVersion = new HintVersion(getActivity()).addGotItAction(rSetVersion);
     }
 
     public void initQcss(ViewGroup[] qcss){
@@ -288,7 +282,6 @@ public class FSControl extends FeatureService {
             new MenuDeflater(i).start();
         }
         getTimer().postDelayed(hintInitialMapDownload, 300);
-        getTimer().postDelayed(hintVersion, 500);
         setEnableMenu(true);
     }
 
@@ -296,7 +289,6 @@ public class FSControl extends FeatureService {
     protected void onPause() {
         super.onPause();
         getTimer().removeCallbacks(hintInitialMapDownload);
-        getTimer().removeCallbacks(hintVersion);
         getTimer().removeCallbacks(ttHideSubQCS);
         getTimer().removeCallbacks(ttEnableMenuQCS);
     }
@@ -386,6 +378,19 @@ public class FSControl extends FeatureService {
             // animate menu item inflation
             AutoTransition at = new AutoTransition();
             at.setDuration(getMenuAnimationTimeout());
+            at.addListener(new TransitionListenerAdapter() {
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    mgLog.d("transition end");
+                    prefMenuInflated.setValue(true);
+                    mgLog.d(prefMenuInflated);
+                }
+                @Override
+                public void onTransitionCancel(Transition transition) {
+                    mgLog.d("transition cancel");
+                    this.onTransitionEnd(transition);
+                }
+            });
             TransitionManager.beginDelayedTransition(qcs,at);
             int max = qcs.getChildCount();
             for (int j=0; j<max; j++){
@@ -421,6 +426,7 @@ public class FSControl extends FeatureService {
         }
         public void start(){
             // animate menu item deflation
+            prefMenuInflated.setValue(false);
             AutoTransition at = new AutoTransition();
             at.setDuration(getMenuAnimationTimeout());
             at.addListener(new TransitionListenerAdapter() {

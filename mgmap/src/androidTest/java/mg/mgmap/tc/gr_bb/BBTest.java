@@ -56,8 +56,7 @@ public class BBTest extends BaseTestCase {
         SystemClock.sleep(1000);
 
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
         assert prefBboxOn.getValue();
         PointModelImpl p1_1 = new PointModelImpl(54.427888,13.44128);
         PointModelImpl p2_1 = new PointModelImpl(54.421888,13.45528);
@@ -70,8 +69,7 @@ public class BBTest extends BaseTestCase {
 
 
         addRegex(".*onClick mi_load_from_bb.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_from_bb);
+        animateMenu(R.id.menu_bb, R.id.mi_load_from_bb);
         Assert.assertEquals(1, mgMapApplication.availableTrackLogsObservable.availableTrackLogs.size() );
 
         PointModelImpl p1_2 = new PointModelImpl(54.427888,13.43528);
@@ -85,8 +83,7 @@ public class BBTest extends BaseTestCase {
         assert !prefBboxOn.getValue();
 
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
         assert prefBboxOn.getValue();
         while ((fsbb.getP1() == null) || (fsbb.getP2() == null)) SystemClock.sleep(50);
 
@@ -96,8 +93,7 @@ public class BBTest extends BaseTestCase {
         animateSwipeLatLong(fsbb.getP2(), p2_3);
 
         addRegex(".*onClick mi_load_from_bb.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_from_bb);
+        animateMenu(R.id.menu_bb, R.id.mi_load_from_bb);
         Assert.assertEquals(3, mgMapApplication.availableTrackLogsObservable.availableTrackLogs.size() );
 
         addRegex(".*onClick mi_bbox.*");
@@ -127,8 +123,7 @@ public class BBTest extends BaseTestCase {
         SystemClock.sleep(3000);
 
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
         FSBB fsbb = mgMapActivity.getFS(FSBB.class);
         while ((fsbb.getP1() == null) || (fsbb.getP2() == null)) SystemClock.sleep(50);
         assert( fsbb.getP1() != null);
@@ -137,8 +132,7 @@ public class BBTest extends BaseTestCase {
         animateSwipeLatLong(fsbb.getP2(), p2_1);
 
         addRegex(".*onClick mi_load_remain.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_remain);
+        animateMenu(R.id.menu_bb, R.id.mi_load_remain);
 
         addRegex(".*onClick bgJobGroupConfirm_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         addRegex(".*successCounter=2.  errorCounter=0  jobCounter=2..*");
@@ -147,8 +141,7 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.bt_dialog_positive);
         // switch bbox off
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
 
         //scroll down
         PointModel pc1 = new PointModelImpl(bBox.getCenter());
@@ -157,13 +150,11 @@ public class BBTest extends BaseTestCase {
 
 
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
 
         // load partly (only remaining)
         addRegex(".*onClick mi_load_remain.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_remain);
+        animateMenu(R.id.menu_bb, R.id.mi_load_remain);
         addRegex(".*onClick bgJobGroupConfirm_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         addRegex(".*successCounter=1.  errorCounter=0  jobCounter=1..*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -172,8 +163,7 @@ public class BBTest extends BaseTestCase {
 
         // reload all
         addRegex(".*onClick mi_load_all.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_all);
+        animateMenu(R.id.menu_bb, R.id.mi_load_all);
         addRegex(".*onClick bgJobGroupConfirm_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         addRegex(".*successCounter=2.  errorCounter=0  jobCounter=2..*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -181,24 +171,20 @@ public class BBTest extends BaseTestCase {
         animateToViewAndClick(R.id.bt_dialog_positive);
         // switch bbox off
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
 
         addRegex(".*onClick mi_zoom_out.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_zoom_out);
+        animateMenu(R.id.menu_multi, R.id.mi_zoom_out);
         animateToViewAndClick(R.id.mi_zoom_out);
         SystemClock.sleep(3500);
 
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
 
         // delete all
         addRegex(".*onClick mi_delete_all.*");
         addRegex(".*Drop .. tiles in 3 jobs.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_delete_all);
+        animateMenu(R.id.menu_bb, R.id.mi_delete_all);
         addRegex(".*onClick bgJobGroupConfirm_Drop_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         addRegex(".*successCounter=3  errorCounter=0  jobCounter=3.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -207,24 +193,20 @@ public class BBTest extends BaseTestCase {
 
         // switch bbox off
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
 
 
         addRegex(".*onClick mi_zoom_in.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_zoom_in);
+        animateMenu(R.id.menu_multi, R.id.mi_zoom_in);
         animateToViewAndClick(R.id.mi_zoom_in);
         SystemClock.sleep(3500);
 
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
 
         // and now load again to verify that delete was done ...
         addRegex(".*onClick mi_load_remain.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_remain);
+        animateMenu(R.id.menu_bb, R.id.mi_load_remain);
         addRegex(".*onClick bgJobGroupConfirm_Load_Tiles_for_\"OpenCycleMap\"_btPositive.*");
         addRegex(".*successCounter=1.  errorCounter=0  jobCounter=1..*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -248,12 +230,10 @@ public class BBTest extends BaseTestCase {
         setCursorToCenterPos();
 
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
 
         mgMapApplication.getPrefCache().get(R.string.FSBB_pref_bb_action_layer, 0).setValue("MAPGRID: hgt".hashCode());
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_remain);
+        animateMenu(R.id.menu_bb, R.id.mi_load_remain);
         addRegex(".*onClick btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
         addRegex(".*onClick bgJobGroupConfirm_Download_height_data_btPositive.*");
@@ -282,8 +262,7 @@ public class BBTest extends BaseTestCase {
         SystemClock.sleep(1000);
 
         addRegex(".*onClick mi_bbox.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_bbox);
+        animateMenu(R.id.menu_bb, R.id.mi_bbox);
         PointModelImpl p1_1 = new PointModelImpl(54.9,12.7);
         PointModelImpl p2_1 = new PointModelImpl(54.1,14.3);
         FSBB fsbb = mgMapActivity.getFS(FSBB.class);
@@ -294,8 +273,7 @@ public class BBTest extends BaseTestCase {
         animateSwipeLatLong(fsbb.getP2(), p2_1);
 
         addRegex(".*onClick mi_load_remain.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_remain);
+        animateMenu(R.id.menu_bb, R.id.mi_load_remain);
 
         addRegex(".*onClick bgJobGroupConfirm_Download_height_data_btPositive.*");
         addRegex(".*successCounter=2  errorCounter=0  jobCounter=2.*");
@@ -311,8 +289,7 @@ public class BBTest extends BaseTestCase {
 
         // load partly (only remaining)
         addRegex(".*onClick mi_load_remain.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_remain);
+        animateMenu(R.id.menu_bb, R.id.mi_load_remain);
         addRegex(".*onClick bgJobGroupConfirm_Download_height_data_btPositive.*");
         addRegex(".*successCounter=3  errorCounter=0  jobCounter=3.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -321,8 +298,7 @@ public class BBTest extends BaseTestCase {
 
         // reload all
         addRegex(".*onClick mi_load_all.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_all);
+        animateMenu(R.id.menu_bb, R.id.mi_load_all);
         addRegex(".*onClick bgJobGroupConfirm_Download_height_data_btPositive.*");
         addRegex(".*successCounter=6  errorCounter=0  jobCounter=6.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -337,8 +313,7 @@ public class BBTest extends BaseTestCase {
 
         // delete all
         addRegex(".*onClick mi_delete_all.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_delete_all);
+        animateMenu(R.id.menu_bb, R.id.mi_delete_all);
         addRegex(".*onClick bgJobGroupConfirm_Drop_hgt_files_btPositive.*");
         addRegex(".*successCounter=6  errorCounter=0  jobCounter=6.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
@@ -351,8 +326,7 @@ public class BBTest extends BaseTestCase {
 
         // and now load again to verify that delete was done ...
         addRegex(".*onClick mi_load_remain.*");
-        animateToViewAndClick(R.id.menu_bb);
-        animateToViewAndClick(R.id.mi_load_remain);
+        animateMenu(R.id.menu_bb, R.id.mi_load_remain);
         addRegex(".*onClick bgJobGroupConfirm_Download_height_data_btPositive.*");
         addRegex(".*successCounter=6  errorCounter=0  jobCounter=6.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
