@@ -127,7 +127,7 @@ public class MapFileWithBorder extends MapFile {
         }
         this.mpmBorder = mpm;
         setPriority(mpmBorder==null?0: mpmBorder.size());
-        mgLog.d("init MGMapFile with "+file.getName()+" finished. mpmBorder="+(mpmBorder!=null));
+        mgLog.d("init MGMapFile with "+file.getName()+" finished. mpmBorder="+(mpmBorder!=null)+" priority="+getPriority());
     }
 
     @Override

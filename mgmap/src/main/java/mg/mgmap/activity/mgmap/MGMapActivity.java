@@ -701,9 +701,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
     public void initMapsforgeNumRenderThreads(){
-        int numRenderThreads = 0;
+        int numRenderThreads = 1;
         try {
-            numRenderThreads = Integer.parseInt( getSharedPreferences().getString(getResources().getString(R.string.preferences_mapsforge_renderThreads),"-111") );
+            numRenderThreads = Integer.parseInt( getSharedPreferences().getString(getResources().getString(R.string.preferences_mapsforge_renderThreads),"1") );
         } catch (NumberFormatException e) {
             mgLog.e(e.getMessage());
         }
