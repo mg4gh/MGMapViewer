@@ -28,6 +28,11 @@ import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.hills.DemFolder;
+import org.mapsforge.map.layer.hills.DemFolderFS;
+import org.mapsforge.map.layer.hills.HiResStandardClasyHillShading;
+import org.mapsforge.map.layer.hills.HillsRenderConfig;
+import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.layer.tilestore.TileStoreLayer;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
@@ -209,11 +214,23 @@ public class MGMapLayerFactory {
                         mds = new MapFileWithBorder(entryFile, language);
                         activity.getMapDataStoreUtil().register(key, mds);
                     }
+
+                    HillsRenderConfig hillsConfig = null;
+                    if (activity.getPrefCache().get(R.string.preferences_hill_shading_key, false).getValue()){
+                        DemFolder hgtFolder = new DemFolderFS(persistenceManager.getHgtDir());
+//                        MemoryCachingHgtReaderTileSource hillTileSource = new MemoryCachingHgtReaderTileSource(hgtFolder, new StandardClasyHillShading(), AndroidGraphicFactory.INSTANCE);
+                        MemoryCachingHgtReaderTileSource hillTileSource = new MemoryCachingHgtReaderTileSource(hgtFolder, new HiResStandardClasyHillShading(), AndroidGraphicFactory.INSTANCE);
+                        hillTileSource.setEnableInterpolationOverlap(true);
+                        hillsConfig = new HillsRenderConfig(hillTileSource);
+                        // call after setting/changing parameters, walks filesystem for DEM metadata
+                        hillsConfig.indexOnThread();
+                    }
                     TileRendererLayer tileRendererLayer = new TileRendererLayer(
                             msfTileCache,  mds,
                             mapView.getModel().mapViewPosition,
                             true, true, false,
-                            AndroidGraphicFactory.INSTANCE
+                            AndroidGraphicFactory.INSTANCE,
+                            hillsConfig
                     );
                     tileRendererLayer.setAlpha(1f);
                     tileRendererLayer.setXmlRenderTheme(xmlRenderTheme);

@@ -120,6 +120,9 @@ public class PersistenceManager {
     public File getAppDir(){
         return appDir;
     }
+    public File getHgtDir(){
+        return hgtDir;
+    }
     public File getLogDir(){
         return logDir;
     }

@@ -146,4 +146,8 @@
     <string name="preferences_alarm_ps_title">Power saving alarm (developer)</string>
     <string name="preferences_alarm_ps_desc">Acoustic alam on potential power saving problem during location service usage. </string>
 
+    <string name="preferences_hill_shading_key">hill_shading_key</string>
+    <string name="preferences_hill_shading_title">Hill shading</string>
+    <string name="preferences_hill_shading_desc">Use hill shading. Be aware that this might slow down some processing and that it consumes significant memory.</string>
+
 </resources>
