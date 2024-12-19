@@ -21,9 +21,12 @@ public class WayProviderHelper implements WayProvider {
     }
 
 
-    public boolean isHighway(Way way){
+    public boolean isWayForRouting(Way way){
         for (Tag tag : way.tags){
             if (tag.key.equals("highway")){
+                return true;
+            }
+            if (tag.key.equals("route") && tag.value.equals("ferry")) {
                 return true;
             }
         }

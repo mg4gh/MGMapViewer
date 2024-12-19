@@ -51,6 +51,7 @@
     <string name="MGMapApplication_pref_Restart">MGMapApplication.Restart</string>
     <string name="MGMapApplication_pref_Developer">MGMapApplication.Developer</string>
     <string name="MGMapApplication_pref_MetaData_loading">MGMapApplication.MetaDataLoading</string>
+    <string name="MGMapApplication_pref_Elevate_loading">MGMapApplication.ElevateLoading</string>
     <string name="MGMapApplication_pref_Pwd">MGMapApplication.pwd</string>
     <string name="MGMapActivity_trigger_recreate">MGMapActivity.triggerRecreate</string>
 
@@ -137,11 +138,16 @@
 
     <string name="preferences_sftp_uploadGpxTrigger">Sftp.uploadGpxTrigger</string>
     <string name="preferences_tracks_visible">prefTracksVisible</string>
+    <string name="preferences_mapsforge_renderThreads">prefMapsforgeNumRenderThreads</string>
 
     <string name="unique_work_name">MGMapViewerApp.UniqueWorkName</string>
 
     <string name="preferences_alarm_ps_key">alarm_power_saving_key</string>
     <string name="preferences_alarm_ps_title">Power saving alarm (developer)</string>
     <string name="preferences_alarm_ps_desc">Acoustic alam on potential power saving problem during location service usage. </string>
+
+    <string name="preferences_hill_shading_key">hill_shading_key</string>
+    <string name="preferences_hill_shading_title">Hill shading</string>
+    <string name="preferences_hill_shading_desc">Use hill shading. Be aware that this might slow down some processing and that it consumes significant memory.</string>
 
 </resources>

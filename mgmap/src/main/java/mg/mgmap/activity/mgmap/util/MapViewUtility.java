@@ -100,6 +100,9 @@ public class MapViewUtility {
     public int getZoomLevel() {
         return this.mapView.getModel().mapViewPosition.getZoomLevel();
     }
+    public void setZoomLevel(byte zoom) {
+        this.mapView.getModel().mapViewPosition.setZoomLevel(zoom);
+    }
 
     public PointModel getCenter() {
         return new PointModelImpl(this.mapView.getModel().mapViewPosition.getCenter());

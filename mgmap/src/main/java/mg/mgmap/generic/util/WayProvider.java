@@ -23,5 +23,5 @@ public interface WayProvider {
 
     List<Way> getWays(Tile tile);
 
-    boolean isHighway(Way way);
+    boolean isWayForRouting(Way way);
 }

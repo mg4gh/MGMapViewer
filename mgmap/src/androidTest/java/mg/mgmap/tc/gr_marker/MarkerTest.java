@@ -56,8 +56,7 @@ public class MarkerTest extends BaseTestCase {
         SystemClock.sleep(2000);
 
         addRegex(".*onClick mi_marker_edit.*");
-        animateToViewAndClick(R.id.menu_marker);
-        animateToViewAndClick(R.id.mi_marker_edit);
+        animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
         animateToPosAndClick(54.420327,13.437579);
         animateToPosAndClick(54.415861,13.447284);
@@ -105,8 +104,7 @@ public class MarkerTest extends BaseTestCase {
         SystemClock.sleep(2000);
 
         addRegex(".*onClick mi_marker_edit.*");
-        animateToViewAndClick(R.id.menu_marker);
-        animateToViewAndClick(R.id.mi_marker_edit);
+        animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
         animateToPosAndClick(54.415861,13.447284);
         SystemClock.sleep(1000);
@@ -139,8 +137,7 @@ public class MarkerTest extends BaseTestCase {
         SystemClock.sleep(2000);
 
         addRegex(".*onClick mi_marker_edit.*");
-        animateToViewAndClick(R.id.menu_marker);
-        animateToViewAndClick(R.id.mi_marker_edit);
+        animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
         animateToPosAndClick(54.420327,13.437579);
         animateToPosAndClick(54.415861,13.447284);
@@ -215,9 +212,7 @@ public class MarkerTest extends BaseTestCase {
         SystemClock.sleep(2000);
 
         addRegex(".*onClick mi_marker_edit.*");
-        animateToViewAndClick(R.id.menu_marker);
-        animateToViewAndClick(R.id.mi_marker_edit);
-
+        animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
         addRegex(".*optimize Pos Lat=54.3551.., Lon=13.2729.. to Lat=54.3547.., Lon=13.2729... .*");
         addRegex(".*optimize Pos Lat=54.3556.., Lon=13.2759.. to Lat=54.3547.., Lon=13.2759.., .*");
@@ -246,9 +241,7 @@ public class MarkerTest extends BaseTestCase {
         SystemClock.sleep(2000);
 
         addRegex(".*onClick mi_marker_edit.*");
-        animateToViewAndClick(R.id.menu_marker);
-        animateToViewAndClick(R.id.mi_marker_edit);
-
+        animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
         addRegex(".*optimize Pos Lat=54.3550.., Lon=13.2729.. to Lat=54.3547.., Lon=13.2729.., .*");
         addRegex(".*optimize Pos Lat=54.3552.., Lon=13.2759.. to Lat=54.3547.., Lon=13.2759.., .*");
@@ -277,9 +270,7 @@ public class MarkerTest extends BaseTestCase {
         SystemClock.sleep(2000);
 
         addRegex(".*onClick mi_marker_edit.*");
-        animateToViewAndClick(R.id.menu_marker);
-        animateToViewAndClick(R.id.mi_marker_edit);
-
+        animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
         addRegex(".*optimize Pos Lat=54.3548.., Lon=13.2729.. to Lat=54.3547.., Lon=13.2729.., .*");
         addRegex(".*optimize Pos Lat=54.3550.., Lon=13.2744.. to Lat=54.3547.., Lon=13.2744.., .*");

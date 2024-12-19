@@ -110,9 +110,12 @@ public class BBox {
     }
 
     public static BBox fromBoundingBox(BoundingBox boundingBox){
-        return new BBox().
-                extend(boundingBox.minLatitude, boundingBox.minLongitude).
-                extend(boundingBox.maxLatitude, boundingBox.maxLongitude);
+        BBox bBox = new BBox();
+        if (boundingBox != null){
+            bBox.extend(boundingBox.minLatitude, boundingBox.minLongitude);
+            bBox.extend(boundingBox.maxLatitude, boundingBox.maxLongitude);
+        }
+        return bBox;
     }
 
     public PointModel getCenter(){
@@ -169,6 +172,10 @@ public class BBox {
     @Override
     public String toString() {
         return String.format(Locale.ENGLISH, "minLat=%2.6f, minLon=%2.6f, maxLat=%2.6f, maxLon=%2.6f",minLatitude,minLongitude,maxLatitude,maxLongitude);
+    }
+
+    public long fingerprint(){
+        return ((long)LaLo.d2md(this.minLatitude) + LaLo.d2md(this.maxLatitude)) <<32 +  (LaLo.d2md(this.minLongitude)+LaLo.d2md(this.maxLongitude));
     }
 
 }

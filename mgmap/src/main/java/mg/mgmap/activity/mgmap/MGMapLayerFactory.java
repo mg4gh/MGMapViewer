@@ -28,13 +28,19 @@ import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.hills.DemFolder;
+import org.mapsforge.map.layer.hills.DemFolderFS;
+import org.mapsforge.map.layer.hills.HiResStandardClasyHillShading;
+import org.mapsforge.map.layer.hills.HillsRenderConfig;
+import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.layer.tilestore.TileStoreLayer;
-import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +51,7 @@ import java.util.Properties;
 import mg.mgmap.activity.mgmap.view.Grid;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
 import mg.mgmap.R;
+import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.activity.mgmap.features.tilestore.XmlTileSource;
@@ -69,6 +76,8 @@ public class MGMapLayerFactory {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static final String XML_CONFIG_NAME = "config.xml";
+    public static final String KEY_SEPARATOR = ": ";
+    public static final String WORLD_MAP = "world.map";
 
     public static ArrayList<String> getMapLayerKeys(Context context){
         ArrayList<String> mapLayerKeys = new ArrayList<>();
@@ -92,10 +101,26 @@ public class MGMapLayerFactory {
     private final PersistenceManager persistenceManager;
     private final XmlRenderTheme xmlRenderTheme;
 
-    public MGMapLayerFactory(MGMapActivity activity){
+    public MGMapLayerFactory(MGMapActivity activity) {
         this.activity = activity;
         persistenceManager = activity.getMGMapApplication().getPersistenceManager();
         xmlRenderTheme = activity.getRenderTheme();
+
+        SharedPreferences sharedPreferences = activity.getSharedPreferences();
+        for (String prefKey : getMapLayerKeys()) {
+            String defaultValue = prefKey.equals(activity.getString(R.string.Layers_pref_chooseMap2_key))?"MAPSFORGE: all":"none";
+            String key = sharedPreferences.getString(prefKey, defaultValue);
+            sharedPreferences.edit().putString(prefKey, key).apply(); // so if pref was not existing, then default value "none" is now set - this helps to prevent recreate activity on initial set
+        }
+
+        try {
+            if (sharedPreferences.getBoolean(WORLD_MAP,true)){
+                IOUtil.copyStreams(activity.getAssets().open(WORLD_MAP), new FileOutputStream(new File(activity.getMGMapApplication().getPersistenceManager().getMapsforgeDir(), WORLD_MAP)));
+                sharedPreferences.edit().putBoolean(WORLD_MAP, false).apply();
+            }
+        } catch (IOException e) {
+            mgLog.e(e);
+        }
     }
 
     public ArrayList<String> getMapLayerKeys() {
@@ -112,7 +137,7 @@ public class MGMapLayerFactory {
                 return mapLayers.get(key);
             }
 
-            String[] keypart = key.split(": ");
+            String[] keypart = key.split(KEY_SEPARATOR);
             Types type;
             String entry;
             if (keypart.length != 2) return null;
@@ -136,12 +161,76 @@ public class MGMapLayerFactory {
                             mapView.getModel().frameBufferModel.getOverdrawFactor() *1.5, false);
                     activity.addTileCache(msfTileCache);
 
-                    MapDataStore mapFile = new MapFile(entryFile, language);
+                    MapDataStore mds;
+                    if (entryFile.isDirectory()){ // represents multi map
+                        String policyKey = "policy";
+                        MultiMapDataStore.DataPolicy policy = MultiMapDataStore.DataPolicy.FAST_DETAILS;
+                        Properties props = new Properties();
+                        File configFile = new File(entryFile, "config.properties");
+                        if (configFile.exists()){ // ... with config.properties
+                            try (FileInputStream fis = new FileInputStream(configFile)){
+                                props.load( fis ); // ... that are loaded into props
+                            }
+                        } else { // without config.properties
+                            String[] msfNames = new File(mapsDir, Types.MAPSFORGE.name().toLowerCase()).list();
+                            if (msfNames != null){
+                                for (int i=0; i<msfNames.length; i++){
+                                    if (msfNames[i].endsWith(".map")) {
+                                        props.put("map" + i, msfNames[i]); // ... map files form mapsforge base dir are placed in props
+                                    }
+                                }
+                            }
+                        }
+                        if (props.containsKey(policyKey)){
+                            try {
+                                policy = MultiMapDataStore.DataPolicy.valueOf(props.getProperty(policyKey));
+                            } catch (IllegalArgumentException e) {
+                                mgLog.e(e.getMessage());
+                            }
+                        }
+                        MultiMapDataStore mmds = new MultiMapDataStore(policy);
+                        boolean first = true;
+                        for (Object propKey : props.keySet()){ // now props are added as MapDataStore
+                            if (propKey.toString().startsWith("map")){
+                                File mapsforgeFile = new File(typeDir, ""+props.get(propKey));
+                                if (mapsforgeFile.exists()){
+                                    MapDataStore mapFile = new MapFileWithBorder(mapsforgeFile, language);
+                                    String prioKey = propKey.toString().replace("map","prio");
+                                    if (props.containsKey(prioKey)){
+                                        try {
+                                            mapFile.setPriority(Integer.parseInt(props.getProperty(prioKey)));
+                                        } catch (NumberFormatException e) {
+                                            mgLog.e(e.getMessage());
+                                        }
+                                    }
+                                    mmds.addMapDataStore(mapFile, first, first);
+                                    activity.getMapDataStoreUtil().register(Types.MAPSFORGE.name()+ KEY_SEPARATOR +mapsforgeFile.getName(), mapFile);
+                                    first = false;
+                                }
+                            }
+                        }
+                        mds = mmds;
+                    } else { // entryFile is File
+                        mds = new MapFileWithBorder(entryFile, language);
+                        activity.getMapDataStoreUtil().register(key, mds);
+                    }
+
+                    HillsRenderConfig hillsConfig = null;
+                    if (activity.getPrefCache().get(R.string.preferences_hill_shading_key, false).getValue()){
+                        DemFolder hgtFolder = new DemFolderFS(persistenceManager.getHgtDir());
+//                        MemoryCachingHgtReaderTileSource hillTileSource = new MemoryCachingHgtReaderTileSource(hgtFolder, new StandardClasyHillShading(), AndroidGraphicFactory.INSTANCE);
+                        MemoryCachingHgtReaderTileSource hillTileSource = new MemoryCachingHgtReaderTileSource(hgtFolder, new HiResStandardClasyHillShading(), AndroidGraphicFactory.INSTANCE);
+                        hillTileSource.setEnableInterpolationOverlap(true);
+                        hillsConfig = new HillsRenderConfig(hillTileSource);
+                        // call after setting/changing parameters, walks filesystem for DEM metadata
+                        hillsConfig.indexOnThread();
+                    }
                     TileRendererLayer tileRendererLayer = new TileRendererLayer(
-                            msfTileCache,  mapFile,
+                            msfTileCache,  mds,
                             mapView.getModel().mapViewPosition,
                             true, true, false,
-                            AndroidGraphicFactory.INSTANCE
+                            AndroidGraphicFactory.INSTANCE,
+                            hillsConfig
                     );
                     tileRendererLayer.setAlpha(1f);
                     tileRendererLayer.setXmlRenderTheme(xmlRenderTheme);

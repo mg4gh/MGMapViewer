@@ -47,23 +47,18 @@ public class MapLayerListPreference extends ListPreference {
     }
 
     private void initFilters(){
-        filters.put(MGMapLayerFactory.Types.MAPSFORGE, (dir, name) -> {
-            boolean res = !(new File(dir,name).isDirectory());
-            res &= name.endsWith(".map") || name.endsWith(".ref");
-            return res;
-        });
+        filters.put(MGMapLayerFactory.Types.MAPSFORGE, (dir, name) -> new File(dir,name).isDirectory() || name.endsWith(".map"));
         filters.put(MGMapLayerFactory.Types.MAPSTORES, (dir, name) -> (new File(dir,name).isDirectory()));
         filters.put(MGMapLayerFactory.Types.MAPONLINE, (dir, name) -> {
             File fStore = new File(dir,name);
             File fConfig = new File(fStore,MGMapLayerFactory.XML_CONFIG_NAME);
             return (fStore.isDirectory() && fConfig.exists());
         });
-        FilenameFilter prop = (dir, name) -> {
+        filters.put(MGMapLayerFactory.Types.MAPGRID,(dir, name) -> {
             boolean res = !(new File(dir,name).isDirectory());
             res &= name.endsWith(".properties");
             return res;
-        };
-        filters.put(MGMapLayerFactory.Types.MAPGRID,prop);
+        });
     }
 
     /** Returns a list of available map layers */

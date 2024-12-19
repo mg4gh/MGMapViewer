@@ -98,6 +98,7 @@ public class PersistenceManager {
 
         mapsDir = createIfNotExists(appDir, "maps");
         mapsMapsforgeDir = createIfNotExists(mapsDir, "mapsforge");
+        createIfNotExists(mapsMapsforgeDir, "all");
         createIfNotExists(mapsDir, "mapstores");
         createIfNotExists(mapsDir, "maponline");
         createIfNotExists(mapsDir, "mapgrid");
@@ -118,6 +119,9 @@ public class PersistenceManager {
     }
     public File getAppDir(){
         return appDir;
+    }
+    public File getHgtDir(){
+        return hgtDir;
     }
     public File getLogDir(){
         return logDir;

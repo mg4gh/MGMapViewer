@@ -60,6 +60,15 @@ FSBB.loadTransparent=Boolean:true
 ```
 you will get also transparent layers offered for the operation.
 
+### Mapsforget Number of Render Threads
+
+This property allows to manipulate the number of render threads in mapsforge. 
+```
+prefMapsforgeNumRenderThreads=4
+```
+
+
+
 ### Sample config
 
 The following sample configuration
@@ -69,6 +78,8 @@ FSRouting.RoutingAlgorithm=BidirectionalAStar
 FSSearch.reverseSearchOn=Boolean:true
 FSSearch.locationBasedSearchOn=Boolean:true
 DownloadMapsDirect=Boolean:false
+#FSBB.loadTransparent=Boolean:false
+#prefMapsforgeNumRenderThreads=4
 ```
 can be downloaded and installed [here](mgmap-install://mg4gh.github.io/MGMapViewer/Features/DeveloperFeatures/Preferences/config.zip).
 After installation you can use the internal [FileManager](../../FurtherFeatures/FileManager/filemanager.md) to modify these preferences.

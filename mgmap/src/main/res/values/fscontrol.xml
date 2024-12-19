@@ -27,4 +27,5 @@
     <string name="FSControl_pref_menu_animation_timeout_desc1">Duration of menu animation</string>
     <string name="FSControl_pref_menu_animation_timeout_desc2">Duration of menu animation (Default 250ms). Valid range is between 0 and 500.</string>
     <string name="FSControl_pref_version_key">FSControl.prefVersionKey</string>
+    <string name="FSControl_pref_menu_inflated">FSControl.prefMenuInflated</string>
 </resources>

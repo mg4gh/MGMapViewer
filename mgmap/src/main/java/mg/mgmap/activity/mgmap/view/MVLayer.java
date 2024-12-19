@@ -18,6 +18,7 @@ import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.core.model.Rotation;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.layer.Layer;
 
@@ -47,7 +48,7 @@ public abstract class MVLayer extends Layer {
 
 
     @Override
-    public final synchronized void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
+    public final synchronized void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
         this.topLeftPoint = topLeftPoint;
         mapSize = MercatorProjection.getMapSize(zoomLevel, displayModel.getTileSize());
         if (mapViewUtility != null) {

@@ -104,6 +104,7 @@ public abstract class MapViewerBase extends AppCompatActivity implements SharedP
                 getResources().getString(R.string.Layers_pref_chooseMap4_key),
                 getResources().getString(R.string.Layers_pref_chooseMap5_key),
                 getResources().getString(R.string.preference_theme_changed),
+                getResources().getString(R.string.preferences_hill_shading_key),
                 getResources().getString(R.string.preference_choose_theme_key),
                 getResources().getString(R.string.preferences_scale_key),
                 getResources().getString(R.string.preferences_scalebar_key),

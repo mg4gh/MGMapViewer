@@ -2,10 +2,9 @@ package mg.mgmap.generic.util.hints;
 
 import android.app.Activity;
 
-import java.util.Arrays;
 
 import mg.mgmap.R;
-import mg.mgmap.activity.settings.MapLayerListPreference;
+import mg.mgmap.activity.mgmap.MGMapActivity;
 
 public class HintInitialMapDownload extends AbstractHint implements Runnable{
 
@@ -20,8 +19,16 @@ public class HintInitialMapDownload extends AbstractHint implements Runnable{
 
     @Override
     public boolean checkHintCondition() {
-        return  super.checkHintCondition() &&
-                Arrays.stream(new MapLayerListPreference(activity, null).getAvailableMapLayers(activity)).noneMatch(s -> s.startsWith("MAPSFORGE"));
+        boolean res = super.checkHintCondition();
+        if (res && getActivity() instanceof MGMapActivity mgMapActivity){
+            for (String key : mgMapActivity.getMapDataStoreUtil().getMapDataStoreMap().values()){
+                if (key.startsWith("MAPSFORGE") && !key.contains("world")){
+                    res = false;
+                    break;
+                }
+            }
+        }
+        return res;
     }
 
 }

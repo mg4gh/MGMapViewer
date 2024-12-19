@@ -22,8 +22,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.mapsforge.core.model.Dimension;
+import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.layer.Layer;
-import org.mapsforge.map.layer.renderer.TileRendererLayer;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -47,8 +47,6 @@ import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
-//import mg.mgmap.generic.util.hints.AbstractHint;
-//import mg.mgmap.generic.util.hints.NewHgtHint;
 import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
 
@@ -74,7 +72,6 @@ public class FSBB extends FeatureService {
     private final TreeMap<String, Layer> tsAndHgtLayerEntries = identifyTsAndHgt();
     private TreeMap<String, Layer> visibleTsAndHgtLayerEntries;
     private boolean initSquare = false;
-//    final private AbstractHint hgtHint;
 
     public FSBB(MGMapActivity mmActivity) {
         super(mmActivity);
@@ -89,8 +86,6 @@ public class FSBB extends FeatureService {
         prefAutoDlHgt.addObserver((e) -> {
             if (!prefAutoDlHgt.getValue()) prefAutoDlHgtAsked.setValue("");
         });
-//        hgtHint = new NewHgtHint(getActivity(), getApplication().getHgtProvider());
-//        hgtHint.addGotItAction(()-> getApplication().getHgtProvider().loadHgt(getActivity(), true, getApplication().getHgtProvider().getEhgtList(), null, null) );
     }
 
     private WriteablePointModel p1 = null;
@@ -356,13 +351,16 @@ public class FSBB extends FeatureService {
 
     void checkHgtAvailability(){
         if (prefAutoDlHgt.getValue()){
-            for (Map.Entry<String, Layer> entry : getMapLayerFactory().getMapLayers().entrySet()){
-                if ((entry.getValue() instanceof TileRendererLayer) && (!prefAutoDlHgtAsked.getValue().contains("\"" + entry.getKey() + "\""))){
-                    prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" \""+entry.getKey()+"\"");
-                    BBox bBox = BBox.fromBoundingBox(((TileRendererLayer)entry.getValue()).getMapDataStore().boundingBox());
-                    mgLog.i("layer="+entry.getKey()+" bbox="+bBox);
-                    loadHgt(bBox, false, entry.getKey(), null);
-                    break; // cannot handle multiple layers at the same time
+            for (Map.Entry<MapDataStore, String> entry : getActivity().getMapDataStoreUtil().getMapDataStoreMap().entrySet()){
+                String id = "\""+entry.getValue()+"\"";
+                if (!prefAutoDlHgtAsked.getValue().contains(id)){
+                    prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" "+id);
+                    BBox bBox = BBox.fromBoundingBox(entry.getKey().boundingBox());
+                    mgLog.d("layer="+id+" bbox="+bBox);
+                    if ( (bBox.maxLatitude - bBox.minLatitude < 100) && (bBox.maxLongitude - bBox.minLongitude < 100)){
+                        loadHgt(bBox, false, id, null);
+                        break;
+                    }
                 }
             }
         }
@@ -467,8 +465,8 @@ public class FSBB extends FeatureService {
 
     private void dropHgt(BBox bBox, HgtGridView hgtLayer){
         ArrayList<String> hgtNames = new ArrayList<>();
-        for (int latitude = PointModelUtil.getLower(bBox.minLatitude); latitude<PointModelUtil.getLower(bBox.maxLatitude)+1; latitude++ ) {
-            for (int longitude = PointModelUtil.getLower(bBox.minLongitude); longitude < PointModelUtil.getLower(bBox.maxLongitude) + 1; longitude++) {
+        for (int latitude = PointModelUtil.getLower(bBox.minLatitude)+1; latitude<PointModelUtil.getLower(bBox.maxLatitude); latitude++ ) {
+            for (int longitude = PointModelUtil.getLower(bBox.minLongitude)+1; longitude < PointModelUtil.getLower(bBox.maxLongitude); longitude++) {
                 String hgtName = HgtProvider.getHgtName(latitude, longitude);
                 hgtNames.add(hgtName);
             }

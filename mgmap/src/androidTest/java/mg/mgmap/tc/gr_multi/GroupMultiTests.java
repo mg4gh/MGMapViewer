@@ -52,14 +52,13 @@ public class GroupMultiTests extends BaseTestCase {
         int[] loc1 = new int[2], loc2 = new int[2], loc3 = new int[2];
         View vMenuMulti = waitForView(ExtendedTextView.class, R.id.menu_multi);
         vMenuMulti.getLocationOnScreen(loc1);
-        animateToViewAndClick(R.id.menu_multi);
         addRegex(".*onClick mi_fullscreen.*");
-        animateToViewAndClick(R.id.mi_fullscreen);
+        animateMenu(R.id.menu_multi, R.id.mi_fullscreen);
+
         SystemClock.sleep(1000);
         vMenuMulti.getLocationOnScreen(loc2);
-        animateToViewAndClick(R.id.menu_multi);
         addRegex(".*onClick mi_fullscreen.*");
-        animateToViewAndClick(R.id.mi_fullscreen);
+        animateMenu(R.id.menu_multi, R.id.mi_fullscreen);
         vMenuMulti.getLocationOnScreen(loc3);
         mgLog.i(loc1[0]+","+loc1[1]+" "+loc2[0]+","+loc2[1]+" "+loc3[0]+","+loc3[1]);
         assert ((loc1[0] == loc2[0]) && (loc1[0] == loc3[0]));
@@ -78,8 +77,7 @@ public class GroupMultiTests extends BaseTestCase {
 
         setCursorToCenterPos();
         addRegex(".*onClick mi_zoom_in.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_zoom_in);
+        animateMenu(R.id.menu_multi, R.id.mi_zoom_in);
         animateTo(getCenterPos());
         SystemClock.sleep(5000);
         mgLog.i("finished");
@@ -93,8 +91,7 @@ public class GroupMultiTests extends BaseTestCase {
         waitForActivity(MGMapActivity.class);
         setCursorToCenterPos();
         addRegex(".*onClick mi_zoom_out.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_zoom_out);
+        animateMenu(R.id.menu_multi, R.id.mi_zoom_out);
         animateTo(getCenterPos());
         SystemClock.sleep(2000);
         mgLog.i("finished");
@@ -113,8 +110,7 @@ public class GroupMultiTests extends BaseTestCase {
 
         setCursorToCenterPos();
         addRegex(".*onClick mi_home.*");
-        animateToViewAndClick(R.id.menu_multi);
-        animateToViewAndClick(R.id.mi_home);
+        animateMenu(R.id.menu_multi, R.id.mi_home);
         SystemClock.sleep(1000);
         mgLog.i("finished");
     }
