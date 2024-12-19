@@ -15,8 +15,11 @@
 package mg.mgmap.activity.mgmap.features.tilestore;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -50,6 +53,7 @@ import mg.mgmap.R;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
+import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.DialogView;
 
@@ -146,14 +150,30 @@ public class TileStoreLoader {
                             })
                             .setNegative( "Abort", null)
                             .setNeutral("Fill",evt ->{
-                                for (XmlTileSourceConfig.AutoFill autoFill : xmlTileSource.config.autoFills){
-                                    myWebView.loadUrl("javascript:(function() { document.getElementById('"+autoFill.id()+"').value = '" + autoFill.value() + "'; ;})()");
-                                }
+                                // This approach did not work - due to recaptcha protection
+//                                for (XmlTileSourceConfig.AutoFill autoFill : xmlTileSource.config.autoFills){
+//                                    myWebView.loadUrl("javascript:(function() { document.getElementsByName('"+autoFill.id()+"')[0].value = '" + autoFill.value() + "'; ;})()");
+//                                }
+
+                                // This approach was working, but could easily detected as automation
+//                                XmlTileSourceConfig.AutoFill autoFill = xmlTileSource.config.autoFills.get(cnt);
+//                                myWebView.loadUrl("javascript:(function() { document.getElementsByName('"+autoFill.id()+"')[0].focus(); })()");
+//
+//                                KeyCharacterMap mKeyCharacterMap =
+//                                        KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
+//                                KeyEvent[] kea = mKeyCharacterMap.getEvents(autoFill.value().toCharArray());
+//                                for (KeyEvent ke : kea){
+//                                    activity.dispatchKeyEvent(ke);
+//                                }
+
+                                // better approach with typing each letter by its own
+                                new AutoFiller(activity, myWebView, xmlTileSource.config.autoFills).start();
                             })
                             .setMaximize(true)
                             .show());
 
                     dialogView.setEnablePositive(false);
+
                     timer.postDelayed(new TimerTaskEnableDone(dialogView, timer), 200);
                 } catch (Exception e) {
                     mgLog.e(e);
@@ -161,6 +181,48 @@ public class TileStoreLoader {
 
             }
         });
+    }
+
+    Handler timer = new Handler();
+    public class AutoFiller {
+        private final Activity activity;
+        private final WebView webView;
+        ArrayList<XmlTileSourceConfig.AutoFill> autofills;
+        private int cnt = 0;
+        private String value = "";
+        KeyCharacterMap mKeyCharacterMap;
+
+        public AutoFiller(Activity activity, WebView webView, ArrayList<XmlTileSourceConfig.AutoFill> autofills) {
+            this.activity = activity;
+            this.webView = webView;
+            this.autofills = autofills;
+            mKeyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
+        }
+        Runnable runnable = null;
+        public void start(){
+            runnable = () -> {
+                if (value.isEmpty()) {
+                    if (cnt < autofills.size()){
+                        XmlTileSourceConfig.AutoFill autoFill = autofills.get(cnt++);
+                        webView.loadUrl("javascript:(function() { document.getElementsByName('"+ autoFill.id()+"')[0].focus(); })()");
+                        value = autoFill.value();
+                        timer.postDelayed(runnable, 100);
+                    } else {
+                        KeyboardUtil.hideKeyboard(activity);
+                        mgLog.d("AutoFill finished");
+                    }
+                } else {
+                    String s = value.substring(0,1);
+                    value = value.substring(1);
+                    KeyEvent[] kea = mKeyCharacterMap.getEvents(s.toCharArray());
+                    for (KeyEvent ke : kea){
+                        activity.dispatchKeyEvent(ke);
+                    }
+                    timer.postDelayed(runnable, 50);
+                }
+            };
+            timer.postDelayed(runnable, 10);
+        }
     }
 
     private void saveCookiesAndInit(String cookies){
