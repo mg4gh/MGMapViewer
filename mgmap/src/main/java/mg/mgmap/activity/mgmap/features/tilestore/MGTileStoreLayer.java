@@ -31,4 +31,10 @@ public class MGTileStoreLayer extends TileStoreLayer {
     public MGTileStore getMGTileStore(){
         return mgTileStore;
     }
+
+    @Override
+    protected void onRemove() {
+        super.onRemove();
+        mgTileStore.destroy();
+    }
 }
