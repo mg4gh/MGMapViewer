@@ -78,7 +78,9 @@ public class InitTest extends BaseTestCase {
         SystemClock.sleep(2000);
         addRegex(".*onClick bgJobGroupResult_Download_map_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
+        SystemClock.sleep(2000);
 
+        waitForActivity(MGMapActivity.class);
         addRegex(".*onClick bgJobGroupConfirm_Download_height_data_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
         SystemClock.sleep(2000);

@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -284,16 +285,16 @@ public class BaseTestCase {
 
     protected PointOfView animateTo(PointOfView pov, int duration){
         Point pos = pov.point();
-        if ((pos.x < 0) || (pos.x > 1200) || (pos.y < 0) || (pos.y > 2400)){
-            MGLog.ctx(MGLog.Level.DEBUG, 15);
-            assert false;
-        }
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
-
         setCursorVisibility(true);
         int[] tvLoc = new int[2];
         testView.getLocationOnScreen(tvLoc);
         Point tvPos = new Point(pos.x - tvLoc[0], pos.y - tvLoc[1]);
+        if ((pos.x < 0) || (pos.x > (tvLoc[0]+testView.getWidth())) || (pos.y < 0) || (pos.y > (tvLoc[1]+testView.getHeight()))){
+            mgLog.i(" tvLoc=("+tvLoc[0]+","+tvLoc[1]+") tvSize=("+testView.getWidth()+","+testView.getHeight()+") "+testView.getActivity().getClass());
+            MGLog.ctx(MGLog.Level.DEBUG, 15);
+            assert false;
+        }
         mgLog.i("to "+pos+" tvPos="+tvPos+" "+testView.getActivity().getClass());
 
         testView.getActivity().runOnUiThread(() -> {
