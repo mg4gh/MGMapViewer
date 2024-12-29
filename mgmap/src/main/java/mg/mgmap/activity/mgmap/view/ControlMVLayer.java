@@ -54,6 +54,7 @@ public abstract class ControlMVLayer<T> extends MVLayer {
 
     @Override
     public boolean onScroll(float scrollX1, float scrollY1, float scrollX2, float scrollY2) {
+        if (topLeftPoint == null) return false; // not yet initialized, cannot check for scroll
         if (!checkDragXY(scrollX1,scrollY1)){
             reset();
             setDragXY(scrollX1,scrollY1);

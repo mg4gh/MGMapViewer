@@ -71,17 +71,19 @@ public class GGraphTileFactory {
     }
 
     public void resetCosts(){
-        for (GGraphTile graph : gTileCache.getAll()){
-             for (GNode node : graph.getNodes()){
-                 GNeighbour neighbour = node.getNeighbour();
-                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null) {
-                     neighbour.resetCost();
-                     WayAttributs wayAttributs = neighbour.getWayAttributs();
-                     if (wayAttributs != null) {
-                         wayAttributs.setDerivedData(null);
-                     }
-                 }
-             }
+        if (gTileCache != null){
+            for (GGraphTile graph : gTileCache.getAll()){
+                for (GNode node : graph.getNodes()){
+                    GNeighbour neighbour = node.getNeighbour();
+                    while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null) {
+                        neighbour.resetCost();
+                        WayAttributs wayAttributs = neighbour.getWayAttributs();
+                        if (wayAttributs != null) {
+                            wayAttributs.setDerivedData(null);
+                        }
+                    }
+                }
+            }
         }
     }
 
