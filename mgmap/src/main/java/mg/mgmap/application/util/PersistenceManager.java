@@ -361,7 +361,11 @@ public class PersistenceManager {
     }
 
     public File getHgtFile(String hgtName){
-        return new File(hgtDir, getHgtFilename(hgtName));
+        File hgtFile = new File(hgtDir, hgtName+".hgt"); // prefer unzipped if exists
+        if (!hgtFile.exists()){
+            hgtFile = new File(hgtDir, hgtName+".SRTMGL1.hgt.zip");
+        }
+        return hgtFile;
     }
 
     public ArrayList<String> getExistingHgtNames(){
@@ -379,11 +383,6 @@ public class PersistenceManager {
         deleteFile(getHgtFile(hgtName));
     }
 
-
-    public String getHgtFilename(String hgtName) {
-        return hgtName+".SRTMGL1.hgt.zip";
-    }
-
     public FileOutputStream openHgtOutput(String hgtName){
         try {
             return new FileOutputStream(getHgtFile(hgtName));
@@ -393,28 +392,22 @@ public class PersistenceManager {
         return null;
     }
 
-    public boolean hgtIsAvailable(String hgtName){
-        return getHgtFile(hgtName).exists();
-    }
-
     public byte[] getHgtBuf(String hgtName){
         byte[] buf = new byte[0];
         try {
             File hgtFile = getHgtFile(hgtName);
             if (hgtFile.exists()){
                 if (hgtFile.length()>0){
-                    ZipFile zipFile = new ZipFile(hgtFile);
-                    ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
-                    InputStream zis = zipFile.getInputStream(zipEntry);
-                    int todo = zis.available();
-                    buf = new byte[todo];
-                    int done = 0;
-                    while (todo > 0) {
-                        int step = zis.read(buf, done, todo);
-                        todo -= step;
-                        done += step;
+                    if (hgtFile.getName().endsWith("zip")){
+                        try (ZipFile zipFile = new ZipFile(hgtFile)){
+                            ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
+                            buf = readHgtData( zipFile.getInputStream(zipEntry) );
+                        }
+                    } else {
+                        try (FileInputStream is = new FileInputStream(hgtFile)){
+                            buf = readHgtData( is );
+                        }
                     }
-                    zipFile.close();
                 } else { // is dummy hgt file
                     buf = new byte[1];
                 }
@@ -422,6 +415,18 @@ public class PersistenceManager {
         } catch (IOException e) { // should not happen
             mgLog.e(e);
             buf = new byte[0]; // but if so, prevent accessing inconsistent data
+        }
+        return buf;
+    }
+
+    private byte[] readHgtData(InputStream is) throws IOException{
+        int todo = is.available();
+        byte[] buf = new byte[todo];
+        int done = 0;
+        while (todo > 0) {
+            int step = is.read(buf, done, todo);
+            todo -= step;
+            done += step;
         }
         return buf;
     }

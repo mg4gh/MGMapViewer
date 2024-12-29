@@ -178,7 +178,7 @@ public class HgtProvider {
         return (long)fValue;
     }
     public boolean hgtIsAvailable(String hgtName){
-        return persistenceManager.hgtIsAvailable(hgtName);
+        return persistenceManager.getHgtFile(hgtName).exists();
     }
 
 
