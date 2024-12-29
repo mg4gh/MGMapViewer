@@ -17,13 +17,13 @@ package mg.mgmap.activity.mgmap.features.tilestore;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.tilestore.TileStoreLayer;
-import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.model.MapViewPosition;
 
 public class MGTileStoreLayer extends TileStoreLayer {
 
     final MGTileStore mgTileStore;
 
-    public MGTileStoreLayer(MGTileStore mgTileStore, TileCache tileCache, IMapViewPosition mapViewPosition, GraphicFactory graphicFactory, boolean isTransparent) {
+    public MGTileStoreLayer(MGTileStore mgTileStore, TileCache tileCache, MapViewPosition mapViewPosition, GraphicFactory graphicFactory, boolean isTransparent) {
         super(tileCache, mapViewPosition, graphicFactory, isTransparent);
         this.mgTileStore = mgTileStore;
     }

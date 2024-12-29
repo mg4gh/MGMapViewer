@@ -126,6 +126,13 @@
             app:title="@string/preferences_hill_shading_title"
             app:iconSpaceReserved="false"
             />
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_hill_shading_hiRes_key"
+            app:summary="@string/preferences_hill_shading_hiRes_desc"
+            app:title="@string/preferences_hill_shading_hiRes_title"
+            app:iconSpaceReserved="false"
+            />
 
         <ListPreference
             app:defaultValue="1.0"

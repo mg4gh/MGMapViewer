@@ -44,7 +44,6 @@ import androidx.appcompat.app.AlertDialog;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.util.Parameters;
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 
 import org.mapsforge.map.layer.Layer;
@@ -52,7 +51,7 @@ import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 
 import org.mapsforge.map.model.DisplayModel;
-import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
@@ -348,7 +347,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         mapDataStoreUtil.onDestroy();
         gGraphTileFactory.onDestroy();
         prefCache.cleanup();
-        AndroidGraphicFactory.clearResourceMemoryCache(); // do this as very last action - otherwise some crash might occur
+// Comment out the cleanup as it may cause native crashes due to longer running jobs from DatabaseRenderer in combination with recreate activity tasks.
+// Anyway the question is whether this call makes really sense ...
+// On the other hand threads (like DatabaseRenderer and HillShading should be stopped here (but right now they may still run)
+//        AndroidGraphicFactory.clearResourceMemoryCache(); // do this as very last action - otherwise some crash might occur
         mgLog.w("Destroy finished");
         super.onDestroy();
     }
@@ -701,9 +703,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
     public void initMapsforgeNumRenderThreads(){
-        int numRenderThreads = 1;
+        int numRenderThreads = Runtime.getRuntime().availableProcessors()+1;
         try {
-            numRenderThreads = Integer.parseInt( getSharedPreferences().getString(getResources().getString(R.string.preferences_mapsforge_renderThreads),"1") );
+            numRenderThreads = Integer.parseInt( getSharedPreferences().getString(getResources().getString(R.string.preferences_mapsforge_renderThreads),""+numRenderThreads) );
         } catch (NumberFormatException e) {
             mgLog.e(e.getMessage());
         }
@@ -714,11 +716,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
     protected void initializePosition() {
-        IMapViewPosition mvp = mapView.getModel().mapViewPosition;
+        MapViewPosition mvp = mapView.getModel().mapViewPosition;
         if ((mvp.getCenter().getLatitude() == 0) && (mvp.getCenter().getLongitude() == 0)){
             mapViewUtility.setCenter(new PointModelImpl(49.4057, 8.6789));
             mvp.setZoomLevel((byte)5);
         }
+        mgLog.d("initial Position: "+mvp.getMapPosition());
         mvp.setZoomLevelMax(MapViewUtility.ZOOM_LEVEL_MAX);
         mvp.setZoomLevelMin(MapViewUtility.ZOOM_LEVEL_MIN);
     }

@@ -30,9 +30,11 @@ import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.hills.DemFolder;
 import org.mapsforge.map.layer.hills.DemFolderFS;
-import org.mapsforge.map.layer.hills.HiResStandardClasyHillShading;
+import org.mapsforge.map.layer.hills.HiResClasyHillShading;
 import org.mapsforge.map.layer.hills.HillsRenderConfig;
 import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
+import org.mapsforge.map.layer.hills.ShadingAlgorithm;
+import org.mapsforge.map.layer.hills.StandardClasyHillShading;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.layer.tilestore.TileStoreLayer;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
@@ -218,9 +220,8 @@ public class MGMapLayerFactory {
                     HillsRenderConfig hillsConfig = null;
                     if (activity.getPrefCache().get(R.string.preferences_hill_shading_key, false).getValue()){
                         DemFolder hgtFolder = new DemFolderFS(persistenceManager.getHgtDir());
-//                        MemoryCachingHgtReaderTileSource hillTileSource = new MemoryCachingHgtReaderTileSource(hgtFolder, new StandardClasyHillShading(), AndroidGraphicFactory.INSTANCE);
-                        MemoryCachingHgtReaderTileSource hillTileSource = new MemoryCachingHgtReaderTileSource(hgtFolder, new HiResStandardClasyHillShading(), AndroidGraphicFactory.INSTANCE);
-                        hillTileSource.setEnableInterpolationOverlap(true);
+                        ShadingAlgorithm shadingAlgorithm = (activity.getPrefCache().get(R.string.preferences_hill_shading_hiRes_key, false).getValue())?new HiResClasyHillShading():new StandardClasyHillShading();
+                        MemoryCachingHgtReaderTileSource hillTileSource = new MemoryCachingHgtReaderTileSource(hgtFolder, shadingAlgorithm, AndroidGraphicFactory.INSTANCE);
                         hillsConfig = new HillsRenderConfig(hillTileSource);
                         // call after setting/changing parameters, walks filesystem for DEM metadata
                         hillsConfig.indexOnThread();
