@@ -88,7 +88,10 @@ public class FSBB extends FeatureService {
         prefAutoDlHgt.addObserver((e) -> {
             if (!prefAutoDlHgt.getValue()) prefAutoDlHgtAsked.setValue("");
         });
-        prefLayerConfig.addObserver(evt -> tsAndHgtLayerEntries = identifyTsAndHgt());
+        prefLayerConfig.addObserver(evt -> {
+            tsAndHgtLayerEntries = identifyTsAndHgt();
+            checkHgtAvailability();
+        });
     }
 
     private WriteablePointModel p1 = null;
