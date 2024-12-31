@@ -30,6 +30,7 @@ import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.R;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 
@@ -42,6 +43,7 @@ public class LabeledSlider extends LinearLayout {
     Pref<Boolean> prefSliderVisibility = null;
     private final TextView label;
     private final SeekBar seekBar;
+    private final Observer prefSliderObserver;
 
     public LabeledSlider(Context context) {
         this(context, null);
@@ -56,37 +58,42 @@ public class LabeledSlider extends LinearLayout {
 
         label = this.createSeekBarLabel(this);
         seekBar = this.createSeekBar(this);
+        prefSliderObserver = evt -> seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100));
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public LabeledSlider initPrefData(Pref<Boolean> prefSliderVisibility, Pref<Float> prefSlider, Integer color, String text){
-        label.setText(text);
+        mgLog.d("prefSlider="+prefSlider+" text="+text);
         this.prefSliderVisibility = prefSliderVisibility;
         this.prefSlider = prefSlider;
-        this.prefSlider.addObserver((e) -> seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100)));
-        prefSlider.onChange();
-        seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) { }
+        if (prefSlider != null){
+            label.setText(text);
+            this.prefSlider.deleteObserver(prefSliderObserver);// remove, if exists
+            this.prefSlider.addObserver(prefSliderObserver); // add anyway
+            prefSlider.onChange();
+            seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) { }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) { }
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) { }
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                prefSlider.setValue( progress/100.0f );
-                mgLog.d(" progress="+progress);
-            }
-        });
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    prefSlider.setValue( progress/100.0f );
+                    mgLog.d(" progress="+progress);
+                }
+            });
 
-        if (color != null){
-            GradientDrawable sd = (GradientDrawable) ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.shape3, getContext().getTheme());
-            if (sd != null){
-                sd.setTint(color);
-                sd.setBounds(0,0,convertDp(25),convertDp(10));
-                label.setCompoundDrawables(sd,null,null,null);
-                int drawablePadding = convertDp(3.0f);
-                label.setCompoundDrawablePadding(drawablePadding);
+            if (color != null){
+                GradientDrawable sd = (GradientDrawable) ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.shape3, getContext().getTheme());
+                if (sd != null){
+                    sd.setTint(color);
+                    sd.setBounds(0,0,convertDp(25),convertDp(10));
+                    label.setCompoundDrawables(sd,null,null,null);
+                    int drawablePadding = convertDp(3.0f);
+                    label.setCompoundDrawablePadding(drawablePadding);
+                }
             }
         }
         return this;
@@ -121,13 +128,17 @@ public class LabeledSlider extends LinearLayout {
         return prefSliderVisibility;
     }
 
+    public Pref<Float> getPrefSlider() {
+        return prefSlider;
+    }
+
     @NonNull
     @Override
     public String toString() {
         return "LabeledSlider{" +
-                "label=" + label.getText() +
-                " visibility="+prefSliderVisibility.getValue()+
-                " alpha="+prefSlider.getValue()+
+                "label=" + ((label==null)?"":label.getText()) +
+                " visibility="+((prefSliderVisibility==null)?"":prefSliderVisibility.getValue())+
+                " alpha="+((prefSlider==null)?"":prefSlider.getValue())+
                 '}';
     }
 

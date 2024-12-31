@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.map.datastore.MapDataStore;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.util.MapViewUtility;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.settings.SearchProviderListPreference;
-import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.FullscreenUtil;
@@ -293,7 +293,15 @@ public class FSSearch extends FeatureService {
         setSearchResult(new SearchPos(pmSearchResult));
     }
     public void setSearchResult(SearchPos spSearchResult) {
-        if (activity.getMapDataStoreUtil().getMapDataStore(new BBox().extend(spSearchResult)) == null){
+        boolean outside = true;
+        LatLong latLongSearchResult = spSearchResult.getLatLong();
+        for (MapDataStore mds : getActivity().getMapLayerFactory().getMapDataStoreMap().keySet()) {
+            if (mds.boundingBox().contains(latLongSearchResult)){
+                outside = false;
+                break;
+            }
+        }
+        if (outside){
             mgLog.w("outside of map: "+spSearchResult);
             DialogView dialogView = activity.findViewById(R.id.dialog_parent);
             dialogView.lock(() -> dialogView

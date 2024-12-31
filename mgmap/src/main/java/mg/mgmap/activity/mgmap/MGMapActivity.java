@@ -126,7 +126,7 @@ import java.util.Set;
  * The main activity of the MgMapViewer. It is based on the mapsforge MapView and provides track logging
  * and modification functionality.
  */
-public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCallback {
+public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCallback,SharedPreferences.OnSharedPreferenceChangeListener{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
@@ -153,6 +153,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
     private final PropertyChangeListener prefGpsObserver = (e) -> triggerTrackLoggerService();
     private Pref<Boolean> prefTracksVisible;
+    private List<String> recreatePreferences;
 
     public MGMapApplication getMGMapApplication(){
         return application;
@@ -169,9 +170,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
     public PrefCache getPrefCache(){
         return prefCache;
-    }
-    public MapDataStoreUtil getMapDataStoreUtil() {
-        return mapDataStoreUtil;
     }
     public GGraphTileFactory getGGraphTileFactory() {
         return gGraphTileFactory;
@@ -194,19 +192,34 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         }
         setContentView(R.layout.mgmapactivity);
 
+        recreatePreferences = Arrays.asList( // in fact this is not anymore an activity recreate - its rather an internal map recreate
+                getResources().getString(R.string.MGMapActivity_trigger_recreate),
+                getResources().getString(R.string.FSGrad_pref_WayDetails_key),
+                getResources().getString(R.string.Layers_pref_chooseMap1_key),
+                getResources().getString(R.string.Layers_pref_chooseMap2_key),
+                getResources().getString(R.string.Layers_pref_chooseMap3_key),
+                getResources().getString(R.string.Layers_pref_chooseMap4_key),
+                getResources().getString(R.string.Layers_pref_chooseMap5_key),
+                getResources().getString(R.string.preference_theme_changed),
+                getResources().getString(R.string.preferences_hill_shading_key),
+                getResources().getString(R.string.preference_choose_theme_key),
+                getResources().getString(R.string.preferences_scale_key),
+                getResources().getString(R.string.preferences_scalebar_key),
+                getResources().getString(R.string.preferences_language_key));
+
         initTheme();
         initMapsforgeNumRenderThreads();
         PointModelUtil.init(getResources().getInteger(R.integer.CLOSE_THRESHOLD));
 
         mapLayerFactory = new MGMapLayerFactory(this);
-        mapDataStoreUtil = new MapDataStoreUtil();
+        mapDataStoreUtil = new MapDataStoreUtil(mapLayerFactory);
 
         prefCache = new PrefCache(this);
 
         initMapView();
         createLayers();
 
-        initSharedPreferencesDone(); // after MapDatastoreUtil creation
+        this.sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         mapViewUtility = new MapViewUtility(this, mapView);
         initializePosition();
 
@@ -326,6 +339,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     @Override
     protected void onDestroy() {
         mgLog.w("Destroy started");
+        this.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         for (int i = featureServices.size() - 1; i >= 0; i--) { // reverse order
             FeatureService microService = featureServices.get(i);
             try {
@@ -342,9 +356,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         application.prefGps.deleteObserver(prefGpsObserver);
 
+        mapLayerFactory.onDestroy();
         mapView.getLayerManager().getLayers().clear(); // cleanup TileRendererLayer (incl DatabaseRenderer etc)
         mapView.destroyAll();
-        mapDataStoreUtil.onDestroy();
         gGraphTileFactory.onDestroy();
         prefCache.cleanup();
 // Comment out the cleanup as it may cause native crashes due to longer running jobs from DatabaseRenderer in combination with recreate activity tasks.
@@ -779,21 +793,25 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         return mapViewUtility;
     }
 
+    public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
+        // Some preference changes take effect due to mapLayerFactory.recreateMapLayers - those need to be listed in recreatePreferences
+        if (recreatePreferences.contains(key) && (!preferences.getBoolean(getResources().getString(R.string.MGMapApplication_pref_Restart), true))){
+            FeatureService.getTimer().postDelayed(() -> {
+                boolean recreateAllMapsforge = !key.startsWith(MGMapLayerFactory.LAYER_PREF_KEY_PREFIX);
+                mgLog.i("recreate: call mapLayerFactory.recreateMapLayers("+recreateAllMapsforge+") due to key="+key+" value="+ preferences.getAll().get(key));
+                mapLayerFactory.recreateMapLayers(recreateAllMapsforge);
 
-    /** Depending on the preferences for the five map layers the corresponding layer object are created. */
+                if ((key.startsWith(MGMapLayerFactory.LAYER_PREF_KEY_PREFIX)) && ("MAPGRID: hgt".equals(preferences.getAll().get(key)))){
+                    mapView.getModel().mapViewPosition.setZoomLevel((byte)7);
+                }
+            }, 10);
+        }
+    }
+
     protected void createLayers() {
         Layers layers = mapView.getLayerManager().getLayers();
-        for (String prefKey : mapLayerFactory.getMapLayerKeys()){
-            String key = sharedPreferences.getString(prefKey, "");
-            mgLog.d("prefKey="+prefKey+" key="+key);
-            Layer layer = mapLayerFactory.getMapLayer(key);
-            if (layer != null){
-                if (!layers.contains(layer)){
-                    layers.add(layer);
-
-                }
-            }
-        }
+        // Depending on the preferences for the five map layers the corresponding layer object are created.
+        mapLayerFactory.recreateMapLayers(true);
         // create additional control layer to be handle tap events. */
         layers.add(new MVLayer() {
             @Override

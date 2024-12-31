@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.model;
 
+import org.mapsforge.core.model.LatLong;
+
 /** A model for a single point */
 public interface PointModel {
 
@@ -38,4 +40,6 @@ public interface PointModel {
     long getTimestamp();
 
     long getLaLo();
+
+    LatLong getLatLong();
 }

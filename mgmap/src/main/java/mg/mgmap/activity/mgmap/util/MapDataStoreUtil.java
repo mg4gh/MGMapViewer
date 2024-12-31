@@ -16,66 +16,30 @@ package mg.mgmap.activity.mgmap.util;
 
 import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
-import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.datastore.MapReadResult;
 import org.mapsforge.map.datastore.Way;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-import mg.mgmap.activity.mgmap.MultiMapDataStore;
-import mg.mgmap.generic.model.BBox;
+import mg.mgmap.activity.mgmap.MGMapLayerFactory;
 import mg.mgmap.generic.util.WayProvider;
 
 public class MapDataStoreUtil implements WayProvider {
 
-    private boolean active;
-    private TreeMap<MapDataStore, String> mapDataStoreMap;
-    private final MultiMapDataStore mmds = new MultiMapDataStore(MultiMapDataStore.DataPolicy.FAST_DETAILS);
+    MGMapLayerFactory mapLayerFactory;
 
-    public MapDataStoreUtil() {
-        mapDataStoreMap = new TreeMap<>((mds1, mds2) -> {
-            int res = -Integer.compare(mds1.getPriority(), mds2.getPriority());
-            if (res == 0) {
-                res = Long.compare(BBox.fromBoundingBox(mds1.boundingBox()).fingerprint(), BBox.fromBoundingBox(mds2.boundingBox()).fingerprint());
-            }
-            return res;
-        });
-        active = true;
-    }
-
-    public void register(String id, MapDataStore mds) {
-        mapDataStoreMap.put(mds, id);
-        mmds.addMapDataStore(mds, false, false);
-    }
-
-    public Map<MapDataStore, String> getMapDataStoreMap() {
-        return mapDataStoreMap;
-    }
-
-    public void onDestroy() {
-        mapDataStoreMap = null;
-        mmds.close();
-        active = false;
-    }
-
-    public MapDataStore getMapDataStore(BBox bBox) {
-        for (MapDataStore mds : mapDataStoreMap.keySet()) {
-            if (BBox.fromBoundingBox(mds.boundingBox()).contains(bBox)) return mds;
-        }
-        return null;
+    public MapDataStoreUtil(MGMapLayerFactory mapLayerFactory) {
+        this.mapLayerFactory = mapLayerFactory;
     }
 
     public List<Way> getWays(Tile tile) {
         List<Way> wayList = new ArrayList<>();
-        if (active) {
-            MapReadResult mapReadResult = mmds.readMapData(tile);
+            MapReadResult mapReadResult = mapLayerFactory.readMapData(tile);
             if (mapReadResult != null) {
                 wayList = mapReadResult.ways;
             }
-        }
+
         return wayList;
     }
 

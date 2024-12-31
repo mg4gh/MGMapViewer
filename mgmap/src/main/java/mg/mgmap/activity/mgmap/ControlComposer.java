@@ -36,6 +36,7 @@ import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
+import mg.mgmap.activity.mgmap.view.LabeledSlider;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.Pref;
@@ -81,26 +82,49 @@ public class ControlComposer {
         parent.setVisibility(View.INVISIBLE);
     }
 
+    private int getSliderId(int idx){
+        return switch (idx){
+            case 0 -> R.id.slider_map1;
+            case 1 -> R.id.slider_map2;
+            case 2 -> R.id.slider_map3;
+            case 3 -> R.id.slider_map4;
+            case 4 -> R.id.slider_map5;
+            default -> throw new RuntimeException("Map idx out of bound [0..4]: "+idx);
+        };
+    }
+
     void composeAlphaSlider(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.bars);
-        for (String prefKey : activity.getMapLayerFactory().getMapLayerKeys()) {
-            final String key = activity.sharedPreferences.getString(prefKey, "");
-            if (activity.getMapLayerFactory().hasAlpha(key)){
-                Pref<Boolean> visibility = new Pref<>("alpha_" + key+"_visibility", true, null);
-                @SuppressLint("DiscouragedApi") int id = activity.getResources().getIdentifier(prefKey.replace("SelectMap", "slider_map"), "id", activity.getPackageName());
-                coView.createLabeledSlider(parent).initPrefData(visibility, activity.getPrefCache().get("alpha_" + key, 1.0f), null, key).setId(id);
-            }
+        for (int idx=0; idx<MGMapLayerFactory.NUM_MAP_LAYERS; idx++){
+            coView.createLabeledSlider(parent).setId(getSliderId(idx));
         }
         parent.setVisibility(View.INVISIBLE);
+    }
+    void configureAlphaSlider(MGMapActivity activity, ControlView coView) {
+        MGMapLayerFactory mapLayerFactory = activity.getMapLayerFactory();
+        ArrayList<LabeledSlider> sliders = coView.labeledSliders;
+        if (sliders != null){
+            for (int idx=0; idx<MGMapLayerFactory.NUM_MAP_LAYERS; idx++) {
+                LabeledSlider labeledSlider = sliders.get(idx);
+                final String key = mapLayerFactory.getMapLayerKey(idx);
+                if (mapLayerFactory.hasAlpha(idx)){
+                    labeledSlider.initPrefData(null, activity.getPrefCache().get("alpha_" + key, 1.0f), null, key);
+                } else {
+                    labeledSlider.initPrefData(null, null, null, null);
+                }
+            }
+            coView.reworkLabeledSliderVisibility();
+        }
     }
 
     void composeAlphaSlider2(MGMapActivity activity, ControlView coView){
         ViewGroup parent = activity.findViewById(R.id.bars2);
-        activity.getFS(FSRecordingTrackLog.class).initLabeledSlider(coView.createLabeledSlider(parent), "rtl").setId(R.id.slider_rtl);
-        activity.getFS(FSMarker.class).initLabeledSlider(coView.createLabeledSlider(parent), "mtl").setId(R.id.slider_mtl);
-        activity.getFS(FSRouting.class).initLabeledSlider(coView.createLabeledSlider(parent), "rotl").setId(R.id.slider_rotl);
-        activity.getFS(FSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider(parent), "stl").setId(R.id.slider_stl);
-        activity.getFS(FSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider(parent), "atl").setId(R.id.slider_atl);
+        activity.getFS(FSRecordingTrackLog.class).initLabeledSlider(coView.createLabeledSlider2(parent), "rtl").setId(R.id.slider_rtl);
+        activity.getFS(FSMarker.class).initLabeledSlider(coView.createLabeledSlider2(parent), "mtl").setId(R.id.slider_mtl);
+        activity.getFS(FSRouting.class).initLabeledSlider(coView.createLabeledSlider2(parent), "rotl").setId(R.id.slider_rotl);
+        activity.getFS(FSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider2(parent), "stl").setId(R.id.slider_stl);
+        activity.getFS(FSAvailableTrackLogs.class).initLabeledSlider(coView.createLabeledSlider2(parent), "atl").setId(R.id.slider_atl);
+        coView.registerSliderVisibilityObserver2();
         parent.setVisibility(View.INVISIBLE);
     }
 

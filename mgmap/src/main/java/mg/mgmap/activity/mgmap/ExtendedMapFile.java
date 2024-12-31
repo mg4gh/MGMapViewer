@@ -22,10 +22,11 @@ import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteableMultiPointModel;
 import mg.mgmap.generic.util.basic.MGLog;
 
-public class MapFileWithBorder extends MapFile {
+public class ExtendedMapFile extends MapFile {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
+    private final String id;
     private final MultiPointModel mpmBorder;
     private record Relation(long lalo1, long lalo2){
         long other(long lalo){
@@ -37,8 +38,9 @@ public class MapFileWithBorder extends MapFile {
     private static final int TILE_SIZE = 256;
 
 
-    public MapFileWithBorder(File file, String language){
+    public ExtendedMapFile(String id, File file, String language){
         super(file, language);
+        this.id = id;
 
         mgLog.d("init MGMapFile with "+file.getName());
         long mapSize = MercatorProjection.getMapSize(ZOOM_LEVEL, TILE_SIZE);
@@ -128,6 +130,10 @@ public class MapFileWithBorder extends MapFile {
         this.mpmBorder = mpm;
         setPriority(mpmBorder==null?0: mpmBorder.size());
         mgLog.d("init MGMapFile with "+file.getName()+" finished. mpmBorder="+(mpmBorder!=null)+" priority="+getPriority());
+    }
+
+    public String getId(){
+        return id;
     }
 
     @Override
