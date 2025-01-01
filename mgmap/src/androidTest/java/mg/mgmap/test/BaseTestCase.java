@@ -10,7 +10,6 @@ import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -172,7 +171,7 @@ public class BaseTestCase {
         animateSwipeLatLong(new PointModelImpl(latitudeStart,longitudeStart),new PointModelImpl(latitudeEnd,longitudeEnd));
     }
     protected void animateSwipeLatLong(PointModel pmStart, PointModel pmEnd){
-        // wait if a fing action is in progress
+        // wait if a fling action is in progress
         PointModel pmCenterOld;
         PointModel pmCenter = activitySupervision.getActivity(MGMapActivity.class).getMapViewUtility().getCenter();
         do {
