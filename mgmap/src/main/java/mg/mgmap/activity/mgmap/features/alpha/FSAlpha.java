@@ -72,6 +72,7 @@ public class FSAlpha extends FeatureService {
         super.onResume();
         prefAlphaLayers.setValue(false);
         prefAlphaTracks.setValue(false);
+        refreshObserver.onChange();
     }
 
     @Override
@@ -98,5 +99,6 @@ public class FSAlpha extends FeatureService {
             getActivity().findViewById(R.id.bars2).setVisibility(visibility2);
         }
         getControlView().reworkLabeledSliderVisibility();
+        getControlView().reworkLabeledSliderVisibility2();
     }
 }

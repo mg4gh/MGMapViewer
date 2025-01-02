@@ -222,7 +222,7 @@ public class BBTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity1 = waitForActivity(MGMapActivity.class);
         SystemClock.sleep(1000);
-        addRegex(".*recreate MGMapActivity due to key=SelectMap4 value=MAPGRID: hgt*");
+        addRegex(".*recreate.*due to key=SelectMap4 value=MAPGRID: hgt*");
         mgMapActivity1.getPrefCache().get(R.string.Layers_pref_chooseMap4_key, "").setValue("MAPGRID: hgt");
         SystemClock.sleep(5000);
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
@@ -253,7 +253,7 @@ public class BBTest extends BaseTestCase {
         mgLog.i("started");
         MGMapActivity mgMapActivity1 = waitForActivity(MGMapActivity.class);
 
-        addRegex(".*recreate MGMapActivity due to key=SelectMap3 value=MAPGRID: hgt*");
+        addRegex(".*recreate.*due to key=SelectMap3 value=MAPGRID: hgt*");
         mgMapActivity1.getPrefCache().get(R.string.Layers_pref_chooseMap3_key, "").setValue("MAPGRID: hgt");
         SystemClock.sleep(1000);
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);

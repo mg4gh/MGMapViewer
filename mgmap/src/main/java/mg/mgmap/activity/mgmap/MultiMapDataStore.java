@@ -128,9 +128,9 @@ public class MultiMapDataStore extends MapDataStore {
             case FAST_DETAILS, RETURN_ALL, DEDUPLICATE -> {
                 long result = 0;
                 for (MapDataStore mdb : mapDatabases) {
-                    if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof MapFileWithBorder mapFileWithBorder){
-                        if (mapFileWithBorder.hasInnerBorder() && mapFileWithBorder.isInInnerBorder(tile)){
-                            result = mapFileWithBorder.getDataTimestamp(tile);
+                    if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
+                        if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(tile)){
+                            result = extendedMapFile.getDataTimestamp(tile);
                             break;
                         }
                     }
@@ -164,9 +164,9 @@ public class MultiMapDataStore extends MapDataStore {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
-            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof MapFileWithBorder mapFileWithBorder){
-                if (mapFileWithBorder.hasInnerBorder() && mapFileWithBorder.isInInnerBorder(tile)){
-                    mapReadResult = mapFileWithBorder.readLabels(tile);
+            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
+                if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(tile)){
+                    mapReadResult = extendedMapFile.readLabels(tile);
                     break;
                 }
             }
@@ -214,9 +214,9 @@ public class MultiMapDataStore extends MapDataStore {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
-            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof MapFileWithBorder mapFileWithBorder){
-                if (mapFileWithBorder.hasInnerBorder() && mapFileWithBorder.isInInnerBorder(upperLeft, lowerRight)){
-                    mapReadResult = mapFileWithBorder.readLabels(upperLeft, lowerRight);
+            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
+                if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(upperLeft, lowerRight)){
+                    mapReadResult = extendedMapFile.readLabels(upperLeft, lowerRight);
                     break;
                 }
             }
@@ -266,9 +266,9 @@ public class MultiMapDataStore extends MapDataStore {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
-            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof MapFileWithBorder mapFileWithBorder){
-                if (mapFileWithBorder.hasInnerBorder() && mapFileWithBorder.isInInnerBorder(tile)){
-                    mapReadResult = mapFileWithBorder.readMapData(tile);
+            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
+                if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(tile)){
+                    mapReadResult = extendedMapFile.readMapData(tile);
                     break;
                 }
             }
@@ -315,9 +315,9 @@ public class MultiMapDataStore extends MapDataStore {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
-            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof MapFileWithBorder mapFileWithBorder){
-                if (mapFileWithBorder.hasInnerBorder() && mapFileWithBorder.isInInnerBorder(upperLeft, lowerRight)){
-                    mapReadResult = mapFileWithBorder.readMapData(upperLeft, lowerRight);
+            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
+                if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(upperLeft, lowerRight)){
+                    mapReadResult = extendedMapFile.readMapData(upperLeft, lowerRight);
                     break;
                 }
             }
@@ -368,9 +368,9 @@ public class MultiMapDataStore extends MapDataStore {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
-            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof MapFileWithBorder mapFileWithBorder){
-                if (mapFileWithBorder.hasInnerBorder() && mapFileWithBorder.isInInnerBorder(tile)){
-                    mapReadResult = mapFileWithBorder.readMapData(tile);
+            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
+                if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(tile)){
+                    mapReadResult = extendedMapFile.readMapData(tile);
                     break;
                 }
             }
@@ -418,9 +418,9 @@ public class MultiMapDataStore extends MapDataStore {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
-            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof MapFileWithBorder mapFileWithBorder){
-                if (mapFileWithBorder.hasInnerBorder() && mapFileWithBorder.isInInnerBorder(upperLeft, lowerRight)){
-                    mapReadResult = mapFileWithBorder.readPoiData(upperLeft, lowerRight);
+            if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
+                if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(upperLeft, lowerRight)){
+                    mapReadResult = extendedMapFile.readPoiData(upperLeft, lowerRight);
                     break;
                 }
             }
@@ -514,4 +514,7 @@ public class MultiMapDataStore extends MapDataStore {
         return false;
     }
 
+    public List<MapDataStore> getMapDatabases() {
+        return mapDatabases;
+    }
 }

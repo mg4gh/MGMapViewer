@@ -323,6 +323,9 @@ public class FeatureService {
     protected <T> Pref<T> getPref(int id, T defaultValue){
         return activity.getPrefCache().get(id,defaultValue);
     }
+    protected <T> Pref<T> getPref(String key, T defaultValue){
+        return activity.getPrefCache().get(key,defaultValue);
+    }
 
     public Drawable getDrawable(int drawableId){
         return ResourcesCompat.getDrawable(getResources(), drawableId, getActivity().getTheme());

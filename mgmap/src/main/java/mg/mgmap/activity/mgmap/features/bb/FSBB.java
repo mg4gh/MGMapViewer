@@ -32,6 +32,7 @@ import java.util.TreeMap;
 
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.mgmap.MGMapActivity;
+import mg.mgmap.activity.mgmap.MGMapLayerFactory;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
 import mg.mgmap.activity.mgmap.FeatureService;
@@ -61,6 +62,7 @@ public class FSBB extends FeatureService {
     private final Pref<String> prefAutoDlHgtAsked = getPref(R.string.FSBB_pref_autoDlHgt_AskedList, "");
     private final Pref<Integer> prefBBActionLayer = getPref(R.string.FSBB_pref_bb_action_layer, 0);
     private final Pref<Boolean> prefBBLoadTransparentLayers = getPref(R.string.FSBB_pref_load_transparent_layer, false);
+    private final Pref<String> prefLayerConfig = getPref(MGMapLayerFactory.PREF_LAYER_CONFIG, "");
 
     private final Pref<Boolean> triggerLoadFromBB = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> prefLoadFromBBEnabled = new Pref<>(Boolean.FALSE);
@@ -69,7 +71,7 @@ public class FSBB extends FeatureService {
     private final Pref<Boolean> triggerTSLoadAll = new Pref<>(Boolean.FALSE);
     private final Pref<Boolean> triggerTSDeleteAll = new Pref<>(Boolean.FALSE);
 
-    private final TreeMap<String, Layer> tsAndHgtLayerEntries = identifyTsAndHgt();
+    private TreeMap<String, Layer> tsAndHgtLayerEntries = identifyTsAndHgt();
     private TreeMap<String, Layer> visibleTsAndHgtLayerEntries;
     private boolean initSquare = false;
 
@@ -85,6 +87,10 @@ public class FSBB extends FeatureService {
         prefBboxOn.addObserver(refreshObserver);
         prefAutoDlHgt.addObserver((e) -> {
             if (!prefAutoDlHgt.getValue()) prefAutoDlHgtAsked.setValue("");
+        });
+        prefLayerConfig.addObserver(evt -> {
+            tsAndHgtLayerEntries = identifyTsAndHgt();
+            checkHgtAvailability();
         });
     }
 
@@ -325,14 +331,17 @@ public class FSBB extends FeatureService {
     }
 
     private TreeMap<String, Layer> identifyTsAndHgt(){
+        MGMapLayerFactory mapLayerFactory = getMapLayerFactory();
         TreeMap<String, Layer> layerEntries = new TreeMap<>();
-        for (Map.Entry<String, Layer> entry : getMapLayerFactory().getMapLayers().entrySet()){
-            if (entry.getValue() instanceof MGTileStoreLayer mgTileStoreLayer) {
+        for (int idx=0; idx< MGMapLayerFactory.NUM_MAP_LAYERS; idx++){
+            String key = mapLayerFactory.getMapLayerKey(idx);
+            Layer layer = mapLayerFactory.getMapLayer(idx);
+            if (layer instanceof MGTileStoreLayer mgTileStoreLayer) {
                 if (mgTileStoreLayer.getMGTileStore().hasConfig()){
-                    layerEntries.put(entry.getKey(), entry.getValue());
+                    layerEntries.put(key, layer);
                 }
-            } else if (entry.getValue() instanceof HgtGridView) {
-                layerEntries.put(entry.getKey(), entry.getValue());
+            } else if (layer instanceof HgtGridView) {
+                layerEntries.put(key, layer);
             }
         }
         return layerEntries;
@@ -351,16 +360,13 @@ public class FSBB extends FeatureService {
 
     void checkHgtAvailability(){
         if (prefAutoDlHgt.getValue()){
-            for (Map.Entry<MapDataStore, String> entry : getActivity().getMapDataStoreUtil().getMapDataStoreMap().entrySet()){
+            for (Map.Entry<MapDataStore, String> entry : getActivity().getMapLayerFactory().getMapDataStoreMap().entrySet()){
                 String id = "\""+entry.getValue()+"\"";
                 if (!prefAutoDlHgtAsked.getValue().contains(id)){
                     prefAutoDlHgtAsked.setValue(prefAutoDlHgtAsked.getValue()+" "+id);
                     BBox bBox = BBox.fromBoundingBox(entry.getKey().boundingBox());
                     mgLog.d("layer="+id+" bbox="+bBox);
-                    if ( (bBox.maxLatitude - bBox.minLatitude < 100) && (bBox.maxLongitude - bBox.minLongitude < 100)){
-                        loadHgt(bBox, false, id, null);
-                        break;
-                    }
+                    loadHgt(bBox, false, id, null);
                 }
             }
         }

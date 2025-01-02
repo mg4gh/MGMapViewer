@@ -10,7 +10,6 @@ import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -60,6 +59,7 @@ public class BaseTestCase {
     private ArrayList<String> regexs = null;
     private ArrayList<String> matches = null;
     protected Pref<Boolean> prefMenuInflated;
+    protected Pref<Boolean> prefMetaLoading;
 
     protected MGMapApplication mgMapApplication;
     protected AssetManager androidTestAssets;
@@ -88,6 +88,7 @@ public class BaseTestCase {
         matches = new ArrayList<>();
         lm.startMatch(regexs, matches);
         prefMenuInflated = mgMapApplication.getPrefCache().get(R.string.FSControl_pref_menu_inflated, false);
+        prefMetaLoading = mgMapApplication.getPrefCache().get(R.string.MGMapApplication_pref_MetaData_loading, true);
         mgLog.i(this.getClass().getName() + "." + name.getMethodName() + " start");
     }
 
@@ -144,6 +145,7 @@ public class BaseTestCase {
     }
 
     protected  <T extends Activity> T waitForActivity(Class<T> clazz) {
+        mgLog.d("waitForActivity clazz="+clazz);
         T activity = null;
         boolean found = false;
         while (!found){
@@ -157,6 +159,7 @@ public class BaseTestCase {
         currentActivity = activity;
         TestView testView = waitForView(TestView.class, mg.mgmap.R.id.testview);
         setCursorPos(new PointOfView(currentPos, testView));
+        mgLog.d("waitForActivity clazz="+clazz+" finished "+activity);
         return activity;
     }
 
@@ -172,7 +175,7 @@ public class BaseTestCase {
         animateSwipeLatLong(new PointModelImpl(latitudeStart,longitudeStart),new PointModelImpl(latitudeEnd,longitudeEnd));
     }
     protected void animateSwipeLatLong(PointModel pmStart, PointModel pmEnd){
-        // wait if a fing action is in progress
+        // wait if a fling action is in progress
         PointModel pmCenterOld;
         PointModel pmCenter = activitySupervision.getActivity(MGMapActivity.class).getMapViewUtility().getCenter();
         do {
@@ -204,14 +207,17 @@ public class BaseTestCase {
     }
 
     protected PointOfView animateToViewAndClick(int viewId){
-        mgLog.i("to "+currentActivity.getResources().getResourceName(viewId));
+        mgLog.d("animateToViewAndClick to "+currentActivity.getResources().getResourceName(viewId));
         PointOfView pov = animateTo(getClickPos(viewId),TIMEOUT_ANIMATION);
         animateClick(pov);
+        mgLog.d("animateToViewAndClick finished to "+currentActivity.getResources().getResourceName(viewId));
         return pov;
     }
     protected PointOfView animateToViewAndClick(View view){
+        mgLog.d("animateToViewAndClick to "+view);
         PointOfView pov = animateTo(getClickPos(view),TIMEOUT_ANIMATION);
         animateClick(pov);
+        mgLog.d("animateToViewAndClick finished to "+view);
         return pov;
     }
 

@@ -17,6 +17,7 @@ package mg.mgmap.activity.mgmap.features.search.provider;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 
+import org.mapsforge.map.datastore.MapDataStore;
 import org.sqlite.database.sqlite.SQLiteDatabase;
 
 import java.io.File;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeSet;
 
+import mg.mgmap.activity.mgmap.ExtendedMapFile;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.search.SearchView;
@@ -83,17 +85,21 @@ public class POI extends SearchProvider {
         File mapsDir = persistenceManager.getMapsDir();
         File mapsforgeDir = new File (mapsDir, "mapsforge");
         poiFile = null;
-        for (String prefKey : activity.getMapLayerFactory().getMapLayerKeys()){
-            String key =  preferences.getString(prefKey, "");
-            if (key.startsWith("MAPSFORGE:")){
-                File poi = new File(mapsforgeDir, key.replaceAll("MAPSFORGE: ", "").replaceAll("map$","poi"));
-                if (poi.exists()){
-                    poiFile = poi;
-                    break;
+
+        ArrayList<MapDataStore> mapDataStores = new ArrayList<>( activity.getMapLayerFactory().getMapDataStoreMap().keySet() );
+        mapDataStores.sort((a,b) -> -Integer.compare(a.getPriority(), b.getPriority()));
+        for (MapDataStore mds : mapDataStores){
+            if (mds instanceof ExtendedMapFile extendedMapFile){
+                String key = extendedMapFile.getId();
+                if (key.startsWith("MAPSFORGE:")){
+                    File poi = new File(mapsforgeDir, key.replaceAll("MAPSFORGE: ", "").replaceAll("map$","poi"));
+                    if (poi.exists()){
+                        poiFile = poi;
+                        break;
+                    }
                 }
             }
         }
-
 
         new Thread(() -> {
             SQLiteDatabase db = null;

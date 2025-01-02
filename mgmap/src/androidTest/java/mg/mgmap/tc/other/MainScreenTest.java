@@ -60,6 +60,7 @@ public class MainScreenTest extends BaseTestCase {
         PointModelImpl p1_3 = new PointModelImpl(54.427888,13.43528);
         PointModelImpl p2_3 = new PointModelImpl(54.408888,13.45528);
         FSBB fsbb = mgMapActivity.getFS(FSBB.class);
+        while ((fsbb.getP1() == null) || (fsbb.getP2() == null)) SystemClock.sleep(50);
         animateSwipeLatLong(fsbb.getP1(), p1_3);
         animateSwipeLatLong(fsbb.getP2(), p2_3);
 

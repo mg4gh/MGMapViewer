@@ -151,7 +151,5 @@
     <string name="preferences_hill_shading_desc">Use hill shading. Be aware that this might slow down the map visualisation and that it consumes significant memory.</string>
 
     <string name="preferences_hill_shading_hiRes_key">hill_shading_hiRes_key</string>
-    <string name="preferences_hill_shading_hiRes_title">High resolution hill shading</string>
-    <string name="preferences_hill_shading_hiRes_desc">Use hill with high resolution shading. Be aware that this might slow down the map visualisation more and that it consumes even more memory.</string>
 
 </resources>

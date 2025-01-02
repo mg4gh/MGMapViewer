@@ -2,13 +2,13 @@
 <resources>
     <string name="preferences_mapsforge_title">Mapsforge Settings</string>
 
-    <string name="preferences_scale_key">scale</string>
+    <string name="preferences_scale_key">mapsforge_scale</string>
     <string name="preferences_scale">Display Scale</string>
     <string name="preferences_scale_desc">Adjust scale of the map display</string>
 
     <string name="preferences_scalebar">Scale bar</string>
     <string name="preferences_scalebar_desc">Set units system on the scale bar</string>
-    <string name="preferences_scalebar_key">scalebar</string>
+    <string name="preferences_scalebar_key">mapsforge_scalebar</string>
     <string name="preferences_scalebar_metric_key">metric</string>
     <string name="preferences_scalebar_imperial_key">imperial</string>
     <string name="preferences_scalebar_nautical_key">nautical</string>
@@ -16,7 +16,7 @@
     <string name="preferences_scalebar_none_key">none</string>
 
     <string name="preferences_language">Multilingual Map Language Selection</string>
-    <string name="preferences_language_key">language_selection</string>
+    <string name="preferences_language_key">mapsforge_language_selection</string>
     <string name="preferences_language_desc">Select language of multilingual map (multilingual map must be loaded)</string>
 
 

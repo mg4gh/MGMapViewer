@@ -77,8 +77,8 @@ public class ShowHideTest extends BaseTestCase {
         animateClick(pov);
         Assert.assertEquals(0.0f, mgMapActivity.getPrefCache().get("alpha_MAPSFORGE: ruegen.map",0f).getValue(), 0.01f);
         SystemClock.sleep(2000);
-        addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.2.");
-        addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.3.");
+        addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.2.?");
+        addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.3.?");
         addRegex(".*context=MGMapActivity key=alpha_MAPSFORGE: ruegen.map value=0.8.?");
         animateSwipeToPos(lsl.getThumbPos(20),lsl.getThumbPos(81));
         Assert.assertEquals(0.8f, mgMapActivity.getPrefCache().get("alpha_MAPSFORGE: ruegen.map",0f).getValue(), 0.01f);
@@ -154,6 +154,8 @@ public class ShowHideTest extends BaseTestCase {
         addRegex(".*onClick mi_statistic.*");
         animateMenu(R.id.menu_task, R.id.mi_statistic);
         waitForActivity(TrackStatisticActivity.class);
+        waitForPref(prefMetaLoading, false); // make sure that there is no interference with end of meta loading
+        SystemClock.sleep(100);
 
         animateToStatAndClick(".*20221029_122839.*");
         animateToStatAndClick(".*20221025_095831.*");
@@ -202,6 +204,8 @@ public class ShowHideTest extends BaseTestCase {
         addRegex(".*onClick mi_statistic.*");
         animateMenu(R.id.menu_task, R.id.mi_statistic);
         waitForActivity(TrackStatisticActivity.class);
+        waitForPref(prefMetaLoading, false); // make sure that there is no interference with end of meta loading
+        SystemClock.sleep(100);
 
         animateToStatAndClick(".*20221029_122839.*");
         animateToStatAndClick(".*20221025_095831.*");

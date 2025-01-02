@@ -43,8 +43,6 @@ import org.mapsforge.map.model.DisplayModel;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
@@ -175,9 +173,11 @@ public class ControlView extends RelativeLayout {
             controlComposer.composeRoutingProfileButtons(activity, this);
 
             controlComposer.composeAlphaSlider(activity,this);
-            controlComposer.composeAlphaSlider2(activity,this);
-            registerSliderObserver(); // do this after the init call, which set the visibility prefs
+            getActivity().getPrefCache().get(MGMapLayerFactory.PREF_LAYER_CONFIG, "").addObserver(evt -> controlComposer.configureAlphaSlider(activity,this));
+            controlComposer.configureAlphaSlider(activity,this);
             reworkLabeledSliderVisibility();
+            controlComposer.composeAlphaSlider2(activity,this);
+            reworkLabeledSliderVisibility2();
 
             controlComposer.composeStatusLine(activity, this);
             finalizeStatusLine();
@@ -464,50 +464,65 @@ public class ControlView extends RelativeLayout {
     // *************************************************************************************************
 
 
-    final HashMap<ViewGroup, ArrayList<LabeledSlider>> labeledSliderMap = new HashMap<>();
-    final Observer sliderVisibilityChangeObserver = (e) -> reworkLabeledSliderVisibility();
+    ArrayList<LabeledSlider> labeledSliders = new ArrayList<>(); // for map sliders
+    ArrayList<LabeledSlider> labeledSliders2 = new ArrayList<>(); // for track sliders
+
+    final Observer sliderVisibilityChangeObserver2 = (e) -> reworkLabeledSliderVisibility2();
 
     LabeledSlider createLabeledSlider(ViewGroup parent){
         LabeledSlider labeledSlider = new LabeledSlider(context);
         parent.addView(labeledSlider);
-
-        ArrayList<LabeledSlider> childList = labeledSliderMap.computeIfAbsent(parent, k -> new ArrayList<>());
-        childList.add(labeledSlider);
+        labeledSliders.add(labeledSlider);
+        return labeledSlider;
+    }
+    LabeledSlider createLabeledSlider2(ViewGroup parent){
+        LabeledSlider labeledSlider = new LabeledSlider(context);
+        parent.addView(labeledSlider);
+        labeledSliders2.add(labeledSlider);
         return labeledSlider;
     }
 
-    private void registerSliderObserver() {
-        for (ViewGroup parent : labeledSliderMap.keySet()) {
-            for (LabeledSlider slider : Objects.requireNonNull(labeledSliderMap.get(parent))) {
-                slider.getPrefSliderVisibility().addObserver(sliderVisibilityChangeObserver);
-            }
+    void registerSliderVisibilityObserver2() {
+        for (LabeledSlider slider : labeledSliders2) {
+            slider.getPrefSliderVisibility().addObserver(sliderVisibilityChangeObserver2);
         }
     }
     
 
     public void reworkLabeledSliderVisibility(){
-        for (ViewGroup parent : labeledSliderMap.keySet()){
-            if (parent.getVisibility() == VISIBLE){
-                ArrayList<LabeledSlider> children = labeledSliderMap.get(parent);
-                int idxInParent = 0;
-                if (children != null){
-                    for (LabeledSlider slider : children){
-                        if (slider.getPrefSliderVisibility().getValue()){  // should be visible
-                            if (slider.getParent() != parent){
-                                parent.addView(slider, idxInParent);
-                            }
-                            idxInParent++;
-                        } else {                                            // should be invisible
-                            if (slider.getParent() == parent){
-                                parent.removeView(slider);
-                            }
-                        }
-                    }
+        ViewGroup parent = findViewById(R.id.bars);
+        int idxInParent = 0;
+        for (LabeledSlider slider : labeledSliders){
+            if (slider.getPrefSlider() != null){  // should be visible
+                if (slider.getParent() != parent){
+                    parent.addView(slider, idxInParent);
+                }
+                idxInParent++;
+            } else {                                            // should be invisible
+                if (slider.getParent() == parent){
+                    parent.removeView(slider);
                 }
             }
         }
-
     }
+
+    public void reworkLabeledSliderVisibility2(){
+        ViewGroup parent = findViewById(R.id.bars2);
+        int idxInParent = 0;
+        for (LabeledSlider slider : labeledSliders2){
+            if (slider.getPrefSliderVisibility().getValue()){  // should be visible
+                if (slider.getParent() != parent){
+                    parent.addView(slider, idxInParent);
+                }
+                idxInParent++;
+            } else {                                            // should be invisible
+                if (slider.getParent() == parent){
+                    parent.removeView(slider);
+                }
+            }
+        }
+    }
+
 
     // *************************************************************************************************
     // ********* Status line related stuff                                                    **********
@@ -553,6 +568,10 @@ public class ControlView extends RelativeLayout {
             }
             if (shouldBeVisible) cntVisible++;
         }
+    }
+
+    public void setStatusLineVisibility(boolean visible){
+        tr_states.setVisibility(visible?VISIBLE:INVISIBLE);
     }
 
     public void setStatusLineValue(ExtendedTextView etv, Object value){

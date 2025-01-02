@@ -135,4 +135,9 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     public long getLaLo() {
         return LaLo.getLaLo(la,lo);
     }
+
+    @Override
+    public LatLong getLatLong() {
+        return new LatLong(getLat(), getLon());
+    }
 }

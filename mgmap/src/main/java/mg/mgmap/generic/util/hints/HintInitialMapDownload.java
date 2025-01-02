@@ -21,8 +21,8 @@ public class HintInitialMapDownload extends AbstractHint implements Runnable{
     public boolean checkHintCondition() {
         boolean res = super.checkHintCondition();
         if (res && getActivity() instanceof MGMapActivity mgMapActivity){
-            for (String key : mgMapActivity.getMapDataStoreUtil().getMapDataStoreMap().values()){
-                if (key.startsWith("MAPSFORGE") && !key.contains("world")){
+            for (String key : mgMapActivity.getMapLayerFactory().getMapDataStoreMap().values()){
+                if (key.startsWith("MAPSFORGE")){
                     res = false;
                     break;
                 }
