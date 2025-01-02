@@ -154,6 +154,8 @@ public class ShowHideTest extends BaseTestCase {
         addRegex(".*onClick mi_statistic.*");
         animateMenu(R.id.menu_task, R.id.mi_statistic);
         waitForActivity(TrackStatisticActivity.class);
+        waitForPref(prefMetaLoading, false); // make sure that there is no interference with end of meta loading
+        SystemClock.sleep(100);
 
         animateToStatAndClick(".*20221029_122839.*");
         animateToStatAndClick(".*20221025_095831.*");
@@ -202,6 +204,8 @@ public class ShowHideTest extends BaseTestCase {
         addRegex(".*onClick mi_statistic.*");
         animateMenu(R.id.menu_task, R.id.mi_statistic);
         waitForActivity(TrackStatisticActivity.class);
+        waitForPref(prefMetaLoading, false); // make sure that there is no interference with end of meta loading
+        SystemClock.sleep(100);
 
         animateToStatAndClick(".*20221029_122839.*");
         animateToStatAndClick(".*20221025_095831.*");
