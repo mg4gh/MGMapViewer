@@ -17,7 +17,7 @@
             />
         <Preference
             app:title="Mapsforge"
-            app:summary="The base library for map viewing.\nSee https://github.com/mapsforge/mapsforge\nCurrently used version is 0.18.0"
+            app:summary="The base library for map viewing.\nSee https://github.com/mapsforge/mapsforge\nCurrently used version is 0.22.0 + some updates prepared for 0.23.0"
             app:iconSpaceReserved="false"
             />
         <Preference
