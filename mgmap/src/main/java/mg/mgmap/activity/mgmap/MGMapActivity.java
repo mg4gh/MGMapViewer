@@ -401,7 +401,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         mgLog.i("Device scale factor " + DisplayModel.getDeviceScaleFactor());
         mgLog.i("Device screen size " + getResources().getDisplayMetrics().widthPixels + "x" + getResources().getDisplayMetrics().heightPixels);
-        float fs = Float.parseFloat(sharedPreferences.getString(getResources().getString(R.string.preferences_scale_key), Float.toString(DisplayModel.getDefaultUserScaleFactor())));
+        float fs = getUserScaleFactor();
         mgLog.i("User ScaleFactor " + fs);
         if (fs != DisplayModel.getDefaultUserScaleFactor()) {
             DisplayModel.setDefaultUserScaleFactor(fs);
@@ -570,7 +570,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                         @Override
                         public void afterGroupFinished(BgJobGroup jobGroup, int total, int success, int fail) {
                             BgJobGroupCallback.super.afterGroupFinished(jobGroup, total, success, fail);
-                            prefCache.get(R.string.MGMapActivity_trigger_recreate,"").setValue("trigger recreate at "+System.currentTimeMillis());
+//                            prefCache.get(R.string.MGMapActivity_trigger_recreate,"").setValue("trigger recreate at "+System.currentTimeMillis());
                         }
                     };
                     BgJobGroup bgJobGroup = new BgJobGroup(application, this, "Install zip archive", bgJobGroupCallback );
@@ -798,6 +798,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         if (recreatePreferences.contains(key) && (!preferences.getBoolean(getResources().getString(R.string.MGMapApplication_pref_Restart), true))){
             FeatureService.getTimer().postDelayed(() -> {
                 boolean recreateAllMapsforge = !key.startsWith(MGMapLayerFactory.LAYER_PREF_KEY_PREFIX);
+                if (key.startsWith("mapsforge")){ // R.string.preferences_scale_key, R.string.preferences_scalebar_key, R.string.preferences_language_key
+                    // reset mapsforge settings
+                    mapView.getModel().displayModel.setUserScaleFactor(getUserScaleFactor());
+                    setMapScaleBar();
+                }
                 mgLog.i("recreate: call mapLayerFactory.recreateMapLayers("+recreateAllMapsforge+") due to key="+key+" value="+ preferences.getAll().get(key));
                 mapLayerFactory.recreateMapLayers(recreateAllMapsforge);
 

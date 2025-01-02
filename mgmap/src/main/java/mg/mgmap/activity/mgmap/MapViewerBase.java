@@ -22,23 +22,28 @@ import org.mapsforge.map.android.util.AndroidPreferences;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.model.common.PreferencesFacade;
 import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
 import org.mapsforge.map.scalebar.NauticalUnitAdapter;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
+import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Base class of the MGMapActivity.
  * Covers the most handling concerning the preferences and also concerning the MapView initialization
  */
 public abstract class MapViewerBase extends AppCompatActivity{
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     protected MapView mapView;
     protected PreferencesFacade preferencesFacade;
@@ -88,22 +93,28 @@ public abstract class MapViewerBase extends AppCompatActivity{
         this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( preferencesName+"_"+this.getClass().getSimpleName(), MODE_PRIVATE));
     }
 
+    protected float getUserScaleFactor(){
+        float fs = 1;
+        try {
+            fs = Float.parseFloat(sharedPreferences.getString(getResources().getString(R.string.preferences_scale_key), Float.toString(DisplayModel.getDefaultUserScaleFactor())));
+        } catch (Exception e) {
+            mgLog.e(e.getMessage());
+        }
+        return fs;
+    }
 
     protected void setMapScaleBar() {
         String value = this.sharedPreferences.getString(getResources().getString(R.string.preferences_scalebar_key), getResources().getString(R.string.preferences_scalebar_metric_key));
 
-        if (getResources().getString(R.string.preferences_scalebar_none_key).equals(value)) {
-            AndroidUtil.setMapScaleBar(this.mapView, null, null);
-        } else {
-            if (getResources().getString(R.string.preferences_scalebar_both_key).equals(value)) {
-                AndroidUtil.setMapScaleBar(this.mapView, MetricUnitAdapter.INSTANCE, ImperialUnitAdapter.INSTANCE);
-            } else if (getResources().getString(R.string.preferences_scalebar_metric_key).equals(value)) {
-                AndroidUtil.setMapScaleBar(this.mapView, MetricUnitAdapter.INSTANCE, null);
-            } else if (getResources().getString(R.string.preferences_scalebar_imperial_key).equals(value)) {
-                AndroidUtil.setMapScaleBar(this.mapView, ImperialUnitAdapter.INSTANCE, null);
-            } else if (getResources().getString(R.string.preferences_scalebar_nautical_key).equals(value)) {
-                AndroidUtil.setMapScaleBar(this.mapView, NauticalUnitAdapter.INSTANCE, null);
-            }
+        mapView.setMapScaleBar(null);
+        if (getResources().getString(R.string.preferences_scalebar_both_key).equals(value)) {
+            AndroidUtil.setMapScaleBar(this.mapView, MetricUnitAdapter.INSTANCE, ImperialUnitAdapter.INSTANCE);
+        } else if (getResources().getString(R.string.preferences_scalebar_metric_key).equals(value)) {
+            AndroidUtil.setMapScaleBar(this.mapView, MetricUnitAdapter.INSTANCE, null);
+        } else if (getResources().getString(R.string.preferences_scalebar_imperial_key).equals(value)) {
+            AndroidUtil.setMapScaleBar(this.mapView, ImperialUnitAdapter.INSTANCE, null);
+        } else if (getResources().getString(R.string.preferences_scalebar_nautical_key).equals(value)) {
+            AndroidUtil.setMapScaleBar(this.mapView, NauticalUnitAdapter.INSTANCE, null);
         }
     }
 

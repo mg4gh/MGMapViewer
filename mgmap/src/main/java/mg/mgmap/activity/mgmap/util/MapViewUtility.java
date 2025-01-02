@@ -22,8 +22,8 @@ import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
+import org.mapsforge.map.scalebar.MapScaleBar;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.generic.model.BBox;
@@ -117,11 +117,6 @@ public class MapViewUtility {
         return DEFAULT_TRACK_WIDTH * mapView.getModel().displayModel.getScaleFactor();
     }
 
-    public static PointModel getMapDataStoreCenter(MapDataStore mds){
-        LatLong startPos = mds.startPosition();
-        return new PointModelImpl(startPos.getLatitude(), startPos.getLongitude());
-    }
-
     public Point getPoint4PointModel(PointModel pm) {
         int[] loc = new int[2];
         this.mapView.getLocationOnScreen(loc);
@@ -157,8 +152,11 @@ public class MapViewUtility {
     }
 
     public void setScaleBarVMargin(int vMargin){
-        mapView.getMapScaleBar().setMarginVertical(vMargin);
-        mapView.getMapScaleBar().redrawScaleBar();
+        MapScaleBar mapScaleBar = mapView.getMapScaleBar();
+        if (mapScaleBar != null){
+            mapScaleBar.setMarginVertical(vMargin);
+            mapScaleBar.redrawScaleBar();
+        }
     }
     public void setScaleBarColor(int color){
         if (mapView.getMapScaleBar() instanceof DefaultMapScaleBar mapScaleBar) {
@@ -167,8 +165,11 @@ public class MapViewUtility {
         }
     }
     public void setScaleBarVisibility(boolean visibility){
-        mapView.getMapScaleBar().setVisible(visibility);
-        mapView.invalidate();
+        MapScaleBar mapScaleBar = mapView.getMapScaleBar();
+        if (mapScaleBar != null) {
+            mapScaleBar.setVisible(visibility);
+            mapView.invalidate();
+        }
     }
 
     public boolean getTrackVisibility(){
