@@ -31,6 +31,7 @@ import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.hills.AdaptiveClasyHillShading;
 import org.mapsforge.map.layer.hills.DemFolder;
 import org.mapsforge.map.layer.hills.DemFolderFS;
 import org.mapsforge.map.layer.hills.HiResClasyHillShading;
@@ -316,7 +317,7 @@ public class MGMapLayerFactory {
                     HillsRenderConfig hillsConfig = null;
                     if (activity.getPrefCache().get(R.string.preferences_hill_shading_key, false).getValue()){
                         DemFolder hgtFolder = new DemFolderFS(persistenceManager.getHgtDir());
-                        ShadingAlgorithm shadingAlgorithm = (activity.getPrefCache().get(R.string.preferences_hill_shading_hiRes_key, false).getValue())?new HiResClasyHillShading():new StandardClasyHillShading();
+                        ShadingAlgorithm shadingAlgorithm = (activity.getPrefCache().get(R.string.preferences_hill_shading_hiRes_key, false).getValue())?new AdaptiveClasyHillShading():new StandardClasyHillShading();
                         MemoryCachingHgtReaderTileSource hillTileSource = new MemoryCachingHgtReaderTileSource(hgtFolder, shadingAlgorithm, AndroidGraphicFactory.INSTANCE);
                         hillsConfig = new HillsRenderConfig(hillTileSource);
                         // call after setting/changing parameters, walks filesystem for DEM metadata
