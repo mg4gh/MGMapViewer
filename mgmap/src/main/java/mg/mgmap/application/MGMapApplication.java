@@ -162,6 +162,7 @@ public class MGMapApplication extends Application {
         AndroidGraphicFactory.createInstance(this);
         prefCache = new PrefCache(this);
 
+        initVersionCode();
         hgtProvider = new HgtProvider(this, persistenceManager, getAssets()); // for hgt file handling
         elevationProvider = new ElevationProviderImpl(hgtProvider); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
@@ -605,5 +606,18 @@ public class MGMapApplication extends Application {
     }
     public void finishAlarm(){
         notificationUtil.finishAlarm();
+    }
+
+    private void initVersionCode(){
+        Pref<Integer> version = prefCache.get(R.string.MGMapApplication_pref_version, 0);
+        if (version.getValue() != BuildConfig.VERSION_CODE){
+            version.setValue(BuildConfig.VERSION_CODE);
+
+            if (version.getValue() == 34){ // defaults change with version code 34
+                prefCache.get(R.string.preferences_smoothing4routing_key, true).setValue(true);
+                prefCache.get(R.string.preferences_routingProfile_key, true).setValue(true);
+                prefCache.get(R.string.preferences_display_show_km_key, true).setValue(true);
+            }
+        }
     }
 }

@@ -53,6 +53,7 @@
     <string name="MGMapApplication_pref_MetaData_loading">MGMapApplication.MetaDataLoading</string>
     <string name="MGMapApplication_pref_Elevate_loading">MGMapApplication.ElevateLoading</string>
     <string name="MGMapApplication_pref_Pwd">MGMapApplication.pwd</string>
+    <string name="MGMapApplication_pref_version">MGMapApplication.version</string>
     <string name="MGMapActivity_trigger_recreate">MGMapActivity.triggerRecreate</string>
 
     <string name="my_rendertheme_menu_key">myrenderthememenu</string>
@@ -66,7 +67,7 @@
     <string name="preference_choose_search_title">Select Search Provider</string>
 
     <string name="preferences_hints_key">pref_hints_key</string>
-    <string name="preferences_hints_title">Hints</string>
+    <string name="preferences_hints_title">Hints (developer)</string>
     <string name="preferences_hints_desc">Show hints as popup dialog.</string>
 
 
@@ -104,23 +105,21 @@
         since they may be more inaccurate than the accuracy data suggest.</string>
 
 
-    <string name="preferences_cat_gnss_title">GNSS settings</string>
+    <string name="preferences_cat_gnss_key">GNSS_settings_key</string>
+    <string name="preferences_cat_gnss_title">GNSS settings (developer)</string>
     <string name="preferences_gnss_fused_title">Used google fused location provider</string>
     <string name="preferences_gnss_fused_desc">Use the google fused location provider instead of the pure GNSS location provider</string>
 
-    <string name="preferences_gnss_locationBuilder_key">prefGnssLocationRequestBuilder</string>
-    <string name="preferences_gnss_locationBuilder_title">LocationRequest.Builder (developer)</string>
-    <string name="preferences_gnss_locationBuilder_desc">Use LocationRequest.Builder instead of legacy LocationRequest creation. (Test feature - not yet fully working)</string>
-
     <string name="preferences_gnss_minMillis_key">prefGnssMinMillis</string>
-    <string name="preferences_gnss_minMillis_title">LocationRequest minTime (developer)</string>
+    <string name="preferences_gnss_minMillis_title">LocationRequest minTime</string>
     <string name="preferences_gnss_minMillis_desc">Minimum time between location callbacks (in milliseconds)</string>
 
     <string name="preferences_gnss_minMeter_key">prefGnssMinMeter</string>
-    <string name="preferences_gnss_minMeter_title">LocationRequest minDistance (developer)</string>
+    <string name="preferences_gnss_minMeter_title">LocationRequest minDistance</string>
     <string name="preferences_gnss_minMeter_desc">Minimum distance between location callbacks (in meter)</string>
 
-    <string name="preferences_cat_behaviour_title">Behaviour settings</string>
+    <string name="preferences_cat_behaviour_key">Behaviour_settings_key</string>
+    <string name="preferences_cat_behaviour_title">Behaviour settings (developer)</string>
     <string name="preferences_cat_fileMgr_title">File manager settings</string>
     <string name="preferences_fileMgr_preferIntEditor_key">FileMgr.preferInternalEditor</string>
     <string name="preferences_fileMgr_preferIntEditor_title">Editor</string>

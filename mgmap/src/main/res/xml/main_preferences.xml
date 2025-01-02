@@ -94,7 +94,7 @@
             app:iconSpaceReserved="false"
             />
         <SwitchPreference
-            app:defaultValue="false"
+            app:defaultValue="true"
             app:key="@string/preferences_display_show_km_key"
             app:title="@string/preferences_display_show_km_title"
             app:summary="@string/preferences_display_show_km_desc"
@@ -165,7 +165,7 @@
         app:iconSpaceReserved="false"
         >
         <SwitchPreference
-            app:defaultValue="false"
+            app:defaultValue="true"
             app:key="@string/preferences_routingProfile_key"
             app:summary="@string/preferences_routingProfile_desc"
             app:title="@string/preferences_routingProfile_title"
@@ -180,7 +180,7 @@
             />
 
         <SwitchPreference
-            app:defaultValue="false"
+            app:defaultValue="true"
             app:key="@string/preferences_smoothing4routing_key"
             app:summary="@string/preferences_smoothing4routing_desc"
             app:title="@string/preferences_smoothing4routing_title"
@@ -231,6 +231,7 @@
 
     <PreferenceCategory
         app:title="@string/preferences_cat_gnss_title"
+        app:key="@string/preferences_cat_gnss_key"
         app:iconSpaceReserved="false"
         >
         <SwitchPreference
@@ -238,13 +239,6 @@
             app:key="@string/FSPosition_pref_FusedLocationProvider"
             app:summary="@string/preferences_gnss_fused_desc"
             app:title="@string/preferences_gnss_fused_title"
-            app:iconSpaceReserved="false"
-            />
-        <SwitchPreference
-            app:defaultValue="false"
-            app:key="@string/preferences_gnss_locationBuilder_key"
-            app:summary="@string/preferences_gnss_locationBuilder_desc"
-            app:title="@string/preferences_gnss_locationBuilder_title"
             app:iconSpaceReserved="false"
             />
         <EditTextPreference
@@ -274,6 +268,7 @@
 
     <PreferenceCategory
         app:title="@string/preferences_cat_behaviour_title"
+        app:key="@string/preferences_cat_behaviour_key"
         app:iconSpaceReserved="false"
         >
         <SwitchPreference

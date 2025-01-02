@@ -23,7 +23,7 @@
     <string name="FSRouting_pref_currentRoutingProfile">FSRouting.currentRoutingProfile</string>
     <string name="FSRouting_pref_calcRouteInProgress">FSRouting.calculateRouteInProgress</string>
 
-    <string name="preferences_cat_routing_title">Routing settings (developer)</string>
+    <string name="preferences_cat_routing_title">Routing settings </string>
     <string name="preferences_routingProfile_key">pref_routingProfile_key</string>
     <string name="preferences_routingProfile_title">Routing profile</string>
     <string name="preferences_routingProfile_desc">Use alternative routing profiles</string>
@@ -31,10 +31,10 @@
 
     <string name="FSRouting_routing_category_key">RoutingCategoryKey</string>
     <string name="FSRouting_routing_profiles_menu_key">RoutingProfilesMenuKey</string>
-    <string name="FSRouting_routing_profiles_menu_tile">Select visible routing profiles</string>
+    <string name="FSRouting_routing_profiles_menu_tile">Select visible routing profiles (developer)</string>
 
     <string name="preferences_smoothing4routing_key">pref_smoothing4routing_key</string>
-    <string name="preferences_smoothing4routing_title">Smooth height data</string>
+    <string name="preferences_smoothing4routing_title">Smooth height data (developer)</string>
     <string name="preferences_smoothing4routing_desc">Smooth height data at graph creation time</string>
 
     <string name="FSRouting_routing_algorithm_key">FSRouting.RoutingAlgorithm</string>

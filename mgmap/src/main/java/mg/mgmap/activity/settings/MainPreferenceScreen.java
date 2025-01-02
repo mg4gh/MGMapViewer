@@ -80,10 +80,11 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
                 R.string.FSSearch_pref_SearchDetails_key,
                 R.string.preferences_alarm_ps_key,
                 R.string.FSGrad_pref_WayDetails_key,
-                R.string.FSRouting_routing_category_key,
-                R.string.preferences_gnss_locationBuilder_key,
-                R.string.preferences_gnss_minMeter_key,
-                R.string.preferences_gnss_minMillis_key
+                R.string.FSRouting_routing_profiles_menu_key,
+                R.string.preferences_smoothing4routing_key,
+                R.string.preferences_cat_gnss_key,
+                R.string.preferences_cat_behaviour_key,
+                R.string.preferences_hints_key,
         };
         for (int prefId : developerPrefIds){
             Preference preference = findPreference(getResources().getString(prefId));
@@ -92,7 +93,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
             }
         }
 
-        Pref<Boolean> prefUseRoutingProfiles = prefCache.get(R.string.preferences_routingProfile_key, false);
+        Pref<Boolean> prefUseRoutingProfiles = prefCache.get(R.string.preferences_routingProfile_key, true);
         Preference pRoutingProfiles = findPreference(getResources().getString(R.string.FSRouting_routing_profiles_menu_key));
         prefUseRoutingProfiles.addObserver((Observer) evt -> pRoutingProfiles.setEnabled(prefUseRoutingProfiles.getValue()) );
         prefUseRoutingProfiles.onChange();
