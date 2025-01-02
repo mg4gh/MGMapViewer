@@ -406,6 +406,7 @@ public class FSControl extends FeatureService {
                         qcss[0].getChildAt(i).setVisibility(View.INVISIBLE);
                     } else { // two Line
                         getMapViewUtility().setScaleBarVisibility(false);
+                        getControlView().setStatusLineVisibility(false);
                         if ((i + 1) != idx) {
                             // enlight (not pressed) menus
                             qcss[0].getChildAt(i).setBackground(qcLightBackground);
@@ -435,6 +436,7 @@ public class FSControl extends FeatureService {
                     mgLog.v("transition end");
                     qcs.setVisibility(View.INVISIBLE);
                     getMapViewUtility().setScaleBarVisibility(true);
+                    getControlView().setStatusLineVisibility(true);
 
                     for (int i=0; i<qcss[0].getChildCount(); i++){
                         // reset intensity and visibility of menus

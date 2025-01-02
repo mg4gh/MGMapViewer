@@ -570,6 +570,10 @@ public class ControlView extends RelativeLayout {
         }
     }
 
+    public void setStatusLineVisibility(boolean visible){
+        tr_states.setVisibility(visible?VISIBLE:INVISIBLE);
+    }
+
     public void setStatusLineValue(ExtendedTextView etv, Object value){
         if (etv != null) {
             if (etv.setValue(value)){
