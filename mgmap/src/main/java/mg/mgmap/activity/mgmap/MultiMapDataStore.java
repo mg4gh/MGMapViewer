@@ -517,4 +517,8 @@ public class MultiMapDataStore extends MapDataStore {
     public List<MapDataStore> getMapDatabases() {
         return mapDatabases;
     }
+
+    public DataPolicy getDataPolicy() {
+        return dataPolicy;
+    }
 }

@@ -34,7 +34,6 @@ import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.hills.AdaptiveClasyHillShading;
 import org.mapsforge.map.layer.hills.DemFolder;
 import org.mapsforge.map.layer.hills.DemFolderFS;
-import org.mapsforge.map.layer.hills.HiResClasyHillShading;
 import org.mapsforge.map.layer.hills.HillsRenderConfig;
 import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
 import org.mapsforge.map.layer.hills.ShadingAlgorithm;
@@ -164,7 +163,7 @@ public class MGMapLayerFactory {
                 }
             }
             multiMapDataStore = new MultiMapDataStore(MultiMapDataStore.DataPolicy.FAST_DETAILS);
-            for (MapDataStore mds : getMapDataStoreMap().keySet()){
+            for (MapDataStore mds : getMapDataStoreMap(true).keySet()){
                 multiMapDataStore.addMapDataStore(mds, false, false);
             }
             mapLayerMutex[0] = true;
@@ -203,7 +202,12 @@ public class MGMapLayerFactory {
         return null;
     }
 
-    public Map<MapDataStore, String> getMapDataStoreMap(){
+    public Map<MapDataStore, String> getMapDataStoreMap() {
+        return getMapDataStoreMap(false);
+    }
+
+    private Map<MapDataStore, String> getMapDataStoreMap(boolean log){
+        if (log) mgLog.i("Mapsforge map configuration:");
         Map<MapDataStore, String> mapDataStoreMap = new HashMap<>();
         for (int i=0; i<NUM_MAP_LAYERS; i++){
             if (mapKeyArray[i].startsWith(Types.MAPSFORGE.name())){
@@ -211,10 +215,13 @@ public class MGMapLayerFactory {
                     MapDataStore mds = mapsforgeLayer.getMapDataStore();
                     if (mds instanceof ExtendedMapFile extendedMapFile){
                         addDatastore(mapDataStoreMap, mds, extendedMapFile.getId());
+                        if (log) mgLog.i("Layer="+(i+1)+" "+extendedMapFile);
                     } else if (mds instanceof MultiMapDataStore mmds){
+                        if (log) mgLog.i("Layer="+(i+1)+" MultiMapDataStore dataPolicy="+mmds.getDataPolicy());
                         for (MapDataStore subMds : mmds.getMapDatabases()){
                             if (subMds instanceof ExtendedMapFile extendedMapFile){
                                 addDatastore(mapDataStoreMap, subMds, extendedMapFile.getId());
+                                if (log) mgLog.i("Layer="+(i+1)+" "+extendedMapFile);
                             }
                         }
                     }

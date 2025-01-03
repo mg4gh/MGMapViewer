@@ -1,5 +1,7 @@
 package mg.mgmap.activity.mgmap;
 
+import androidx.annotation.NonNull;
+
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
@@ -26,7 +28,8 @@ public class ExtendedMapFile extends MapFile {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private final String id;
+    protected final String id;
+    protected final String filename;
     private final MultiPointModel mpmBorder;
     private record Relation(long lalo1, long lalo2){
         long other(long lalo){
@@ -41,8 +44,9 @@ public class ExtendedMapFile extends MapFile {
     public ExtendedMapFile(String id, File file, String language){
         super(file, language);
         this.id = id;
+        this.filename = file.getName();
 
-        mgLog.d("init MGMapFile with "+file.getName());
+        mgLog.d("init ExtendedMapFile with "+file.getName());
         long mapSize = MercatorProjection.getMapSize(ZOOM_LEVEL, TILE_SIZE);
         int tileXMin = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( boundingBox().minLongitude , mapSize) , ZOOM_LEVEL, TILE_SIZE);
         int tileXMax = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( boundingBox().maxLongitude , mapSize) , ZOOM_LEVEL, TILE_SIZE);
@@ -129,7 +133,7 @@ public class ExtendedMapFile extends MapFile {
         }
         this.mpmBorder = mpm;
         setPriority(mpmBorder==null?0: mpmBorder.size());
-        mgLog.d("init MGMapFile with "+file.getName()+" finished. mpmBorder="+(mpmBorder!=null)+" priority="+getPriority());
+        mgLog.d("init ExtendedMapFile with "+file.getName()+" finished. mpmBorder="+(mpmBorder!=null)+" priority="+getPriority());
     }
 
     public String getId(){
@@ -161,4 +165,13 @@ public class ExtendedMapFile extends MapFile {
         return true;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName()
+                +" id=\""+id+"\""
+                +" filename=\""+filename+"\""
+                +" borderNodes="+((mpmBorder==null)?0:mpmBorder.size())
+                +" priority="+getPriority();
+    }
 }
