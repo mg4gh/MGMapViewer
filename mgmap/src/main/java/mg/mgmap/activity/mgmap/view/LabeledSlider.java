@@ -43,7 +43,7 @@ public class LabeledSlider extends LinearLayout {
     Pref<Boolean> prefSliderVisibility = null;
     private final TextView label;
     private final SeekBar seekBar;
-    private final Observer prefSliderObserver;
+    private Observer prefSliderObserver;
 
     public LabeledSlider(Context context) {
         this(context, null);
@@ -58,7 +58,6 @@ public class LabeledSlider extends LinearLayout {
 
         label = this.createSeekBarLabel(this);
         seekBar = this.createSeekBar(this);
-        prefSliderObserver = evt -> seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100));
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -68,7 +67,10 @@ public class LabeledSlider extends LinearLayout {
         this.prefSlider = prefSlider;
         if (prefSlider != null){
             label.setText(text);
-            this.prefSlider.deleteObserver(prefSliderObserver);// remove, if exists
+            if (prefSliderObserver != null){
+                this.prefSlider.deleteObserver(prefSliderObserver);// remove, if exists
+            }
+            prefSliderObserver = evt -> seekBar.setProgress( (int)(LabeledSlider.this.prefSlider.getValue() * 100));
             this.prefSlider.addObserver(prefSliderObserver); // add anyway
             prefSlider.onChange();
             seekBar.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
