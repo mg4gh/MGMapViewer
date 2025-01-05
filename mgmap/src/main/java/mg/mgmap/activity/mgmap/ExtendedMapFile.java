@@ -2,6 +2,7 @@ package mg.mgmap.activity.mgmap;
 
 import androidx.annotation.NonNull;
 
+import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
@@ -150,17 +151,21 @@ public class ExtendedMapFile extends MapFile {
     }
 
     public boolean isInInnerBorder(Tile tile){
-        return isInInnerBorder(BBox.fromBoundingBox(tile.getBoundingBox()));
+        return isInInnerBorder(tile.getBoundingBox().minLatitude, tile.getBoundingBox().maxLatitude, tile.getBoundingBox().minLongitude, tile.getBoundingBox().maxLongitude);
     }
     public boolean isInInnerBorder(Tile upperLeft,Tile lowerRight){
-        return isInInnerBorder(BBox.fromBoundingBox(upperLeft.getBoundingBox().extendBoundingBox(lowerRight.getBoundingBox())));
+        BoundingBox boundingBox = upperLeft.getBoundingBox().extendBoundingBox(lowerRight.getBoundingBox());
+        return isInInnerBorder(boundingBox.minLatitude, boundingBox.maxLatitude, boundingBox.minLongitude, boundingBox.maxLongitude);
     }
-    public boolean isInInnerBorder(BBox bBox){
-        for (PointModel corner : List.of(new PointModelImpl(bBox.maxLatitude, bBox.minLongitude),
-                new PointModelImpl(bBox.maxLatitude, bBox.maxLongitude),
-                new PointModelImpl(bBox.minLatitude, bBox.maxLongitude),
-                new PointModelImpl(bBox.minLatitude, bBox.minLongitude))) {
+    public boolean isInInnerBorder(double minLatitude, double maxLatitude, double minLongitude, double maxLongitude){
+        for (PointModel corner : List.of(new PointModelImpl(maxLatitude, minLongitude),
+                new PointModelImpl(maxLatitude, maxLongitude),
+                new PointModelImpl(minLatitude, maxLongitude),
+                new PointModelImpl(minLatitude, minLongitude))) {
             if (!PointModelUtil.pointInPolygon(corner, mpmBorder)) return false;
+        }
+        for (PointModel pm : mpmBorder){ // check if a border point is inside the polygon
+            if ((minLatitude < pm.getLat()) && (pm.getLat() < maxLatitude) && (minLongitude < pm.getLon()) && (pm.getLon() < maxLongitude)) return false;
         }
         return true;
     }

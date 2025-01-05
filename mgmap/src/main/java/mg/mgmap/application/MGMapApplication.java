@@ -146,6 +146,7 @@ public class MGMapApplication extends Application {
 
         MGLog.logConfig.put("mg.mgmap", BuildConfig.DEBUG? MGLog.Level.DEBUG:MGLog.Level.INFO);
 //        MGLog.logConfig.put("mg.mgmap.test.TestControl", MGLog.Level.VERBOSE);
+//        MGLog.logConfig.put("mg.mgmap.activity.mgmap.MultiMapDataStore", MGLog.Level.VERBOSE);
         mgLog.evaluateLevel();
 
         setup = new Setup(this);

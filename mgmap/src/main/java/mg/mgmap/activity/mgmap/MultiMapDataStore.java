@@ -23,11 +23,11 @@ import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.datastore.MapReadResult;
 
-import java.lang.invoke.MethodHandles;
+//import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-import mg.mgmap.generic.util.basic.MGLog;
+//import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * A MapDatabase that reads and combines data from multiple map files.
@@ -47,7 +47,7 @@ import mg.mgmap.generic.util.basic.MGLog;
  */
 public class MultiMapDataStore extends MapDataStore {
 
-    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+//    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public enum DataPolicy {
         RETURN_FIRST, // return the first set of data
@@ -268,7 +268,7 @@ public class MultiMapDataStore extends MapDataStore {
     }
 
     private MapReadResult readMapData(Tile tile, boolean deduplicate) {
-        mgLog.d(  " x="+tile.tileX+" y="+tile.tileY+" z="+tile.zoomLevel+ " "+tile.getBoundingBox());
+//        mgLog.v(  " x="+tile.tileX+" y="+tile.tileY+" z="+tile.zoomLevel+ " "+tile.getBoundingBox());
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         if (this.dataPolicy==DataPolicy.FAST_DETAILS){
@@ -277,6 +277,7 @@ public class MultiMapDataStore extends MapDataStore {
                     if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(tile)){ // with inner border that covers the tile fully
                         mapReadResult = extendedMapFile.readMapData(tile);                          // then take just the result from this store
                         isTileFilled = true;                                                        // and stop further processing
+//                        mgLog.v(  "id="+extendedMapFile.getId()+" mapReadResult.ways.size="+mapReadResult.ways.size());
                         break;
                     }
                 }
@@ -295,10 +296,9 @@ public class MultiMapDataStore extends MapDataStore {
                     }
                     mapReadResult.isWater = mapReadResult.isWater & result.isWater;
                     mapReadResult.add(result, deduplicate);
-                    if (mdb instanceof ExtendedMapFile extendedMapFile){
-                        boolean full = extendedMapFile.hasInnerBorder() & extendedMapFile.isInInnerBorder(tile);
-                        mgLog.d(  "full="+full+" id="+extendedMapFile.getId()+" mapReadResult.ways.size="+mapReadResult.ways.size()+" result.ways.size()="+result.ways.size());
-                    }
+//                    if (mdb instanceof ExtendedMapFile extendedMapFile){
+//                        mgLog.v(" id="+extendedMapFile.getId()+" mapReadResult.ways.size="+mapReadResult.ways.size()+" result.ways.size()="+result.ways.size());
+//                    }
                 }
 
                 if (mdb.supportsFullTile(tile)) {
