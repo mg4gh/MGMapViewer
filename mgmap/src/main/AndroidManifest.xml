@@ -14,7 +14,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
-    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.location.gps"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.sensor.barometer"
         android:required="false" />
@@ -27,7 +28,9 @@
 
     <application
         android:name="mg.mgmap.application.MGMapApplication"
-        android:allowBackup="false"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules1"
+        android:dataExtractionRules="@xml/backup_rules2"
         android:icon="@drawable/mg_map"
         android:label="MGMapViewer"
         android:largeHeap="true"

@@ -88,6 +88,7 @@ import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogRefZoom;
 import mg.mgmap.generic.model.WriteablePointModel;
+import mg.mgmap.generic.util.BackupUtil;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
@@ -254,7 +255,10 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         // use prefGps from applications prefCache to prevent race conditions during startup phase
         application.prefGps.addObserver(prefGpsObserver);
         application.prefGps.onChange();
-        prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> new GpxSyncUtil().trySynchronisation(application));
+        prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> {
+            FeatureService.getTimer().postDelayed(()->BackupUtil.trigger(MGMapActivity.this, application.getPersistenceManager()), 10);
+            FeatureService.getTimer().postDelayed(()->new GpxSyncUtil().trySynchronisation(application), 1000);
+        });
         prefTracksVisible = prefCache.get(R.string.preferences_tracks_visible, true);
         prefTracksVisible.addObserver(pcl -> getFS(FSAvailableTrackLogs.class).redraw());
     }

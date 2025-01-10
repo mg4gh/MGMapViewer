@@ -35,6 +35,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import mg.mgmap.application.MGMapApplication;
+import mg.mgmap.generic.util.BackupUtil;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -63,6 +64,8 @@ public class PersistenceManager {
     private final File configDir;
     private final File searchConfigDir;
     private final File apkDir;
+    private final File backupDir;
+    private final File restoreDir;
 
     private final File fRaw;
     private FileOutputStream fosRaw = null;
@@ -112,6 +115,11 @@ public class PersistenceManager {
         createGraphhopperCfgIfNotExists("Graphhopper.cfg");
         createFileIfNotExists(searchConfigDir,"GeoLatLong.cfg");
         apkDir = createIfNotExists(appDir, "apk");
+        File backupBaseDir = createIfNotExists(appDir, "backup");
+        backupDir = createIfNotExists(backupBaseDir, "backup");
+        restoreDir = createIfNotExists(backupBaseDir, "restore");
+
+        BackupUtil.restore(application, this);
     }
 
     public File getBaseDir(){
@@ -138,10 +146,16 @@ public class PersistenceManager {
     public File getTrackGpxDir(){
         return trackGpxDir;
     }
-
     public File getApkDir(){
         return apkDir;
     }
+    public File getBackupDir() {
+        return backupDir;
+    }
+    public File getRestoreDir() {
+        return restoreDir;
+    }
+
     public void cleanApkDir(){
         try {
             File[] files  = apkDir.listFiles();

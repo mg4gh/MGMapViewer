@@ -27,7 +27,7 @@ public class GpxSyncUtil {
     private static final String SYNC_CONFIG = "gpx_sync.properties";
 
     final long lastAction = 0;
-    final boolean syncInProgress = false;
+    private static boolean syncInProgress = false;
     
     public void trySynchronisation(MGMapApplication application) {
         long now = System.currentTimeMillis();
@@ -38,6 +38,7 @@ public class GpxSyncUtil {
 
     private void trySynchronisationAsync(MGMapApplication application){
         try {
+            syncInProgress = true;
             PersistenceManager persistenceManager = application.getPersistenceManager();
             File syncProps = new File(persistenceManager.getConfigDir(), SYNC_CONFIG);
             if (!syncProps.exists()) return;
@@ -106,6 +107,8 @@ public class GpxSyncUtil {
             }.copy();
         } catch (Exception e){
             mgLog.e(e);
+        } finally {
+            syncInProgress = false;
         }
     }
 
