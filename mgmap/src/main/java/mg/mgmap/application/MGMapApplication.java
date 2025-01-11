@@ -32,6 +32,7 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import mg.mgmap.BuildConfig;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.generic.model.TrackLogPoint;
+import mg.mgmap.generic.util.BackupUtil;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.statistic.TrackStatisticFilter;
 import mg.mgmap.application.util.ActivityLifecycleAdapter;
@@ -203,7 +204,7 @@ public class MGMapApplication extends Application {
             mgLog.i("init finished!");
         }).start();
 
-
+        BackupUtil.restore2(this, persistenceManager);
 
         // initialize MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(() -> {
@@ -310,6 +311,10 @@ public class MGMapApplication extends Application {
     }
 
     public void checkCreateLoadMetaData(boolean onlyNew){
+        File restoreJob = new File(persistenceManager.getRestoreDir(), "restore.job");
+        while (restoreJob.exists()){ // don't start as restore may add files
+            SystemClock.sleep(1000);
+        }
         ArrayList<String> newNames = ExtrasUtil.checkCreateMeta(this, this.currentRun);
     }
 
