@@ -136,6 +136,7 @@
     <string name="activity_param_key">mg.mgmap.args</string>
 
     <string name="preferences_sftp_uploadGpxTrigger">Sftp.uploadGpxTrigger</string>
+    <string name="preferences_last_full_backup_time">Pref.prefLastFullBackupTime</string>
     <string name="preferences_tracks_visible">prefTracksVisible</string>
     <string name="preferences_mapsforge_renderThreads">prefMapsforgeNumRenderThreads</string>
 

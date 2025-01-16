@@ -28,7 +28,6 @@ import org.sqlite.database.sqlite.SQLiteDatabase;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
@@ -83,7 +82,7 @@ public class MGTileStoreDB extends MGTileStore {
         } else if (storeRW == null){ // store found, but is not writeable - create a clone that is writeable
             mgLog.i(prefix+"store found ("+store.getName()+"), but is not writeable - create a clone that is writeable");
             storeRW = new File(store.getAbsolutePath().replaceFirst("\\.mbtiles", "_rw.mbtiles"));
-            IOUtil.copyStreams(new FileInputStream(store), new FileOutputStream(storeRW));
+            IOUtil.copyFile(store, storeRW);
         } else {
             mgLog.i(prefix+"store found with read/write access found: "+storeRW.getName());
         }

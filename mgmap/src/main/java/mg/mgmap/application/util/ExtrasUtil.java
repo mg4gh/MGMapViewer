@@ -67,13 +67,14 @@ public class ExtrasUtil {
                         }
                     }  catch (Exception e){ mgLog.e(e); }
                 }
-//                mgLog.d(String.format(Locale.ENGLISH, "load metaData trackLog=%s currentRun=%s app.currentRun=%s",name, currentRun, mgMapApplication.currentRun ));
-                if (mgMapApplication.currentRun != currentRun) break; // check correct run immediately before adding to metaData
-                mgMapApplication.addMetaDataTrackLog(trackLog);
+                if (trackLog != null){ // might be null, if gpx is corrupted
+                    if (mgMapApplication.currentRun != currentRun) break; // check correct run immediately before adding to metaData
+                    mgMapApplication.addMetaDataTrackLog(trackLog);
+                }
             }
-            mgLog.d(String.format(Locale.ENGLISH,"checkCreateMeta summary gpxNames=%d cntMetaLoaded=%d cntMetaCreated=%d",gpxNames.size(),cntMetaLoaded,cntMetaCreated));
+            mgLog.i(String.format(Locale.ENGLISH,"checkCreateMeta summary gpxNames=%d cntMetaLoaded=%d cntMetaCreated=%d",gpxNames.size(),cntMetaLoaded,cntMetaCreated));
             for (String name : metaNames){
-                mgLog.i("Delete meta file for "+name);
+                mgLog.d("Delete meta file for "+name);
                 persistenceManager.deleteTrack(name);
             }
             mgLog.i("checkCreateMeta finished  - currentRun="+currentRun);
