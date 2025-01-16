@@ -205,6 +205,7 @@ public class MGMapApplication extends Application {
         }).start();
 
         BackupUtil.restore2(this, persistenceManager, true);
+        BackupUtil.restore2(this, persistenceManager, false);
 
         // initialize MetaData (as used from AvailableTrackLogs service and statistic)
         new Thread(() -> {

@@ -20,7 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import mg.mgmap.R;
@@ -43,7 +42,7 @@ public class BackupUtil {
         return "backup_"+(latest?"latest":"full")+".zip";
     }
 
-    public static void checkFullBackup(Context context, PersistenceManager persistenceManager, Pref<Long> prefLastFullBackupTime){
+    public static void checkFullBackup(Activity activity, PersistenceManager persistenceManager, Pref<Long> prefLastFullBackupTime){
         long days = (System.currentTimeMillis() - prefLastFullBackupTime.getValue()) / (1000L*60*60*24L);
         boolean timeTrigger = ( days >= 90L ); // 90 days
         boolean trackNumberTrigger = false;
@@ -58,17 +57,31 @@ public class BackupUtil {
         }
         mgLog.d("checkFullBackup timeTrigger="+timeTrigger+" days="+days+" trackNumberTrigger="+trackNumberTrigger+" cntNewFiles="+cntNewFiles);
         if (timeTrigger || trackNumberTrigger){
-            BackupUtil.trigger(context, persistenceManager, false, prefLastFullBackupTime);
+            DialogView dialogView = activity.findViewById(R.id.dialog_parent);
+            dialogView.lock(() -> dialogView
+                    .setTitle("Full GPX Backup")
+                    .setMessage("""
+                            It's time to make a full backup of gpx tracks. Once the backup_full.zip is created it will be offered via \
+                            the Android Share mechanism. It's recommended to use your google drive as a target).\s
+                            
+                            If you want to restore the archive later, just copy this file via the Android share \
+                            mechanism back to the MGMapViewer/backup/restore/ folder and restart the app.""")
+                    .setPositive("OK", evt -> trigger(activity, persistenceManager, false, prefLastFullBackupTime))
+                    .setNegative("Cancel", null)
+                    .show());
         }
     }
 
-    public static ZipParameters addZipParametersForEncryption(ZipParameters zipParameters){
-        zipParameters.setEncryptFiles(true);
-        zipParameters.setEncryptionMethod(EncryptionMethod.AES);
-        // Below line is optional. AES 256 is used by default. You can override it to use AES 128. AES 192 is supported only for extracting.
-        zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
-        return zipParameters;
+    public static void checkLatestBackup(Context context, PersistenceManager persistenceManager, Pref<Long> prefLastFullBackupTime){
+        String backupFileName = getBackupFileName(true);
+        File backupFile = new File(persistenceManager.getBackupDir(), backupFileName);
+        long minutes = (System.currentTimeMillis() - backupFile.lastModified()) / (1000L*60L);
+        mgLog.d("checkLatestBackup minutes="+minutes);
+        if ( minutes >= 60L ){ // 1 hours
+            BackupUtil.trigger(context, persistenceManager, true, prefLastFullBackupTime);
+        }
     }
+
     public static void trigger(Context context, PersistenceManager persistenceManager, boolean latest, Pref<Long> prefLastFullBackupTime){
         String backupFileName = getBackupFileName(latest);
         mgLog.d("trigger prepare backup");
@@ -101,9 +114,11 @@ public class BackupUtil {
                             ArrayList<File> files = PersistenceManager.getFilesRecursive(persistenceManager.getTrackGpxDir(),PersistenceManager.SUFFIX_GPX);
                             if (files.isEmpty()) return;
                             files.sort( (f1,f2)-> -(Long.compare(f1.lastModified(),f2.lastModified())) );
-                            File last = (latest &&  (files.size() > 365))?files.get(365):files.get(files.size()-1);
+                            int latestIdx = (latest &&  (files.size() > 365))?365:files.size()-1;
+                            while (latest && (latestIdx != 0) && (files.get(latestIdx).lastModified() < prefLastFullBackupTime.getValue())) latestIdx--; // latest backup only files newer than last full backup
+                            long latestModified = files.get(latestIdx).lastModified();
                             ZipParameters zipParameters = new ZipParameters();
-                            zipParameters.setExcludeFileFilter(file -> file.isDirectory()? PersistenceManager.checkFilesOlderThan(file,last.lastModified()):file.lastModified() < last.lastModified());
+                            zipParameters.setExcludeFileFilter(file -> file.isDirectory()? PersistenceManager.checkFilesOlderThan(file,latestModified):file.lastModified() < latestModified);
                             zipFile.setRunInThread(true);
                             ProgressMonitor progressMonitor = zipFile.getProgressMonitor();
                             zipFile.addFolder(persistenceManager.getTrackGpxDir(), zipParameters);
@@ -122,11 +137,14 @@ public class BackupUtil {
 
                         if (success){
                             try (ZipFile zipFile = new ZipFile( backupFile, (clazz+PW).toCharArray() )){
-                                ZipParameters zipParameters = addZipParametersForEncryption( new ZipParameters() );
+                                ZipParameters zipParameters = new ZipParameters();
+                                zipParameters.setEncryptFiles(true);
+                                zipParameters.setEncryptionMethod(EncryptionMethod.AES);
+                                // Below line is optional. AES 256 is used by default. You can override it to use AES 128. AES 192 is supported only for extracting.
+                                zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
                                 zipFile.setRunInThread(true);
                                 ProgressMonitor progressMonitor = zipFile.getProgressMonitor();
                                 zipFile.addFile(backupFileTemp, zipParameters);
-
                                 while (!progressMonitor.getState().equals(ProgressMonitor.State.READY) || (progressMonitor.getResult() == null)) {
                                     mgLog.d("encrypt progress: "+progressMonitor.getState()+" "+progressMonitor.getWorkCompleted()+" "+progressMonitor.getTotalWork()+" "+progressMonitor.getPercentDone());
                                     setProgress( 50 + progressMonitor.getPercentDone()/2 );
@@ -138,7 +156,7 @@ public class BackupUtil {
                                         mgLog.d("prepare backup - copy to dataBackupDir "+backupFileName+" to "+dataBackupDir.getAbsolutePath());
                                         IOUtil.copyFile( backupFile, new File(dataBackupDir, backupFileName) );
                                     } else { // full backup
-                                        triggerFullBackup(context, backupFile, prefLastFullBackupTime);
+                                        triggerFullBackupShare(context, backupFile, prefLastFullBackupTime);
                                     }
                                 }
                             }
@@ -229,7 +247,7 @@ public class BackupUtil {
 
                                 if (success){
                                     File restoreGpxDir = new File(persistenceManager.getRestoreDir(), "gpx");
-                                    if (!PersistenceManager.forceDelete(restoreGpxDir)) mgLog.e("delete failed for restoreGpxDir "+restoreGpxDir.getAbsolutePath());
+                                    PersistenceManager.forceDelete(restoreGpxDir); // should not exists, but just in case ...
                                     try (ZipFile zipFile = new ZipFile( backupFileTemp )){
                                         zipFile.setRunInThread(false);
                                         ProgressMonitor progressMonitor = zipFile.getProgressMonitor();
@@ -271,21 +289,6 @@ public class BackupUtil {
             }
         }
 
-    }
-
-    private static void triggerFullBackup(Context context, File fullBackupFile, Pref<Long> prefLastFullBackupTime){
-        if (context instanceof Activity activity){
-            String fileSize = String.format(Locale.ENGLISH,"%f.1MB", fullBackupFile.length()/(1024*1024f));
-            DialogView dialogView = activity.findViewById(R.id.dialog_parent);
-            dialogView.lock(() -> dialogView
-                    .setTitle("Full GPX Backup")
-                    .setMessage("It's time to save the full backup of gpx tracks ("+fileSize+") (recommended to your google drive). \n\nIf you want to restore them later, just copy this file via the Android share mechanism back to the MGMapViewer/backup/restore/ folder and restart the app.")
-                    .setPositive("OK", evt -> triggerFullBackupShare(context, fullBackupFile, prefLastFullBackupTime))
-                    .setNegative("Cancel", null)
-                    .show());
-        } else {
-            triggerFullBackupShare(context, fullBackupFile, prefLastFullBackupTime);
-        }
     }
 
     private static void triggerFullBackupShare(Context context, File fullBackupFile, Pref<Long> prefLastFullBackupTime){
