@@ -37,7 +37,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.util.BackupUtil;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -145,7 +144,7 @@ public class PersistenceManager {
 
     private final MGMapApplication application;
     private final Context context;
-
+    private boolean firstRun = false;
 
     private File baseDir;
     private final File appDir;
@@ -175,19 +174,23 @@ public class PersistenceManager {
         baseDir = context.getExternalFilesDir(null);
         mgLog.i("Default Storage: "+getBaseDir().getAbsolutePath());
 
-        if (! new File(baseDir, sAppDir).exists()){
-            mgLog.i("Default Storage not found - check alternatives");
+        File appDir2Check = new File(baseDir, sAppDir);
+        if (! appDir2Check.exists()){
+            firstRun = true;
+            mgLog.i("Default App Storage ("+appDir2Check.getAbsolutePath()+") not found - check alternatives");
             for (File f : context.getExternalFilesDirs(null)){
-                boolean exists = new File(f, sAppDir).exists();
-                mgLog.i("check Storage: "+baseDir.getAbsolutePath()+" ->exists: "+exists);
+                appDir2Check = new File(f, sAppDir);
+                boolean exists = appDir2Check.exists();
+                mgLog.i("check App Storage: "+appDir2Check.getAbsolutePath()+" ->exists: "+exists);
                 if (exists){
                     baseDir = f;
+                    firstRun = false;
+                    break;
                 }
-                mgLog.i("f= "+f.getAbsolutePath());
             }
         }
 
-        mgLog.i("Storage: "+baseDir.getAbsolutePath());
+        mgLog.i("Storage baseDir="+baseDir.getAbsolutePath()+" firstRun="+firstRun);
 
         appDir = createIfNotExists(baseDir, sAppDir);
         File trackDir = createIfNotExists(getAppDir(), "track");
@@ -215,10 +218,11 @@ public class PersistenceManager {
         File backupBaseDir = createIfNotExists(appDir, "backup");
         backupDir = createIfNotExists(backupBaseDir, "backup");
         restoreDir = createIfNotExists(backupBaseDir, "restore");
-
-        BackupUtil.restore(application, this);
     }
 
+    public boolean isFirstRun() {
+        return firstRun;
+    }
     public File getBaseDir(){
         return baseDir;
     }
