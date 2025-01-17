@@ -49,7 +49,7 @@ public class BaseTestCase {
 
     protected static Handler timer = new Handler(Looper.getMainLooper());
 
-    protected static int TIMEOUT_ANIMATION = 800;
+    protected static int TIMEOUT_ANIMATION = 700;
 
     public record PointOfView(Point point, View view){}
 
@@ -89,6 +89,7 @@ public class BaseTestCase {
         lm.startMatch(regexs, matches);
         prefMenuInflated = mgMapApplication.getPrefCache().get(R.string.FSControl_pref_menu_inflated, false);
         prefMetaLoading = mgMapApplication.getPrefCache().get(R.string.MGMapApplication_pref_MetaData_loading, true);
+        mgMapApplication.getPrefCache().get(R.string.preferences_last_full_backup_time, 0L).setValue(System.currentTimeMillis()); // prevent full backup during test
         mgLog.i(this.getClass().getName() + "." + name.getMethodName() + " start");
     }
 
@@ -322,7 +323,7 @@ public class BaseTestCase {
             }
 
         });
-        SystemClock.sleep(duration+200);
+        SystemClock.sleep(duration+300);
         currentPos = pos;
         return pov;
     }
@@ -362,7 +363,7 @@ public class BaseTestCase {
                 testView.getClick().setScaleY(1);
             });
         },600);
-        SystemClock.sleep(TIMEOUT_ANIMATION);
+        SystemClock.sleep(TIMEOUT_ANIMATION+100);
         mgLog.d("pos="+pov.point());
         return pov;
     }

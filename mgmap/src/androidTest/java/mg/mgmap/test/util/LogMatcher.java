@@ -54,11 +54,13 @@ public class LogMatcher implements MGLogObserver {
     public boolean getResult(){
         boolean success = (matches.size() == regexs.size());
         mgLog.i ( (success?"passed":"failed")+" (lineCnt: "+lineCnt+")" );
+        int cnt = 0;
         for (String s : regexs){
-            mgLog.any(success?MGLog.Level.VERBOSE:MGLog.Level.INFO, " R "+s);
+            mgLog.any(success?MGLog.Level.VERBOSE:MGLog.Level.INFO, " R "+(++cnt)+" "+s);
         }
+        cnt = 0;
         for (String s : matches){
-            mgLog.any(success?MGLog.Level.VERBOSE:MGLog.Level.INFO, " M "+s);
+            mgLog.any(success?MGLog.Level.VERBOSE:MGLog.Level.INFO, " M "+(++cnt)+" "+s);
         }
         return success;
     }
