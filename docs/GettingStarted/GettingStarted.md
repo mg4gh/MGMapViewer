@@ -6,7 +6,7 @@
 
 Just start the app the first time. In the bottom you see the menu quick controls and above the status line with very few information. 
    In the background you see a world map, which contains mainly the land/see areas.
-   Additionally you see the initial map download hint.  
+   Additionally you see the initial map download hint.
    Once you read and understood this, you can close the hint with the "Got it" button. 
  
 As the hint advised use <img src="../icons/group_task.svg" width="24"/> and <img src="../icons/download.svg" width="24"/>
@@ -19,7 +19,7 @@ If you want to download e.g. the map of Berlin, just press the <span style="colo
 
    <img src="./03_OpenAndroMaps_Berlin.png" width="300" />&nbsp;
 
-With this click the MGMappViewer app opens again and you will be ask to confirm the download of the requested map.
+With this click you return to the map view and you will be ask to confirm the download of the requested map.
    The download itself may take some time (depending on the map size and your internet speed). For long lasting downloads there is a 
    countdown of the remaining download effort in the status line visible.
    Once the download is finish you'll see the result.  
