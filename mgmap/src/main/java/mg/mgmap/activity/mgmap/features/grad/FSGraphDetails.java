@@ -53,11 +53,11 @@ public class FSGraphDetails extends FeatureService {
         @Override
         public boolean onTap(WriteablePointModel pmTap) {
             unregisterAll();
-            boolean res = false;
+            final boolean[] res = {false};
             if (verifyGraphDetailsVisibility()) {
-                res = showGraphDetails( pmTap );
+                new Thread(() -> res[0] = showGraphDetails( pmTap )).start();
             }
-            return res;
+            return res[0];
         }
     }
 
