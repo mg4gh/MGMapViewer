@@ -194,7 +194,8 @@ public class BackupUtil {
             mgLog.d("restore backup - check started for "+backupFileName);
             File dataBackupDir = new File(context.getFilesDir(), "backup");
             File dataBackupFile = new File(dataBackupDir, backupFileName);
-            mgLog.d("restore backup - dataBackupFile="+dataBackupFile.getAbsolutePath()+" dataBackupDir="+dataBackupDir.exists()+" dataBackupFile+"+dataBackupFile.exists()+" dataRestoreMarker="+dataRestoreMarker.exists());
+            mgLog.d("restore backup - dataBackupFile="+dataBackupFile.getAbsolutePath()+" dataBackupDir.exists="+dataBackupDir.exists()
+                    +" dataBackupFile.exists="+dataBackupFile.exists()+" dataRestoreMarker="+dataRestoreMarker.exists());
             if (!dataRestoreMarker.exists()){
                 File backupFile = new File(persistenceManager.getRestoreDir(), backupFileName);
                 if (dataBackupDir.exists() && dataBackupFile.exists()){
