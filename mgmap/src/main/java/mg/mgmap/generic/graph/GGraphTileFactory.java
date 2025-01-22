@@ -146,11 +146,16 @@ public class GGraphTileFactory {
     public GGraphTile getGGraphTile(int tileX, int tileY, boolean load){
         GGraphTile gGraphTile = gTileCache.get(tileX, tileY);
         if (load && (gGraphTile == null)){
-            gGraphTile = loadGGraphTile(tileX, tileY);
-            if (prefSmooth4Routing.getValue()){
-                smoothGGraphTile(gGraphTile);
+            synchronized (this){  // prevent parallel access from routing thread and FSGraphDetails
+                gGraphTile = gTileCache.get(tileX, tileY); // check, if tile is meanwhile in cache
+                if (gGraphTile == null) {
+                    gGraphTile = loadGGraphTile(tileX, tileY);
+                    if (prefSmooth4Routing.getValue()){
+                        smoothGGraphTile(gGraphTile);
+                    }
+                    gTileCache.put(tileX, tileY, gGraphTile);
+                }
             }
-            gTileCache.put(tileX, tileY, gGraphTile);
         }
         return gGraphTile;
     }
