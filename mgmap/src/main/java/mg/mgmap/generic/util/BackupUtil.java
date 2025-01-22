@@ -55,14 +55,17 @@ public class BackupUtil {
                 break;
             }
         }
-        mgLog.d("checkFullBackup timeTrigger="+timeTrigger+" days="+days+" trackNumberTrigger="+trackNumberTrigger+" cntNewFiles="+cntNewFiles);
-        if (timeTrigger || trackNumberTrigger){
+        String backupFileName = getBackupFileName(false);
+        File backupFile = new File(persistenceManager.getBackupDir(), backupFileName);
+        boolean noBackupFileTrigger = !backupFile.exists() && (files.size() > 10);
+        mgLog.d("checkFullBackup timeTrigger="+timeTrigger+" days="+days+" trackNumberTrigger="+trackNumberTrigger+" cntNewFiles="+cntNewFiles+" noBackupFileTrigger="+noBackupFileTrigger+" backupFile.exists="+backupFile.exists()+" files.size="+files.size());
+        if (timeTrigger || trackNumberTrigger || noBackupFileTrigger){
             DialogView dialogView = activity.findViewById(R.id.dialog_parent);
             dialogView.lock(() -> dialogView
                     .setTitle("Full GPX Backup")
                     .setMessage("""
                             It's time to make a full backup of gpx tracks. Once the backup_full.zip is created it will be offered via \
-                            the Android Share mechanism. It's recommended to use your google drive as a target).\s
+                            the Android Share mechanism. It's recommended to use your google drive as a target.\s
                             
                             If you want to restore the archive later, just copy this file via the Android share \
                             mechanism back to the MGMapViewer/backup/restore/ folder and restart the app.""")
@@ -76,8 +79,8 @@ public class BackupUtil {
         String backupFileName = getBackupFileName(true);
         File backupFile = new File(persistenceManager.getBackupDir(), backupFileName);
         long minutes = (System.currentTimeMillis() - backupFile.lastModified()) / (1000L*60L);
-        mgLog.d("checkLatestBackup minutes="+minutes);
-        if ( minutes >= 60L ){ // 1 hours
+        mgLog.d("checkLatestBackup minutes="+minutes+" backupFile.exists="+backupFile.exists());
+        if ( (minutes >= 60L) || !backupFile.exists() ){ // 1 hours
             BackupUtil.trigger(context, persistenceManager, true, prefLastFullBackupTime);
         }
     }

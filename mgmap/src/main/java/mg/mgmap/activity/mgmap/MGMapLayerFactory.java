@@ -112,7 +112,7 @@ public class MGMapLayerFactory {
         sharedPreferences = activity.getSharedPreferences();
         for (int i=0; i<NUM_MAP_LAYERS; i++) {
             String prefKey = getPrefKey4Idx(i);
-            String defaultValue = prefKey.equals(getPrefKey4Idx(2))?"MAPSFORGE: all":"none";
+            String defaultValue = prefKey.equals(getPrefKey4Idx(1))?"MAPSFORGE: all":"none";
             String key = sharedPreferences.getString(prefKey, defaultValue);
             sharedPreferences.edit().putString(prefKey, key).apply(); // so if pref was not existing, then default value "none" is now set - this helps to prevent recreate activity on initial set
         }
