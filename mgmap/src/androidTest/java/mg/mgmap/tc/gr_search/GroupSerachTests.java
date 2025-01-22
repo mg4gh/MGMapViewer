@@ -130,7 +130,7 @@ public class GroupSerachTests extends BaseTestCase {
         SystemClock.sleep(1000);
         Assert.assertEquals(currentActivity.findViewById(R.id.search_result1).getVisibility(), View.INVISIBLE);
 //        Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
-        Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(" "), ViewActions.pressImeActionButton());
+        Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
         animateToViewAndClick(R.id.search_result1);
 
