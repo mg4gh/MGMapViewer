@@ -80,7 +80,7 @@ public class GGraph{
         return null; // should not happen (given neighbourNode is not neighbour to node
     }
 
-    public ArrayList<GNode> segmentNodes(GNode node1, GNode node2, int closeThreshold){
+    public ArrayList<GNode> segmentNodes(GNode node1, GNode node2, int closeThreshold, boolean limitToTile){
         ArrayList<GNode> segmentNodes = new ArrayList<>();
         segmentNodes.add(node1);
         segmentNodes.add(node2);
@@ -90,6 +90,7 @@ public class GGraph{
         double distance = 0;
         while ( (nodeC = oppositeNode(nodeB, nodeA)) != null){
             if (segmentNodes.contains(nodeC)) break;
+            if (limitToTile && !GNode.sameTile(nodeC,nodeA)) break;
             nodeA = nodeB;
             nodeB = nodeC;
             segmentNodes.add(nodeC);
@@ -101,6 +102,7 @@ public class GGraph{
         distance = 0;
         while ( (nodeC = oppositeNode(nodeB, nodeA)) != null){
             if (segmentNodes.contains(nodeC)) break;
+            if (limitToTile && !GNode.sameTile(nodeC,nodeA)) break;
             nodeA = nodeB;
             nodeB = nodeC;
             segmentNodes.add(0, nodeC);

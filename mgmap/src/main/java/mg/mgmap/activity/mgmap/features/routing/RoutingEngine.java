@@ -482,7 +482,7 @@ public class RoutingEngine {
             ApproachModel approach = listApproaches.get(appIdx);
             if (!dropApproaches.contains( approach )){
                 GGraphTile gGraphTile = approach.getNode1().getTile(gFactory);
-                ArrayList<GNode> segmentNodes = gGraphTile.segmentNodes(approach.getNode1(), approach.getNode2(), closeThreshold);
+                ArrayList<GNode> segmentNodes = gGraphTile.segmentNodes(approach.getNode1(), approach.getNode2(), closeThreshold, false);
                 for (int idx=appIdx+1; idx<listApproaches.size(); idx++){
                     ApproachModel other = listApproaches.get(idx);
                     if (segmentNodes.contains(other.getNode1()) && segmentNodes.contains(other.getNode2())){

@@ -163,21 +163,19 @@ public class FSGraphDetails extends FeatureService {
 
         //noinspection ConstantConditions
         if ((bestNode != null) && (bestNeighbour != null) && (bestTile != null)){ // second and third condition are automatically true
-            ArrayList<GNode> nodes = bestTile.segmentNodes(bestNode,bestNeighbour.getNeighbourNode(),Integer.MAX_VALUE);
+            ArrayList<GNode> nodes = bestTile.segmentNodes(bestNode,bestNeighbour.getNeighbourNode(),Integer.MAX_VALUE, true);
 
             GNode lastNode = null;
             for (GNode node : nodes){
-                if (GNode.sameTile(bestNode,node)){
-                    multiPointModel.addPoint(node);
-                    if (lastNode != null){
-                        final GNode last = lastNode;
-                        double distance = PointModelUtil.distance(last,node);
-                        double verticalDistance = PointModelUtil.verticalDistance(last, node);
-                        mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost(),last.getNeighbour(node).getWayAttributs().toDetailedString()));
-                    }
-                    mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
-                    lastNode = node;
+                multiPointModel.addPoint(node);
+                if (lastNode != null){
+                    final GNode last = lastNode;
+                    double distance = PointModelUtil.distance(last,node);
+                    double verticalDistance = PointModelUtil.verticalDistance(last, node);
+                    mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost(),last.getNeighbour(node).getWayAttributs().toDetailedString()));
                 }
+                mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
+                lastNode = node;
             }
         }
         return (bestTile==null)?null:bestTile.getTileBBox();
