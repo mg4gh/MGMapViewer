@@ -159,13 +159,13 @@ public class MultiMapDataStore extends MapDataStore {
                 }
                 yield null;
             }
-            case RETURN_ALL -> readLabels(tile, false);
-            case FAST_DETAILS, DEDUPLICATE -> readLabels(tile, true);
+            case RETURN_ALL -> readAllLabels(tile);
+            case FAST_DETAILS, DEDUPLICATE -> readAllLabels(tile).deduplicate();
         };
 
     }
 
-    private MapReadResult readLabels(Tile tile, boolean deduplicate) {
+    private MapReadResult readAllLabels(Tile tile) {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
@@ -185,7 +185,7 @@ public class MultiMapDataStore extends MapDataStore {
                     continue;
                 }
                 mapReadResult.isWater = mapReadResult.isWater & result.isWater;
-                mapReadResult.add(result, deduplicate);
+                mapReadResult.add(result);
             }
 
             if (mdb.supportsFullTile(tile)) {
@@ -209,13 +209,13 @@ public class MultiMapDataStore extends MapDataStore {
                 }
                 yield null;
             }
-            case RETURN_ALL -> readLabels(upperLeft, lowerRight, false);
-            case FAST_DETAILS, DEDUPLICATE -> readLabels(upperLeft, lowerRight, true);
+            case RETURN_ALL -> readAllLabels(upperLeft, lowerRight);
+            case FAST_DETAILS, DEDUPLICATE -> readAllLabels(upperLeft, lowerRight).deduplicate();
         };
 
     }
 
-    private MapReadResult readLabels(Tile upperLeft, Tile lowerRight, boolean deduplicate) {
+    private MapReadResult readAllLabels(Tile upperLeft, Tile lowerRight) {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
@@ -238,7 +238,7 @@ public class MultiMapDataStore extends MapDataStore {
                     continue;
                 }
                 mapReadResult.isWater = mapReadResult.isWater & result.isWater;
-                mapReadResult.add(result, deduplicate);
+                mapReadResult.add(result);
             }
 
             if (mdb.supportsFullArea(
@@ -262,12 +262,12 @@ public class MultiMapDataStore extends MapDataStore {
                 }
                 yield null;
             }
-            case RETURN_ALL -> readMapData(tile, false);
-            case FAST_DETAILS, DEDUPLICATE -> readMapData(tile, true);
+            case RETURN_ALL -> readAllMapData(tile);
+            case FAST_DETAILS, DEDUPLICATE -> readAllMapData(tile).deduplicate();
         };
     }
 
-    private MapReadResult readMapData(Tile tile, boolean deduplicate) {
+    private MapReadResult readAllMapData(Tile tile) {
 //        mgLog.v(  " x="+tile.tileX+" y="+tile.tileY+" z="+tile.zoomLevel+ " "+tile.getBoundingBox());
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
@@ -295,10 +295,7 @@ public class MultiMapDataStore extends MapDataStore {
                         continue;
                     }
                     mapReadResult.isWater = mapReadResult.isWater & result.isWater;
-                    mapReadResult.add(result, deduplicate);
-//                    if (mdb instanceof ExtendedMapFile extendedMapFile){
-//                        mgLog.v(" id="+extendedMapFile.getId()+" mapReadResult.ways.size="+mapReadResult.ways.size()+" result.ways.size()="+result.ways.size());
-//                    }
+                    mapReadResult.add(result);
                 }
 
                 if (mdb.supportsFullTile(tile)) {
@@ -324,12 +321,12 @@ public class MultiMapDataStore extends MapDataStore {
                 }
                 yield null;
             }
-            case RETURN_ALL -> readMapData(upperLeft, lowerRight, false);
-            case FAST_DETAILS, DEDUPLICATE -> readMapData(upperLeft, lowerRight, true);
+            case RETURN_ALL -> readAllMapData(upperLeft, lowerRight);
+            case FAST_DETAILS, DEDUPLICATE -> readAllMapData(upperLeft, lowerRight).deduplicate();
         };
     }
 
-    private MapReadResult readMapData(Tile upperLeft, Tile lowerRight, boolean deduplicate) {
+    private MapReadResult readAllMapData(Tile upperLeft, Tile lowerRight) {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
@@ -352,7 +349,7 @@ public class MultiMapDataStore extends MapDataStore {
                     continue;
                 }
                 mapReadResult.isWater = mapReadResult.isWater & result.isWater;
-                mapReadResult.add(result, deduplicate);
+                mapReadResult.add(result);
             }
 
             if (mdb.supportsFullArea(
@@ -376,13 +373,13 @@ public class MultiMapDataStore extends MapDataStore {
                 }
                 yield null;
             }
-            case RETURN_ALL -> readPoiData(tile, false);
-            case FAST_DETAILS, DEDUPLICATE -> readPoiData(tile, true);
+            case RETURN_ALL -> readAllPoiData(tile);
+            case FAST_DETAILS, DEDUPLICATE -> readAllPoiData(tile).deduplicate();
         };
 
     }
 
-    private MapReadResult readPoiData(Tile tile, boolean deduplicate) {
+    private MapReadResult readAllPoiData(Tile tile) {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
@@ -402,7 +399,7 @@ public class MultiMapDataStore extends MapDataStore {
                     continue;
                 }
                 mapReadResult.isWater = mapReadResult.isWater & result.isWater;
-                mapReadResult.add(result, deduplicate);
+                mapReadResult.add(result);
             }
 
             if (mdb.supportsFullTile(tile)) {
@@ -426,13 +423,13 @@ public class MultiMapDataStore extends MapDataStore {
                 }
                 yield null;
             }
-            case RETURN_ALL -> readPoiData(upperLeft, lowerRight, false);
-            case FAST_DETAILS, DEDUPLICATE -> readPoiData(upperLeft, lowerRight, true);
+            case RETURN_ALL -> readAllPoiData(upperLeft, lowerRight);
+            case FAST_DETAILS, DEDUPLICATE -> readAllPoiData(upperLeft, lowerRight).deduplicate();
         };
 
     }
 
-    private MapReadResult readPoiData(Tile upperLeft, Tile lowerRight, boolean deduplicate) {
+    private MapReadResult readAllPoiData(Tile upperLeft, Tile lowerRight) {
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
@@ -455,7 +452,7 @@ public class MultiMapDataStore extends MapDataStore {
                     continue;
                 }
                 mapReadResult.isWater = mapReadResult.isWater & result.isWater;
-                mapReadResult.add(result, deduplicate);
+                mapReadResult.add(result);
             }
 
             if (mdb.supportsFullArea(

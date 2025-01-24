@@ -23,6 +23,7 @@ import org.mapsforge.map.datastore.Way;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
+import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -40,7 +41,7 @@ public class GGraphTileFactory {
 
     final static int CACHE_LIMIT = 2000;
     private final byte ZOOM_LEVEL = 15;
-    private final int TILE_SIZE = 256;
+    private final int TILE_SIZE = MapViewerBase.TILE_SIZE;
     static final int LOW_MEMORY_THRESHOLD = 1;
 
     static int getKey(int tileX,int tileY){

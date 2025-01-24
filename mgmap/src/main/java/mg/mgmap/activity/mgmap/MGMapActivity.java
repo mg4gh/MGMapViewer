@@ -43,6 +43,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.view.MapView;
 
@@ -144,8 +145,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     protected XmlRenderThemeStyleMenu renderThemeStyleMenu;
 
     MGMapLayerFactory mapLayerFactory = null;
-    /** Reference to the MapViewUtility - provides so services around the MapView object */
-    MapViewUtility mapViewUtility = null;
 
     private PrefCache prefCache;
 
@@ -829,6 +828,12 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         layers.add(new MVLayer() {
             @Override
             protected boolean onTap(WriteablePointModel point) {
+                byte zoomLevel = (byte) MGMapActivity.this.getMapViewUtility().getZoomLevel();
+                long mapSize = MercatorProjection.getMapSize(zoomLevel, TILE_SIZE);
+                int tileX = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( point.getLon() , mapSize) , zoomLevel, TILE_SIZE);
+                int tileY = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( point.getLat() , mapSize) , zoomLevel, TILE_SIZE);
+                mgLog.d("tap Position: "+point);
+                mgLog.d("tap Tile: x="+tileX+" y="+tileY+" z="+zoomLevel);
                 if (getFS(FSPosition.class).check4MapMovingOff(point)) return true;
                 TrackLogRef ref = selectCloseTrack( point );
                 if (ref.getTrackLog() != null){

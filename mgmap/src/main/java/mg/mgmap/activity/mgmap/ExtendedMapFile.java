@@ -39,7 +39,7 @@ public class ExtendedMapFile extends MapFile {
     }
 
     private static final byte ZOOM_LEVEL = 4;
-    private static final int TILE_SIZE = 256;
+    private static final int TILE_SIZE = MapViewerBase.TILE_SIZE;
 
 
     public ExtendedMapFile(String id, File file, String language){

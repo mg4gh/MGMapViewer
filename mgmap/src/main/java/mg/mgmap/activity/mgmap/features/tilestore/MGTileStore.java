@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.lang.invoke.MethodHandles;
 
+import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -35,7 +36,7 @@ public abstract class MGTileStore extends TileStore {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     TileCache tileCache = null;
-    protected final int tileSize = 256;
+    protected final int tileSize = MapViewerBase.TILE_SIZE;
     final File storeDir;
 
     public MGTileStore(File storeDir, String suffix, GraphicFactory graphicFactory){

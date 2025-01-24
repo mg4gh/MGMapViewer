@@ -18,12 +18,11 @@ import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.mapsforge.map.android.util.AndroidPreferences;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.model.DisplayModel;
-import org.mapsforge.map.model.common.PreferencesFacade;
+import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
 import org.mapsforge.map.scalebar.NauticalUnitAdapter;
@@ -32,6 +31,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
+import mg.mgmap.activity.mgmap.util.MapViewUtility;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.R;
@@ -45,8 +47,10 @@ public abstract class MapViewerBase extends AppCompatActivity{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
+    public static final int TILE_SIZE = 256;
+
     protected MapView mapView;
-    protected PreferencesFacade preferencesFacade;
+    protected MapViewUtility mapViewUtility;
     protected SharedPreferences sharedPreferences;
     protected final List<TileCache> tileCaches = new ArrayList<>();
 
@@ -69,6 +73,7 @@ public abstract class MapViewerBase extends AppCompatActivity{
     /** MGMapViewer use exactly one mapView object, which is initialized here */
     protected void initMapView() {
         mapView = findViewById(R.id.mapView);
+        mapViewUtility = new MapViewUtility(this, mapView);
         restoreMapViewModel();
         mapView.setClickable(true);
         mapView.getMapScaleBar().setVisible(true);
@@ -78,19 +83,27 @@ public abstract class MapViewerBase extends AppCompatActivity{
     }
 
     protected void saveMapViewModel(){
-        mapView.getModel().save(this.preferencesFacade);
-        this.preferencesFacade.save();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("Mapsforge.position", mapViewUtility.getCenter().getLaLo());
+        editor.putInt("Mapsforge.zoom", mapViewUtility.getZoomLevel());
+        editor.apply();
     }
 
     private void restoreMapViewModel(){
-        mapView.getModel().init(this.preferencesFacade);
+        PointModel pmDefaultCenter = new PointModelImpl(49.4057, 8.6789);
+        PointModel pmCenter = PointModelImpl.createFromLaLo(sharedPreferences.getLong("Mapsforge.position",pmDefaultCenter.getLaLo()));
+        mapViewUtility.setCenter(pmCenter);
+        byte zoomLevel = (byte) sharedPreferences.getInt("Mapsforge.zoom", 5);
+        mapViewUtility.setZoomLevel(zoomLevel);
+        MapViewPosition mvp = mapView.getModel().mapViewPosition;
+        mgLog.d("initial Position: "+mvp.getMapPosition());
+        mvp.setZoomLevelMax(MapViewUtility.ZOOM_LEVEL_MAX);
+        mvp.setZoomLevelMin(MapViewUtility.ZOOM_LEVEL_MIN);
     }
 
 
     protected void createSharedPreferences() {
         this.sharedPreferences = MGMapApplication.getByContext(this).getSharedPreferences();
-        String preferencesName = MGMapApplication.getByContext(this).getPreferencesName();
-        this.preferencesFacade = new AndroidPreferences(this.getSharedPreferences( preferencesName+"_"+this.getClass().getSimpleName(), MODE_PRIVATE));
     }
 
     protected float getUserScaleFactor(){
