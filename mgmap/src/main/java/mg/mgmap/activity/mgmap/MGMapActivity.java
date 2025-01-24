@@ -52,7 +52,6 @@ import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 
 import org.mapsforge.map.model.DisplayModel;
-import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
@@ -84,7 +83,6 @@ import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogRefZoom;
@@ -223,7 +221,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         this.sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         mapViewUtility = new MapViewUtility(this, mapView);
-        initializePosition();
 
         // don't change orientation when device is rotated
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
@@ -735,20 +732,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         }
         mgLog.d("Mapsforge number of render threads: Parameters.NUMBER_OF_THREADS="+Parameters.NUMBER_OF_THREADS);
     }
-
-    protected void initializePosition() {
-        MapViewPosition mvp = mapView.getModel().mapViewPosition;
-        if ((mvp.getCenter().getLatitude() == 0) && (mvp.getCenter().getLongitude() == 0)){
-            mapViewUtility.setCenter(new PointModelImpl(49.4057, 8.6789));
-            mvp.setZoomLevel((byte)5);
-        }
-        mgLog.d("initial Position: "+mvp.getMapPosition());
-        mvp.setZoomLevelMax(MapViewUtility.ZOOM_LEVEL_MAX);
-        mvp.setZoomLevelMin(MapViewUtility.ZOOM_LEVEL_MIN);
-    }
-
-
-
 
     protected XmlRenderTheme getRenderTheme() {
         String themeName = "";

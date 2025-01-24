@@ -48,6 +48,8 @@ public abstract class MapViewerBase extends AppCompatActivity{
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static final int TILE_SIZE = 256;
+    public static final String MAPSFORGE_POSITION = "Mapsforge.position";
+    public static final String MAPSFORGE_ZOOM = "Mapsforge.zoom";
 
     protected MapView mapView;
     protected MapViewUtility mapViewUtility;
@@ -84,16 +86,32 @@ public abstract class MapViewerBase extends AppCompatActivity{
 
     protected void saveMapViewModel(){
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putLong("Mapsforge.position", mapViewUtility.getCenter().getLaLo());
-        editor.putInt("Mapsforge.zoom", mapViewUtility.getZoomLevel());
+        editor.putLong(MAPSFORGE_POSITION, mapViewUtility.getCenter().getLaLo());
+        editor.putInt(MAPSFORGE_ZOOM, mapViewUtility.getZoomLevel());
         editor.apply();
     }
 
     private void restoreMapViewModel(){
-        PointModel pmDefaultCenter = new PointModelImpl(49.4057, 8.6789);
-        PointModel pmCenter = PointModelImpl.createFromLaLo(sharedPreferences.getLong("Mapsforge.position",pmDefaultCenter.getLaLo()));
+        PointModel pmCenterDefault = new PointModelImpl(49.4057, 8.6789);
+        byte zoomLevelDefault = 5;
+
+        // just for migration from old preferences to actual one - can be removed after publish of version code 37
+        String preferencesName = MGMapApplication.getByContext(this).getPreferencesName();
+        SharedPreferences old = getSharedPreferences( preferencesName+"_"+this.getClass().getSimpleName(), MODE_PRIVATE);
+        double oldLatitude = Double.longBitsToDouble(old.getLong("latitude", Double.doubleToLongBits(PointModel.NO_LAT_LONG)));
+        double oldLongitude = Double.longBitsToDouble(old.getLong("longitude", Double.doubleToLongBits(PointModel.NO_LAT_LONG)));
+        int oldZoomLevel = old.getInt("zoomLevel", -1);
+        if ((-PointModel.NO_LAT_LONG < oldLatitude) && (oldLatitude < PointModel.NO_LAT_LONG)
+                && (-PointModel.NO_LAT_LONG < oldLongitude) && (oldLongitude < PointModel.NO_LAT_LONG)
+                && (MapViewUtility.ZOOM_LEVEL_MIN <= oldZoomLevel) && (oldZoomLevel <= MapViewUtility.ZOOM_LEVEL_MAX)){ // consistency check of old position
+            pmCenterDefault = new PointModelImpl(oldLatitude, oldLongitude);
+            zoomLevelDefault = (byte)oldZoomLevel;
+        }
+
+        // restore mapsforge position and zom level
+        PointModel pmCenter = PointModelImpl.createFromLaLo(sharedPreferences.getLong(MAPSFORGE_POSITION,pmCenterDefault.getLaLo()));
         mapViewUtility.setCenter(pmCenter);
-        byte zoomLevel = (byte) sharedPreferences.getInt("Mapsforge.zoom", 5);
+        byte zoomLevel = (byte) sharedPreferences.getInt(MAPSFORGE_ZOOM, zoomLevelDefault);
         mapViewUtility.setZoomLevel(zoomLevel);
         MapViewPosition mvp = mapView.getModel().mapViewPosition;
         mgLog.d("initial Position: "+mvp.getMapPosition());
