@@ -36,7 +36,7 @@
     <string name="btHideMarkerTrack">MARKER\nTRACK</string>
 
 
-    <string name="ctx_stat_del_track">Delete track</string>
+    <string name="ctx_stat_del_track">Delete tracks</string>
     <string name="ctx_stat_stl_track">Show track</string>
     <string name="ctx_stat_mtl_track">Marker track</string>
     <string name="ctx_stat_shr_track">Share track</string>

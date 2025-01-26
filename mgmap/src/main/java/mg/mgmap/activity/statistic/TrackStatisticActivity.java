@@ -476,13 +476,13 @@ public class TrackStatisticActivity extends AppCompatActivity {
         return v -> {
             if (prefDeleteAllowed.getValue()){
                 ArrayList<TrackLog> trackLogs = getSelectedEntries();
-                String msg = getNames(trackLogs, false).toString();
+                List<String> names = getNames(trackLogs, false);
                 DialogView dialogView = this.findViewById(R.id.dialog_parent);
                 dialogView.lock(() -> dialogView
                         .setTitle(getResources().getString(R.string.ctx_stat_del_track))
-                        .setMessage(msg.substring(1,msg.length()-1))
+                        .setContentView( VUtil.createFileListView(context, names) )
                         .setPositive("OK", evt -> {
-                            mgLog.i("confirm delete for list \""+msg+"\"");
+                            mgLog.i("confirm delete for list \""+names+"\"");
                             for(TrackLog trackLog : trackLogs){
                                 application.metaTrackLogs.remove(trackLog.getNameKey());
                                 application.availableTrackLogsObservable.availableTrackLogs.remove(trackLog);

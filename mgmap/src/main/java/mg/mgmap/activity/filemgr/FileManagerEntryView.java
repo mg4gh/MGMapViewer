@@ -180,20 +180,18 @@ public class FileManagerEntryView extends LinearLayout {
 
 
     public void unbind(){
-
-        mgLog.i(fileManagerEntryModel.getFile().getAbsolutePath());
+        mgLog.d(fileManagerEntryModel.getFile().getAbsolutePath());
         clearReferences();
         boundViews.remove(this);
     }
 
     private void clearReferences(){
-        mgLog.i("unbind_data "+fileManagerEntryModel.getFile().getAbsolutePath());
+        mgLog.d("unbind_data "+fileManagerEntryModel.getFile().getAbsolutePath());
         etvSelected.cleanup();
         etvSelected.setOnClickListener(null);
         etvSelected.setOnLongClickListener(null);
         llRight.setOnClickListener(null);
         llRight.setOnLongClickListener(null);
-        fileManagerEntryModel.getSelected().setValue(false);
         fileManagerEntryModel = null;
         setOnClickListener(null);     // OCL created during bind in FileManagerEntryAdapter/FileManagerActivity
         setOnLongClickListener(null); // OCL created during bind in FileManagerEntryAdapter/FileManagerActivity

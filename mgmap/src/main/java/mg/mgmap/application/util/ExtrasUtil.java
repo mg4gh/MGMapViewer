@@ -77,6 +77,7 @@ public class ExtrasUtil {
                 mgLog.d("Delete meta file for "+name);
                 persistenceManager.deleteTrack(name);
             }
+            PersistenceManager.forceDeleteEmptyDirs(persistenceManager.getTrackMetaDir());
             mgLog.i("checkCreateMeta finished  - currentRun="+currentRun);
             return newGpxNames;
         } catch (Exception e) {

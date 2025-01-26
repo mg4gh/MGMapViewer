@@ -54,8 +54,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import mg.mgmap.R;
@@ -354,7 +354,7 @@ public class FileManagerActivity extends AppCompatActivity {
         prefOpenEnabled.setValue((selectedEntries.size() == 1) && (flags[0]));
         prefShareEnabled.setValue(!selectedEntries.isEmpty() && (flags[0]));
         prefSaveEnabled.setValue(!shareUris.isEmpty());
-        prefDeleteEnabled.setValue((!selectedEntries.isEmpty()) && (!flags[2]));
+        prefDeleteEnabled.setValue(!selectedEntries.isEmpty());
         prefBackEnabled.setValue(true);
     }
 
@@ -671,17 +671,15 @@ public class FileManagerActivity extends AppCompatActivity {
         return v -> {
             if (prefDeleteEnabled.getValue()){
                 ArrayList<FileManagerEntryModel> entries = getSelectedEntries(null);
-                String msg = entries.stream().map(e->(e.getFile().getName()+"\n")).collect(Collectors.joining());
-//                String msg = getNames(trackLogs, false).toString();
+                List<String> names = getEntryNameList(entries);
                 DialogView dialogView = this.findViewById(R.id.dialog_parent);
                 dialogView.lock(() -> dialogView
-                        .setTitle("Delete")
-                        .setMessage(msg)
+                        .setTitle("Delete files")
+                        .setContentView( VUtil.createFileListView(context, names) )
                         .setPositive("OK", evt -> {
-                            mgLog.i("confirm delete for list \""+msg+"\"");
+                            mgLog.i("confirm delete for list \""+names+"\"");
                             for(FileManagerEntryModel entry : entries){
-                                boolean res = entry.getFile().delete();
-                                mgLog.d("delete file "+entry.getFile().getName()+ " result: "+res);
+                                if (!PersistenceManager.forceDelete(entry.getFile())) mgLog.d("delete entry "+entry.getFile().getName()+" failed");
                             }
                             prefPwd.changed();
                         })
@@ -696,6 +694,18 @@ public class FileManagerActivity extends AppCompatActivity {
     }
 
 
+    private List<String> getEntryNameList(List<FileManagerEntryModel> entries){
+        List<String> names = new ArrayList<>();
+        for (FileManagerEntryModel aModel : entries){
+            if (aModel.getFile().isDirectory()){
+                int count = PersistenceManager.getFilesRecursive(aModel.getFile(),"").size();
+                names.add( aModel.getFile().getName()+File.separator+"   ("+count+" file"+(count==1?"":"s")+")" );
+            } else {
+                names.add( aModel.getFile().getName() );
+            }
+        }
+        return names;
+    }
 
 }
 

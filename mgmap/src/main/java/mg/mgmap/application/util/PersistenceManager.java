@@ -90,6 +90,24 @@ public class PersistenceManager {
         return file.delete();
     }
 
+    public static void forceDeleteEmptyDirs(File file){
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                if (f.isDirectory() && !Files.isSymbolicLink(f.toPath())) {
+                    forceDeleteEmptyDirs(f);
+                }
+            }
+            contents = file.listFiles(); // check contents after recursive walk through
+            assert (contents != null);
+            if (contents.length == 0){                                                          // Is it now empty?
+                if (!file.delete()) mgLog.e("failed to delete "+file.getAbsolutePath());   // then delete it
+            }
+        }
+    }
+
+
+
     public static void mergeDir(File mergeFrom, File mergeTo){ // recursive merge dir
         assert mergeFrom.exists();
         assert mergeTo.exists();
@@ -246,6 +264,9 @@ public class PersistenceManager {
     }
     public File getTrackGpxDir(){
         return trackGpxDir;
+    }
+    public File getTrackMetaDir(){
+        return trackMetaDir;
     }
     public File getApkDir(){
         return apkDir;

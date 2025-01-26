@@ -2,13 +2,20 @@ package mg.mgmap.generic.view;
 
 import android.content.Context;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import org.mapsforge.map.model.DisplayModel;
+
+import java.io.File;
+import java.util.List;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.util.CC;
@@ -86,5 +93,22 @@ public class VUtil {
         return (int)(idx*widthPerQC);
     }
 
+
+    public static View createFileListView(Context context, List<String> names){
+        TextView textView = new TextView(context);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        if (names.size() <17) textView.setLines(17); // this corresponds to the overall height of 410dp of the ScrollView
+        for (String name : names){
+            textView.append( name + System.lineSeparator() );
+        }
+        HorizontalScrollView horizontalScrollView = new HorizontalScrollView(context);
+        horizontalScrollView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        horizontalScrollView.addView(textView);
+        ScrollView scrollView = new ScrollView(context);
+        scrollView.addView(horizontalScrollView);
+        scrollView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, VUtil.dp(410)));
+        return scrollView;
+    }
 
 }
