@@ -50,7 +50,6 @@ public class GpxExporter {
             pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             pw.println("<gpx version=\"1.1\" creator=\"MGMap\">");
             pw.println("\t<metadata>");
-            pw.println("\t\t<name>"+trackLog.getName()+"</name>");
             pw.println("\t\t<time>"+ Formatter.SDF_GPX.format(new Date(trackLog.getTrackStatistic().getTStart())).replace("_","T")+"</time>");
             TrackLog refTL = trackLog.getReferencedTrackLog();
             if ((refTL != null) && (refTL.getNumberOfSegments() == 1)){ // supposed to be a route - export also the base MarkerTrackPoints

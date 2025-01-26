@@ -127,10 +127,6 @@ public class GpxImporter {
                     assert trackLog != null;
                     trackLog.stopSegment(PointModel.NO_TIME);
                 }
-                if ("name".equals(qName)) {
-                    assert trackLog != null;
-                    trackLog.setName(text);
-                }
                 if ("keywords".equals(qName)) {
                     if ("MGMarkerRoute".equals(text)){
                         String name = filename.replaceAll("MarkerRoute$","MarkerTrack");

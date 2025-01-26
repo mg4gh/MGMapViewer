@@ -62,6 +62,7 @@ import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
+import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
@@ -450,6 +451,20 @@ public class FileManagerActivity extends AppCompatActivity {
                                 application.getPersistenceManager().createFileIfNotExists(parent, newName);
                             }
                             prefPwd.changed();
+                        }
+                        // hook to rename corresponding trackLog object (if exists) - otherwise there would be an inconsistency between TrackStatisticActivity and FileManagerActivity
+                        if ((oldFile != null) && (!newName.equals(oldFile.getName()) && oldFile.getName().endsWith(".gpx") && newName.endsWith(".gpx")) && (oldFile.getParentFile() != null)){
+                            String oldDirName = oldFile.getParentFile().getAbsolutePath().replace( application.getPersistenceManager().getTrackGpxDir().getAbsolutePath()+File.separator, "")+File.separator;
+                            String oldTrackName = oldFile.getName().replaceFirst("\\.gpx$","");
+                            String newTrackName = newName.replaceFirst("\\.gpx$","");
+                            synchronized (application.metaTrackLogs){
+                                for (TrackLog trackLog :application.metaTrackLogs.values()){
+                                    if (trackLog.getName().equals(oldDirName+oldTrackName)){
+                                       trackLog.setName(oldDirName+newTrackName);
+                                       break;
+                                    }
+                                }
+                            }
                         }
                     }
                 })
