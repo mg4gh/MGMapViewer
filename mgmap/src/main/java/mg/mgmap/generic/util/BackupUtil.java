@@ -38,7 +38,7 @@ public class BackupUtil {
 
     private static final AtomicBoolean inProgress = new AtomicBoolean(false);
 
-    private static String getBackupFileName(boolean latest){
+    public static String getBackupFileName(boolean latest){
         return "backup_"+(latest?"latest":"full")+".zip";
     }
 

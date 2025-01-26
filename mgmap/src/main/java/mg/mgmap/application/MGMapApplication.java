@@ -319,8 +319,9 @@ public class MGMapApplication extends Application {
     }
 
     public void checkCreateLoadMetaData(boolean onlyNew){
-        File restoreJob = new File(persistenceManager.getRestoreDir(), "restore.job");
-        while (restoreJob.exists()){ // don't start as restore may add files
+        File backupLatest = new File(persistenceManager.getRestoreDir(), BackupUtil.getBackupFileName(true));
+        File backupFull = new File(persistenceManager.getRestoreDir(), BackupUtil.getBackupFileName(false));
+        while (backupLatest.exists() || backupFull.exists()){ // don't start as restore may add files
             SystemClock.sleep(1000);
         }
         ArrayList<String> newNames = ExtrasUtil.checkCreateMeta(this, this.currentRun);
