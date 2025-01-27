@@ -163,7 +163,9 @@ public class MGMapApplication extends Application {
         CC.init(this);
         AndroidGraphicFactory.createInstance(this);
         File svgCacheDir = new File(getCacheDir(), "svgCache");
-        if (!svgCacheDir.mkdirs()) mgLog.e("create svgCacheDir failed: "+svgCacheDir.getAbsolutePath());
+        if (!svgCacheDir.exists()){
+            if (!svgCacheDir.mkdirs()) mgLog.e("create svgCacheDir failed: "+svgCacheDir.getAbsolutePath());
+        }
         AndroidGraphicFactory.INSTANCE.setSvgCacheDir(svgCacheDir);
         prefCache = new PrefCache(this);
 

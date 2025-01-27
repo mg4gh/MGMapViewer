@@ -51,7 +51,7 @@ public class PersistenceManager {
     public static final String SUFFIX_META = ".meta";
 
 
-    private static ArrayList<File> getFilesRecursive(File dir, String nameEndsWith, ArrayList<File> matchedList){
+    public static ArrayList<File> getFilesRecursive(File dir, String nameEndsWith, ArrayList<File> matchedList){
         File[] entries = dir.listFiles();
         if (entries != null){
             for (File entry : entries) {
@@ -79,6 +79,10 @@ public class PersistenceManager {
     }
 
     public static boolean forceDelete(File file){
+        forceDeleteContent(file);
+        return file.delete();
+    }
+    public static void forceDeleteContent(File file){
         File[] contents = file.listFiles();
         if (contents != null) {
             for (File f : contents) {
@@ -87,7 +91,6 @@ public class PersistenceManager {
                 }
             }
         }
-        return file.delete();
     }
 
     public static void forceDeleteEmptyDirs(File file){
@@ -180,6 +183,7 @@ public class PersistenceManager {
     private final File apkDir;
     private final File backupDir;
     private final File restoreDir;
+    private final File tempZipDir;
 
     private final File fRaw;
     private FileOutputStream fosRaw = null;
@@ -191,6 +195,10 @@ public class PersistenceManager {
 
         baseDir = context.getExternalFilesDir(null);
         mgLog.i("Default Storage: "+getBaseDir().getAbsolutePath());
+
+        for (File f : context.getExternalFilesDirs(null)) {
+            mgLog.d("Storage check: "+f.getAbsolutePath()+" exists="+f.exists());
+        }
 
         File appDir2Check = new File(baseDir, sAppDir);
         if (! appDir2Check.exists()){
@@ -236,6 +244,8 @@ public class PersistenceManager {
         File backupBaseDir = createIfNotExists(appDir, "backup");
         backupDir = createIfNotExists(backupBaseDir, "backup");
         restoreDir = createIfNotExists(backupBaseDir, "restore");
+        tempZipDir = createIfNotExists(context.getFilesDir(), "tempZip");
+        forceDeleteContent(tempZipDir);
     }
 
     public boolean isFirstRun() {
@@ -276,6 +286,9 @@ public class PersistenceManager {
     }
     public File getRestoreDir() {
         return restoreDir;
+    }
+    public File getTempZipDir() {
+        return tempZipDir;
     }
 
     public void cleanApkDir(){

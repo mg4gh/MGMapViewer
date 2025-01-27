@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
+    <!-- the <files-path> is needed for the internal path /data/data/<package>/files, especially the tempZip folder there    -->
+    <files-path name="internal_files" path="."/>
+    <!-- the <external-path> is needed for the primary external path /sdcard/Android/data/<package>/files   -->
     <external-path name="external_files" path="."/>
-    <external-files-path name="external_files2" path="."/>
-    <root-path name="external_files" path="/storage/" />
+    <!-- the <root-path> entry is needed for physical sdcard -->
+    <root-path name="sdcard_files" path="/storage/" />
 </paths>

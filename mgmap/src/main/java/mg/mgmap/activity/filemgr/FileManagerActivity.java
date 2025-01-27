@@ -32,6 +32,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -42,6 +43,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.progress.ProgressMonitor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,6 +67,7 @@ import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.TrackLog;
+import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
@@ -292,7 +297,6 @@ public class FileManagerActivity extends AppCompatActivity {
         mgLog.d();
 
         prefPwd.onChange();
-//        refreshAllEntries();
         prefFullscreen.onChange();
         reworkObserver.propertyChange(null);
     }
@@ -327,12 +331,16 @@ public class FileManagerActivity extends AppCompatActivity {
             return true;
         });
         view.getLlRight().setOnClickListener(v -> {
-            if (!getSelectedEntries(null).isEmpty()){
-                model.getSelected().toggle();
-            } else if (model.getFile().isDirectory()){
-                prefPwd.setValue(model.getFile().getAbsolutePath());
-            } else {
-                openFile(model.getFile());
+            try {
+                if (!getSelectedEntries(null).isEmpty()){
+                    model.getSelected().toggle();
+                } else if (model.getFile().isDirectory()){
+                    prefPwd.setValue(model.getFile().getAbsolutePath());
+                } else {
+                    openFile(model.getFile());
+                }
+            } catch (Exception e) {
+                mgLog.e(e);
             }
             reworkObserver.propertyChange(null);
         });
@@ -352,7 +360,7 @@ public class FileManagerActivity extends AppCompatActivity {
         prefSelectNoneEnabled.setValue(!selectedEntries.isEmpty());
         prefEditEnabled.setValue(selectedEntries.size() == 1);
         prefOpenEnabled.setValue((selectedEntries.size() == 1) && (flags[0]));
-        prefShareEnabled.setValue(!selectedEntries.isEmpty() && (flags[0]));
+        prefShareEnabled.setValue(!selectedEntries.isEmpty());
         prefSaveEnabled.setValue(!shareUris.isEmpty());
         prefDeleteEnabled.setValue(!selectedEntries.isEmpty());
         prefBackEnabled.setValue(true);
@@ -420,7 +428,6 @@ public class FileManagerActivity extends AppCompatActivity {
         InputFilter filter = (source, start, end, dest, dStart, dEnd) -> {
             for (int i = start; i < end; i++) {
                 if ("\\?%*:|\"<>,;=\n".indexOf(source.charAt(i)) >= 0){
-//                                etFileName.setError("Not allowed characters: /\\?%*:|\"<>.,;=<LF>");
                     return "";
                 }
             }
@@ -446,15 +453,15 @@ public class FileManagerActivity extends AppCompatActivity {
                                 bRes = oldFile.renameTo(fNewFile);
                                 mgLog.d("rename result: "+bRes);
                             } else if (bDir){
-                                application.getPersistenceManager().createIfNotExists(parent, newName);
+                                persistenceManager.createIfNotExists(parent, newName);
                             } else {
-                                application.getPersistenceManager().createFileIfNotExists(parent, newName);
+                                persistenceManager.createFileIfNotExists(parent, newName);
                             }
                             prefPwd.changed();
                         }
                         // hook to rename corresponding trackLog object (if exists) - otherwise there would be an inconsistency between TrackStatisticActivity and FileManagerActivity
                         if ((oldFile != null) && (!newName.equals(oldFile.getName()) && oldFile.getName().endsWith(".gpx") && newName.endsWith(".gpx")) && (oldFile.getParentFile() != null)){
-                            String oldDirName = oldFile.getParentFile().getAbsolutePath().replace( application.getPersistenceManager().getTrackGpxDir().getAbsolutePath()+File.separator, "")+File.separator;
+                            String oldDirName = oldFile.getParentFile().getAbsolutePath().replace( persistenceManager.getTrackGpxDir().getAbsolutePath()+File.separator, "")+File.separator;
                             String oldTrackName = oldFile.getName().replaceFirst("\\.gpx$","");
                             String newTrackName = newName.replaceFirst("\\.gpx$","");
                             synchronized (application.metaTrackLogs){
@@ -593,38 +600,108 @@ public class FileManagerActivity extends AppCompatActivity {
         } // tryTinyEditor
     }
 
+    @SuppressLint("SetTextI18n")
+    @SuppressWarnings("ConstantConditions")
     private View.OnClickListener createShareOCL(){
         return v -> {
             if (prefShareEnabled.getValue()){
-                ArrayList<FileManagerEntryModel> entries = getSelectedEntries(null);
-                if (!entries.isEmpty()){
-                    Intent sendIntent;
-                    String title = "Share ...";
-                    if (entries.size() == 1){
-                        File file = entries.get(0).getFile();
-                        sendIntent = new Intent(Intent.ACTION_SEND);
-                        Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
-                        sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                        sendIntent.setClipData(ClipData.newRawUri("", uri));
-                        title = "Share "+file.getName()+" to ...";
-                    } else {
-                        ArrayList<Uri> uris = new ArrayList<>();
-                        ClipData clipData = ClipData.newRawUri("", null);
-                        for(FileManagerEntryModel model : entries){
-                            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", model.getFile());
-                            uris.add( uri );
-                            clipData.addItem(new ClipData.Item(uri));
-                        }
-                        sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                        sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-                        sendIntent.setClipData(clipData);
-                    }
-                    sendIntent.setType("*/*");
-                    sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(Intent.createChooser(sendIntent, title));
-                }
+                boolean[] flags = new boolean[8];
+                ArrayList<FileManagerEntryModel> entries = getSelectedEntries(flags);
+                List<String> names = getEntryNameList(entries);
+                LinearLayout contentView = new LinearLayout(context);
+                contentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                contentView.setOrientation(LinearLayout.VERTICAL);
+                contentView.addView(VUtil.createFileListView(context, names));
+                CheckBox cbZip = new CheckBox(context);
+                cbZip.setChecked(flags[2] || entries.size()>5); // contains at least one none empty subdir ... but it's just the default
+                cbZip.setText("zip content before share");
+                contentView.addView(cbZip);
+
+                DialogView dialogView = this.findViewById(R.id.dialog_parent);
+                dialogView.lock(() -> dialogView
+                        .setTitle("Share files")
+                        .setContentView( contentView )
+                        .setPositive("OK", evt -> {
+                            if (entries.isEmpty()) return;
+                            mgLog.i("confirm share for list \""+names+"\"");
+                            mgLog.i("confirm share zip="+cbZip.isChecked());
+                            if (cbZip.isChecked()){
+                                BgJob bgJob = new BgJob(){
+                                    @Override
+                                    protected void doJob() throws Exception {
+                                        // suppress ObjectEqualsNull
+                                        String zipName = ((entries.size() == 1)?entries.get(0).getFile().getName():entries.get(0).getFile().getParentFile().getName()) +".zip";
+                                        File fZipFile = new File(persistenceManager.getTempZipDir(), zipName);
+                                        PersistenceManager.forceDelete(fZipFile);
+                                        try (ZipFile zipFile = new ZipFile(fZipFile)){
+                                            for (FileManagerEntryModel entry : entries){
+                                                if (entry.getFile().isDirectory()){
+                                                    zipFile.addFolder(entry.getFile());
+                                                } else {
+                                                    zipFile.addFile(entry.getFile());
+                                                }
+                                            }
+                                            ProgressMonitor progressMonitor = zipFile.getProgressMonitor();
+                                            mgLog.d("encrypt progress: "+progressMonitor.getState()+" "+progressMonitor.getWorkCompleted()+" "+progressMonitor.getTotalWork()+" "+progressMonitor.getPercentDone()+" result="+progressMonitor.getResult());
+                                            if (progressMonitor.getResult().equals(ProgressMonitor.Result.SUCCESS)){
+                                                doShare( List.of(fZipFile) );
+                                            }
+                                        } // try zip
+                                    } // doJob
+                                }; // bgJob
+                                bgJob.setText("Prepare share");
+                                bgJob.setMax(100);
+                                MGMapApplication.getByContext(context).addBgJob(bgJob);
+                            } else {
+                                ArrayList<File> files = new ArrayList<>();
+                                for (FileManagerEntryModel entry : entries){
+                                    if (entry.getFile().isDirectory()){
+                                        PersistenceManager.getFilesRecursive(entry.getFile(), "", files);
+                                    } else {
+                                        files.add(entry.getFile());
+                                    }
+                                }
+                                doShare(files);
+                            }
+                        })
+                        .setNegative("Cancel", null)
+                        .show());
+
             }
         };
+    }
+
+    private void doShare(List<File> files){
+        try {
+            if (!files.isEmpty()){
+                Intent sendIntent;
+                String title = "Share ...";
+                if (files.size() == 1){
+                    File file = files.get(0);
+                    sendIntent = new Intent(Intent.ACTION_SEND);
+                    Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+                    sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                    sendIntent.setClipData(ClipData.newRawUri("", uri));
+                    title = "Share "+file.getName()+" to ...";
+                } else {
+                    ArrayList<Uri> uris = new ArrayList<>();
+                    ClipData clipData = ClipData.newRawUri("", null);
+                    for(File file : files){
+                        Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+                        uris.add( uri );
+                        clipData.addItem(new ClipData.Item(uri));
+                    }
+                    sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                    sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                    sendIntent.setClipData(clipData);
+                }
+                sendIntent.setType("*/*");
+                sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(sendIntent, title));
+            }
+        } catch (Throwable e) {
+            mgLog.e(e);
+        }
     }
 
     @SuppressLint("Range")
@@ -659,7 +736,7 @@ public class FileManagerActivity extends AppCompatActivity {
                     mgLog.e(e);
                 }
             }
-            if (fDir.getAbsolutePath().startsWith( application.getPersistenceManager().getTrackGpxDir().getAbsolutePath())){ // fDir equals or is subPath of gpx dir
+            if (fDir.getAbsolutePath().startsWith( persistenceManager.getTrackGpxDir().getAbsolutePath())){ // fDir equals or is subPath of gpx dir
                 new Thread(() -> application.checkCreateLoadMetaData(true)).start();
             }
             prefPwd.changed();
