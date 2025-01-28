@@ -97,8 +97,8 @@ public class VUtil {
     public static View createFileListView(Context context, List<String> names){
         TextView textView = new TextView(context);
         textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        if (names.size() <17) textView.setLines(17); // this corresponds to the overall height of 410dp of the ScrollView
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        if (names.size() <15) textView.setLines(15); // this corresponds to the overall height of 410dp of the ScrollView
         for (String name : names){
             textView.append( name + System.lineSeparator() );
         }
@@ -107,7 +107,7 @@ public class VUtil {
         horizontalScrollView.addView(textView);
         ScrollView scrollView = new ScrollView(context);
         scrollView.addView(horizontalScrollView);
-        scrollView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, VUtil.dp(410)));
+        scrollView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, VUtil.dp(280)));
         return scrollView;
     }
 

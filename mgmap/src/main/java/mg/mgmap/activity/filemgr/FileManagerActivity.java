@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,12 +40,14 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.progress.ProgressMonitor;
 
 import java.io.File;
@@ -55,11 +58,14 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import mg.mgmap.R;
@@ -614,6 +620,7 @@ public class FileManagerActivity extends AppCompatActivity {
                 contentView.addView(VUtil.createFileListView(context, names));
                 CheckBox cbZip = new CheckBox(context);
                 cbZip.setChecked(flags[2] || entries.size()>5); // contains at least one none empty subdir ... but it's just the default
+                cbZip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                 cbZip.setText("zip content before share");
                 contentView.addView(cbZip);
 
@@ -704,12 +711,13 @@ public class FileManagerActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("Range")
+    @SuppressLint({"Range", "UnsanitizedFilenameFromContentProvider"})
     private View.OnClickListener createSaveOCL(){
         return v -> {
             ContentResolver contentResolver = application.getContentResolver();
-            File fDir = new File(prefPwd.getValue());
-            while (fDir.isDirectory() &&  !shareUris.isEmpty()){
+            File pwdDir = new File(prefPwd.getValue());
+            int shareUriCnt = shareUris.size();
+            while (pwdDir.isDirectory() &&  !shareUris.isEmpty()){
                 Uri uri = shareUris.remove(0);
                 mgLog.i("uri: " + uri);
 
@@ -721,12 +729,26 @@ public class FileManagerActivity extends AppCompatActivity {
                                     String filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                                     String size = cursor.getString(cursor.getColumnIndex(OpenableColumns.SIZE));
                                     mgLog.i("filename=" + filename + " size=" + size);
-                                    File fNew = new File(fDir, filename);
-                                    if (fNew.exists()){
-                                        mgLog.w("File already exists: " + fNew.getAbsolutePath());
-                                        Toast.makeText(this, filename+" already exists",Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        IOUtil.copyStreams(is, Files.newOutputStream(Paths.get(prefPwd.getValue(),filename)));
+                                    try {
+                                        File fNew = new File(pwdDir, filename); // unsanitized filename throws exception
+                                        if ((shareUriCnt == 1) && filename.endsWith(".zip")){
+                                            File tempReceiveDir = new File(persistenceManager.getTempZipDir(), "received");
+                                            if (!tempReceiveDir.exists()){
+                                                if (!tempReceiveDir.mkdirs()) mgLog.e("failed to create "+tempReceiveDir.getAbsolutePath());
+                                            }
+                                            File tempZipFile = new File(tempReceiveDir, filename);
+                                            IOUtil.copyStreams(is, new FileOutputStream(tempZipFile));
+                                            ArrayList<String> names = new ArrayList<>();
+                                            if (listZipContent(tempZipFile, names)){
+                                                unzipDialog(tempZipFile, pwdDir, names);
+                                            } else {
+                                                IOUtil.copyFile(tempZipFile, fNew);
+                                            }
+                                        } else {
+                                            IOUtil.copyStreams(is, new FileOutputStream(fNew));
+                                        }
+                                    } catch (Exception e) {
+                                        mgLog.e(e);
                                     }
                                 }
                             }
@@ -736,12 +758,75 @@ public class FileManagerActivity extends AppCompatActivity {
                     mgLog.e(e);
                 }
             }
-            if (fDir.getAbsolutePath().startsWith( persistenceManager.getTrackGpxDir().getAbsolutePath())){ // fDir equals or is subPath of gpx dir
+            if (pwdDir.getAbsolutePath().startsWith( persistenceManager.getTrackGpxDir().getAbsolutePath())){ // if pwdDir equals or is subPath of gpx dir
                 new Thread(() -> application.checkCreateLoadMetaData(true)).start();
             }
             prefPwd.changed();
-
         };
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void unzipDialog(File tempZipFile, File pwdDir, ArrayList<String> names) {
+        LinearLayout contentView = new LinearLayout(context);
+        contentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        contentView.setOrientation(LinearLayout.VERTICAL);
+        contentView.addView(VUtil.createFileListView(context, names));
+        CheckBox cbZip = new CheckBox(context);
+        cbZip.setChecked(false);
+        cbZip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        cbZip.setText("unzip content before save");
+        contentView.addView(cbZip);
+
+        DialogView dialogView = this.findViewById(R.id.dialog_parent);
+        dialogView.lock(() -> dialogView
+                .setTitle("Received shared zip file")
+                .setMessage("Name: "+tempZipFile.getName()+"\nContent:")
+                .setContentView(contentView)
+                .setPositive("OK", evt -> {
+                    mgLog.i("confirm shared file list \""+names+"\"");
+                    mgLog.i("confirm shared unzip="+cbZip.isChecked());
+                    if (cbZip.isChecked()){
+                        try (ZipFile zipFile = new ZipFile(tempZipFile)){
+                            zipFile.extractAll(pwdDir.getPath());
+                        } catch (IOException e){
+                            mgLog.e(e);
+                        }
+                    } else {
+                        IOUtil.copyFile(tempZipFile, new File(pwdDir, tempZipFile.getName()));
+                    }
+                    prefPwd.changed();
+                })
+                .setNegative("Cancel", null)
+                .show());
+    }
+
+
+    @SuppressWarnings("ConstantConditions")
+    private boolean listZipContent(File file, @NonNull List<String> contentList){
+        boolean res = false;
+        try (ZipFile zipFile = new ZipFile(file)){
+            if (!zipFile.isEncrypted()) {
+                Map<String, Integer> dirMap = new TreeMap<>();
+                Set<String> fileSet = new TreeSet<>();
+                for (FileHeader fileHeader : zipFile.getFileHeaders()){
+                    String key = fileHeader.getFileName().replaceFirst("/.*","/"); // cut directory
+                    if (key.contains("/")){ // directory entry
+                        dirMap.compute(key, (k, cnt) -> ((cnt == null) ? 0 : cnt) + (fileHeader.getFileName().endsWith("/")?0:1)); // increment for files, not for directories
+                    } else {
+                        fileSet.add(key);
+                    }
+                }
+                for (String key : dirMap.keySet()){
+                    int count = dirMap.get(key);
+                    contentList.add(key+"   ("+count+" file"+(count==1?"":"s")+")");
+                }
+                contentList.addAll(fileSet);
+                res = true;
+            }
+        } catch (Exception e){
+            mgLog.e(e);
+        }
+        return res;
     }
 
     private View.OnClickListener createDeleteOCL(){
