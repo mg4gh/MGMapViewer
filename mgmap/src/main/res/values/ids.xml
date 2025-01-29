@@ -106,6 +106,7 @@
     <item type="id" name="fileMgr_mi_save"  />
     <item type="id" name="fileMgr_mi_delete"  />
     <item type="id" name="fileMgr_mi_back"  />
+    <item type="id" name="fileMgr_mi_move"  />
     <item type="id" name="fileMgr_up"  />
 
     <item type="id" name="search_edit_text"  />

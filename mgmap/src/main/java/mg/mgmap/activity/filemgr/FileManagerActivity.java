@@ -81,6 +81,7 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
+import mg.mgmap.generic.util.hints.HintMoveReceived;
 import mg.mgmap.generic.util.hints.HintShareReceived;
 import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -107,12 +108,14 @@ public class FileManagerActivity extends AppCompatActivity {
     private final Pref<Boolean> prefSelectNoneEnabled = new Pref<>(Boolean.TRUE);
     private final Pref<Boolean> prefEditEnabled = new Pref<>(Boolean.TRUE);
     private final Pref<Boolean> prefOpenEnabled = new Pref<>(Boolean.TRUE);
+    private final Pref<Boolean> prefMoveEnabled = new Pref<>(Boolean.TRUE);
     private final Pref<Boolean> prefShareEnabled = new Pref<>(Boolean.TRUE);
     private final Pref<Boolean> prefSaveEnabled = new Pref<>(Boolean.FALSE); // use for save shared files
     private final Pref<Boolean> prefDeleteEnabled = new Pref<>(Boolean.TRUE);
-    private final Pref<Boolean> prefBackEnabled = new Pref<>(Boolean.TRUE);
+//    private final Pref<Boolean> prefBackEnabled = new Pref<>(Boolean.TRUE);
 
     private final ArrayList<Uri> shareUris = new ArrayList<>();
+    private final ArrayList<File> moveFiles = new ArrayList<>();
 
 
 
@@ -235,6 +238,10 @@ public class FileManagerActivity extends AppCompatActivity {
                 .setOnClickListener(createOpenOCL());
 
         VUtil.createQuickControlETV(qcs,true)
+                .setData(prefMoveEnabled,R.drawable.file_mgr_move2,R.drawable.file_mgr_move)
+                .setNameAndId(R.id.stat_mi_back)
+                .setOnClickListener(createMoveOCL());
+        VUtil.createQuickControlETV(qcs,true)
                 .setData(prefShareEnabled,R.drawable.share2,R.drawable.share)
                 .setNameAndId(R.id.stat_mi_share)
                 .setOnClickListener(createShareOCL());
@@ -246,10 +253,10 @@ public class FileManagerActivity extends AppCompatActivity {
                 .setData(prefDeleteEnabled,R.drawable.delete2,R.drawable.delete)
                 .setNameAndId(R.id.stat_mi_delete)
                 .setOnClickListener(createDeleteOCL());
-        VUtil.createQuickControlETV(qcs,true)
-                .setData(R.drawable.back)
-                .setNameAndId(R.id.stat_mi_back)
-                .setOnClickListener(createBackOCL());
+//        VUtil.createQuickControlETV(qcs,true)
+//                .setData(R.drawable.back)
+//                .setNameAndId(R.id.stat_mi_back)
+//                .setOnClickListener(createBackOCL());
 
         if (!getIntent().toString().contains(" act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] ")){
             onNewIntent(getIntent());
@@ -275,6 +282,7 @@ public class FileManagerActivity extends AppCompatActivity {
             mgLog.d("intent flags="+ Integer.toHexString( intent.getFlags() ));
 
 
+            moveFiles.clear();
             shareUris.clear();
             if (Intent.ACTION_SEND.equals(intent.getAction()) ) {
                 Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -366,10 +374,11 @@ public class FileManagerActivity extends AppCompatActivity {
         prefSelectNoneEnabled.setValue(!selectedEntries.isEmpty());
         prefEditEnabled.setValue(selectedEntries.size() == 1);
         prefOpenEnabled.setValue((selectedEntries.size() == 1) && (flags[0]));
+        prefMoveEnabled.setValue(!selectedEntries.isEmpty());
         prefShareEnabled.setValue(!selectedEntries.isEmpty());
-        prefSaveEnabled.setValue(!shareUris.isEmpty());
+        prefSaveEnabled.setValue(!shareUris.isEmpty() || !moveFiles.isEmpty());
         prefDeleteEnabled.setValue(!selectedEntries.isEmpty());
-        prefBackEnabled.setValue(true);
+//        prefBackEnabled.setValue(true);
     }
 
     /**
@@ -606,6 +615,21 @@ public class FileManagerActivity extends AppCompatActivity {
         } // tryTinyEditor
     }
 
+    private View.OnClickListener createMoveOCL() {
+        return v -> {
+            if (prefMoveEnabled.getValue()) {
+                ArrayList<FileManagerEntryModel> entries = getSelectedEntries(null);
+                moveFiles.clear();
+                shareUris.clear();
+                entries.forEach(e->moveFiles.add(e.getFile()));
+                if (!moveFiles.isEmpty()){
+                    prefPwd.changed();
+                    application.getHintUtil().showHint( new HintMoveReceived(this, moveFiles.size()) );
+                }
+            }
+        };
+    }
+
     @SuppressLint("SetTextI18n")
     @SuppressWarnings("ConstantConditions")
     private View.OnClickListener createShareOCL(){
@@ -711,58 +735,79 @@ public class FileManagerActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint({"Range", "UnsanitizedFilenameFromContentProvider"})
     private View.OnClickListener createSaveOCL(){
         return v -> {
-            ContentResolver contentResolver = application.getContentResolver();
-            File pwdDir = new File(prefPwd.getValue());
-            int shareUriCnt = shareUris.size();
-            while (pwdDir.isDirectory() &&  !shareUris.isEmpty()){
-                Uri uri = shareUris.remove(0);
-                mgLog.i("uri: " + uri);
+            if (!shareUris.isEmpty()){
+                handleSaveOfShare();
+            } else if (!moveFiles.isEmpty()){
+                handleSaveOfMove();
+            }
+        };
+    }
 
-                try {
-                    try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
-                        if (cursor != null && cursor.moveToFirst()) {
-                            try (InputStream is = contentResolver.openInputStream(uri)){
-                                if (is != null){
-                                    String filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                    String size = cursor.getString(cursor.getColumnIndex(OpenableColumns.SIZE));
-                                    mgLog.i("filename=" + filename + " size=" + size);
-                                    try {
-                                        File fNew = new File(pwdDir, filename); // unsanitized filename throws exception
-                                        if ((shareUriCnt == 1) && filename.endsWith(".zip")){
-                                            File tempReceiveDir = new File(persistenceManager.getTempZipDir(), "received");
-                                            if (!tempReceiveDir.exists()){
-                                                if (!tempReceiveDir.mkdirs()) mgLog.e("failed to create "+tempReceiveDir.getAbsolutePath());
-                                            }
-                                            File tempZipFile = new File(tempReceiveDir, filename);
-                                            IOUtil.copyStreams(is, new FileOutputStream(tempZipFile));
-                                            ArrayList<String> names = new ArrayList<>();
-                                            if (listZipContent(tempZipFile, names)){
-                                                unzipDialog(tempZipFile, pwdDir, names);
-                                            } else {
-                                                IOUtil.copyFile(tempZipFile, fNew);
-                                            }
-                                        } else {
-                                            IOUtil.copyStreams(is, new FileOutputStream(fNew));
+    private void handleSaveOfMove() {
+        File pwdDir = new File(prefPwd.getValue());
+        for (File file : moveFiles){
+            try {
+                if (!file.renameTo(new File(pwdDir, file.getName()))) mgLog.e("move "+file.getAbsolutePath()+" to "+pwdDir.getAbsolutePath()+" failed. ");
+            } catch (Exception e) {
+                mgLog.e(e);
+            }
+        }
+        moveFiles.clear();
+        prefPwd.changed();
+    }
+
+    @SuppressLint({"Range", "UnsanitizedFilenameFromContentProvider"})
+    private void handleSaveOfShare(){
+        ContentResolver contentResolver = application.getContentResolver();
+        File pwdDir = new File(prefPwd.getValue());
+        int shareUriCnt = shareUris.size();
+        while (pwdDir.isDirectory() &&  !shareUris.isEmpty()){
+            Uri uri = shareUris.remove(0);
+            mgLog.i("uri: " + uri);
+
+            try {
+                try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        try (InputStream is = contentResolver.openInputStream(uri)){
+                            if (is != null){
+                                String filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                                String size = cursor.getString(cursor.getColumnIndex(OpenableColumns.SIZE));
+                                mgLog.i("filename=" + filename + " size=" + size);
+                                try {
+                                    File fNew = new File(pwdDir, filename); // unsanitized filename throws exception
+                                    if ((shareUriCnt == 1) && filename.endsWith(".zip")){
+                                        File tempReceiveDir = new File(persistenceManager.getTempZipDir(), "received");
+                                        if (!tempReceiveDir.exists()){
+                                            if (!tempReceiveDir.mkdirs()) mgLog.e("failed to create "+tempReceiveDir.getAbsolutePath());
                                         }
-                                    } catch (Exception e) {
-                                        mgLog.e(e);
+                                        File tempZipFile = new File(tempReceiveDir, filename);
+                                        IOUtil.copyStreams(is, new FileOutputStream(tempZipFile));
+                                        ArrayList<String> names = new ArrayList<>();
+                                        if (listZipContent(tempZipFile, names)){
+                                            unzipDialog(tempZipFile, pwdDir, names);
+                                        } else {
+                                            IOUtil.copyFile(tempZipFile, fNew);
+                                        }
+                                    } else {
+                                        IOUtil.copyStreams(is, new FileOutputStream(fNew));
                                     }
+                                } catch (Exception e) {
+                                    mgLog.e(e);
                                 }
                             }
                         }
                     }
-                } catch (IOException e) {
-                    mgLog.e(e);
                 }
+            } catch (IOException e) {
+                mgLog.e(e);
             }
-            if (pwdDir.getAbsolutePath().startsWith( persistenceManager.getTrackGpxDir().getAbsolutePath())){ // if pwdDir equals or is subPath of gpx dir
-                new Thread(() -> application.checkCreateLoadMetaData(true)).start();
-            }
-            prefPwd.changed();
-        };
+        }
+        if (pwdDir.getAbsolutePath().startsWith( persistenceManager.getTrackGpxDir().getAbsolutePath())){ // if pwdDir equals or is subPath of gpx dir
+            new Thread(() -> application.checkCreateLoadMetaData(true)).start();
+        }
+        prefPwd.changed();
     }
 
     @SuppressLint("SetTextI18n")
@@ -851,9 +896,9 @@ public class FileManagerActivity extends AppCompatActivity {
         };
     }
 
-    private View.OnClickListener createBackOCL(){
-        return v -> FileManagerActivity.this.onBackPressed();
-    }
+//    private View.OnClickListener createBackOCL(){
+//        return v -> FileManagerActivity.this.onBackPressed();
+//    }
 
 
     private List<String> getEntryNameList(List<FileManagerEntryModel> entries){

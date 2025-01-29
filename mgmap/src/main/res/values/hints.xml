@@ -9,6 +9,7 @@
     <string name="hintBatteryUsage">hint_battery_usage_key</string>
     <string name="hintNewHgtData">hint_new_hgt_data_key</string>
     <string name="hintShareReceived">hint_share_received_key</string>
+    <string name="hintMoveReceived">hint_move_received_key</string>
     <string name="hintVersion">hint_version_key</string>
 
     <item type="id" name="bt_dialog_positive"  />
