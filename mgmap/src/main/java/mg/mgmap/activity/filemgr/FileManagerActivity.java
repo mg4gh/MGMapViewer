@@ -442,7 +442,7 @@ public class FileManagerActivity extends AppCompatActivity {
         etFileName.setSelectAllOnFocus(true);
         InputFilter filter = (source, start, end, dest, dStart, dEnd) -> {
             for (int i = start; i < end; i++) {
-                if ("\\?%*:|\"<>,;=\n".indexOf(source.charAt(i)) >= 0){
+                if ("/\\?%*:|\"<>,;=\n".indexOf(source.charAt(i)) >= 0){
                     return "";
                 }
             }

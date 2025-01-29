@@ -343,7 +343,7 @@ public class TrackStatisticActivity extends AppCompatActivity {
                     etTrackLogName.setSelectAllOnFocus(true);
                     InputFilter filter = (source, start, end, dest, dstart, dend) -> {
                         for (int i = start; i < end; i++) {
-                            if ("\\?%*:|\"<>.,;=\n".indexOf(source.charAt(i)) >= 0){
+                            if ("/\\?%*:|\"<>.,;=\n".indexOf(source.charAt(i)) >= 0){
 //                                etTrackLogName.setError("Not allowed characters: /\\?%*:|\"<>.,;=<LF>");
                                 return "";
                             }
