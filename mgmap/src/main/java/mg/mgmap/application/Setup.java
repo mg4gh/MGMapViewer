@@ -79,6 +79,7 @@ public class Setup {
             application._init(baseConfig);
         } catch (Exception e) {
             mgLog.e(e);
+            System.exit(111);
         }
     }
 

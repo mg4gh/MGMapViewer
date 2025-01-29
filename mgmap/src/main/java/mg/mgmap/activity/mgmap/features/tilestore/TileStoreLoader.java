@@ -191,6 +191,7 @@ public class TileStoreLoader {
         private int cnt = 0;
         private String value = "";
         KeyCharacterMap mKeyCharacterMap;
+        XmlTileSourceConfig.AutoFill autoFill = null;
 
         public AutoFiller(Activity activity, WebView webView, ArrayList<XmlTileSourceConfig.AutoFill> autofills) {
             this.activity = activity;
@@ -203,7 +204,8 @@ public class TileStoreLoader {
             runnable = () -> {
                 if (value.isEmpty()) {
                     if (cnt < autofills.size()){
-                        XmlTileSourceConfig.AutoFill autoFill = autofills.get(cnt++);
+                        if (autoFill != null) webView.loadUrl("javascript:(function() { document.getElementsByName('"+ autoFill.id()+"')[0].blur(); })()");
+                        autoFill = autofills.get(cnt++);
                         webView.loadUrl("javascript:(function() { document.getElementsByName('"+ autoFill.id()+"')[0].focus(); })()");
                         value = autoFill.value();
                         timer.postDelayed(runnable, 100);
