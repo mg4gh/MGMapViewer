@@ -79,6 +79,7 @@ public class ControlComposer {
         for (RoutingProfile routingProfile : FSRouting.getDefinedRoutingProfiles()){
             activity.getFS(FSRouting.class).initRoutingProfile(coView.createRoutingProfileETV(parent), routingProfile).setIdOnly(View.generateViewId());
         }
+        parent.removeAllViews();
         parent.setVisibility(View.INVISIBLE);
     }
 

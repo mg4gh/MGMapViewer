@@ -438,9 +438,10 @@ public class ControlView extends RelativeLayout {
                 }
             }
         };
+        parent.addView(etv);
         etv.setDrawableSize(dp(36));
 
-        int hMargin  = dp(5f);
+        int hMargin  = dp(2f);
         int vMargin = dp(5);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);

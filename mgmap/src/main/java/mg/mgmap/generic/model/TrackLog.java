@@ -202,4 +202,29 @@ public class TrackLog extends ObservableImpl implements Comparable<TrackLog>{
             this.setModified(true);
         }
     }
+
+    public WriteableTrackLog cloneTrackLog(boolean reverse){
+        WriteableTrackLog wtl = new WriteableTrackLog(name);
+        if (getRoutingProfileId() != null){
+            wtl.setRoutingProfileId(getRoutingProfileId());
+        }
+        wtl.startTrack(getTrackStatistic().getTStart());
+        for (int seg=0; seg<getNumberOfSegments(); seg++){
+            TrackLogSegment segment = trackLogSegments.get(reverse?getNumberOfSegments()-1-seg:seg);
+            wtl.startSegment(segment.getStatistic().getTStart());
+            for (int i = 0; i<segment.size(); i++){
+                PointModel pm = segment.get(reverse? segment.size()-(i+1) : i);
+                PointModel npm;
+                if (pm instanceof TrackLogPoint) {
+                    npm = new TrackLogPoint((TrackLogPoint) pm);
+                } else {
+                    npm = new WriteablePointModelImpl(pm);
+                }
+                wtl.addPoint(npm);
+            }
+            wtl.stopSegment(segment.getStatistic().getTEnd());
+        }
+        wtl.stopTrack(getTrackStatistic().getTEnd());
+        return wtl;
+    }
 }

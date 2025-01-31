@@ -55,6 +55,7 @@ public class RoutingEngine {
     private final ArrayList<PointModel> currentRelaxedNodes = new ArrayList<>();
     private RoutingContext routingContext;
     RoutingProfile routingProfile;
+    final Object routingProfileMonitor = new Object();
     final AtomicInteger refreshRequired = new AtomicInteger(0);
     private GGraphSearch gGraphSearch = null;
     final String routingAlgorithm;
@@ -80,16 +81,23 @@ public class RoutingEngine {
         }
     }
 
-    boolean setRoutingProfile(RoutingProfile routingProfile){
-        if (this.routingProfile != routingProfile){
-            mgLog.i("profile changed to: "+routingProfile.getId());
-            this.routingProfile = routingProfile;
-            synchronized (this){
-                gFactory.resetCosts();
+    void setRoutingProfile(RoutingProfile routingProfile){
+        synchronized (routingProfileMonitor){
+            if (this.routingProfile != routingProfile){
+                mgLog.i("profile changed to: "+routingProfile.getId());
+                this.routingProfile = routingProfile;
+                synchronized (this){ // wait for updateRouting2 to be finished (if running)
+                    gFactory.resetCosts();
+                }
+                refreshRequired.incrementAndGet();
             }
-            return true;
         }
-        return false;
+    }
+
+    void checkRoutingProfileMonitor() { // this method blocks while a routing profile change is in progress - this may take some time, since profile change may need to wait for a running route action
+        synchronized (routingProfileMonitor) {
+            mgLog.d("got routingProfileMonitor");
+        }
     }
 
     public ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
@@ -140,7 +148,7 @@ public class RoutingEngine {
             mgLog.e("routing profile is null; cannot route");
             return rotl;
         }
-        boolean routingProfileChanged = routingProfile.getId().equals(mtl.getRoutingProfileId());
+        boolean routingProfileChanged = (rotl == null) || !routingProfile.getId().equals(rotl.getRoutingProfileId());
         mtl.setRoutingProfileId(routingProfile.getId());
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
@@ -223,6 +231,7 @@ public class RoutingEngine {
             routeTrackLog.startTrack(mtl.getTrackStatistic().getTStart());
             routeTrackLog.setModified(mtl.isModified());
             routeTrackLog.setReferencedTrackLog(mtl);
+            routeTrackLog.setRoutingProfileId(mtl.getRoutingProfileId());
             mgLog.i("Route modified: "+name);
 
             ArrayList<PointModel> rpmKeys = new ArrayList<>(routePointMap.keySet()); // create a list to detect unused entries in routePointMap

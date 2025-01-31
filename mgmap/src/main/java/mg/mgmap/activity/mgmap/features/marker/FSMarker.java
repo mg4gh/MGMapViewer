@@ -29,7 +29,6 @@ import mg.mgmap.R;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
-import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteablePointModel;
@@ -185,29 +184,11 @@ public class FSMarker extends FeatureService {
     public void createMarkerTrackLog(TrackLog trackLog, boolean reverse){
         String name = trackLog.getName();
         name = name.endsWith("_MarkerTrack")?name:(name+"_MarkerTrack");
-        WriteableTrackLog mtl = new WriteableTrackLog(name);
-        if (trackLog.getRoutingProfileId() != null){
-            mtl.setRoutingProfileId(trackLog.getRoutingProfileId());
-        }
-        mtl.startTrack(trackLog.getTrackStatistic().getTStart());
-        for (TrackLogSegment segment : trackLog.getTrackLogSegments()){
-            mtl.startSegment(segment.getStatistic().getTStart());
-            for (int i = 0; i<segment.size(); i++){
-                PointModel pm = segment.get(reverse? segment.size()-(i+1) : i);
-                PointModel npm;
-                if (pm instanceof TrackLogPoint) {
-                    npm = new TrackLogPoint((TrackLogPoint) pm);
-                } else {
-                    npm = new WriteablePointModelImpl(pm);
-                }
-                mtl.addPoint(npm);
-            }
-            mtl.stopSegment(segment.getStatistic().getTEnd());
-        }
-        mtl.stopTrack(trackLog.getTrackStatistic().getTEnd());
+        WriteableTrackLog mtl = trackLog.cloneTrackLog(reverse);
+        mtl.setName(name);
         markerTrackLogObservable.setTrackLog(mtl);
         getMapViewUtility().zoomForBoundingBox(trackLog.getBBox());
-        showHide(mtl);
+        refreshObserver.onChange();
     }
 
     private void initMarkerTrackLog(){

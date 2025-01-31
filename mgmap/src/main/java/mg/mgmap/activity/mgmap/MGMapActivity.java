@@ -493,6 +493,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                             if (aTrackLog != null){
                                 if (aTrackLog.getReferencedTrackLog() != null){
                                     selectedTrackLog = aTrackLog.getReferencedTrackLog();
+                                    if (selectedTrackLog.getRoutingProfileId() == null){
+                                        selectedTrackLog.setRoutingProfileId(getFS(FSRouting.class).getDefaultRoutingProfileId());
+                                    }
                                     getFS(FSMarker.class).createMarkerTrackLog(selectedTrackLog);
                                 } else {
                                     selectedTrackLog = aTrackLog;
