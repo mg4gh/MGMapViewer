@@ -132,6 +132,7 @@ public class FSRouting extends FeatureService {
     private final MGMapApplication application;
     private MultiPointView dndVisualisationLayer = null;
     private final PrefCache prefCache;
+    private final Thread routingThread;
 
     public FSRouting(MGMapActivity mgActivity, FSMarker fsMarker, GGraphTileFactory gFactory) {
         super(mgActivity);
@@ -257,8 +258,7 @@ public class FSRouting extends FeatureService {
             prefRouteSavable.setValue((rotl != null) && rotl.isModified() );
         });
 
-        Thread routingThread = createRoutingThread();
-        routingThread.start(); // start after adding observers to prefCalcRouteInProgress
+        routingThread = createRoutingThread();
     }
 
     @NonNull
@@ -376,12 +376,7 @@ public class FSRouting extends FeatureService {
                     newMtl.setRoutingProfileId(id);
                     application.markerTrackLogObservable.setTrackLog(newMtl);
                 }
-//            } else {
-//                if (prefCalcRouteInProgress.getValue()){
-//                    routingEngine.refreshRequired.set(-1100);
-//                }
             }
-//            routingEngine.refreshRequired.incrementAndGet();
         });
         profileETVs.add(etv);
         return etv;
@@ -426,6 +421,9 @@ public class FSRouting extends FeatureService {
     @Override
     protected void onResume() {
         super.onResume();
+        if (routingThread.getState() == Thread.State.NEW){
+            routingThread.start(); // don't start earlier, otherwise concurrent modification exception on observers of prefCalcRouteInProgress may occur (observers are added during ControlComposers work)
+        }
     }
 
     @Override
