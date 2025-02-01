@@ -489,6 +489,7 @@ public class FSRouting extends FeatureService {
             mgLog.d("Start");
             long tStart = System.currentTimeMillis();
             rotl = routingEngine.updateRouting2(mtl, application.routeTrackLogObservable.getTrackLog());
+            application.getMetaDataUtil().createMetaData(rotl);
             mgLog.d("End duration="+(System.currentTimeMillis()-tStart)+"ms");
         }
         application.routeTrackLogObservable.setTrackLog(rotl);

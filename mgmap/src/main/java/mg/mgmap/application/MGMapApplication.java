@@ -448,6 +448,7 @@ public class MGMapApplication extends Application {
                                 if (selectedTrackLogRef.getTrackLog().getNameKey().equals(gpxTrackLog.getNameKey())){
                                     setSelectedTrackLogRef(gpxTrackLogRef);
                                 }
+                                metaTrackLogs.put(gpxTrackLog.getNameKey(), gpxTrackLog);
                             }
                         } catch (Exception e) {
                             mgLog.e(e);
