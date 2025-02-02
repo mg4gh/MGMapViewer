@@ -186,6 +186,14 @@
             app:title="@string/preferences_smoothing4routing_title"
             app:iconSpaceReserved="false"
             />
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/preferences_minimalTurningInstruction_key"
+            app:summary="@string/preferences_minimalTurningInstruction_desc"
+            app:title="@string/preferences_minimalTurningInstruction_title"
+            app:iconSpaceReserved="false"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory
