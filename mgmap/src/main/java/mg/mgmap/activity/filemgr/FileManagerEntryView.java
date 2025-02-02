@@ -226,7 +226,7 @@ public class FileManagerEntryView extends LinearLayout {
     }
 
     // For some unknown reason the name field shows initially only one line (and only for those in the first screen).
-    // This workaround triggers a refresh for long track names
+    // This workaround triggers a refresh for long track names (and taken over for file names)
     private void hack(){
         if ((fileManagerEntryModel != null) && (etvName != null)){
             if (fileManagerEntryModel.getFile().getName().length() > 26){

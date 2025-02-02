@@ -253,10 +253,6 @@ public class FileManagerActivity extends AppCompatActivity {
                 .setData(prefDeleteEnabled,R.drawable.delete2,R.drawable.delete)
                 .setNameAndId(R.id.stat_mi_delete)
                 .setOnClickListener(createDeleteOCL());
-//        VUtil.createQuickControlETV(qcs,true)
-//                .setData(R.drawable.back)
-//                .setNameAndId(R.id.stat_mi_back)
-//                .setOnClickListener(createBackOCL());
 
         if (!getIntent().toString().contains(" act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] ")){
             onNewIntent(getIntent());
@@ -506,11 +502,50 @@ public class FileManagerActivity extends AppCompatActivity {
         };
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    // This method checks if the file to open is a zip file. If so, it offers to unzip it locally. Otherwise the open intent will be issued via openFile2 method 
+    @SuppressLint("SetTextI18n")
     private void openFile(File file){
+        if (file.getName().endsWith("zip")){
+            ArrayList<String> names = new ArrayList<>();
+            if (listZipContent(file, names)){
+                LinearLayout contentView = new LinearLayout(context);
+                contentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                contentView.setOrientation(LinearLayout.VERTICAL);
+                contentView.addView(VUtil.createFileListView(context, names));
+                CheckBox cbZip = new CheckBox(context);
+                cbZip.setChecked(true);
+                cbZip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+                cbZip.setText("unzip content");
+                cbZip.setEnabled(false);
+                contentView.addView(cbZip);
+
+                DialogView dialogView = this.findViewById(R.id.dialog_parent);
+                dialogView.lock(() -> dialogView
+                        .setTitle("Unzip file")
+                        .setMessage("Name: "+file.getName()+"\nContent:")
+                        .setContentView(contentView)
+                        .setPositive("Unzip", evt -> {
+                            mgLog.i("confirm unzip file list \""+names+"\"");
+                            try (ZipFile zipFile = new ZipFile(file)){
+                                zipFile.extractAll(new File(prefPwd.getValue()).getPath());
+                            } catch (IOException e){
+                                mgLog.e(e);
+                            }
+                            prefPwd.changed();
+                        })
+                        .setNegative("Open via intent", evt->openFile2(file))
+                        .show());
+
+            }
+        } else {
+            openFile2(file);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void openFile2(File file){
         Intent intent = new Intent(Intent.ACTION_VIEW );
         Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
-//                    intent.setDataAndType(uri,"*/*");
         if (file.getName().endsWith(".gpx")){
             intent.setDataAndType(uri,"text/gpx");
         } else if (file.getName().endsWith(".xml")){
@@ -895,10 +930,6 @@ public class FileManagerActivity extends AppCompatActivity {
             }
         };
     }
-
-//    private View.OnClickListener createBackOCL(){
-//        return v -> FileManagerActivity.this.onBackPressed();
-//    }
 
 
     private List<String> getEntryNameList(List<FileManagerEntryModel> entries){
