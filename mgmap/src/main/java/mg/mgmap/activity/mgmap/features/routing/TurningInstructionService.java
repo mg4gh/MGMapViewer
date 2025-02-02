@@ -15,6 +15,7 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 
 import java.lang.invoke.MethodHandles;
@@ -156,83 +157,89 @@ public class TurningInstructionService {
 
 
     private void checkHints(boolean backOnTrack, TrackLogRefApproach bestMatch){
+        boolean abortTTS = false;
         int abstand = (int)bestMatch.getDistance();
         StringBuilder text = new StringBuilder();
         mgLog.d("SegIdx="+bestMatch.getSegmentIdx()+" epIdx="+bestMatch.getEndPointIndex()+" HINT Abstand="+abstand);
 
-        if (!prefCache.get(R.string.preferences_minimalTurningInstruction_key, false).getValue()){
-            PointModel lastPm = bestMatch.getApproachPoint();
-            double routeDistance = 0;
-            int numHints = 0;
-            TrackLogSegment segment = bestMatch.getSegment();
-            for (int pmIdx=bestMatch.getEndPointIndex(); pmIdx<segment.size(); pmIdx++){
-                PointModel pm = segment.get(pmIdx);
-                double newDistance = PointModelUtil.distance(lastPm,pm);
-                if (routeDistance+newDistance > THRESHOLD_KURS) { // some threshold
-                    PointModel pmx = PointModelUtil.interpolate(lastPm,pm,THRESHOLD_KURS-routeDistance);
+        if (PointModelUtil.distance(bestMatch.getTrackLog().getPointList(bestMatch,null)) < THRESHOLD_NEAR) {
+            text.append("Ziel erreicht.");
+            abortTTS = true;
+        } else {
+            if (!prefCache.get(R.string.preferences_minimalTurningInstruction_key, false).getValue()){
+                PointModel lastPm = bestMatch.getApproachPoint();
+                double routeDistance = 0;
+                int numHints = 0;
+                TrackLogSegment segment = bestMatch.getSegment();
+                for (int pmIdx=bestMatch.getEndPointIndex(); pmIdx<segment.size(); pmIdx++){
+                    PointModel pm = segment.get(pmIdx);
+                    double newDistance = PointModelUtil.distance(lastPm,pm);
+                    if (routeDistance+newDistance > THRESHOLD_KURS) { // some threshold
+                        PointModel pmx = PointModelUtil.interpolate(lastPm,pm,THRESHOLD_KURS-routeDistance);
 
-                    double courseDegree = PointModelUtil.calcDegree( segment.get(bestMatch.getEndPointIndex()-1), bestMatch.getApproachPoint() , pmx );
-                    int courseClock = PointModelUtil.clock4degree( courseDegree );
-                    mgLog.d("Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
-                    if (((0 < courseDegree) && (courseDegree < 150)) || ((210 < courseDegree) && (courseDegree < 360))) {
-                        if (!text.isEmpty()){ // add Kurs only, if there is a hint
-                            text.append(" Kurs ").append(courseClock).append(" Uhr");
+                        double courseDegree = PointModelUtil.calcDegree( segment.get(bestMatch.getEndPointIndex()-1), bestMatch.getApproachPoint() , pmx );
+                        int courseClock = PointModelUtil.clock4degree( courseDegree );
+                        mgLog.d("Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
+                        if (((0 < courseDegree) && (courseDegree < 150)) || ((210 < courseDegree) && (courseDegree < 360))) {
+                            if (!text.isEmpty()){ // add Kurs only, if there is a hint
+                                text.append(" Kurs ").append(courseClock).append(" Uhr");
+                            }
                         }
+                        break;
                     }
-                    break;
-                }
 
-                routeDistance += newDistance;
+                    routeDistance += newDistance;
 
-                RoutingHint hint = null;
-                if (pm instanceof ExtendedPointModel<?>) {
-                    @SuppressWarnings("unchecked")
-                    ExtendedPointModel<RoutingHint> epm = (ExtendedPointModel<RoutingHint>) pm;
-                    hint = epm.getExtent();
-                }
-                if (hint != null){
-                    mgLog.d("HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
-                            +" l="+PointModelUtil.clock4degree(hint.nextLeftDegree)+" r="+PointModelUtil.clock4degree(hint.nextRightDegree));
-                    int clock = PointModelUtil.clock4degree(hint.directionDegree);
-                    if ((hint.numberOfPathes > 2) && (clock >= 0)){
-                        boolean cond1 = ((hint.directionDegree < 150) || (hint.directionDegree > 210));
-                        boolean cond2 = ((hint.nextLeftDegree > 0) && ((hint.directionDegree-hint.nextLeftDegree)<45));
-                        boolean cond3 = ((hint.nextRightDegree < 360) && ((hint.nextRightDegree-hint.directionDegree)<45));
+                    RoutingHint hint = null;
+                    if (pm instanceof ExtendedPointModel<?>) {
+                        @SuppressWarnings("unchecked")
+                        ExtendedPointModel<RoutingHint> epm = (ExtendedPointModel<RoutingHint>) pm;
+                        hint = epm.getExtent();
+                    }
+                    if (hint != null){
+                        mgLog.d("HINT d="+routeDistance+" w="+hint.numberOfPathes+" deg="+hint.directionDegree+" c="+PointModelUtil.clock4degree(hint.directionDegree)
+                                +" l="+PointModelUtil.clock4degree(hint.nextLeftDegree)+" r="+PointModelUtil.clock4degree(hint.nextRightDegree));
+                        int clock = PointModelUtil.clock4degree(hint.directionDegree);
+                        if ((hint.numberOfPathes > 2) && (clock >= 0)){
+                            boolean cond1 = ((hint.directionDegree < 150) || (hint.directionDegree > 210));
+                            boolean cond2 = ((hint.nextLeftDegree > 0) && ((hint.directionDegree-hint.nextLeftDegree)<45));
+                            boolean cond3 = ((hint.nextRightDegree < 360) && ((hint.nextRightDegree-hint.directionDegree)<45));
 
-                        if ((cond1 || cond2 || cond3) && (numHints<2)){
-                            boolean bClose = (routeDistance < 40);
-                            if (numHints == 0){
-                                if ((pm == lastHintPoint) && (lastHintClose==bClose)){
-                                    break; // no tts for this point
-                                } else {
-                                    lastHintPoint = pm;
-                                    lastHintClose = bClose;
+                            if ((cond1 || cond2 || cond3) && (numHints<2)){
+                                boolean bClose = (routeDistance < 40);
+                                if (numHints == 0){
+                                    if ((pm == lastHintPoint) && (lastHintClose==bClose)){
+                                        break; // no tts for this point
+                                    } else {
+                                        lastHintPoint = pm;
+                                        lastHintClose = bClose;
+                                    }
                                 }
-                            }
-                            text.append(bClose ? (numHints == 0 ? "Gleich " : "Danach ") : (" In " + (int) routeDistance + " Meter ")).append(clock).append("Uhr ");
-                            if (cond2){ // next path left is less than 45degree beside direction degree
-                                text.append("Nicht links ").append(PointModelUtil.clock4degree(hint.nextLeftDegree)).append(" Uhr ");
-                            }
-                            if (cond3){ // next path right is less than 45degree beside direction degree
-                                text.append("Nicht rechts ").append(PointModelUtil.clock4degree(hint.nextRightDegree)).append(" Uhr ");
-                            }
+                                text.append(bClose ? (numHints == 0 ? "Gleich " : "Danach ") : (" In " + (int) routeDistance + " Meter ")).append(clock).append("Uhr ");
+                                if (cond2){ // next path left is less than 45degree beside direction degree
+                                    text.append("Nicht links ").append(PointModelUtil.clock4degree(hint.nextLeftDegree)).append(" Uhr ");
+                                }
+                                if (cond3){ // next path right is less than 45degree beside direction degree
+                                    text.append("Nicht rechts ").append(PointModelUtil.clock4degree(hint.nextRightDegree)).append(" Uhr ");
+                                }
 
-                            numHints++;
+                                numHints++;
 
+                            }
                         }
+                    } else {
+                        mgLog.d("HINT d="+routeDistance);
                     }
-                } else {
-                    mgLog.d("HINT d="+routeDistance);
+                    lastPm = pm;
                 }
-                lastPm = pm;
             }
-        }
-        if (backOnTrack){
-            text.insert(0,"on track ");
-        }
-        if (text.isEmpty()){
-            if (PointModelUtil.distance(bestMatch.getTrackLog().getPointList(lastHintApproach,bestMatch)) > 500){
-                text.append("on track");
+            if (backOnTrack){
+                text.insert(0,"on track ");
+            }
+            if (text.isEmpty()){
+                if (PointModelUtil.distance(bestMatch.getTrackLog().getPointList(lastHintApproach,bestMatch)) > 500){
+                    text.append("on track");
+                }
             }
         }
 
@@ -240,6 +247,10 @@ public class TurningInstructionService {
             mgLog.i("TTS: "+text);
             tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null, "ABCDEF");
             lastHintApproach = bestMatch;
+            if (abortTTS){
+                SystemClock.sleep(2000);
+                prefRoutingHints.setValue(false);
+            }
         }
     }
 
