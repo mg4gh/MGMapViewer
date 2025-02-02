@@ -39,7 +39,7 @@ public class TurningInstructionService {
     private static final int THRESHOLD_FAR = 200;
     private static final int THRESHOLD_NEAR = 40;
     private static final int THRESHOLD_KURS = 100; // distance for kurs calculation
-    private static final int AWAY_REPETITION_THRESHOLD = 3;
+    private static final int AWAY_REPETITION_THRESHOLD = 2;
 
     private enum ServiceState { OFF , INIT, ON }
     private final Pref<Boolean> prefRoutingHints;
