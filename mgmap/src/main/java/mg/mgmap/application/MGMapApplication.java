@@ -71,6 +71,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -638,4 +639,23 @@ public class MGMapApplication extends Application {
             }
         }
     }
+
+
+
+
+    public static void loadPropertiesToPreferences(SharedPreferences sharedPreferences, Properties properties){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        for (Object oPrefName  : properties.keySet()){
+            String prefValue = properties.getProperty(oPrefName.toString());
+            if (prefValue.isEmpty()){
+                editor.remove(oPrefName.toString());
+            } else if (prefValue.startsWith("Boolean:")){
+                editor.putBoolean( oPrefName.toString(), prefValue.equals("Boolean:true"));
+            } else {
+                editor.putString( oPrefName.toString(), prefValue);
+            }
+        }
+        editor.apply();
+    }
+
 }

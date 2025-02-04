@@ -69,7 +69,7 @@ public class Setup {
 
                 Properties pPreferences = new Properties();
                 pPreferences.load(assetManager.open(wanted+"/preferences.properties"));
-                loadPropertiesToPreferences(sharedPreferences, pPreferences);
+                MGMapApplication.loadPropertiesToPreferences(sharedPreferences, pPreferences);
                 mode = BaseConfig.Mode.INSTRUMENTATION_TEST;
             }
 
@@ -83,16 +83,4 @@ public class Setup {
         }
     }
 
-    public static void loadPropertiesToPreferences(SharedPreferences sharedPreferences, Properties properties){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        for (Object oPrefName  : properties.keySet()){
-            String prefValue = properties.getProperty(oPrefName.toString());
-            if (prefValue.startsWith("Boolean:")){
-                editor.putBoolean( oPrefName.toString(), prefValue.equals("Boolean:true"));
-            } else {
-                editor.putString( oPrefName.toString(), prefValue);
-            }
-        }
-        editor.apply();
-    }
 }

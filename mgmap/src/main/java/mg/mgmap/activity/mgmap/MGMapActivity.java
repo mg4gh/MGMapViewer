@@ -78,7 +78,6 @@ import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
-import mg.mgmap.application.Setup;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
@@ -186,7 +185,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         super.onCreate(savedInstanceState);
 
         createSharedPreferences();
-        Setup.loadPropertiesToPreferences(getSharedPreferences(), application.getPersistenceManager().getConfigProperties("load", ".*.properties"));
         if (Build.VERSION.SDK_INT >= 27){
             setShowWhenLocked(true);
         }

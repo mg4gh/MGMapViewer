@@ -219,6 +219,10 @@ public class PersistenceManager {
         mgLog.i("Storage baseDir="+baseDir.getAbsolutePath()+" firstRun="+firstRun);
 
         appDir = createIfNotExists(baseDir, sAppDir);
+        configDir = createIfNotExists(appDir, "config");
+        // load extra configured properties before first usage of preferences
+        MGMapApplication.loadPropertiesToPreferences(application.getSharedPreferences(), getConfigProperties("load", ".*.properties"));
+
         File trackDir = createIfNotExists(getAppDir(), "track");
         trackMetaDir = createIfNotExists(trackDir, "meta");
         trackGpxDir = createTrackGpxDir(trackDir);
@@ -234,7 +238,6 @@ public class PersistenceManager {
         themesDir = createIfNotExists(appDir, "themes");
         hgtDir = createIfNotExists(appDir, "hgt");
         logDir = createIfNotExists(appDir, "log");
-        configDir = createIfNotExists(appDir, "config");
         searchConfigDir = createIfNotExists(configDir, "search");
         createFileIfNotExists(searchConfigDir, "POI.cfg");
         createFileIfNotExists(searchConfigDir, "Nominatim.cfg");
