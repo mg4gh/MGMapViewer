@@ -197,7 +197,7 @@ public class PersistenceManager {
         mgLog.i("Default Storage: "+getBaseDir().getAbsolutePath());
 
         for (File f : context.getExternalFilesDirs(null)) {
-            mgLog.d("Storage check: "+f.getAbsolutePath()+" exists="+f.exists());
+            mgLog.i("Storage check: "+f.getAbsolutePath()+" exists="+f.exists());
         }
 
         File appDir2Check = new File(baseDir, sAppDir);
@@ -221,7 +221,7 @@ public class PersistenceManager {
         appDir = createIfNotExists(baseDir, sAppDir);
         File trackDir = createIfNotExists(getAppDir(), "track");
         trackMetaDir = createIfNotExists(trackDir, "meta");
-        trackGpxDir = createIfNotExists(trackDir, "gpx");
+        trackGpxDir = createTrackGpxDir(trackDir);
         File trackRecDir = createIfNotExists(trackDir, "recording");
         fRaw = new File(trackRecDir, "raw.dat");
 
@@ -397,6 +397,29 @@ public class PersistenceManager {
         }
     }
 
+    public File createTrackGpxDir(File trackDir){
+        String sPrefGpxDir = application.getSharedPreferences().getString("trackGpxDir","");
+        File gpxDir = null;
+        try {
+            if (!sPrefGpxDir.isEmpty()){
+                File fPrefGpxDir = new File(sPrefGpxDir);
+                if (!fPrefGpxDir.exists()){
+                    if (!fPrefGpxDir.mkdirs()) mgLog.e("Failed to create gpxDir: "+fPrefGpxDir.getAbsolutePath());
+                }
+                File testFile = new File(fPrefGpxDir,"testToWrite.txt");
+                new FileOutputStream(testFile).close();
+                if (!testFile.delete()) mgLog.e("Failed to delete testFile: "+testFile.getAbsolutePath());
+                gpxDir = fPrefGpxDir;
+            }
+        } catch (Exception e) {
+            mgLog.e(e);
+        }
+        if (gpxDir == null){
+            gpxDir = createIfNotExists(trackDir, "gpx");
+        }
+        mgLog.i("use trackGpxDir: "+gpxDir );
+        return gpxDir;
+    }
     public boolean existsGpx(String filename) {
         File file = getAbsoluteFile(trackGpxDir, filename, SUFFIX_GPX);
         return file.exists();
