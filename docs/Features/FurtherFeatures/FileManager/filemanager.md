@@ -38,7 +38,7 @@ The quick controls provide follwoing functions:
   </tr>
   <tr>
     <td><img src="../../../icons/edit2.svg" width="24"/></td> 
-    <td>one file or directory is seleceted</td>
+    <td>one entry is seleceted</td>
     <td>edit the file or directory name</td>	
   </tr>
   <tr>
@@ -49,24 +49,24 @@ The quick controls provide follwoing functions:
   
   
   <tr>
+    <td><img src="../../../icons/file_mgr_move.svg" width="24"/></td> 
+    <td>one or more entries are selected</td>
+    <td>move file(s) and/or directory/directories</td>	
+  </tr>
+  <tr>
     <td><img src="../../../icons/share.svg" width="24"/></td> 
     <td>one or more files are selected</td>
-    <td>share the selected files</td>	
+    <td>share the selected files/directories</td>	
   </tr>
   <tr>
     <td><img src="../../../icons/save.svg" width="24"/></td> 
-    <td>MGMapViewer was selected as a share target</td>
-    <td>save the (via share received) files to the current directory (so first navigate to the desired target directory, then use the save)</td>	
+    <td>uncompleted move or share operation</td>
+    <td>save the (moved or via share received) content to the current directory <br/> <b>Hint</b>: first navigate to the desired target directory, then use the save button</td>	
   </tr>
   <tr>
     <td><img src="../../../icons/delete.svg" width="24"/></td> 
-    <td>one or more files and empty directories are selected</td>
+    <td>one or more entries are selected</td>
     <td>delete the selected files and directories</td>	
-  </tr>
-  <tr>
-    <td><img src="../../../icons/back.svg" width="24"/></td> 
-    <td>always</td>
-    <td>go back to the previous activity</td>	
   </tr>
 </table>
 

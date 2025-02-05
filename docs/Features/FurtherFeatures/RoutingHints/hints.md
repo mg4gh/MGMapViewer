@@ -47,7 +47,15 @@ Additional rules
 - If the measured distance to the route is above the THRESHOLD_MEDIUM (40m), then you get up to three messages:
   - "Achtung Abstand \<nn> Meter"
   - "Achtung Achtung Abstand \<nn> Meter"
-  - "Achtung Achtung Achtung Abstand \<nn> Meter"  
+  - "Track verlassen"
   If there are further gps points with a distance more the THRESHOLD_MEDIUM, you don't get any further information.
+- A gps point with distance < THRESHOLD_MEDIUM after a gps point with distance > THRESHOLD_MEDIUM results in a "on track" message.
+- A gps point goves also an "on track" message, if last given instruction is more than 500m back on the route.
+- A gps point with distance < THRESHOLD_MEDIUM to the final point of the route give the message "Ziel erreicht"
+
+#### Minimal turning instruction
+
+Via the routing settings the "minimal turning instructions" can be switched on. In this mode only the "on track" message and the distance warnings are
+given. 
 
 <small><small>[Back to Index](../../../index.md)</small></small>
