@@ -722,7 +722,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     }
 
     public void initMapsforgeNumRenderThreads(){
-        int numRenderThreads = Runtime.getRuntime().availableProcessors()+1;
+//        int numRenderThreads = Runtime.getRuntime().availableProcessors()+1;
+        int numRenderThreads = 2; // seems like mapsforge has again build in some bottleneck
         try {
             numRenderThreads = Integer.parseInt( getSharedPreferences().getString(getResources().getString(R.string.preferences_mapsforge_renderThreads),""+numRenderThreads) );
         } catch (NumberFormatException e) {
