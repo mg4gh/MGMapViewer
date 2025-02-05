@@ -61,10 +61,24 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginBottom="40dp"
+            android:padding="5dp"
+            android:id="@+id/fm_qc_help"
+            android:orientation="horizontal"
+            android:background="#C8D4C8C8"
+            android:layout_alignParentBottom="true"
+            android:visibility="visible"
+            android:gravity="center"
+            android:text="@string/saveHint"
+            >
+        </TextView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:id="@+id/ts_qc"
+            android:id="@+id/fm_qc"
             android:orientation="horizontal"
             android:background="@color/CC_GRAY200"
             android:layout_alignParentBottom="true"

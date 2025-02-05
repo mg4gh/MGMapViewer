@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="saveHint">Pending: Select target folder and press <b>Save</b></string>
+    <string name="FileMgr.zipBeforeShare">zip content before share</string>
+    <string name="FileMgr.unzipContent">unzip content</string>
 </resources>

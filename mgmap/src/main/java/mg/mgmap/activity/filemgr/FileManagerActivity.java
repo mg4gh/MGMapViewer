@@ -81,8 +81,8 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.hints.HintMoveReceived;
-import mg.mgmap.generic.util.hints.HintShareReceived;
+//import mg.mgmap.generic.util.hints.HintMoveReceived;
+//import mg.mgmap.generic.util.hints.HintShareReceived;
 import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.generic.view.VUtil;
@@ -116,7 +116,7 @@ public class FileManagerActivity extends AppCompatActivity {
 
     private final ArrayList<Uri> shareUris = new ArrayList<>();
     private final ArrayList<File> moveFiles = new ArrayList<>();
-
+    private View qcsHelp;
 
 
     public MGMapApplication getMGMapApplication() {
@@ -216,8 +216,10 @@ public class FileManagerActivity extends AppCompatActivity {
                 });
 
 
+        qcsHelp = findViewById(R.id.fm_qc_help);
+        qcsHelp.setVisibility(View.INVISIBLE);
 
-        ViewGroup qcs = findViewById(R.id.ts_qc);
+        ViewGroup qcs = findViewById(R.id.fm_qc);
         VUtil.createQuickControlETV(qcs,true)
                 .setData(R.drawable.file_mgr_dir)
                 .setNameAndId(R.id.fileMgr_mi_dir_add)
@@ -239,7 +241,7 @@ public class FileManagerActivity extends AppCompatActivity {
 
         VUtil.createQuickControlETV(qcs,true)
                 .setData(prefMoveEnabled,R.drawable.file_mgr_move2,R.drawable.file_mgr_move)
-                .setNameAndId(R.id.stat_mi_back)
+                .setNameAndId(R.id.stat_mi_move)
                 .setOnClickListener(createMoveOCL());
         VUtil.createQuickControlETV(qcs,true)
                 .setData(prefShareEnabled,R.drawable.share2,R.drawable.share)
@@ -293,7 +295,8 @@ public class FileManagerActivity extends AppCompatActivity {
                 }
             }
             if (!shareUris.isEmpty()){
-                application.getHintUtil().showHint( new HintShareReceived(this, shareUris.size()) );
+//                application.getHintUtil().showHint( new HintShareReceived(this, shareUris.size()) );
+                qcsHelp.setVisibility(View.VISIBLE);
             }
 
         }
@@ -322,7 +325,7 @@ public class FileManagerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        ViewGroup qcs = findViewById(R.id.ts_qc);
+        ViewGroup qcs = findViewById(R.id.fm_qc);
         qcs.removeAllViews();
         prefCache.cleanup();
         FileManagerEntryView.cleanup();
@@ -503,7 +506,6 @@ public class FileManagerActivity extends AppCompatActivity {
     }
 
     // This method checks if the file to open is a zip file. If so, it offers to unzip it locally. Otherwise the open intent will be issued via openFile2 method 
-    @SuppressLint("SetTextI18n")
     private void openFile(File file){
         if (file.getName().endsWith("zip")){
             ArrayList<String> names = new ArrayList<>();
@@ -515,7 +517,7 @@ public class FileManagerActivity extends AppCompatActivity {
                 CheckBox cbZip = new CheckBox(context);
                 cbZip.setChecked(true);
                 cbZip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-                cbZip.setText("unzip content");
+                cbZip.setText(R.string.FileMgr_unzipContent);
                 cbZip.setEnabled(false);
                 contentView.addView(cbZip);
 
@@ -659,13 +661,13 @@ public class FileManagerActivity extends AppCompatActivity {
                 entries.forEach(e->moveFiles.add(e.getFile()));
                 if (!moveFiles.isEmpty()){
                     prefPwd.changed();
-                    application.getHintUtil().showHint( new HintMoveReceived(this, moveFiles.size()) );
+                    qcsHelp.setVisibility(View.VISIBLE);
+//                    application.getHintUtil().showHint( new HintMoveReceived(this, moveFiles.size()) );
                 }
             }
         };
     }
 
-    @SuppressLint("SetTextI18n")
     @SuppressWarnings("ConstantConditions")
     private View.OnClickListener createShareOCL(){
         return v -> {
@@ -680,7 +682,7 @@ public class FileManagerActivity extends AppCompatActivity {
                 CheckBox cbZip = new CheckBox(context);
                 cbZip.setChecked(flags[2] || entries.size()>5); // contains at least one none empty subdir ... but it's just the default
                 cbZip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-                cbZip.setText("zip content before share");
+                cbZip.setText(R.string.FileMgr_zipBeforeShare);
                 contentView.addView(cbZip);
 
                 DialogView dialogView = this.findViewById(R.id.dialog_parent);
@@ -777,6 +779,7 @@ public class FileManagerActivity extends AppCompatActivity {
             } else if (!moveFiles.isEmpty()){
                 handleSaveOfMove();
             }
+            qcsHelp.setVisibility(View.INVISIBLE);
         };
     }
 
@@ -845,7 +848,6 @@ public class FileManagerActivity extends AppCompatActivity {
         prefPwd.changed();
     }
 
-    @SuppressLint("SetTextI18n")
     private void unzipDialog(File tempZipFile, File pwdDir, ArrayList<String> names) {
         LinearLayout contentView = new LinearLayout(context);
         contentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -97,6 +97,7 @@
     <item type="id" name="stat_mi_save"  />
     <item type="id" name="stat_mi_delete"  />
     <item type="id" name="stat_mi_back"  />
+    <item type="id" name="stat_mi_move"  />
 
     <item type="id" name="fileMgr_mi_dir_add"  />
     <item type="id" name="fileMgr_mi_file_add"  />
