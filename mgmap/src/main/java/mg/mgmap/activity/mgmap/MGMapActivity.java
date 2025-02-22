@@ -149,7 +149,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private GGraphTileFactory gGraphTileFactory = null;
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
     private final Runnable ttCheckFullBackup = () ->
-        BackupUtil.checkFullBackup(MGMapActivity.this, application.getPersistenceManager(), prefCache.get(R.string.preferences_last_full_backup_time, 0L));
+        BackupUtil.checkFullBackup(MGMapActivity.this, application.getPersistenceManager());
     private final PropertyChangeListener prefGpsObserver = (e) -> triggerTrackLoggerService();
     private Pref<Boolean> prefTracksVisible;
     private List<String> recreatePreferences;
@@ -252,7 +252,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.prefGps.addObserver(prefGpsObserver);
         application.prefGps.onChange();
         prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> {
-            FeatureService.getTimer().postDelayed(()->BackupUtil.checkLatestBackup(MGMapActivity.this, application.getPersistenceManager(), prefCache.get(R.string.preferences_last_full_backup_time, 0L)), 10);
+            FeatureService.getTimer().postDelayed(()->BackupUtil.checkLatestBackup(MGMapActivity.this, application.getPersistenceManager()), 10);
             FeatureService.getTimer().postDelayed(()->new GpxSyncUtil().trySynchronisation(application), 10000);
         });
         prefTracksVisible = prefCache.get(R.string.preferences_tracks_visible, true);

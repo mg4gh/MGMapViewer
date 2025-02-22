@@ -211,9 +211,6 @@ public class MGMapApplication extends Application {
             mgLog.i("init finished!");
         }).start();
 
-        if (persistenceManager.isFirstRun()){ // initialize lastFullBackupTime with install time - otherwise the first backup request would appear almost directly after installation.
-            prefCache.get(R.string.preferences_last_full_backup_time, 0L).setValue(System.currentTimeMillis());
-        }
         BackupUtil.restore2(this, persistenceManager, true); // restore backup_latest.zip (if exists)
         BackupUtil.restore2(this, persistenceManager, false); // restore backup_full.zip (if exists) (Remark: there is no use case, where both backup files have to be restored in the same run)
 

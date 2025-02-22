@@ -165,9 +165,9 @@ public class PersistenceManager {
 
     private final MGMapApplication application;
     private final Context context;
-    private boolean firstRun = false;
 
     private File baseDir;
+    private File baseDirExt = null;
     private final File appDir;
 
     private final File trackMetaDir;
@@ -196,13 +196,17 @@ public class PersistenceManager {
         baseDir = context.getExternalFilesDir(null);
         mgLog.i("Default Storage: "+getBaseDir().getAbsolutePath());
 
-        for (File f : context.getExternalFilesDirs(null)) {
+        File[] externalFilesDirs = context.getExternalFilesDirs(null);
+        for (File f : externalFilesDirs) {
             mgLog.i("Storage check: "+f.getAbsolutePath()+" exists="+f.exists());
+            if ((externalFilesDirs.length == 2) && (f != baseDir)){
+                baseDirExt = f;
+                mgLog.i("SDCard baseDir: "+f.getAbsolutePath()+" exists="+f.exists());
+            }
         }
 
         File appDir2Check = new File(baseDir, sAppDir);
         if (! appDir2Check.exists()){
-            firstRun = true;
             mgLog.i("Default App Storage ("+appDir2Check.getAbsolutePath()+") not found - check alternatives");
             for (File f : context.getExternalFilesDirs(null)){
                 appDir2Check = new File(f, sAppDir);
@@ -210,13 +214,12 @@ public class PersistenceManager {
                 mgLog.i("check App Storage: "+appDir2Check.getAbsolutePath()+" ->exists: "+exists);
                 if (exists){
                     baseDir = f;
-                    firstRun = false;
                     break;
                 }
             }
         }
 
-        mgLog.i("Storage baseDir="+baseDir.getAbsolutePath()+" firstRun="+firstRun);
+        mgLog.i("Storage baseDir="+baseDir.getAbsolutePath());
 
         appDir = createIfNotExists(baseDir, sAppDir);
         configDir = createIfNotExists(appDir, "config");
@@ -251,11 +254,11 @@ public class PersistenceManager {
         forceDeleteContent(tempZipDir);
     }
 
-    public boolean isFirstRun() {
-        return firstRun;
-    }
     public File getBaseDir(){
         return baseDir;
+    }
+    public File getBaseDirExt(){
+        return baseDirExt;
     }
     public File getAppDir(){
         return appDir;
