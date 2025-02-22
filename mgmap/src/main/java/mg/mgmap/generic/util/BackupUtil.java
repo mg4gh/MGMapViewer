@@ -42,14 +42,15 @@ public class BackupUtil {
         return "backup_"+(latest?"latest":"full")+".zip";
     }
 
-    public static void checkFullBackup(Activity activity, PersistenceManager persistenceManager, Pref<Long> prefLastFullBackupTime){
-        long days = (System.currentTimeMillis() - prefLastFullBackupTime.getValue()) / (1000L*60*60*24L);
-        boolean timeTrigger = ( days >= 90L ); // 90 days
+    public static void checkFullBackup(Activity activity, PersistenceManager persistenceManager){
+        long lastFullBackupTime = getFullBackupTime(persistenceManager);
+        long days = (System.currentTimeMillis() - lastFullBackupTime) / (1000L*60*60*24L);
+        boolean timeTrigger = ( 15000 >= days ) && ( days >= 90L ); // 90 days
         boolean trackNumberTrigger = false;
         ArrayList<File> files = PersistenceManager.getFilesRecursive(persistenceManager.getTrackGpxDir(),PersistenceManager.SUFFIX_GPX);
         int cntNewFiles = 0;
         for (File f : files){
-            if (f.isFile() && (f.lastModified() > prefLastFullBackupTime.getValue())) cntNewFiles++;
+            if (f.isFile() && (f.lastModified() > lastFullBackupTime)) cntNewFiles++;
             if (cntNewFiles > 300){
                 trackNumberTrigger = true;
                 break;
@@ -58,8 +59,10 @@ public class BackupUtil {
         String backupFileName = getBackupFileName(false);
         File backupFile = new File(persistenceManager.getBackupDir(), backupFileName);
         boolean noBackupFileTrigger = !backupFile.exists() && (files.size() > 10);
-        mgLog.d("checkFullBackup timeTrigger="+timeTrigger+" days="+days+" trackNumberTrigger="+trackNumberTrigger+" cntNewFiles="+cntNewFiles+" noBackupFileTrigger="+noBackupFileTrigger+" backupFile.exists="+backupFile.exists()+" files.size="+files.size());
-        if (timeTrigger || trackNumberTrigger || noBackupFileTrigger){
+        File backupLatestFile = new File(persistenceManager.getBackupDir(), getBackupFileName(true));
+        boolean backupLatestLarge = backupLatestFile.exists() && (backupLatestFile.length() > 20*1000*1000);
+        mgLog.d("checkFullBackup timeTrigger="+timeTrigger+" days="+days+" trackNumberTrigger="+trackNumberTrigger+" cntNewFiles="+cntNewFiles+" noBackupFileTrigger="+noBackupFileTrigger+" backupLatestLarge="+backupLatestLarge);
+        if (timeTrigger || trackNumberTrigger || noBackupFileTrigger || backupLatestLarge){
             DialogView dialogView = activity.findViewById(R.id.dialog_parent);
             dialogView.lock(() -> dialogView
                     .setTitle("Full GPX Backup")
@@ -69,23 +72,23 @@ public class BackupUtil {
                             
                             If you want to restore the archive later, just copy this file via the Android share \
                             mechanism back to the MGMapViewer/backup/restore/ folder and restart the app.""")
-                    .setPositive("OK", evt -> trigger(activity, persistenceManager, false, prefLastFullBackupTime))
+                    .setPositive("OK", evt -> trigger(activity, persistenceManager, false))
                     .setNegative("Cancel", null)
                     .show());
         }
     }
 
-    public static void checkLatestBackup(Context context, PersistenceManager persistenceManager, Pref<Long> prefLastFullBackupTime){
+    public static void checkLatestBackup(Context context, PersistenceManager persistenceManager){
         String backupFileName = getBackupFileName(true);
         File backupFile = new File(persistenceManager.getBackupDir(), backupFileName);
         long minutes = (System.currentTimeMillis() - backupFile.lastModified()) / (1000L*60L);
         mgLog.d("checkLatestBackup minutes="+minutes+" backupFile.exists="+backupFile.exists());
         if ( (minutes >= 60L) || !backupFile.exists() ){ // 1 hours
-            BackupUtil.trigger(context, persistenceManager, true, prefLastFullBackupTime);
+            BackupUtil.trigger(context, persistenceManager, true);
         }
     }
 
-    public static void trigger(Context context, PersistenceManager persistenceManager, boolean latest, Pref<Long> prefLastFullBackupTime){
+    public static void trigger(Context context, PersistenceManager persistenceManager, boolean latest){
         String backupFileName = getBackupFileName(latest);
         mgLog.d("trigger prepare backup");
         if (inProgress.compareAndSet(false, true)){
@@ -113,12 +116,14 @@ public class BackupUtil {
                         }
                         mgLog.d(clazz+PW);
                         boolean success = false;
+
+                        long lastFullBackupTime = getFullBackupTime(persistenceManager);
                         try (ZipFile zipFile = new ZipFile( backupFileTemp )){
                             ArrayList<File> files = PersistenceManager.getFilesRecursive(persistenceManager.getTrackGpxDir(),PersistenceManager.SUFFIX_GPX);
                             if (files.isEmpty()) return;
                             files.sort( (f1,f2)-> -(Long.compare(f1.lastModified(),f2.lastModified())) );
                             int latestIdx = (latest &&  (files.size() > 365))?365:files.size()-1;
-                            while (latest && (latestIdx != 0) && (files.get(latestIdx).lastModified() < prefLastFullBackupTime.getValue())) latestIdx--; // latest backup only files newer than last full backup
+                            while (latest && (latestIdx != 0) && (files.get(latestIdx).lastModified() < lastFullBackupTime)) latestIdx--; // latest backup only files newer than last full backup
                             long latestModified = files.get(latestIdx).lastModified();
                             ZipParameters zipParameters = new ZipParameters();
                             zipParameters.setExcludeFileFilter(file -> file.isDirectory()? PersistenceManager.checkFilesOlderThan(file,latestModified):file.lastModified() < latestModified);
@@ -159,7 +164,12 @@ public class BackupUtil {
                                         mgLog.d("prepare backup - copy to dataBackupDir "+backupFileName+" to "+dataBackupDir.getAbsolutePath());
                                         IOUtil.copyFile( backupFile, new File(dataBackupDir, backupFileName) );
                                     } else { // full backup
-                                        triggerFullBackupShare(context, backupFile, prefLastFullBackupTime);
+                                        triggerFullBackupShare(context, backupFile);
+                                    }
+                                    File baseDirExt = persistenceManager.getBaseDirExt();
+                                    if ((baseDirExt != null) && (persistenceManager.getBaseDir() != baseDirExt)){
+                                        mgLog.d("prepare backup - copy "+backupFileName+" to "+baseDirExt.getAbsolutePath());
+                                        IOUtil.copyFile( backupFile, new File(baseDirExt, backupFileName) );
                                     }
                                 }
                             }
@@ -295,7 +305,7 @@ public class BackupUtil {
 
     }
 
-    private static void triggerFullBackupShare(Context context, File fullBackupFile, Pref<Long> prefLastFullBackupTime){
+    private static void triggerFullBackupShare(Context context, File fullBackupFile){
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", fullBackupFile);
         sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
@@ -303,7 +313,11 @@ public class BackupUtil {
         sendIntent.setType("*/zip");
         sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         context.startActivity(Intent.createChooser(sendIntent, "Share full backup ..."));
-        prefLastFullBackupTime.setValue(System.currentTimeMillis());
+    }
+
+    private static long getFullBackupTime(PersistenceManager persistenceManager ){
+        File fFullBackup = new File(persistenceManager.getBackupDir(), getBackupFileName(false));
+        return fFullBackup.exists()? fFullBackup.lastModified() : 0;
     }
 
 }
