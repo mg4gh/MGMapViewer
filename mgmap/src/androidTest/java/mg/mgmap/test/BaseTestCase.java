@@ -89,7 +89,6 @@ public class BaseTestCase {
         lm.startMatch(regexs, matches);
         prefMenuInflated = mgMapApplication.getPrefCache().get(R.string.FSControl_pref_menu_inflated, false);
         prefMetaLoading = mgMapApplication.getPrefCache().get(R.string.MGMapApplication_pref_MetaData_loading, true);
-        mgMapApplication.getPrefCache().get(R.string.preferences_last_full_backup_time, 0L).setValue(System.currentTimeMillis()); // prevent full backup during test
         mgLog.i(this.getClass().getName() + "." + name.getMethodName() + " start");
     }
 

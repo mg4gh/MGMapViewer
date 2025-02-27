@@ -149,12 +149,12 @@ public class MultiMapDataStore extends MapDataStore {
     }
 
     @Override
-    public MapReadResult readLabels(Tile tile) {
+    public MapReadResult readNamedItems(Tile tile) {
         return switch (this.dataPolicy) {
             case RETURN_FIRST -> {
                 for (MapDataStore mdb : mapDatabases) {
                     if (mdb.supportsTile(tile)) {
-                        yield mdb.readLabels(tile);
+                        yield mdb.readNamedItems(tile);
                     }
                 }
                 yield null;
@@ -171,7 +171,7 @@ public class MultiMapDataStore extends MapDataStore {
         for (MapDataStore mdb : mapDatabases) {
             if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
                 if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(tile)){
-                    mapReadResult = extendedMapFile.readLabels(tile);
+                    mapReadResult = extendedMapFile.readNamedItems(tile);
                     break;
                 }
             }
@@ -180,7 +180,7 @@ public class MultiMapDataStore extends MapDataStore {
             }
 
             if (mdb.supportsTile(tile)) {
-                MapReadResult result = mdb.readLabels(tile);
+                MapReadResult result = mdb.readNamedItems(tile);
                 if (result == null) {
                     continue;
                 }
@@ -196,7 +196,7 @@ public class MultiMapDataStore extends MapDataStore {
     }
 
     @Override
-    public MapReadResult readLabels(Tile upperLeft, Tile lowerRight) {
+    public MapReadResult readNamedItems(Tile upperLeft, Tile lowerRight) {
         return switch (this.dataPolicy) {
             case RETURN_FIRST -> {
                 for (MapDataStore mdb : mapDatabases) {
@@ -204,7 +204,7 @@ public class MultiMapDataStore extends MapDataStore {
                             upperLeft.getBoundingBox().extendBoundingBox(lowerRight.getBoundingBox()),
                             upperLeft.zoomLevel
                     )) {
-                        yield mdb.readLabels(upperLeft, lowerRight);
+                        yield mdb.readNamedItems(upperLeft, lowerRight);
                     }
                 }
                 yield null;
@@ -221,7 +221,7 @@ public class MultiMapDataStore extends MapDataStore {
         for (MapDataStore mdb : mapDatabases) {
             if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
                 if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(upperLeft, lowerRight)){
-                    mapReadResult = extendedMapFile.readLabels(upperLeft, lowerRight);
+                    mapReadResult = extendedMapFile.readNamedItems(upperLeft, lowerRight);
                     break;
                 }
             }
@@ -233,7 +233,7 @@ public class MultiMapDataStore extends MapDataStore {
                     upperLeft.getBoundingBox().extendBoundingBox(lowerRight.getBoundingBox()),
                     upperLeft.zoomLevel
             )) {
-                MapReadResult result = mdb.readLabels(upperLeft, lowerRight);
+                MapReadResult result = mdb.readNamedItems(upperLeft, lowerRight);
                 if (result == null) {
                     continue;
                 }
