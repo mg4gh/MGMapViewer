@@ -296,6 +296,12 @@ public class BBTest extends BaseTestCase {
         addRegex(".*onClick bgJobGroupResult_Download_height_data_btPositive.*");
         animateToViewAndClick(R.id.bt_dialog_positive);
 
+        PointModelImpl p1_2a = new PointModelImpl(55.2,12.7);
+        PointModelImpl p2_2a = new PointModelImpl(54.2,14.3);
+        animateSwipeLatLong(p1_2, p1_2a);
+        animateSwipeLatLong(p2_2, p2_2a);
+
+
         // reload all
         addRegex(".*onClick mi_load_all.*");
         animateMenu(R.id.menu_bb, R.id.mi_load_all);
@@ -308,8 +314,8 @@ public class BBTest extends BaseTestCase {
         // extend bb for delete all
         PointModelImpl p1_3 = new PointModelImpl(56.1,11.8);
         PointModelImpl p2_3 = new PointModelImpl(53.8,15.2);
-        animateSwipeLatLong(p1_2, p1_3);
-        animateSwipeLatLong(p2_2, p2_3);
+        animateSwipeLatLong(p1_2a, p1_3);
+        animateSwipeLatLong(p2_2a, p2_3);
 
         // delete all
         addRegex(".*onClick mi_delete_all.*");
