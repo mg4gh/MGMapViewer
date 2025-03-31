@@ -66,6 +66,7 @@ public class TileStoreLoader {
     final MGMapApplication application;
     final MGMapActivity activity;
     final MGTileStore mgTileStore;
+    final HashMap<String, String> cookieMap = new HashMap<>();
 
     public XmlTileSource xmlTileSource;
     BgJobGroup jobGroup;
@@ -79,9 +80,7 @@ public class TileStoreLoader {
         }
         @Override
         public void run() {
-            String cookies = CookieManager.getInstance().getCookie(xmlTileSource.config.cookiesDomain);
-            mgLog.d("cookies="+cookies);
-            boolean check = checkRequiredCookies(cookies);
+            boolean check = checkRequiredCookies();
             boolean enableWorked = dialogView.setEnablePositive(check);
             if (!check && enableWorked){
                 timer.postDelayed(this, 1000);
@@ -133,9 +132,15 @@ public class TileStoreLoader {
                         @Override
                         public void onPageFinished(WebView view, String url) {
                             super.onPageFinished(view, url);
+                            String cookies = CookieManager.getInstance().getCookie(url);
                             // this might be used, if autofill fields are renamed
                             // view.saveWebArchive(new File(application.getPersistenceManager().getLogDir(),"abc_"+System.currentTimeMillis()+".war").getAbsolutePath());
+
                             mgLog.d(url);
+                            // mgLog.d("cookies="+cookies);
+                            if (url.contains(xmlTileSource.config.cookiesURL)){
+                                addCookies(cookies);
+                            }
                         }
                     });
                     myWebView.loadUrl(xmlTileSource.config.cookiesURL);
@@ -144,8 +149,7 @@ public class TileStoreLoader {
                             .setContentView(myWebView)
                             .setLogPrefix("tsl")
                             .setPositive("Done", evt -> {
-                                String cookies = CookieManager.getInstance().getCookie(xmlTileSource.config.cookiesDomain);
-                                saveCookiesAndInit(cookies);
+                                saveCookiesAndInit();
                                 jobGroup.doit(); // this is the real retry
                             })
                             .setNegative( "Abort", null)
@@ -227,18 +231,27 @@ public class TileStoreLoader {
         }
     }
 
-    private void saveCookiesAndInit(String cookies){
+    private void addCookies(String cookies){
         mgLog.d( cookies);
+        String[] cookiesA = cookies.split("; ");
+        for (String s : cookiesA) {
+            String[] part = s.split("=");
+            cookieMap.put(part[0], part[1]);
+        }
+    }
+
+    private void saveCookiesAndInit(){
         String nl = System.lineSeparator();
         StringBuilder sb = new StringBuilder("[").append(nl);
-        String[] cookiesA = cookies.split("; ");
-        for (int i=0; i<cookiesA.length; i++){
-            String[] part = cookiesA[i].split("=");
+        int i=0; // needed to prevent "," after last entry
+        List<String> requiredList = new ArrayList<>( List.of(xmlTileSource.config.cookiesRequired));
+        for (String requiredCookie : requiredList){
+            i++;
             sb.append("{").append(nl);
-            sb.append("    \"Name raw\": \"").append(part[0]).append("\",").append(nl);
-            sb.append("    \"Content raw\": \"").append(part[1]).append("\"").append(nl);
+            sb.append("    \"Name raw\": \"").append(requiredCookie).append("\",").append(nl);
+            sb.append("    \"Content raw\": \"").append(cookieMap.get(requiredCookie)).append("\"").append(nl);
             sb.append("}");
-            if ( (i+1) < cookiesA.length ) sb.append(","); // if not the last
+            if ( i < requiredList.size() ) sb.append(","); // if not the last
             sb.append(nl);
         }
         sb.append("]").append(nl);
@@ -250,17 +263,13 @@ public class TileStoreLoader {
         } catch (Exception e){ mgLog.e(e);}
     }
 
-    private boolean checkRequiredCookies(String cookies){
+    private boolean checkRequiredCookies(){
         if (xmlTileSource.config.cookiesRequired == null) return true;
         List<String> requiredList = new ArrayList<>( List.of(xmlTileSource.config.cookiesRequired));
-        if (cookies != null){
-            String[] cookiesA = cookies.split("; ");
-            for (String s : cookiesA) {
-                String[] part = s.split("=");
-                requiredList.remove(part[0]);
-            }
+        for (String requiredCookie : requiredList){
+            if (! cookieMap.containsKey(requiredCookie)) return false;
         }
-        return requiredList.isEmpty();
+        return true;
     }
 
     private void init() throws Exception {
