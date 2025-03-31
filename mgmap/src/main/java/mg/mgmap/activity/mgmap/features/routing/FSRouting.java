@@ -65,7 +65,6 @@ import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
-import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.PrefCache;
@@ -112,9 +111,8 @@ public class FSRouting extends FeatureService {
 
     private final Pref<Float> prefAlphaRotl = getPref(R.string.FSRouting_pref_alphaRoTL, 1.0f);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
-    private final Pref<Boolean> prefStlVisibility = getPref(R.string.FSATL_pref_STL_visibility, false);
+//    private final Pref<Boolean> prefStlVisibility = getPref(R.string.FSATL_pref_STL_visibility, false);
     private final Pref<Integer> prefZoomLevel = getPref(R.string.FSBeeline_pref_ZoomLevel, 15);
-    private final Pref<Boolean> prefMapMatching = new Pref<>(false);
     private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
     private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
@@ -142,19 +140,6 @@ public class FSRouting extends FeatureService {
         ttRefreshTime = 50;
         mtlSupportProvider = new AdvancedMtlSupportProvider();
         fsMarker.mtlSupportProvider = mtlSupportProvider;
-        prefMapMatching.addObserver((e) -> {
-            TrackLog selectedTrackLog = getApplication().availableTrackLogsObservable.selectedTrackLogRef.getTrackLog();
-            if (selectedTrackLog != null){
-                prepareOptimize();
-                application.addBgJob (new BgJob(){
-                    @Override
-                    protected void doJob() {
-                        fsMarker.createMarkerTrackLog(selectedTrackLog);
-                        optimize();
-                    }
-                });
-            }
-        });
 
         application.markerTrackLogObservable.addObserver((e) -> {
             TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
@@ -394,9 +379,8 @@ public class FSRouting extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
         super.initQuickControl(etv,info);
         if ("matching".equals(info)) {
-            etv.setPrAction(prefMapMatching);
             etv.setData(R.drawable.matching);
-            etv.setDisabledData(prefStlVisibility,R.drawable.matching_dis);
+            etv.setDisabledData(new Pref<>(false),R.drawable.matching_dis);
             etv.setHelp(r(R.string.FSRouting_qcMapMatching_Help));
         } else if ("routingHint".equals(info)){
             etv.setData(prefRoutingHints,R.drawable.routing_hints2, R.drawable.routing_hints1);
@@ -526,21 +510,6 @@ public class FSRouting extends FeatureService {
                 mpv.setShowPointsOnly(true);
                 register(mpv);
             }
-        }
-    }
-
-
-    void optimize(){ // needs to be reworked
-        synchronized (routingEngine){
-            prefCalcRouteInProgress.setValue(true);
-            routingEngine.setRoutingContext( new RoutingContext(1000, false, 10, PointModelUtil.getCloseThreshold()) );
-            WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-            RouteOptimizer ro = new RouteOptimizer(gFactory, routingEngine);
-            ro.optimize(mtl);
-            routingEngine.setRoutingContext( new RoutingContext(1000, true, 3, PointModelUtil.getCloseThreshold()) );
-            updateRouting();
-            routingEngine.setRoutingContext(interactiveRoutingContext);
-            prefCalcRouteInProgress.setValue(false);
         }
     }
 
