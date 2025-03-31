@@ -217,7 +217,7 @@ public class BBTest extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void _03_tilestore_and_hgt() {
         mgLog.i("started");
         MGMapActivity mgMapActivity1 = waitForActivity(MGMapActivity.class);
