@@ -81,8 +81,6 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
-//import mg.mgmap.generic.util.hints.HintMoveReceived;
-//import mg.mgmap.generic.util.hints.HintShareReceived;
 import mg.mgmap.generic.view.DialogView;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.generic.view.VUtil;
@@ -295,7 +293,6 @@ public class FileManagerActivity extends AppCompatActivity {
                 }
             }
             if (!shareUris.isEmpty()){
-//                application.getHintUtil().showHint( new HintShareReceived(this, shareUris.size()) );
                 qcsHelp.setVisibility(View.VISIBLE);
             }
 
@@ -474,7 +471,7 @@ public class FileManagerActivity extends AppCompatActivity {
                             prefPwd.changed();
                         }
                         // hook to rename corresponding trackLog object (if exists) - otherwise there would be an inconsistency between TrackStatisticActivity and FileManagerActivity
-                        if ((oldFile != null) && (!newName.equals(oldFile.getName()) && oldFile.getName().endsWith(".gpx") && newName.endsWith(".gpx")) && (oldFile.getParentFile() != null)){
+                        if ((oldFile != null) && (oldFile.getName().endsWith(".gpx") && newName.endsWith(".gpx")) && (oldFile.getParentFile() != null)){
                             String oldDirName = oldFile.getParentFile().getAbsolutePath().replace( persistenceManager.getTrackGpxDir().getAbsolutePath()+File.separator, "")+File.separator;
                             String oldTrackName = oldFile.getName().replaceFirst("\\.gpx$","");
                             String newTrackName = newName.replaceFirst("\\.gpx$","");
@@ -662,7 +659,6 @@ public class FileManagerActivity extends AppCompatActivity {
                 if (!moveFiles.isEmpty()){
                     prefPwd.changed();
                     qcsHelp.setVisibility(View.VISIBLE);
-//                    application.getHintUtil().showHint( new HintMoveReceived(this, moveFiles.size()) );
                 }
             }
         };
