@@ -68,7 +68,7 @@
             android:padding="5dp"
             android:id="@+id/fm_qc_help"
             android:orientation="horizontal"
-            android:background="#C8D4C8C8"
+            android:background="#C8F0C8C8"
             android:layout_alignParentBottom="true"
             android:visibility="visible"
             android:gravity="center"
