@@ -64,16 +64,15 @@ public class AStar extends GGraphSearch{
         GNodeRef ref = prioQueue.first();
         boolean lowMemory = false;
         while ((ref != null) && (ref.getNode() != target) && (ref.getHeuristicCost() <= costLimit) && (!lowMemory)){ // abort  if target reached or if there are no more nodes to settle or costLimit reached or lowMemory
-            if (ref.getNode().getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
+            GNode node = ref.getNode();
+            if (node.getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
                 if (refreshRequired.get() != 0) break;
-                GNode node = ref.getNode();
                 lowMemory = graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
-                GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
+                GNeighbour neighbour = node.getNeighbour(); // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     double costToNeighbour = neighbour.getCost();
                     if (costToNeighbour < 0){
-//                        costToNeighbour = routingProfile.getCost(neighbour.getWayAttributs(), node, neighbourNode, neighbour.isPrimaryDirection());
                         costToNeighbour = routingProfile.getCost(node, neighbour, neighbourNode);
                         neighbour.setCost(costToNeighbour);
                     }
@@ -81,7 +80,7 @@ public class AStar extends GGraphSearch{
                     // create new prioQueue entry, if there is currently none or if the current relaxted path has better cost
                     GNodeRef neighbourRef = neighbourNode.getNodeRef();
                     if ((neighbourRef == null) || (currentCost < neighbourRef.getCost() )){
-                        neighbourRef = new GNodeRef(neighbourNode,currentCost,ref.getNode(),neighbour, routingProfile.heuristic(neighbourNode,target));
+                        neighbourRef = new GNodeRef(neighbourNode,currentCost,node,neighbour, routingProfile.heuristic(neighbourNode,target));
                         neighbourNode.setNodeRef(neighbourRef);
                         prioQueue.add(neighbourRef);
                         if (neighbourRef.getHeuristicCost() < ref.getHeuristicCost()){
