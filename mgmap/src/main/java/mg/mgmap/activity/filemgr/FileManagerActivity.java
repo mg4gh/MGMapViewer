@@ -269,12 +269,12 @@ public class FileManagerActivity extends AppCompatActivity {
             mgLog.d("intent action="+intent.getAction());
             mgLog.d("intent categories="+intent.getCategories());
             mgLog.d("intent scheme="+intent.getScheme());
-            mgLog.d("intent data="+intent.getData());
             mgLog.d("intent type="+intent.getType());
-            if (intent.getData()!=null)
-                mgLog.d("intent data.path="+intent.getData().getPath());
-            if (intent.getData()!=null)
+            mgLog.d("intent data="+intent.getData());
+            if (intent.getData()!=null) {
+                mgLog.d("intent data.path=" + intent.getData().getPath());
                 mgLog.d("intent data.host="+intent.getData().getHost());
+            }
             mgLog.d("intent flags="+ Integer.toHexString( intent.getFlags() ));
 
 
@@ -844,6 +844,7 @@ public class FileManagerActivity extends AppCompatActivity {
         prefPwd.changed();
     }
 
+    @SuppressLint("SetTextI18n")
     private void unzipDialog(File tempZipFile, File pwdDir, ArrayList<String> names) {
         LinearLayout contentView = new LinearLayout(context);
         contentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
