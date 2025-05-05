@@ -58,6 +58,7 @@ public class RoutingTest {
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, "");
         routingEngine.setRoutingProfile(new ShortestDistance());
+        routingEngine.refreshRequired.set(0);
 
         {   // einfache Strecke Nahe Spyrer Hof
             WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
