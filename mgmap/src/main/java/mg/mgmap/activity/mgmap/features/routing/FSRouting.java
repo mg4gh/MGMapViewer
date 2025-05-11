@@ -52,7 +52,6 @@ import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.GGraphSearch;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
-import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -535,8 +534,8 @@ public class FSRouting extends FeatureService {
             mgLog.d("pos="+wpm+" threshold="+threshold);
             TreeSet<ApproachModel> approaches = routingEngine.calcApproaches(wpm, (int)threshold);
             if (!approaches.isEmpty()){
-                GNode pos = approaches.first().getApproachNode();
-                mgLog.i("optimize Pos "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm",pos.getNeighbour().getCost()));
+                PointModel pos = approaches.first().getApproachNode();
+                mgLog.i("optimize Pos "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm",PointModelUtil.distance(pos,approaches.first().getPmPos()) ));
                 wpm.setLat(pos.getLat());
                 wpm.setLon(pos.getLon());
                 wpm.setEle(pos.getEle());
