@@ -342,7 +342,7 @@ public class RoutingEngine {
                         if ((mpmRaw.get(idx-1) instanceof  GNode) && (mpmRaw.get(idx) instanceof GNode)){
                             lastNeighbour = ((GNode)mpmRaw.get(idx-1)).getNeighbour((GNode)mpmRaw.get(idx));
                         }
-                        duration += routingProfile.getDuration(mpmRaw.get(idx-1), lastNeighbour, mpmRaw.get(idx));
+                        duration += routingProfile.getDuration(lastNeighbour==null?null:lastNeighbour.getWayAttributs(),mpmRaw.get(idx-1), mpmRaw.get(idx));
 
                         if (idx < mpmRaw.size()-1){
                             hint = new RoutingHint();
@@ -394,7 +394,7 @@ public class RoutingEngine {
                         // lastNeighbour will only be used for duration calculation - only distance and wayAttributes are used - so incorrect neighbour object doesn't matter
                         GNeighbour lastNeighbour = ((GNode)mpmRaw.get(0)).getNeighbour((GNode)mpmRaw.get(1));
                         lastNeighbour.setDistance(PointModelUtil.distance(mpm.get(0),mpm.get(2)));
-                        duration = routingProfile.getDuration(mpm.get(0), lastNeighbour, mpm.get(2));
+                        duration += routingProfile.getDuration(lastNeighbour.getWayAttributs(), mpmRaw.get(0), mpmRaw.get(2));
                         if (mpm.get(2) instanceof ExtendedPointModelImpl<?>){
                             ((ExtendedPointModelImpl<?>)mpm.get(2)).setTimestamp(duration);
                         }
@@ -437,7 +437,7 @@ public class RoutingEngine {
             mpm.addPoint(epm0);
 
             ExtendedPointModelImpl<RoutingHint> epm1 = new ExtendedPointModelImpl<>((gEnd==null)?target.mtlp:gEnd, null);
-            epm1.setTimestamp(routingProfile.getDuration(epm0, null, epm1));
+            epm1.setTimestamp(routingProfile.getDuration(null, epm0, epm1));
             mpm.addPoint(epm1);
         }
         mgLog.d("End");

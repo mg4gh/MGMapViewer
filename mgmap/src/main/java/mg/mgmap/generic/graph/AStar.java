@@ -73,7 +73,7 @@ public class AStar extends GGraphSearch{
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     double costToNeighbour = neighbour.getCost();
                     if (costToNeighbour < 0){
-                        costToNeighbour = routingProfile.getCost(node, neighbour, neighbourNode);
+                        costToNeighbour = routingProfile.getCost(neighbour.getWayAttributs(), node, neighbourNode, neighbour.isPrimaryDirection());
                         neighbour.setCost(costToNeighbour);
                     }
                     double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path

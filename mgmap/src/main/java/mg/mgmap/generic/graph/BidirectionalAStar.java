@@ -24,6 +24,7 @@ import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
 /**
@@ -98,8 +99,7 @@ public class BidirectionalAStar extends GGraphSearch{
                     GNode directedNeighbourNode = ref.isReverse()?node:neighbourNode;
                     double costToNeighbour = directedNeighbour.getCost();
                     if (costToNeighbour < 0){
-//                        costToNeighbour = routingProfile.getCost(directedNeighbour.getWayAttributs(), directedNode, directedNeighbourNode, directedNeighbour.isPrimaryDirection());
-                        costToNeighbour = routingProfile.getCost(directedNode, directedNeighbour,  directedNeighbourNode);
+                        costToNeighbour = routingProfile.getCost(directedNeighbour.getWayAttributs(), directedNode, directedNeighbourNode, directedNeighbour.isPrimaryDirection());
                         directedNeighbour.setCost(costToNeighbour);
                     }
                     double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path
