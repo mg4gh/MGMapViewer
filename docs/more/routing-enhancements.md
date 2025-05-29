@@ -30,11 +30,11 @@ Replace the fine granular object structure in GGraphTile by some ByteBuffers tha
   - distance ? mybe keep as float
   - cost ?
     - today cost is attribute of GNeighbour, but reset an profile/map changes
-    - Would it be better to calc costs always as part of routing process (similar to waht is done today with the lazy calculation/filling of the cost - just so it always)? 
+    - Would it be better to calc costs always as part of routing process (similar to what is done today with the lazy calculation/filling of the cost - just do it always - but on moving/recalculating a route it could slow down)? 
       If so, the we do not need the cost attribute, since value is calculated just in time
     - if we use cost, probably a float value would be sufficient
   - wayAttributes index (two bytes) 
-  - primaryDirection (derived from: (idx %2 == 0) || (neighbourTileSelector!=0))
+  - primaryDirection (derived from: (idx %2 == 0) || (neighbourTileSelector!=0) || (wayAttributes==-1))
   - reverseNeighbour: derived from (idx ^ 1)
 - NodeRef Array (array size = number of nodes), may contain a GNodeRef reference (for bidirectional AStar use two such arrays)
 - GNodeRef
@@ -61,6 +61,22 @@ Further aspects:
   - pmPos (PointModel) - unchanged
   - node1, node2: (short) use index to nodeBB 
   - approachNode: should be PointModel (no longer GNode)
+- In fact nowhere is a set of ApproachModel used (only best one)
+  - could be placed directly in RoutePointModel ?? oder ist das eine blöde Abhängigkeit? von routing->graph
+  - move calcApproaches to graph package (similar to verify)
+  
 - RoutingProfile needs to be changed
   - change internal methods to float values
   - replace external called Methods to use no PointModel anymore
+
+### Preparation
+
+- separation graph package and routing package
+- reduce to one (best) approach per RPM
+- ApproachModel as Interface of ApproachModelImpl (as part of model package, while approachModelImpl is part of graph package)
+  - just getter for pmPos, pmApproach, distance
+  - access to pmNode1, pmNode2 only via approachModelImpl
+  - access to approachModelImpl via GMultiGraph (inside graph package) 
+- move calcApproaches (similar to validateApproachModel) to GGraphTileFactory
+- move calcRouting method from RoutingEngine to GGraphMulti, e.g. calcRoute
+  - parameter should be ApproachModel (may have null as pmApproach) for source and target
