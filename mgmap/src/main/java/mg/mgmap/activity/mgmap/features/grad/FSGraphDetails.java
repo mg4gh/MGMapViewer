@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
@@ -125,7 +124,7 @@ public class FSGraphDetails extends FeatureService {
         GGraphTile bestTile = null;
         WriteablePointModel pmApproach = new TrackLogPoint();
         double bestDistance = closeThreshold;
-        ArrayList<GGraphTile> tiles = getActivity().getFS(FSRouting.class).getGGraphTileList(bBoxTap);
+        ArrayList<GGraphTile> tiles = getActivity().getGGraphTileFactory().getGGraphTileList(bBoxTap);
 
         for (GGraphTile gGraphTile : tiles){
             if (gGraphTile.getTileBBox().contains(pmTap)){
@@ -169,10 +168,12 @@ public class FSGraphDetails extends FeatureService {
             for (GNode node : nodes){
                 multiPointModel.addPoint(node);
                 if (lastNode != null){
-                    final GNode last = lastNode;
-                    double distance = PointModelUtil.distance(last,node);
-                    double verticalDistance = PointModelUtil.verticalDistance(last, node);
-                    mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost(),last.getNeighbour(node).getWayAttributs().toDetailedString()));
+                    final GNeighbour nLast2Node = bestTile.getNeighbour(lastNode,node);
+                    final GNeighbour nNode2Last = bestTile.getNeighbour(node,lastNode);
+                    String wayDetails = (nLast2Node.getWayAttributs()!=null)?nLast2Node.getWayAttributs().toDetailedString():"";
+                    double distance = nLast2Node.getDistance();
+                    double verticalDistance = PointModelUtil.verticalDistance(lastNode, node);
+                    mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,nLast2Node.getCost(),nNode2Last.getCost(),wayDetails));
                 }
                 mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
                 lastNode = node;

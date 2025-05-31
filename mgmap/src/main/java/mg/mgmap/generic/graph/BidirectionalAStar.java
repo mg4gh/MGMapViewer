@@ -21,16 +21,16 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
+import mg.mgmap.generic.model.ApproachModel;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Implementation of the Dijkstra algorithm.
  */
-public class BidirectionalAStar extends GGraphSearch{
+public class BidirectionalAStar extends GGraphAlgorithm {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
@@ -47,17 +47,19 @@ public class BidirectionalAStar extends GGraphSearch{
     private int resultPathLength = 0;
     private GNode matchNode = null;
 
-    public BidirectionalAStar(GGraphMulti graph, RoutingProfile routingProfile) {
+    public BidirectionalAStar(GGraph graph, RoutingProfile routingProfile) {
         super(graph, routingProfile);
     }
 
 
-    public MultiPointModel perform(GNode source, GNode target, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
+    public MultiPointModel performAlgo(ApproachModel sourceApproachModel, ApproachModel targetApproachModel, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
         prioQueue = new TreeSet<>();
         if (relaxedList != null) relaxedList.clear();
 
-        this.source = source;
-        this.target = target;
+        this.source = (sourceApproachModel instanceof ApproachModelImpl ami)?ami.getApproachNode():null;
+        this.target = (targetApproachModel instanceof ApproachModelImpl ami)?ami.getApproachNode():null;
+        if ((source == null) || (target == null)) return null; // should never happen
+
         long tStart = System.currentTimeMillis();
         GNodeRef refSource = new GNodeRef(source,0,null,null, heuristic(false, source));
         source.resetNodeRefs();
@@ -87,7 +89,7 @@ public class BidirectionalAStar extends GGraphSearch{
                     break;
                 }
                 GNode node = ref.getNode();
-                if (graph.preNodeRelax(node)) { // add lazy expansion of GGraphMulti
+                if (preNodeRelax(node)) { // add lazy expansion of GGraphMulti
                     mgLog.i("exit perform 4 low memory");
                     break;
                 }

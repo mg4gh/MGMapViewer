@@ -83,8 +83,8 @@ public class GGraphTile extends GGraph {
         GNeighbour n21 = new GNeighbour(node1, wayAttributs ).setPrimaryDirection(false);
         n12.setReverse(n21);
         n21.setReverse(n12);
-        node1.addNeighbour(n12);
-        node2.addNeighbour(n21);
+        addNeighbour(node1, n12);
+        addNeighbour(node2, n21);
         double distance = PointModelUtil.distance(node1, node2);
         n12.setDistance(distance);
         n21.setDistance(distance);

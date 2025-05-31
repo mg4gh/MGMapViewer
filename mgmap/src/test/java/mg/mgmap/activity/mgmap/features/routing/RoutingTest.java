@@ -19,9 +19,10 @@ import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImplHelper;
 import mg.mgmap.application.util.WayProviderHelper;
 import mg.mgmap.generic.graph.AStar;
+import mg.mgmap.generic.graph.ApproachModelImpl;
 import mg.mgmap.generic.graph.BidirectionalAStar;
 import mg.mgmap.generic.graph.GGraphMulti;
-import mg.mgmap.generic.graph.GGraphSearch;
+import mg.mgmap.generic.graph.GGraphAlgorithm;
 import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
 import mg.mgmap.generic.graph.GNode;
@@ -31,6 +32,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteableTrackLog;
+import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -54,9 +56,9 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<Boolean>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
 
-        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, "");
+        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new ShortestDistance());
         routingEngine.refreshRequired.set(0);
 
@@ -127,7 +129,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<Boolean>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
 
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
@@ -172,7 +174,7 @@ public class RoutingTest {
     @Test
     public void _03_routing() {
         PointModelUtil.init(32);
-//        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
         MGLog.setUnittest(true);
 
         ElevationProvider elevationProvider = new ElevationProviderImplHelper();
@@ -181,7 +183,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<Boolean>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
 
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
@@ -224,9 +226,11 @@ public class RoutingTest {
 
 
 
-    private MultiPointModel performSearch(GGraphSearch routingAlg, GNode gStart, GNode gEnd){
+    private MultiPointModel performSearch(GGraphAlgorithm routingAlg, GNode gStart, GNode gEnd){
         ArrayList<PointModel> relaxed = new ArrayList<>();
-        MultiPointModel mpm = routingAlg.perform(gStart, gEnd, 100000, new AtomicInteger(),relaxed);
+        ApproachModelImpl amStart = new ApproachModelImpl(0,0,gStart,null,null, gStart);
+        ApproachModelImpl amEnd = new ApproachModelImpl(0,0,gEnd,null,null, gEnd);
+        MultiPointModel mpm = routingAlg.perform(amStart, amEnd, 100000, new AtomicInteger(),relaxed);
         System.out.println(routingAlg.getResult().replaceAll("\n","    "));
         return mpm;
     }
@@ -250,9 +254,9 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<Boolean>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
 
-        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, "");
+        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new TrekkingBike());
 
         {

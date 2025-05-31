@@ -14,11 +14,14 @@
  */
 package mg.mgmap.generic.graph;
 
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointNeighbour;
+
 /**
  * This class is the basis for the neighbour relationship in a graph.
  */
 
-public class GNeighbour{
+public class GNeighbour implements PointNeighbour {
 
     private final GNode neighbourNode;
     private double cost;
@@ -38,6 +41,10 @@ public class GNeighbour{
         resetCost();
     }
 
+    @Override
+    public PointModel getPoint() {
+        return getNeighbourNode();
+    }
 
     public GNode getNeighbourNode() {
         return neighbourNode;

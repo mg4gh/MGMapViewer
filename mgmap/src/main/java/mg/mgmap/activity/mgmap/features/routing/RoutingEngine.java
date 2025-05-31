@@ -15,32 +15,26 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import mg.mgmap.generic.graph.ApproachModel;
-import mg.mgmap.generic.graph.BidirectionalAStar;
-import mg.mgmap.generic.graph.GGraphMulti;
-import mg.mgmap.generic.graph.GGraphSearch;
-import mg.mgmap.generic.graph.GGraphTile;
+import mg.mgmap.generic.graph.GGraph;
+import mg.mgmap.generic.graph.GGraphAlgorithm;
 import mg.mgmap.generic.graph.GGraphTileFactory;
-import mg.mgmap.generic.graph.GNeighbour;
-import mg.mgmap.generic.graph.GNode;
-import mg.mgmap.generic.model.BBox;
+import mg.mgmap.generic.model.ApproachModel;
 import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.PointNeighbour;
 import mg.mgmap.generic.model.TrackLog;
-import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteableTrackLog;
+import mg.mgmap.generic.util.Observable;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
 
@@ -57,21 +51,16 @@ public class RoutingEngine {
     RoutingProfile routingProfile;
     final Object routingProfileMonitor = new Object();
     final AtomicInteger refreshRequired = new AtomicInteger(0);
-    private GGraphSearch gGraphSearch = null;
-    final String routingAlgorithm;
+    private final Observable routeIntermediatesObservable;
 
-    public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext, String routingAlgorithm){
+    public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext, Observable routeIntermediatesObservable){
         this.gFactory = gFactory;
         this.routingContext = routingContext;
-        this.routingAlgorithm = routingAlgorithm;
+        this.routeIntermediatesObservable = routeIntermediatesObservable;
     }
 
     public RoutingContext getRoutingContext() {
         return routingContext;
-    }
-
-    public GGraphSearch getGGraphSearch() {
-        return gGraphSearch;
     }
 
     public void setRoutingContext(RoutingContext routingContext){
@@ -98,14 +87,6 @@ public class RoutingEngine {
         synchronized (routingProfileMonitor) {
             mgLog.d("got routingProfileMonitor");
         }
-    }
-
-    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
-        return gFactory.getGGraphTileList(bBox);
-    }
-
-    public ApproachModel validateApproachModel(ApproachModel am) {
-        return gFactory.validateApproachModel(am);
     }
 
     RoutePointModel getRoutePointModel(PointModel pm){
@@ -296,52 +277,36 @@ public class RoutingEngine {
         MultiPointModelImpl mpm = new MultiPointModelImpl();
         mgLog.d("Start");
 
-        GNode gStart = source.getApproachNode();
-        GNode gEnd = target.getApproachNode();
+        PointModel gStart = source.getApproachNode();
+        PointModel gEnd = target.getApproachNode();
         mgLog.i("start "+gStart+" end "+gEnd);
 
-        GGraphMulti multi = null;
+        GGraph gGraph = null;
         ApproachModel sourceApproachModel = null;
         ApproachModel targetApproachModel = null;
         try {
             if ((gStart != null) && (gEnd != null)){
-                ArrayList<GGraphTile> gGraphTiles = getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
-                gGraphTiles.addAll(getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
-                multi = new GGraphMulti(gFactory, gGraphTiles);
-
-                sourceApproachModel = validateApproachModel(source.selectedApproach);
-                targetApproachModel = validateApproachModel(target.selectedApproach);
-                connectApproach2Graph(sourceApproachModel);
-                connectApproach2Graph(targetApproachModel);
+                gGraph = gFactory.getGraph(gStart, gEnd);
+                sourceApproachModel = gFactory.validateApproachModel(source.selectedApproach);
+                targetApproachModel = gFactory.validateApproachModel(target.selectedApproach);
+                gFactory.connectApproach2Graph(gGraph, sourceApproachModel);
+                gFactory.connectApproach2Graph(gGraph, targetApproachModel);
 
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
-                // perform an AStar on this graph - ProfiledAStar may adopt the heuristic calculation depending on the current routingProfile
-                try {
-                    Class<?> clazz = Class.forName("mg.mgmap.generic.graph."+routingAlgorithm);
-                    Constructor<?> constructor = clazz.getConstructor(GGraphMulti.class, RoutingProfile.class);
-                    Object object = constructor.newInstance(multi, routingProfile);
-                    if (object instanceof GGraphSearch) {
-                        gGraphSearch = (GGraphSearch) object;
-                    }
-                } catch (Exception e) {
-                    mgLog.e(e);
-                    gGraphSearch = new BidirectionalAStar(multi, routingProfile); // fallback
-                }
-                MultiPointModel mpmRaw = gGraphSearch.perform(gStart, gEnd, distLimit, refreshRequired, relaxedNodes);
-                mgLog.i(gGraphSearch.getResult());
-                gGraphSearch = null;
+                GGraphAlgorithm gGraphAlgorithm = gFactory.getAlgorithmForGraph(gGraph, routingProfile);
+                gGraphAlgorithm.setRouteIntermediatesObservable(routeIntermediatesObservable);
+                MultiPointModel mpmRaw = gGraphAlgorithm.perform(sourceApproachModel, targetApproachModel, distLimit, refreshRequired, relaxedNodes);
+                mgLog.i(gGraphAlgorithm.getResult());
 
                 long duration = -1;
-                for (int idx=0; idx < mpmRaw.size(); idx++){
+                for (int idx=0; idx < ((mpmRaw==null)?0:mpmRaw.size()); idx++){
                     RoutingHint hint = null;
                     if (idx == 0){
                         duration = 0;
                     } else {
-                        GNeighbour lastNeighbour = null;
-                        if ((mpmRaw.get(idx-1) instanceof  GNode) && (mpmRaw.get(idx) instanceof GNode)){
-                            lastNeighbour = ((GNode)mpmRaw.get(idx-1)).getNeighbour((GNode)mpmRaw.get(idx));
-                        }
+//                        PointNeighbour lastNeighbour = gFactory.getPointNeighbour(mpmRaw.get(idx-1), mpmRaw.get(idx));
+                        PointNeighbour lastNeighbour = gGraph.getNeighbour(mpmRaw.get(idx-1), mpmRaw.get(idx));
                         duration += routingProfile.getDuration(lastNeighbour==null?null:lastNeighbour.getWayAttributs(),mpmRaw.get(idx-1), mpmRaw.get(idx));
 
                         if (idx < mpmRaw.size()-1){
@@ -354,22 +319,23 @@ public class RoutingEngine {
 
                             hint.nextLeftDegree = -1;
                             hint.nextRightDegree = 361;
-                            if (hint.pmCurrent instanceof GNode pmgCurrent) {
-                                GNeighbour neighbour = pmgCurrent.getNeighbour();
+                            PointNeighbour neighbour = gGraph.getNeighbour(hint.pmCurrent, hint.pmCurrent); // neighbour to itself == first neighbour
+                            if (neighbour != null) {
 
-                                while ((neighbour = multi.getNextNeighbour(pmgCurrent, neighbour)) != null) {
-                                    if (sourceApproachModel.getApproachNode() == neighbour.getNeighbourNode()) continue; // skip neighbour to source approach node
-                                    if (targetApproachModel.getApproachNode() == neighbour.getNeighbourNode()) continue; // skip neighbour to target approach node
+//                                while ((neighbour = neighbour.getNextNeighbour()) != null) {
+                                while ((neighbour = gGraph.getNextNeighbour(hint.pmCurrent, neighbour)) != null) {
+                                    if (sourceApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to source approach node
+                                    if (targetApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to target approach node
                                     hint.numberOfPathes++;
                                     // use approach segments as path, but not as concurrent path with degree calculation
-                                    if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbour.getNeighbourNode()))){
+                                    if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbour.getPoint()))){
                                         continue;
                                     }
-                                    if ((idx == mpmRaw.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbour.getNeighbourNode()))){
+                                    if ((idx == mpmRaw.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbour.getPoint()))){
                                         continue;
                                     }
 
-                                    double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getNeighbourNode());
+                                    double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getPoint());
                                     if ((hint.nextLeftDegree < degree) && (degree < hint.directionDegree)) hint.nextLeftDegree = degree;
                                     if ((hint.directionDegree < degree) && (degree < hint.nextRightDegree)) hint.nextRightDegree = degree;
                                 }
@@ -384,16 +350,15 @@ public class RoutingEngine {
 
 
                 // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
-                if (mpm.size() == 3){
+                if ((mpm.size() == 3) && (mpmRaw != null)){ // second condition will always be satisfied
                     double d = PointModelUtil.distance(mpm.get(0), mpm.get(2) );
                     double d1 = PointModelUtil.distance(mpm.get(0), mpm.get(1) );
                     double d2 = PointModelUtil.distance(mpm.get(1), mpm.get(2) );
                     PointModel pm1 = mpm.get(1);
 
                     if (((d1 > d2) && (Math.abs(d1-(d2+d))<0.1)) || ((d1 <= d2) && (Math.abs(d2-(d1+d))<0.1))){
-                        // lastNeighbour will only be used for duration calculation - only distance and wayAttributes are used - so incorrect neighbour object doesn't matter
-                        GNeighbour lastNeighbour = ((GNode)mpmRaw.get(0)).getNeighbour((GNode)mpmRaw.get(1));
-                        lastNeighbour.setDistance(PointModelUtil.distance(mpm.get(0),mpm.get(2)));
+                        // retrieve neighbour to get wayAttributes
+                        PointNeighbour lastNeighbour = gGraph.getNeighbour(mpmRaw.get(0),mpmRaw.get(1));
                         duration += routingProfile.getDuration(lastNeighbour.getWayAttributs(), mpmRaw.get(0), mpmRaw.get(2));
                         if (mpm.get(2) instanceof ExtendedPointModelImpl<?>){
                             ((ExtendedPointModelImpl<?>)mpm.get(2)).setTimestamp(duration);
@@ -407,28 +372,12 @@ public class RoutingEngine {
         } catch (Exception e) {
             mgLog.e(e);
         } finally {
-            if (multi != null) {
-                multi.finalizeUsage();
+            if (gGraph != null) {
+                gGraph.finalizeUsage();
             }
             gFactory.serviceCache();
-            if (sourceApproachModel != null){
-                if (sourceApproachModel.getNode1() != null){
-                    sourceApproachModel.getNode1().removeNeighbourNode(0);
-                }
-                if (sourceApproachModel.getNode2() != null){
-                    sourceApproachModel.getNode2().removeNeighbourNode(0);
-                }
-                gStart.getNeighbour().setNextNeighbour(null);
-            }
-            if (targetApproachModel != null){
-                if (targetApproachModel.getNode1() != null){
-                    targetApproachModel.getNode1().removeNeighbourNode(0);
-                }
-                if (targetApproachModel.getNode2() != null){
-                    targetApproachModel.getNode2().removeNeighbourNode(0);
-                }
-                gEnd.getNeighbour().setNextNeighbour(null);
-            }
+            gFactory.disconnectApproach2Graph(gGraph, sourceApproachModel);
+            gFactory.disconnectApproach2Graph(gGraph, targetApproachModel);
         }
         mpm.setRoute(mpm.size() != 0);
 
@@ -449,69 +398,7 @@ public class RoutingEngine {
             return; // approach calculation is already done
         }
         PointModel pointModel = rpm.mtlp;
-        rpm.setApproaches(calcApproaches(pointModel, closeThreshold));
-    }
-
-    TreeSet<ApproachModel> calcApproaches(PointModel pointModel, int closeThreshold){
-        BBox mtlpBBox = new BBox()
-                .extend(pointModel)
-                .extend(closeThreshold);
-
-        TreeSet<ApproachModel> approaches = new TreeSet<>();
-        WriteablePointModel pmApproach = new TrackLogPoint();
-
-        ArrayList<GGraphTile> tiles = getGGraphTileList(mtlpBBox);
-        for (GGraphTile gGraphTile : tiles){
-            for (GNode node : gGraphTile.getNodes()) {
-
-                GNeighbour neighbour = node.getNeighbour();
-                while ((neighbour = gGraphTile.getNextNeighbour(node, neighbour)) != null) {
-                    GNode neighbourNode = neighbour.getNeighbourNode();
-                    if (GNode.sameTile(node, neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
-                        BBox bBoxPart = new BBox().extend(node).extend(neighbourNode);
-                        boolean bIntersects = mtlpBBox.intersects(bBoxPart);
-                        if (bIntersects){ // ok, is candidate for close
-                            if (PointModelUtil.findApproach(pointModel, node, neighbourNode, pmApproach , closeThreshold)) {
-                                double distance = PointModelUtil.distance(pointModel, pmApproach)+0.0001;
-                                if (distance < closeThreshold){ // ok, is close ==> new Approach found
-                                    GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEle(), pmApproach.getEleAcc(), distance); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
-                                    ApproachModel approach = new ApproachModel(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbourNode, approachNode);
-                                    approaches.add(approach);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        ArrayList<ApproachModel> dropApproaches = new ArrayList<>(); // collect approaches that should be deleted
-        ArrayList<ApproachModel> listApproaches = new ArrayList<>(approaches); // approaches as a list (not as a treeSet)
-        for (int appIdx=0; appIdx<listApproaches.size(); appIdx++){
-            ApproachModel approach = listApproaches.get(appIdx);
-            if (!dropApproaches.contains( approach )){
-                GGraphTile gGraphTile = approach.getNode1().getTile(gFactory);
-                ArrayList<GNode> segmentNodes = gGraphTile.segmentNodes(approach.getNode1(), approach.getNode2(), closeThreshold, false);
-                for (int idx=appIdx+1; idx<listApproaches.size(); idx++){
-                    ApproachModel other = listApproaches.get(idx);
-                    if (segmentNodes.contains(other.getNode1()) && segmentNodes.contains(other.getNode2())){
-                        dropApproaches.add(other);
-                    }
-                }
-            }
-        }
-        dropApproaches.forEach(approaches::remove); // seems to have better performance
-        return approaches;
-    }
-
-    private void connectApproach2Graph(ApproachModel approach){
-        GNode approachNode = approach.getApproachNode();
-        GNode node1 = approach.getNode1();
-        GNode node2 = approach.getNode2();
-        GNeighbour neighbour12 = node1.getNeighbour(node2);
-        GNeighbour neighbour21 = neighbour12.getReverse();
-        node1.bidirectionalConnect(approachNode, neighbour12);
-        node2.bidirectionalConnect(approachNode, neighbour21);
+        rpm.setApproach(gFactory.calcApproach(pointModel, closeThreshold));
     }
 
     public HashMap<PointModel, RoutePointModel> getRoutePointMap() {

@@ -27,7 +27,6 @@ import org.mapsforge.map.model.DisplayModel;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
@@ -48,11 +47,9 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
-import mg.mgmap.generic.graph.ApproachModel;
-import mg.mgmap.generic.graph.GGraphSearch;
-import mg.mgmap.generic.graph.GGraphTile;
 import mg.mgmap.generic.graph.GGraphTileFactory;
-import mg.mgmap.generic.model.BBox;
+import mg.mgmap.generic.model.ApproachModel;
+import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -110,7 +107,6 @@ public class FSRouting extends FeatureService {
 
     private final Pref<Float> prefAlphaRotl = getPref(R.string.FSRouting_pref_alphaRoTL, 1.0f);
     private final Pref<Boolean> prefMtlVisibility = getPref(R.string.FSMarker_pref_MTL_visibility, false);
-//    private final Pref<Boolean> prefStlVisibility = getPref(R.string.FSATL_pref_STL_visibility, false);
     private final Pref<Integer> prefZoomLevel = getPref(R.string.FSBeeline_pref_ZoomLevel, 15);
     private final Pref<Boolean> prefRoutingHints = getPref(R.string.FSRouting_qc_RoutingHint, false);
     private final Pref<Boolean> prefRoutingHintsEnabled = new Pref<>(false);
@@ -120,8 +116,7 @@ public class FSRouting extends FeatureService {
     private final Pref<Boolean> prefCalcRouteInProgress = getPref(R.string.FSRouting_pref_calcRouteInProgress, false);
     private final ArrayList<ExtendedTextView> profileETVs = new ArrayList<>();
     private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
-    private MultiPointView routingIntermediate = null;
-    private final Pref<String> prefRoutingAlgorithm = getPref(R.string.FSRouting_routing_algorithm_key, "BidirectionalAStar");
+    private MultiPointView routingIntermediateMPV = null;
 
 
     private ViewGroup dashboardRoute = null;
@@ -135,7 +130,7 @@ public class FSRouting extends FeatureService {
         super(mgActivity);
         this.gFactory = gFactory;
         application = getApplication();
-        routingEngine = new RoutingEngine(gFactory, interactiveRoutingContext, prefRoutingAlgorithm.getValue());
+        routingEngine = new RoutingEngine(gFactory, interactiveRoutingContext, application.routeIntermediatesObservable);
         ttRefreshTime = 50;
         mtlSupportProvider = new AdvancedMtlSupportProvider();
         fsMarker.mtlSupportProvider = mtlSupportProvider;
@@ -228,11 +223,8 @@ public class FSRouting extends FeatureService {
         prefCalcRouteInProgress.addObserver((e)-> getActivity().runOnUiThread(() -> {
             if (prefCalcRouteInProgress.getValue()) {
                 getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                getTimer().postDelayed(ttRoutingIntermediate,1500);
             } else {
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                getTimer().removeCallbacks(ttRoutingIntermediate);
-                hideIntermediate();
             }
         }));
 
@@ -240,6 +232,17 @@ public class FSRouting extends FeatureService {
         application.routeTrackLogObservable.addObserver((e) -> {
             TrackLog rotl = application.routeTrackLogObservable.getTrackLog();
             prefRouteSavable.setValue((rotl != null) && rotl.isModified() );
+        });
+
+        application.routeIntermediatesObservable.addObserver(e -> {
+            unregister(routingIntermediateMPV);
+            if (e.getNewValue() instanceof ArrayList<?> routeIntermediates){
+                //noinspection unchecked
+                routingIntermediateMPV = new MultiMultiPointView((ArrayList<MultiPointModel>) routeIntermediates, PAINT_ROUTE_STROKE);
+                register(routingIntermediateMPV);
+            } else {
+                routingIntermediateMPV = null;
+            }
         });
 
         routingThread = createRoutingThread();
@@ -288,27 +291,6 @@ public class FSRouting extends FeatureService {
         return routingThread;
     }
 
-    final Runnable ttRoutingIntermediate = this::refreshRoutingIntermediate;
-    private void refreshRoutingIntermediate(){
-        hideIntermediate();
-        if (prefCalcRouteInProgress.getValue()) {
-            showIntermediate();
-            getTimer().postDelayed(ttRoutingIntermediate,500);
-        }
-    }
-
-    private void hideIntermediate(){
-        unregister(routingIntermediate);
-        routingIntermediate = null;
-    }
-    private void showIntermediate(){
-        GGraphSearch gGraphSearch = routingEngine.getGGraphSearch();
-        if (gGraphSearch != null) {
-            routingIntermediate = new MultiMultiPointView(gGraphSearch.getBestPath(), PAINT_ROUTE_STROKE);
-            register(routingIntermediate);
-        }
-    }
-
     private void addDefinedRoutingProfile(PrefCache prefCache, RoutingProfile routingProfile, boolean defaultVisibility){
         definedRoutingProfiles.add(routingProfile);
         prefCache.get(routingProfile.getId(), defaultVisibility);
@@ -329,10 +311,6 @@ public class FSRouting extends FeatureService {
 
     public String getDefaultRoutingProfileId(){
         return defaultRoutingProfileId;
-    }
-
-    public ArrayList<GGraphTile> getGGraphTileList(BBox bBox) {
-        return routingEngine.getGGraphTileList(bBox);
     }
 
     @Override
@@ -531,11 +509,15 @@ public class FSRouting extends FeatureService {
 
         @Override
         public void optimizePosition(WriteablePointModel wpm, double threshold) {
-            mgLog.d("pos="+wpm+" threshold="+threshold);
-            TreeSet<ApproachModel> approaches = routingEngine.calcApproaches(wpm, (int)threshold);
-            if (!approaches.isEmpty()){
-                PointModel pos = approaches.first().getApproachNode();
-                mgLog.i("optimize Pos "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm",PointModelUtil.distance(pos,approaches.first().getPmPos()) ));
+            // 29.05.25 Due to the increase of interactiveRoutingContext.approachLimit from 1 to 10, this limit can be higher than closeThresholdForZoomLevel
+            // In this case, the point doesn't snap to the way, but the route is drawn on the way - which feels wrong. So now use interactiveRoutingContext.approachLimit
+            // as a lower boundary for closeThreshold.
+            int closeThreshold = Math.max(interactiveRoutingContext.approachLimit, (int) threshold);
+            mgLog.d("pos="+wpm+" threshold="+closeThreshold);
+            ApproachModel approachModel = gFactory.calcApproach(wpm, closeThreshold);
+            if (approachModel != null){
+                PointModel pos = approachModel.getApproachNode();
+                mgLog.i("optimize Pos "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm", approachModel.getApproachDistance() ));
                 wpm.setLat(pos.getLat());
                 wpm.setLon(pos.getLon());
                 wpm.setEle(pos.getEle());

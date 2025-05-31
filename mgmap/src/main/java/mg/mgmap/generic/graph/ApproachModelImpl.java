@@ -14,18 +14,16 @@
  */
 package mg.mgmap.generic.graph;
 
-import androidx.annotation.NonNull;
-
+import mg.mgmap.generic.model.ApproachModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.generic.model.PointModelUtil;
 
 /**
  * An Approach is a model object that represents a close part of a graph.
  * In particular it contains references to the nodes (node1 and node2) of the graph, where an originating position is close to the connection.
  * It contains also a reference to the closest point of this line (approachNode). Approaches are stored in the context of the originating point.
  */
-public class ApproachModel implements  Comparable<ApproachModel> {
+public class ApproachModelImpl implements ApproachModel {
 
     private final int tileX;
     private final int tileY;
@@ -34,7 +32,7 @@ public class ApproachModel implements  Comparable<ApproachModel> {
     private GNode node2;
     private final GNode approachNode;
 
-    public ApproachModel(int tileX, int tileY, PointModel pmPos, GNode node1, GNode node2, GNode approachNode) {
+    public ApproachModelImpl(int tileX, int tileY, PointModel pmPos, GNode node1, GNode node2, GNode approachNode) {
         this.tileX = tileX;
         this.tileY = tileY;
         this.pmPos = new PointModelImpl(pmPos.getLat(), pmPos.getLon());
@@ -73,14 +71,15 @@ public class ApproachModel implements  Comparable<ApproachModel> {
     }
 
     @Override
-    public int compareTo(@NonNull ApproachModel approach) {
-        double distance = approachNode.getNeighbour().getCost();
-        double otherDistance = approach.approachNode.getNeighbour().getCost();
-        if (distance < otherDistance) return -1;
-        if (distance > otherDistance) return 1;
-        int res = (PointModelUtil.compareTo(approachNode, approach.approachNode));
-        if (res == 0) res = (PointModelUtil.compareTo(node1, approach.node1));
-        if (res == 0) res = (PointModelUtil.compareTo(node2, approach.node2));
-        return res;
+    public float getApproachDistance() {
+        return (float) approachNode.getNeighbour().getCost();
     }
+
+    public boolean verifyApproach(PointModel node1, PointModel approachNode, PointModel node2){
+        if (this.getApproachNode() != approachNode) return false;
+        if ((node1 == this.getNode1()) && (node2 == this.getNode2())) return true;
+        if ((node1 == this.getNode2()) && (node2 == this.getNode1())) return true;
+        return false;
+    }
+
 }

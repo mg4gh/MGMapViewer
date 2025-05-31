@@ -80,3 +80,12 @@ Further aspects:
 - move calcApproaches (similar to validateApproachModel) to GGraphTileFactory
 - move calcRouting method from RoutingEngine to GGraphMulti, e.g. calcRoute
   - parameter should be ApproachModel (may have null as pmApproach) for source and target
+- problematic are the turning instruction calculation in the routing engine, since they make use of GNode and GNeighbour functionality
+  - introduce a PointNeighbour Interface
+    - has method getNeighbourPoint
+    - has method getWayAttributes
+    - has method getNextNeighbour
+  - add methods to GGraphFactory:
+    - getNeighbour(PointModel pm1, PointModel pm2) -> return PointNeighbour from pm1 to pm2
+      (return firstNeighbour, if pm1 == pm2)
+  

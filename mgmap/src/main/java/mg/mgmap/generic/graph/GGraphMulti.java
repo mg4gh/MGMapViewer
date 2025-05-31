@@ -60,19 +60,16 @@ public class GGraphMulti extends GGraph {
         return nodes;
     }
 
-    // return true, if routing should be aborted due to low memory
+    // return true, if graph changed
     boolean preNodeRelax(GNode node){
+        boolean changed = false;
         if ((node.borderNode != 0) /*&& (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)*/){ // add lazy expansion of GGraphMulti
-            boolean changed = checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST);
+            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST);
             changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_NORTH);
             changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_EAST);
             changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_SOUTH);
-            if (changed && MemoryUtil.checkLowMemory(GGraphTileFactory.LOW_MEMORY_THRESHOLD)){
-                mgLog.w("abort routing due low memory");
-                return true;
-            }
         }
-        return false;
+        return changed;
     }
 
     // Returns true, if graph is extended
@@ -88,8 +85,8 @@ public class GGraphMulti extends GGraph {
             GGraphTile gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileXn, tileYn, false);
 
             if (gGraphTileNeighbour == null){
-                mgLog.d(String.format(Locale.ENGLISH, "border=%d tileX=%d tileY=%d",border,tileXn,tileYn));
                 gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileXn, tileYn, true);
+                mgLog.d(String.format(Locale.ENGLISH, "tileX=%d tileY=%d use=%b border=%d tileXn=%d tileYn=%d use=%b",tileX,tileY,gGraphTile.used,border,tileXn,tileYn,gGraphTileNeighbour.used)+" "+gGraphTile.tbBox+" "+gGraphTileNeighbour.tbBox);
                 bRes = true;
             }
             use(gGraphTileNeighbour);
