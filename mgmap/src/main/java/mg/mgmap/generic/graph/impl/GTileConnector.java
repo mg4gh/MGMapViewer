@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -29,18 +29,18 @@ public class GTileConnector {
             mgLog.e("found="+gGraphTile2.neighbourTiles[horizontal?GNode.BORDER_NODE_WEST:GNode.BORDER_NODE_NORTH]+" expected="+gGraphTile1);
             throw new IllegalArgumentException("inconsistent neighbour tiles - check logfile for more details.");
         }
-        double connectAt = (horizontal)?gGraphTile1.tbBox.maxLongitude:gGraphTile1.tbBox.minLatitude;
-        if (horizontal? (connectAt!=gGraphTile2.tbBox.minLongitude):(connectAt!=gGraphTile2.tbBox.maxLatitude)){
-            throw new IllegalArgumentException("cannot connectHorizontal Tiles with BB " + gGraphTile1.tbBox +" and "+gGraphTile2.tbBox);
+        double connectAt = (horizontal)?gGraphTile1.bBox.maxLongitude:gGraphTile1.bBox.minLatitude;
+        if (horizontal? (connectAt!=gGraphTile2.bBox.minLongitude):(connectAt!=gGraphTile2.bBox.maxLatitude)){
+            throw new IllegalArgumentException("cannot connectHorizontal Tiles with BB " + gGraphTile1.bBox +" and "+gGraphTile2.bBox);
         }
         ArrayList<GNode> borderNodes1 = new ArrayList<>();
-        for (GNode node : gGraphTile1.getNodes()){
+        for (GNode node : gGraphTile1.getGNodes()){
             if ((horizontal)?(node.getLon() == connectAt):(node.getLat() == connectAt)){
                 borderNodes1.add(node);
             }
         }
         ArrayList<GNode> borderNodes2 = new ArrayList<>();
-        for (GNode node : gGraphTile2.getNodes()){
+        for (GNode node : gGraphTile2.getGNodes()){
             if ((horizontal)?(node.getLon() == connectAt):(node.getLat() == connectAt)){
                 borderNodes2.add(node);
             }
@@ -101,7 +101,7 @@ public class GTileConnector {
         GGraphTile neighbourTile = gGraphTile.neighbourTiles[border];
         if (neighbourTile == null) return; // nothing to do
         byte neighboursBorder = GNode.oppositeBorder(border);
-        for (GNode node : neighbourTile.getNodes()){
+        for (GNode node : neighbourTile.getGNodes()){
             if ((node.borderNode & neighboursBorder) != 0){
                 neighbourTile.removeNeighbourTo(node, gGraphTile.tileIdx);
             }

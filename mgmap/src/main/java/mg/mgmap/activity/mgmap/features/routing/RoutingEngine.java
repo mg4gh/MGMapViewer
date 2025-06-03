@@ -20,10 +20,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import mg.mgmap.generic.graph.GGraph;
-import mg.mgmap.generic.graph.GGraphAlgorithm;
-import mg.mgmap.generic.graph.GGraphTileFactory;
-import mg.mgmap.generic.model.ApproachModel;
+import mg.mgmap.generic.graph.Graph;
+import mg.mgmap.generic.graph.GraphAlgorithm;
+import mg.mgmap.generic.graph.GraphFactory;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -42,7 +42,7 @@ public class RoutingEngine {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private final GGraphTileFactory gFactory;
+    private final GraphFactory gFactory;
 
     final HashMap<PointModel, RoutePointModel> routePointMap = new HashMap<>(); // map from mtlp points to corresponding rpms
     final HashMap<PointModel, RoutePointModel> routePointMap2 = new HashMap<>(); // map from points of routeTrackLog to corresponding rpms
@@ -53,7 +53,7 @@ public class RoutingEngine {
     final AtomicInteger refreshRequired = new AtomicInteger(0);
     private final Observable routeIntermediatesObservable;
 
-    public RoutingEngine(GGraphTileFactory gFactory, RoutingContext routingContext, Observable routeIntermediatesObservable){
+    public RoutingEngine(GraphFactory gFactory, RoutingContext routingContext, Observable routeIntermediatesObservable){
         this.gFactory = gFactory;
         this.routingContext = routingContext;
         this.routeIntermediatesObservable = routeIntermediatesObservable;
@@ -281,23 +281,23 @@ public class RoutingEngine {
         PointModel gEnd = target.getApproachNode();
         mgLog.i("start "+gStart+" end "+gEnd);
 
-        GGraph gGraph = null;
+        Graph graph = null;
         ApproachModel sourceApproachModel = null;
         ApproachModel targetApproachModel = null;
         try {
             if ((gStart != null) && (gEnd != null)){
-                gGraph = gFactory.getGraph(gStart, gEnd);
+                graph = gFactory.getGraph(gStart, gEnd);
                 sourceApproachModel = gFactory.validateApproachModel(source.selectedApproach);
                 targetApproachModel = gFactory.validateApproachModel(target.selectedApproach);
-                gFactory.connectApproach2Graph(gGraph, sourceApproachModel);
-                gFactory.connectApproach2Graph(gGraph, targetApproachModel);
+                gFactory.connectApproach2Graph(graph, sourceApproachModel);
+                gFactory.connectApproach2Graph(graph, targetApproachModel);
 
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 
-                GGraphAlgorithm gGraphAlgorithm = gFactory.getAlgorithmForGraph(gGraph, routingProfile);
-                gGraphAlgorithm.setRouteIntermediatesObservable(routeIntermediatesObservable);
-                MultiPointModel mpmRaw = gGraphAlgorithm.perform(sourceApproachModel, targetApproachModel, distLimit, refreshRequired, relaxedNodes);
-                mgLog.i(gGraphAlgorithm.getResult());
+                GraphAlgorithm graphAlgorithm = gFactory.getAlgorithmForGraph(graph, routingProfile);
+                graphAlgorithm.setRouteIntermediatesObservable(routeIntermediatesObservable);
+                MultiPointModel mpmRaw = graphAlgorithm.perform(sourceApproachModel, targetApproachModel, distLimit, refreshRequired, relaxedNodes);
+                mgLog.i(graphAlgorithm.getResult());
 
                 long duration = -1;
                 for (int idx=0; idx < ((mpmRaw==null)?0:mpmRaw.size()); idx++){
@@ -306,7 +306,7 @@ public class RoutingEngine {
                         duration = 0;
                     } else {
 //                        PointNeighbour lastNeighbour = gFactory.getPointNeighbour(mpmRaw.get(idx-1), mpmRaw.get(idx));
-                        PointNeighbour lastNeighbour = gGraph.getNeighbour(mpmRaw.get(idx-1), mpmRaw.get(idx));
+                        PointNeighbour lastNeighbour = graph.getNeighbour(mpmRaw.get(idx-1), mpmRaw.get(idx));
                         duration += routingProfile.getDuration(lastNeighbour==null?null:lastNeighbour.getWayAttributs(),mpmRaw.get(idx-1), mpmRaw.get(idx));
 
                         if (idx < mpmRaw.size()-1){
@@ -319,11 +319,11 @@ public class RoutingEngine {
 
                             hint.nextLeftDegree = -1;
                             hint.nextRightDegree = 361;
-                            PointNeighbour neighbour = gGraph.getNeighbour(hint.pmCurrent, hint.pmCurrent); // neighbour to itself == first neighbour
+                            PointNeighbour neighbour = graph.getNeighbour(hint.pmCurrent, hint.pmCurrent); // neighbour to itself == first neighbour
                             if (neighbour != null) {
 
 //                                while ((neighbour = neighbour.getNextNeighbour()) != null) {
-                                while ((neighbour = gGraph.getNextNeighbour(hint.pmCurrent, neighbour)) != null) {
+                                while ((neighbour = graph.getNextNeighbour(hint.pmCurrent, neighbour)) != null) {
                                     if (sourceApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to source approach node
                                     if (targetApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to target approach node
                                     hint.numberOfPathes++;
@@ -358,7 +358,7 @@ public class RoutingEngine {
 
                     if (((d1 > d2) && (Math.abs(d1-(d2+d))<0.1)) || ((d1 <= d2) && (Math.abs(d2-(d1+d))<0.1))){
                         // retrieve neighbour to get wayAttributes
-                        PointNeighbour lastNeighbour = gGraph.getNeighbour(mpmRaw.get(0),mpmRaw.get(1));
+                        PointNeighbour lastNeighbour = graph.getNeighbour(mpmRaw.get(0),mpmRaw.get(1));
                         duration += routingProfile.getDuration(lastNeighbour.getWayAttributs(), mpmRaw.get(0), mpmRaw.get(2));
                         if (mpm.get(2) instanceof ExtendedPointModelImpl<?>){
                             ((ExtendedPointModelImpl<?>)mpm.get(2)).setTimestamp(duration);
@@ -372,12 +372,12 @@ public class RoutingEngine {
         } catch (Exception e) {
             mgLog.e(e);
         } finally {
-            if (gGraph != null) {
-                gGraph.finalizeUsage();
+            if (graph != null) {
+                graph.finalizeUsage();
             }
             gFactory.serviceCache();
-            gFactory.disconnectApproach2Graph(gGraph, sourceApproachModel);
-            gFactory.disconnectApproach2Graph(gGraph, targetApproachModel);
+            gFactory.disconnectApproach2Graph(graph, sourceApproachModel);
+            gFactory.disconnectApproach2Graph(graph, targetApproachModel);
         }
         mpm.setRoute(mpm.size() != 0);
 

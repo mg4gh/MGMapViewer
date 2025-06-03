@@ -14,7 +14,7 @@
  */
 package mg.mgmap.activity.mgmap.features.routing;
 
-import mg.mgmap.generic.model.ApproachModel;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 

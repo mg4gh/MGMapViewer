@@ -82,7 +82,7 @@ public class HgtProvider {
                     hgtGridView.requestRedraw();
                 }
                 hgtCache.evictAll();
-                activity.getGGraphTileFactory().clearCache();
+                activity.getGraphFactory().clearCache();
                 TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
                 if (mtl != null){
                     mgLog.d("set mtl changed");

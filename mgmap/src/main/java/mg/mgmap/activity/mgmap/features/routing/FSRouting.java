@@ -47,8 +47,8 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.features.marker.FSMarker;
-import mg.mgmap.generic.graph.GGraphTileFactory;
-import mg.mgmap.generic.model.ApproachModel;
+import mg.mgmap.generic.graph.GraphFactory;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -90,7 +90,7 @@ public class FSRouting extends FeatureService {
     }
 
     private final RoutingEngine routingEngine;
-    private final GGraphTileFactory gFactory;
+    private final GraphFactory gFactory;
     private final RoutingContext interactiveRoutingContext = new RoutingContext(
             1000000, // no limit
             false, // no extra snap, since FSMarker snaps point zoom level dependent
@@ -126,7 +126,7 @@ public class FSRouting extends FeatureService {
     private final PrefCache prefCache;
     private final Thread routingThread;
 
-    public FSRouting(MGMapActivity mgActivity, FSMarker fsMarker, GGraphTileFactory gFactory) {
+    public FSRouting(MGMapActivity mgActivity, FSMarker fsMarker, GraphFactory gFactory) {
         super(mgActivity);
         this.gFactory = gFactory;
         application = getApplication();

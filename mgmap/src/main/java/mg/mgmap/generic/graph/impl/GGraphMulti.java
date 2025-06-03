@@ -12,10 +12,9 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.MemoryUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -50,11 +49,11 @@ public class GGraphMulti extends GGraph {
      * @return all node ot the multi graph
      */
     @Override
-    public ArrayList<GNode> getNodes() {
-        ArrayList<GNode> nodes = new ArrayList<>( super.getNodes() );
+    public ArrayList<GNode> getGNodes() {
+        ArrayList<GNode> nodes = new ArrayList<>( super.getGNodes() );
         for (GGraphTile gGraphTile : gGraphTileFactory.getCached()){
             if (gGraphTile.used){
-                nodes.addAll( gGraphTile.getNodes() );
+                nodes.addAll( gGraphTile.getGNodes() );
             }
         }
         return nodes;
@@ -86,7 +85,7 @@ public class GGraphMulti extends GGraph {
 
             if (gGraphTileNeighbour == null){
                 gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileXn, tileYn, true);
-                mgLog.d(String.format(Locale.ENGLISH, "tileX=%d tileY=%d use=%b border=%d tileXn=%d tileYn=%d use=%b",tileX,tileY,gGraphTile.used,border,tileXn,tileYn,gGraphTileNeighbour.used)+" "+gGraphTile.tbBox+" "+gGraphTileNeighbour.tbBox);
+                mgLog.d(String.format(Locale.ENGLISH, "tileX=%d tileY=%d use=%b border=%d tileXn=%d tileYn=%d use=%b",tileX,tileY,gGraphTile.used,border,tileXn,tileYn,gGraphTileNeighbour.used)+" "+gGraphTile.bBox +" "+gGraphTileNeighbour.bBox);
                 bRes = true;
             }
             use(gGraphTileNeighbour);

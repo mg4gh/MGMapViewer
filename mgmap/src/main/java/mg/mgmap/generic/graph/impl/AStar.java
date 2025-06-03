@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
-import mg.mgmap.generic.model.ApproachModel;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -106,7 +106,7 @@ public class AStar extends GGraphAlgorithm {
         cntRelaxed = 0;
         cntSettled = 0;
         resultPathLength = 0;
-        for (GNode node : graph.getNodes()){
+        for (GNode node : graph.getGNodes()){
             if (node.getNeighbour() != null){
                 cntTotal++;
                 if (node.getNodeRef() != null){

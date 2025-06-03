@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import androidx.annotation.NonNull;
 
@@ -20,6 +20,7 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 
 import mg.mgmap.application.util.ElevationProvider;
+import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.WriteablePointModel;
@@ -39,7 +40,7 @@ public class GGraphTile extends GGraph {
     private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
     final Tile tile;
     final int tileIdx;
-    final BBox tbBox;
+    final BBox bBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
     final GGraphTile[] neighbourTiles = new GGraphTile[GNode.BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
@@ -50,7 +51,7 @@ public class GGraphTile extends GGraph {
         this.elevationProvider = elevationProvider;
         this.tile = tile;
         this.tileIdx = GGraphTileFactory.getKey(getTileX(),getTileY());
-        tbBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
+        bBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
     }
 
     void addLatLongs(WayAttributs wayAttributs, LatLong[] latLongs){
@@ -60,13 +61,13 @@ public class GGraphTile extends GGraph {
             double lat2 = PointModelUtil.roundMD(latLongs[i].latitude);
             double lon2 = PointModelUtil.roundMD(latLongs[i].longitude);
 
-            tbBox.clip(lat1, lon1, lat2, lon2, clipRes); // clipRes contains the clip result
+            bBox.clip(lat1, lon1, lat2, lon2, clipRes); // clipRes contains the clip result
             lat2 = clipRes.getLat();
             lon2 = clipRes.getLon();
-            tbBox.clip(lat2, lon2, lat1, lon1, clipRes); // clipRes contains the clip result
+            bBox.clip(lat2, lon2, lat1, lon1, clipRes); // clipRes contains the clip result
             lat1 = clipRes.getLat();
             lon1 = clipRes.getLon();
-            if (tbBox.contains(lat1, lon1) && tbBox.contains(lat2, lon2)){
+            if (bBox.contains(lat1, lon1) && bBox.contains(lat2, lon2)){
                 addSegment(wayAttributs, lat1, lon1 ,lat2, lon2);
             }
         }
@@ -97,7 +98,7 @@ public class GGraphTile extends GGraph {
         return getAddNode(latitude, longitude, true);
     }
     GNode getAddNode(double latitude, double longitude, boolean allowAdd){
-        return getAddNode(PointModelUtil.roundMD(latitude), PointModelUtil.roundMD(longitude), -1, getNodes().size(), allowAdd);
+        return getAddNode(PointModelUtil.roundMD(latitude), PointModelUtil.roundMD(longitude), -1, getGNodes().size(), allowAdd);
     }
 
     /**
@@ -118,19 +119,19 @@ public class GGraphTile extends GGraph {
                 hgtTemp.setLon(longitude);
                 elevationProvider.setElevation(hgtTemp);
                 GNode node = new GNode(latitude, longitude, hgtTemp.getEle(), hgtTemp.getEleAcc(), 0);
-                if (longitude == tbBox.minLongitude) node.borderNode |= GNode.BORDER_NODE_WEST;
-                if (longitude == tbBox.maxLongitude) node.borderNode |= GNode.BORDER_NODE_EAST;
-                if (latitude == tbBox.minLatitude)  node.borderNode |= GNode.BORDER_NODE_SOUTH;
-                if (latitude == tbBox.maxLatitude)  node.borderNode |= GNode.BORDER_NODE_NORTH;
+                if (longitude == bBox.minLongitude) node.borderNode |= GNode.BORDER_NODE_WEST;
+                if (longitude == bBox.maxLongitude) node.borderNode |= GNode.BORDER_NODE_EAST;
+                if (latitude == bBox.minLatitude)  node.borderNode |= GNode.BORDER_NODE_SOUTH;
+                if (latitude == bBox.maxLatitude)  node.borderNode |= GNode.BORDER_NODE_NORTH;
                 node.tileIdx = tileIdx;
-                getNodes().add(high, node);
+                getGNodes().add(high, node);
                 return node;
             } else {
                 return null;
             }
         } else {
             int mid = (high + low) /2;
-            GNode gMid = getNodes().get(mid);
+            GNode gMid = getGNodes().get(mid);
             int cmp = PointModelUtil.compareTo(latitude, longitude, gMid.getLat(), gMid.getLon() );
             if (cmp == 0) return gMid;
             if (cmp < 0){
@@ -141,8 +142,8 @@ public class GGraphTile extends GGraph {
         }
     }
 
-    public BBox getTileBBox(){
-        return tbBox;
+    public BBox getBBox(){
+        return bBox;
     }
 
     public ArrayList<MultiPointModel> getRawWays() {
@@ -157,7 +158,7 @@ public class GGraphTile extends GGraph {
     }
 
     void resetNodeRefs(){
-        for (GNode node : getNodes()){
+        for (GNode node : getGNodes()){
             node.resetNodeRefs();
         }
     }

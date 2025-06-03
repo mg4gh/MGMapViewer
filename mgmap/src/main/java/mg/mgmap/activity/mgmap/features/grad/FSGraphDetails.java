@@ -24,13 +24,11 @@ import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
-import mg.mgmap.generic.graph.GGraphTile;
-import mg.mgmap.generic.graph.GNeighbour;
-import mg.mgmap.generic.graph.GNode;
-import mg.mgmap.generic.graph.GNodeRef;
+import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointNeighbour;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.CC;
@@ -119,27 +117,26 @@ public class FSGraphDetails extends FeatureService {
                 .extend(pmTap)
                 .extend(closeThreshold);
 
-        GNode bestNode = null;
-        GNeighbour bestNeighbour = null;
-        GGraphTile bestTile = null;
+        PointModel bestNode = null;
+        PointNeighbour bestNeighbour = null;
+        Graph bestGraph = null;
         WriteablePointModel pmApproach = new TrackLogPoint();
         double bestDistance = closeThreshold;
-        ArrayList<GGraphTile> tiles = getActivity().getGGraphTileFactory().getGGraphTileList(bBoxTap);
 
-        for (GGraphTile gGraphTile : tiles){
-            if (gGraphTile.getTileBBox().contains(pmTap)){
-                MultiMultiPointView mmpv = new MultiMultiPointView(gGraphTile.getRawWays(), PAINT_GRAD_ALL_STROKE);
+        for (Graph graph : getActivity().getGraphFactory().getGraphList(bBoxTap)){
+            if (graph.getBBox().contains(pmTap)){
+                MultiMultiPointView mmpv = new MultiMultiPointView(graph.getRawWays(), PAINT_GRAD_ALL_STROKE);
                 mmpv.setShowIntermediates(true);
                 register( mmpv ); // show also the complete tile graph
-                BoxView boxView = new BoxView(gGraphTile.getTileBBox(), PAINT_GRAD_ALL_STROKE);
+                BoxView boxView = new BoxView(graph.getBBox(), PAINT_GRAD_ALL_STROKE);
                 register(boxView);
             }
-            for (GNode node : gGraphTile.getNodes()) {
+            for (PointModel node : graph.getNodes()) {
 
-                GNeighbour neighbour = node.getNeighbour();
-                while ((neighbour = gGraphTile.getNextNeighbour(node, neighbour)) != null) {
-                    GNode neighbourNode = neighbour.getNeighbourNode();
-                    if (GNode.sameTile(node,neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
+                PointNeighbour neighbour = graph.getNeighbour(node, node); // returns first neighbour pointing to node itself
+                while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null) {
+                    PointModel neighbourNode = neighbour.getPoint();
+                    if (graph.sameGraph(node,neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
                         BBox bBoxPart = new BBox().extend(node).extend(neighbourNode);
 
                         boolean bIntersects = bBoxTap.intersects(bBoxPart);
@@ -151,7 +148,7 @@ public class FSGraphDetails extends FeatureService {
                                     bestNode = node;
                                     bestNeighbour = neighbour;
                                     bestDistance = distance;
-                                    bestTile = gGraphTile;
+                                    bestGraph = graph;
                                 }
                             }
                         }
@@ -160,30 +157,28 @@ public class FSGraphDetails extends FeatureService {
             }
         }
 
+        final Graph graph = bestGraph;
         //noinspection ConstantConditions
-        if ((bestNode != null) && (bestNeighbour != null) && (bestTile != null)){ // second and third condition are automatically true
-            ArrayList<GNode> nodes = bestTile.segmentNodes(bestNode,bestNeighbour.getNeighbourNode(),Integer.MAX_VALUE, true);
+        if ((bestNode != null) && (bestNeighbour != null) && (graph != null)){ // second and third condition are automatically true
+            ArrayList<PointModel> nodes = graph.segmentNodes(bestNode,bestNeighbour.getPoint(),Integer.MAX_VALUE, true);
 
-            GNode lastNode = null;
-            for (GNode node : nodes){
+            PointModel lastNode = null;
+            for (PointModel node : nodes){
                 multiPointModel.addPoint(node);
                 if (lastNode != null){
-                    final GNeighbour nLast2Node = bestTile.getNeighbour(lastNode,node);
-                    final GNeighbour nNode2Last = bestTile.getNeighbour(node,lastNode);
+                    final PointNeighbour nLast2Node = graph.getNeighbour(lastNode,node);
+                    final PointNeighbour nNode2Last = graph.getNeighbour(node,lastNode);
                     String wayDetails = (nLast2Node.getWayAttributs()!=null)?nLast2Node.getWayAttributs().toDetailedString():"";
                     double distance = nLast2Node.getDistance();
                     double verticalDistance = PointModelUtil.verticalDistance(lastNode, node);
-                    mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,nLast2Node.getCost(),nNode2Last.getCost(),wayDetails));
+                    mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,
+                            graph.getCost(nLast2Node),graph.getCost(nNode2Last),wayDetails));
                 }
-                mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
+                mgLog.d("Point "+ node + graph.getRefDetails(node));
                 lastNode = node;
             }
         }
-        return (bestTile==null)?null:bestTile.getTileBBox();
+        return (graph==null)?null:graph.getBBox();
     }
 
-    private String getRefDetails(GNodeRef ref){
-        if (ref == null) return "";
-        return String.format(Locale.ENGLISH, " %s settled=%b cost=%.2f heuristic=%.2f hcost=%.2f",ref.isReverse()?"rv":"fw",ref.isSetteled(),ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost());
-    }
 }

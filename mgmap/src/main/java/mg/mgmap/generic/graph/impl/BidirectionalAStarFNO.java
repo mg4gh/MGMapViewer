@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 

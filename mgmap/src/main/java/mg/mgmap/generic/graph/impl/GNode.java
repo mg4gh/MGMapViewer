@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import mg.mgmap.generic.model.PointModelImpl;
 
@@ -99,18 +99,10 @@ public class GNode extends PointModelImpl {
         nodeReverseRef = null;
     }
 
-
-    public GGraphTile getTile(GGraphTileFactory gFactory){
-        return gFactory.getGGraphTile(tileIdx>>16, tileIdx&0xFFFF);
-    }
-
-    public static boolean sameTile(GNode node1, GNode node2){
-        return node1.tileIdx == node2.tileIdx;
-    }
-
     public boolean isFlag(byte flag){
         return (flags & flag) != 0;
     }
+
     public void setFlag(byte flag, boolean value){
         if (value){
             flags |= flag;

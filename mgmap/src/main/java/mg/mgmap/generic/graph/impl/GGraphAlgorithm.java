@@ -1,11 +1,12 @@
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
-import mg.mgmap.generic.model.ApproachModel;
+import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
@@ -13,7 +14,7 @@ import mg.mgmap.generic.util.Observable;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.MemoryUtil;
 
-public abstract class GGraphAlgorithm {
+public abstract class GGraphAlgorithm implements GraphAlgorithm {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 

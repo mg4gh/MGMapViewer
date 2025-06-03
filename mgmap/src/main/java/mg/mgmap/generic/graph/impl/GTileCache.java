@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;

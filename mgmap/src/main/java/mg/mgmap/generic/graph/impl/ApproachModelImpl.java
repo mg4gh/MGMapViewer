@@ -12,9 +12,9 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
-import mg.mgmap.generic.model.ApproachModel;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 

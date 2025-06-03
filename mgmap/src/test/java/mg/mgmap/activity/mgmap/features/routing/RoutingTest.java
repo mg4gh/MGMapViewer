@@ -18,14 +18,14 @@ import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImplHelper;
 import mg.mgmap.application.util.WayProviderHelper;
-import mg.mgmap.generic.graph.AStar;
-import mg.mgmap.generic.graph.ApproachModelImpl;
-import mg.mgmap.generic.graph.BidirectionalAStar;
-import mg.mgmap.generic.graph.GGraphMulti;
-import mg.mgmap.generic.graph.GGraphAlgorithm;
-import mg.mgmap.generic.graph.GGraphTile;
-import mg.mgmap.generic.graph.GGraphTileFactory;
-import mg.mgmap.generic.graph.GNode;
+import mg.mgmap.generic.graph.impl.AStar;
+import mg.mgmap.generic.graph.impl.ApproachModelImpl;
+import mg.mgmap.generic.graph.impl.BidirectionalAStar;
+import mg.mgmap.generic.graph.impl.GGraphMulti;
+import mg.mgmap.generic.graph.impl.GGraphAlgorithm;
+import mg.mgmap.generic.graph.impl.GGraphTile;
+import mg.mgmap.generic.graph.impl.GGraphTileFactory;
+import mg.mgmap.generic.graph.impl.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
@@ -145,8 +145,8 @@ public class RoutingTest {
             int tileXEnd = 17102;
             int tileYEnd = 11179;
 
-            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getNodes().get(5);
-            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getNodes().get(5);
+            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getGNodes().get(5);
+            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getGNodes().get(5);
             gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
             gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
             multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
@@ -154,8 +154,8 @@ public class RoutingTest {
             multi.finalizeUsage();
             gGraphTileFactory.serviceCache();
 
-            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getNodes().get(5);
-            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getNodes().get(5);
+            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getGNodes().get(5);
+            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getGNodes().get(5);
             gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
             gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
             multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
@@ -199,8 +199,8 @@ public class RoutingTest {
             int tileXEnd = 17202;
             int tileYEnd = 11179;
 
-            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getNodes().get(5);
-            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getNodes().get(5);
+            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getGNodes().get(5);
+            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getGNodes().get(5);
             gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
             gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
             multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
@@ -208,8 +208,8 @@ public class RoutingTest {
             multi.finalizeUsage();
             gGraphTileFactory.serviceCache();
 
-            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getNodes().get(5);
-            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getNodes().get(5);
+            gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getGNodes().get(5);
+            gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getGNodes().get(5);
             gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(gStart).extend(PointModelUtil.getCloseThreshold()));
             gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(gEnd).extend(PointModelUtil.getCloseThreshold())));
             multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);

@@ -1,4 +1,6 @@
-package mg.mgmap.generic.model;
+package mg.mgmap.generic.graph;
+
+import mg.mgmap.generic.model.PointModel;
 
 public interface ApproachModel {
 

@@ -12,10 +12,13 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
+import mg.mgmap.generic.graph.Graph;
+import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.PointNeighbour;
@@ -24,14 +27,19 @@ import mg.mgmap.generic.model.PointNeighbour;
  * A basic graph implementation based on GNode and GNeighbour.
  */
 
-public class GGraph{
+public class GGraph implements Graph {
 
     public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
 
-    private final ArrayList<GNode> nodes = new ArrayList<>();
+    private final ArrayList<GNode> gNodes = new ArrayList<>();
 
-    public ArrayList<GNode> getNodes(){
-        return nodes;
+    public ArrayList<GNode> getGNodes(){
+        return gNodes;
+    }
+
+    @Override
+    public ArrayList<? extends PointModel> getNodes() {
+        return gNodes;
     }
 
     /**
@@ -153,34 +161,36 @@ public class GGraph{
         return null; // should not happen (given neighbourNode is not neighbour to node
     }
 
-    public ArrayList<GNode> segmentNodes(GNode node1, GNode node2, int closeThreshold, boolean limitToTile){
-        ArrayList<GNode> segmentNodes = new ArrayList<>();
-        segmentNodes.add(node1);
-        segmentNodes.add(node2);
-        GNode nodeA = node1;
-        GNode nodeB = node2;
-        GNode nodeC;
-        double distance = 0;
-        while ( (nodeC = oppositeNode(nodeB, nodeA)) != null){
-            if (segmentNodes.contains(nodeC)) break;
-            if (limitToTile && !GNode.sameTile(nodeC,nodeA)) break;
-            nodeA = nodeB;
-            nodeB = nodeC;
-            segmentNodes.add(nodeC);
-            distance += PointModelUtil.distance(nodeA, nodeB);
-            if (distance >= closeThreshold) break;
-        }
-        nodeA = node2;
-        nodeB = node1;
-        distance = 0;
-        while ( (nodeC = oppositeNode(nodeB, nodeA)) != null){
-            if (segmentNodes.contains(nodeC)) break;
-            if (limitToTile && !GNode.sameTile(nodeC,nodeA)) break;
-            nodeA = nodeB;
-            nodeB = nodeC;
-            segmentNodes.add(0, nodeC);
-            distance += PointModelUtil.distance(nodeA, nodeB);
-            if (distance >= closeThreshold) break;
+    public ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2, int closeThreshold, boolean limitToTile){
+        ArrayList<PointModel> segmentNodes = new ArrayList<>();
+        if ((node1 instanceof  GNode gNode1) && (node2 instanceof GNode gNode2)){
+            segmentNodes.add(node1);
+            segmentNodes.add(node2);
+            GNode nodeA = gNode1;
+            GNode nodeB = gNode2;
+            GNode nodeC;
+            double distance = 0;
+            while ( (nodeC = oppositeNode(nodeB, nodeA)) != null){
+                if (segmentNodes.contains(nodeC)) break;
+                if (limitToTile && !sameGraph(nodeC,nodeA)) break;
+                nodeA = nodeB;
+                nodeB = nodeC;
+                segmentNodes.add(nodeC);
+                distance += PointModelUtil.distance(nodeA, nodeB);
+                if (distance >= closeThreshold) break;
+            }
+            nodeA = gNode2;
+            nodeB = gNode1;
+            distance = 0;
+            while ( (nodeC = oppositeNode(nodeB, nodeA)) != null){
+                if (segmentNodes.contains(nodeC)) break;
+                if (limitToTile && !sameGraph(nodeC,nodeA)) break;
+                nodeA = nodeB;
+                nodeB = nodeC;
+                segmentNodes.add(0, nodeC);
+                distance += PointModelUtil.distance(nodeA, nodeB);
+                if (distance >= closeThreshold) break;
+            }
         }
         return segmentNodes;
     }
@@ -208,4 +218,34 @@ public class GGraph{
         reverseNeighbour.setDistance(distance);
     }
 
+
+    public Boolean sameGraph(PointModel node1, PointModel node2){
+        if ((node1 instanceof GNode gNode1) && (node2 instanceof GNode gNode2)){
+            return gNode1.tileIdx == gNode2.tileIdx;
+        }
+        return null;
+    }
+
+    @Override
+    public String getRefDetails(PointModel node) {
+        String res = "";
+        if (node instanceof GNode gNode){
+            res = getRefDetails(gNode.getNodeRef()) + getRefDetails(gNode.getNodeRef(true));
+        }
+        return res;
+    }
+
+    private String getRefDetails(GNodeRef ref){
+        if (ref == null) return "";
+        return String.format(Locale.ENGLISH, " %s settled=%b cost=%.2f heuristic=%.2f hcost=%.2f",ref.isReverse()?"rv":"fw",ref.isSetteled(),ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost());
+    }
+
+    @Override
+    public float getCost(PointNeighbour neighbour) {
+        float cost = 0;
+        if (neighbour instanceof GNeighbour gNeighbour){
+            cost = (float)gNeighbour.getCost();
+        }
+        return cost;
+    }
 }

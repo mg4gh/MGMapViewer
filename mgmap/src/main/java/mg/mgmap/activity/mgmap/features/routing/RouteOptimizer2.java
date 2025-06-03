@@ -3,7 +3,7 @@ package mg.mgmap.activity.mgmap.features.routing;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
-import mg.mgmap.generic.graph.GGraphTileFactory;
+import mg.mgmap.generic.graph.GraphFactory;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
@@ -16,10 +16,10 @@ public class RouteOptimizer2 {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    final GGraphTileFactory gFactory;
+    final GraphFactory gFactory;
     final RoutingEngine routingEngine;
 
-    public RouteOptimizer2(GGraphTileFactory gFactory, RoutingEngine routingEngine){
+    public RouteOptimizer2(GraphFactory gFactory, RoutingEngine routingEngine){
         this.gFactory = gFactory;
         this.routingEngine = routingEngine;
     }
