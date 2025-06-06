@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.impl.GGraph;
-import mg.mgmap.generic.graph.impl.GGraphAlgorithm;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 
@@ -18,7 +17,7 @@ public interface GraphFactory {
 
     ApproachModel validateApproachModel(ApproachModel approachModel);
 
-    GGraphAlgorithm getAlgorithmForGraph(Graph graph, RoutingProfile routingProfile);
+    GraphAlgorithm getAlgorithmForGraph(Graph graph, RoutingProfile routingProfile);
 
 
     void connectApproach2Graph(Graph graph, ApproachModel approachModel);

@@ -28,6 +28,7 @@ import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.graph.Graph;
+import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.graph.GraphFactory;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.graph.ApproachModel;
@@ -153,7 +154,7 @@ public class GGraphTileFactory implements GraphFactory {
         return new GGraphMulti(this, gGraphTiles);
     }
 
-    public GGraphAlgorithm getAlgorithmForGraph(Graph graph, RoutingProfile routingProfile){
+    public GraphAlgorithm getAlgorithmForGraph(Graph graph, RoutingProfile routingProfile){
         GGraphAlgorithm gGraphAlgorithm = null;
         if (graph instanceof GGraph gGraph){
             try {
