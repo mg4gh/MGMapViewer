@@ -89,3 +89,9 @@ Further aspects:
     - getNeighbour(PointModel pm1, PointModel pm2) -> return PointNeighbour from pm1 to pm2
       (return firstNeighbour, if pm1 == pm2)
   
+
+### Process
+- loadGraphTile:
+  - iterate over ways - filter those that are relevant vor routing -> result is wayList of type ArrayList<Way>
+  - create WayAttributes[] - index corresponds to wayList
+  - iterate
