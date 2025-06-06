@@ -3,15 +3,18 @@ package mg.mgmap.generic.graph.implbb;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
+import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
+import mg.mgmap.generic.util.basic.LaLo;
 
 public class BGraphTile {
 
@@ -36,7 +39,12 @@ public class BGraphTile {
     private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
     final BGraphTile[] neighbourTiles = new BGraphTile[BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
 
-
+    ByteBuffer bbPoint;
+    ByteBuffer bbNeighbour;
+    WayAttributs[] wayAttributes;
+    int pointsUsed = 0;
+    int neighboursUsed = 0;
+    int wayAttributesUsed = 0;
 
     boolean used = false; // used for cache - do not delete from cache
     long accessTime = 0; // used for cache
@@ -74,5 +82,14 @@ public class BGraphTile {
         }
     }
 
+    private int lastLat = LaLo.d2md(PointModel.NO_LAT_LONG);
+    private int lastLon = LaLo.d2md(PointModel.NO_LAT_LONG);
+    private short lastIdx = -1;
+    // get point index for given lat+lon; if such point is not yet registered, add this point and return its index
+    private short getAddPoint(int lat, int lon){
+        if ((lat == lastLat) && (lon == lastLon)) return lastIdx;
+
+
+    }
 
 }
