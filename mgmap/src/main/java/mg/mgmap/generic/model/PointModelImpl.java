@@ -27,8 +27,8 @@ import mg.mgmap.generic.util.basic.LaLo;
 /** A simple implementation for a single point */
 public class PointModelImpl implements PointModel, Comparable<PointModel>{
 
-    int la = LaLo.d2md(NO_LAT_LONG);
-    int lo = LaLo.d2md(NO_LAT_LONG);
+    int la = NO_LAT_LONG_MD;
+    int lo = NO_LAT_LONG_MD;
     protected float ele = NO_ELE; // allow derived class to access ele (needed for smoothing process of GGraphTile to fixEle in GNode)
     float eleAcc = NO_ACC;
 

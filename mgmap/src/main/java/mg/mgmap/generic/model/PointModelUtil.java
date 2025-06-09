@@ -33,7 +33,7 @@ public class PointModelUtil {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public static final long NO_POS = LaLo.getLaLo(LaLo.d2md(PointModel.NO_LAT_LONG), LaLo.d2md(PointModel.NO_LAT_LONG));
+    public static final long NO_POS = LaLo.getLaLo(PointModel.NO_LAT_LONG_MD, PointModel.NO_LAT_LONG_MD);
 
     /**
      * The equatorial radius as defined by the <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84
