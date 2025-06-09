@@ -3,13 +3,12 @@ package mg.mgmap.generic.graph;
 import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
-import mg.mgmap.generic.graph.impl.GGraph;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 
 public interface GraphFactory {
 
-    ArrayList<? extends GGraph> getGraphList(BBox bBox);
+    ArrayList<? extends Graph> getGraphList(BBox bBox);
 
     Graph getGraph(PointModel pm1, PointModel pm2);
 

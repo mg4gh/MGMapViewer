@@ -116,7 +116,7 @@ public class GGraphTileFactory implements GraphFactory {
         return gTileCache.getAll();
     }
 
-    public ArrayList<? extends GGraph> getGraphList(BBox bBox){
+    public ArrayList<? extends Graph> getGraphList(BBox bBox){
         return getGGraphTileList(bBox);
     }
 
