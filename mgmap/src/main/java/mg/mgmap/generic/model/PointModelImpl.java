@@ -25,7 +25,7 @@ import java.util.Locale;
 import mg.mgmap.generic.util.basic.LaLo;
 
 /** A simple implementation for a single point */
-public class PointModelImpl implements PointModel, Comparable<PointModel>{
+public class PointModelImpl implements PointModel{
 
     int la = NO_LAT_LONG_MD;
     int lo = NO_LAT_LONG_MD;
