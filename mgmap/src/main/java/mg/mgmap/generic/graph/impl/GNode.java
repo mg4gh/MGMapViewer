@@ -43,6 +43,7 @@ public class GNode extends PointModelImpl {
     public static final byte FLAG_FIX               = 0x01;
     public static final byte FLAG_VISITED           = 0x02;
     public static final byte FLAG_HEIGHT_RELEVANT   = 0x04;
+    public static final byte FLAG_INVALID           = 0x40;
 
     public static int deltaX(byte border){
         return switch (border) {

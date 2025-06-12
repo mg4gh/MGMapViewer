@@ -313,9 +313,11 @@ public class GGraphTileFactory implements GraphFactory {
         ArrayList<GNode> nodes = gGraphTile.getGNodes();
         for (int iIdx=0; iIdx<nodes.size(); iIdx++){
             GNode iNode = nodes.get(iIdx);
+            if (iNode.isFlag(GNode.FLAG_INVALID)) continue; // invalid node
             int iNeighbours = gGraphTile.countNeighbours(iNode);
             for (int nIdx=iIdx+1; nIdx<nodes.size(); nIdx++ ) {
                 GNode nNode = nodes.get(nIdx);
+                if (nNode.isFlag(GNode.FLAG_INVALID)) continue; // invalid node
                 if (iNode.laMdDiff(nNode) >= latThreshold) break; // go to next iIdx
                 if (iNode.loMdDiff(nNode) >= lonThreshold)
                     continue; // goto next mIdx
@@ -370,6 +372,7 @@ public class GGraphTileFactory implements GraphFactory {
 
             }
         }
+        gGraphTile.getGNodes().removeIf(node -> node.isFlag(GNode.FLAG_INVALID));
         return gGraphTile;
     }
 
@@ -388,7 +391,7 @@ public class GGraphTileFactory implements GraphFactory {
             graph.removeNeighbourTo(nextNeighbour.getNeighbourNode(), nNode);
             graph.addSegment(nextNeighbour.getWayAttributs(),iNode, nextNeighbour.getNeighbourNode());
         }
-        graph.getGNodes().remove(nNode);
+        iNode.setFlag(GNode.FLAG_INVALID, true);
         nNode.getNeighbour().setNextNeighbour(null);
     }
 
