@@ -1,7 +1,17 @@
 package mg.mgmap.generic.graph.implbb;
 
-import static mg.mgmap.generic.graph.implbb.BNeighbours.*;
-import static mg.mgmap.generic.graph.implbb.BNodes.*;
+import static mg.mgmap.generic.graph.implbb.BNeighbours.NEIGHBOUR_SIZE;
+import static mg.mgmap.generic.graph.implbb.BNeighbours.REVERSE_NEXT;
+import static mg.mgmap.generic.graph.implbb.BNeighbours.REVERSE_NO;
+import static mg.mgmap.generic.graph.implbb.BNeighbours.REVERSE_PREV;
+import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NODE_EAST;
+import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NODE_NORTH;
+import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NODE_SOUTH;
+import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NODE_WEST;
+import static mg.mgmap.generic.graph.implbb.BNodes.FLAG_FIX;
+import static mg.mgmap.generic.graph.implbb.BNodes.FLAG_HEIGHT_RELEVANT;
+import static mg.mgmap.generic.graph.implbb.BNodes.FLAG_VISITED;
+import static mg.mgmap.generic.graph.implbb.BNodes.POINT_SIZE;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
@@ -11,14 +21,9 @@ import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.TreeMap;
 
 import mg.mgmap.application.util.ElevationProvider;
-import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.WayAttributs;
-
-import mg.mgmap.generic.graph.impl.GNeighbour;
-import mg.mgmap.generic.graph.impl.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
@@ -30,7 +35,7 @@ import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.MGLog;
 
-public class BGraphTile  {
+public class BGraphTileSave {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
@@ -50,14 +55,13 @@ public class BGraphTile  {
     final static ByteBuffer bbPointsInit = ByteBuffer.wrap(baPointsInit);
     final static byte[] baNeighboursInit = new byte[NEIGHBOUR_SIZE * MAX_NEIGHBOURS];
     final static ByteBuffer bbNeighboursInit = ByteBuffer.wrap(baNeighboursInit);
+    final static int POINTS_PER_LAT = 10; // per Lat value there are up to this number of indexes here stored
+    final static short[][] ptIdxPerLatInit = new short[MD_TILE_SIZE+1][POINTS_PER_LAT];
+    final static int[] numPtIdxPerLatInit = new int[MD_TILE_SIZE+1]; // number of entries in ptIdxPerLat with latIdx (which is lat - bBox.minLat)
 
-    static ArrayList<BNode> freeNodes = new ArrayList<>();
-    static {
-        for (int i=0; i<MAX_POINTS; i++){
-            freeNodes.add(new BNode());
-        }
-    }
-    static TreeMap<BNode, BNode> tmBNodes = new TreeMap<>();
+    final static int MAX_OVERFLOW_POINTS = 1024;
+    final static short[] overflowPointsInit = new short[MAX_OVERFLOW_POINTS];
+    static short overflowPointsUsed = 0;
 
 
     final WayProvider wayProvider;
@@ -73,14 +77,9 @@ public class BGraphTile  {
     private final ArrayList<MultiPointModel> rawWays = new ArrayList<>();
     final int tileIdx;
     final BBox bBox;
-    int minLat;
-    int maxLat;
-    int minLon;
-    int maxLon;
-
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
-    final BGraphTile[] neighbourTiles = new BGraphTile[BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
+    final BGraphTileSave[] neighbourTiles = new BGraphTileSave[BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
     boolean init = true; // after initial setup this flag is set to false - access to static arrays is only allowed while init flag is set
 
 
@@ -89,19 +88,13 @@ public class BGraphTile  {
     boolean used = false; // used for cache - do not delete from cache
     long accessTime = 0; // used for cache
 
-    BGraphTile(WayProvider wayProvider, ElevationProvider elevationProvider, Tile tile){
+    BGraphTileSave(WayProvider wayProvider, ElevationProvider elevationProvider, Tile tile){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
         this.tile = tile;
 
         this.tileIdx = BGraphTileFactory.getKey(getTileX(),getTileY());
         bBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
-
-        minLat = LaLo.d2md(bBox.minLatitude);
-        maxLat = LaLo.d2md(bBox.maxLatitude);
-        minLon = LaLo.d2md(bBox.minLongitude);
-        maxLon = LaLo.d2md(bBox.maxLongitude);
-
     }
 
     public int getTileX(){
@@ -122,6 +115,10 @@ public class BGraphTile  {
         neighbours.neighboursUsed = 1; // idx 0 is used as "null"
         this.wayAttributes = wayAttributesInit;
         wayAttributesUsed = 0;
+        overflowPointsUsed = 0;
+        for (int i=0; i<MD_TILE_SIZE+1; i++){
+            numPtIdxPerLatInit[i] = 0; //
+        }
 
         for (Way way : wayProvider.getWays(tile)) {
             if (wayProvider.isWayForRouting(way)){
@@ -148,89 +145,77 @@ public class BGraphTile  {
             }
         }
         mgLog.i("XXXX optimize BGraph -- wayAttributesUsed="+wayAttributesUsed);
-//        short xxxGN = getAddPoint(49300645, 8089221);
-//        short xxxGN = getAddPoint(49702800, 8086710);
-//        mgLog.d("xxxy1 "+countNeighbours(xxxGN) );
-//        short xNeighbour = nodes.getNeighbour(xxxGN);
-//        while (xNeighbour != 0){
-//            short gnn = neighbours.getNeighbourPoint(xNeighbour);
-//            mgLog.d( nodes.getLatitude(gnn)+","+nodes.getLongitude(gnn));
-//            xNeighbour = neighbours.getNextNeighbour(xNeighbour);
-//        }
-
-        BNode aiBNode = tmBNodes.firstKey();
-        int ai = 0;
-        while (aiBNode != null){
-            mgLog.d(String.format(Locale.ENGLISH,"yyyy %4d lat=%.6f,lon=%.6f", ai,aiBNode.getLat()/1000000.0,aiBNode.getLon()/1000000.0));
-            aiBNode = tmBNodes.higherKey(aiBNode);
-            ai++;
+        short xxxGN = getAddPoint(49300645, 8089221);
+        mgLog.d("xxxy1 "+countNeighbours(xxxGN) );
+        short xNeighbour = nodes.getNeighbour(xxxGN);
+        while (xNeighbour != 0){
+            short gnn = neighbours.getNeighbourPoint(xNeighbour);
+            mgLog.d( nodes.getLatitude(gnn)+","+nodes.getLongitude(gnn));
+            xNeighbour = neighbours.getNextNeighbour(xNeighbour);
         }
+
 
         int latThreshold = LaLo.d2md( PointModelUtil.latitudeDistance(CONNECT_THRESHOLD_METER) );
         int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
 //            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
         //all relevant ways are in the map ... try to correct data ...
         int numPoints = nodes.pointsUsed;
-        BNode iBNode = tmBNodes.firstKey();
-        short iiIdx = 0;
-        while (iBNode != null){
-            short iIdx = iBNode.nodeIdx;
+        for (short iIdx=0; iIdx<numPoints; iIdx++){ // iIdx is first pointIdx
             int iLat = nodes.getLatitude(iIdx);
             int iLon = nodes.getLongitude(iIdx);
-            if (!nodes.isFlag(iIdx, FLAG_INVALID)){ // valid point
-                int iNeighbours = countNeighbours(iIdx);
+            if ((iLat == PointModel.NO_LAT_LONG_MD) || (iLon == PointModel.NO_LAT_LONG_MD)) continue; // invalid point
+            int iNeighbours = countNeighbours(iIdx);
 
-                BNode nBNode = tmBNodes.higherKey(iBNode);
-                short nnIdx = (short)(iiIdx+1);
-                while (nBNode != null){
-                    short nIdx = nBNode.nodeIdx;
+            for (short nIdx = (short) (iIdx+1); nIdx<numPoints; nIdx++ ) { // nIdx is second pointIdx
+                int nLat = nodes.getLatitude(nIdx);
+                int nLon = nodes.getLongitude(nIdx);
+                if ((nLat == PointModel.NO_LAT_LONG_MD) || (nLon == PointModel.NO_LAT_LONG_MD)) continue; // invalid point
 
-//                    mgLog.d("XXXX-compareAAA add iiIdx="+iiIdx+" nnIdx="+nnIdx+"     iIdx="+iIdx+" nIdx="+nIdx);
-//
-//                    if ((iiIdx == 54) && (nnIdx == 55)){
-//                        mgLog.d("xxx");
-//                    }
+                if (Math.abs(nLat - iLat) >= latThreshold) continue; // go to next nIdx
+                if (Math.abs(nLon - iLon) >= lonThreshold) continue; // go to next nIdx
+                if (PointModelUtil.distance(LaLo.md2d(iLat),LaLo.md2d(iLon), LaLo.md2d(nLat),LaLo.md2d(nLon)) > CONNECT_THRESHOLD_METER)
+                    continue;
+                if (getNeighbour(iIdx,nIdx) != 0)
+                    continue; // is already neighbour
 
-                    int nLat = nodes.getLatitude(nIdx);
-                    int nLon = nodes.getLongitude(nIdx);
-                    if (!nodes.isFlag(nIdx, FLAG_INVALID)){ // valid point
 
-                        if ((Math.abs(nLat - iLat) < latThreshold) && (Math.abs(nLon - iLon) < lonThreshold) &&
-                                PointModelUtil.distance(LaLo.md2d(iLat),LaLo.md2d(iLon), LaLo.md2d(nLat),LaLo.md2d(nLon)) <= CONNECT_THRESHOLD_METER){ // connect candidate
-                            if (getNeighbour(iIdx,nIdx) == 0){ // // is not yet neighbour
-                                int nNeighbours = countNeighbours(nIdx);
-                                assert ((iNeighbours != 0) && (nNeighbours != 0)) ; // don't connect, if a node has no neighbours (might occur due to former reduceGraph action)
-
-//                                mgLog.d("XXXX-compare add iiIdx="+iiIdx+" nnIdx="+nnIdx+"     iIdx="+iIdx+" nIdx="+nIdx);
-
-                                if ((iNeighbours+nNeighbours != 3) || nodes.isBorderPoint(nIdx) || nodes.isBorderPoint(iIdx)){
-                                    mgLog.d("XXXX-fix add iIdx="+iIdx+" nIdx="+nIdx);
-                                    addSegment((short)-1,iIdx, nIdx);
-                                } else { // iNeighbours:nNeighbours is either 2:1 or 1:2
-                                    short iDrop = (iNeighbours==1)?iIdx:nIdx;
-                                    short iDropReplace = (iNeighbours==2)?iIdx:nIdx;
-                                    reduceGraph(iDrop, iDropReplace); // drop iNode; move neighbour form iNode to nNode
-                                }
-
-                            } // if (getNeighbour(iIdx,nIdx) == 0){ // // is not yet neighbour
-                        } // connect candidate
-
-                    } // if ((nLat != PointModel.NO_LAT_LONG_MD) && (nLon != PointModel.NO_LAT_LONG_MD)) { // valid point
-                    nBNode = tmBNodes.higherKey(nBNode);
-                    nnIdx++;
-                } // while (nBNode != null){
-            } // if ((iLat != PointModel.NO_LAT_LONG_MD) && (iLon != PointModel.NO_LAT_LONG_MD)){ // valid point
-            iBNode = tmBNodes.higherKey(iBNode);
-            iiIdx++;
+                int nNeighbours = countNeighbours(nIdx);
+                if ((iNeighbours == 0) || (nNeighbours == 0)) { // don't connect, if a node has no neighbours (might occur due to former reduceGraph action)
+                    continue;
+                }
+                if ((iNeighbours == 1) && (nNeighbours == 1)) { // 1:1 connect -> no routing hint problem
+                    mgLog.d("XXXX-fix 1 iIdx="+iIdx+" nIdx="+nIdx);
+                    addSegment((short)-1,iIdx, nIdx);
+                    continue;
+                }
+                if (nodes.isBorderPoint(nIdx) || nodes.isBorderPoint(iIdx)) { // border points must be kept for MultiTiles; accept potential routing hint problem
+                    mgLog.d("XXXX-fix 2 iIdx="+iIdx+" nIdx="+nIdx);
+                    addSegment((short)-1,iIdx, nIdx);
+                    continue;
+                }
+                if ((iNeighbours == 2) && (nNeighbours == 1)) { // 2:1 connect -> might give routing hint problem
+                    mgLog.d("XXXX-fix 3 iIdx="+iIdx+" nIdx="+nIdx);
+                    reduceGraph(nIdx, iIdx);  // drop nNode; move neighbour form nNode to iNode
+                    continue;
+                }
+                if ((iNeighbours == 1) && (nNeighbours == 2)) { // 1:2 connect -> might give routing hint problem
+                    mgLog.d("XXXX-fix 4 iIdx="+iIdx+" nIdx="+nIdx);
+                    reduceGraph(iIdx, nIdx); // drop iNode; move neighbour form iNode to nNode
+                    iNeighbours = 0; // just in case there is a second close nNode
+                    continue;
+                }
+                // else (n:m) too complex; accept routing hint issue
+                mgLog.d("XXXX-fix 5 iIdx="+iIdx+" nIdx="+nIdx);
+                addSegment((short)-3,iIdx, nIdx);
+            }
         }
-
-//        mgLog.d("xxxy2 "+countNeighbours(xxxGN) );
-//        xNeighbour = nodes.getNeighbour(xxxGN);
-//        while (xNeighbour != 0){
-//            short gnn = neighbours.getNeighbourPoint(xNeighbour);
-//            mgLog.d( nodes.getLatitude(gnn)+","+nodes.getLongitude(gnn));
-//            xNeighbour = neighbours.getNextNeighbour(xNeighbour);
-//        }
+        mgLog.d("xxxy2 "+countNeighbours(xxxGN) );
+         xNeighbour = nodes.getNeighbour(xxxGN);
+        while (xNeighbour != 0){
+            short gnn = neighbours.getNeighbourPoint(xNeighbour);
+            mgLog.d( nodes.getLatitude(gnn)+","+nodes.getLongitude(gnn));
+            xNeighbour = neighbours.getNextNeighbour(xNeighbour);
+        }
 
 
         byte[] baPoints = new byte[nodes.pointsUsed* POINT_SIZE];
@@ -242,10 +227,6 @@ public class BGraphTile  {
         neighbours.init(ByteBuffer.wrap(baNeighbours));
         wayAttributes = new WayAttributs[wayAttributesUsed];
         System.arraycopy(wayAttributesInit, 0, wayAttributes, 0, wayAttributesUsed);
-
-        freeNodes.addAll(tmBNodes.keySet());
-        tmBNodes.clear();
-        assert (freeNodes.size() == MAX_POINTS);
         init = false;
     }
 
@@ -277,24 +258,43 @@ public class BGraphTile  {
     }
 
 
+    private int lastLat = PointModel.NO_LAT_LONG_MD;
+    private int lastLon = PointModel.NO_LAT_LONG_MD;
+    private short lastIdx = -1;
     // get point index for given lat+lon; if such point is not yet registered, add this point and return its index
     private short getAddPoint(int lat, int lon){
         assert(init);
+        if ((lat == lastLat) && (lon == lastLon)) return lastIdx;
+        int minLat = LaLo.d2md(bBox.minLatitude);
+        int maxLat = LaLo.d2md(bBox.maxLatitude);
+        int minLon = LaLo.d2md(bBox.minLongitude);
+        int maxLon = LaLo.d2md(bBox.maxLongitude);
 
-        short ptIdx = nodes.createNode(lat, lon);
-        BNode bNode = freeNodes.remove(0);
-        bNode.setBGraphTile(this);
-        bNode.setNodeIdx(ptIdx);
-
-        BNode existingBNode = tmBNodes.putIfAbsent(bNode, bNode);
-        if (existingBNode == null){
-
+        short ptIdx = -1;
+        int latIdx = lat - minLat;
+        for (int i=0; i<numPtIdxPerLatInit[latIdx]; i++){
+            short pIdx = ptIdxPerLatInit[latIdx][i];
+            if (nodes.getLongitude(pIdx) == lon){
+                ptIdx = pIdx;
+                break;
+            }
+        }
+        if ((ptIdx < 0) && (numPtIdxPerLatInit[latIdx] == POINTS_PER_LAT)){ // point not yet found and row is full, check also overflow area
+            for (int i=0; i<overflowPointsUsed; i++){
+                short pIdx = overflowPointsInit[i];
+                int aLat = nodes.getLatitude(pIdx);
+                int aLon = nodes.getLongitude(pIdx);
+                if ((aLon == lon) && (aLat == lat)){
+                    return pIdx;
+                }
+            }
+        }
+        if (ptIdx < 0){ // point still not found -> create it
             byte borderNode = 0;
             if (lon == minLon) borderNode |= BORDER_NODE_WEST;
             if (lon == maxLon) borderNode |= BORDER_NODE_EAST;
             if (lat == minLat)  borderNode |= BORDER_NODE_SOUTH;
             if (lat == maxLat)  borderNode |= BORDER_NODE_NORTH;
-
             hgtTemp.setLa(lat);
             hgtTemp.setLo(lon);
             elevationProvider.setElevation(hgtTemp);
@@ -303,31 +303,36 @@ public class BGraphTile  {
             short ptNIdx = neighbours.createNeighbour((short)-1, ptIdx, 0, REVERSE_NO);
             nodes.setNeighbour(ptIdx, ptNIdx);
 
-            nodes.setEle(ptIdx, hgtTemp.getEle());
-            final short ppp = ptIdx;
-            mgLog.d(()->String.format(Locale.ENGLISH, "addNode idx=%d lat=%.6f lon=%.6f ",ppp, LaLo.md2d(lat),LaLo.md2d(lon) ));
-        } else {
-            freeNodes.add(bNode);
-            ptIdx = existingBNode.nodeIdx;
+            if (numPtIdxPerLatInit[latIdx] == POINTS_PER_LAT){ // row is full, put point to overflow area
+                overflowPointsInit[overflowPointsUsed++] = ptIdx;
+            } else {
+                ptIdxPerLatInit[latIdx][ numPtIdxPerLatInit[latIdx] ] = ptIdx;
+                numPtIdxPerLatInit[latIdx]++;
+            }
         }
+        lastLat = lat;
+        lastLon = lon;
+        lastIdx = ptIdx;
+        mgLog.d(String.format(Locale.ENGLISH, "addNode idx=%d lat=%.6f lon=%.6f ",ptIdx, LaLo.md2d(lat),LaLo.md2d(lon) ));
         return ptIdx;
     }
 
-    // reduce Graph by dropping node identified by pointIdxDrop, all Neighbours form pointIdxDrop will get pointIdxReplace as a Neighbour
-    private void reduceGraph(short pointIdxDrop, short pointIdxReplace){
+    // reduce Graph by dropping node identified by pointIdxDrop, all Neighbours form pointIdxDrop will get pointIdxNeighbour as a Neighbour
+    private void reduceGraph(short pointIdxDrop, short pointIdxNeighbour){
         assert(init);
         short nIdx = nodes.getNeighbour(pointIdxDrop);
         while ((nIdx = neighbours.getNextNeighbour(nIdx)) != 0){
             short npIdx = neighbours.getNeighbourPoint(nIdx);
             short waIdx = neighbours.getWayAttributes(nIdx);
 
-            mgLog.d(()->"XXXX reduceGraph pointIdxDrop="+pointIdxDrop+"("+nodes.getLatitude(pointIdxDrop)+","+nodes.getLongitude(pointIdxDrop)+")"
-                    +" pointIdxReplace="+pointIdxReplace+"("+nodes.getLatitude(pointIdxReplace)+","+nodes.getLongitude(pointIdxReplace)+")"
+            mgLog.d("XXXX reduceGraph pointIdxDrop="+pointIdxDrop+"("+nodes.getLatitude(pointIdxDrop)+","+nodes.getLongitude(pointIdxDrop)+")"
+                    +" pointIdxNeighbour="+pointIdxNeighbour+"("+nodes.getLatitude(pointIdxNeighbour)+","+nodes.getLongitude(pointIdxNeighbour)+")"
                     +" npIdx="+npIdx+"("+nodes.getLatitude(npIdx)+","+nodes.getLongitude(npIdx)+")");
             removeNeighbourTo(npIdx, pointIdxDrop);
-            addSegment(waIdx, pointIdxReplace, npIdx);
+            addSegment(waIdx, pointIdxNeighbour, npIdx);
         }
-        nodes.setFlag(pointIdxDrop, FLAG_INVALID, true);
+        nodes.setLatitude(pointIdxDrop, PointModel.NO_LAT_LONG_MD);
+        nodes.setLongitude(pointIdxDrop, PointModel.NO_LAT_LONG_MD);
     }
 
     public void removeNeighbourTo(short pointIdx, short pointIdxNeighbour) { // assume both points are in same tile
