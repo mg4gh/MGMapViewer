@@ -4,11 +4,19 @@ import org.mapsforge.core.model.LatLong;
 
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.PointNeighbour;
 
 public class BNode implements PointModel {
 
     BGraphTile bGraphTile;
     short nodeIdx;
+
+    public BNode(){}
+
+    public BNode(BGraphTile bGraphTile, short nodeIdx) {
+        this.bGraphTile = bGraphTile;
+        this.nodeIdx = nodeIdx;
+    }
 
     public void setBGraphTile(BGraphTile bGraphTile) {
         this.bGraphTile = bGraphTile;

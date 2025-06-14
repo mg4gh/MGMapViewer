@@ -21,8 +21,11 @@ import mg.mgmap.generic.graph.impl.GNeighbour;
 import mg.mgmap.generic.graph.impl.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
+import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.PointNeighbour;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
@@ -30,7 +33,7 @@ import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.MGLog;
 
-public class BGraphTile  {
+public class BGraphTile implements Graph{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
@@ -184,12 +187,6 @@ public class BGraphTile  {
                 short nnIdx = (short)(iiIdx+1);
                 while (nBNode != null){
                     short nIdx = nBNode.nodeIdx;
-
-//                    mgLog.d("XXXX-compareAAA add iiIdx="+iiIdx+" nnIdx="+nnIdx+"     iIdx="+iIdx+" nIdx="+nIdx);
-//
-//                    if ((iiIdx == 54) && (nnIdx == 55)){
-//                        mgLog.d("xxx");
-//                    }
 
                     int nLat = nodes.getLatitude(nIdx);
                     int nLon = nodes.getLongitude(nIdx);
@@ -568,6 +565,115 @@ public class BGraphTile  {
         return 0; // should not happen (given neighbourNode is not neighbour to node
     }
 
+
+    @Override
+    public ArrayList<MultiPointModel> getRawWays() {
+        for (Way way : wayProvider.getWays(tile)) {
+            if (wayProvider.isWayForRouting(way)){
+
+                MultiPointModelImpl mpm = new MultiPointModelImpl();
+                for (LatLong latLong : way.latLongs[0] ){
+                    mpm.addPoint(new PointModelImpl(latLong));
+
+                }
+                rawWays.add(mpm);
+            }
+        }
+        return rawWays;
+    }
+
+    @Override
+    public Boolean sameGraph(PointModel node1, PointModel node2) {
+        return Graph.super.sameGraph(node1, node2);
+    }
+
+    @Override
+    public ArrayList<? extends PointModel> getNodes() {
+        ArrayList<BNode> bNodes = new ArrayList<>();
+        for (short nIdx=0; nIdx<nodes.pointsUsed; nIdx++){
+            if (!nodes.isFlag(nIdx, FLAG_INVALID)){
+                bNodes.add( new BNode(this, nIdx) );
+            }
+        }
+        return bNodes;
+    }
+
+    @Override
+    public PointNeighbour getNeighbour(PointModel node, PointModel neighbourNode) {
+        if ((node instanceof BNode bNode) && (neighbourNode instanceof  BNode bNeighbourNode)){
+            return getNeighbour(bNode, bNeighbourNode);
+        }
+        return null;
+    }
+    public BNeighbour getNeighbour(BNode node, BNode neighbourNode){
+        short neighbourIdx = nodes.getNeighbour(node.nodeIdx);
+        if (node.nodeIdx != neighbourNode.nodeIdx){
+            neighbourIdx = getNeighbour(node.nodeIdx, neighbourNode.nodeIdx);
+        }
+        return (neighbourIdx==0)?null:new BNeighbour(this, neighbourIdx);
+    }
+
+
+    @Override
+    public PointNeighbour getNextNeighbour(PointModel node, PointNeighbour neighbour) {
+        if (neighbour instanceof  BNeighbour bNeighbour){
+            if (neighbours.getTileSelector(bNeighbour.neighbourIdx) == 0){
+                return new BNeighbour(this, neighbours.getNextNeighbour(bNeighbour.neighbourIdx));
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2, int closeThreshold, boolean limitToTile) {
+        assert (limitToTile): "Unsupported operation";
+        ArrayList<PointModel> segmentNodes = new ArrayList<>();
+        segmentNodes.add(node1);
+        segmentNodes.add(node2);
+        if ((node1 instanceof BNode bNode1) && (node2 instanceof  BNode bNode2)){
+            short nodeIdxA = bNode1.nodeIdx;
+            short nodeIdxB = bNode2.nodeIdx;
+            short neighbourIdx = getNeighbour(nodeIdxA, nodeIdxB);
+            float distance = 0;
+            short oppositeNeighbour;
+            while ( (oppositeNeighbour = oppositeNeighbour( neighbours.getNeighbourPoint(neighbourIdx), neighbourIdx )) != 0){
+                neighbourIdx = neighbours.getReverse(oppositeNeighbour);
+                segmentNodes.add(new BNode(this, neighbours.getNeighbourPoint(neighbourIdx)));
+                distance += neighbours.getDistance(neighbourIdx);
+                if (distance >= closeThreshold) break;
+            }
+            nodeIdxA = bNode2.nodeIdx;
+            nodeIdxB = bNode1.nodeIdx;
+            neighbourIdx = getNeighbour(nodeIdxA, nodeIdxB);
+            distance = 0;
+            while ( (oppositeNeighbour = oppositeNeighbour( neighbours.getNeighbourPoint(neighbourIdx), neighbourIdx )) != 0){
+                neighbourIdx = neighbours.getReverse(oppositeNeighbour);
+                segmentNodes.add(new BNode(this, neighbours.getNeighbourPoint(neighbourIdx)));
+                distance += neighbours.getDistance(neighbourIdx);
+                if (distance >= closeThreshold) break;
+            }
+        }
+        return segmentNodes;
+    }
+
+    @Override
+    public String getRefDetails(PointModel node) {
+        return "";
+    }
+
+    @Override
+    public float getCost(PointNeighbour neighbour) {
+        float cost = 0;
+        if (neighbour instanceof  BNeighbour bNeighbour){
+                cost = neighbours.getCost(bNeighbour.neighbourIdx);
+        }
+        return cost;
+    }
+
+    @Override
+    public BBox getBBox() {
+        return bBox;
+    }
 
 
 }

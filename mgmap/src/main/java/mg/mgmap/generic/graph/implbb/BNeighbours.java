@@ -57,17 +57,9 @@ public class BNeighbours {
         bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_POINT_OFFSET);
         return bbNeighbours.getShort();
     }
-    public short getWayAttributes(short nIdx){
-        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_WAY_ATTRIBUTES_OFFSET);
-        return bbNeighbours.getShort();
-    }
-    public float getCost(short nIdx){
-        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_COST_OFFSET);
-        return bbNeighbours.getFloat();
-    }
-    public float getDistance(short nIdx){
-        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_DISTANCE_OFFSET);
-        return bbNeighbours.getFloat();
+    public byte getTileSelector(short nIdx){
+        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_FLAG_TILE_SELECTOR_OFFSET);
+        return bbNeighbours.get();
     }
     public short getReverse(short nIdx){
         bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_FLAG_REVERSE_OFFSET);
@@ -85,6 +77,19 @@ public class BNeighbours {
     public void setNextNeighbour(short nIdx, short nnIdx){
         bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_NEXT_NEIGHBOUR_OFFSET);
         bbNeighbours.putShort(nnIdx);
+    }
+
+    public short getWayAttributes(short nIdx){
+        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_WAY_ATTRIBUTES_OFFSET);
+        return bbNeighbours.getShort();
+    }
+    public float getDistance(short nIdx){
+        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_DISTANCE_OFFSET);
+        return bbNeighbours.getFloat();
+    }
+    public float getCost(short nIdx){
+        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_COST_OFFSET);
+        return bbNeighbours.getFloat();
     }
 
 

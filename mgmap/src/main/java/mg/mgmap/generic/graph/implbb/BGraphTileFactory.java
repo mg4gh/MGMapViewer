@@ -7,29 +7,25 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.activity.mgmap.MapViewerBase;
+import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.application.util.ElevationProvider;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
+import mg.mgmap.generic.graph.GraphAlgorithm;
+import mg.mgmap.generic.graph.GraphFactory;
 import mg.mgmap.generic.model.BBox;
-import mg.mgmap.generic.model.WriteablePointModel;
-import mg.mgmap.generic.model.WriteablePointModelImpl;
+import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.MemoryUtil;
 
-public class BGraphTileFactory {
+public class BGraphTileFactory implements GraphFactory {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
 
-
-
-    private final WriteablePointModel clipRes = new WriteablePointModelImpl();
-
-
     private final byte ZOOM_LEVEL = 15;
     private final int TILE_SIZE = MapViewerBase.TILE_SIZE;
-    static final int LOW_MEMORY_THRESHOLD = 1;
 
     static int getKey(int tileX,int tileY){
         return ( tileX <<16) + tileY;
@@ -37,27 +33,75 @@ public class BGraphTileFactory {
 
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
-    private boolean wayDetails;
     Pref<String> prefRoutingAlgorithm;
     Pref<Boolean> prefSmooth4Routing;
 
 
     public BGraphTileFactory(){}
 
-    public BGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails, Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing){
+    public BGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
-        this.wayDetails = wayDetails;
         this.prefRoutingAlgorithm = prefRoutingAlgorithm;
         this.prefSmooth4Routing = prefSmooth4Routing;
 
         return this;
     }
 
-    // TODO
-//    public ArrayList<? extends Graph> getGraphList(BBox bBox){
-//        return getBGraphTileList(bBox);
-//    }
+
+    public ArrayList<? extends Graph> getGraphList(BBox bBox){
+        return getBGraphTileList(bBox);
+    }
+
+    @Override
+    public Graph getGraph(PointModel pm1, PointModel pm2) {
+        return null;
+    }
+
+    @Override
+    public ApproachModel calcApproach(PointModel pointModel, int closeThreshold) {
+        return null;
+    }
+
+    @Override
+    public ApproachModel validateApproachModel(ApproachModel approachModel) {
+        return approachModel;
+    }
+
+    @Override
+    public GraphAlgorithm getAlgorithmForGraph(Graph graph, RoutingProfile routingProfile) {
+        return null;
+    }
+
+    @Override
+    public void connectApproach2Graph(Graph graph, ApproachModel approachModel) {
+
+    }
+
+    @Override
+    public void disconnectApproach2Graph(Graph graph, ApproachModel approachModel) {
+
+    }
+
+    @Override
+    public void clearCache() {
+
+    }
+
+    @Override
+    public void resetCosts() {
+
+    }
+
+    @Override
+    public void serviceCache() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
+    }
 
     public ArrayList<BGraphTile> getBGraphTileList(BBox bBox){
         ArrayList<BGraphTile> tileList = new ArrayList<>();
@@ -108,6 +152,7 @@ public class BGraphTileFactory {
         bGraphTile.loadGGraphTile();
         return bGraphTile;
     }
+
 
 
 }
