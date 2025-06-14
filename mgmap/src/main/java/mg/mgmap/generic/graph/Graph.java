@@ -2,8 +2,6 @@ package mg.mgmap.generic.graph;
 
 import java.util.ArrayList;
 
-import mg.mgmap.generic.graph.impl.GNeighbour;
-import mg.mgmap.generic.graph.impl.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
@@ -13,7 +11,7 @@ public interface Graph {
 
     ArrayList<? extends PointModel> getNodes();
 
-    GNeighbour getNeighbour(PointModel node, PointModel neighbourNode);
+    PointNeighbour getNeighbour(PointModel node, PointModel neighbourNode);
 
     PointNeighbour getNextNeighbour(PointModel node, PointNeighbour neighbour);
 
@@ -23,7 +21,7 @@ public interface Graph {
 
     float getCost(PointNeighbour neighbour);
 
-    void finalizeUsage();
+    default void finalizeUsage(){};
 
     default BBox getBBox(){
         return null;

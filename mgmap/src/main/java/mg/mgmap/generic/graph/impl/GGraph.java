@@ -57,7 +57,7 @@ public class GGraph implements Graph {
         return neighbour.getNextNeighbour();
     }
 
-    public GNeighbour getNeighbour(PointModel node, PointModel neighbourNode){
+    public PointNeighbour getNeighbour(PointModel node, PointModel neighbourNode){
         if ((node instanceof GNode gNode) && (neighbourNode instanceof GNode gNeighbourNode)){
             return getNeighbour(gNode, gNeighbourNode);
         }
@@ -198,8 +198,6 @@ public class GGraph implements Graph {
     boolean preNodeRelax(GNode node) {
         return false;
     }
-
-    public void finalizeUsage(){}
 
     public int getTileCount(){
         return -1;
