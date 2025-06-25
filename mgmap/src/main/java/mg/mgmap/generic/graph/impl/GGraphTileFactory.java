@@ -391,7 +391,7 @@ public class GGraphTileFactory implements GraphFactory {
             graph.removeNeighbourTo(nextNeighbour.getNeighbourNode(), nNode);
             graph.addSegment(nextNeighbour.getWayAttributs(),iNode, nextNeighbour.getNeighbourNode());
         }
-        iNode.setFlag(GNode.FLAG_INVALID, true);
+        nNode.setFlag(GNode.FLAG_INVALID, true);
         nNode.getNeighbour().setNextNeighbour(null);
     }
 
