@@ -13,6 +13,7 @@ import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.graph.GraphFactory;
+import mg.mgmap.generic.graph.impl.GGraphTile;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.Pref;
@@ -25,6 +26,7 @@ public class BGraphTileFactory implements GraphFactory {
 
 
     private final byte ZOOM_LEVEL = 15;
+    final static int CACHE_LIMIT = 2000;
     private final int TILE_SIZE = MapViewerBase.TILE_SIZE;
 
     static int getKey(int tileX,int tileY){
@@ -35,7 +37,7 @@ public class BGraphTileFactory implements GraphFactory {
     private ElevationProvider elevationProvider = null;
     Pref<String> prefRoutingAlgorithm;
     Pref<Boolean> prefSmooth4Routing;
-
+    BTileCache bTileCache;
 
     public BGraphTileFactory(){}
 
@@ -45,6 +47,7 @@ public class BGraphTileFactory implements GraphFactory {
         this.prefRoutingAlgorithm = prefRoutingAlgorithm;
         this.prefSmooth4Routing = prefSmooth4Routing;
 
+        bTileCache = new BTileCache(CACHE_LIMIT);
         return this;
     }
 
@@ -103,6 +106,11 @@ public class BGraphTileFactory implements GraphFactory {
 
     }
 
+    ArrayList<BGraphTile> getCached(){
+        return bTileCache.getAll();
+    }
+
+
     public ArrayList<BGraphTile> getBGraphTileList(BBox bBox){
         ArrayList<BGraphTile> tileList = new ArrayList<>();
         try {
@@ -135,17 +143,18 @@ public class BGraphTileFactory implements GraphFactory {
         BGraphTile bGraphTile = null;
         if (load){
             synchronized (this){  // prevent parallel access from routing thread and FSGraphDetails
-                bGraphTile = loadGGraphTile(tileX, tileY);
+                bGraphTile = loadBGraphTile(tileX, tileY);
                 if (prefSmooth4Routing.getValue()){
                     bGraphTile.smoothGraph();
                 }
+                bTileCache.put(tileX, tileY, bGraphTile);
             }
         }
         return bGraphTile;
     }
 
 
-    private BGraphTile loadGGraphTile(int tileX, int tileY){
+    private BGraphTile loadBGraphTile(int tileX, int tileY){
         Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
         mgLog.i(()->"Load tileX=" + tileX + " tileY=" + tileY + " "+tile.getBoundingBox().getCenterPoint());
         BGraphTile bGraphTile = new BGraphTile(wayProvider, elevationProvider, tile);

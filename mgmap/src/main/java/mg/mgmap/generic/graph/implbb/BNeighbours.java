@@ -12,7 +12,8 @@ public class BNeighbours {
 
     final static int NEIGHBOUR_SIZE =
             2   // neighbourPointIndex (as short)
-                    + 2 // neighbourPointIndex  4 bit neighbour tile selector (2 bytes)
+                    + 1 // 4 bit neighbour tile selector (1 bytes)
+                    + 1 // reverse flag (1 bytes)
                     + 2 // next neighbour index
                     + 2 // way attributes index
                     + 4 // distance as float
@@ -38,11 +39,11 @@ public class BNeighbours {
     }
 
 
-    public short createNeighbour(short wayAttributesIdx, short neighbourPointIdx, float distance, byte reverse){
+    public short createNeighbour(short wayAttributesIdx, short neighbourPointIdx, float distance, byte tileSelector, byte reverse){
         short nIdx = neighboursUsed++;
         bbNeighbours.position(NEIGHBOUR_SIZE *nIdx);
         bbNeighbours.putShort(neighbourPointIdx);
-        bbNeighbours.put((byte)0); // NEIGHBOUR_FLAG_TILE_SELECTOR_OFFSET
+        bbNeighbours.put(tileSelector); // NEIGHBOUR_FLAG_TILE_SELECTOR_OFFSET
         bbNeighbours.put(reverse); // NEIGHBOUR_FLAG_REVERSE_OFFSET
         bbNeighbours.putShort((short)0); // next neighbour index
         bbNeighbours.putShort(wayAttributesIdx);
@@ -60,6 +61,12 @@ public class BNeighbours {
     public byte getTileSelector(short nIdx){
         bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_FLAG_TILE_SELECTOR_OFFSET);
         return bbNeighbours.get();
+    }
+    public boolean isReverse(short nIdx){
+        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_FLAG_REVERSE_OFFSET);
+        byte reverse = bbNeighbours.get() ;
+        assert (reverse != 0);
+        return (reverse == REVERSE_PREV);
     }
     public short getReverse(short nIdx){
         bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_FLAG_REVERSE_OFFSET);
@@ -90,6 +97,10 @@ public class BNeighbours {
     public float getCost(short nIdx){
         bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_COST_OFFSET);
         return bbNeighbours.getFloat();
+    }
+    public void setCost(short nIdx, float cost){
+        bbNeighbours.position(nIdx* NEIGHBOUR_SIZE + NEIGHBOUR_COST_OFFSET);
+        bbNeighbours.putFloat(cost);
     }
 
 

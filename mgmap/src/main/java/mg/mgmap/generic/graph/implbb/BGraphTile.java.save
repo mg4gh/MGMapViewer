@@ -4,14 +4,14 @@ import static mg.mgmap.generic.graph.implbb.BNeighbours.NEIGHBOUR_SIZE;
 import static mg.mgmap.generic.graph.implbb.BNeighbours.REVERSE_NEXT;
 import static mg.mgmap.generic.graph.implbb.BNeighbours.REVERSE_NO;
 import static mg.mgmap.generic.graph.implbb.BNeighbours.REVERSE_PREV;
-import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NODE_EAST;
-import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NODE_NORTH;
-import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NODE_SOUTH;
-import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NODE_WEST;
+import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_EAST;
+import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_NORTH;
+import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_SOUTH;
+import static mg.mgmap.generic.graph.implbb.BNodes.BORDER_WEST;
 import static mg.mgmap.generic.graph.implbb.BNodes.FLAG_FIX;
 import static mg.mgmap.generic.graph.implbb.BNodes.FLAG_HEIGHT_RELEVANT;
 import static mg.mgmap.generic.graph.implbb.BNodes.FLAG_VISITED;
-import static mg.mgmap.generic.graph.implbb.BNodes.POINT_SIZE;
+import static mg.mgmap.generic.graph.implbb.BNodes.NODE_SIZE;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
@@ -51,7 +51,7 @@ public class BGraphTileSave {
 
 
 
-    final static byte[] baPointsInit = new byte[POINT_SIZE * MAX_POINTS];
+    final static byte[] baPointsInit = new byte[NODE_SIZE * MAX_POINTS];
     final static ByteBuffer bbPointsInit = ByteBuffer.wrap(baPointsInit);
     final static byte[] baNeighboursInit = new byte[NEIGHBOUR_SIZE * MAX_NEIGHBOURS];
     final static ByteBuffer bbNeighboursInit = ByteBuffer.wrap(baNeighboursInit);
@@ -79,7 +79,7 @@ public class BGraphTileSave {
     final BBox bBox;
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
-    final BGraphTileSave[] neighbourTiles = new BGraphTileSave[BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
+    final BGraphTileSave[] neighbourTiles = new BGraphTileSave[BORDER_WEST +1];//use BORDER constants as index, although some entries stay always null
     boolean init = true; // after initial setup this flag is set to false - access to static arrays is only allowed while init flag is set
 
 
@@ -110,7 +110,7 @@ public class BGraphTileSave {
     @SuppressWarnings("CommentedOutCode")
     synchronized void loadGGraphTile(){ // synchronized to prevent concurrent access to static ByteBuffers
         nodes.init(bbPointsInit);
-        nodes.pointsUsed = 0;
+        nodes.nodesUsed = 0;
         neighbours.init(bbNeighboursInit);
         neighbours.neighboursUsed = 1; // idx 0 is used as "null"
         this.wayAttributes = wayAttributesInit;
@@ -159,7 +159,7 @@ public class BGraphTileSave {
         int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
 //            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
         //all relevant ways are in the map ... try to correct data ...
-        int numPoints = nodes.pointsUsed;
+        int numPoints = nodes.nodesUsed;
         for (short iIdx=0; iIdx<numPoints; iIdx++){ // iIdx is first pointIdx
             int iLat = nodes.getLatitude(iIdx);
             int iLon = nodes.getLongitude(iIdx);
@@ -218,8 +218,8 @@ public class BGraphTileSave {
         }
 
 
-        byte[] baPoints = new byte[nodes.pointsUsed* POINT_SIZE];
-        System.arraycopy(baPointsInit, 0, baPoints, 0, nodes.pointsUsed* POINT_SIZE);
+        byte[] baPoints = new byte[nodes.nodesUsed * NODE_SIZE];
+        System.arraycopy(baPointsInit, 0, baPoints, 0, nodes.nodesUsed * NODE_SIZE);
         nodes.init( ByteBuffer.wrap(baPoints) );
         int numBorderNodes = nodes.countBorderNodes();
         byte[] baNeighbours = new byte[neighbours.neighboursUsed* NEIGHBOUR_SIZE + numBorderNodes*NEIGHBOUR_SIZE * 4]; // numBorderNodes*NEIGHBOUR_SIZE*4 is preserved space for tile interconnect - per interconnect we need two neighbours
@@ -291,10 +291,10 @@ public class BGraphTileSave {
         }
         if (ptIdx < 0){ // point still not found -> create it
             byte borderNode = 0;
-            if (lon == minLon) borderNode |= BORDER_NODE_WEST;
-            if (lon == maxLon) borderNode |= BORDER_NODE_EAST;
-            if (lat == minLat)  borderNode |= BORDER_NODE_SOUTH;
-            if (lat == maxLat)  borderNode |= BORDER_NODE_NORTH;
+            if (lon == minLon) borderNode |= BORDER_WEST;
+            if (lon == maxLon) borderNode |= BORDER_EAST;
+            if (lat == minLat)  borderNode |= BORDER_SOUTH;
+            if (lat == maxLat)  borderNode |= BORDER_NORTH;
             hgtTemp.setLa(lat);
             hgtTemp.setLo(lon);
             elevationProvider.setElevation(hgtTemp);
@@ -361,7 +361,7 @@ public class BGraphTileSave {
 
     void smoothGraph(){
         ArrayList<Short> smoothNeighbourList = new ArrayList<>();
-        for (short pointIdx = 0; pointIdx < nodes.pointsUsed; pointIdx++){
+        for (short pointIdx = 0; pointIdx < nodes.nodesUsed; pointIdx++){
             boolean fix = true;
             if (countNeighbours(pointIdx) == 2){
                 short selfNeighbour = nodes.getNeighbour(pointIdx);
@@ -374,7 +374,7 @@ public class BGraphTileSave {
             nodes.setFlags(pointIdx, FLAG_FIX, fix, FLAG_VISITED, false, FLAG_HEIGHT_RELEVANT, fix);
         }
 
-        for (short aPointIdx = 0; aPointIdx < nodes.pointsUsed; aPointIdx++) {
+        for (short aPointIdx = 0; aPointIdx < nodes.nodesUsed; aPointIdx++) {
             if (nodes.isFlag(aPointIdx, FLAG_FIX)){
                 short minHeightPoint;
                 short maxHeightPoint;

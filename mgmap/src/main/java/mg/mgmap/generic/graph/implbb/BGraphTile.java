@@ -17,8 +17,6 @@ import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.WayAttributs;
 
-import mg.mgmap.generic.graph.impl.GNeighbour;
-import mg.mgmap.generic.graph.impl.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -40,7 +38,7 @@ public class BGraphTile implements Graph{
     public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
     private final static int MD_TILE_SIZE = 10986;
 
-    final static int MAX_POINTS = 8192; // per tile
+    final static int MAX_NODES = 8192; // per tile
 
     final static int MAX_NEIGHBOURS = 8192*8; // per tile
 
@@ -49,18 +47,41 @@ public class BGraphTile implements Graph{
 
 
 
-    final static byte[] baPointsInit = new byte[POINT_SIZE * MAX_POINTS];
-    final static ByteBuffer bbPointsInit = ByteBuffer.wrap(baPointsInit);
+    final static byte[] baNodesInit = new byte[NODE_SIZE * MAX_NODES];
+    final static ByteBuffer bbNodesInit = ByteBuffer.wrap(baNodesInit);
     final static byte[] baNeighboursInit = new byte[NEIGHBOUR_SIZE * MAX_NEIGHBOURS];
     final static ByteBuffer bbNeighboursInit = ByteBuffer.wrap(baNeighboursInit);
 
     static ArrayList<BNode> freeNodes = new ArrayList<>();
     static {
-        for (int i=0; i<MAX_POINTS; i++){
+        for (int i = 0; i< MAX_NODES; i++){
             freeNodes.add(new BNode());
         }
     }
     static TreeMap<BNode, BNode> tmBNodes = new TreeMap<>();
+
+
+    static final byte BORDER_WEST = 0x08;
+    static final byte BORDER_NORTH = 0x04;
+    static final byte BORDER_EAST = 0x02;
+    static final byte BORDER_SOUTH = 0x01;
+    static final byte BORDER_NO = 0x00;
+
+    public static int deltaX(byte border){
+        return switch (border) {
+            case BORDER_WEST -> -1;
+            case BORDER_EAST -> 1;
+            default -> 0;
+        };
+    }
+    public static int deltaY(byte border){
+        return switch (border) {
+            case BORDER_NORTH -> -1;
+            case BORDER_SOUTH -> 1;
+            default -> 0;
+        };
+    }
+
 
 
     final WayProvider wayProvider;
@@ -83,13 +104,14 @@ public class BGraphTile implements Graph{
 
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     private final WriteablePointModel hgtTemp = new WriteablePointModelImpl();
-    final BGraphTile[] neighbourTiles = new BGraphTile[BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
+    final BGraphTile[] neighbourTiles = new BGraphTile[BORDER_WEST +1];//use BORDER constants as index, although some entries stay always null
     boolean init = true; // after initial setup this flag is set to false - access to static arrays is only allowed while init flag is set
 
+    ByteBuffer bbNodeRefs = null;
 
 
 
-    boolean used = false; // used for cache - do not delete from cache
+    short idxInMulti = -1; // idx >= 0 indicated that this tile is part of a BGraphMulti
     long accessTime = 0; // used for cache
 
     BGraphTile(WayProvider wayProvider, ElevationProvider elevationProvider, Tile tile){
@@ -105,6 +127,7 @@ public class BGraphTile implements Graph{
         minLon = LaLo.d2md(bBox.minLongitude);
         maxLon = LaLo.d2md(bBox.maxLongitude);
 
+        neighbourTiles[0] = this;
     }
 
     public int getTileX(){
@@ -119,8 +142,8 @@ public class BGraphTile implements Graph{
 
     @SuppressWarnings("CommentedOutCode")
     synchronized void loadGGraphTile(){ // synchronized to prevent concurrent access to static ByteBuffers
-        nodes.init(bbPointsInit);
-        nodes.pointsUsed = 0;
+        nodes.init(bbNodesInit);
+        nodes.nodesUsed = 0;
         neighbours.init(bbNeighboursInit);
         neighbours.neighboursUsed = 1; // idx 0 is used as "null"
         this.wayAttributes = wayAttributesInit;
@@ -173,7 +196,7 @@ public class BGraphTile implements Graph{
         int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
 //            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
         //all relevant ways are in the map ... try to correct data ...
-        int numPoints = nodes.pointsUsed;
+        int numPoints = nodes.nodesUsed;
         BNode iBNode = tmBNodes.firstKey();
         short iiIdx = 0;
         while (iBNode != null){
@@ -230,9 +253,10 @@ public class BGraphTile implements Graph{
 //        }
 
 
-        byte[] baPoints = new byte[nodes.pointsUsed* POINT_SIZE];
-        System.arraycopy(baPointsInit, 0, baPoints, 0, nodes.pointsUsed* POINT_SIZE);
+        byte[] baPoints = new byte[nodes.nodesUsed * NODE_SIZE];
+        System.arraycopy(baNodesInit, 0, baPoints, 0, nodes.nodesUsed * NODE_SIZE);
         nodes.init( ByteBuffer.wrap(baPoints) );
+        // nodesUsed is already set from the init phase
         int numBorderNodes = nodes.countBorderNodes();
         byte[] baNeighbours = new byte[neighbours.neighboursUsed* NEIGHBOUR_SIZE + numBorderNodes*NEIGHBOUR_SIZE * 4]; // numBorderNodes*NEIGHBOUR_SIZE*4 is preserved space for tile interconnect - per interconnect we need two neighbours
         System.arraycopy(baNeighboursInit, 0, baNeighbours, 0, neighbours.neighboursUsed* NEIGHBOUR_SIZE);
@@ -242,7 +266,7 @@ public class BGraphTile implements Graph{
 
         freeNodes.addAll(tmBNodes.keySet());
         tmBNodes.clear();
-        assert (freeNodes.size() == MAX_POINTS);
+        assert (freeNodes.size() == MAX_NODES);
         init = false;
     }
 
@@ -287,17 +311,17 @@ public class BGraphTile implements Graph{
         if (existingBNode == null){
 
             byte borderNode = 0;
-            if (lon == minLon) borderNode |= BORDER_NODE_WEST;
-            if (lon == maxLon) borderNode |= BORDER_NODE_EAST;
-            if (lat == minLat)  borderNode |= BORDER_NODE_SOUTH;
-            if (lat == maxLat)  borderNode |= BORDER_NODE_NORTH;
+            if (lon == minLon) borderNode |= BORDER_WEST;
+            if (lon == maxLon) borderNode |= BORDER_EAST;
+            if (lat == minLat)  borderNode |= BORDER_SOUTH;
+            if (lat == maxLat)  borderNode |= BORDER_NORTH;
 
             hgtTemp.setLa(lat);
             hgtTemp.setLo(lon);
             elevationProvider.setElevation(hgtTemp);
 
             ptIdx = nodes.createNode(lat, lon, hgtTemp.getEle(), borderNode);
-            short ptNIdx = neighbours.createNeighbour((short)-1, ptIdx, 0, REVERSE_NO);
+            short ptNIdx = neighbours.createNeighbour((short)-1, ptIdx, 0, BORDER_NO, REVERSE_NO);
             nodes.setNeighbour(ptIdx, ptNIdx);
 
             nodes.setEle(ptIdx, hgtTemp.getEle());
@@ -343,6 +367,23 @@ public class BGraphTile implements Graph{
         }
     }
 
+    // remove neighbours to tile with given selector
+    public void removeNeighbourToTile(short nodeIdx, byte neighbourTileSelector) { // assume both points are in same tile
+        short nIdx = nodes.getNeighbour(nodeIdx);
+
+        short lastNIdx = nIdx;
+        while ((nIdx = neighbours.getNextNeighbour(nIdx)) != 0){
+            short npIdx = neighbours.getNeighbourPoint(nIdx);
+            short nnIdx = neighbours.getNextNeighbour(nIdx);
+            byte tileSelector = neighbours.getTileSelector(nIdx);
+            if (tileSelector == neighbourTileSelector){
+                neighbours.setNextNeighbour(lastNIdx, nnIdx);
+                break;
+            }
+            lastNIdx = nIdx;
+        }
+    }
+
 
 
 
@@ -353,7 +394,7 @@ public class BGraphTile implements Graph{
 
     void smoothGraph(){
         ArrayList<Short> smoothNeighbourList = new ArrayList<>();
-        for (short pointIdx = 0; pointIdx < nodes.pointsUsed; pointIdx++){
+        for (short pointIdx = 0; pointIdx < nodes.nodesUsed; pointIdx++){
             boolean fix = true;
             if (countNeighbours(pointIdx) == 2){
                 short selfNeighbour = nodes.getNeighbour(pointIdx);
@@ -366,7 +407,7 @@ public class BGraphTile implements Graph{
             nodes.setFlags(pointIdx, FLAG_FIX, fix, FLAG_VISITED, false, FLAG_HEIGHT_RELEVANT, fix);
         }
 
-        for (short aPointIdx = 0; aPointIdx < nodes.pointsUsed; aPointIdx++) {
+        for (short aPointIdx = 0; aPointIdx < nodes.nodesUsed; aPointIdx++) {
             if (nodes.isFlag(aPointIdx, FLAG_FIX)){
                 short minHeightPoint;
                 short maxHeightPoint;
@@ -534,14 +575,28 @@ public class BGraphTile implements Graph{
     }
 
     void addSegment(short wayAttributesIdx, short pt1Idx, short pt2Idx) {
-        mgLog.d(String.format(Locale.ENGLISH, "addSegment widx=%d pt1Idx=%d pt2Idx=%d",wayAttributesIdx,pt1Idx,pt2Idx ));
+        addSegment(wayAttributesIdx, pt1Idx, this, pt2Idx, BORDER_NO);
+//        mgLog.d(String.format(Locale.ENGLISH, "addSegment widx=%d pt1Idx=%d pt2Idx=%d",wayAttributesIdx,pt1Idx,pt2Idx ));
+//        double dLat1 = LaLo.md2d(nodes.getLatitude(pt1Idx));
+//        double dLon1 = LaLo.md2d(nodes.getLongitude(pt1Idx));
+//        double dLat2 = LaLo.md2d(nodes.getLatitude(pt2Idx));
+//        double dLon2 = LaLo.md2d(nodes.getLongitude(pt2Idx));
+//        double distance = PointModelUtil.distance(dLat1, dLon1, dLat2, dLon2);
+//        short n12Idx = neighbours.createNeighbour(wayAttributesIdx, pt2Idx, (float) distance, REVERSE_NEXT);
+//        short n21Idx = neighbours.createNeighbour(wayAttributesIdx, pt1Idx, (float) distance, REVERSE_PREV);
+//        addNeighbour(pt1Idx, n12Idx);
+//        addNeighbour(pt2Idx, n21Idx);
+    }
+
+    void addSegment(short wayAttributesIdx, short pt1Idx, BGraphTile bGraphTile2, short pt2Idx, byte bGraphTile2Selector) {
+        mgLog.d(String.format(Locale.ENGLISH, "addSegment wIdx=%d pt1Idx=%d tileIdx2=%d pt2Idx=%d",wayAttributesIdx,pt1Idx,bGraphTile2.tileIdx, pt2Idx ));
         double dLat1 = LaLo.md2d(nodes.getLatitude(pt1Idx));
         double dLon1 = LaLo.md2d(nodes.getLongitude(pt1Idx));
-        double dLat2 = LaLo.md2d(nodes.getLatitude(pt2Idx));
-        double dLon2 = LaLo.md2d(nodes.getLongitude(pt2Idx));
+        double dLat2 = LaLo.md2d(bGraphTile2.nodes.getLatitude(pt2Idx));
+        double dLon2 = LaLo.md2d(bGraphTile2.nodes.getLongitude(pt2Idx));
         double distance = PointModelUtil.distance(dLat1, dLon1, dLat2, dLon2);
-        short n12Idx = neighbours.createNeighbour(wayAttributesIdx, pt2Idx, (float) distance, REVERSE_NEXT);
-        short n21Idx = neighbours.createNeighbour(wayAttributesIdx, pt1Idx, (float) distance, REVERSE_PREV);
+        short n12Idx = neighbours.createNeighbour(wayAttributesIdx, pt2Idx, (float) distance, bGraphTile2Selector, REVERSE_NEXT);
+        short n21Idx = neighbours.createNeighbour(wayAttributesIdx, pt1Idx, (float) distance, bGraphTile2Selector, REVERSE_PREV);
         addNeighbour(pt1Idx, n12Idx);
         addNeighbour(pt2Idx, n21Idx);
     }
@@ -590,7 +645,7 @@ public class BGraphTile implements Graph{
     @Override
     public ArrayList<? extends PointModel> getNodes() {
         ArrayList<BNode> bNodes = new ArrayList<>();
-        for (short nIdx=0; nIdx<nodes.pointsUsed; nIdx++){
+        for (short nIdx = 0; nIdx<nodes.nodesUsed; nIdx++){
             if (!nodes.isFlag(nIdx, FLAG_INVALID)){
                 bNodes.add( new BNode(this, nIdx) );
             }
@@ -673,6 +728,24 @@ public class BGraphTile implements Graph{
     @Override
     public BBox getBBox() {
         return bBox;
+    }
+
+    public void createNodeRefs(){
+        byte[] baNodeRefs = new byte[ nodes.nodesUsed * 4 * 2 ]; // nodeRef + reverse nodeRef per node as 4 byte index to BNodesRef
+        bbNodeRefs = ByteBuffer.wrap(baNodeRefs);
+        bbNodeRefs.position(0);
+        for (int i=0; i<nodes.nodesUsed * 2; i++){
+            bbNodeRefs.putInt(-1);
+        }
+    }
+
+    int getNodeRef(short node, boolean reverse){
+        bbNodeRefs.position(node * 4 * 2 + (reverse? 4 : 0 ));
+        return bbNodeRefs.getInt();
+    }
+    void setNodeRef(short node, boolean reverse, int nodeRef){
+        bbNodeRefs.position(node * 4 * 2 + (reverse? 4 : 0 ));
+        bbNodeRefs.putInt(nodeRef);
     }
 
 

@@ -19,14 +19,12 @@ import mg.mgmap.generic.graph.impl.GGraphTileFactory;
 import mg.mgmap.generic.graph.impl.GNeighbour;
 import mg.mgmap.generic.graph.impl.GNode;
 import mg.mgmap.generic.model.BBox;
-import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.MemoryUtil;
 
 public class BGraphTest {
 
@@ -35,24 +33,26 @@ public class BGraphTest {
     @Test
     public void _01_tile_nodes() {
         PointModelUtil.init(32);
-        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+//        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
         MGLog.setUnittest(true);
         mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
         ElevationProvider elevationProvider = new ElevationProviderImplHelper();
-        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+//        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        File mapFile = new File("src/test/assets/map_local/Germany-South_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath() + " " + mapFile.exists());
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
 //        BBox bBox = new BBox().extend(49.0, 8.0);
-//        BBox bBox = new BBox().extend(49.0, 8.0).extend(49.3, 8.3);
+        BBox bBox = new BBox().extend(49.0, 8.0).extend(49.3, 8.3);
 //        BBox bBox = new BBox().extend(49.699614769647766, 8.0914306640625);
-        BBox bBox = new BBox().extend(49.301260,8.089355);
+//        BBox bBox = new BBox().extend(49.301260,8.089355);
+//        BBox bBox = new BBox().extend(49.282140,8.001331).extend(50);
 
         GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
         ArrayList<GGraphTile> gGraphTiles = gGraphTileFactory.getGGraphTileList(bBox);
-        BGraphTileFactory bGraphTileFactory = new BGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
+        BGraphTileFactory bGraphTileFactory = new BGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(""), new Pref<>(false));
         ArrayList<BGraphTile> bGraphTiles = bGraphTileFactory.getBGraphTileList(bBox);
 
         assert (gGraphTiles.size() == bGraphTiles.size()):"g="+gGraphTiles.size()+" b="+bGraphTiles.size();
@@ -62,7 +62,7 @@ public class BGraphTest {
 
             ArrayList<GNode> gNodes = new ArrayList<>( gGraphTile.getGNodes() );
             int invalidPoints = 0;
-            for (short nodeIdx=0; nodeIdx<bGraphTile.nodes.pointsUsed; nodeIdx++){
+            for (short nodeIdx = 0; nodeIdx<bGraphTile.nodes.nodesUsed; nodeIdx++){
                 mgLog.d("XXXX iTile="+iTile+" nodeIdx="+nodeIdx);
                 if (isValid(bGraphTile, nodeIdx)){
                     GNode gNode = identifyGNode(gNodes, bGraphTile, nodeIdx);
@@ -71,7 +71,7 @@ public class BGraphTest {
                     invalidPoints ++;
                 }
             }
-            Assert.assertEquals (gNodes.size() , bGraphTile.nodes.pointsUsed - invalidPoints);
+            Assert.assertEquals (gNodes.size() , bGraphTile.nodes.nodesUsed - invalidPoints);
 
         }
 
@@ -80,24 +80,29 @@ public class BGraphTest {
 
     }
 
-    TreeSet<GNode> neighbours(GNode gNode){
+    TreeSet<GNode> neighbours(GNode gNode, boolean ignoreNeighbourTile){
         TreeSet<GNode> res = new TreeSet<>();
         GNeighbour xNeighbour = gNode.getNeighbour();
         while (xNeighbour != null){
-            mgLog.d("GN: "+xNeighbour.getNeighbourNode());
-            res.add(xNeighbour.getNeighbourNode());
+            mgLog.d("GN: "+xNeighbour.getNeighbourNode()+" "+xNeighbour.getNeighbourNode().tileIdx);
+            GNode xNode = xNeighbour.getNeighbourNode();
+            if (!ignoreNeighbourTile || (gNode.tileIdx == xNode.tileIdx)){
+                res.add(xNeighbour.getNeighbourNode());
+            }
             xNeighbour = xNeighbour.getNextNeighbour();
         }
         return res;
     }
-    TreeSet<PointModelImpl> neighbours(BGraphTile bGraphTile, short nodeIdx){
+    TreeSet<PointModelImpl> neighbours(BGraphTile bGraphTile, short nodeIdx, boolean ignoreNeighbourTile){
         TreeSet<PointModelImpl> res = new TreeSet<>();
         short xNeighbour = bGraphTile.nodes.getNeighbour(nodeIdx);
         while (xNeighbour != 0){
             short gnn = bGraphTile.neighbours.getNeighbourPoint(xNeighbour);
             PointModelImpl pmi = PointModelImpl.createFromLaLo( bGraphTile.nodes.getLatitude(gnn), bGraphTile.nodes.getLongitude(gnn) );
             mgLog.d("BN: "+pmi);
-            res.add(pmi);
+            if (!ignoreNeighbourTile || (bGraphTile.neighbours.getTileSelector(xNeighbour) == 0)){
+                res.add(pmi);
+            }
             xNeighbour = bGraphTile.neighbours.getNextNeighbour(xNeighbour);
         }
         return res;
@@ -110,8 +115,8 @@ public class BGraphTest {
     void deepCompare( GNode gNode, BGraphTile bGraphTile, short bNode, boolean ignoreNeighbourTile){
         int level = 0;
         compare(gNode, bGraphTile, bNode, level++);
-        TreeSet<GNode> gNeighbours = neighbours(gNode);
-        TreeSet<PointModelImpl> bNeighbours = neighbours(bGraphTile, bNode);
+        TreeSet<GNode> gNeighbours = neighbours(gNode, ignoreNeighbourTile);
+        TreeSet<PointModelImpl> bNeighbours = neighbours(bGraphTile, bNode, ignoreNeighbourTile);
         assert (gNeighbours.size() == bNeighbours.size()):gNeighbours.size()+" "+ bNeighbours.size();
         while (!gNeighbours.isEmpty()){
             GNode first = gNeighbours.first();
