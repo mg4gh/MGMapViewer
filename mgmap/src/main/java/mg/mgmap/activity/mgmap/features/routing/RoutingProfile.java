@@ -45,7 +45,7 @@ public abstract class RoutingProfile {
     public double heuristic(PointModel node1, PointModel node2){
         return heuristic(PointModelUtil.distance(node1, node2), PointModelUtil.verticalDistance(node1,node2));
     }
-    protected double heuristic(double distance, float verticalDistance){
+    public double heuristic(double distance, float verticalDistance){
         return costCalculator.heuristic(distance,verticalDistance);
     }
 
