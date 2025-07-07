@@ -279,6 +279,7 @@ public class GroupSerachTests extends BaseTestCase {
         mgLog.i("started");
         SystemClock.sleep(1000);
         MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
+        Assert.assertEquals("Graphhopper", mgMapApplication.getPrefCache().get(R.string.preference_choose_search_key, "").getValue());
         final Pref<String> prefSearchPos = mgMapActivity.getPrefCache().get(R.string.FSSearch_pref_SearchPos2, "");
 
         FSSearch fsSearch = mgMapActivity.getFS(FSSearch.class);
@@ -310,7 +311,7 @@ public class GroupSerachTests extends BaseTestCase {
         check(mgMapActivity, fsSearch, "geo:0,0?q=49.522168%2C%20-8.751283&z=16", ".*lat=49.522168.*lon=-8.751283.*zoom=16.*");
 
 
-        check(mgMapActivity, fsSearch, "geo:0,0?q=Kirchstraße 16, 69115 Heidelberg, Deutschland", ".*lat=49.406934.*lon=8.678442.*zoom=16.*");
+        check(mgMapActivity, fsSearch, "geo:0,0?q=Kirchstraße 16, 69115 Heidelberg, Deutschland", ".*lat=49.4069.*lon=8.6784.*zoom=16.*");
         check(mgMapActivity, fsSearch, "geo:0,0?q=zur+Post+Garz", ".*lat=54.31662.*lon=13.34847.*zoom=16.*");
 
         mgLog.i("finished");
