@@ -173,7 +173,8 @@ public class BGraphTile implements Graph{
 //                }
             }
         }
-        mgLog.i("XXXX optimize BGraph -- wayAttributesUsed="+wayAttributesUsed);
+//        mgLog.i("XXXX optimize BGraph -- wayAttributesUsed="+wayAttributesUsed);
+
 //        short xxxGN = getAddPoint(49300645, 8089221);
 //        short xxxGN = getAddPoint(49702800, 8086710);
 //        mgLog.d("xxxy1 "+countNeighbours(xxxGN) );
@@ -187,7 +188,7 @@ public class BGraphTile implements Graph{
         BNode aiBNode = tmBNodes.firstKey();
         int ai = 0;
         while (aiBNode != null){
-            mgLog.d(String.format(Locale.ENGLISH,"yyyy %4d lat=%.6f,lon=%.6f", ai,aiBNode.getLat()/1000000.0,aiBNode.getLon()/1000000.0));
+//            mgLog.d(String.format(Locale.ENGLISH,"yyyy %4d lat=%.6f,lon=%.6f", ai,aiBNode.getLat()/1000000.0,aiBNode.getLon()/1000000.0));
             aiBNode = tmBNodes.higherKey(aiBNode);
             ai++;
         }
@@ -321,12 +322,12 @@ public class BGraphTile implements Graph{
             elevationProvider.setElevation(hgtTemp);
 
             ptIdx = nodes.createNode(lat, lon, hgtTemp.getEle(), borderNode);
-            short ptNIdx = neighbours.createNeighbour((short)-1, ptIdx, 0, BORDER_NO, REVERSE_NO);
+            short ptNIdx = neighbours.createNeighbour((short)-1, ptIdx, 0, BORDER_NO, PRIMARY_NA);
             nodes.setNeighbour(ptIdx, ptNIdx);
 
             nodes.setEle(ptIdx, hgtTemp.getEle());
             final short ppp = ptIdx;
-            mgLog.d(()->String.format(Locale.ENGLISH, "addNode idx=%d lat=%.6f lon=%.6f ",ppp, LaLo.md2d(lat),LaLo.md2d(lon) ));
+//            mgLog.d(()->String.format(Locale.ENGLISH, "addNode idx=%d lat=%.6f lon=%.6f ",ppp, LaLo.md2d(lat),LaLo.md2d(lon) ));
         } else {
             freeNodes.add(bNode);
             ptIdx = existingBNode.nodeIdx;
@@ -561,7 +562,7 @@ public class BGraphTile implements Graph{
             nIdx = nnIdx;
         }
         neighbours.setNextNeighbour(nIdx, neighbourIdx);
-        mgLog.d(String.format(Locale.ENGLISH, "addNeighbour point=%d neighbour=%d ",pointIdx,neighbourIdx ));
+//        mgLog.d(String.format(Locale.ENGLISH, "addNeighbour point=%d neighbour=%d ",pointIdx,neighbourIdx ));
     }
 
 
@@ -589,16 +590,18 @@ public class BGraphTile implements Graph{
     }
 
     void addSegment(short wayAttributesIdx, short pt1Idx, BGraphTile bGraphTile2, short pt2Idx, byte bGraphTile2Selector) {
-        mgLog.d(String.format(Locale.ENGLISH, "addSegment wIdx=%d pt1Idx=%d tileIdx2=%d pt2Idx=%d",wayAttributesIdx,pt1Idx,bGraphTile2.tileIdx, pt2Idx ));
+//        mgLog.d(String.format(Locale.ENGLISH, "addSegment wIdx=%d pt1Idx=%d tileIdx2=%d pt2Idx=%d",wayAttributesIdx,pt1Idx,bGraphTile2.tileIdx, pt2Idx ));
         double dLat1 = LaLo.md2d(nodes.getLatitude(pt1Idx));
         double dLon1 = LaLo.md2d(nodes.getLongitude(pt1Idx));
         double dLat2 = LaLo.md2d(bGraphTile2.nodes.getLatitude(pt2Idx));
         double dLon2 = LaLo.md2d(bGraphTile2.nodes.getLongitude(pt2Idx));
         double distance = PointModelUtil.distance(dLat1, dLon1, dLat2, dLon2);
-        short n12Idx = neighbours.createNeighbour(wayAttributesIdx, pt2Idx, (float) distance, bGraphTile2Selector, REVERSE_NEXT);
-        short n21Idx = neighbours.createNeighbour(wayAttributesIdx, pt1Idx, (float) distance, bGraphTile2Selector, REVERSE_PREV);
+        short n12Idx = neighbours.createNeighbour(wayAttributesIdx, pt2Idx, (float) distance, bGraphTile2Selector, PRIMARY_YES);
+        short n21Idx = neighbours.createNeighbour(wayAttributesIdx, pt1Idx, (float) distance, bGraphTile2Selector, (this==bGraphTile2)?PRIMARY_NO:PRIMARY_YES); // for tile connectors use always PRIMARY_YES
         addNeighbour(pt1Idx, n12Idx);
-        addNeighbour(pt2Idx, n21Idx);
+        if (this == bGraphTile2){
+            addNeighbour(pt2Idx, n21Idx); // if segment is to another tile, then you cannot add the reverse neighbour to the node here - in this case the add segment is called 2nd time for the other tle
+        }
     }
 
 

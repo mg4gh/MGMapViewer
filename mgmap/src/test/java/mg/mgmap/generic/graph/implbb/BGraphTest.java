@@ -13,12 +13,15 @@ import java.util.TreeSet;
 
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImplHelper;
+import mg.mgmap.application.util.ElevationProviderImplHelper2;
+import mg.mgmap.application.util.HgtProvider2;
 import mg.mgmap.application.util.WayProviderHelper;
 import mg.mgmap.generic.graph.impl.GGraphTile;
 import mg.mgmap.generic.graph.impl.GGraphTileFactory;
 import mg.mgmap.generic.graph.impl.GNeighbour;
 import mg.mgmap.generic.graph.impl.GNode;
 import mg.mgmap.generic.model.BBox;
+import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.Pref;
@@ -46,14 +49,25 @@ public class BGraphTest {
         WayProvider wayProvider = new WayProviderHelper(mds);
 //        BBox bBox = new BBox().extend(49.0, 8.0);
         BBox bBox = new BBox().extend(49.0, 8.0).extend(49.3, 8.3);
+//        PointModelImpl pm1 = new PointModelImpl(49.402665, 8.686337);
+//        PointModelImpl pm2 = new PointModelImpl(49.404388, 8.685524);
+//        BBox bBox = new BBox().extend(pm1).extend(pm2);
 //        BBox bBox = new BBox().extend(49.699614769647766, 8.0914306640625);
 //        BBox bBox = new BBox().extend(49.301260,8.089355);
 //        BBox bBox = new BBox().extend(49.282140,8.001331).extend(50);
 
         GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
+        long ts1g = System.currentTimeMillis();
         ArrayList<GGraphTile> gGraphTiles = gGraphTileFactory.getGGraphTileList(bBox);
+        long ts2g = System.currentTimeMillis();
         BGraphTileFactory bGraphTileFactory = new BGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(""), new Pref<>(false));
+        long ts1b = System.currentTimeMillis();
         ArrayList<BGraphTile> bGraphTiles = bGraphTileFactory.getBGraphTileList(bBox);
+        long ts2b = System.currentTimeMillis();
+
+        mgLog.i("XXXX g Duration="+(ts2g-ts1g)+" b Duration="+(ts2b-ts1b));
+
+
 
         assert (gGraphTiles.size() == bGraphTiles.size()):"g="+gGraphTiles.size()+" b="+bGraphTiles.size();
         for (int iTile=0; iTile < gGraphTiles.size(); iTile++){
@@ -66,7 +80,7 @@ public class BGraphTest {
                 mgLog.d("XXXX iTile="+iTile+" nodeIdx="+nodeIdx);
                 if (isValid(bGraphTile, nodeIdx)){
                     GNode gNode = identifyGNode(gNodes, bGraphTile, nodeIdx);
-                    deepCompare(gNode, bGraphTile, nodeIdx, true);
+                    deepCompare(gNode, bGraphTile, nodeIdx, false);
                 } else {
                     invalidPoints ++;
                 }
@@ -80,12 +94,15 @@ public class BGraphTest {
 
     }
 
-    TreeSet<GNode> neighbours(GNode gNode, boolean ignoreNeighbourTile){
-        TreeSet<GNode> res = new TreeSet<>();
+    ArrayList<GNode> neighbours(GNode gNode, boolean ignoreNeighbourTile){
+        ArrayList<GNode> res = new ArrayList<>();
         GNeighbour xNeighbour = gNode.getNeighbour();
         while (xNeighbour != null){
             mgLog.d("GN: "+xNeighbour.getNeighbourNode()+" "+xNeighbour.getNeighbourNode().tileIdx);
             GNode xNode = xNeighbour.getNeighbourNode();
+            if (gNode.tileIdx != xNode.tileIdx){
+                mgLog.d("XXX different Tile");
+            }
             if (!ignoreNeighbourTile || (gNode.tileIdx == xNode.tileIdx)){
                 res.add(xNeighbour.getNeighbourNode());
             }
@@ -93,14 +110,19 @@ public class BGraphTest {
         }
         return res;
     }
-    TreeSet<PointModelImpl> neighbours(BGraphTile bGraphTile, short nodeIdx, boolean ignoreNeighbourTile){
-        TreeSet<PointModelImpl> res = new TreeSet<>();
+    ArrayList<PointModelImpl> neighbours(BGraphTile bGraphTile, short nodeIdx, boolean ignoreNeighbourTile){
+        ArrayList<PointModelImpl> res = new ArrayList<>();
         short xNeighbour = bGraphTile.nodes.getNeighbour(nodeIdx);
         while (xNeighbour != 0){
-            short gnn = bGraphTile.neighbours.getNeighbourPoint(xNeighbour);
-            PointModelImpl pmi = PointModelImpl.createFromLaLo( bGraphTile.nodes.getLatitude(gnn), bGraphTile.nodes.getLongitude(gnn) );
+            byte tileSelector = bGraphTile.neighbours.getTileSelector(xNeighbour);
+            BGraphTile neighbourTile = bGraphTile;
+            if (tileSelector != 0){
+                neighbourTile = bGraphTile.neighbourTiles[tileSelector];
+            }
+            short neighbourNode = bGraphTile.neighbours.getNeighbourPoint(xNeighbour);
+            PointModelImpl pmi = PointModelImpl.createFromLaLo( neighbourTile.nodes.getLatitude(neighbourNode), neighbourTile.nodes.getLongitude(neighbourNode) );
             mgLog.d("BN: "+pmi);
-            if (!ignoreNeighbourTile || (bGraphTile.neighbours.getTileSelector(xNeighbour) == 0)){
+            if (!ignoreNeighbourTile || tileSelector == 0){
                 res.add(pmi);
             }
             xNeighbour = bGraphTile.neighbours.getNextNeighbour(xNeighbour);
@@ -115,13 +137,18 @@ public class BGraphTest {
     void deepCompare( GNode gNode, BGraphTile bGraphTile, short bNode, boolean ignoreNeighbourTile){
         int level = 0;
         compare(gNode, bGraphTile, bNode, level++);
-        TreeSet<GNode> gNeighbours = neighbours(gNode, ignoreNeighbourTile);
-        TreeSet<PointModelImpl> bNeighbours = neighbours(bGraphTile, bNode, ignoreNeighbourTile);
+        ArrayList<GNode> gNeighbours = neighbours(gNode, ignoreNeighbourTile);
+        ArrayList<PointModelImpl> bNeighbours = neighbours(bGraphTile, bNode, ignoreNeighbourTile);
+        if (gNeighbours.size() != bNeighbours.size()){
+            mgLog.d( );
+        };
         assert (gNeighbours.size() == bNeighbours.size()):gNeighbours.size()+" "+ bNeighbours.size();
         while (!gNeighbours.isEmpty()){
-            GNode first = gNeighbours.first();
-            gNeighbours.remove(first);
-            bNeighbours.remove(first);
+            GNode firstG = gNeighbours.get(0);
+            PointModel firstB = bNeighbours.get(0);
+            Assert.assertEquals(firstG, firstB);
+            gNeighbours.remove(firstG);
+            bNeighbours.remove(firstB);
         }
         assert(bNeighbours.isEmpty());
 

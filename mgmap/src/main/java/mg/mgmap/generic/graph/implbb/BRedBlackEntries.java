@@ -140,7 +140,10 @@ public abstract class BRedBlackEntries extends BBufferedEntries{
     }
     protected void insert(int idx, int treeIdx){
         int cRes = compareTo(idx, treeIdx);
-        assert cRes != 0;
+        if (cRes == 0){
+            System.out.println(1);
+        }
+        assert cRes != 0 : "idx="+idx+" treeIdx="+treeIdx;
         ByteBuffer bb = getBuf4Idx(treeIdx);
         int pos = bb.position() + entrySize + ((cRes < 0)?RB_LEFT_OFFSET:RB_RIGHT_OFFSET);
         bb.position(pos);

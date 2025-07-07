@@ -7,16 +7,21 @@ import org.mapsforge.map.reader.MapFile;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S2;
+import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S2_Spline;
 import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImplHelper;
+import mg.mgmap.application.util.ElevationProviderImplHelper2;
+import mg.mgmap.application.util.HgtProvider2;
 import mg.mgmap.application.util.WayProviderHelper;
 import mg.mgmap.generic.graph.impl.AStar;
 import mg.mgmap.generic.graph.impl.ApproachModelImpl;
@@ -31,6 +36,7 @@ import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Pref;
@@ -40,6 +46,50 @@ import mg.mgmap.generic.util.gpx.GpxExporter;
 
 
 public class RoutingTest {
+
+    @Test
+    public void _00_routing() {
+
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+        MGLog.setUnittest(true);
+
+        PointModelUtil.init(32);
+        RoutingContext interactiveRoutingContext = new RoutingContext(
+                10000,
+                false, // no extra snap, since FSMarker snaps point zoom level dependent
+                10, // accept long detours in interactive mode
+                1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
+
+        ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
+        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
+
+        WriteablePointModelImpl wpmi1 = new WriteablePointModelImpl(49.392927, 8.707837);
+        elevationProvider.setElevation(wpmi1);
+
+        MapDataStore mds = new MapFile(mapFile, "de");
+        WayProvider wayProvider = new WayProviderHelper(mds);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true));
+
+        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
+        routingEngine.setRoutingProfile(new MTB_K2S2());
+        routingEngine.refreshRequired.set(0);
+
+        {   // einfache Strecke Nahe Spyrer Hof
+            WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
+            mtl.startTrack(1L);
+            mtl.startSegment(2L);
+
+
+            mtl.addPoint(new PointModelImpl(49.402665, 8.686337));
+            mtl.addPoint(new PointModelImpl(49.392902, 8.707811));
+
+            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
+            String statistic = rotl.getTrackStatistic().toString();
+            System.out.println( statistic);
+
+        }
+    }
 
     @Test
     public void _01_routing() {

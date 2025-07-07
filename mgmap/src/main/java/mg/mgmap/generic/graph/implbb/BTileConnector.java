@@ -45,21 +45,26 @@ public class BTileConnector {
 
         byte borderSelector1 = BORDER_NO;
         byte borderSelector2 = BORDER_NO;
-        if (bGraphTile1.tile.tileX +1 == bGraphTile2.tileIdx){
+        if (bGraphTile1.tile.tileX +1 == bGraphTile2.tile.tileX){
+            assert (bGraphTile1.tile.tileY == bGraphTile2.tile.tileY);
             borderSelector1 = BORDER_EAST;
             borderSelector2 = BORDER_WEST;
-        } else if (bGraphTile1.neighbourTiles[BORDER_WEST] == bGraphTile2){
+        } else if (bGraphTile1.tile.tileX -1 == bGraphTile2.tile.tileX){
+            assert (bGraphTile1.tile.tileY == bGraphTile2.tile.tileY);
             borderSelector1 = BORDER_WEST;
             borderSelector2 = BORDER_EAST;
-        } else if (bGraphTile1.neighbourTiles[BORDER_SOUTH] == bGraphTile2){
+        } else if (bGraphTile1.tile.tileY +1 == bGraphTile2.tile.tileY){
+            assert (bGraphTile1.tile.tileX == bGraphTile2.tile.tileX);
             borderSelector1 = BORDER_SOUTH;
             borderSelector2 = BORDER_NORTH;
-        } else if (bGraphTile1.neighbourTiles[BORDER_NORTH] == bGraphTile2){
+        } else if (bGraphTile1.tile.tileY -1 == bGraphTile2.tile.tileY){
+            assert (bGraphTile1.tile.tileX == bGraphTile2.tile.tileX);
             borderSelector1 = BORDER_NORTH;
             borderSelector2 = BORDER_SOUTH;
         }
 
         double connectAt = (horizontal)?bGraphTile1.bBox.maxLongitude:bGraphTile1.bBox.minLatitude;
+        int connectAtMd = LaLo.d2md(connectAt);
         if (horizontal? (connectAt!=bGraphTile2.bBox.minLongitude):(connectAt!=bGraphTile2.bBox.maxLatitude)){
             throw new IllegalArgumentException("cannot connectHorizontal Tiles with BB " + bGraphTile1.bBox +" and "+bGraphTile2.bBox);
         }
@@ -70,31 +75,36 @@ public class BTileConnector {
         int numBorderNodes2 = 0;
 
         for (short i=0; i<bGraphTile1.nodes.nodesUsed; i++) {
-            if ((horizontal) ? (bGraphTile1.nodes.getLongitude(i) == connectAt) : (bGraphTile1.nodes.getLatitude(i) == connectAt)) {
+            if ((horizontal) ? (bGraphTile1.nodes.getLongitude(i) == connectAtMd) : (bGraphTile1.nodes.getLatitude(i) == connectAtMd)) {
                 borderNodeIndexes1[numBorderNodes1++] = i;
             }
         }
         for (short i=0; i<bGraphTile2.nodes.nodesUsed; i++) {
-            if ((horizontal) ? (bGraphTile2.nodes.getLongitude(i) == connectAt) : (bGraphTile2.nodes.getLatitude(i) == connectAt)) {
+            if ((horizontal) ? (bGraphTile2.nodes.getLongitude(i) == connectAtMd) : (bGraphTile2.nodes.getLatitude(i) == connectAtMd)) {
                 borderNodeIndexes2[numBorderNodes2++] = i;
             }
         }
         double threshold = (horizontal)? PointModelUtil.latitudeDistance(CONNECT_THRESHOLD_METER):PointModelUtil.longitudeDistance(CONNECT_THRESHOLD_METER, connectAt);
+        int thresholdMd = LaLo.d2md(threshold);
+        final short REMOVE_MARKER = (short)0x8000;
         for (short idx1=0; idx1<numBorderNodes1; idx1++){
+            short node1 = (short)(borderNodeIndexes1[idx1] & ~REMOVE_MARKER);
             for (short idx2=0; idx2<numBorderNodes2; idx2++){
-                if ( (horizontal?Math.abs( bGraphTile1.nodes.getLatitude(idx1) - bGraphTile2.nodes.getLatitude(idx2) ):Math.abs( bGraphTile1.nodes.getLongitude(idx1) - bGraphTile2.nodes.getLongitude(idx2) )) <= threshold){ //distance less than 0.5m -> connect nodes
-                    bGraphTile1.addSegment((short) -1, idx1, bGraphTile2, idx2, borderSelector1);
-                    bGraphTile2.addSegment((short) -1, idx2, bGraphTile1, idx1, borderSelector2);
-                    borderNodeIndexes1[idx1] = -1;
-                    borderNodeIndexes2[idx2] = -1;
+                short node2 = (short)(borderNodeIndexes2[idx2] & ~REMOVE_MARKER);
+
+                if ( (horizontal?Math.abs( bGraphTile1.nodes.getLatitude(node1) - bGraphTile2.nodes.getLatitude(node2) ):Math.abs( bGraphTile1.nodes.getLongitude(node1) - bGraphTile2.nodes.getLongitude(node2) )) <= thresholdMd){ //distance less than 0.5m -> connect nodes
+                    bGraphTile1.addSegment((short) -1, node1, bGraphTile2, node2, borderSelector1);
+                    bGraphTile2.addSegment((short) -1, node2, bGraphTile1, node1, borderSelector2);
+                    borderNodeIndexes1[idx1] |= REMOVE_MARKER;
+                    borderNodeIndexes2[idx2] |= REMOVE_MARKER;
                 }
             }
         }
         for (short idx1=0; idx1<numBorderNodes1; idx1++){
-            if (borderNodeIndexes1[idx1] == -1) continue;
+            if (borderNodeIndexes1[idx1] < 0) continue;
 
             for (short idx2=0; idx2<numBorderNodes2; idx2++) {
-                if (borderNodeIndexes2[idx2] == -1) continue;
+                if (borderNodeIndexes2[idx2] < 0) continue;
 
                 if ((bGraphTile1.countNeighbours(idx1) == 1) && (bGraphTile2.countNeighbours(idx2) == 1)) {
                     double lat1 = LaLo.md2d(bGraphTile1.nodes.getLatitude(idx1));
@@ -126,14 +136,14 @@ public class BTileConnector {
         StringBuilder sb1 = new StringBuilder("tile1.idx="+bGraphTile1.tileIdx);
         boolean remainings = false;
         for (short idx1=0; idx1<numBorderNodes1; idx1++) {
-            if (borderNodeIndexes1[idx1] == -1) continue;
+            if (borderNodeIndexes1[idx1] < 0) continue;
             sb1.append(",").append(idx1);
             remainings = true;
         }
         if (remainings) mgLog.d(()->"remainings1 " + sb1);
         StringBuilder sb2 = new StringBuilder("tile2.idx="+bGraphTile2.tileIdx);
         for (short idx2=0; idx2<numBorderNodes2; idx2++) {
-            if (borderNodeIndexes2[idx2] == -1) continue;
+            if (borderNodeIndexes2[idx2] < 0) continue;
             sb2.append(",").append(idx2);
             remainings = true;
         }

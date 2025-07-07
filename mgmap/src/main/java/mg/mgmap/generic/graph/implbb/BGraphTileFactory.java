@@ -1,5 +1,7 @@
 package mg.mgmap.generic.graph.implbb;
 
+import static mg.mgmap.generic.graph.implbb.BNodes.FLAG_INVALID;
+
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
 
@@ -13,11 +15,15 @@ import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.graph.GraphFactory;
-import mg.mgmap.generic.graph.impl.GGraphTile;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.TrackLogPoint;
+import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WayProvider;
+import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.MGLog;
 
 public class BGraphTileFactory implements GraphFactory {
@@ -63,7 +69,52 @@ public class BGraphTileFactory implements GraphFactory {
 
     @Override
     public ApproachModel calcApproach(PointModel pointModel, int closeThreshold) {
-        return null;
+        BBox mtlpBBox = new BBox()
+                .extend(pointModel)
+                .extend(closeThreshold);
+
+        ApproachModel bestApproach = null;
+        WriteablePointModel pmApproach = new TrackLogPoint();
+
+        ArrayList<BGraphTile> tiles = getBGraphTileList(mtlpBBox);
+        for (BGraphTile bGraphTile : tiles){
+            for (short node=0; node < bGraphTile.nodes.nodesUsed; node++) {
+                if (!bGraphTile.nodes.isFlag(node, FLAG_INVALID)) { // valid point
+                    double lat = LaLo.md2d(bGraphTile.nodes.getLatitude(node));
+                    double lon = LaLo.md2d(bGraphTile.nodes.getLongitude(node));
+                    float ele = bGraphTile.nodes.getEle(node);
+                    short neighbour = bGraphTile.nodes.getNeighbour(node);
+                    while ((neighbour = bGraphTile.neighbours.getNextNeighbour(neighbour)) != 0) {
+                        short neighbourNode = bGraphTile.neighbours.getNeighbourPoint(neighbour);
+                        if (bGraphTile.neighbours.getTileSelector(neighbour) == 0){ // neighbour node is in same tile
+                            double neighbourLat = LaLo.md2d(bGraphTile.nodes.getLatitude(neighbourNode));
+                            double neighbourLon = LaLo.md2d(bGraphTile.nodes.getLongitude(neighbourNode));
+                            if (PointModelUtil.compareTo(lat, lon, neighbourLat, neighbourLon) < 0){ // neighbour relations exist in both direction - here we can reduce to one
+                                BBox bBoxPart = new BBox().extend(lat, lon).extend(neighbourLat, neighbourLon);
+                                boolean bIntersects = mtlpBBox.intersects(bBoxPart);
+                                if (bIntersects) { // ok, is candidate for close
+                                    float neighbourEle = bGraphTile.nodes.getEle(neighbourNode);
+                                    if (PointModelUtil.findApproach(pointModel, lat, lon, ele, 0, neighbourLat, neighbourLon, neighbourEle, 0, pmApproach , closeThreshold)) {
+                                        double distance = PointModelUtil.distance(pointModel, pmApproach)+0.0001;
+                                        if (distance < closeThreshold){ // ok, is close ==> new Approach found
+                                            if ((bestApproach == null) || (distance < bestApproach.getApproachDistance())){ // ... and it is better than current best approach - so keep it as the best
+                                                BNode bNode = new BNode(bGraphTile, node);
+                                                BNode bNeighbourNode = new BNode(bGraphTile, neighbourNode);
+                                                PointModelImpl approachNode = new PointModelImpl(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEle(), 0); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
+                                                bestApproach = new ApproachModelImpl(pointModel, approachNode, bNode, bNeighbourNode, (float)distance);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        return bestApproach;
+
     }
 
     @Override
@@ -140,8 +191,8 @@ public class BGraphTileFactory implements GraphFactory {
         return getBGraphTile(tileX, tileY, true);
     }
     public BGraphTile getBGraphTile(int tileX, int tileY, boolean load){
-        BGraphTile bGraphTile = null;
-        if (load){
+        BGraphTile bGraphTile = bTileCache.get(tileX, tileY);
+        if (load && (bGraphTile == null)){
             synchronized (this){  // prevent parallel access from routing thread and FSGraphDetails
                 bGraphTile = loadBGraphTile(tileX, tileY);
                 if (prefSmooth4Routing.getValue()){
@@ -156,7 +207,7 @@ public class BGraphTileFactory implements GraphFactory {
 
     private BGraphTile loadBGraphTile(int tileX, int tileY){
         Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
-        mgLog.i(()->"Load tileX=" + tileX + " tileY=" + tileY + " "+tile.getBoundingBox().getCenterPoint());
+        mgLog.d(()->"Load "+(bTileCache.size())+" tileX=" + tileX + " tileY=" + tileY + " "+tile.getBoundingBox().getCenterPoint());
         BGraphTile bGraphTile = new BGraphTile(wayProvider, elevationProvider, tile);
         bGraphTile.loadGGraphTile();
         return bGraphTile;

@@ -24,22 +24,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.ApproachModel;
 
+import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.util.Observable;
 import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.basic.MemoryUtil;
 
 
-public class BidirectionalAStar {
+public class BidirectionalAStar implements GraphAlgorithm {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     BGraphMulti bGraphMulti;
     RoutingProfile routingProfile;
+    protected Observable routeIntermediatesObservable;
+    private boolean running = false;
+
     BNodeRefs nodeRefs;
 
     protected PointModel source = null;
@@ -65,6 +70,7 @@ public class BidirectionalAStar {
     public MultiPointModel performAlgo(ApproachModel sourceApproachModel, ApproachModel targetApproachModel, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
         nodeRefs = new BNodeRefs(bGraphMulti);
         if (relaxedList != null) relaxedList.clear();
+        MultiPointModelImpl resultPath = new MultiPointModelImpl();
 
         ApproachModelImpl sourceApproachModelImpl = (sourceApproachModel instanceof ApproachModelImpl ami)?ami:null;
         ApproachModelImpl targetApproachModelImpl = (targetApproachModel instanceof ApproachModelImpl ami)?ami:null;
@@ -74,144 +80,176 @@ public class BidirectionalAStar {
         source = sourceApproachModel.getApproachNode();
         target = targetApproachModel.getApproachNode();
 
-        createInitialNodeRef(sourceApproachModelImpl.node1, sourceApproachModelImpl.node2, source, false);
-        createInitialNodeRef(sourceApproachModelImpl.node2, sourceApproachModelImpl.node1, source, false);
-        createInitialNodeRef(targetApproachModelImpl.node1, targetApproachModelImpl.node2, target, true);
-        createInitialNodeRef(sourceApproachModelImpl.node2, sourceApproachModelImpl.node1, target, true);
-
-        int ref = nodeRefs.getFirstNode();
-        int reverseRef;
-
-
-        double bestMatchCost = Double.MAX_VALUE;
-        while (true){
-            if (nodeRefs.getHeuristicCost(ref) > costLimit/2){ // if costLimit reached
-                mgLog.i("exit performAlgo 5 - cost limit reached: ref.getHeuristicCost()="+nodeRefs.getHeuristicCost(ref)+" costLimit/2="+(costLimit/2));
-                break;
-            }
-
-            boolean refIsReverse = nodeRefs.isFlag(ref, BNodeRefs.FLAGS_REVERSED);
-            BGraphTile bTile = bGraphMulti.getTile( nodeRefs.getNodeTileIdx( ref ));
-            short node = nodeRefs.getNodeIdx(ref);
-
-            reverseRef = bTile.getNodeRef(node, !refIsReverse);
-            if ((reverseRef >= 0) && (nodeRefs.isFlag(reverseRef, BNodeRefs.FLAGS_SETTLED))){ // match found
-                mgLog.i("exit performAlgo 1 - match found: refNode="+new BNode(bTile, node)+" ref="+getRefDetails(ref)+" revRef="+getRefDetails(reverseRef));
-                break;
-            }
-
-            if (bTile.getNodeRef(node, refIsReverse) == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
-
-                if (refreshRequired.get() != 0) {
-                    mgLog.i("exit performAlgo 3 - refresh required");
-                    break;
-                }
-                if (preNodeRelax(bTile, node)) { // add lazy expansion of GGraphMulti
-                    mgLog.i("exit performAlgo 4 - low memory");
-                    break;
-                }
-                short neighbour = bTile.nodes.getNeighbour(node); // start relax all neighbours
-                while ((neighbour = bTile.neighbours.getNextNeighbour(neighbour)) != 0) {
-                    BGraphTile bNeighbourTile = bTile.neighbourTiles[bTile.neighbours.getTileSelector(neighbour)];
-                    short neighbourNode = bTile.neighbours.getNeighbourPoint(neighbour);
-                    short directedNeighbour = refIsReverse ? bTile.neighbours.getReverse(neighbour) : neighbour;
-
-                    // do this block independent on the next if - data are used here - and later for heuristic
-                    bNeighbourTile.nodes.bbNodes.position(neighbourNode * BNodes.NODE_SIZE + BNodes.POINT_LATITUDE_OFFSET);
-                    double lat2 = LaLo.md2d(bNeighbourTile.nodes.bbNodes.getInt());
-                    double lon2 = LaLo.md2d(bNeighbourTile.nodes.bbNodes.getInt());
-                    float ele2 = bNeighbourTile.nodes.bbNodes.getFloat();
-
-                    float costToNeighbour = bTile.neighbours.getCost(directedNeighbour);
-                    if (costToNeighbour < 0) { // not yet calculated -> do it now
-                        bTile.nodes.bbNodes.position(node * BNodes.NODE_SIZE + BNodes.POINT_LATITUDE_OFFSET);
-                        double lat1 = LaLo.md2d(bTile.nodes.bbNodes.getInt());
-                        double lon1 = LaLo.md2d(bTile.nodes.bbNodes.getInt());
-                        float ele1 = bTile.nodes.bbNodes.getFloat();
-                        short waIdx = bTile.neighbours.getWayAttributes(neighbour);
-                        WayAttributs wayAttributs = (waIdx < 0) ? null : bTile.wayAttributes[waIdx];
-                        double distance = PointModelUtil.distance(lat1, lon1, lat2, lon2);
-                        float vertDistance = (ele2 - ele1) * (refIsReverse ? -1 : 1);
-                        boolean primaryDirection = !bTile.neighbours.isReverse(neighbour) || (waIdx < 0);
-                        costToNeighbour = (float) routingProfile.getCost(wayAttributs, distance, vertDistance, primaryDirection);
-                        bTile.neighbours.setCost(directedNeighbour, costToNeighbour);
-                    }
-                    float currentCost = nodeRefs.getCost(ref) + costToNeighbour;
-                    int neighbourRef = bNeighbourTile.getNodeRef(neighbourNode, refIsReverse);
-                    // create new prioQueue entry, if there is currently none or if the current relaxted path has better cost
-                    if ((neighbourRef < 0) || (currentCost < nodeRefs.getCost(neighbourRef))) {
-                        float heuristic = heuristic(refIsReverse, lat2, lon2, ele2);
-                        neighbourRef = nodeRefs.createNodeRef(bNeighbourTile.idxInMulti, neighbourNode, currentCost, heuristic, bTile.idxInMulti, node, neighbour, refIsReverse ? BNodeRefs.FLAGS_REVERSED : 0);
-                        bNeighbourTile.setNodeRef(neighbourNode, refIsReverse, neighbourRef);
-                        if (nodeRefs.getHeuristicCost(neighbourRef) < nodeRefs.getHeuristicCost(ref)) {
-                            mgLog.e("Inconsistency detected ");
-                        }
-                        double matchCost = getMatchCost(bNeighbourTile, neighbourNode);
-                        if (matchCost < bestMatchCost) {
-                            matchTile = bNeighbourTile;
-                            matchNode = neighbourNode;
-                            bestMatchCost = matchCost;
-                            mgLog.d("matchTile=" + matchTile + "matchNode=" + matchNode + " matchCost=" + matchCost);
-                        }
-                    }
-                }
-                nodeRefs.setFlag(ref, BNodeRefs.FLAGS_SETTLED, true);
-                if (refIsReverse){
-                    if (( bestReverseHeuristicRef == -1) || (nodeRefs.getHeuristic(ref) < nodeRefs.getHeuristic(bestReverseHeuristicRef))){
-                        bestReverseHeuristicRef = ref;
-                    }
+        if (sourceApproachModelImpl.node1.bGraphTile == targetApproachModelImpl.node1.bGraphTile){
+            if (sourceApproachModelImpl.node1.nodeIdx == targetApproachModelImpl.node1.nodeIdx){
+                if (sourceApproachModelImpl.node2.nodeIdx == targetApproachModelImpl.node2.nodeIdx) {
+                    resultPath.addPoint(sourceApproachModel.getApproachNode());
+                    resultPath.addPoint(targetApproachModel.getApproachNode());
                 } else {
-                    if (( bestHeuristicRef == -1) || (nodeRefs.getHeuristic(ref) < nodeRefs.getHeuristic(bestHeuristicRef))){
-                        bestHeuristicRef = ref;
-                    }
+                    resultPath.addPoint(sourceApproachModel.getApproachNode());
+                    resultPath.addPoint(sourceApproachModelImpl.node1);
+                    resultPath.addPoint(targetApproachModel.getApproachNode());
                 }
-            }
-            ref = nodeRefs.getNextNode(ref);
-            if (ref == -1) {
-                mgLog.i("exit performAlgo 2 - ref=-1, no more nodes to handle, no path found");
-                break; // no more nodes to handle - no path found
+            } else if (sourceApproachModelImpl.node1.nodeIdx == targetApproachModelImpl.node2.nodeIdx){
+                if (sourceApproachModelImpl.node2.nodeIdx == targetApproachModelImpl.node1.nodeIdx) {
+                    resultPath.addPoint(sourceApproachModel.getApproachNode());
+                    resultPath.addPoint(targetApproachModel.getApproachNode());
+                } else {
+                    resultPath.addPoint(sourceApproachModel.getApproachNode());
+                    resultPath.addPoint(sourceApproachModelImpl.node1);
+                    resultPath.addPoint(targetApproachModel.getApproachNode());
+                }
+            } else if (sourceApproachModelImpl.node2.nodeIdx == targetApproachModelImpl.node2.nodeIdx){
+                resultPath.addPoint(sourceApproachModel.getApproachNode());
+                resultPath.addPoint(sourceApproachModelImpl.node2);
+                resultPath.addPoint(targetApproachModel.getApproachNode());
             }
         }
-        duration = System.currentTimeMillis() - tStart;
 
-        // generate statistics
-        cntTotal = 0;
-        cntRelaxed = 0;
-        cntSettled = 0;
-        resultPathLength = 0;
+        if (resultPath.size() == 0){
+            // source- and targetApproachModes are 4 different points!
+            createInitialNodeRef(sourceApproachModelImpl.node1, sourceApproachModelImpl.node2, source, false);
+            createInitialNodeRef(sourceApproachModelImpl.node2, sourceApproachModelImpl.node1, source, false);
+            createInitialNodeRef(targetApproachModelImpl.node1, targetApproachModelImpl.node2, target, true);
+            createInitialNodeRef(targetApproachModelImpl.node2, targetApproachModelImpl.node1, target, true);
 
-        for (short iTile=0; iTile<bGraphMulti.getNumTiles(); iTile++){
-            BGraphTile bTile = bGraphMulti.getTile(iTile);
-            for (short node=0; node < bTile.nodes.nodesUsed; node++){
-                if (!bTile.nodes.isFlag(node, FLAG_INVALID)){
-                    cntTotal++;
-                    int nodeRef = bTile.getNodeRef(node, false);
-                    int reverseNodeRef = bTile.getNodeRef(node, true);
-                    if ((nodeRef >= 0) || (reverseNodeRef >= 0)){
-                        cntRelaxed++;
-                        if (((nodeRef >= 0) && nodeRefs.isFlag(nodeRef, BNodeRefs.FLAGS_SETTLED)) ||
-                                ((reverseNodeRef >= 0) && nodeRefs.isFlag(reverseNodeRef, BNodeRefs.FLAGS_SETTLED))){
-                            cntSettled++;
+            int ref = nodeRefs.getFirstNode();
+            int reverseRef;
+
+
+            double bestMatchCost = Double.MAX_VALUE;
+            while (true){
+                if (nodeRefs.getHeuristicCost(ref) > costLimit/2){ // if costLimit reached
+                    mgLog.i("exit performAlgo 5 - cost limit reached: ref.getHeuristicCost()="+nodeRefs.getHeuristicCost(ref)+" costLimit/2="+(costLimit/2));
+                    break;
+                }
+
+                boolean refIsReverse = nodeRefs.isFlag(ref, BNodeRefs.FLAGS_REVERSED);
+                BGraphTile bTile = bGraphMulti.getTile( nodeRefs.getNodeTileIdx( ref ));
+                short node = nodeRefs.getNodeIdx(ref);
+
+                reverseRef = bTile.getNodeRef(node, !refIsReverse);
+//                mgLog.d("TEMPO - ref="+ref+" node="+node+" refIsReverse="+refIsReverse+" reverseRef="+reverseRef);
+                if ((reverseRef >= 0) && (nodeRefs.isFlag(reverseRef, BNodeRefs.FLAGS_SETTLED))){ // match found
+                    mgLog.i("exit performAlgo 1 - match found: refNode="+new BNode(bTile, node)+" ref="+getRefDetails(ref)+" revRef="+getRefDetails(reverseRef));
+                    break;
+                }
+
+                if (bTile.getNodeRef(node, refIsReverse) == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
+
+                    if (refreshRequired.get() != 0) {
+                        mgLog.i("exit performAlgo 3 - refresh required");
+                        break;
+                    }
+                    if (preNodeRelax(bTile, node)) { // add lazy expansion of GGraphMulti
+                        mgLog.i("exit performAlgo 4 - low memory");
+                        break;
+                    }
+                    short neighbour = bTile.nodes.getNeighbour(node); // start relax all neighbours
+                    while ((neighbour = bTile.neighbours.getNextNeighbour(neighbour)) != 0) {
+                        BGraphTile bNeighbourTile = bTile.neighbourTiles[bTile.neighbours.getTileSelector(neighbour)];
+                        short neighbourNode = bTile.neighbours.getNeighbourPoint(neighbour);
+                        short directedNeighbour = refIsReverse ? bTile.neighbours.getReverse(neighbour) : neighbour;
+
+                        // do this block independent on the next if - data are used here - and later for heuristic
+                        bNeighbourTile.nodes.bbNodes.position(neighbourNode * BNodes.NODE_SIZE + BNodes.POINT_LATITUDE_OFFSET);
+                        double lat2 = LaLo.md2d(bNeighbourTile.nodes.bbNodes.getInt());
+                        double lon2 = LaLo.md2d(bNeighbourTile.nodes.bbNodes.getInt());
+                        float ele2 = bNeighbourTile.nodes.bbNodes.getFloat();
+
+                        float costToNeighbour = bTile.neighbours.getCost(directedNeighbour);
+                        if (costToNeighbour < 0) { // not yet calculated -> do it now
+                            bTile.nodes.bbNodes.position(node * BNodes.NODE_SIZE + BNodes.POINT_LATITUDE_OFFSET);
+                            double lat1 = LaLo.md2d(bTile.nodes.bbNodes.getInt());
+                            double lon1 = LaLo.md2d(bTile.nodes.bbNodes.getInt());
+                            float ele1 = bTile.nodes.bbNodes.getFloat();
+                            short waIdx = bTile.neighbours.getWayAttributes(neighbour);
+                            WayAttributs wayAttributs = (waIdx < 0) ? null : bTile.wayAttributes[waIdx];
+                            double distance = PointModelUtil.distance(lat1, lon1, lat2, lon2);
+                            float vertDistance = (ele2 - ele1) * (refIsReverse ? -1 : 1);
+                            boolean primaryDirection = bTile.neighbours.isPrimary(neighbour) || (waIdx < 0);
+                            costToNeighbour = (float) routingProfile.getCost(wayAttributs, distance, vertDistance, primaryDirection);
+                            bTile.neighbours.setCost(directedNeighbour, costToNeighbour);
+                        }
+                        float currentCost = nodeRefs.getCost(ref) + costToNeighbour;
+                        int neighbourRef = bNeighbourTile.getNodeRef(neighbourNode, refIsReverse);
+                        // create new prioQueue entry, if there is currently none or if the current relaxted path has better cost
+                        if ((neighbourRef < 0) || (currentCost < nodeRefs.getCost(neighbourRef))) {
+                            float heuristic = heuristic(refIsReverse, lat2, lon2, ele2);
+                            neighbourRef = nodeRefs.createNodeRef(bNeighbourTile.idxInMulti, neighbourNode, currentCost, heuristic, bTile.idxInMulti, node, neighbour, refIsReverse ? BNodeRefs.FLAGS_REVERSED : 0);
+                            bNeighbourTile.setNodeRef(neighbourNode, refIsReverse, neighbourRef);
+//                            mgLog.d("    add nodeRef: "+nodeRefs.toString(bGraphMulti, neighbourRef));
+                            if (nodeRefs.getHeuristicCost(neighbourRef) < nodeRefs.getHeuristicCost(ref)) {
+                                mgLog.e("Inconsistency detected ");
+                                break;
+                            }
+                            double matchCost = getMatchCost(bNeighbourTile, neighbourNode);
+                            if (matchCost < bestMatchCost) {
+                                matchTile = bNeighbourTile;
+                                matchNode = neighbourNode;
+                                bestMatchCost = matchCost;
+                                mgLog.d("matchTile=" + matchTile + "matchNode=" + matchNode + " matchCost=" + matchCost);
+                            }
+                        }
+                    }
+                    nodeRefs.setFlag(ref, BNodeRefs.FLAGS_SETTLED, true);
+                    if (refIsReverse){
+                        if (( bestReverseHeuristicRef == -1) || (nodeRefs.getHeuristic(ref) < nodeRefs.getHeuristic(bestReverseHeuristicRef))){
+                            bestReverseHeuristicRef = ref;
+                        }
+                    } else {
+                        if (( bestHeuristicRef == -1) || (nodeRefs.getHeuristic(ref) < nodeRefs.getHeuristic(bestHeuristicRef))){
+                            bestHeuristicRef = ref;
+                        }
+                    }
+                }
+                ref = nodeRefs.getNextNode(ref);
+                if (ref == -1) {
+                    mgLog.i("exit performAlgo 2 - ref=-1, no more nodes to handle, no path found");
+                    break; // no more nodes to handle - no path found
+                }
+            }
+            duration = System.currentTimeMillis() - tStart;
+
+            // generate statistics
+            cntTotal = 0;
+            cntRelaxed = 0;
+            cntSettled = 0;
+            resultPathLength = 0;
+
+            for (short iTile=0; iTile<bGraphMulti.getNumTiles(); iTile++){
+                BGraphTile bTile = bGraphMulti.getTile(iTile);
+                for (short node=0; node < bTile.nodes.nodesUsed; node++){
+                    if (!bTile.nodes.isFlag(node, FLAG_INVALID)){
+                        cntTotal++;
+                        int nodeRef = bTile.getNodeRef(node, false);
+                        int reverseNodeRef = bTile.getNodeRef(node, true);
+                        if ((nodeRef >= 0) || (reverseNodeRef >= 0)){
+                            cntRelaxed++;
+                            if (((nodeRef >= 0) && nodeRefs.isFlag(nodeRef, BNodeRefs.FLAGS_SETTLED)) ||
+                                    ((reverseNodeRef >= 0) && nodeRefs.isFlag(reverseNodeRef, BNodeRefs.FLAGS_SETTLED))){
+                                cntSettled++;
+                            }
                         }
                     }
                 }
             }
-        }
 
 
-        MultiPointModelImpl resultPath = new MultiPointModelImpl();
-        if (matchTile != null){
-            resultPath = getPath(matchTile.getNodeRef(matchNode, false));
-            resultPath.addPoint(0, source);
-            resultPath.removePoint(resultPath.size()-1); // remove matchNode
-            resultPathLength = resultPath.size();
-            for (PointModel pm : getPath(matchTile.getNodeRef(matchNode, true))){
-                resultPath.addPoint(resultPathLength,pm);
+            if (matchTile != null){
+                resultPath = getPath(matchTile.getNodeRef(matchNode, false));
+                resultPath.addPoint(0, source);
+                resultPath.removePoint(resultPath.size()-1); // remove matchNode
+                resultPathLength = resultPath.size();
+                for (PointModel pm : getPath(matchTile.getNodeRef(matchNode, true))){
+                    resultPath.addPoint(resultPathLength,pm);
+                }
+                resultPath.addPoint(target);
             }
-            resultPath.addPoint(target);
         }
         resultPathLength = resultPath.size();
         return resultPath;
+
     }
 
     float heuristic(boolean reverse, PointModel node){
@@ -245,12 +283,14 @@ public class BidirectionalAStar {
 
     void createInitialNodeRef(BNode node1, BNode node2, PointModel approachNode, boolean reverse){
         BGraphTile tile = node1.bGraphTile;
-        short neighbour12 = tile.getNeighbour(node1.nodeIdx, node2.nodeIdx);
-        short waIdx = tile.neighbours.getWayAttributes(neighbour12);
+        short neighbour21 = tile.getNeighbour(node2.nodeIdx, node1.nodeIdx);
+        short neighbour12 = tile.neighbours.getReverse(neighbour21);
+        short waIdx = tile.neighbours.getWayAttributes(neighbour21);
         WayAttributs wayAttributs = (waIdx < 0)?null:tile.wayAttributes[waIdx];
-        float cost = (float)routingProfile.getCost(wayAttributs, node1, approachNode, tile.neighbours.isReverse(neighbour12) || (waIdx < 0));
+        float cost = (float)routingProfile.getCost(wayAttributs, node1, approachNode, tile.neighbours.isPrimary(neighbour21) || (waIdx < 0));
         float heuristic = heuristic(reverse, node1);
-        nodeRefs.createNodeRef(tile.idxInMulti, node1.nodeIdx, cost, heuristic, (short)-1, (short)-1, neighbour12, (byte)0);
+        int ref = nodeRefs.createNodeRef(tile.idxInMulti, node1.nodeIdx, cost, heuristic, (short)-1, (short)-1, neighbour12, reverse?BNodeRefs.FLAGS_REVERSED:(byte)0);
+        tile.setNodeRef(node1.nodeIdx, reverse, ref);
     }
 
     protected boolean preNodeRelax(BGraphTile bGraphTile, short node){
@@ -322,5 +362,42 @@ public class BidirectionalAStar {
                 nodeRefs.getHeuristic(ref),
                 nodeRefs.getHeuristicCost(ref));
     }
+
+
+    @Override
+    public void setRouteIntermediatesObservable(Observable routeIntermediatesObservable) {
+
+    }
+
+
+    public MultiPointModel perform(ApproachModel sourceApproachModel, ApproachModel targetApproachModel, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
+        running = true;
+        new Thread(() -> {
+            while (running){
+                synchronized (BidirectionalAStar.this){
+                    try {
+                        BidirectionalAStar.this.wait(1000);
+                        if (routeIntermediatesObservable != null){
+                            routeIntermediatesObservable.setChanged();
+                            routeIntermediatesObservable.notifyObservers( getBestPath() );
+                        }
+                    } catch (InterruptedException e) {
+                        mgLog.e(e.getMessage());
+                    }
+                }
+            }
+            if (routeIntermediatesObservable != null){
+                routeIntermediatesObservable.setChanged();
+                routeIntermediatesObservable.notifyObservers(null);
+            }
+        }).start();
+        MultiPointModel mpm =  performAlgo(sourceApproachModel, targetApproachModel, costLimit, refreshRequired, relaxedList);
+        running = false;
+        synchronized (BidirectionalAStar.this){
+            BidirectionalAStar.this.notify();
+        }
+        return mpm;
+    }
+
 
 }

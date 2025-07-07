@@ -6,9 +6,9 @@ public class BNodeRefs extends BRedBlackEntries{
 
     final static int NODE_REF_SIZE =
             2 + 2       // node: tile idx (in GraphMulti) + Node idx (in GraphTile)
-            + 2 + 2     // predecessor: tile idx (in GraphMulti) + Node idx (in GraphTile)
             + 4         // cost (float)
             + 4         // heuristic (float)
+            + 2 + 2     // predecessor: tile idx (in GraphMulti) + Node idx (in GraphTile)
             + 2         // neighbour (neighbour idx of node to predecessor)
             + 1;         // FLAGS:
 
@@ -122,25 +122,52 @@ public class BNodeRefs extends BRedBlackEntries{
     @Override
     int compareTo(int idx1, int idx2) {
         ByteBuffer bb1 = getBuf4Idx(idx1);
-        short tileIdxInMulti1 = bb1.getShort(); // read tileIdxInMulti
-        short nodeIdx1 = bb1.getShort(); // read nodeIdx
+        int tileAndNodeIdx1 = bb1.getInt();
+//        short tileIdxInMulti1 = bb1.getShort(); // read tileIdxInMulti
+//        short nodeIdx1 = bb1.getShort(); // read nodeIdx
         float heuristicCost1 = bb1.getFloat(); // read cost
         heuristicCost1 += bb1.getFloat();  // read heuristic
+        int prevTileAndNodeIdx1 = bb1.getInt();
 
         ByteBuffer bb2 = getBuf4Idx(idx2);
-        short tileIdxInMulti2 = bb2.getShort(); // read tileIdxInMulti
-        short nodeIdx2 = bb2.getShort(); // read nodeIdx
+        int tileAndNodeIdx2 = bb1.getInt();
+//        short tileIdxInMulti2 = bb2.getShort(); // read tileIdxInMulti
+//        short nodeIdx2 = bb2.getShort(); // read nodeIdx
         float heuristicCost2 = bb2.getFloat(); // read cost
         heuristicCost2 += bb2.getFloat();  // read heuristic
+        int prevTileAndNodeIdx2 = bb1.getInt();
 
         int res = Float.compare(heuristicCost1, heuristicCost2);
         if (res == 0){
-            res = Short.compare(tileIdxInMulti1, tileIdxInMulti2);
+            res = Integer.compare(tileAndNodeIdx1, tileAndNodeIdx2);
             if (res == 0){
-                res = Short.compare(nodeIdx1, nodeIdx2);
+                res = Integer.compare(prevTileAndNodeIdx1, prevTileAndNodeIdx2);
             }
         }
         return res;
     }
+
+    String toString(BGraphMulti bGraphMulti, int ref){
+        ByteBuffer bb = getBuf4Idx(ref);
+        BGraphTile bGraphTile = bGraphMulti.getTile( bb.getShort() );
+        short node = bb.getShort();
+        float cost = bb.getFloat();
+        float heuristic = bb.getFloat();
+        BGraphTile bPrevGraphTile = bGraphMulti.getTile( bb.getShort() );
+        short prevNode = bb.getShort();
+        short neighbour = bb.getShort();
+        byte flags = bb.get();
+
+        return "GNodeRef{" +
+                "node=" + new BNode(bGraphTile, node) +
+                ", predecessor=" +  new BNode(bPrevGraphTile, prevNode) +
+                ", neighbour=" + neighbour +
+                ", cost=" + cost +
+                ", heuristic=" + heuristic +
+//                ", settled=" + settled +
+                ", reverse=" + ((flags & FLAGS_REVERSED) > 0) +
+                '}';
+    }
+
 
 }

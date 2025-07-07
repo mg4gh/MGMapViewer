@@ -1,8 +1,7 @@
-package mg.mgmap.generic.graph.implbb;
+package mg.mgmap.generic.graph.test.bgraph;
 
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
-import java.util.Locale;
 
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -39,12 +38,12 @@ public class BNeighbours {
     }
 
 
-    public short createNeighbour(short wayAttributesIdx, short neighbourPointIdx, float distance, byte tileSelector, byte reverse){
+    public short createNeighbour(short wayAttributesIdx, short neighbourPointIdx, float distance, byte tileSelector, byte primary){
         short nIdx = neighboursUsed++;
         bbNeighbours.position(NEIGHBOUR_SIZE *nIdx);
         bbNeighbours.putShort(neighbourPointIdx);
         bbNeighbours.put(tileSelector); // NEIGHBOUR_FLAG_TILE_SELECTOR_OFFSET
-        bbNeighbours.put(reverse); // NEIGHBOUR_FLAG_REVERSE_OFFSET
+        bbNeighbours.put(primary); // NEIGHBOUR_FLAG_PRIMARY_OFFSET
         bbNeighbours.putShort((short)0); // next neighbour index
         bbNeighbours.putShort(wayAttributesIdx);
         bbNeighbours.putFloat(distance);
