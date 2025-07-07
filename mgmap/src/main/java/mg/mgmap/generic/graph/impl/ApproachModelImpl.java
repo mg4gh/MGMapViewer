@@ -82,4 +82,15 @@ public class ApproachModelImpl implements ApproachModel {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "ApproachModelImpl{" +
+                "tileX=" + tileX +
+                ", tileY=" + tileY +
+                ", pmPos=" + pmPos +
+                ", node1=" + node1 +
+                ", node2=" + node2 +
+                ", approachNode=" + approachNode +
+                '}';
+    }
 }

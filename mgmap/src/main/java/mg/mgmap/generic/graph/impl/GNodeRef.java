@@ -87,4 +87,17 @@ public class GNodeRef implements Comparable<GNodeRef>{
     public void setReverse(boolean reverse) {
         this.reverse = reverse;
     }
+
+    @Override
+    public String toString() {
+        return "GNodeRef{" +
+                "node=" + node +
+                ", predecessor=" + predecessor +
+                ", neighbour=" + neighbour +
+                ", cost=" + cost +
+                ", heuristic=" + heuristic +
+                ", settled=" + settled +
+                ", reverse=" + reverse +
+                '}';
+    }
 }

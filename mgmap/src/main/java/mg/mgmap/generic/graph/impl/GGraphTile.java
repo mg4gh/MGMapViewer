@@ -46,15 +46,16 @@ public class GGraphTile extends GGraph {
     final GGraphTile[] neighbourTiles = new GGraphTile[GNode.BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
     boolean used = false; // used for cache - do not delete from cache
     long accessTime = 0; // used for cache
+    public ArrayList<Long> timestamps = new ArrayList<>();
 
-    GGraphTile(ElevationProvider elevationProvider, Tile tile){
+    public GGraphTile(ElevationProvider elevationProvider, Tile tile){
         this.elevationProvider = elevationProvider;
         this.tile = tile;
         this.tileIdx = GGraphTileFactory.getKey(getTileX(),getTileY());
         bBox = BBox.fromBoundingBox(this.tile.getBoundingBox());
     }
 
-    void addLatLongs(WayAttributs wayAttributs, LatLong[] latLongs){
+    public void addLatLongs(WayAttributs wayAttributs, LatLong[] latLongs){
         for (int i=1; i<latLongs.length; i++){
             double lat1 = PointModelUtil.roundMD(latLongs[i-1].latitude);
             double lon1 = PointModelUtil.roundMD(latLongs[i-1].longitude);

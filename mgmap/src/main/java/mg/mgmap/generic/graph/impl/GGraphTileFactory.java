@@ -306,6 +306,7 @@ public class GGraphTileFactory implements GraphFactory {
                 }
             }
         }
+        gGraphTile.timestamps.add(System.nanoTime());
         int latThreshold = LaLo.d2md( PointModelUtil.latitudeDistance(GGraph.CONNECT_THRESHOLD_METER) );
         int lonThreshold = LaLo.d2md( PointModelUtil.longitudeDistance(GGraph.CONNECT_THRESHOLD_METER, tile.getBoundingBox().getCenterPoint().getLatitude()) );
 //            Log.v(MGMapApplication.LABEL, NameUtil.context()+" latThreshold="+latThreshold+" lonThreshold="+lonThreshold);
@@ -373,6 +374,7 @@ public class GGraphTileFactory implements GraphFactory {
             }
         }
         gGraphTile.getGNodes().removeIf(node -> node.isFlag(GNode.FLAG_INVALID));
+        gGraphTile.timestamps.add(System.nanoTime());
         return gGraphTile;
     }
 
