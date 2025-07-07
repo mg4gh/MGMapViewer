@@ -401,11 +401,15 @@ public class GGraphTileFactory implements GraphFactory {
         ArrayList<GNeighbour> smoothNeighbourList = new ArrayList<>();
         for (GNode aNode : tile.getGNodes()){
             boolean fix = true;
-            if (tile.countNeighbours(aNode) == 2){
-                GNeighbour firstNeighbour = tile.getNextNeighbour(aNode, aNode.getNeighbour());
+            GNeighbour firstNeighbour = tile.getNextNeighbour(aNode, aNode.getNeighbour());
+            if (firstNeighbour != null){
                 GNeighbour secondNeighbour = tile.getNextNeighbour(aNode, firstNeighbour);
-                if (firstNeighbour.getWayAttributs() == secondNeighbour.getWayAttributs()){
-                    fix = false;
+                if (secondNeighbour != null){
+                    if ((tile.getNextNeighbour(aNode, secondNeighbour) == null) &&
+                            (firstNeighbour.getWayAttributs() == secondNeighbour.getWayAttributs()) &&
+                            (aNode.borderNode == 0)){
+                        fix = false;
+                    }
                 }
             }
             aNode.setFlag(GNode.FLAG_FIX, fix);
