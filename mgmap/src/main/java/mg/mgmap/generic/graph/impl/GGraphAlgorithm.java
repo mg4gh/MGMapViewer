@@ -36,7 +36,7 @@ public abstract class GGraphAlgorithm implements GraphAlgorithm {
                 synchronized (GGraphAlgorithm.this){
                     try {
                         GGraphAlgorithm.this.wait(1000);
-                        if (routeIntermediatesObservable != null){
+                        if (running && (routeIntermediatesObservable != null)){
                             routeIntermediatesObservable.setChanged();
                             routeIntermediatesObservable.notifyObservers( getBestPath() );
                         }
