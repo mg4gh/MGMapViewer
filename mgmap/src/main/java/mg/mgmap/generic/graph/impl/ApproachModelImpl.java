@@ -31,14 +31,16 @@ public class ApproachModelImpl implements ApproachModel {
     private GNode node1;
     private GNode node2;
     private final GNode approachNode;
+    private final float approachDistance;
 
-    public ApproachModelImpl(int tileX, int tileY, PointModel pmPos, GNode node1, GNode node2, GNode approachNode) {
+    public ApproachModelImpl(int tileX, int tileY, PointModel pmPos, GNode node1, GNode node2, GNode approachNode, float approachDistance) {
         this.tileX = tileX;
         this.tileY = tileY;
         this.pmPos = new PointModelImpl(pmPos.getLat(), pmPos.getLon());
         this.node1 = node1;
         this.node2 = node2;
         this.approachNode = approachNode;
+        this.approachDistance = approachDistance;
     }
 
     public int getTileX() {
@@ -72,7 +74,7 @@ public class ApproachModelImpl implements ApproachModel {
 
     @Override
     public float getApproachDistance() {
-        return (float) approachNode.getNeighbour().getCost();
+        return approachDistance;
     }
 
     public boolean verifyApproach(PointModel node1, PointModel approachNode, PointModel node2){

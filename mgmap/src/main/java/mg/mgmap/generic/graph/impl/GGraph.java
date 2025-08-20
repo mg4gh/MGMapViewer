@@ -50,11 +50,18 @@ public class GGraph implements Graph {
      */
     @SuppressWarnings("unused")
     public PointNeighbour getNextNeighbour(PointModel node, PointNeighbour neighbour){
-        return neighbour.getNextNeighbour();
+        if (node instanceof GNode gNode){
+            return getNextNeighbour(gNode, (GNeighbour)neighbour);
+        }
+        return null;
     }
     @SuppressWarnings("unused")
     public GNeighbour getNextNeighbour(GNode node, GNeighbour neighbour){
-        return neighbour.getNextNeighbour();
+        if (neighbour != null){
+            return neighbour.getNextNeighbour();
+        } else {
+            return node.getNeighbour();
+        }
     }
 
     public PointNeighbour getNeighbour(PointModel node, PointModel neighbourNode){
@@ -73,35 +80,52 @@ public class GGraph implements Graph {
     }
 
     public void addNeighbour(GNode node, GNeighbour neighbour){
-        GNeighbour nextNeighbour = node.getNeighbour();
-        while (getNextNeighbour(node,nextNeighbour) != null) {
-            nextNeighbour = getNextNeighbour(node,nextNeighbour);
-        }
-        setNextNeighbour(node, nextNeighbour, neighbour);
+        neighbour.setNextNeighbour(node.getNeighbour());
+        node.setNeighbour(neighbour);
+
+//        if (node.getNeighbour() == null){
+//            node.setNeighbour(neighbour);
+//        } else {
+//            GNeighbour nextNeighbour = node.getNeighbour();
+//            while (getNextNeighbour(node,nextNeighbour) != null) {
+//                nextNeighbour = getNextNeighbour(node,nextNeighbour);
+//            }
+//            setNextNeighbour(node, nextNeighbour, neighbour);
+//        }
     }
 
     public void removeNeighbourTo(GNode node, GNode neighbourNode) {
         GNeighbour nextNeighbour = node.getNeighbour();
-        while (getNextNeighbour(node, nextNeighbour) != null) {
-            GNeighbour lastNeighbour = nextNeighbour;
-            nextNeighbour = getNextNeighbour(node, nextNeighbour);
+        if (nextNeighbour != null){
             if (nextNeighbour.getNeighbourNode() == neighbourNode){
-                lastNeighbour.setNextNeighbour(getNextNeighbour(node, nextNeighbour));
-                break;
+                node.setNeighbour(nextNeighbour.getNextNeighbour());
+            } else {
+                while (getNextNeighbour(node, nextNeighbour) != null) {
+                    GNeighbour lastNeighbour = nextNeighbour;
+                    nextNeighbour = getNextNeighbour(node, nextNeighbour);
+                    if (nextNeighbour.getNeighbourNode() == neighbourNode){
+                        lastNeighbour.setNextNeighbour(getNextNeighbour(node, nextNeighbour));
+                        break;
+                    }
+                }
             }
         }
     }
 
     public void removeNeighbourTo(GNode node, int tileIdx) {
         GNeighbour nextNeighbour = node.getNeighbour();
-        GNeighbour lastNeighbour = nextNeighbour;
-        while (getNextNeighbour(node, nextNeighbour) != null) {
-            nextNeighbour = getNextNeighbour(node, nextNeighbour);
+        GNeighbour lastNeighbour = null;
+        while (nextNeighbour != null) {
             if (nextNeighbour.getNeighbourNode().tileIdx == tileIdx){
-                lastNeighbour.setNextNeighbour(getNextNeighbour(node, nextNeighbour));
+                if (lastNeighbour == null){
+                    node.setNeighbour(getNextNeighbour(node, nextNeighbour));
+                } else {
+                    lastNeighbour.setNextNeighbour(getNextNeighbour(node, nextNeighbour));
+                }
             } else {
                 lastNeighbour = nextNeighbour;
             }
+            nextNeighbour = getNextNeighbour(node, nextNeighbour);
         }
     }
 
@@ -111,7 +135,7 @@ public class GGraph implements Graph {
     }
 
     public int countNeighbours(GNode node){
-        GNeighbour neighbour = getNextNeighbour(node, node.getNeighbour());
+        GNeighbour neighbour = getNextNeighbour(node, null);
         int cnt = 0;
         while (neighbour != null){
             cnt++;
@@ -125,8 +149,7 @@ public class GGraph implements Graph {
         returns null, if there is not exactly one other neighbour.
     */
     public GNode oppositeNode(GNode node, GNode neighbourNode){
-        GNeighbour neighbour = node.getNeighbour();
-        GNeighbour firstNeighbour = getNextNeighbour(node, neighbour);
+        GNeighbour firstNeighbour = node.getNeighbour();
         if (firstNeighbour == null) return null; // found no neighbour
         GNeighbour secondNeighbour = getNextNeighbour(node, firstNeighbour);
         if (secondNeighbour == null) return null; // found just one neighbour
@@ -145,8 +168,7 @@ public class GGraph implements Graph {
         returns null, if there is not exactly one other neighbour.
     */
     public GNeighbour oppositeNeighbour(GNode node, GNeighbour givenNeighbour){
-        GNeighbour neighbour = node.getNeighbour();
-        GNeighbour firstNeighbour = getNextNeighbour(node, neighbour);
+        GNeighbour firstNeighbour = node.getNeighbour();
         if (firstNeighbour == null) return null; // found no neighbour
         GNeighbour secondNeighbour = getNextNeighbour(node, firstNeighbour);
         if (secondNeighbour == null) return null; // found just one neighbour
@@ -211,7 +233,7 @@ public class GGraph implements Graph {
         reverseNeighbour.setReverse(neighbour);
         addNeighbour(node, neighbour);
         addNeighbour(neighbourNode, reverseNeighbour);
-        double distance = PointModelUtil.distance(node, neighbourNode);
+        float distance = (float)PointModelUtil.distance(node, neighbourNode);
         neighbour.setDistance(distance);
         reverseNeighbour.setDistance(distance);
     }
@@ -242,7 +264,7 @@ public class GGraph implements Graph {
     public float getCost(PointNeighbour neighbour) {
         float cost = 0;
         if (neighbour instanceof GNeighbour gNeighbour){
-            cost = (float)gNeighbour.getCost();
+            cost = gNeighbour.getCost();
         }
         return cost;
     }

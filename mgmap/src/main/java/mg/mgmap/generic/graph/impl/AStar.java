@@ -72,10 +72,10 @@ public class AStar extends GGraphAlgorithm {
             if (node.getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
                 if (refreshRequired.get() != 0) break;
                 lowMemory = preNodeRelax(node); // add lazy expansion of GGraphMulti
-                GNeighbour neighbour = node.getNeighbour(); // start relax all neighbours
+                GNeighbour neighbour = null; // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();
-                    double costToNeighbour = neighbour.getCost();
+                    float costToNeighbour = neighbour.getCost();
                     if (costToNeighbour < 0){
                         costToNeighbour = routingProfile.getCost(neighbour.getWayAttributs(), node, neighbourNode, neighbour.isPrimaryDirection());
                         neighbour.setCost(costToNeighbour);

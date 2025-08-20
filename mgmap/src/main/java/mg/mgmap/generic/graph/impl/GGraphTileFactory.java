@@ -17,7 +17,6 @@ package mg.mgmap.generic.graph.impl;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
-
 import org.mapsforge.map.datastore.Way;
 
 import java.lang.invoke.MethodHandles;
@@ -27,23 +26,23 @@ import java.util.ArrayList;
 import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.application.util.ElevationProvider;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.graph.GraphFactory;
 import mg.mgmap.generic.graph.WayAttributs;
-import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.model.PointModelUtil;
-import mg.mgmap.generic.util.WayProvider;
 
 public class GGraphTileFactory implements GraphFactory {
 
@@ -197,7 +196,7 @@ public class GGraphTileFactory implements GraphFactory {
         for (GGraphTile gGraphTile : tiles){
             for (GNode node : gGraphTile.getGNodes()) {
 
-                GNeighbour neighbour = node.getNeighbour();
+                GNeighbour neighbour = null;
                 while ((neighbour = gGraphTile.getNextNeighbour(node, neighbour)) != null) {
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     if (gGraphTile.sameGraph(node, neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
@@ -205,11 +204,11 @@ public class GGraphTileFactory implements GraphFactory {
                         boolean bIntersects = mtlpBBox.intersects(bBoxPart);
                         if (bIntersects){ // ok, is candidate for close
                             if (PointModelUtil.findApproach(pointModel, node, neighbourNode, pmApproach , closeThreshold)) {
-                                double distance = PointModelUtil.distance(pointModel, pmApproach)+0.0001;
+                                float distance = (float)(PointModelUtil.distance(pointModel, pmApproach)+0.0001);
                                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
                                     if ((bestApproach == null) || (distance < bestApproach.getApproachDistance())){
-                                        GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEle(), pmApproach.getEleAcc(), distance); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
-                                        bestApproach = new ApproachModelImpl(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbourNode, approachNode);
+                                        GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEle(), pmApproach.getEleAcc()); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
+                                        bestApproach = new ApproachModelImpl(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbourNode, approachNode, distance);
                                     }
                                 }
                             }
@@ -386,7 +385,7 @@ public class GGraphTileFactory implements GraphFactory {
     // reduce Graph by dropping nNode, all Neighbours form nNode will get iNode as a Neighbour
     private void reduceGraph(GGraphTile graph, GNode iNode, GNode nNode){
         // iterate over al neighbours from nNode
-        GNeighbour nextNeighbour = nNode.getNeighbour();
+        GNeighbour nextNeighbour = null;
         while (graph.getNextNeighbour(nNode, nextNeighbour) != null) {
             nextNeighbour = graph.getNextNeighbour(nNode, nextNeighbour);
             // remove nNode as a Neighbour
@@ -401,7 +400,7 @@ public class GGraphTileFactory implements GraphFactory {
         ArrayList<GNeighbour> smoothNeighbourList = new ArrayList<>();
         for (GNode aNode : tile.getGNodes()){
             boolean fix = true;
-            GNeighbour firstNeighbour = tile.getNextNeighbour(aNode, aNode.getNeighbour());
+            GNeighbour firstNeighbour = tile.getNextNeighbour(aNode, null);
             if (firstNeighbour != null){
                 GNeighbour secondNeighbour = tile.getNextNeighbour(aNode, firstNeighbour);
                 if (secondNeighbour != null){
@@ -420,9 +419,9 @@ public class GGraphTileFactory implements GraphFactory {
             if (aNode.isFlag(GNode.FLAG_FIX)){
                 GNode minHeightPoint;
                 GNode maxHeightPoint;
-                GNeighbour aNeighbour = aNode.getNeighbour();
-                while (tile.getNextNeighbour(aNode, aNeighbour) != null) { // iterate over all neighbours
-                    aNeighbour = tile.getNextNeighbour(aNode, aNeighbour);
+                GNeighbour aNeighbour = null;
+                while ((aNeighbour = tile.getNextNeighbour(aNode, aNeighbour)) != null) { // iterate over all neighbours
+//                    aNeighbour = tile.getNextNeighbour(aNode, aNeighbour);
 
                     GNeighbour neighbour = aNeighbour;
                     GNode neighbourNode = neighbour.getNeighbourNode();

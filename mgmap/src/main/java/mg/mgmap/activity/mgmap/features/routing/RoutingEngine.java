@@ -319,28 +319,24 @@ public class RoutingEngine {
 
                             hint.nextLeftDegree = -1;
                             hint.nextRightDegree = 361;
-                            PointNeighbour neighbour = graph.getNeighbour(hint.pmCurrent, hint.pmCurrent); // neighbour to itself == first neighbour
-                            if (neighbour != null) {
 
-//                                while ((neighbour = neighbour.getNextNeighbour()) != null) {
-                                while ((neighbour = graph.getNextNeighbour(hint.pmCurrent, neighbour)) != null) {
-                                    if (sourceApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to source approach node
-                                    if (targetApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to target approach node
-                                    hint.numberOfPathes++;
-                                    // use approach segments as path, but not as concurrent path with degree calculation
-                                    if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbour.getPoint()))){
-                                        continue;
-                                    }
-                                    if ((idx == mpmRaw.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbour.getPoint()))){
-                                        continue;
-                                    }
-
-                                    double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getPoint());
-                                    if ((hint.nextLeftDegree < degree) && (degree < hint.directionDegree)) hint.nextLeftDegree = degree;
-                                    if ((hint.directionDegree < degree) && (degree < hint.nextRightDegree)) hint.nextRightDegree = degree;
+                            PointNeighbour neighbour = null;
+                            while ((neighbour = graph.getNextNeighbour(hint.pmCurrent, neighbour)) != null) {
+                                if (sourceApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to source approach node
+                                if (targetApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to target approach node
+                                hint.numberOfPathes++;
+                                // use approach segments as path, but not as concurrent path with degree calculation
+                                if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbour.getPoint()))){
+                                    continue;
                                 }
-                            }
+                                if ((idx == mpmRaw.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbour.getPoint()))){
+                                    continue;
+                                }
 
+                                double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getPoint());
+                                if ((hint.nextLeftDegree < degree) && (degree < hint.directionDegree)) hint.nextLeftDegree = degree;
+                                if ((hint.directionDegree < degree) && (degree < hint.nextRightDegree)) hint.nextRightDegree = degree;
+                            }
                         }
                     }
                     ExtendedPointModelImpl<RoutingHint> epm = new ExtendedPointModelImpl<>(mpmRaw.get(idx),hint);

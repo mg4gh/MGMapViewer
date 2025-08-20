@@ -7,7 +7,6 @@ import org.mapsforge.map.reader.MapFile;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,7 +14,6 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S2;
-import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S2_Spline;
 import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.util.ElevationProvider;
@@ -278,8 +276,8 @@ public class RoutingTest {
 
     private MultiPointModel performSearch(GGraphAlgorithm routingAlg, GNode gStart, GNode gEnd){
         ArrayList<PointModel> relaxed = new ArrayList<>();
-        ApproachModelImpl amStart = new ApproachModelImpl(0,0,gStart,null,null, gStart);
-        ApproachModelImpl amEnd = new ApproachModelImpl(0,0,gEnd,null,null, gEnd);
+        ApproachModelImpl amStart = new ApproachModelImpl(0,0,gStart,null,null, gStart, 0);
+        ApproachModelImpl amEnd = new ApproachModelImpl(0,0,gEnd,null,null, gEnd, 0);
         MultiPointModel mpm = routingAlg.perform(amStart, amEnd, 100000, new AtomicInteger(),relaxed);
         System.out.println(routingAlg.getResult().replaceAll("\n","    "));
         return mpm;

@@ -133,7 +133,7 @@ public class FSGraphDetails extends FeatureService {
             }
             for (PointModel node : graph.getNodes()) {
 
-                PointNeighbour neighbour = graph.getNeighbour(node, node); // returns first neighbour pointing to node itself
+                PointNeighbour neighbour = null;
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null) {
                     PointModel neighbourNode = neighbour.getPoint();
                     if (graph.sameGraph(node,neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one

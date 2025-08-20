@@ -25,14 +25,13 @@ public class GNode extends PointModelImpl {
     /**
      * This is the entry of a queue of neighbours. The first link refers to the node itself.
      */
-    private final GNeighbour neighbour;
+    private GNeighbour neighbour = null;
 
     // for Routing algorithms
     private GNodeRef nodeRef = null;
     private GNodeRef nodeReverseRef = null;
 
-    // TODO cleanup - reset to package privacy
-    public int tileIdx;
+    int tileIdx;
     byte borderNode = 0;
     public static final byte BORDER_NODE_WEST  = 0x08;
     public static final byte BORDER_NODE_NORTH = 0x04;
@@ -69,13 +68,15 @@ public class GNode extends PointModelImpl {
         };
     }
 
-    public GNode(double latitude, double longitude, float ele, float eleAcc, double cost){
+    public GNode(double latitude, double longitude, float ele, float eleAcc){
         super(latitude, longitude, ele, eleAcc);
-        this.neighbour = new GNeighbour(this, cost);
     }
 
     public GNeighbour getNeighbour() {
         return neighbour;
+    }
+    public void setNeighbour(GNeighbour neighbour){
+        this.neighbour = neighbour;
     }
 
     public GNodeRef getNodeRef() {

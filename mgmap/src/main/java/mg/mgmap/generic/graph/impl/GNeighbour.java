@@ -25,14 +25,14 @@ import mg.mgmap.generic.model.PointNeighbour;
 public class GNeighbour implements PointNeighbour {
 
     private final GNode neighbourNode;
-    private double cost;
-    private double distance = -1;
+    private float cost;
+    private float distance = -1;
     private GNeighbour nextNeighbour = null;
     private WayAttributs wayAttributs = null;
     private boolean primaryDirection = true;
     private GNeighbour reverse = null;
 
-    public GNeighbour(GNode neighbourNode, double cost){
+    public GNeighbour(GNode neighbourNode, float cost){
         this.neighbourNode = neighbourNode;
         this.cost = cost;
     }
@@ -51,20 +51,20 @@ public class GNeighbour implements PointNeighbour {
         return neighbourNode;
     }
 
-    public double getCost() {
+    public float getCost() {
         return cost;
     }
     void resetCost(){
         cost = -1;
     }
-    public void setCost(double cost){
+    public void setCost(float cost){
         this.cost = cost;
     }
 
-    public double getDistance() {
+    public float getDistance() {
         return distance;
     }
-    public void setDistance(double distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 

@@ -7,5 +7,5 @@ public interface PointNeighbour {
     PointModel getPoint();
     PointNeighbour getNextNeighbour();
     WayAttributs getWayAttributs();
-    double getDistance();
+    float getDistance();
 }

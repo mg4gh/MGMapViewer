@@ -65,8 +65,8 @@ public class GTileConnector {
             for (GNode node1 : remainingNodes1){
                 for (GNode node2 : remainingNodes2){
                     if ((gGraphTile1.countNeighbours(node1) == 1) && (gGraphTile2.countNeighbours(node2) == 1) && (PointModelUtil.distance(node1,node2)<CONNECT_THRESHOLD_METER*20)){
-                        GNode node1Neighbour = gGraphTile1.getNextNeighbour(node1, node1.getNeighbour()).getNeighbourNode();
-                        GNode node2Neighbour = gGraphTile2.getNextNeighbour(node2, node2.getNeighbour()).getNeighbourNode();
+                        GNode node1Neighbour = gGraphTile1.getNextNeighbour(node1, null).getNeighbourNode();
+                        GNode node2Neighbour = gGraphTile2.getNextNeighbour(node2, null).getNeighbourNode();
                         WriteablePointModel approachPoint = new WriteablePointModelImpl();
                         if (!PointModelUtil.findApproach(node1,node1Neighbour,node2Neighbour,approachPoint,0)) continue; // approach not found try next points
                         if (PointModelUtil.distance(approachPoint,node1) > CONNECT_THRESHOLD_METER) continue;

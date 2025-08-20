@@ -39,6 +39,7 @@ public class GNodeRef implements Comparable<GNodeRef>{
     }
 
     public int compareTo(@NonNull GNodeRef gNodeRef) {
+        if (this == gNodeRef) return 0;
         if (getHeuristicCost() == gNodeRef.getHeuristicCost()){
             return Integer.compare(hashCode(), gNodeRef.hashCode());
         }

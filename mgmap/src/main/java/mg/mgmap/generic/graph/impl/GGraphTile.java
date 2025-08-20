@@ -19,15 +19,15 @@ import androidx.annotation.NonNull;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 
+import java.util.ArrayList;
+
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
-import mg.mgmap.generic.model.PointModelUtil;
-
-import java.util.ArrayList;
 
 /**
  * Represents the GGraph object for a particular tile.
@@ -87,7 +87,7 @@ public class GGraphTile extends GGraph {
         n21.setReverse(n12);
         addNeighbour(node1, n12);
         addNeighbour(node2, n21);
-        double distance = PointModelUtil.distance(node1, node2);
+        float distance = (float)PointModelUtil.distance(node1, node2);
         n12.setDistance(distance);
         n21.setDistance(distance);
     }
@@ -119,7 +119,7 @@ public class GGraphTile extends GGraph {
                 hgtTemp.setLat(latitude);
                 hgtTemp.setLon(longitude);
                 elevationProvider.setElevation(hgtTemp);
-                GNode node = new GNode(latitude, longitude, hgtTemp.getEle(), hgtTemp.getEleAcc(), 0);
+                GNode node = new GNode(latitude, longitude, hgtTemp.getEle(), hgtTemp.getEleAcc());
                 if (longitude == bBox.minLongitude) node.borderNode |= GNode.BORDER_NODE_WEST;
                 if (longitude == bBox.maxLongitude) node.borderNode |= GNode.BORDER_NODE_EAST;
                 if (latitude == bBox.minLatitude)  node.borderNode |= GNode.BORDER_NODE_SOUTH;

@@ -93,13 +93,13 @@ public class BidirectionalAStar extends GGraphAlgorithm {
                     mgLog.i("exit perform 4 low memory");
                     break;
                 }
-                GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
+                GNeighbour neighbour = null; // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNeighbour directedNeighbour = ref.isReverse()?neighbour.getReverse():neighbour;
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     GNode directedNode = ref.isReverse()?neighbourNode:node;
                     GNode directedNeighbourNode = ref.isReverse()?node:neighbourNode;
-                    double costToNeighbour = directedNeighbour.getCost();
+                    float costToNeighbour = directedNeighbour.getCost();
                     if (costToNeighbour < 0){
                         costToNeighbour = routingProfile.getCost(directedNeighbour.getWayAttributs(), directedNode, directedNeighbourNode, directedNeighbour.isPrimaryDirection());
                         directedNeighbour.setCost(costToNeighbour);

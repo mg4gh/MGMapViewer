@@ -11,8 +11,29 @@ Still memory is the limiting factor for long routes.
 Each Node of the graph is a separate Object (GNode), each neighbour too (GNeighbour). Furthermore each GNodeRef is also a separate object.
 Persistent caching of these objects seems to be difficult, since all object relationships need to be cached too.
 
-One more problem of current implementation is that approaches might be outdated due to caching of GTile (GGrapthTile might be thrown away and setup newly - then 
+One more problem of current implementation is that approaches might be outdated due to caching of GTile (GGraphTile might be thrown away and setup newly - then 
 the approach point equals to a new one, but is not in the node list of GTile - see `RoutingEngine.getVerifyRoutePointModel`).
+
+### Results
+
+The first idea to use a (or a set of) large ByteBuffer for Nodes and a second for Neighbours can save significant space. The downside is that the performance goes down too.
+A second approach to use large arrays worked much better, still the performance in the routing goes down - especially for longer routes.
+So both approaches are withdrawn finally.
+
+### Next Steps
+
+Next approach should be the attempt to save at least some space:
+  - use float instead of double in GNode and GNeighbour and GNodeRef
+  - drop the first Neighbour pointing to itself
+
+### Further ideas
+
+Is it possible to remove regular GNodes with two neighbours and replace them with a Neighbour (with attached intermediate Nodes). This could be related to the "height relevant points"  - so try to drop none-height relevant points and attach the lat/lon values to the neighbour.
+An alternative approach could reduce all two neighbour nodes - at the cost to keep height with all points.
+
+
+
+# Outdated ides
 
 ### Ideas
 
