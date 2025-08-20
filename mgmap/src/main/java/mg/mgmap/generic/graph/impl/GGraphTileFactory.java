@@ -429,7 +429,7 @@ public class GGraphTileFactory implements GraphFactory {
                     int neighbourNodeIdx;
                     // reset smoothNodeList
                     smoothNeighbourList.clear();
-                    smoothNeighbourList.add(aNode.getNeighbour()); // neighbour with getNeighbourNode = node
+                    smoothNeighbourList.add(aNode.getNeighbour().getReverse()); // a neighbour with getNeighbourNode = aNode
                     float minHeight = aNode.getEle();
                     float maxHeight = aNode.getEle();
                     minHeightPoint = aNode;
