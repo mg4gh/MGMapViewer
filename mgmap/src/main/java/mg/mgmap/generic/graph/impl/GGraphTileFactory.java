@@ -51,7 +51,7 @@ public class GGraphTileFactory implements GraphFactory {
     final static int CACHE_LIMIT = 2000;
     private final byte ZOOM_LEVEL = 15;
     private final int TILE_SIZE = MapViewerBase.TILE_SIZE;
-    static final int LOW_MEMORY_THRESHOLD = 1;
+    static final int LOW_MEMORY_THRESHOLD = 2;
 
     static int getKey(int tileX,int tileY){
         return ( tileX <<16) + tileY;
