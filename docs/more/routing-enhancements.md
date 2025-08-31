@@ -24,12 +24,18 @@ So both approaches are withdrawn finally.
 
 Next approach should be the attempt to save at least some space:
   - use float instead of double in GNode and GNeighbour and GNodeRef
+    - ok for distance and heuristic, nok for total cost (not precise enough)
   - drop the first Neighbour pointing to itself
 
 ### Further ideas
 
-Is it possible to remove regular GNodes with two neighbours and replace them with a Neighbour (with attached intermediate Nodes). This could be related to the "height relevant points"  - so try to drop none-height relevant points and attach the lat/lon values to the neighbour.
-An alternative approach could reduce all two neighbour nodes - at the cost to keep height with all points.
+  - Is it possible to remove regular GNodes with two neighbours and replace them with a Neighbour (with attached intermediate Nodes). 
+    This could be related to the "height relevant points"  - so try to drop none-height relevant points and attach the lat/lon values to the neighbour.
+  - An alternative approach could reduce all two neighbour nodes - at the cost to keep height with all points.
+  - If a point has anyway a reference to its corresponding tile, then a point cold store only the offset of lat/lon to the tiles lat/lon
+  - height could be stored as a short value (unit decimeter/tenth of meter) (sufficient for values up to 6500m)
+  - PointModelUtil is used to compare Nodes - converts internal int values to double before comparing - could be simplified
+  - Use a LongSparseArray during setup of tile (instead of manually sorting)
 
 
 
