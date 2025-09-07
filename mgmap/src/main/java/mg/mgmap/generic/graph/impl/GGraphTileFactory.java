@@ -279,7 +279,7 @@ public class GGraphTileFactory implements GraphFactory {
     }
 
     @SuppressWarnings("CommentedOutCode")
-    private GGraphTile loadGGraphTile(int tileX, int tileY){
+    public GGraphTile loadGGraphTile(int tileX, int tileY){
         mgLog.d(()->"Load tileX=" + tileX + " tileY=" + tileY + " (" + gTileCache.size() + ")");
         Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
         GGraphTile gGraphTile = new GGraphTile(elevationProvider, tile);
