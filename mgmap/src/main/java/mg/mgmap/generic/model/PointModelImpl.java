@@ -68,14 +68,23 @@ public class PointModelImpl implements PointModel{
     public double getLat() {
         return LaLo.md2d(la);
     }
+    public int getLa(){
+        return la;
+    }
     @Override
     public double getLon() {
         return LaLo.md2d(lo);
+    }
+    public int getLo(){
+        return lo;
     }
 
     @Override
     public float getEle(){
         return ele;
+    }
+    public int getEl(){
+        return (int)(ele*10);
     }
 
 
