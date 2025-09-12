@@ -274,7 +274,7 @@ public class GroupSerachTests extends BaseTestCase {
     }
 
 
-    @Test(timeout = 400000)
+    @Test(timeout = 600000)
     public void _09_process_geo_intent() {
         mgLog.i("started");
         SystemClock.sleep(1000);
@@ -314,6 +314,7 @@ public class GroupSerachTests extends BaseTestCase {
         check(mgMapActivity, fsSearch, "geo:0,0?q=Kirchstraße 16, 69115 Heidelberg, Deutschland", ".*lat=49.4069.*lon=8.6784.*zoom=16.*");
         check(mgMapActivity, fsSearch, "geo:0,0?q=zur+Post+Garz", ".*lat=54.31662.*lon=13.34847.*zoom=16.*");
 
+        SystemClock.sleep(3000);
         mgLog.i("finished");
     }
 

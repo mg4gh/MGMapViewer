@@ -14,7 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.features.search.provider;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
@@ -76,6 +75,8 @@ public class Nominatim extends SearchProvider {
 
                 URL url = new URL(sUrl);
                 URLConnection conn = url.openConnection();
+                conn.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0");
+                conn.setRequestProperty("DNT","1");
                 InputStream is = conn.getInputStream();
 
                 JsonReader jsonReader = Json.createReader(is);
@@ -108,7 +109,7 @@ public class Nominatim extends SearchProvider {
                 }
 
                 publishResult(request, resList);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 mgLog.e(e);
             }
 
