@@ -129,7 +129,7 @@ public class RoutingEngine {
             mgLog.e("routing profile is null; cannot route");
             return rotl;
         }
-        boolean routingProfileChanged = (rotl == null) || !routingProfile.getId().equals(rotl.getRoutingProfileId());
+//        boolean routingProfileChanged = (rotl == null) || !routingProfile.getId().equals(rotl.getRoutingProfileId()); // TODO: cleanup, if no problem becomes visible
         mtl.setRoutingProfileId(routingProfile.getId());
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
@@ -144,7 +144,7 @@ public class RoutingEngine {
 
                 boolean bRecalcRoute = true;
                 try {
-                    if (routingProfileChanged){
+//                    if (!routingProfileChanged){
                         if ((prev.getApproach() != null) && (current.getApproach() != null)) {
                             PointModel pmFirst = current.currentMPM.get(0);
                             PointModel pmLast = current.currentMPM.get(current.currentMPM.size() - 1);
@@ -155,7 +155,7 @@ public class RoutingEngine {
                                     !current.aborted)
                                 bRecalcRoute = false;
                         }
-                    }
+//                    }
 
                 } catch (Exception e){
                     //routeModel can be null, approachSet can be empty, ...

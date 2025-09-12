@@ -338,6 +338,12 @@ public class FSRouting extends FeatureService {
                     newMtl.setRoutingProfileId(id);
                     application.markerTrackLogObservable.setTrackLog(newMtl);
                 }
+            } else {
+                if (prefCalcRouteInProgress.getValue()){
+                    routingEngine.refreshRequired.set(-1000);
+                } else {
+                    routingEngine.refreshRequired.incrementAndGet();
+                }
             }
         });
         profileETVs.add(etv);
