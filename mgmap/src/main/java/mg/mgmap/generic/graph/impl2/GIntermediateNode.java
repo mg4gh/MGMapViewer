@@ -22,10 +22,6 @@ public class GIntermediateNode implements PointModel {
         return pIdx;
     }
 
-    public void setPIdx(int pIdx) {
-        this.pIdx = pIdx;
-    }
-
     @Override
     public double getLat() {
         return LaLo.md2d(neighbour.getIntermediatesPoints()[pIdx*3]);
@@ -38,7 +34,7 @@ public class GIntermediateNode implements PointModel {
 
     @Override
     public float getEle() {
-        return (float)(neighbour.getIntermediatesPoints()[pIdx*3+2] / 10.0) ;
+        return neighbour.getIntermediatesPoints()[pIdx*3+2] / PointModelUtil.ELE_FACTOR;
     }
 
     @Override

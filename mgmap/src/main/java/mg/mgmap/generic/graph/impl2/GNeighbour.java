@@ -16,6 +16,7 @@ package mg.mgmap.generic.graph.impl2;
 
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.PointNeighbour;
 
 /**
@@ -26,7 +27,6 @@ public class GNeighbour implements PointNeighbour {
 
     private final GNode neighbourNode;
     private float cost;
-    private float distance = -1;
     private GNeighbour nextNeighbour = null;
     private WayAttributs wayAttributs = null;
     private boolean primaryDirection = true;
@@ -63,10 +63,7 @@ public class GNeighbour implements PointNeighbour {
     }
 
     public float getDistance() {
-        return distance;
-    }
-    public void setDistance(float distance) {
-        this.distance = distance;
+        return (float)PointModelUtil.distance(neighbourNode, reverse.neighbourNode);
     }
 
     public GNeighbour getNextNeighbour() {

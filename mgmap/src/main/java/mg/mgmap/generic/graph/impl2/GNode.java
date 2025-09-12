@@ -31,7 +31,7 @@ public class GNode extends PointModelImpl {
     private GNodeRef nodeRef = null;
     private GNodeRef nodeReverseRef = null;
 
-    int tileIdx;
+    int tileIdx = 0;
     byte borderNode = 0;
     public static final byte BORDER_NODE_WEST  = 0x08;
     public static final byte BORDER_NODE_NORTH = 0x04;

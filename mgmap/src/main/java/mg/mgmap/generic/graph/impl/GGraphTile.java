@@ -25,6 +25,8 @@ import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
@@ -168,5 +170,24 @@ public class GGraphTile extends GGraph {
     @Override
     public String toString() {
         return "GGraphTile-("+getTileX()+","+getTileY()+")";
+    }
+
+    @Override
+    public ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> neighbourPoints) {
+        if (this.bBox.contains(pointModel)){
+            GNode gNode = getNode(pointModel.getLat(), pointModel.getLon());
+            if (gNode != null){
+                GNeighbour neighbour = null;
+                while ((neighbour = (neighbour==null)?gNode.getNeighbour():neighbour.getNextNeighbour()) != null){
+                    neighbourPoints.add(new PointModelImpl(neighbour.getPoint()));
+                }
+            }
+        }
+        return neighbourPoints;
+    }
+
+    @Override
+    public int getTileCount() {
+        return 1;
     }
 }

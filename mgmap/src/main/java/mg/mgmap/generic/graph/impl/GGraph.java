@@ -27,18 +27,13 @@ import mg.mgmap.generic.model.PointNeighbour;
  * A basic graph implementation based on GNode and GNeighbour.
  */
 
-public class GGraph implements Graph {
+public abstract class GGraph implements Graph {
 
     public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
 
     private final ArrayList<GNode> gNodes = new ArrayList<>();
 
     public ArrayList<GNode> getGNodes(){
-        return gNodes;
-    }
-
-    @Override
-    public ArrayList<? extends PointModel> getNodes() {
         return gNodes;
     }
 
@@ -64,13 +59,7 @@ public class GGraph implements Graph {
         }
     }
 
-    public PointNeighbour getNeighbour(PointModel node, PointModel neighbourNode){
-        if ((node instanceof GNode gNode) && (neighbourNode instanceof GNode gNeighbourNode)){
-            return getNeighbour(gNode, gNeighbourNode);
-        }
-        return null;
-    }
-    public GNeighbour getNeighbour(GNode node, GNode neighbourNode){
+    GNeighbour getNeighbour(GNode node, GNode neighbourNode){
         GNeighbour nextNeighbour = node.getNeighbour();
         while (nextNeighbour != null) {
             if (nextNeighbour.getNeighbourNode() == neighbourNode) return nextNeighbour;
@@ -82,19 +71,9 @@ public class GGraph implements Graph {
     public void addNeighbour(GNode node, GNeighbour neighbour){
         neighbour.setNextNeighbour(node.getNeighbour());
         node.setNeighbour(neighbour);
-
-//        if (node.getNeighbour() == null){
-//            node.setNeighbour(neighbour);
-//        } else {
-//            GNeighbour nextNeighbour = node.getNeighbour();
-//            while (getNextNeighbour(node,nextNeighbour) != null) {
-//                nextNeighbour = getNextNeighbour(node,nextNeighbour);
-//            }
-//            setNextNeighbour(node, nextNeighbour, neighbour);
-//        }
     }
 
-    public void removeNeighbourTo(GNode node, GNode neighbourNode) {
+    void removeNeighbourTo(GNode node, GNode neighbourNode) {
         GNeighbour nextNeighbour = node.getNeighbour();
         if (nextNeighbour != null){
             if (nextNeighbour.getNeighbourNode() == neighbourNode){
@@ -112,7 +91,7 @@ public class GGraph implements Graph {
         }
     }
 
-    public void removeNeighbourTo(GNode node, int tileIdx) {
+    void removeNeighbourTo(GNode node, int tileIdx) {
         GNeighbour nextNeighbour = node.getNeighbour();
         GNeighbour lastNeighbour = null;
         while (nextNeighbour != null) {
@@ -129,11 +108,6 @@ public class GGraph implements Graph {
         }
     }
 
-    @SuppressWarnings("unused")
-    public void setNextNeighbour(GNode node, GNeighbour neighbour, GNeighbour nextNeighbour){
-        neighbour.setNextNeighbour(nextNeighbour);
-    }
-
     public int countNeighbours(GNode node){
         GNeighbour neighbour = getNextNeighbour(node, null);
         int cnt = 0;
@@ -143,7 +117,6 @@ public class GGraph implements Graph {
         }
         return cnt;
     }
-
 
     /* returns oppositeNode - means the node has exactly 2 neighbours, where neighbourNode is one and the returned value is the other neighbour.
         returns null, if there is not exactly one other neighbour.
@@ -183,7 +156,7 @@ public class GGraph implements Graph {
         return null; // should not happen (given neighbourNode is not neighbour to node
     }
 
-    public ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2, int closeThreshold, boolean limitToTile){
+    public ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2){
         ArrayList<PointModel> segmentNodes = new ArrayList<>();
         if ((node1 instanceof  GNode gNode1) && (node2 instanceof GNode gNode2)){
             segmentNodes.add(node1);
@@ -191,27 +164,21 @@ public class GGraph implements Graph {
             GNode nodeA = gNode1;
             GNode nodeB = gNode2;
             GNode nodeC;
-            double distance = 0;
             while ( (nodeC = oppositeNode(nodeB, nodeA)) != null){
                 if (segmentNodes.contains(nodeC)) break;
-                if (limitToTile && !sameGraph(nodeC,nodeA)) break;
+                if (!sameGraph(nodeC,nodeA)) break;
                 nodeA = nodeB;
                 nodeB = nodeC;
                 segmentNodes.add(nodeC);
-                distance += PointModelUtil.distance(nodeA, nodeB);
-                if (distance >= closeThreshold) break;
             }
             nodeA = gNode2;
             nodeB = gNode1;
-            distance = 0;
             while ( (nodeC = oppositeNode(nodeB, nodeA)) != null){
                 if (segmentNodes.contains(nodeC)) break;
-                if (limitToTile && !sameGraph(nodeC,nodeA)) break;
+                if (!sameGraph(nodeC,nodeA)) break;
                 nodeA = nodeB;
                 nodeB = nodeC;
                 segmentNodes.add(0, nodeC);
-                distance += PointModelUtil.distance(nodeA, nodeB);
-                if (distance >= closeThreshold) break;
             }
         }
         return segmentNodes;
@@ -221,9 +188,7 @@ public class GGraph implements Graph {
         return false;
     }
 
-    public int getTileCount(){
-        return -1;
-    }
+    public abstract int getTileCount();
 
     public void bidirectionalConnect(GNode node, GNode neighbourNode, GNeighbour baseNeighbour){
         WayAttributs wayAttributs = baseNeighbour==null?null:baseNeighbour.getWayAttributs();
@@ -239,7 +204,7 @@ public class GGraph implements Graph {
     }
 
 
-    public Boolean sameGraph(PointModel node1, PointModel node2){
+    Boolean sameGraph(PointModel node1, PointModel node2){
         if ((node1 instanceof GNode gNode1) && (node2 instanceof GNode gNode2)){
             return gNode1.tileIdx == gNode2.tileIdx;
         }
@@ -258,14 +223,5 @@ public class GGraph implements Graph {
     private String getRefDetails(GNodeRef ref){
         if (ref == null) return "";
         return String.format(Locale.ENGLISH, " %s settled=%b cost=%.2f heuristic=%.2f hcost=%.2f",ref.isReverse()?"rv":"fw",ref.isSetteled(),ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost());
-    }
-
-    @Override
-    public float getCost(PointNeighbour neighbour) {
-        float cost = 0;
-        if (neighbour instanceof GNeighbour gNeighbour){
-            cost = gNeighbour.getCost();
-        }
-        return cost;
     }
 }

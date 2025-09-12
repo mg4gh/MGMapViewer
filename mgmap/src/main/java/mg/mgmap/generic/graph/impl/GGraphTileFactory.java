@@ -49,8 +49,8 @@ public class GGraphTileFactory implements GraphFactory {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     final static int CACHE_LIMIT = 2000;
-    private final byte ZOOM_LEVEL = 15;
-    private final int TILE_SIZE = MapViewerBase.TILE_SIZE;
+    final byte ZOOM_LEVEL = 15;
+    final int TILE_SIZE = MapViewerBase.TILE_SIZE;
     static final int LOW_MEMORY_THRESHOLD = 2;
 
     static int getKey(int tileX,int tileY){
@@ -208,7 +208,7 @@ public class GGraphTileFactory implements GraphFactory {
                                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
                                     if ((bestApproach == null) || (distance < bestApproach.getApproachDistance())){
                                         GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEle(), pmApproach.getEleAcc()); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
-                                        bestApproach = new ApproachModelImpl(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbourNode, approachNode, distance);
+                                        bestApproach = new ApproachModelImpl(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbour, neighbourNode, approachNode, distance);
                                     }
                                 }
                             }
@@ -250,7 +250,7 @@ public class GGraphTileFactory implements GraphFactory {
                     if (am.getNode2() != null){
                         gGraph.removeNeighbourTo(am.getNode2(), 0);
                     }
-                    am.getApproachNode().getNeighbour().setNextNeighbour(null);
+                    am.getApproachNode().setNeighbour(null);
                 } else {
                     mgLog.e("Unexpected approachModel type: "+approachModel.getClass().getName());
                 }
@@ -522,7 +522,7 @@ public class GGraphTileFactory implements GraphFactory {
                             if (!endNode.isFlag(GNode.FLAG_HEIGHT_RELEVANT)){
                                 distance += smoothNeighbourList.get(endIdx).getDistance();
                                 float height = (float)PointModelUtil.interpolate (0, totalDistance, startHeight, endHeight, distance);
-                                endNode.fixEle( height );
+                                endNode.fixEle( Math.round(height*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR );
                             }
                         }
 

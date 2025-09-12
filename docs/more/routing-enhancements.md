@@ -41,18 +41,11 @@ Next approach should be the attempt to save at least some space:
 
 #### Detail ideas for intermediate neighbours 
 
-Main idea: Replace GNode and GNeighbour for 2-neighbour points
-  - GTileFactory.getGGraphTile (after load and smooth, before putting tile to cache):
-    - reduceGraph (replace all 2 Neighbour Nodes with its neighbours)
-    - in calcApproach: 
-      - after `if (gGraphTile.sameGraph(node, neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){` iterate over subsegments of neighbour with intermediates
-    - in connectApproachToGraph
-      - split to appropriate intermediate neighbours
-  - data changes: 
-    - add to GNeighbour an int[] with la,lo, (ele*10) as int values (length: 3 times number of intermediate points)
-    - add to approachModelImpl an iIdx (intermediateIdx) field (so if neighbour contains intermediates, iIdx points to the intermediate node at the beginning of the approach segment )
-      - iIdx = -1 ==> segment from node1 to first intermediate (or node2)
-      - iIdx = 0..<numIntermediates-1> ==> segment from intermediate iIdx to intermediate iIdx+1 (or node2)
+Further aspects after realisation in impl2
+- should approaches be independent on the Graph?
+  - yes, to avaid garbage collection issues
+  - no, because it's hard/impossible to retrieve information (just from approach data)
+  - solution???
 
 
 

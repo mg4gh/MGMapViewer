@@ -1,7 +1,9 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
 import org.junit.Assert;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.reader.MapFile;
 
@@ -11,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S2;
@@ -21,6 +24,7 @@ import mg.mgmap.application.util.ElevationProviderImplHelper;
 import mg.mgmap.application.util.ElevationProviderImplHelper2;
 import mg.mgmap.application.util.HgtProvider2;
 import mg.mgmap.application.util.WayProviderHelper;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.impl.AStar;
 import mg.mgmap.generic.graph.impl.ApproachModelImpl;
 import mg.mgmap.generic.graph.impl.BidirectionalAStar;
@@ -43,13 +47,14 @@ import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxExporter;
 
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RoutingTest {
 
     @Test
     public void _00_routing() {
 
-        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
-        MGLog.setUnittest(true);
+//        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+//        MGLog.setUnittest(true);
 
         PointModelUtil.init(32);
         RoutingContext interactiveRoutingContext = new RoutingContext(
@@ -276,8 +281,8 @@ public class RoutingTest {
 
     private MultiPointModel performSearch(GGraphAlgorithm routingAlg, GNode gStart, GNode gEnd){
         ArrayList<PointModel> relaxed = new ArrayList<>();
-        ApproachModelImpl amStart = new ApproachModelImpl(0,0,gStart,null,null, gStart, 0);
-        ApproachModelImpl amEnd = new ApproachModelImpl(0,0,gEnd,null,null, gEnd, 0);
+        ApproachModelImpl amStart = new ApproachModelImpl(0,0,gStart,null,null, null, gStart, 0);
+        ApproachModelImpl amEnd = new ApproachModelImpl(0,0,gEnd,null,null,null, gEnd, 0);
         MultiPointModel mpm = routingAlg.perform(amStart, amEnd, 100000, new AtomicInteger(),relaxed);
         System.out.println(routingAlg.getResult().replaceAll("\n","    "));
         return mpm;
@@ -322,5 +327,224 @@ public class RoutingTest {
             GpxExporter.export(new PrintWriter(gpxFile), rotl);
         }
     }
+
+
+
+    @Test
+    public void _06_routing_compare_impl_vs_impl2() {
+
+        PointModelUtil.init(32);
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+        MGLog.setUnittest(true);
+
+        ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
+        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
+
+        MapDataStore mds = new MapFile(mapFile, "de");
+        WayProvider wayProvider = new WayProviderHelper(mds);
+
+
+        RoutingProfile rp = new MTB_K2S2();
+
+//        PointModel pmStart = new PointModelImpl(49.402665, 8.686337);
+
+        PointModel pmStart = new PointModelImpl(49.596619, 8.837210);
+
+
+//        PointModel pmEnd = new PointModelImpl(49.401881, 8.687912);
+//        PointModel pmEnd = new PointModelImpl(49.400780, 8.692002);
+//        PointModel pmEnd = new PointModelImpl(49.396697, 8.697632);
+//        PointModel pmEnd = new PointModelImpl(49.396879, 8.706517);
+//        PointModel pmEnd = new PointModelImpl(49.396136, 8.708723);
+//        PointModel pmEnd = new PointModelImpl(49.392785, 8.707633);
+
+        PointModel pmEnd = new PointModelImpl(49.461036, 9.036647);
+
+        MultiPointModel mpm1;
+        {
+            GGraphTileFactory gGraphTileFactory;
+            ArrayList<GGraphTile> gGraphTiles;
+            GGraphMulti multi;
+            ApproachModel amStart;
+            ApproachModel amEnd;
+
+            gGraphTileFactory = new mg.mgmap.generic.graph.impl.GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true));
+            gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(pmStart).extend(PointModelUtil.getCloseThreshold()));
+            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(pmEnd).extend(PointModelUtil.getCloseThreshold())));
+            multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
+
+            amStart = gGraphTileFactory.calcApproach(pmStart, PointModelUtil.getCloseThreshold());
+            gGraphTileFactory.connectApproach2Graph(multi, amStart);
+            amEnd = gGraphTileFactory.calcApproach(pmEnd, PointModelUtil.getCloseThreshold());
+            gGraphTileFactory.connectApproach2Graph(multi, amEnd);
+            ArrayList<PointModel> relaxed = new ArrayList<>();
+            GGraphAlgorithm routingAlg = new BidirectionalAStar(multi, rp);
+            mpm1 = routingAlg.perform(amStart, amEnd, 100000, new AtomicInteger(),relaxed);
+            System.out.println(routingAlg.getResult().replaceAll("\n","    "));
+
+            multi.finalizeUsage();
+            gGraphTileFactory.serviceCache();
+            gGraphTileFactory.disconnectApproach2Graph(multi, amStart);
+            gGraphTileFactory.disconnectApproach2Graph(multi, amEnd);
+        }
+
+        MultiPointModel mpm2;
+        {
+            mg.mgmap.generic.graph.impl2.GGraphTileFactory gGraphTileFactory;
+            ArrayList<mg.mgmap.generic.graph.impl2.GGraphTile> gGraphTiles;
+            mg.mgmap.generic.graph.impl2.GGraphMulti multi;
+            ApproachModel amStart;
+            ApproachModel amEnd;
+
+            gGraphTileFactory = new mg.mgmap.generic.graph.impl2.GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true));
+            gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(pmStart).extend(PointModelUtil.getCloseThreshold()));
+            gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(pmEnd).extend(PointModelUtil.getCloseThreshold())));
+            multi = new mg.mgmap.generic.graph.impl2.GGraphMulti(gGraphTileFactory, gGraphTiles);
+
+            amStart = gGraphTileFactory.calcApproach(pmStart, PointModelUtil.getCloseThreshold());
+            gGraphTileFactory.connectApproach2Graph(multi, amStart);
+            amEnd = gGraphTileFactory.calcApproach(pmEnd, PointModelUtil.getCloseThreshold());
+            gGraphTileFactory.connectApproach2Graph(multi, amEnd);
+            ArrayList<PointModel> relaxed = new ArrayList<>();
+            mg.mgmap.generic.graph.impl2.GGraphAlgorithm routingAlg = new mg.mgmap.generic.graph.impl2.BidirectionalAStar(multi, rp);
+
+            mpm2 = routingAlg.perform(amStart, amEnd, 100000, new AtomicInteger(),relaxed);
+            System.out.println(routingAlg.getResult().replaceAll("\n","    "));
+
+            multi.finalizeUsage();
+            gGraphTileFactory.serviceCache();
+            gGraphTileFactory.disconnectApproach2Graph(multi, amStart);
+            gGraphTileFactory.disconnectApproach2Graph(multi, amEnd);
+        }
+
+        for (int i=0; i<Math.min(mpm1.size(), mpm2.size()); i++){
+            System.out.println("F i="+i+ " mpm1="+mpm1.get(i)+ " mpm2="+mpm2.get(i)+"  "+ Objects.equals(mpm1.get(i),mpm2.get(i)));
+        }
+
+        for (int i=0; i<Math.min(mpm1.size(), mpm2.size()); i++){
+            System.out.println("R i="+i+ " mpm1="+mpm1.get(mpm1.size()-1-i)+ " mpm2="+mpm2.get(mpm2.size()-1-i)+"  "+Objects.equals(mpm1.get(mpm1.size()-1-i),mpm2.get(mpm2.size()-1-i) ));
+        }
+
+
+        Assert.assertEquals(mpm1.size(), mpm2.size());
+        for (int i=0; i<mpm1.size(); i++){
+//            System.out.println("check mpm idx: "+i);
+            Assert.assertEquals(mpm1.get(i).getLat(),mpm2.get(i).getLat(),0);
+            Assert.assertEquals(mpm1.get(i).getLon(),mpm2.get(i).getLon(),0);
+            Assert.assertEquals(mpm1.get(i).getEle(),mpm2.get(i).getEle(),0.1);
+        }
+    }
+
+    @Test
+    public void _07_routing_compare_impl_vs_impl2() {
+
+        PointModelUtil.init(32);
+//        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+//        MGLog.setUnittest(true);
+
+        ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
+        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
+
+        MapDataStore mds = new MapFile(mapFile, "de");
+        WayProvider wayProvider = new WayProviderHelper(mds);
+
+
+        RoutingProfile rp = new MTB_K2S2();
+        int tileXStart = 17184;
+        int tileYStart = 11160;
+        int tileXEnd = 17202;
+        int tileYEnd = 11179;
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
+        for (int x=0; x<100; x++){
+            System.out.printf(Locale.ENGLISH, "%s x=%03d started%n",sdf.format(new Date()),x );
+
+            PointModel pmStart;
+            PointModel pmEnd;
+
+            MultiPointModel mpm1;
+            {
+                GGraphTileFactory gGraphTileFactory;
+                ArrayList<GGraphTile> gGraphTiles;
+                GGraphMulti multi;
+                ApproachModel amStart;
+                ApproachModel amEnd;
+
+                gGraphTileFactory = new mg.mgmap.generic.graph.impl.GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true));
+                PointModel sPoint = gGraphTileFactory.loadGGraphTile(tileXStart+x/2, tileYStart+x).getGNodes().get(5);
+                PointModel ePoint = gGraphTileFactory.loadGGraphTile(tileXEnd+x/2, tileYEnd+x).getGNodes().get(5);
+                pmStart = new PointModelImpl(sPoint.getLat()+0.000011, sPoint.getLon()-0.000022);
+                pmEnd = new PointModelImpl(ePoint.getLat()-0.000011, ePoint.getLon()+0.000022);
+                System.out.println("pmStart="+pmStart);
+                System.out.println("pmEnd=  "+pmEnd);
+
+                gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(pmStart).extend(PointModelUtil.getCloseThreshold()));
+                gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(pmEnd).extend(PointModelUtil.getCloseThreshold())));
+                multi = new GGraphMulti(gGraphTileFactory, gGraphTiles);
+
+                amStart = gGraphTileFactory.calcApproach(pmStart, PointModelUtil.getCloseThreshold());
+                gGraphTileFactory.connectApproach2Graph(multi, amStart);
+                amEnd = gGraphTileFactory.calcApproach(pmEnd, PointModelUtil.getCloseThreshold());
+                gGraphTileFactory.connectApproach2Graph(multi, amEnd);
+                ArrayList<PointModel> relaxed = new ArrayList<>();
+                GGraphAlgorithm routingAlg = new BidirectionalAStar(multi, rp);
+                mpm1 = routingAlg.perform(amStart, amEnd, 100000, new AtomicInteger(),relaxed);
+                System.out.println(routingAlg.getResult().replaceAll("\n","    "));
+
+                multi.finalizeUsage();
+                gGraphTileFactory.serviceCache();
+                gGraphTileFactory.disconnectApproach2Graph(multi, amStart);
+                gGraphTileFactory.disconnectApproach2Graph(multi, amEnd);
+            }
+
+            MultiPointModel mpm2;
+            {
+                mg.mgmap.generic.graph.impl2.GGraphTileFactory gGraphTileFactory;
+                ArrayList<mg.mgmap.generic.graph.impl2.GGraphTile> gGraphTiles;
+                mg.mgmap.generic.graph.impl2.GGraphMulti multi;
+                ApproachModel amStart;
+                ApproachModel amEnd;
+
+                gGraphTileFactory = new mg.mgmap.generic.graph.impl2.GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true));
+                gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(pmStart).extend(PointModelUtil.getCloseThreshold()));
+                gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(pmEnd).extend(PointModelUtil.getCloseThreshold())));
+                multi = new mg.mgmap.generic.graph.impl2.GGraphMulti(gGraphTileFactory, gGraphTiles);
+
+                amStart = gGraphTileFactory.calcApproach(pmStart, PointModelUtil.getCloseThreshold());
+                gGraphTileFactory.connectApproach2Graph(multi, amStart);
+                amEnd = gGraphTileFactory.calcApproach(pmEnd, PointModelUtil.getCloseThreshold());
+                gGraphTileFactory.connectApproach2Graph(multi, amEnd);
+                ArrayList<PointModel> relaxed = new ArrayList<>();
+                mg.mgmap.generic.graph.impl2.GGraphAlgorithm routingAlg = new mg.mgmap.generic.graph.impl2.BidirectionalAStar(multi, rp);
+
+                mpm2 = routingAlg.perform(amStart, amEnd, 100000, new AtomicInteger(),relaxed);
+                System.out.println(routingAlg.getResult().replaceAll("\n","    "));
+
+                multi.finalizeUsage();
+                gGraphTileFactory.serviceCache();
+                gGraphTileFactory.disconnectApproach2Graph(multi, amStart);
+                gGraphTileFactory.disconnectApproach2Graph(multi, amEnd);
+            }
+
+            Assert.assertEquals(mpm1.size(), mpm2.size());
+            for (int i=0; i<mpm1.size(); i++){
+//                System.out.println("check mpm idx: "+i);
+                Assert.assertEquals(mpm1.get(i).getLat(),mpm2.get(i).getLat(),0);
+                Assert.assertEquals(mpm1.get(i).getLon(),mpm2.get(i).getLon(),0);
+                Assert.assertEquals(mpm1.get(i).getEle(),mpm2.get(i).getEle(),0.1);
+            }
+
+
+        }
+
+
+
+
+
+    }
+
 
 }

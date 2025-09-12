@@ -36,6 +36,7 @@ import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.PointNeighbour;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.TrackLogStatistic;
 import mg.mgmap.generic.model.WriteablePointModel;
@@ -49,8 +50,8 @@ public class GGraphTileFactory implements GraphFactory {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     final static int CACHE_LIMIT = 2000;
-    private final byte ZOOM_LEVEL = 15;
-    private final int TILE_SIZE = MapViewerBase.TILE_SIZE;
+    final byte ZOOM_LEVEL = 15;
+    final int TILE_SIZE = MapViewerBase.TILE_SIZE;
     static final int LOW_MEMORY_THRESHOLD = 2;
 
     static int getKey(int tileX,int tileY){
@@ -63,6 +64,7 @@ public class GGraphTileFactory implements GraphFactory {
     Pref<String> prefRoutingAlgorithm;
     Pref<Boolean> prefSmooth4Routing;
     GTileCache gTileCache;
+    ArrayList<PointModel> neighbourPoints = new ArrayList<>();
 
     public GGraphTileFactory(){}
 
@@ -86,7 +88,7 @@ public class GGraphTileFactory implements GraphFactory {
         if (gTileCache != null){
             for (GGraphTile graph : gTileCache.getAll()){
                 for (GNode node : graph.getGNodes()){
-                    GNeighbour neighbour = node.getNeighbour();
+                    GNeighbour neighbour = null;
                     while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null) {
                         neighbour.resetCost();
                         WayAttributs wayAttributs = neighbour.getWayAttributs();
@@ -164,7 +166,7 @@ public class GGraphTileFactory implements GraphFactory {
                     gGraphAlgorithm = (GGraphAlgorithm) object;
                 }
             } catch (Exception e) {
-                mgLog.e(e);
+//                mgLog.e(e);
                 gGraphAlgorithm = new BidirectionalAStar(gGraph, routingProfile); // fallback
             }
         }
@@ -174,10 +176,13 @@ public class GGraphTileFactory implements GraphFactory {
     public ApproachModel validateApproachModel(ApproachModel approachModel){
         if (approachModel instanceof ApproachModelImpl am){
             GGraphTile gGraphTile = getGGraphTile(am.getTileX(), am.getTileY());
-            am.setNode1( gGraphTile.getNode(am.getNode1().getLat(),am.getNode1().getLon()) );
-            am.setNode2( gGraphTile.getNode(am.getNode2().getLat(),am.getNode2().getLon()) );
-            if (am.getNode1() == null) mgLog.e("node1==null ->rework failed");
-            if (am.getNode2() == null) mgLog.e("node2==null ->rework failed");
+
+            am.setNode1(GNodeUtil.validateNode(gGraphTile, am.getNode1()));
+            am.setNode2(GNodeUtil.validateNode(gGraphTile, am.getNode2()));
+            am.setNeighbour1To2(GNodeUtil.validateNeighbour(gGraphTile, am.getNeighbour1To2()));
+            am.setApproachNode(new GNode(am.getApproachNode().getLat(),am.getApproachNode().getLon(),am.getApproachNode().getEle(),am.getApproachNode().getEleAcc()));
+
+            if ((am.getNode1() == null) || (am.getNode2() == null) || (am.getApproachNode() == null) || (am.getNeighbour1To2() == null)) mgLog.e("rework failed: "+am);
         } else {
             mgLog.e("unexpected approachModel type - expected "+ ApproachModelImpl.class.getName()+"; found "+approachModel.getClass().getName());
         }
@@ -198,21 +203,23 @@ public class GGraphTileFactory implements GraphFactory {
 
                 GNeighbour neighbour = null;
                 while ((neighbour = gGraphTile.getNextNeighbour(node, neighbour)) != null) {
-                    GNode neighbourNode = neighbour.getNeighbourNode();
-                    if (gGraphTile.sameGraph(node, neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
+                    if (neighbour.isPrimaryDirection()){
+                        GNode neighbourNode = neighbour.getNeighbourNode();
+//                    if (gGraphTile.sameGraph(node, neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
                         int cntIntermediates = neighbour.cntIntermediates();
                         if (cntIntermediates == 0){
-                            bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, node, neighbourNode, bestApproach);
+                            bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, node, neighbour, neighbourNode, bestApproach);
                         } else {
-                            GIntermediateNode gin1 = new GIntermediateNode(node, neighbour, 0);
+                            GIntermediateNode gin1;
                             GIntermediateNode gin2 = new GIntermediateNode(node, neighbour, 0);
-                            bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, node, gin2, bestApproach);
+                            bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, node, neighbour, gin2, bestApproach);
                             for (int pIdx = 0; pIdx < cntIntermediates-1; pIdx++){
-                                gin1.setPIdx(gin2.getPIdx());
-                                gin2.setPIdx(gin2.getPIdx()+1);
-                                bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, gin1, gin2, bestApproach);
+                                gin1 = gin2;
+                                gin2 = new GIntermediateNode(node, neighbour, pIdx+1);
+                                bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, gin1, neighbour, gin2, bestApproach);
                             }
-                            bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, gin1, neighbourNode, bestApproach);
+                            gin1 = gin2;
+                            bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, gin1, neighbour, neighbourNode, bestApproach);
                         }
                     }
                 }
@@ -221,7 +228,7 @@ public class GGraphTileFactory implements GraphFactory {
         return bestApproach;
     }
 
-    private ApproachModel checkForBetterApproach(PointModel pointModel, int closeThreshold, BBox mtlpBBox, WriteablePointModel pmApproach, GGraphTile gGraphTile, PointModel node, PointModel neighbourNode, ApproachModel bestApproach){
+    private ApproachModel checkForBetterApproach(PointModel pointModel, int closeThreshold, BBox mtlpBBox, WriteablePointModel pmApproach, GGraphTile gGraphTile, PointModel node, PointNeighbour neighbour, PointModel neighbourNode, ApproachModel bestApproach){
         BBox bBoxPart = new BBox().extend(node).extend(neighbourNode);
         boolean bIntersects = mtlpBBox.intersects(bBoxPart);
         if (bIntersects){ // ok, is candidate for close
@@ -229,8 +236,8 @@ public class GGraphTileFactory implements GraphFactory {
                 float distance = (float)(PointModelUtil.distance(pointModel, pmApproach)+0.0001);
                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
                     if ((bestApproach == null) || (distance < bestApproach.getApproachDistance())){
-                        GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEle(), pmApproach.getEleAcc()); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
-                        bestApproach = new ApproachModelImpl(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbourNode, approachNode, distance);
+                        GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), Math.round(pmApproach.getEle()*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR, pmApproach.getEleAcc()); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
+                        bestApproach = new ApproachModelImpl(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbour, neighbourNode, approachNode, distance);
                     }
                 }
             }
@@ -239,19 +246,63 @@ public class GGraphTileFactory implements GraphFactory {
     }
 
 
-
-    @SuppressWarnings("unused")
     public void connectApproach2Graph(Graph graph, ApproachModel approachModel){
         if (graph instanceof GGraph gGraph){
             if (approachModel != null) {
                 if (approachModel instanceof ApproachModelImpl am){
                     GNode approachNode = am.getApproachNode();
-                    GNode node1 = am.getNode1();
-                    GNode node2 = am.getNode2();
-                    GNeighbour neighbour12 = gGraph.getNeighbour(node1, node2);
+                    PointModel node1 = am.getNode1();
+                    GNode gNode0 = null;
+                    GNode gNode1 = null;
+                    if (node1 instanceof GNode gNode){
+                        gNode0 = gNode;
+                        gNode1 = gNode;
+                    } else if (node1 instanceof GIntermediateNode giNode){
+                        gNode0 = giNode.node;
+                        gNode1 = new GNode(giNode.getLat(), giNode.getLon(), giNode.getEle(), giNode.getEleAcc());
+                        int intermediates = giNode.getPIdx();
+                        if (intermediates > 0){
+                            int[] intermediatePoints = new int[3*intermediates];
+                            int[] intermediatePointsReverse = new int[3*intermediates];
+                            System.arraycopy(giNode.neighbour.getIntermediatesPoints(), 0, intermediatePoints, 0, 3*intermediates);
+                            System.arraycopy(giNode.neighbour.getReverse().getIntermediatesPoints(), (giNode.neighbour.cntIntermediates() - intermediates) * 3, intermediatePointsReverse, 0, 3*intermediates);
+                            GNeighbour startNeighbour = gGraph.bidirectionalConnect(gNode0, gNode1, giNode.neighbour);
+                            startNeighbour.setIntermediatesPoints(intermediatePoints);
+                            startNeighbour.getReverse().setIntermediatesPoints(intermediatePointsReverse);
+                        } else {
+                            gGraph.bidirectionalConnect(gNode0, gNode1, giNode.neighbour);
+                        }
+                    }
+                    PointModel node2 = am.getNode2();
+                    GNode gNode2 = null;
+                    GNode gNode3 = null;
+                    if (node2 instanceof GNode gNode){
+                        gNode2 = gNode;
+                        gNode3 = gNode;
+                    } else if (node2 instanceof GIntermediateNode giNode){
+                        gNode2 = new GNode(giNode.getLat(), giNode.getLon(), giNode.getEle(), giNode.getEleAcc());
+                        gNode3 = giNode.neighbour.getNeighbourNode();
+                        int intermediates = giNode.neighbour.cntIntermediates() - giNode.getPIdx() - 1;
+                        if (intermediates > 0){
+                            int[] intermediatePoints = new int[3*intermediates];
+                            int[] intermediatePointsReverse = new int[3*intermediates];
+                            System.arraycopy(giNode.neighbour.getIntermediatesPoints(), (giNode.neighbour.cntIntermediates() - intermediates) * 3, intermediatePoints, 0, 3*intermediates);
+                            System.arraycopy(giNode.neighbour.getReverse().getIntermediatesPoints(), 0, intermediatePointsReverse, 0, 3*intermediates);
+                            GNeighbour endNeighbour = gGraph.bidirectionalConnect(gNode3, gNode2, giNode.neighbour.getReverse());
+                            endNeighbour.setIntermediatesPoints(intermediatePointsReverse);
+                            endNeighbour.getReverse().setIntermediatesPoints(intermediatePoints);
+                            mgLog.d();
+                        } else {
+                            gGraph.bidirectionalConnect(gNode3, gNode2, giNode.neighbour.getReverse());
+                        }
+                    }
+                    assert (gNode0 != null);
+                    assert (gNode3 != null);
+                    GNeighbour neighbour12 = (GNeighbour) (am.getNeighbour1To2()) ;
                     GNeighbour neighbour21 = neighbour12.getReverse();
-                    gGraph.bidirectionalConnect(node1, approachNode, neighbour12);
-                    gGraph.bidirectionalConnect(node2, approachNode, neighbour21);
+                    gGraph.bidirectionalConnect(gNode1, approachNode, neighbour12);
+                    gGraph.bidirectionalConnect(gNode2, approachNode, neighbour21);
+                    mgLog.d("dummy");
                 } else {
                     mgLog.e("Unexpected approachModel type: "+approachModel.getClass().getName());
                 }
@@ -264,13 +315,20 @@ public class GGraphTileFactory implements GraphFactory {
         if (graph instanceof GGraph gGraph) {
             if (approachModel != null){
                 if (approachModel instanceof ApproachModelImpl am){
-                    if (am.getNode1() != null){
-                        gGraph.removeNeighbourTo(am.getNode1(), 0);
+                    if (am.getNode1() instanceof GNode gNode1){
+                        gGraph.removeNeighbourTo(gNode1, 0);
                     }
-                    if (am.getNode2() != null){
-                        gGraph.removeNeighbourTo(am.getNode2(), 0);
+                    if (am.getNode1() instanceof GIntermediateNode giNode1){
+                        gGraph.removeNeighbourTo(giNode1.node, 0);
                     }
-                    am.getApproachNode().getNeighbour().setNextNeighbour(null);
+
+                    if (am.getNode2() instanceof GNode gNode2){
+                        gGraph.removeNeighbourTo(gNode2, 0);
+                    }
+                    if (am.getNode2() instanceof GIntermediateNode giNode2){
+                        gGraph.removeNeighbourTo(giNode2.neighbour.getNeighbourNode(), 0);
+                    }
+                    am.getApproachNode().setNeighbour(null);
                 } else {
                     mgLog.e("Unexpected approachModel type: "+approachModel.getClass().getName());
                 }
@@ -290,6 +348,7 @@ public class GGraphTileFactory implements GraphFactory {
                     gGraphTile = loadGGraphTile(tileX, tileY);
                     if (prefSmooth4Routing.getValue()){
                         smoothGGraphTile(gGraphTile);
+                        reduceIntermediates(gGraphTile);
                     }
                     gTileCache.put(tileX, tileY, gGraphTile);
                 }
@@ -343,8 +402,10 @@ public class GGraphTileFactory implements GraphFactory {
                     continue; // goto next mIdx
                 if (PointModelUtil.distance(iNode, nNode) > GGraph.CONNECT_THRESHOLD_METER)
                     continue;
-                if (gGraphTile.getNeighbour(iNode,nNode)!=null)
-                    continue; // is already neighbour
+                if (!neighbourPoints.isEmpty()) neighbourPoints.clear(); // reuse list object, but clear if necessary
+                if (gGraphTile.getNeighbours(iNode, neighbourPoints).contains(nNode)){
+                    continue;
+                }
 
 //This doesn't work well for routing hints
 //                    graph.addSegment(iNode, nNode);
@@ -542,34 +603,59 @@ public class GGraphTileFactory implements GraphFactory {
                             if (!endNode.isFlag(GNode.FLAG_HEIGHT_RELEVANT)){
                                 distance += smoothNeighbourList.get(endIdx).getDistance();
                                 float height = (float)PointModelUtil.interpolate (0, totalDistance, startHeight, endHeight, distance);
-                                endNode.fixEle( height );
+                                endNode.fixEle( Math.round(height*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR );
                             }
                         }
-
-                        if (endIdx - startIdx > 1){ // there are intermediate Points
-                            GNode startNode = smoothNeighbourList.get(startIdx).getNeighbourNode();
-                            GNeighbour startNeighbour = smoothNeighbourList.get(startIdx+1); // form start to startNext
-                            GNode startNextNode = startNeighbour.getNeighbourNode();
-                            GNode endNode = smoothNeighbourList.get(endIdx).getNeighbourNode();
-                            GNeighbour endNeighbour = smoothNeighbourList.get(endIdx).getReverse(); // from end to endPrev
-                            GNode endPrevNode = smoothNeighbourList.get(endIdx-1).getNeighbourNode();
-                            int[] intermediatePoints = new int[(endIdx - startIdx -1) *3];
-                            for (int pIdx = startIdx; pIdx < endIdx; pIdx++){
-                                GNode pNode = smoothNeighbourList.get(pIdx).getNeighbourNode();
-                                intermediatePoints[pIdx * 3    ] = pNode.getLa();
-                                intermediatePoints[pIdx * 3 + 1] = pNode.getLo();
-                                intermediatePoints[pIdx * 3 + 2] = pNode.getEl();
-                            }
-                            tile.removeNeighbourTo(startNode, startNextNode);
-                            tile.removeNeighbourTo(endNode, endPrevNode);
-                            tile.bidirectionalConnect(startNode, endNode, startNeighbour);
-                        }
-
                         startIdx = endIdx;
                     }
                 } // iterate over all neighbours
             } // if (aNode.isFlag(GNode.FLAG_FIX))
         } // iterate over all nodes
+    }
+
+    @SuppressWarnings("UnnecessaryLocalVariable")
+    public void reduceIntermediates(GGraphTile gGraphTile){
+        ArrayList<GNode> intermediatesList = new ArrayList<>();
+        for (GNode aNode : gGraphTile.getGNodes()) { // iterate over all nodes
+            if (aNode.isFlag(GNode.FLAG_FIX)){
+                GNeighbour aNeighbour = null;
+                while ((aNeighbour = gGraphTile.getNextNeighbour(aNode, aNeighbour)) != null) { // iterate over all neighbours
+                    if (aNeighbour.isPrimaryDirection()){ // do work only for one direction
+                        GNode startNode = aNode;
+                        GNeighbour startNeighbour = aNeighbour;
+                        GNeighbour neighbour = aNeighbour;
+                        while (!neighbour.getNeighbourNode().isFlag(GNode.FLAG_FIX)){
+                            intermediatesList.add(neighbour.getNeighbourNode());
+                            neighbour = gGraphTile.oppositeNeighbour(neighbour.getNeighbourNode(), neighbour.getReverse());
+                        }
+                        if (!intermediatesList.isEmpty()){
+                            GNode endNode = neighbour.getNeighbourNode();
+                            GNeighbour endNeighbour = neighbour.getReverse();
+                            int numIntermediates = intermediatesList.size();
+                            int[] intermediatePoints = new int[3*numIntermediates];
+                            int[] intermediatePointsReverse = new int[3*numIntermediates];
+                            for (int iIdx=0; iIdx<numIntermediates; iIdx++){
+                                intermediatePoints[iIdx*3    ] = intermediatesList.get(iIdx).getLa();
+                                intermediatePointsReverse[3*(numIntermediates-1) - iIdx*3     ] = intermediatesList.get(iIdx).getLa();
+                                intermediatePoints[iIdx*3 + 1] = intermediatesList.get(iIdx).getLo();
+                                intermediatePointsReverse[3*(numIntermediates-1) - iIdx*3 + 1 ] = intermediatesList.get(iIdx).getLo();
+                                intermediatePoints[iIdx*3 + 2] = intermediatesList.get(iIdx).getEl();
+                                intermediatePointsReverse[3*(numIntermediates-1) - iIdx*3 + 2 ] = intermediatesList.get(iIdx).getEl();
+                            }
+                            // be careful - removal of neighbours and adding of shortcutNeighbours is done during iteration - nevertheless it should work this way
+                            gGraphTile.removeNeighbourTo(startNode, startNeighbour.getNeighbourNode());
+                            gGraphTile.removeNeighbourTo(endNode, endNeighbour.getNeighbourNode());
+                            GNeighbour shortcutNeighbour = gGraphTile.bidirectionalConnect(startNode, endNode, startNeighbour);
+                            shortcutNeighbour.setIntermediatesPoints(intermediatePoints);
+                            shortcutNeighbour.getReverse().setIntermediatesPoints(intermediatePointsReverse);
+
+                            intermediatesList.clear();
+                        } // if (!intermediatesList.isEmpty()){
+                    } // primaryDirection
+                } // iterate over all neighbours
+            } // if (aNode.isFlag(GNode.FLAG_FIX))
+        } // iterate over all nodes
+        gGraphTile.getGNodes().removeIf(node -> !node.isFlag(GNode.FLAG_FIX));
     }
 
     private double distance(ArrayList<GNeighbour> smoothNeighbourList, int idx1, int idx2){

@@ -24,12 +24,12 @@ import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.graph.GraphFactory;
 import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.generic.model.PointNeighbour;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteablePointModel;
@@ -305,9 +305,12 @@ public class RoutingEngine {
                     if (idx == 0){
                         duration = 0;
                     } else {
-//                        PointNeighbour lastNeighbour = gFactory.getPointNeighbour(mpmRaw.get(idx-1), mpmRaw.get(idx));
-                        PointNeighbour lastNeighbour = graph.getNeighbour(mpmRaw.get(idx-1), mpmRaw.get(idx));
-                        duration += routingProfile.getDuration(lastNeighbour==null?null:lastNeighbour.getWayAttributs(),mpmRaw.get(idx-1), mpmRaw.get(idx));
+                        WayAttributs wayAttributs = null;
+                        if (mpmRaw.get(idx) instanceof ExtendedPointModelImpl<?>){
+                            //noinspection unchecked
+                            wayAttributs =((ExtendedPointModelImpl<WayAttributs>)mpmRaw.get(idx)).getExtent();
+                        }
+                        duration += routingProfile.getDuration(wayAttributs,mpmRaw.get(idx-1), mpmRaw.get(idx));
 
                         if (idx < mpmRaw.size()-1){
                             hint = new RoutingHint();
@@ -320,20 +323,19 @@ public class RoutingEngine {
                             hint.nextLeftDegree = -1;
                             hint.nextRightDegree = 361;
 
-                            PointNeighbour neighbour = null;
-                            while ((neighbour = graph.getNextNeighbour(hint.pmCurrent, neighbour)) != null) {
-                                if (sourceApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to source approach node
-                                if (targetApproachModel.getApproachNode() == neighbour.getPoint()) continue; // skip neighbour to target approach node
+                            for (PointModel neighbourPoint : graph.getNeighbours(hint.pmCurrent, new ArrayList<>())){
+                                if (sourceApproachModel.getApproachNode() == neighbourPoint) continue; // skip neighbour to source approach node
+                                if (targetApproachModel.getApproachNode() == neighbourPoint) continue; // skip neighbour to target approach node
                                 hint.numberOfPathes++;
                                 // use approach segments as path, but not as concurrent path with degree calculation
-                                if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbour.getPoint()))){
+                                if ((idx == 1) && (source.verifyApproach(hint.pmCurrent,hint.pmPrev,neighbourPoint))){
                                     continue;
                                 }
-                                if ((idx == mpmRaw.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbour.getPoint()))){
+                                if ((idx == mpmRaw.size()-2) && (target.verifyApproach(hint.pmCurrent,hint.pmNext,neighbourPoint))){
                                     continue;
                                 }
 
-                                double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbour.getPoint());
+                                double degree = PointModelUtil.calcDegree(hint.pmPrev,hint.pmCurrent,neighbourPoint);
                                 if ((hint.nextLeftDegree < degree) && (degree < hint.directionDegree)) hint.nextLeftDegree = degree;
                                 if ((hint.directionDegree < degree) && (degree < hint.nextRightDegree)) hint.nextRightDegree = degree;
                             }
@@ -342,25 +344,6 @@ public class RoutingEngine {
                     ExtendedPointModelImpl<RoutingHint> epm = new ExtendedPointModelImpl<>(mpmRaw.get(idx),hint);
                     epm.setTimestamp(duration);
                     mpm.addPoint(epm);
-                }
-
-
-                // optimize, if start and end approach hit the same graph neighbour (overlays for approach doesn't consider potential neighbour approach
-                if ((mpm.size() == 3) && (mpmRaw != null)){ // second condition will always be satisfied
-                    double d = PointModelUtil.distance(mpm.get(0), mpm.get(2) );
-                    double d1 = PointModelUtil.distance(mpm.get(0), mpm.get(1) );
-                    double d2 = PointModelUtil.distance(mpm.get(1), mpm.get(2) );
-                    PointModel pm1 = mpm.get(1);
-
-                    if (((d1 > d2) && (Math.abs(d1-(d2+d))<0.1)) || ((d1 <= d2) && (Math.abs(d2-(d1+d))<0.1))){
-                        // retrieve neighbour to get wayAttributes
-                        PointNeighbour lastNeighbour = graph.getNeighbour(mpmRaw.get(0),mpmRaw.get(1));
-                        duration += routingProfile.getDuration(lastNeighbour.getWayAttributs(), mpmRaw.get(0), mpmRaw.get(2));
-                        if (mpm.get(2) instanceof ExtendedPointModelImpl<?>){
-                            ((ExtendedPointModelImpl<?>)mpm.get(2)).setTimestamp(duration);
-                        }
-                        mpm.removePoint(pm1);
-                    }
                 }
             } else {
                 mgLog.d("no approach, take bee line");

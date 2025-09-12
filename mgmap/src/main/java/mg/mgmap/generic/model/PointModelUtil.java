@@ -34,6 +34,7 @@ public class PointModelUtil {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     public static final long NO_POS = LaLo.getLaLo(PointModel.NO_LAT_LONG_MD, PointModel.NO_LAT_LONG_MD);
+    public static final float ELE_FACTOR = 100.0f;
 
     /**
      * The equatorial radius as defined by the <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84
@@ -127,7 +128,7 @@ public class PointModelUtil {
         if ((v1x == 0) && (v1y == 0)){
             pmResult.setEle(eleEnd1);
             pmResult.setTimestamp(tsEnd1);
-        } else if (v1x > v1y) { // interpolate based on longitude
+        } else if (Math.abs(v1x) > Math.abs(v1y)) { // interpolate based on longitude
             pmResult.setEle( (float) interpolate(lonEnd1, lonEnd2, eleEnd1, eleEnd2, pmResult.getLon()) );
             pmResult.setTimestamp( (long) interpolate(lonEnd1, lonEnd2, tsEnd1, tsEnd2, pmResult.getLon()) );
         } else { // interpolate based on latitude

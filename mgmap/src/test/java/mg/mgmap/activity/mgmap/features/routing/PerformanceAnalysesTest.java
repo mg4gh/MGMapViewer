@@ -1,37 +1,30 @@
 package mg.mgmap.activity.mgmap.features.routing;
 
-import android.util.LruCache;
-
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.datastore.MapDataStore;
-import org.mapsforge.map.datastore.Way;
 import org.mapsforge.map.reader.MapFile;
 
 import java.io.File;
 
-import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S2;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImplHelper;
 import mg.mgmap.application.util.ElevationProviderImplHelper2;
 import mg.mgmap.application.util.HgtProvider2;
 import mg.mgmap.application.util.WayProviderHelper;
-import mg.mgmap.generic.graph.impl.GGraphTile;
-import mg.mgmap.generic.graph.impl.GGraphTileFactory;
+import mg.mgmap.generic.graph.impl2.GGraphTile;
+import mg.mgmap.generic.graph.impl2.GGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
-import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
-import mg.mgmap.generic.model.WriteableTrackLog;
-import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.MGLog;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PerformanceAnalyses {
+public class PerformanceAnalysesTest {
 
 
     @Test
@@ -41,23 +34,15 @@ public class PerformanceAnalyses {
         MGLog.setUnittest(true);
 
         PointModelUtil.init(32);
-        RoutingContext interactiveRoutingContext = new RoutingContext(
-                10000,
-                false, // no extra snap, since FSMarker snaps point zoom level dependent
-                10, // accept long detours in interactive mode
-                1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
 
-        ElevationProvider elevationProvider = new ElevationProviderImplHelper();
         File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
 
         int baseX = 17173;
         int baseY = 11196;
 
-
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
 
         long start = System.nanoTime();
         for (int x = baseX; x < baseX + 100; x++){
@@ -77,11 +62,6 @@ public class PerformanceAnalyses {
         MGLog.setUnittest(true);
 
         PointModelUtil.init(32);
-        RoutingContext interactiveRoutingContext = new RoutingContext(
-                10000,
-                false, // no extra snap, since FSMarker snaps point zoom level dependent
-                10, // accept long detours in interactive mode
-                1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
 
         ElevationProvider elevationProvider = new ElevationProviderImplHelper();
         File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
@@ -118,11 +98,6 @@ public class PerformanceAnalyses {
         MGLog.setUnittest(true);
 
         PointModelUtil.init(32);
-        RoutingContext interactiveRoutingContext = new RoutingContext(
-                10000,
-                false, // no extra snap, since FSMarker snaps point zoom level dependent
-                10, // accept long detours in interactive mode
-                1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
 
         HgtProvider2 hgtProvider = new HgtProvider2();
         ElevationProvider elevationProvider = new ElevationProviderImplHelper2( hgtProvider );
@@ -154,11 +129,6 @@ public class PerformanceAnalyses {
         MGLog.setUnittest(true);
 
         PointModelUtil.init(32);
-        RoutingContext interactiveRoutingContext = new RoutingContext(
-                10000,
-                false, // no extra snap, since FSMarker snaps point zoom level dependent
-                10, // accept long detours in interactive mode
-                1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
 
         ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
         File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
@@ -166,11 +136,6 @@ public class PerformanceAnalyses {
 
         int baseX = 17173;
         int baseY = 11196;
-
-
-        MapDataStore mds = new MapFile(mapFile, "de");
-        WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>("BidirectionalAStar"), new Pref<>(false));
 
         long start = System.nanoTime();
         WriteablePointModelImpl wpmi = new WriteablePointModelImpl();

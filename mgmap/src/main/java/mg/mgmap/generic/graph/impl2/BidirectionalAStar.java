@@ -94,14 +94,14 @@ public class BidirectionalAStar extends GGraphAlgorithm {
                     break;
                 }
                 GNeighbour neighbour = null; // start relax all neighbours
-                while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
+                while ((neighbour = (neighbour==null)?node.getNeighbour():neighbour.getNextNeighbour()) != null){
                     GNeighbour directedNeighbour = ref.isReverse()?neighbour.getReverse():neighbour;
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     GNode directedNode = ref.isReverse()?neighbourNode:node;
                     GNode directedNeighbourNode = ref.isReverse()?node:neighbourNode;
                     float costToNeighbour = directedNeighbour.getCost();
                     if (costToNeighbour < 0){
-                        costToNeighbour = routingProfile.getCost(directedNeighbour.getWayAttributs(), directedNode, directedNeighbourNode, directedNeighbour.isPrimaryDirection());
+                        costToNeighbour = costToNeighbour(directedNode, directedNeighbour, directedNeighbourNode);
                         directedNeighbour.setCost(costToNeighbour);
                     }
                     double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path
@@ -168,9 +168,8 @@ public class BidirectionalAStar extends GGraphAlgorithm {
         MultiPointModelImpl resultPath = new MultiPointModelImpl();
         if (matchNode != null){
             resultPath = getPath(matchNode.getNodeRef());
-            resultPathLength = resultPath.size();
-            for (PointModel pm : getPath(matchNode.getNodeRef(true).getPredecessor().getNodeRef(true))){
-                resultPath.addPoint(resultPathLength,pm);
+            for (PointModel pm : getPath(matchNode.getNodeRef(true))){
+                resultPath.addPoint(pm);
             }
         }
         resultPathLength = resultPath.size();

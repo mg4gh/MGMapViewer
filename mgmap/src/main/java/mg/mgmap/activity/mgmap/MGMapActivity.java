@@ -80,7 +80,7 @@ import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.graph.GraphFactory;
-import mg.mgmap.generic.graph.impl.GGraphTileFactory;
+import mg.mgmap.generic.graph.impl2.GGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogRef;

@@ -14,6 +14,9 @@
  */
 package mg.mgmap.generic.graph.impl;
 
+import org.mapsforge.core.util.MercatorProjection;
+
+import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.basic.MGLog;
 
 import java.lang.invoke.MethodHandles;
@@ -57,6 +60,27 @@ public class GGraphMulti extends GGraph {
             }
         }
         return nodes;
+    }
+
+    @Override
+    public ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> neighbourPoints) {
+        long mapSize = MercatorProjection.getMapSize(gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
+
+        int tileX = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( pointModel.getLon() , mapSize) , gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
+        int tileY = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( pointModel.getLat() , mapSize) , gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
+        GGraphTile graph = gGraphTileFactory.getGGraphTile(tileX, tileY);
+        neighbourPoints = graph.getNeighbours(pointModel, new ArrayList<>());
+
+        GNode node = graph.getNode(pointModel.getLat(), pointModel.getLon());
+        if (node != null){
+            for (byte border = mg.mgmap.generic.graph.impl2.GNode.BORDER_NODE_SOUTH; border <= mg.mgmap.generic.graph.impl2.GNode.BORDER_NODE_WEST; border = (byte)(border<<1)){
+                if ((node.borderNode & border) != 0){
+                    GGraphTile neighbourGraph = graph.neighbourTiles[border];
+                    if (neighbourGraph != null) neighbourGraph.getNeighbours(pointModel, neighbourPoints);
+                }
+            }
+        }
+        return neighbourPoints;
     }
 
     // return true, if graph changed

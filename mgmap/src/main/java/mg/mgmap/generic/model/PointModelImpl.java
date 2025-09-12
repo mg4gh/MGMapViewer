@@ -43,6 +43,16 @@ public class PointModelImpl implements PointModel{
         return pmi;
     }
 
+    public static PointModelImpl createFromLaLo(int la, int lo, int el){
+        PointModelImpl pmi = new PointModelImpl();
+        pmi.la = la;
+        pmi.lo = lo;
+        pmi.ele = el/PointModelUtil.ELE_FACTOR;
+        return pmi;
+    }
+
+
+
     public PointModelImpl(PointModel pm){
         this(pm.getLat(), pm.getLon(), pm.getEle(), pm.getEleAcc());
     }
@@ -84,7 +94,7 @@ public class PointModelImpl implements PointModel{
         return ele;
     }
     public int getEl(){
-        return (int)(ele*10);
+        return (int)(ele*PointModelUtil.ELE_FACTOR);
     }
 
 

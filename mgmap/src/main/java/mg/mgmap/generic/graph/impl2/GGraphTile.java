@@ -24,7 +24,10 @@ import java.util.ArrayList;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.BBox;
+import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
@@ -87,9 +90,6 @@ public class GGraphTile extends GGraph {
         n21.setReverse(n12);
         addNeighbour(node1, n12);
         addNeighbour(node2, n21);
-        float distance = (float)PointModelUtil.distance(node1, node2);
-        n12.setDistance(distance);
-        n21.setDistance(distance);
     }
 
     public GNode getNode(double latitude, double longitude){
@@ -169,4 +169,25 @@ public class GGraphTile extends GGraph {
     public String toString() {
         return "GGraphTile-("+getTileX()+","+getTileY()+")";
     }
+
+    @Override
+    public ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> neighbourPoints) {
+        if (this.bBox.contains(pointModel)){
+            GNode gNode = getNode(pointModel.getLat(), pointModel.getLon());
+            if (gNode != null){
+
+                GNeighbour neighbour = null;
+                while ((neighbour = (neighbour==null)?gNode.getNeighbour():neighbour.getNextNeighbour()) != null){
+                    if (neighbour.cntIntermediates() > 0){
+                        int[] intermediates = neighbour.getIntermediatesPoints();
+                        neighbourPoints.add(ExtendedPointModelImpl.createFromLaLo(intermediates[0], intermediates[1], intermediates[2], null));
+                    } else {
+                        neighbourPoints.add(new PointModelImpl(neighbour.getPoint()));
+                    }
+                }
+            }
+        }
+        return neighbourPoints;
+    }
+
 }

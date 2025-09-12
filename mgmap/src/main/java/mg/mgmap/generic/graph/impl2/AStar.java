@@ -29,6 +29,7 @@ import mg.mgmap.generic.util.basic.MGLog;
 /**
  * Implementation of the AStar algorithm.
  */
+@SuppressWarnings("unused")
 public class AStar extends GGraphAlgorithm {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
@@ -73,11 +74,11 @@ public class AStar extends GGraphAlgorithm {
                 if (refreshRequired.get() != 0) break;
                 lowMemory = preNodeRelax(node); // add lazy expansion of GGraphMulti
                 GNeighbour neighbour = null; // start relax all neighbours
-                while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
+                while ((neighbour = (neighbour==null)?node.getNeighbour():neighbour.getNextNeighbour()) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     float costToNeighbour = neighbour.getCost();
                     if (costToNeighbour < 0){
-                        costToNeighbour = routingProfile.getCost(neighbour.getWayAttributs(), node, neighbourNode, neighbour.isPrimaryDirection());
+                        costToNeighbour = costToNeighbour(node, neighbour, neighbourNode);
                         neighbour.setCost(costToNeighbour);
                     }
                     double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path

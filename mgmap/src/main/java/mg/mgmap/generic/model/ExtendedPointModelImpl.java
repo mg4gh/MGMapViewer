@@ -18,6 +18,20 @@ public class ExtendedPointModelImpl<T> extends WriteablePointModelImpl implement
 
     private final T extent;
 
+    public static <T> ExtendedPointModelImpl<T> createFromLaLo(int la, int lo, int el, T extent){
+        ExtendedPointModelImpl<T> epmi = new ExtendedPointModelImpl<>(extent);
+        epmi.la = la;
+        epmi.lo = lo;
+        epmi.ele = el/PointModelUtil.ELE_FACTOR;
+        return epmi;
+    }
+
+
+
+    private ExtendedPointModelImpl(T extent) {
+        this.extent = extent;
+    }
+
     public ExtendedPointModelImpl(PointModel pm, T extent){
         this(pm.getLat(), pm.getLon(), pm.getEle(), pm.getEleAcc(), extent);
     }

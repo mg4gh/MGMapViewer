@@ -5,23 +5,14 @@ import java.util.ArrayList;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.PointNeighbour;
 
 public interface Graph {
 
-    ArrayList<? extends PointModel> getNodes();
-
-    PointNeighbour getNeighbour(PointModel node, PointModel neighbourNode);
-
-    PointNeighbour getNextNeighbour(PointModel node, PointNeighbour neighbour);
-
-    ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2, int closeThreshold, boolean limitToTile);
+    ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2);
 
     String getRefDetails(PointModel node);
 
-    float getCost(PointNeighbour neighbour);
-
-    default void finalizeUsage(){};
+    default void finalizeUsage(){}
 
     default BBox getBBox(){
         return null;
@@ -31,8 +22,5 @@ public interface Graph {
         return null;
     }
 
-    default Boolean sameGraph(PointModel node1, PointModel node2){
-        return null;
-    }
-
+    ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> resList);
 }

@@ -14,9 +14,12 @@
  */
 package mg.mgmap.generic.graph.impl;
 
+import androidx.annotation.NonNull;
+
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.PointModelUtil;
 
 /**
  * An Approach is a model object that represents a close part of a graph.
@@ -30,14 +33,16 @@ public class ApproachModelImpl implements ApproachModel {
     private final PointModel pmPos;
     private GNode node1;
     private GNode node2;
+    private final GNeighbour neighbour1To2;
     private final GNode approachNode;
     private final float approachDistance;
 
-    public ApproachModelImpl(int tileX, int tileY, PointModel pmPos, GNode node1, GNode node2, GNode approachNode, float approachDistance) {
+    public ApproachModelImpl(int tileX, int tileY, PointModel pmPos, GNode node1, GNeighbour neighbour1To2, GNode node2, GNode approachNode, float approachDistance) {
         this.tileX = tileX;
         this.tileY = tileY;
         this.pmPos = new PointModelImpl(pmPos.getLat(), pmPos.getLon());
         this.node1 = node1;
+        this.neighbour1To2 = neighbour1To2;
         this.node2 = node2;
         this.approachNode = approachNode;
         this.approachDistance = approachDistance;
@@ -64,6 +69,10 @@ public class ApproachModelImpl implements ApproachModel {
         this.node2 = node2;
     }
 
+    public GNeighbour getNeighbour1To2(){
+        return neighbour1To2;
+    }
+
     public GNode getApproachNode() {
         return approachNode;
     }
@@ -79,11 +88,12 @@ public class ApproachModelImpl implements ApproachModel {
 
     public boolean verifyApproach(PointModel node1, PointModel approachNode, PointModel node2){
         if (this.getApproachNode() != approachNode) return false;
-        if ((node1 == this.getNode1()) && (node2 == this.getNode2())) return true;
-        if ((node1 == this.getNode2()) && (node2 == this.getNode1())) return true;
+        if ((PointModelUtil.compareTo(node1,this.getNode1())==0) && (PointModelUtil.compareTo(node2, this.getNode2())==0)) return true;
+        if ((PointModelUtil.compareTo(node1,this.getNode2())==0) && (PointModelUtil.compareTo(node2, this.getNode1())==0)) return true;
         return false;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "ApproachModelImpl{" +
@@ -93,6 +103,7 @@ public class ApproachModelImpl implements ApproachModel {
                 ", node1=" + node1 +
                 ", node2=" + node2 +
                 ", approachNode=" + approachNode +
+                ", neighbour1To2=" + neighbour1To2 +
                 '}';
     }
 }

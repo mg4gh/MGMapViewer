@@ -168,9 +168,8 @@ public class BidirectionalAStar extends GGraphAlgorithm {
         MultiPointModelImpl resultPath = new MultiPointModelImpl();
         if (matchNode != null){
             resultPath = getPath(matchNode.getNodeRef());
-            resultPathLength = resultPath.size();
-            for (PointModel pm : getPath(matchNode.getNodeRef(true).getPredecessor().getNodeRef(true))){
-                resultPath.addPoint(resultPathLength,pm);
+            for (PointModel pm : getPath(matchNode.getNodeRef(true))){
+                resultPath.addPoint(pm);
             }
         }
         resultPathLength = resultPath.size();

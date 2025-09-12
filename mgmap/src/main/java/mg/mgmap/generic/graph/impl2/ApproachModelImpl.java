@@ -14,9 +14,13 @@
  */
 package mg.mgmap.generic.graph.impl2;
 
+import androidx.annotation.NonNull;
+
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
+import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.PointNeighbour;
 
 /**
  * An Approach is a model object that represents a close part of a graph.
@@ -29,15 +33,17 @@ public class ApproachModelImpl implements ApproachModel {
     private final int tileY;
     private final PointModel pmPos;
     private PointModel node1;
+    private PointNeighbour neighbour1To2;
     private PointModel node2;
-    private final GNode approachNode;
+    private GNode approachNode;
     private final float approachDistance;
 
-    public ApproachModelImpl(int tileX, int tileY, PointModel pmPos, PointModel node1, PointModel node2, GNode approachNode, float approachDistance) {
+    public ApproachModelImpl(int tileX, int tileY, PointModel pmPos, PointModel node1, PointNeighbour neighbour1To2, PointModel node2, GNode approachNode, float approachDistance) {
         this.tileX = tileX;
         this.tileY = tileY;
         this.pmPos = new PointModelImpl(pmPos.getLat(), pmPos.getLon());
         this.node1 = node1;
+        this.neighbour1To2 = neighbour1To2;
         this.node2 = node2;
         this.approachNode = approachNode;
         this.approachDistance = approachDistance;
@@ -53,19 +59,29 @@ public class ApproachModelImpl implements ApproachModel {
     public PointModel getNode1() {
         return node1;
     }
-    public void setNode1(GNode node1) {
+    public void setNode1(PointModel node1) {
         this.node1 = node1;
     }
 
     public PointModel getNode2() {
         return node2;
     }
-    public void setNode2(GNode node2) {
+    public void setNode2(PointModel node2) {
         this.node2 = node2;
+    }
+
+    public PointNeighbour getNeighbour1To2(){
+        return neighbour1To2;
+    }
+    public void setNeighbour1To2(PointNeighbour neighbour1To2){
+        this.neighbour1To2 = neighbour1To2;
     }
 
     public GNode getApproachNode() {
         return approachNode;
+    }
+    public void setApproachNode(GNode approachNode) {
+        this.approachNode = approachNode;
     }
 
     public PointModel getPmPos() {
@@ -79,11 +95,12 @@ public class ApproachModelImpl implements ApproachModel {
 
     public boolean verifyApproach(PointModel node1, PointModel approachNode, PointModel node2){
         if (this.getApproachNode() != approachNode) return false;
-        if ((node1 == this.getNode1()) && (node2 == this.getNode2())) return true;
-        if ((node1 == this.getNode2()) && (node2 == this.getNode1())) return true;
+        if ((PointModelUtil.compareTo(node1,this.getNode1())==0) && (PointModelUtil.compareTo(node2, this.getNode2())==0)) return true;
+        if ((PointModelUtil.compareTo(node1,this.getNode2())==0) && (PointModelUtil.compareTo(node2, this.getNode1())==0)) return true;
         return false;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "ApproachModelImpl{" +
@@ -93,6 +110,7 @@ public class ApproachModelImpl implements ApproachModel {
                 ", node1=" + node1 +
                 ", node2=" + node2 +
                 ", approachNode=" + approachNode +
+                ", neighbour1To2=" + neighbour1To2 +
                 '}';
     }
 }
