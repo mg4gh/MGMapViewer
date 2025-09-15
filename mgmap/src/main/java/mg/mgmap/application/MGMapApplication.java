@@ -483,6 +483,7 @@ public class MGMapApplication extends Application {
         };
 
         public void setTrackLog(T trackLog){
+            mgLog.d(propertyName+"="+((trackLog==null)?"null":trackLog.getName())+" ("+trackLog+")");
             if (this.trackLog != trackLog){ // if the trackLog object is not changed, do nothing.
                 if (this.trackLog != null){
                     this.trackLog.deleteObserver(proxyObserver);
