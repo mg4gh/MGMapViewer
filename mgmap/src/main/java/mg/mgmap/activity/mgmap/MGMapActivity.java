@@ -79,7 +79,8 @@ import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
 import mg.mgmap.application.util.PersistenceManager;
-import mg.mgmap.generic.graph.GGraphTileFactory;
+import mg.mgmap.generic.graph.GraphFactory;
+import mg.mgmap.generic.graph.impl2.GGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogRef;
@@ -146,7 +147,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private PrefCache prefCache;
 
     private MapDataStoreUtil mapDataStoreUtil = null;
-    private GGraphTileFactory gGraphTileFactory = null;
+    private GraphFactory graphFactory = null;
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
     private final Runnable ttCheckFullBackup = () ->
         BackupUtil.checkFullBackup(MGMapActivity.this, application.getPersistenceManager());
@@ -170,8 +171,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     public PrefCache getPrefCache(){
         return prefCache;
     }
-    public GGraphTileFactory getGGraphTileFactory() {
-        return gGraphTileFactory;
+    public GraphFactory getGraphFactory() {
+        return graphFactory;
     }
     public boolean getTrackVisibility(){ return prefTracksVisible.getValue(); }
 
@@ -226,7 +227,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         coView = getControlView();
         boolean wayDetails = prefCache.get(R.string.FSGrad_pref_WayDetails_key, false).getValue();
         Pref<Boolean> prefSmooth4Routing = prefCache.get(R.string.preferences_smoothing4routing_key, true);
-        gGraphTileFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), wayDetails, prefSmooth4Routing);
+        Pref<String> prefRoutingAlgorithm = prefCache.get(R.string.FSRouting_routing_algorithm_key, "BidirectionalAStar");
+        graphFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), wayDetails, prefRoutingAlgorithm, prefSmooth4Routing);
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSAlpha(this));
@@ -234,7 +236,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
         featureServices.add(new FSAvailableTrackLogs(this));
         featureServices.add(new FSMarker(this));
-        featureServices.add(new FSRouting(this, getFS(FSMarker.class), gGraphTileFactory));
+        featureServices.add(new FSRouting(this, getFS(FSMarker.class), graphFactory));
         featureServices.add(new FSRecordingTrackLog(this));
 
         featureServices.add(new FSGraphDetails(this));
@@ -361,7 +363,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         mapLayerFactory.onDestroy();
         mapView.getLayerManager().getLayers().clear(); // cleanup TileRendererLayer (incl DatabaseRenderer etc)
         mapView.destroyAll();
-        gGraphTileFactory.onDestroy();
+        graphFactory.onDestroy();
         prefCache.cleanup();
 // Comment out the cleanup as it may cause native crashes due to longer running jobs from DatabaseRenderer in combination with recreate activity tasks.
 // Anyway the question is whether this call makes really sense ...

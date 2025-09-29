@@ -13,6 +13,10 @@ public class MemoryUtil {
         long totalFreeMem = maxMem - totalMem + freeMem;
         long freeMemPercent =  (totalFreeMem*100) /maxMem;
         mgLog.d("freeMemPercent="+freeMemPercent+ " maxMem="+maxMem);
+        if (freeMemPercent < 5) {
+            mgLog.i("trigger System.gc()");
+            System.gc();
+        }
         return freeMemPercent < threshold;
     }
 

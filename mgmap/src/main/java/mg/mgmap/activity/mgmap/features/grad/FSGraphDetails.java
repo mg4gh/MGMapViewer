@@ -18,21 +18,17 @@ import org.mapsforge.core.graphics.Paint;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
-import mg.mgmap.activity.mgmap.features.routing.FSRouting;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
-import mg.mgmap.generic.graph.GGraphTile;
-import mg.mgmap.generic.graph.GNeighbour;
-import mg.mgmap.generic.graph.GNode;
-import mg.mgmap.generic.graph.GNodeRef;
+import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.Graph;
+import mg.mgmap.generic.graph.impl2.ApproachModelImpl;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -120,69 +116,30 @@ public class FSGraphDetails extends FeatureService {
                 .extend(pmTap)
                 .extend(closeThreshold);
 
-        GNode bestNode = null;
-        GNeighbour bestNeighbour = null;
-        GGraphTile bestTile = null;
-        WriteablePointModel pmApproach = new TrackLogPoint();
-        double bestDistance = closeThreshold;
-        ArrayList<GGraphTile> tiles = getActivity().getFS(FSRouting.class).getGGraphTileList(bBoxTap);
+        ApproachModel am = getActivity().getGraphFactory().calcApproach(pmTap, PointModelUtil.getCloseThreshold());
+        ArrayList<? extends Graph> graphs =  getActivity().getGraphFactory().getGraphList(bBoxTap);
 
-        for (GGraphTile gGraphTile : tiles){
-            if (gGraphTile.getTileBBox().contains(pmTap)){
-                MultiMultiPointView mmpv = new MultiMultiPointView(gGraphTile.getRawWays(), PAINT_GRAD_ALL_STROKE);
+        Graph aGraph = graphs.get(0);
+        if ((aGraph != null) && (am instanceof ApproachModelImpl ami)){
+            for (PointModel pm : aGraph.segmentNodes(ami.getNode1(), ami.getNode2())){
+                multiPointModel.addPoint(pm);
+                mgLog.d("Point "+ pm + aGraph.getRefDetails(pm));
+            }
+        }
+        aGraph = null;
+        for (Graph graph : graphs) {
+            if (graph.getBBox().contains(pmTap)) {
+                MultiMultiPointView mmpv = new MultiMultiPointView(graph.getRawWays(), PAINT_GRAD_ALL_STROKE);
                 mmpv.setShowIntermediates(true);
-                register( mmpv ); // show also the complete tile graph
-                BoxView boxView = new BoxView(gGraphTile.getTileBBox(), PAINT_GRAD_ALL_STROKE);
+                register(mmpv); // show also the complete tile graph
+                BoxView boxView = new BoxView(graph.getBBox(), PAINT_GRAD_ALL_STROKE);
                 register(boxView);
             }
-            for (GNode node : gGraphTile.getNodes()) {
-
-                GNeighbour neighbour = node.getNeighbour();
-                while ((neighbour = gGraphTile.getNextNeighbour(node, neighbour)) != null) {
-                    GNode neighbourNode = neighbour.getNeighbourNode();
-                    if (GNode.sameTile(node,neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
-                        BBox bBoxPart = new BBox().extend(node).extend(neighbourNode);
-
-                        boolean bIntersects = bBoxTap.intersects(bBoxPart);
-                        if (bIntersects){ // ok, is candidate for close
-                            if (PointModelUtil.findApproach(pmTap, node, neighbourNode, pmApproach)){
-                                double distance = PointModelUtil.distance(pmTap, pmApproach);
-
-                                if (distance < bestDistance){ // ok, new best found
-                                    bestNode = node;
-                                    bestNeighbour = neighbour;
-                                    bestDistance = distance;
-                                    bestTile = gGraphTile;
-                                }
-                            }
-                        }
-                    }
-                }
+            if (graph.getBBox().contains(multiPointModel.getBBox())){
+                aGraph = graph;
             }
         }
-
-        //noinspection ConstantConditions
-        if ((bestNode != null) && (bestNeighbour != null) && (bestTile != null)){ // second and third condition are automatically true
-            ArrayList<GNode> nodes = bestTile.segmentNodes(bestNode,bestNeighbour.getNeighbourNode(),Integer.MAX_VALUE, true);
-
-            GNode lastNode = null;
-            for (GNode node : nodes){
-                multiPointModel.addPoint(node);
-                if (lastNode != null){
-                    final GNode last = lastNode;
-                    double distance = PointModelUtil.distance(last,node);
-                    double verticalDistance = PointModelUtil.verticalDistance(last, node);
-                    mgLog.d(()-> String.format(Locale.ENGLISH, "   segment dist=%.2f vertDist=%.2f ascend=%.1f cost=%.2f revCost=%.2f wa=%s",distance,verticalDistance,verticalDistance*100/distance,last.getNeighbour(node).getCost(),node.getNeighbour(last).getCost(),last.getNeighbour(node).getWayAttributs().toDetailedString()));
-                }
-                mgLog.d(()-> "Point "+ node + getRefDetails(node.getNodeRef()) + getRefDetails(node.getNodeRef(true)));
-                lastNode = node;
-            }
-        }
-        return (bestTile==null)?null:bestTile.getTileBBox();
+        return aGraph==null?null:aGraph.getBBox();
     }
 
-    private String getRefDetails(GNodeRef ref){
-        if (ref == null) return "";
-        return String.format(Locale.ENGLISH, " %s settled=%b cost=%.2f heuristic=%.2f hcost=%.2f",ref.isReverse()?"rv":"fw",ref.isSetteled(),ref.getCost(),ref.getHeuristic(),ref.getHeuristicCost());
-    }
 }

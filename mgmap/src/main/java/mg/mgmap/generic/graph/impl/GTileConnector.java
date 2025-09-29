@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -29,18 +29,18 @@ public class GTileConnector {
             mgLog.e("found="+gGraphTile2.neighbourTiles[horizontal?GNode.BORDER_NODE_WEST:GNode.BORDER_NODE_NORTH]+" expected="+gGraphTile1);
             throw new IllegalArgumentException("inconsistent neighbour tiles - check logfile for more details.");
         }
-        double connectAt = (horizontal)?gGraphTile1.tbBox.maxLongitude:gGraphTile1.tbBox.minLatitude;
-        if (horizontal? (connectAt!=gGraphTile2.tbBox.minLongitude):(connectAt!=gGraphTile2.tbBox.maxLatitude)){
-            throw new IllegalArgumentException("cannot connectHorizontal Tiles with BB " + gGraphTile1.tbBox +" and "+gGraphTile2.tbBox);
+        double connectAt = (horizontal)?gGraphTile1.bBox.maxLongitude:gGraphTile1.bBox.minLatitude;
+        if (horizontal? (connectAt!=gGraphTile2.bBox.minLongitude):(connectAt!=gGraphTile2.bBox.maxLatitude)){
+            throw new IllegalArgumentException("cannot connectHorizontal Tiles with BB " + gGraphTile1.bBox +" and "+gGraphTile2.bBox);
         }
         ArrayList<GNode> borderNodes1 = new ArrayList<>();
-        for (GNode node : gGraphTile1.getNodes()){
+        for (GNode node : gGraphTile1.getGNodes()){
             if ((horizontal)?(node.getLon() == connectAt):(node.getLat() == connectAt)){
                 borderNodes1.add(node);
             }
         }
         ArrayList<GNode> borderNodes2 = new ArrayList<>();
-        for (GNode node : gGraphTile2.getNodes()){
+        for (GNode node : gGraphTile2.getGNodes()){
             if ((horizontal)?(node.getLon() == connectAt):(node.getLat() == connectAt)){
                 borderNodes2.add(node);
             }
@@ -51,7 +51,7 @@ public class GTileConnector {
         for (GNode node1 : borderNodes1){
             for (GNode node2 : borderNodes2){
                 if ( (horizontal?Math.abs( node1.getLat() - node2.getLat() ):Math.abs( node1.getLon() - node2.getLon() )) <= threshold){ //distance less than 0.5m -> connect nodes
-                    node1.bidirectionalConnect(node2, null);
+                    gGraphTile1.bidirectionalConnect(node1, node2, null); // no need to add this to gGraphTile2 too, since nodes are linked
                     remainingNodes1.remove(node1);
                     remainingNodes2.remove(node2);
                 }
@@ -64,16 +64,16 @@ public class GTileConnector {
             mgLog.v(remainingNodes2::toString);
             for (GNode node1 : remainingNodes1){
                 for (GNode node2 : remainingNodes2){
-                    if ((node1.countNeighbours() == 1) && (node2.countNeighbours() == 1) && (PointModelUtil.distance(node1,node2)<CONNECT_THRESHOLD_METER*20)){
-                        GNode node1Neighbour = node1.getNeighbour().getNextNeighbour().getNeighbourNode();
-                        GNode node2Neighbour = node2.getNeighbour().getNextNeighbour().getNeighbourNode();
+                    if ((gGraphTile1.countNeighbours(node1) == 1) && (gGraphTile2.countNeighbours(node2) == 1) && (PointModelUtil.distance(node1,node2)<CONNECT_THRESHOLD_METER*20)){
+                        GNode node1Neighbour = gGraphTile1.getNextNeighbour(node1, null).getNeighbourNode();
+                        GNode node2Neighbour = gGraphTile2.getNextNeighbour(node2, null).getNeighbourNode();
                         WriteablePointModel approachPoint = new WriteablePointModelImpl();
                         if (!PointModelUtil.findApproach(node1,node1Neighbour,node2Neighbour,approachPoint,0)) continue; // approach not found try next points
                         if (PointModelUtil.distance(approachPoint,node1) > CONNECT_THRESHOLD_METER) continue;
                         if (!PointModelUtil.findApproach(node2,node1Neighbour,node2Neighbour,approachPoint,0)) continue; // approach not found try next points
                         if (PointModelUtil.distance(approachPoint,node2) > CONNECT_THRESHOLD_METER) continue;
                         mgLog.d(()->"OK, connect: node1 " + node1 + " node1neighbour " + node1Neighbour + " node2 " + node2 + " node2neighbour " + node2Neighbour);
-                        node1.bidirectionalConnect(node2, null);
+                        gGraphTile1.bidirectionalConnect(node1, node2, null); // no need to add this to gGraphTile2 too, since nodes are linked
                         stillRemainingNodes1.remove(node1);
                         stillRemainingNodes2.remove(node2);
                     }
@@ -101,10 +101,9 @@ public class GTileConnector {
         GGraphTile neighbourTile = gGraphTile.neighbourTiles[border];
         if (neighbourTile == null) return; // nothing to do
         byte neighboursBorder = GNode.oppositeBorder(border);
-        for (GNode node : neighbourTile.getNodes()){
+        for (GNode node : neighbourTile.getGNodes()){
             if ((node.borderNode & neighboursBorder) != 0){
-                node.removeNeighbourNode(gGraphTile.tileIdx);
-                node.resetNodeRefs();
+                neighbourTile.removeNeighbourTo(node, gGraphTile.tileIdx);
             }
         }
         assert (neighbourTile.neighbourTiles[neighboursBorder].tileIdx == gGraphTile.tileIdx)

@@ -1,17 +1,3 @@
-/*
- * Copyright 2017 - 2021 mg4gh
- *
- * This program is free software: you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package mg.mgmap.application.util;
 
 import mg.mgmap.generic.model.PointModel;
@@ -20,12 +6,11 @@ import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
 
-/** Provide an elevation value for a given position on the .hgt file basis. */
-public class ElevationProviderImpl implements ElevationProvider{
+public class ElevationProviderImplHelper2 implements ElevationProvider{
 
-    final HgtProvider hgtProvider;
+    final HgtProvider2 hgtProvider;
 
-    public ElevationProviderImpl(HgtProvider hgtProvider){
+    public ElevationProviderImplHelper2(HgtProvider2 hgtProvider){
         this.hgtProvider = hgtProvider;
     }
 
@@ -88,6 +73,7 @@ public class ElevationProviderImpl implements ElevationProvider{
             wpm.setEleAcc(PointModel.NO_ACC);
         }
     }
+
 
     private float getEle(byte[] hgtBuf, int off) {
         float res = PointModel.NO_ELE;

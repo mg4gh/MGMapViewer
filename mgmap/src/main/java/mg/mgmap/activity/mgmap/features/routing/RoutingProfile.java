@@ -26,10 +26,10 @@ public abstract class RoutingProfile {
         return profileCalculator; // default is no way specific calculator
     }
 
-    public double getCost(WayAttributs wayAttributs, PointModel node, PointModel neighbourNode, boolean primaryDirection){
-        return getCost(wayAttributs, PointModelUtil.distance(node,neighbourNode), PointModelUtil.verticalDistance(node, neighbourNode), primaryDirection);
+    public float getCost(WayAttributs wayAttributs, PointModel node, PointModel neighbourNode, boolean primaryDirection){
+        return getCost(wayAttributs, (float)PointModelUtil.distance(node,neighbourNode), PointModelUtil.verticalDistance(node, neighbourNode), primaryDirection);
     }
-    public double getCost(WayAttributs wayAttributs, double distance, float verticalDistance, boolean primaryDirection){
+    public float getCost(WayAttributs wayAttributs, float distance, float verticalDistance, boolean primaryDirection){
         CostCalculator calculator = this.costCalculator;
         if (wayAttributs != null){
             if (wayAttributs.getDerivedData()==null){
@@ -39,13 +39,13 @@ public abstract class RoutingProfile {
                 calculator = wayCostCalculator;
             }
         }
-        return calculator.calcCosts(distance, verticalDistance, primaryDirection);
+        return (float)calculator.calcCosts(distance, verticalDistance, primaryDirection);
     }
 
     public double heuristic(PointModel node1, PointModel node2){
         return heuristic(PointModelUtil.distance(node1, node2), PointModelUtil.verticalDistance(node1,node2));
     }
-    protected double heuristic(double distance, float verticalDistance){
+    public double heuristic(double distance, float verticalDistance){
         return costCalculator.heuristic(distance,verticalDistance);
     }
 

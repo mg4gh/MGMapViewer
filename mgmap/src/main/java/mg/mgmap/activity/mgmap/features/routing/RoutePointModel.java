@@ -14,12 +14,7 @@
  */
 package mg.mgmap.activity.mgmap.features.routing;
 
-import java.util.ArrayList;
-import java.util.TreeSet;
-
-import mg.mgmap.generic.graph.GNode;
 import mg.mgmap.generic.graph.ApproachModel;
-import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 
@@ -29,7 +24,7 @@ import mg.mgmap.generic.model.PointModel;
  * just the list of GNode instances - instead it is a list of ExtendedPointModelImpl instances with generic
  * type RoutingHint. These points contain already the routing hints as an extent object
  * and they also contain the relative amount of time from the beginning of this route. <br>
- * Finally it contains references to the approaches of this MarkerTrackLogPoint.
+ * Finally it contains references to the best approach of this MarkerTrackLogPoint.
  * */
 public class RoutePointModel {
 
@@ -38,10 +33,8 @@ public class RoutePointModel {
     final PointModel mtlp;
     double currentDistance = 0;
 
-    ArrayList<ApproachModel> approaches;
     ApproachModel selectedApproach;
-    BBox approachBBox;
-    boolean aborted;
+    boolean aborted; // last route calculation aborted for this RPM
 
     public RoutePointModel(PointModel pointModel){
         this.mtlp = pointModel;
@@ -52,42 +45,27 @@ public class RoutePointModel {
         return selectedApproach;
     }
 
-    GNode getApproachNode(){
+    PointModel getApproachNode(){
         return (selectedApproach == null)?null:selectedApproach.getApproachNode();
     }
 
-    /** @noinspection RedundantIfStatement*/
+
     public boolean verifyApproach(PointModel node1, PointModel approachNode, PointModel node2){
         if (selectedApproach == null) return false;
-        if (selectedApproach.getApproachNode() != approachNode) return false;
-        if ((node1 == selectedApproach.getNode1()) && (node2 == selectedApproach.getNode2())) return true;
-        if ((node1 == selectedApproach.getNode2()) && (node2 == selectedApproach.getNode1())) return true;
-        return false;
+        return selectedApproach.verifyApproach(node1,approachNode,node2);
     }
 
     public PointModel getMtlp() {
         return mtlp;
     }
 
-    public ArrayList<ApproachModel> getApproaches() {
-        return approaches;
-    }
 
     public void resetApproaches(){
-        approaches = null;
         selectedApproach = null;
-        approachBBox = null;
     }
 
-    void setApproaches(TreeSet<ApproachModel> approaches){
-        this.approaches = new ArrayList<>( approaches );
-        approachBBox = new BBox();
-        if (!approaches.isEmpty()){
-            for (ApproachModel am : approaches){
-                approachBBox.extend(am.getNode1()).extend(am.getNode2());
-            }
-            selectedApproach = approaches.first();
-        }
+    void setApproach(ApproachModel approachModel){
+        selectedApproach = approachModel;
     }
 
 }

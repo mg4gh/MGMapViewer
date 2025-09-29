@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -21,16 +21,16 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
 /**
  * Implementation of the Dijkstra algorithm.
  */
-public class BidirectionalAStar extends GGraphSearch{
+public class BidirectionalAStar extends GGraphAlgorithm {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
@@ -47,17 +47,19 @@ public class BidirectionalAStar extends GGraphSearch{
     private int resultPathLength = 0;
     private GNode matchNode = null;
 
-    public BidirectionalAStar(GGraphMulti graph, RoutingProfile routingProfile) {
+    public BidirectionalAStar(GGraph graph, RoutingProfile routingProfile) {
         super(graph, routingProfile);
     }
 
 
-    public MultiPointModel perform(GNode source, GNode target, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
+    public MultiPointModel performAlgo(ApproachModel sourceApproachModel, ApproachModel targetApproachModel, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
         prioQueue = new TreeSet<>();
         if (relaxedList != null) relaxedList.clear();
 
-        this.source = source;
-        this.target = target;
+        this.source = (sourceApproachModel instanceof ApproachModelImpl ami)?ami.getApproachNode():null;
+        this.target = (targetApproachModel instanceof ApproachModelImpl ami)?ami.getApproachNode():null;
+        if ((source == null) || (target == null)) return null; // should never happen
+
         long tStart = System.currentTimeMillis();
         GNodeRef refSource = new GNodeRef(source,0,null,null, heuristic(false, source));
         source.resetNodeRefs();
@@ -87,17 +89,17 @@ public class BidirectionalAStar extends GGraphSearch{
                     break;
                 }
                 GNode node = ref.getNode();
-                if (graph.preNodeRelax(node)) { // add lazy expansion of GGraphMulti
+                if (preNodeRelax(node)) { // add lazy expansion of GGraphMulti
                     mgLog.i("exit perform 4 low memory");
                     break;
                 }
-                GNeighbour neighbour = ref.getNode().getNeighbour(); // start relax all neighbours
+                GNeighbour neighbour = null; // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNeighbour directedNeighbour = ref.isReverse()?neighbour.getReverse():neighbour;
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     GNode directedNode = ref.isReverse()?neighbourNode:node;
                     GNode directedNeighbourNode = ref.isReverse()?node:neighbourNode;
-                    double costToNeighbour = directedNeighbour.getCost();
+                    float costToNeighbour = directedNeighbour.getCost();
                     if (costToNeighbour < 0){
                         costToNeighbour = routingProfile.getCost(directedNeighbour.getWayAttributs(), directedNode, directedNeighbourNode, directedNeighbour.isPrimaryDirection());
                         directedNeighbour.setCost(costToNeighbour);
@@ -150,7 +152,7 @@ public class BidirectionalAStar extends GGraphSearch{
         cntRelaxed = 0;
         cntSettled = 0;
         resultPathLength = 0;
-        for (GNode node : graph.getNodes()){
+        for (GNode node : graph.getGNodes()){
             if (node.getNeighbour() != null){
                 cntTotal++;
                 if ((node.getNodeRef() != null) || (node.getNodeRef(true) != null)){
@@ -166,9 +168,8 @@ public class BidirectionalAStar extends GGraphSearch{
         MultiPointModelImpl resultPath = new MultiPointModelImpl();
         if (matchNode != null){
             resultPath = getPath(matchNode.getNodeRef());
-            resultPathLength = resultPath.size();
-            for (PointModel pm : getPath(matchNode.getNodeRef(true).getPredecessor().getNodeRef(true))){
-                resultPath.addPoint(resultPathLength,pm);
+            for (PointModel pm : getPath(matchNode.getNodeRef(true))){
+                resultPath.addPoint(pm);
             }
         }
         resultPathLength = resultPath.size();

@@ -18,8 +18,10 @@ package mg.mgmap.generic.model;
 public interface WriteablePointModel extends PointModel {
 
     void setLat(double latitude);
+    void setLa(int la);
 
     void setLon(double longitude);
+    void setLo(int lo);
 
     void setEle(float elevation);
 

@@ -12,10 +12,9 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import mg.mgmap.generic.model.PointModelImpl;
-import mg.mgmap.generic.model.PointModelUtil;
 
 /**
  * This class is the basis for a node in a graph.
@@ -26,7 +25,7 @@ public class GNode extends PointModelImpl {
     /**
      * This is the entry of a queue of neighbours. The first link refers to the node itself.
      */
-    private final GNeighbour neighbour;
+    private GNeighbour neighbour = null;
 
     // for Routing algorithms
     private GNodeRef nodeRef = null;
@@ -43,6 +42,7 @@ public class GNode extends PointModelImpl {
     public static final byte FLAG_FIX               = 0x01;
     public static final byte FLAG_VISITED           = 0x02;
     public static final byte FLAG_HEIGHT_RELEVANT   = 0x04;
+    public static final byte FLAG_INVALID           = 0x40;
 
     public static int deltaX(byte border){
         return switch (border) {
@@ -68,44 +68,15 @@ public class GNode extends PointModelImpl {
         };
     }
 
-    public GNode(double latitude, double longitude, float ele, float eleAcc, double cost){
+    public GNode(double latitude, double longitude, float ele, float eleAcc){
         super(latitude, longitude, ele, eleAcc);
-        this.neighbour = new GNeighbour(this, cost);
     }
 
     public GNeighbour getNeighbour() {
         return neighbour;
     }
-
-    public void addNeighbour(GNeighbour neighbour) {
-        getLastNeighbour().setNextNeighbour(neighbour);
-    }
-
-    GNeighbour getLastNeighbour(){
-        GNeighbour nextNeighbour = this.neighbour;
-        while (nextNeighbour.getNextNeighbour() != null) {
-            nextNeighbour = nextNeighbour.getNextNeighbour();
-        }
-        return nextNeighbour;
-    }
-
-    int countNeighbours(){
-        int cnt = 0;
-        GNeighbour nextNeighbour = this.neighbour;
-        while (nextNeighbour.getNextNeighbour() != null) {
-            nextNeighbour = nextNeighbour.getNextNeighbour();
-            cnt++;
-        }
-        return cnt;
-    }
-
-    public GNeighbour getNeighbour(GNode oNode){
-        GNeighbour nextNeighbour = this.neighbour;
-        while (nextNeighbour.getNextNeighbour() != null) {
-            nextNeighbour = nextNeighbour.getNextNeighbour();
-            if (nextNeighbour.getNeighbourNode() == oNode) return nextNeighbour;
-        }
-        return null;
+    public void setNeighbour(GNeighbour neighbour){
+        this.neighbour = neighbour;
     }
 
     public GNodeRef getNodeRef() {
@@ -130,55 +101,10 @@ public class GNode extends PointModelImpl {
         nodeReverseRef = null;
     }
 
-    public void bidirectionalConnect(GNode neighbourNode, GNeighbour baseNeighbour){
-        WayAttributs wayAttributs = baseNeighbour==null?null:baseNeighbour.getWayAttributs();
-        GNeighbour neighbour = new GNeighbour(neighbourNode, wayAttributs).setPrimaryDirection(baseNeighbour == null || baseNeighbour.isPrimaryDirection());
-        GNeighbour reverseNeighbour = new GNeighbour(this, wayAttributs).setPrimaryDirection(baseNeighbour == null || !baseNeighbour.isPrimaryDirection());
-        neighbour.setReverse(reverseNeighbour);
-        reverseNeighbour.setReverse(neighbour);
-        this.addNeighbour(neighbour);
-        neighbourNode.addNeighbour(reverseNeighbour);
-        double distance = PointModelUtil.distance(this, neighbourNode);
-        neighbour.setDistance(distance);
-        reverseNeighbour.setDistance(distance);
-    }
-
-    public void removeNeighbourNode(GNode neighbourNode){
-        GNeighbour nextNeighbour = this.neighbour;
-        while (nextNeighbour.getNextNeighbour() != null) {
-            GNeighbour lastNeighbour = nextNeighbour;
-            nextNeighbour = nextNeighbour.getNextNeighbour();
-            if (nextNeighbour.getNeighbourNode() == neighbourNode){
-                lastNeighbour.setNextNeighbour(nextNeighbour.getNextNeighbour());
-            }
-        }
-    }
-
-    public void removeNeighbourNode(int tileIdx){
-        GNeighbour nextNeighbour = this.neighbour;
-        GNeighbour lastNeighbour = nextNeighbour;
-        while (nextNeighbour.getNextNeighbour() != null) {
-            nextNeighbour = nextNeighbour.getNextNeighbour();
-            if (nextNeighbour.getNeighbourNode().tileIdx == tileIdx){
-                lastNeighbour.setNextNeighbour(nextNeighbour.getNextNeighbour());
-            } else {
-                lastNeighbour = nextNeighbour;
-            }
-        }
-    }
-
-
-    public GGraphTile getTile(GGraphTileFactory gFactory){
-        return gFactory.getGGraphTile(tileIdx>>16, tileIdx&0xFFFF);
-    }
-
-    public static boolean sameTile(GNode node1, GNode node2){
-        return node1.tileIdx == node2.tileIdx;
-    }
-
     public boolean isFlag(byte flag){
         return (flags & flag) != 0;
     }
+
     public void setFlag(byte flag, boolean value){
         if (value){
             flags |= flag;

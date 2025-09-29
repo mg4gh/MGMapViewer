@@ -33,7 +33,8 @@ public class PointModelUtil {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public static final long NO_POS = LaLo.getLaLo(LaLo.d2md(PointModel.NO_LAT_LONG), LaLo.d2md(PointModel.NO_LAT_LONG));
+    public static final long NO_POS = LaLo.getLaLo(PointModel.NO_LAT_LONG_MD, PointModel.NO_LAT_LONG_MD);
+    public static final float ELE_FACTOR = 100.0f;
 
     /**
      * The equatorial radius as defined by the <a href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84
@@ -75,14 +76,20 @@ public class PointModelUtil {
     public static boolean findApproach(PointModel pm, PointModel segmentEnd1, PointModel segmentEnd2, WriteablePointModel pmResult) {
         return findApproach(pm,segmentEnd1,segmentEnd2,pmResult,closeThreshold);
     }
+
     /** Check, whether pm has an approach to the segment segmentEnd1-segmentEnd2. Return the closest point in pmResult.
      * Be careful with passing references to pmResult !!*/
-    @SuppressWarnings("UnnecessaryLocalVariable")
     public static boolean findApproach(PointModel pm, PointModel segmentEnd1, PointModel segmentEnd2, WriteablePointModel pmResult, int threshold) {
-        double minLat = Math.min(segmentEnd1.getLat(), segmentEnd2.getLat());
-        double maxLat = Math.max(segmentEnd1.getLat(), segmentEnd2.getLat());
-        double minLong = Math.min(segmentEnd1.getLon(), segmentEnd2.getLon());
-        double maxLong = Math.max(segmentEnd1.getLon(), segmentEnd2.getLon());
+        return findApproach(pm, segmentEnd1.getLat(), segmentEnd1.getLon(), segmentEnd1.getEle(), segmentEnd1.getTimestamp(),
+                                segmentEnd2.getLat(), segmentEnd2.getLon(), segmentEnd2.getEle(), segmentEnd2.getTimestamp(), pmResult, threshold);
+    }
+
+    @SuppressWarnings("UnnecessaryLocalVariable")
+    public static boolean findApproach(PointModel pm, double latEnd1, double lonEnd1, float eleEnd1, long tsEnd1, double latEnd2, double lonEnd2, float eleEnd2, long tsEnd2, WriteablePointModel pmResult, int threshold) {
+        double minLat = Math.min(latEnd1, latEnd2);
+        double maxLat = Math.max(latEnd1, latEnd2);
+        double minLong = Math.min(lonEnd1, lonEnd2);
+        double maxLong = Math.max(lonEnd1, lonEnd2);
 
         double closeDeltaLat = latitudeDistance(threshold);
         double closeDeltaLong = longitudeDistance(threshold, pm.getLat());
@@ -98,14 +105,14 @@ public class PointModelUtil {
         double resLat;
 
         // vector v1 = Vector from segmentEnd1 to segmentEnd2
-        double v1x = segmentEnd2.getLon() - segmentEnd1.getLon();
-        double v1y = segmentEnd2.getLat() - segmentEnd1.getLat();
+        double v1x = lonEnd2 - lonEnd1;
+        double v1y = latEnd2 - latEnd1;
         // vector v1o = orthogonal vector from v1
         double v1ox = v1y;
         double v1oy = -v1x;
         // vector dp = Vector from segmentEnd1 to pm
-        double dpx = pm.getLon() - segmentEnd1.getLon();
-        double dpy = pm.getLat() - segmentEnd1.getLat();
+        double dpx = pm.getLon() - lonEnd1;
+        double dpy = pm.getLat() - latEnd1;
         // vector v2 = orthogonal Vector from v1 - scaled by latitude factor f
         double f = Math.cos(Math.toRadians(pm.getLat()));
         double v2x = v1y/(f*f);
@@ -117,8 +124,17 @@ public class PointModelUtil {
 
         pmResult.setLon(Math.min(maxLong, Math.max(minLong, resLong)));
         pmResult.setLat(Math.min(maxLat, Math.max(minLat, resLat)));
-        interpolateELe(segmentEnd1, segmentEnd2, pmResult);
-        interpolateTimestamp(segmentEnd1, segmentEnd2, pmResult);
+
+        if ((v1x == 0) && (v1y == 0)){
+            pmResult.setEle(eleEnd1);
+            pmResult.setTimestamp(tsEnd1);
+        } else if (Math.abs(v1x) > Math.abs(v1y)) { // interpolate based on longitude
+            pmResult.setEle( (float) interpolate(lonEnd1, lonEnd2, eleEnd1, eleEnd2, pmResult.getLon()) );
+            pmResult.setTimestamp( (long) interpolate(lonEnd1, lonEnd2, tsEnd1, tsEnd2, pmResult.getLon()) );
+        } else { // interpolate based on latitude
+            pmResult.setEle( (float) interpolate(latEnd1, latEnd2, eleEnd1, eleEnd2, pmResult.getLat()) );
+            pmResult.setTimestamp( (long) interpolate(latEnd1, latEnd2, tsEnd1, tsEnd2, pmResult.getLat()) );
+        }
         return true;
     }
 

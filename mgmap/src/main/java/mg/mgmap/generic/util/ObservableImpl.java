@@ -9,7 +9,7 @@ public class ObservableImpl implements Observable{
 
     final ArrayList<PropertyChangeListener> propertyChangeListeners = new ArrayList<>();
 
-    private final String propertyName;
+    protected final String propertyName;
     private Object value;
     private boolean changed = false;
 

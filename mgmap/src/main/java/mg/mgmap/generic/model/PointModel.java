@@ -16,10 +16,13 @@ package mg.mgmap.generic.model;
 
 import org.mapsforge.core.model.LatLong;
 
+import mg.mgmap.generic.util.basic.LaLo;
+
 /** A model for a single point */
-public interface PointModel {
+public interface PointModel extends Comparable<PointModel>{
 
     double NO_LAT_LONG = 200;
+    int NO_LAT_LONG_MD = LaLo.d2md(NO_LAT_LONG);
     float NO_ELE = -20000;
     float NO_ACC = -20002;
     float NO_PRES = 0;

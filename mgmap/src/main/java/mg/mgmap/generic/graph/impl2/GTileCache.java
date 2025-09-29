@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl2;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -81,10 +81,11 @@ public class GTileCache {
                 } else {
                     accessMap.remove(entry.getKey());
                     tileMap.remove(entry.getValue());
-                    GTileConnector.disconnect(tile,GNode.BORDER_NODE_WEST);
-                    GTileConnector.disconnect(tile,GNode.BORDER_NODE_NORTH);
-                    GTileConnector.disconnect(tile,GNode.BORDER_NODE_EAST);
-                    GTileConnector.disconnect(tile,GNode.BORDER_NODE_SOUTH);
+                    GTileConnector.disconnect(tile, GNode.BORDER_NODE_WEST);
+                    GTileConnector.disconnect(tile, GNode.BORDER_NODE_NORTH);
+                    GTileConnector.disconnect(tile, GNode.BORDER_NODE_EAST);
+                    GTileConnector.disconnect(tile, GNode.BORDER_NODE_SOUTH);
+                    tile.resetNodeRefs();
 //                    mgLog.d("remove from cache: tileX="+tile.getTileX()+" tileY="+tile.getTileY()+" access="+tile.accessTime);
                 }
             } else {

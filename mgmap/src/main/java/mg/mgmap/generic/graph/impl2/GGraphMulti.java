@@ -12,14 +12,16 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl2;
 
-import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.util.basic.MemoryUtil;
+import org.mapsforge.core.util.MercatorProjection;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.util.basic.MGLog;
 
 
 /**
@@ -50,29 +52,48 @@ public class GGraphMulti extends GGraph {
      * @return all node ot the multi graph
      */
     @Override
-    public ArrayList<GNode> getNodes() {
-        ArrayList<GNode> nodes = new ArrayList<>( super.getNodes() );
+    public ArrayList<GNode> getGNodes() {
+        ArrayList<GNode> nodes = new ArrayList<>( super.getGNodes() );
         for (GGraphTile gGraphTile : gGraphTileFactory.getCached()){
             if (gGraphTile.used){
-                nodes.addAll( gGraphTile.getNodes() );
+                nodes.addAll( gGraphTile.getGNodes() );
             }
         }
         return nodes;
     }
 
-    // return true, if routing should be aborted due to low memory
-    boolean preNodeRelax(GNode node){
-        if ((node.borderNode != 0) /*&& (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)*/){ // add lazy expansion of GGraphMulti
-            boolean changed = checkGGraphTileNeighbour(node,GNode.BORDER_NODE_WEST);
-            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_NORTH);
-            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_EAST);
-            changed |= checkGGraphTileNeighbour(node,GNode.BORDER_NODE_SOUTH);
-            if (changed && MemoryUtil.checkLowMemory(GGraphTileFactory.LOW_MEMORY_THRESHOLD)){
-                mgLog.w("abort routing due low memory");
-                return true;
+    @Override
+    public ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> neighbourPoints) {
+        long mapSize = MercatorProjection.getMapSize(gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
+
+        int tileX = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( pointModel.getLon() , mapSize) , gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
+        int tileY = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( pointModel.getLat() , mapSize) , gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
+        GGraphTile graph = gGraphTileFactory.getGGraphTile(tileX, tileY);
+        neighbourPoints = graph.getNeighbours(pointModel, new ArrayList<>());
+
+        GNode node = graph.getNode(pointModel.getLat(), pointModel.getLon());
+        if (node != null){
+            for (byte border = GNode.BORDER_NODE_SOUTH; border <= GNode.BORDER_NODE_WEST; border = (byte)(border<<1)){
+                if ((node.borderNode & border) != 0){
+                    GGraphTile neighbourGraph = graph.neighbourTiles[border];
+                    if (neighbourGraph != null) neighbourGraph.getNeighbours(pointModel, neighbourPoints);
+                }
             }
         }
-        return false;
+        return neighbourPoints;
+    }
+
+
+    // return true, if graph changed
+    boolean preNodeRelax(GNode node){
+        boolean changed = false;
+        if ((node.borderNode != 0) /*&& (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)*/){ // add lazy expansion of GGraphMulti
+            changed |= checkGGraphTileNeighbour(node, GNode.BORDER_NODE_WEST);
+            changed |= checkGGraphTileNeighbour(node, GNode.BORDER_NODE_NORTH);
+            changed |= checkGGraphTileNeighbour(node, GNode.BORDER_NODE_EAST);
+            changed |= checkGGraphTileNeighbour(node, GNode.BORDER_NODE_SOUTH);
+        }
+        return changed;
     }
 
     // Returns true, if graph is extended
@@ -88,8 +109,8 @@ public class GGraphMulti extends GGraph {
             GGraphTile gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileXn, tileYn, false);
 
             if (gGraphTileNeighbour == null){
-                mgLog.d(String.format(Locale.ENGLISH, "border=%d tileX=%d tileY=%d",border,tileXn,tileYn));
                 gGraphTileNeighbour = gGraphTileFactory.getGGraphTile(tileXn, tileYn, true);
+                mgLog.d(String.format(Locale.ENGLISH, "tileX=%d tileY=%d use=%b border=%d tileXn=%d tileYn=%d use=%b",tileX,tileY,gGraphTile.used,border,tileXn,tileYn,gGraphTileNeighbour.used)+" "+gGraphTile.bBox +" "+gGraphTileNeighbour.bBox);
                 bRes = true;
             }
             use(gGraphTileNeighbour);

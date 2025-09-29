@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 
@@ -10,7 +10,7 @@ import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 public class BidirectionalAStarFNO extends BidirectionalAStar{
 
 
-    public BidirectionalAStarFNO(GGraphMulti graph, RoutingProfile routingProfile) {
+    public BidirectionalAStarFNO(GGraph graph, RoutingProfile routingProfile) {
         super(graph, routingProfile);
     }
 

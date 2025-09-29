@@ -50,6 +50,7 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogRef;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.util.BgJob;
+import mg.mgmap.generic.util.Observable;
 import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
@@ -106,6 +107,7 @@ public class MGMapApplication extends Application {
     public final TrackLogObservable<RecordingTrackLog> recordingTrackLogObservable = new TrackLogObservable<>("recordingTrackLog",true);
     public final TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = new TrackLogObservable<>("markerTrackLog",false);
     public final TrackLogObservable<WriteableTrackLog> routeTrackLogObservable = new TrackLogObservable<>("routeTrackLog",true);
+    public final Observable routeIntermediatesObservable = new ObservableImpl();
     public final Map<String, TrackLog> metaTrackLogs = Collections.synchronizedMap( new TreeMap<>(Collections.reverseOrder()) );
 
     /** queue for new (unhandled) TrackLogPoint objects */
@@ -481,6 +483,7 @@ public class MGMapApplication extends Application {
         };
 
         public void setTrackLog(T trackLog){
+            mgLog.d(propertyName+"="+((trackLog==null)?"null":trackLog.getName())+" ("+trackLog+")");
             if (this.trackLog != trackLog){ // if the trackLog object is not changed, do nothing.
                 if (this.trackLog != null){
                     this.trackLog.deleteObserver(proxyObserver);

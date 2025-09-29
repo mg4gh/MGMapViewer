@@ -11,8 +11,45 @@ Still memory is the limiting factor for long routes.
 Each Node of the graph is a separate Object (GNode), each neighbour too (GNeighbour). Furthermore each GNodeRef is also a separate object.
 Persistent caching of these objects seems to be difficult, since all object relationships need to be cached too.
 
-One more problem of current implementation is that approaches might be outdated due to caching of GTile (GGrapthTile might be thrown away and setup newly - then 
+One more problem of current implementation is that approaches might be outdated due to caching of GTile (GGraphTile might be thrown away and setup newly - then 
 the approach point equals to a new one, but is not in the node list of GTile - see `RoutingEngine.getVerifyRoutePointModel`).
+
+### Results
+
+The first idea to use a (or a set of) large ByteBuffer for Nodes and a second for Neighbours can save significant space. The downside is that the performance goes down too.
+A second approach to use large arrays worked much better, still the performance in the routing goes down - especially for longer routes.
+So both approaches are withdrawn finally.
+
+### Next Steps
+
+Next approach should be the attempt to save at least some space:
+  - use float instead of double in GNode and GNeighbour and GNodeRef
+    - ok for distance and heuristic, nok for total cost (not precise enough)
+  - drop the first Neighbour pointing to itself
+
+### Further ideas
+
+  - Is it possible to remove regular GNodes with two neighbours and replace them with a Neighbour (with attached intermediate Nodes). 
+    This could be related to the "height relevant points"  - so try to drop none-height relevant points and attach the lat/lon values to the neighbour.
+  - An alternative approach could reduce all two neighbour nodes - at the cost to keep height with all points.
+  - If a point has anyway a reference to its corresponding tile, then a point cold store only the offset of lat/lon to the tiles lat/lon
+  - height could be stored as a short value (unit decimeter/tenth of meter) (sufficient for values up to 6500m)
+  - PointModelUtil is used to compare Nodes - converts internal int values to double before comparing - could be simplified
+  - Use a LongSparseArray during setup of tile (instead of manually sorting)
+
+
+
+#### Detail ideas for intermediate neighbours 
+
+Further aspects after realisation in impl2
+- should approaches be independent on the Graph?
+  - yes, to avaid garbage collection issues
+  - no, because it's hard/impossible to retrieve information (just from approach data)
+  - solution???
+
+
+
+# Outdated ides
 
 ### Ideas
 
@@ -80,3 +117,18 @@ Further aspects:
 - move calcApproaches (similar to validateApproachModel) to GGraphTileFactory
 - move calcRouting method from RoutingEngine to GGraphMulti, e.g. calcRoute
   - parameter should be ApproachModel (may have null as pmApproach) for source and target
+- problematic are the turning instruction calculation in the routing engine, since they make use of GNode and GNeighbour functionality
+  - introduce a PointNeighbour Interface
+    - has method getNeighbourPoint
+    - has method getWayAttributes
+    - has method getNextNeighbour
+  - add methods to GGraphFactory:
+    - getNeighbour(PointModel pm1, PointModel pm2) -> return PointNeighbour from pm1 to pm2
+      (return firstNeighbour, if pm1 == pm2)
+  
+
+### Process
+- loadGraphTile:
+  - iterate over ways - filter those that are relevant vor routing -> result is wayList of type ArrayList<Way>
+  - create WayAttributes[] - index corresponds to wayList
+  - iterate

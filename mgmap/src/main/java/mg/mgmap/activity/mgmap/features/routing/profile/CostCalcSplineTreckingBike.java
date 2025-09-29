@@ -85,7 +85,7 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
             float slope = vertDist / (float) dist;
             double spm = surfaceCatSpline.calc(slope);
             double v = 3.6/spm;
-            mgLog.d(()-> String.format(Locale.ENGLISH, "DurationCalc: Slope=%.2f v=%.2f time=%.2f dist=%.2f surfaceCat=%s",100f*slope,v,spm*dist,dist,surfaceCat));
+            mgLog.v(()-> String.format(Locale.ENGLISH, "DurationCalc: Slope=%.2f v=%.2f time=%.2f dist=%.2f surfaceCat=%s",100f*slope,v,spm*dist,dist,surfaceCat));
         }
         return ( dist >= 0.00001) ? (long) ( 1000 * dist * surfaceCatSpline.calc(vertDist/(float) dist)) : 0;
     }

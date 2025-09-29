@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -28,11 +29,12 @@ import mg.mgmap.generic.util.basic.MGLog;
 /**
  * Implementation of the AStar algorithm.
  */
-public class AStar extends GGraphSearch{
+public class AStar extends GGraphAlgorithm {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private TreeSet<GNodeRef> prioQueue = null;
+    protected GNode source = null;
     protected GNode target = null;
     protected GNodeRef bestHeuristicRef = null;
 
@@ -42,15 +44,17 @@ public class AStar extends GGraphSearch{
     private int cntSettled = 0;
     private int resultPathLength = 0;
 
-    public AStar(GGraphMulti graph, RoutingProfile routingProfile) {
+    public AStar(GGraph graph, RoutingProfile routingProfile) {
         super(graph, routingProfile);
     }
 
-    public MultiPointModel perform(GNode source, GNode target, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
+    public MultiPointModel performAlgo(ApproachModel sourceApproachModel, ApproachModel targetApproachModel, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
         prioQueue = new TreeSet<>();
         if (relaxedList != null) relaxedList.clear();
 
-        this.target = target;
+        this.source = (sourceApproachModel instanceof ApproachModelImpl ami)?ami.getApproachNode():null;
+        this.target = (targetApproachModel instanceof ApproachModelImpl ami)?ami.getApproachNode():null;
+        if ((source == null) || (target == null)) return null; // should never happen
         long tStart = System.currentTimeMillis();
         GNodeRef refSource = new GNodeRef(source,0,null,null, routingProfile.heuristic(source,target));
         source.resetNodeRefs();
@@ -67,11 +71,11 @@ public class AStar extends GGraphSearch{
             GNode node = ref.getNode();
             if (node.getNodeRef() == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
                 if (refreshRequired.get() != 0) break;
-                lowMemory = graph.preNodeRelax(node); // add lazy expansion of GGraphMulti
-                GNeighbour neighbour = node.getNeighbour(); // start relax all neighbours
+                lowMemory = preNodeRelax(node); // add lazy expansion of GGraphMulti
+                GNeighbour neighbour = null; // start relax all neighbours
                 while ((neighbour = graph.getNextNeighbour(node, neighbour)) != null){
                     GNode neighbourNode = neighbour.getNeighbourNode();
-                    double costToNeighbour = neighbour.getCost();
+                    float costToNeighbour = neighbour.getCost();
                     if (costToNeighbour < 0){
                         costToNeighbour = routingProfile.getCost(neighbour.getWayAttributs(), node, neighbourNode, neighbour.isPrimaryDirection());
                         neighbour.setCost(costToNeighbour);
@@ -102,7 +106,7 @@ public class AStar extends GGraphSearch{
         cntRelaxed = 0;
         cntSettled = 0;
         resultPathLength = 0;
-        for (GNode node : graph.getNodes()){
+        for (GNode node : graph.getGNodes()){
             if (node.getNeighbour() != null){
                 cntTotal++;
                 if (node.getNodeRef() != null){

@@ -25,10 +25,10 @@ import java.util.Locale;
 import mg.mgmap.generic.util.basic.LaLo;
 
 /** A simple implementation for a single point */
-public class PointModelImpl implements PointModel, Comparable<PointModel>{
+public class PointModelImpl implements PointModel{
 
-    int la = LaLo.d2md(NO_LAT_LONG);
-    int lo = LaLo.d2md(NO_LAT_LONG);
+    int la = NO_LAT_LONG_MD;
+    int lo = NO_LAT_LONG_MD;
     protected float ele = NO_ELE; // allow derived class to access ele (needed for smoothing process of GGraphTile to fixEle in GNode)
     float eleAcc = NO_ACC;
 
@@ -42,6 +42,16 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
         pmi.lo = lo;
         return pmi;
     }
+
+    public static PointModelImpl createFromLaLo(int la, int lo, int el){
+        PointModelImpl pmi = new PointModelImpl();
+        pmi.la = la;
+        pmi.lo = lo;
+        pmi.ele = el/PointModelUtil.ELE_FACTOR;
+        return pmi;
+    }
+
+
 
     public PointModelImpl(PointModel pm){
         this(pm.getLat(), pm.getLon(), pm.getEle(), pm.getEleAcc());
@@ -68,14 +78,23 @@ public class PointModelImpl implements PointModel, Comparable<PointModel>{
     public double getLat() {
         return LaLo.md2d(la);
     }
+    public int getLa(){
+        return la;
+    }
     @Override
     public double getLon() {
         return LaLo.md2d(lo);
+    }
+    public int getLo(){
+        return lo;
     }
 
     @Override
     public float getEle(){
         return ele;
+    }
+    public int getEl(){
+        return (int)(ele*PointModelUtil.ELE_FACTOR);
     }
 
 

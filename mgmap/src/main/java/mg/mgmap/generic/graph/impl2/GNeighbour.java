@@ -12,23 +12,28 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl2;
+
+import mg.mgmap.generic.graph.WayAttributs;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.PointNeighbour;
 
 /**
  * This class is the basis for the neighbour relationship in a graph.
  */
 
-public class GNeighbour{
+public class GNeighbour implements PointNeighbour {
 
     private final GNode neighbourNode;
-    private double cost;
-    private double distance = -1;
+    private float cost;
     private GNeighbour nextNeighbour = null;
     private WayAttributs wayAttributs = null;
     private boolean primaryDirection = true;
     private GNeighbour reverse = null;
+    private int[] intermediatesPoints = null;
 
-    public GNeighbour(GNode neighbourNode, double cost){
+    public GNeighbour(GNode neighbourNode, float cost){
         this.neighbourNode = neighbourNode;
         this.cost = cost;
     }
@@ -38,26 +43,27 @@ public class GNeighbour{
         resetCost();
     }
 
+    @Override
+    public PointModel getPoint() {
+        return getNeighbourNode();
+    }
 
     public GNode getNeighbourNode() {
         return neighbourNode;
     }
 
-    public double getCost() {
+    public float getCost() {
         return cost;
     }
     void resetCost(){
         cost = -1;
     }
-    public void setCost(double cost){
+    public void setCost(float cost){
         this.cost = cost;
     }
 
-    public double getDistance() {
-        return distance;
-    }
-    public void setDistance(double distance) {
-        this.distance = distance;
+    public float getDistance() {
+        return (float)PointModelUtil.distance(neighbourNode, reverse.neighbourNode);
     }
 
     public GNeighbour getNextNeighbour() {
@@ -88,4 +94,21 @@ public class GNeighbour{
     public void setReverse(GNeighbour reverse) {
         this.reverse = reverse;
     }
+
+    public int[] getIntermediatesPoints() {
+        return intermediatesPoints;
+    }
+
+    public void setIntermediatesPoints(int[] intermediatesPoints) {
+        this.intermediatesPoints = intermediatesPoints;
+    }
+
+    public int cntIntermediates(){
+        if (intermediatesPoints == null){
+            return 0;
+        } else {
+            return intermediatesPoints.length/3;
+        }
+    }
+
 }

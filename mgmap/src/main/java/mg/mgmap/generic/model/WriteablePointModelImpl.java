@@ -42,9 +42,18 @@ public class WriteablePointModelImpl extends PointModelImpl implements Writeable
         la = LaLo.d2md(latitude);
     }
     @Override
+    public void setLa(int la) {
+        this.la = la;
+    }
+    @Override
     public void setLon(double longitude) {
         lo = LaLo.d2md(longitude);
     }
+    @Override
+    public void setLo(int lo) {
+        this.lo = lo;
+    }
+
     @Override
     public void setEle(float elevation) {
         if (elevation != NO_ELE){

@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph;
+package mg.mgmap.generic.graph.impl2;
 
 import androidx.annotation.NonNull;
 
@@ -39,8 +39,11 @@ public class GNodeRef implements Comparable<GNodeRef>{
     }
 
     public int compareTo(@NonNull GNodeRef gNodeRef) {
+        if (this == gNodeRef) return 0;
         if (getHeuristicCost() == gNodeRef.getHeuristicCost()){
-            return Integer.compare(hashCode(), gNodeRef.hashCode());
+            int res = Long.compare(node.getLaLo(), gNodeRef.node.getLaLo());
+            if (res == 0) return Integer.compare(hashCode(), gNodeRef.hashCode());
+            return res;
         }
         if (getHeuristicCost() < gNodeRef.getHeuristicCost()){
             return -1;
@@ -86,5 +89,18 @@ public class GNodeRef implements Comparable<GNodeRef>{
 
     public void setReverse(boolean reverse) {
         this.reverse = reverse;
+    }
+
+    @Override
+    public String toString() {
+        return "GNodeRef{" +
+                "node=" + node +
+                ", predecessor=" + predecessor +
+                ", neighbour=" + neighbour +
+                ", cost=" + cost +
+                ", heuristic=" + heuristic +
+                ", settled=" + settled +
+                ", reverse=" + reverse +
+                '}';
     }
 }
