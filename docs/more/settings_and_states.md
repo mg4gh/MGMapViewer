@@ -3,7 +3,7 @@
 
 | preference key string | pref key id name | variable name | type | default | usage | observer | require recreate |
 |---|---|---|---|---|---|---|---|
-| SelectMap\[1..5] | Layers_pref_chooseMap\[1..5]_key | mapLayerKeys | String | "" | MGMapActivity; ControlComposer; search.provider.POI | - | yes |
+| SelectMap\[1..5] | Layers_pref_chooseMap\[1..5]_key | mapLayerKeys | String | "" | MGMapActivity; ControlComposer | - | yes |
 | "alpha_"+\<layer_key> | - | prefAlpha | float | 1.0f | MGMapLayerFactory | - | no |
 | PrefThemeChanged | preference_theme_changed | baseLayer | String | MGMapActivity.getRenderTheme Elevate.xml | ThemeSettings; MapViewerBase | - | yes |
 | SelectTheme | preference_choose_theme_key | -  | String | "Elevate.xml" | MGMapActivity; MapViewerBase | - | yes |

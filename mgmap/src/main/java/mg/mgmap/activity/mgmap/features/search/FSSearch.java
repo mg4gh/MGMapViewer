@@ -15,6 +15,7 @@
 package mg.mgmap.activity.mgmap.features.search;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -40,6 +41,7 @@ import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.features.search.provider.Graphhopper;
 import mg.mgmap.activity.mgmap.util.MapViewUtility;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.settings.SearchProviderListPreference;
@@ -242,7 +244,8 @@ public class FSSearch extends FeatureService {
         try {
             this.searchProvider = (SearchProvider) Class.forName("mg.mgmap.activity.mgmap.features.search.provider."+prefSearchProvider.getValue()).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            mgLog.e(e);
+            mgLog.e("Failed to create searchProvider: "+e.getMessage());
+            this.searchProvider = new Graphhopper();
         }
         searchProvider.init( getActivity(),this, searchView, getSharedPreferences());
     }
@@ -338,7 +341,9 @@ public class FSSearch extends FeatureService {
 
     /** @noinspection RegExpRedundantEscape, ReassignedVariable, DataFlowIssue */
     public void processGeoIntent(String sUri){
-        sUri = URLDecoder.decode(sUri, StandardCharsets.UTF_8);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            sUri = URLDecoder.decode(sUri, StandardCharsets.UTF_8);
+        }
         mgLog.i("sUri="+sUri);
 
         // possible patterns are (according to https://developer.android.com/guide/components/intents-common#java)

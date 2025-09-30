@@ -17,13 +17,13 @@ package mg.mgmap.activity.mgmap.features.tilestore;
 import android.content.ContentValues;
 import android.content.res.AssetManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.IOUtils;
 import org.mapsforge.map.layer.queue.Job;
-import org.sqlite.database.sqlite.SQLiteDatabase;
 
 
 import java.io.ByteArrayInputStream;
@@ -42,14 +42,6 @@ import mg.mgmap.generic.util.basic.MGLog;
 public class MGTileStoreDB extends MGTileStore {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
-
-    static {
-        try {
-            System.loadLibrary("sqliteX");
-        } catch (Throwable t) {
-            mgLog.e(t);
-        }
-    }
 
     private final SQLiteDatabase db;
     private final GraphicFactory graphicFactory;

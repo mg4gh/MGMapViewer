@@ -131,11 +131,6 @@ public class SettingTest extends BaseTestCase {
         Assert.assertEquals("Graphhopper", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_search_key),""));
 
 
-        animateToPrefAndClick(R.string.preference_choose_search_key);
-        onView(allOf(withText("POI"))).perform(click());
-        Assert.assertEquals("POI", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_search_key),""));
-        SystemClock.sleep(1000);
-
         PreferenceUtil.setPreference(settingsActivity, R.string.preference_choose_search_key, "Nominatim");
         SystemClock.sleep(200);
         Assert.assertEquals("Nominatim", mgMapApplication.getSharedPreferences().getString(mgMapApplication.getResources().getString(R.string.preference_choose_search_key),""));

@@ -169,58 +169,6 @@ public class GroupSerachTests extends BaseTestCase {
         mgLog.i("finished");
     }
 
-    @Test(timeout = 40000)
-    public void _05_search_POI() {
-        mgLog.i("started");
-        SystemClock.sleep(1000);
-        Pref<String> prefSearchProvider = mgMapApplication.getPrefCache().get(R.string.preference_choose_search_key, "");
-        prefSearchProvider.setValue("POI");
-//        Assert.assertEquals("Graphhopper", mgMapApplication.getPrefCache().get(R.string.preference_choose_search_key, "").getValue());
-        setCursorToCenterPos();
-        addRegex(".*onClick mi_search.*");
-        animateMenu(R.id.menu_search, R.id.mi_search);
-        SystemClock.sleep(1000);
-
-        Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("Hunnenstr Garz"));
-        SystemClock.sleep(1000);
-//        Assert.assertEquals ("", waitForView(TextView.class, R.id.search_result1).getText());
-        Assert.assertEquals(View.INVISIBLE, currentActivity.findViewById(R.id.search_result1).getVisibility());
-        Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(""), ViewActions.pressImeActionButton());
-        SystemClock.sleep(1000);
-        animateToViewAndClick(R.id.search_result1);
-
-        PointModel pmCenter = getPointModel4Point(getCenterPos().point());
-        Assert.assertEquals(54.317257, pmCenter.getLat(), 0.00001);
-        Assert.assertEquals(13.348735, pmCenter.getLon(), 0.00001);
-        SystemClock.sleep(2000);
-
-        mgLog.i("finished");
-    }
-
-    @Test(timeout = 40000)
-    public void _06_reverse_search_POI() {
-        mgLog.i("started");
-        SystemClock.sleep(1000);
-        MGMapActivity mgMapActivity = waitForActivity(MGMapActivity.class);
-        MapPosition mp = new MapPosition(new LatLong(54.317,13.35), (byte) 17);
-        mgMapActivity.getMapsforgeMapView().getModel().mapViewPosition.setMapPosition(mp);
-
-        Pref<String> prefSearchProvider = mgMapApplication.getPrefCache().get(R.string.preference_choose_search_key, "");
-        prefSearchProvider.setValue("POI");
-        setCursorToCenterPos();
-        addRegex(".*onClick mi_search.*");
-        animateMenu(R.id.menu_search, R.id.mi_search);
-        SystemClock.sleep(1000);
-
-        Point pSearch = getPoint4PointModel(new PointModelImpl(54.317257, 13.348735));
-        animateSwipeToPos(pSearch,pSearch); // long click pSearch
-
-        Assert.assertTrue (waitForView(TextView.class, R.id.search_result1).getText().toString().matches(".*Hunnenstraße.*Garz.*"));
-        SystemClock.sleep(2000);
-
-        mgLog.i("finished");
-    }
-
 
     @Test(timeout = 40000)
     public void _07_GeoLatLong() {

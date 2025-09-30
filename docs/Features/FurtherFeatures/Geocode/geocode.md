@@ -4,7 +4,7 @@
  
 The feature "Geocode" provides the ability to search 
 - a location (lat,lon) by name (with and without a given base location) and
-- an entity (address/street/amenity/POI) by a given location.
+- an entity (address/street/amenity) by a given location.
 
 Since google claims the search location would be the precise location (which is obviously only the case, when you do a geocode request on your current position), this transfer is by default disabled.
 If you want to use it, simply install following [geocode.zip](mgmap-install://mg4gh.github.io/MGMapViewer/Features/FurtherFeatures/Geocode/geocode.zip) configuration.
@@ -21,10 +21,9 @@ Currently there the following geocode providers implemented:
 - [Nominatim](./nominatim.md): the geocode service of [OpenStreetMap](https://www.openstreetmap.de/) is called [Nominatim](https://nominatim.org/)
 - [Pelias](./pelias.md):  the routing engine [OpenRouteService](https://openrouteservice.org/) provides the geocode service [Pelias](https://github.com/pelias/pelias)
 - [Graphhopper](./graphhopper.md): the service of [graphhopper](https://www.graphhopper.com/) provides a routing engine and a geocode API too.
-- [POI](./poi.md): a geocode service via POI files from [openandromaps](https://www.openandromaps.org/)
 - [GeoLatLong](./geolatlong.md) provider to find paces by the explicit usage of the latitude and longitude values.
 
-For the first three providers you will need internet access! The fourth one works with a local poi database file.
+For the first three providers you will need internet access! 
 The abilities and the quality of the results is a wide range, up to now the graphhopper engine is my personal favorite provider.
 
 ### Configuration
@@ -36,7 +35,6 @@ So if you want to be able to use all of them, you need the files
      MGMapViewer/config/search/Graphhopper.cfg 
                               /Nominatim.cfg
                               /Pelias.cfg
-                              /POI.cfg
                               /GeoLatLong.cfg
 ```
 

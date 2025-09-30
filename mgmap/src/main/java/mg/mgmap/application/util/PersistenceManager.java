@@ -242,7 +242,8 @@ public class PersistenceManager {
         hgtDir = createIfNotExists(appDir, "hgt");
         logDir = createIfNotExists(appDir, "log");
         searchConfigDir = createIfNotExists(configDir, "search");
-        createFileIfNotExists(searchConfigDir, "POI.cfg");
+        File configPOI = new File(searchConfigDir, "POI.cfg");
+        if (configPOI.exists()) mgLog.d("configPOI.delete result: "+configPOI.delete());
         createFileIfNotExists(searchConfigDir, "Nominatim.cfg");
         createGraphhopperCfgIfNotExists("Graphhopper.cfg");
         createFileIfNotExists(searchConfigDir,"GeoLatLong.cfg");

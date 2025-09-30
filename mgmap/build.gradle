@@ -212,14 +212,6 @@ android {
         }
     }
 
-    sourceSets {
-        main {
-            file("${rootDir}/sqlite-android/natives").eachDir() { dir ->
-                jniLibs.srcDirs += "${dir.path}/lib"
-            }
-        }
-    }
-
     signingConfigs {
         mg4gh {
             keyAlias 'mgm'

@@ -28,7 +28,7 @@ public class OpenAndroMapsUtil {
             @Override
             protected void doJob() throws Exception {
                 Zipper zipper = new Zipper(null);
-                FilenameFilter filter = (dir, name) -> (name.endsWith("map") || name.endsWith("poi"));
+                FilenameFilter filter = (dir, name) -> (name.endsWith("map") );
                 zipper.unpack(url, persistenceManager.getMapsforgeDir(), filter, this);
             }
         };
