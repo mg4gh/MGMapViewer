@@ -181,7 +181,7 @@ public class TurningInstructionService {
                         int courseClock = PointModelUtil.clock4degree( courseDegree );
                         mgLog.d("Kurs "+segment.get(bestMatch.getEndPointIndex()-1)+" "+bestMatch.getApproachPoint()+" "+pmx+" "+courseDegree+" "+courseClock);
                         if (((0 < courseDegree) && (courseDegree < 150)) || ((210 < courseDegree) && (courseDegree < 360))) {
-                            if (!text.isEmpty()){ // add Kurs only, if there is a hint
+                            if (text.length() != 0){ // add Kurs only, if there is a hint
                                 text.append(" Kurs ").append(courseClock).append(" Uhr");
                             }
                         }
