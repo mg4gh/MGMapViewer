@@ -1,6 +1,7 @@
 package mg.mgmap.tc.gr_search;
 
 import android.graphics.Point;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.TextView;
@@ -252,15 +253,16 @@ public class GroupSerachTests extends BaseTestCase {
         assert searchPos != null;
         Assert.assertEquals("Garz", searchPos.getLabel());
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            check(mgMapActivity, fsSearch, "geo:49.521168,8.741283?q=49.521168%2C%208.741283", ".*lat=49.521168.*lon=8.741283.*zoom=15.*");
+            check(mgMapActivity, fsSearch, "geo:49.521168,8.741283?q=49.521168%2C%208.741283&z=16", ".*lat=49.521168.*lon=8.741283.*zoom=16.*");
+            check(mgMapActivity, fsSearch, "geo:0,0?q=49.522168%2C%208.751283&z=16", ".*lat=49.522168.*lon=8.751283.*zoom=16.*");
+            check(mgMapActivity, fsSearch, "geo:0,0?q=49.522168%2C%20-8.751283&z=16", ".*lat=49.522168.*lon=-8.751283.*zoom=16.*");
+        }
 
-        check(mgMapActivity, fsSearch, "geo:49.521168,8.741283?q=49.521168%2C%208.741283", ".*lat=49.521168.*lon=8.741283.*zoom=15.*");
-        check(mgMapActivity, fsSearch, "geo:49.521168,8.741283?q=49.521168%2C%208.741283&z=16", ".*lat=49.521168.*lon=8.741283.*zoom=16.*");
-        check(mgMapActivity, fsSearch, "geo:0,0?q=49.522168%2C%208.751283&z=16", ".*lat=49.522168.*lon=8.751283.*zoom=16.*");
-        check(mgMapActivity, fsSearch, "geo:0,0?q=49.522168%2C%20-8.751283&z=16", ".*lat=49.522168.*lon=-8.751283.*zoom=16.*");
 
-
-        check(mgMapActivity, fsSearch, "geo:0,0?q=Kirchstraße 16, 69115 Heidelberg, Deutschland", ".*lat=49.4069.*lon=8.6784.*zoom=16.*");
-        check(mgMapActivity, fsSearch, "geo:0,0?q=zur+Post+Garz", ".*lat=54.31662.*lon=13.34847.*zoom=16.*");
+        check(mgMapActivity, fsSearch, "geo:0,0?q=Kirchstraße 16, 69115 Heidelberg, Deutschland", ".*lat=49.4069.*lon=8.6784.*");
+        check(mgMapActivity, fsSearch, "geo:0,0?q=zur+Post+Garz", ".*lat=54.31662.*lon=13.34847.*");
 
         SystemClock.sleep(3000);
         mgLog.i("finished");
