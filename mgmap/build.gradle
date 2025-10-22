@@ -156,12 +156,12 @@ afterEvaluate {
 }
 
 android {
-    compileSdk 35
+    compileSdk = 36
     defaultConfig {
         def mgBuildTime = "\"${aBuildDate}\""
         applicationId "mg.mgmap"
         minSdkVersion 26
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode Integer.parseInt("$mgVersionCode")
         versionName "${versionMajor}-${mgVersionCode}.${mgBuildNbr}"
         buildConfigField "String", "BUILD_TIME", "${mgBuildTime}"
@@ -284,7 +284,7 @@ dependencies {
     implementation 'net.lingala.zip4j:zip4j:2.11.5'
     implementation "androidx.constraintlayout:constraintlayout:2.2.1"
 
-    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:5.2.1'
 //    implementation 'com.jcraft:jsch:0.1.55' // copied to libs folder of project -> access during project build
 
     implementation 'com.google.android.gms:play-services-location:21.3.0'
