@@ -18,6 +18,7 @@ import org.mapsforge.core.graphics.Paint;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
@@ -120,10 +121,18 @@ public class FSGraphDetails extends FeatureService {
         ArrayList<? extends Graph> graphs =  getActivity().getGraphFactory().getGraphList(bBoxTap);
 
         Graph aGraph = graphs.get(0);
+        PointModel lastPm = null;
         if ((aGraph != null) && (am instanceof ApproachModelImpl ami)){
             for (PointModel pm : aGraph.segmentNodes(ami.getNode1(), ami.getNode2())){
                 multiPointModel.addPoint(pm);
+                if (lastPm != null){
+                    double dist = PointModelUtil.distance(lastPm,pm);
+                    double vertDist = PointModelUtil.verticalDistance(lastPm,pm);
+                    double rise = 100 * vertDist/dist;
+                    mgLog.d(String.format(Locale.ENGLISH, "    dist=%.2fm vertDist=%.1fm rise=%.1f",dist,vertDist,rise));
+                }
                 mgLog.d("Point "+ pm + aGraph.getRefDetails(pm));
+                lastPm = pm;
             }
         }
         aGraph = null;
