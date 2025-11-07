@@ -129,7 +129,6 @@ public class RoutingEngine {
             mgLog.e("routing profile is null; cannot route");
             return rotl;
         }
-//        boolean routingProfileChanged = (rotl == null) || !routingProfile.getId().equals(rotl.getRoutingProfileId()); // TODO: cleanup, if no problem becomes visible
         mtl.setRoutingProfileId(routingProfile.getId());
 
         for (TrackLogSegment segment : mtl.getTrackLogSegments()){
@@ -144,21 +143,18 @@ public class RoutingEngine {
 
                 boolean bRecalcRoute = true;
                 try {
-//                    if (!routingProfileChanged){
-                        if ((prev.getApproach() != null) && (current.getApproach() != null)) {
-                            PointModel pmFirst = current.currentMPM.get(0);
-                            PointModel pmLast = current.currentMPM.get(current.currentMPM.size() - 1);
-                            PointModel approachFirst = prev.getApproach().getApproachNode();
-                            PointModel approachLast = current.getApproach().getApproachNode();
-                            if ((PointModelUtil.compareTo(pmFirst, approachFirst) == 0) &&
-                                    (PointModelUtil.compareTo(pmLast, approachLast) == 0) &&
-                                    !current.aborted)
-                                bRecalcRoute = false;
-                        }
-//                    }
-
+                    if ((prev.getApproach() != null) && (current.getApproach() != null)) {
+                        PointModel pmFirst = current.currentMPM.get(0);
+                        PointModel pmLast = current.currentMPM.get(current.currentMPM.size() - 1);
+                        PointModel approachFirst = prev.getApproach().getApproachNode();
+                        PointModel approachLast = current.getApproach().getApproachNode();
+                        if ((PointModelUtil.compareTo(pmFirst, approachFirst) == 0) &&
+                                (PointModelUtil.compareTo(pmLast, approachLast) == 0) &&
+                                !current.aborted)
+                            bRecalcRoute = false;
+                    }
                 } catch (Exception e){
-                    //routeModel can be null, approachSet can be empty, ...
+                    //routeModel can be null, approach can be null, ...
                 }
 
                 if (bRecalcRoute){
@@ -291,6 +287,7 @@ public class RoutingEngine {
                 targetApproachModel = gFactory.validateApproachModel(target.selectedApproach);
                 gFactory.connectApproach2Graph(graph, sourceApproachModel);
                 gFactory.connectApproach2Graph(graph, targetApproachModel);
+                gFactory.checkDirectConnectApproaches(graph, sourceApproachModel, targetApproachModel);
 
                 double distLimit = Math.min(routingContext.maxBeelineDistance, routingContext.maxRouteLengthFactor * routingProfile.heuristic(gStart, gEnd) + 500);
 

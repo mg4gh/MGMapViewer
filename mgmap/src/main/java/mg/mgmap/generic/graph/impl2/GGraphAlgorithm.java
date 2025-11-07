@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.GraphAlgorithm;
-import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -26,7 +25,7 @@ public abstract class GGraphAlgorithm implements GraphAlgorithm {
     protected final GGraph graph;
     protected final RoutingProfile routingProfile;
     protected Observable routeIntermediatesObservable;
-    private boolean running = false;
+    volatile private boolean running = false;
 
 
     public GGraphAlgorithm(GGraph graph, RoutingProfile routingProfile) {
@@ -35,49 +34,47 @@ public abstract class GGraphAlgorithm implements GraphAlgorithm {
     }
 
     public MultiPointModel perform(ApproachModel sourceApproachModel, ApproachModel targetApproachModel, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList){
-        MultiPointModel mpm = checkApproachesOverlap(sourceApproachModel, targetApproachModel);
-        if (mpm == null){ // no overlap, use regular routing algo
-            running = true;
-            new Thread(() -> {
-                while (running){
-                    synchronized (GGraphAlgorithm.this){
-                        try {
-                            GGraphAlgorithm.this.wait(1000);
-                            if (running && (routeIntermediatesObservable != null)){
-                                routeIntermediatesObservable.setChanged();
-                                routeIntermediatesObservable.notifyObservers( getBestPath() );
-                            }
-                        } catch (InterruptedException e) {
-                            mgLog.e(e.getMessage());
+        running = true;
+        new Thread(() -> {
+            while (running){
+                synchronized (GGraphAlgorithm.this){
+                    try {
+                        GGraphAlgorithm.this.wait(1000);
+                        if (running && (routeIntermediatesObservable != null)){
+                            routeIntermediatesObservable.setChanged();
+                            routeIntermediatesObservable.notifyObservers( getBestPath() );
                         }
+                    } catch (InterruptedException e) {
+                        mgLog.e(e.getMessage());
                     }
                 }
-                if (routeIntermediatesObservable != null){
-                    routeIntermediatesObservable.setChanged();
-                    routeIntermediatesObservable.notifyObservers(null);
-                }
-            }).start();
-            mpm =  performAlgo(sourceApproachModel, targetApproachModel, costLimit, refreshRequired, relaxedList);
-            if ((mpm instanceof MultiPointModelImpl mpmi) && (mpmi.size() > 2)){
-                MultiPointModelImpl mpmi2 = new MultiPointModelImpl(); // copy, but remove duplicates
-                Iterator<PointModel> itMpm = mpmi.iterator();
-                PointModel lastPM = null;
-                while (itMpm.hasNext()){
-                    PointModel currentPM = itMpm.next();
-                    if (!currentPM.equals(lastPM)){
-                        mpmi2.addPoint(currentPM);
-                    }
-                    lastPM = currentPM;
-                }
-                mpm = mpmi2;
             }
-            running = false;
-            synchronized (GGraphAlgorithm.this){
-                GGraphAlgorithm.this.notify();
+            if (routeIntermediatesObservable != null){
+                routeIntermediatesObservable.setChanged();
+                routeIntermediatesObservable.notifyObservers(null);
             }
+        }).start();
+        MultiPointModel mpm =  performAlgo(sourceApproachModel, targetApproachModel, costLimit, refreshRequired, relaxedList);
+        if ((mpm instanceof MultiPointModelImpl mpmi) && (mpmi.size() > 2)){
+            MultiPointModelImpl mpmi2 = new MultiPointModelImpl(); // copy, but remove duplicates
+            Iterator<PointModel> itMpm = mpmi.iterator();
+            PointModel lastPM = null;
+            while (itMpm.hasNext()){
+                PointModel currentPM = itMpm.next();
+                if (!currentPM.equals(lastPM)){
+                    mpmi2.addPoint(currentPM);
+                }
+                lastPM = currentPM;
+            }
+            mpm = mpmi2;
+        }
+        running = false;
+        synchronized (GGraphAlgorithm.this){
+            GGraphAlgorithm.this.notify();
         }
         return mpm;
     }
+
     public abstract MultiPointModel performAlgo(ApproachModel sourceApproachModel, ApproachModel targetApproachModel, double costLimit, AtomicInteger refreshRequired, ArrayList<PointModel> relaxedList);
 
     public abstract ArrayList<MultiPointModel> getBestPath();
@@ -130,67 +127,6 @@ public abstract class GGraphAlgorithm implements GraphAlgorithm {
             }
         }
         return path;
-    }
-
-    protected MultiPointModel checkApproachesOverlap(ApproachModel sourceApproachModel, ApproachModel targetApproachModel){
-        MultiPointModelImpl mpmi = null;
-        if ((sourceApproachModel instanceof ApproachModelImpl sami) && (targetApproachModel instanceof ApproachModelImpl tami)){ // expected to be always true
-            if ((sami.getNode1() instanceof GNode) && (sami.getNode2() instanceof GNode)){ // case 1: GNode node1 and GNode node2 in sami: source approach model segment has no intermediates
-                if ((sami.getNode1() == tami.getNode1()) && (sami.getNode2() == tami.getNode2())){ // source and target have same approach segment
-                    WayAttributs wayAttributs = sami.getNeighbour1To2().getWayAttributs();
-                    mpmi = new MultiPointModelImpl();
-                    mpmi.addPoint(new ExtendedPointModelImpl<>(sami.getApproachNode(), null));
-                    mpmi.addPoint(new ExtendedPointModelImpl<>(tami.getApproachNode(), wayAttributs));
-                } // else approaches do not overlap
-            } else { // sami point to segment with intermediates
-                GNode nodeS = null, nodeT = null;
-                GNeighbour neighbourS = null, neighbourT = null;
-                int pIdx1S = 0, pIdx2S = 0, pIdx1T = 0, pIdx2T = 0;
-                if (sami.getNode1() instanceof GIntermediateNode gin){
-                    nodeS = gin.node;
-                    neighbourS = gin.neighbour;
-                    pIdx1S = gin.pIdx;
-                    pIdx2S = gin.pIdx+1;
-                }
-                if (sami.getNode2() instanceof GIntermediateNode gin){
-                    nodeS = gin.node;
-                    neighbourS = gin.neighbour;
-                    pIdx1S = gin.pIdx-1;
-                    pIdx2S = gin.pIdx;
-                }
-                if (tami.getNode1() instanceof GIntermediateNode gin){
-                    nodeT = gin.node;
-                    neighbourT = gin.neighbour;
-                    pIdx1T = gin.pIdx;
-                    pIdx2T = gin.pIdx+1;
-                }
-                if (tami.getNode2() instanceof GIntermediateNode gin){
-                    nodeT = gin.node;
-                    neighbourT = gin.neighbour;
-                    pIdx1T = gin.pIdx-1;
-                    pIdx2T = gin.pIdx;
-                }
-                if ((nodeS == nodeT) && (neighbourS == neighbourT) && (neighbourS != null)){
-                    WayAttributs wayAttributs = neighbourS.getWayAttributs();
-                    mpmi = new MultiPointModelImpl();
-                    mpmi.addPoint(new ExtendedPointModelImpl<>(sami.getApproachNode(), null));
-                    if (pIdx1S < pIdx1T){
-                        for (int pIdx = pIdx2S; pIdx <= pIdx1T; pIdx++){
-                            GIntermediateNode giNode = new GIntermediateNode(nodeS,neighbourS,pIdx);
-                            mpmi.addPoint(new ExtendedPointModelImpl<>(giNode, wayAttributs));
-                        }
-                    }
-                    if (pIdx1S > pIdx1T){
-                        for (int pIdx = pIdx1S; pIdx >= pIdx2T; pIdx--){
-                            GIntermediateNode giNode = new GIntermediateNode(nodeS,neighbourS,pIdx);
-                            mpmi.addPoint(new ExtendedPointModelImpl<>(giNode, wayAttributs));
-                        }
-                    }
-                    mpmi.addPoint(new ExtendedPointModelImpl<>(tami.getApproachNode(), wayAttributs));
-                }
-            }
-        }
-        return mpmi;
     }
 
     float costToNeighbour(GNode node, GNeighbour neighbour, GNode neighbourNode){

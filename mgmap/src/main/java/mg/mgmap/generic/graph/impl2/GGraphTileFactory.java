@@ -291,7 +291,6 @@ public class GGraphTileFactory implements GraphFactory {
                             GNeighbour endNeighbour = gGraph.bidirectionalConnect(gNode3, gNode2, giNode.neighbour.getReverse());
                             endNeighbour.setIntermediatesPoints(intermediatePointsReverse);
                             endNeighbour.getReverse().setIntermediatesPoints(intermediatePoints);
-                            mgLog.d();
                         } else {
                             gGraph.bidirectionalConnect(gNode3, gNode2, giNode.neighbour.getReverse());
                         }
@@ -302,9 +301,77 @@ public class GGraphTileFactory implements GraphFactory {
                     GNeighbour neighbour21 = neighbour12.getReverse();
                     gGraph.bidirectionalConnect(gNode1, approachNode, neighbour12);
                     gGraph.bidirectionalConnect(gNode2, approachNode, neighbour21);
-                    mgLog.d("dummy");
                 } else {
                     mgLog.e("Unexpected approachModel type: "+approachModel.getClass().getName());
+                }
+            }
+        }
+    }
+
+    public void checkDirectConnectApproaches(Graph graph, ApproachModel sourceApproachModel, ApproachModel targetApproachModel) {
+        if ((graph instanceof GGraph gGraph) && (sourceApproachModel instanceof ApproachModelImpl sami) && (targetApproachModel instanceof ApproachModelImpl tami) && (sami.getNeighbour1To2() instanceof GNeighbour neighbour12)) { // expected to be always true
+            if ((sami.getNode1() instanceof GNode) && (sami.getNode2() instanceof GNode)) { // case 1: GNode node1 and GNode node2 in sami: source approach model segment has no intermediates
+                if ((sami.getNode1() == tami.getNode1()) && (sami.getNode2() == tami.getNode2())) { // source and target have same approach segment
+                    if (PointModelUtil.distance(sami.getNode1(), sami.getApproachNode()) < PointModelUtil.distance(tami.getNode1(), tami.getApproachNode())){
+                        gGraph.bidirectionalConnect(sami.getApproachNode(), tami.getApproachNode(), neighbour12);
+                    } else {
+                        gGraph.bidirectionalConnect(sami.getApproachNode(), tami.getApproachNode(), neighbour12.getReverse());
+                    }
+                } // else approaches do not overlap
+            } else { // sami point to segment with intermediates
+                GNode nodeS = null, nodeT = null;
+                GNeighbour neighbourS = null, neighbourT = null;
+                int pIdx1S = 0, pIdx2S = 0, pIdx1T = 0, pIdx2T = 0;
+                if (sami.getNode1() instanceof GIntermediateNode gin){
+                    nodeS = gin.node;
+                    neighbourS = gin.neighbour;
+                    pIdx1S = gin.pIdx;
+                    pIdx2S = gin.pIdx+1;
+                }
+                if (sami.getNode2() instanceof GIntermediateNode gin){
+                    nodeS = gin.node;
+                    neighbourS = gin.neighbour;
+                    pIdx1S = gin.pIdx-1;
+                    pIdx2S = gin.pIdx;
+                }
+                if (tami.getNode1() instanceof GIntermediateNode gin){
+                    nodeT = gin.node;
+                    neighbourT = gin.neighbour;
+                    pIdx1T = gin.pIdx;
+                    pIdx2T = gin.pIdx+1;
+                }
+                if (tami.getNode2() instanceof GIntermediateNode gin){
+                    nodeT = gin.node;
+                    neighbourT = gin.neighbour;
+                    pIdx1T = gin.pIdx-1;
+                    pIdx2T = gin.pIdx;
+                }
+                if ((nodeS == nodeT) && (neighbourS == neighbourT) && (neighbourS != null)) { // sami and tami address same segment with intermediates (third condition should always be true)
+                    if ((pIdx1S > pIdx1T) || (pIdx1S == pIdx1T) && (PointModelUtil.distance(sami.getNode1(), sami.getApproachNode()) > PointModelUtil.distance(tami.getNode1(), tami.getApproachNode()))) { // reverse order of sami and tami in relation to node1->node2
+                        // exchange sami and tami (for connect it is irrelevant, which node is source and which is target)
+                        int tempPIdx1 = pIdx1S;
+                        int tempPIdx2 = pIdx2S;
+                        ApproachModelImpl tempAmi = sami;
+                        pIdx1S = pIdx1T;
+                        pIdx2S = pIdx2T;
+                        sami = tami;
+                        pIdx1T = tempPIdx1;
+                        pIdx2T = tempPIdx2;
+                        tami = tempAmi;
+                    }
+                    int intermediates = pIdx1T - pIdx1S;
+                    if (intermediates > 0) {
+                        int[] intermediatePoints = new int[3 * intermediates];
+                        int[] intermediatePointsReverse = new int[3 * intermediates];
+                        System.arraycopy(neighbourS.getIntermediatesPoints(), (pIdx2S) * 3, intermediatePoints, 0, 3 * intermediates);
+                        System.arraycopy(neighbourS.getReverse().getIntermediatesPoints(), (neighbourS.getReverse().cntIntermediates() - pIdx2T) * 3, intermediatePointsReverse, 0, 3 * intermediates);
+                        GNeighbour directNeighbour = gGraph.bidirectionalConnect(sami.getApproachNode(), tami.getApproachNode(), neighbourS);
+                        directNeighbour.setIntermediatesPoints(intermediatePoints);
+                        directNeighbour.getReverse().setIntermediatesPoints(intermediatePointsReverse);
+                        mgLog.d();
+                    } else { // no intermediates -> connect directly
+                        gGraph.bidirectionalConnect(sami.getApproachNode(), tami.getApproachNode(), neighbourS);
+                    }
                 }
             }
         }

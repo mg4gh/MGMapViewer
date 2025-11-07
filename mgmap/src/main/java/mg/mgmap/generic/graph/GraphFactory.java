@@ -23,6 +23,7 @@ public interface GraphFactory {
 
     void disconnectApproach2Graph(Graph graph, ApproachModel approachModel);
 
+    void checkDirectConnectApproaches(Graph graph, ApproachModel sourceApproachModel, ApproachModel targetApproachModel);
 
     void clearCache();
 

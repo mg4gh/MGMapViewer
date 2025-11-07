@@ -258,6 +258,18 @@ public class GGraphTileFactory implements GraphFactory {
         }
     }
 
+    public void checkDirectConnectApproaches(Graph graph, ApproachModel sourceApproachModel, ApproachModel targetApproachModel) {
+        if ((graph instanceof GGraph gGraph) && (sourceApproachModel instanceof ApproachModelImpl sami) && (targetApproachModel instanceof ApproachModelImpl tami)) { // expected to be always true
+            if ((sami.getNode1() == tami.getNode1()) && (sami.getNode2() == tami.getNode2())) { // source and target have same approach segment
+                if (PointModelUtil.distance(sami.getNode1(), sami.getApproachNode()) < PointModelUtil.distance(tami.getNode1(), tami.getApproachNode())) {
+                    gGraph.bidirectionalConnect(sami.getApproachNode(), tami.getApproachNode(), sami.getNeighbour1To2());
+                } else {
+                    gGraph.bidirectionalConnect(sami.getApproachNode(), tami.getApproachNode(), sami.getNeighbour1To2().getReverse());
+                }
+            } // else approaches do not overlap
+        }
+    }
+
     public GGraphTile getGGraphTile(int tileX, int tileY){
         return getGGraphTile(tileX, tileY, true);
     }
