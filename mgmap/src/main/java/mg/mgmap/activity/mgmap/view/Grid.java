@@ -100,7 +100,7 @@ public class Grid extends Layer {
     private final int lineFrontColor;
     private final int textBackColor;
     private final int textFrontColor;
-    private final Paint lineBack, lineFront, textBack, textFront;
+    protected final Paint lineBack, lineFront, textBack, textFront;
     private final Map<Byte, Double> spacingConfig;
 
     /**

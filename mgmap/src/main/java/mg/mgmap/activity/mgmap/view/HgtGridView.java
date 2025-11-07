@@ -12,9 +12,13 @@ import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.model.DisplayModel;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import mg.mgmap.R;
+import mg.mgmap.application.util.ElevationProvider;
+import mg.mgmap.generic.model.WriteablePointModel;
+import mg.mgmap.generic.model.WriteablePointModelImpl;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.HgtProvider;
@@ -69,7 +73,7 @@ public class HgtGridView extends Grid {
     public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
 
         Double spacing = spacingConfig.get(zoomLevel);
-        if (spacing != null){
+        if ((spacing != null) && (zoomLevel<10)){
 
             double minLongitude = spacing * (Math.floor(boundingBox.minLongitude / spacing));
             double maxLongitude = spacing * (Math.ceil(boundingBox.maxLongitude / spacing));
@@ -99,6 +103,62 @@ public class HgtGridView extends Grid {
                 }
             }
         } // if (spacing != null)
+
+        if ((18 <= zoomLevel) && (zoomLevel <= 22)) {
+            double minLongitude = (Math.floor(boundingBox.minLongitude * 3600) / 3600);
+            double maxLongitude = (Math.ceil(boundingBox.maxLongitude * 3600) / 3600);
+            double minLatitude = (Math.floor(boundingBox.minLatitude * 3600) / 3600);
+            double maxLatitude = (Math.ceil(boundingBox.maxLatitude * 3600) / 3600);
+            long mapSize = MercatorProjection.getMapSize(zoomLevel, this.displayModel.getTileSize());
+
+            {
+                int pixelX1 = (int) (MercatorProjection.longitudeToPixelX(minLongitude, mapSize) - topLeftPoint.x);
+                int pixelX2 = (int) (MercatorProjection.longitudeToPixelX(maxLongitude, mapSize) - topLeftPoint.x) ;
+
+                Path path = graphicFactory.createPath();
+                for (double latitude = minLatitude; latitude <= maxLatitude; latitude += 1/3600.0) {
+                    int pixelY = (int) (MercatorProjection.latitudeToPixelY(latitude, mapSize) - topLeftPoint.y);
+                    path.moveTo(pixelX1, pixelY);
+                    path.lineTo(pixelX2, pixelY);
+                }
+                canvas.drawPath(path,this.lineFront);
+            }
+            {
+                int pixelY1 = (int) (MercatorProjection.latitudeToPixelY(minLatitude, mapSize) - topLeftPoint.y);
+                int pixelY2 = (int) (MercatorProjection.latitudeToPixelY(maxLatitude, mapSize) - topLeftPoint.y);
+
+                Path path = graphicFactory.createPath();
+                for (double longitude = minLongitude; longitude <= maxLongitude; longitude += 1/3600.0) {
+                    int pixelX = (int) (MercatorProjection.longitudeToPixelX(longitude, mapSize) - topLeftPoint.x) ;
+                    path.moveTo(pixelX, pixelY1);
+                    path.lineTo(pixelX, pixelY2);
+                }
+                canvas.drawPath(path,this.lineFront);
+            }
+            {
+                ElevationProvider elevationProvider = application.getElevationProvider();
+                WriteablePointModel wpm = new WriteablePointModelImpl();
+                for (double latitude = minLatitude; latitude <= maxLatitude; latitude += 1/3600.0) {
+                    int pixelY = (int) (MercatorProjection.latitudeToPixelY(latitude, mapSize) - topLeftPoint.y);
+                    wpm.setLat(latitude);
+                    for (double longitude = minLongitude; longitude <= maxLongitude; longitude += 1/3600.0) {
+                        int pixelX = (int) (MercatorProjection.longitudeToPixelX(longitude, mapSize) - topLeftPoint.x) ;
+                        wpm.setLon(longitude);
+
+                        elevationProvider.setElevation(wpm);
+                        String text = String.format(Locale.ENGLISH,"%.1f",wpm.getEle());
+
+                        int pixelXText = pixelX - this.textFront.getTextWidth(text) / 2;
+                        int pixelYText = pixelY + this.textFront.getTextHeight(text) / 2;
+
+                        canvas.drawText(text, pixelXText, pixelYText, this.textBack);
+                        canvas.drawText(text, pixelXText, pixelYText, this.textFront);
+                    }
+                }
+
+            }
+
+        }
         super.draw(boundingBox, zoomLevel, canvas, topLeftPoint, rotation);
 
     }
