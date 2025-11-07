@@ -203,9 +203,9 @@ public class GGraphTileFactory implements GraphFactory {
 
                 GNeighbour neighbour = null;
                 while ((neighbour = gGraphTile.getNextNeighbour(node, neighbour)) != null) {
-                    if (neighbour.isPrimaryDirection()){
+                    if (neighbour.isPrimaryDirection()){ // neighbour relations exist in both direction - here we can reduce to one
                         GNode neighbourNode = neighbour.getNeighbourNode();
-//                    if (gGraphTile.sameGraph(node, neighbourNode) && (PointModelUtil.compareTo(node, neighbourNode) < 0)){ // neighbour relations exist in both direction - here we can reduce to one
+                        if (node.tileIdx != neighbourNode.tileIdx) continue; // don't use neighbours that connect tiles (approach should belong fully to one tile)
                         int cntIntermediates = neighbour.cntIntermediates();
                         if (cntIntermediates == 0){
                             bestApproach = checkForBetterApproach(pointModel, closeThreshold, mtlpBBox, pmApproach, gGraphTile, node, neighbour, neighbourNode, bestApproach);
