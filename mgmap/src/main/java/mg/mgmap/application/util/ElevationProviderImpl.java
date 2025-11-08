@@ -14,19 +14,25 @@
  */
 package mg.mgmap.application.util;
 
+import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
+import mg.mgmap.generic.util.Pref;
 
 /** Provide an elevation value for a given position on the .hgt file basis. */
 public class ElevationProviderImpl implements ElevationProvider{
 
+    final MGMapApplication mgMapApplication;
     final HgtProvider hgtProvider;
+    final Pref<Boolean> prefBicubicInterpolation;
 
-    public ElevationProviderImpl(HgtProvider hgtProvider){
+    public ElevationProviderImpl(MGMapApplication mgMapApplication, HgtProvider hgtProvider){
+        this.mgMapApplication = mgMapApplication;
         this.hgtProvider = hgtProvider;
+        prefBicubicInterpolation = mgMapApplication.getPrefCache().get("prefUseBicubicInterpolation", false);
     }
 
     public void setElevation(TrackLogPoint tlp) {
@@ -69,16 +75,24 @@ public class ElevationProviderImpl implements ElevationProvider{
                 double seEle = getEle(hgtBuf, off+7204);
                 double swEle = getEle(hgtBuf, off+7202);
 
-                double nhi = PointModelUtil.interpolate(0, 1, nwEle, neEle, dlon3600 - oLon);
-                double shi = PointModelUtil.interpolate(0, 1, swEle, seEle, dlon3600 - oLon);
-                double hi = PointModelUtil.interpolate(0, 1, nhi, shi, dlat3600 - oLat);
-
-                double maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
-                double minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
-
+                double hi, maxEle, minEle;
+                if (prefBicubicInterpolation.getValue() && (1 <= oLon) && (oLon <= 3598) && (1 <= oLat) && (oLat <= 3598)){
+                    double h0 = cubicInterpolate1(getEle(hgtBuf,off-7204),getEle(hgtBuf,off-7202),getEle(hgtBuf,off-7200),getEle(hgtBuf,off-7198), dlon3600 - oLon);
+                    double h1 = cubicInterpolate1(getEle(hgtBuf,off-2),nwEle,neEle,getEle(hgtBuf,off+4), dlon3600 - oLon);
+                    double h2 = cubicInterpolate1(getEle(hgtBuf,off+7200),swEle,seEle,getEle(hgtBuf,off+7206), dlon3600 - oLon);
+                    double h3 = cubicInterpolate1(getEle(hgtBuf,off+14402),getEle(hgtBuf,off+14404),getEle(hgtBuf,off+14406),getEle(hgtBuf,off+14408), dlon3600 - oLon);
+                    hi = cubicInterpolate1(h0, h1, h2, h3, dlat3600 - oLat);
+                } else {
+                    double nhi = PointModelUtil.interpolate(0, 1, nwEle, neEle, dlon3600 - oLon);
+                    double shi = PointModelUtil.interpolate(0, 1, swEle, seEle, dlon3600 - oLon);
+                    hi = PointModelUtil.interpolate(0, 1, nhi, shi, dlat3600 - oLat);
+                }
+                maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
+                minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
                 hi = Math.round(hi*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR;
                 wpm.setEle((float) hi);
                 wpm.setEleAcc((float) (maxEle-minEle));
+
             } else { // dummy file for sea level
                 wpm.setEle(0);
                 wpm.setEleAcc(0);
@@ -97,6 +111,17 @@ public class ElevationProviderImpl implements ElevationProvider{
             res = (short)( ((b1 & 0xff)<<8) + (b2 & 0xff) );
         }
         return res;
+    }
+
+    public static double cubicInterpolate1(double y0, double y1, double y2, double y3, double t) {
+        // Kubische Interpolation für gleichmäßig verteilte x
+        double a0 = y3 - y2 - y0 + y1;
+        double a1 = y0 - y1 - a0;
+        double a2 = y2 - y0;
+        @SuppressWarnings("unused")
+        double a3 = y1;
+
+        return ((a0 * t + a1) * t + a2) * t + a3;
     }
 
 }

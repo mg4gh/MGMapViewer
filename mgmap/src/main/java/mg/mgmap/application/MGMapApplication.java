@@ -175,7 +175,7 @@ public class MGMapApplication extends Application {
         initVersionCode();
         BackupUtil.restore(this, persistenceManager);
         hgtProvider = new HgtProvider(this, persistenceManager, getAssets()); // for hgt file handling
-        elevationProvider = new ElevationProviderImpl(hgtProvider); // for height data handling
+        elevationProvider = new ElevationProviderImpl(this, hgtProvider); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
         metaDataUtil = new MetaDataUtil(this, persistenceManager);
         notificationUtil = new NotificationUtil(this);
