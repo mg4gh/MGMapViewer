@@ -36,6 +36,8 @@
     <string name="preferences_smoothing4routing_key">pref_smoothing4routing_key</string>
     <string name="preferences_smoothing4routing_title">Smooth height data (developer)</string>
     <string name="preferences_smoothing4routing_desc">Smooth height data at graph creation time</string>
+    <string name="preferences_smoothing4routing_distance">prefSmoothingDistance</string>
+    <string name="preferences_smoothing4routing_usePrimary">prefSmoothingUsePrimary</string>
 
     <string name="preferences_minimalTurningInstruction_key">FSRoouting.minimalTurningInstruction_key</string>
     <string name="preferences_minimalTurningInstruction_title">Minimal turning instruction</string>

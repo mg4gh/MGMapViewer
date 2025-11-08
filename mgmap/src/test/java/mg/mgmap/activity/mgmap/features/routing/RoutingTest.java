@@ -397,7 +397,7 @@ public class RoutingTest {
             ApproachModel amStart;
             ApproachModel amEnd;
 
-            gGraphTileFactory = new mg.mgmap.generic.graph.impl2.GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true));
+            gGraphTileFactory = new mg.mgmap.generic.graph.impl2.GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true), new Pref<>("16"), new Pref<>(false));
             gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(pmStart).extend(PointModelUtil.getCloseThreshold()));
             gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(pmEnd).extend(PointModelUtil.getCloseThreshold())));
             multi = new mg.mgmap.generic.graph.impl2.GGraphMulti(gGraphTileFactory, gGraphTiles);
@@ -508,7 +508,7 @@ public class RoutingTest {
                 ApproachModel amStart;
                 ApproachModel amEnd;
 
-                gGraphTileFactory = new mg.mgmap.generic.graph.impl2.GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true));
+                gGraphTileFactory = new mg.mgmap.generic.graph.impl2.GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true), new Pref<>("16"), new Pref<>(false));
                 gGraphTiles = gGraphTileFactory.getGGraphTileList (new BBox().extend(pmStart).extend(PointModelUtil.getCloseThreshold()));
                 gGraphTiles.addAll(gGraphTileFactory.getGGraphTileList(new BBox().extend(pmEnd).extend(PointModelUtil.getCloseThreshold())));
                 multi = new mg.mgmap.generic.graph.impl2.GGraphMulti(gGraphTileFactory, gGraphTiles);

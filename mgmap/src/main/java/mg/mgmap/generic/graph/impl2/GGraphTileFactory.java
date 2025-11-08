@@ -22,6 +22,7 @@ import org.mapsforge.map.datastore.Way;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
@@ -65,15 +66,20 @@ public class GGraphTileFactory implements GraphFactory {
     Pref<Boolean> prefSmooth4Routing;
     GTileCache gTileCache;
     ArrayList<PointModel> neighbourPoints = new ArrayList<>();
+    Pref<String> prefSmoothDistance;
+    Pref<Boolean> prefSmoothUsePrimary;
 
     public GGraphTileFactory(){}
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails, Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing){
+    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails,
+                                      Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance, Pref<Boolean> prefSmoothUsePrimary){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
         this.wayDetails = wayDetails;
         this.prefRoutingAlgorithm = prefRoutingAlgorithm;
         this.prefSmooth4Routing = prefSmooth4Routing;
+        this.prefSmoothDistance = prefSmoothDistance;
+        this.prefSmoothUsePrimary = prefSmoothUsePrimary;
 
         gTileCache = new GTileCache(CACHE_LIMIT);
         return this;
@@ -545,6 +551,13 @@ public class GGraphTileFactory implements GraphFactory {
     }
 
     private void smoothGGraphTile(GGraphTile tile){
+        double smoothingDistance = PointModelUtil.getCloseThreshold()/2d;
+        try {
+            smoothingDistance = Double.parseDouble(prefSmoothDistance.getValue());
+        } catch (NumberFormatException e) {
+            mgLog.w(e.getMessage());
+        }
+        mgLog.d(String.format(Locale.ENGLISH, "Smoothing distance: %.1fm",smoothingDistance));
         ArrayList<GNeighbour> smoothNeighbourList = new ArrayList<>();
         for (GNode aNode : tile.getGNodes()){
             boolean fix = true;
@@ -572,6 +585,7 @@ public class GGraphTileFactory implements GraphFactory {
 //                    aNeighbour = tile.getNextNeighbour(aNode, aNeighbour);
 
                     GNeighbour neighbour = aNeighbour;
+                    if (prefSmoothUsePrimary.getValue() && !neighbour.isPrimaryDirection()) continue; // smooth only in primary direction
                     GNode neighbourNode = neighbour.getNeighbourNode();
                     if (neighbourNode.isFlag(GNode.FLAG_VISITED)) continue; // this path is already handled
                     int neighbourNodeIdx;
@@ -604,14 +618,14 @@ public class GGraphTileFactory implements GraphFactory {
                             maxHeightPointIdx = neighbourNodeIdx;
                         }
 
-                        if ( (maxHeight - minHeight >= TrackLogStatistic.ELE_THRESHOLD_ELSE) && (distance(smoothNeighbourList, minHeightPointIdx, maxHeightPointIdx) > PointModelUtil.getCloseThreshold()/2d)){
+                        if ( (maxHeight - minHeight >= TrackLogStatistic.ELE_THRESHOLD_ELSE) && (distance(smoothNeighbourList, minHeightPointIdx, maxHeightPointIdx) > smoothingDistance)){
                             neighbourNode.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
                             if ( maxHeight == neighbourNode.getEle() ){
                                 signumHeightInterval = 1;
                                 if (minHeightPoint != lastHeightRelevantPoint){
                                     if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX)){
                                         minHeightPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
-                                        if (distance (smoothNeighbourList, lastHeightRelevantPointIdx, minHeightPointIdx) <  PointModelUtil.getCloseThreshold()/2d){
+                                        if (distance (smoothNeighbourList, lastHeightRelevantPointIdx, minHeightPointIdx) <  smoothingDistance){
                                             if ( signumLastHeightInterval == Math.signum( minHeightPoint.getEle() - lastHeightRelevantPoint.getEle() ) ) lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset height relevance
                                         }
                                     }
@@ -623,7 +637,7 @@ public class GGraphTileFactory implements GraphFactory {
                                 if (maxHeightPoint != lastHeightRelevantPoint){
                                     if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX)) {
                                         maxHeightPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
-                                        if (distance (smoothNeighbourList, lastHeightRelevantPointIdx, maxHeightPointIdx) < PointModelUtil.getCloseThreshold()/2d){
+                                        if (distance (smoothNeighbourList, lastHeightRelevantPointIdx, maxHeightPointIdx) < smoothingDistance){
                                             if ( signumLastHeightInterval == Math.signum( maxHeightPoint.getEle() - lastHeightRelevantPoint.getEle() ) ) lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset height relevance
                                         }
                                     }
@@ -644,7 +658,7 @@ public class GGraphTileFactory implements GraphFactory {
                         neighbourNode = neighbour.getNeighbourNode();
                     } // while true
                     if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX) &&
-                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx, neighbourNodeIdx) < PointModelUtil.getCloseThreshold()/2d)){
+                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx, neighbourNodeIdx) < smoothingDistance)){
                         lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset last heightRelevantPoint in this segment - otherwise the remaining
                     }
 
@@ -671,6 +685,7 @@ public class GGraphTileFactory implements GraphFactory {
                                 distance += smoothNeighbourList.get(endIdx).getDistance();
                                 float height = (float)PointModelUtil.interpolate (0, totalDistance, startHeight, endHeight, distance);
                                 endNode.fixEle( Math.round(height*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR );
+                                mgLog.d("fixEle: "+endNode);
                             }
                         }
                         startIdx = endIdx;
