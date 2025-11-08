@@ -60,12 +60,38 @@ FSBB.loadTransparent=Boolean:true
 ```
 you will get also transparent layers offered for the operation.
 
-### Mapsforget Number of Render Threads
+### Mapsforge Number of Render Threads
 
-This property allows to manipulate the number of render threads in mapsforge. 
+This property allows to manipulate the number of render threads in mapsforge.
 ```
 prefMapsforgeNumRenderThreads=4
 ```
+
+### Hi-Res hill shading
+
+This property allows to enable high resolution hill shading. This functionality is fully part of mapsforge.
+It promise better quality of hillshading results. Be aware that this might slow down map visualisation, especially if 
+the area of multiple hgt files becomes visible.
+```
+preferences_hill_shading_hiRes_key=Boolean:false
+```
+
+### Bicubic height interpolation
+
+This property enables bicubic height interpolation in the ElevationProvider (as long as this is possible within one hgt buffer - not close to the borders). 
+```
+prefUseBicubicInterpolation=Boolean:true
+```
+
+### Smoothing configuration
+
+These properties allow to set the smoothing distance threshold. 
+if the second config item (prefSmoothingUsePrimary) is switched on, then smoothing happens only for the primary direction (instead of random order with use of nodes visited flag)
+```
+prefSmoothingDistance=32
+prefSmoothingUsePrimary=Boolean:true
+```
+
 
 ### Sample config
 
@@ -77,8 +103,11 @@ FSSearch.reverseSearchOn=Boolean:true
 FSSearch.locationBasedSearchOn=Boolean:true
 DownloadMapsDirect=Boolean:false
 #FSBB.loadTransparent=Boolean:false
-#prefMapsforgeNumRenderThreads=4
-#trackGpxDir=/storage/180F-2D14/Android/data/mg.mgmap/files/gpx
+#prefMapsforgeNumRenderThreads=2
+preferences_hill_shading_hiRes_key=Boolean:false
+prefUseBicubicInterpolation=Boolean:true
+prefSmoothingDistance=16
+prefSmoothingUsePrimary=Boolean:true
 ```
 can be downloaded and installed [here](mgmap-install://mg4gh.github.io/MGMapViewer/Features/DeveloperFeatures/Preferences/config.zip).
 After installation you can use the internal [FileManager](../../FurtherFeatures/FileManager/filemanager.md) to modify these preferences.
