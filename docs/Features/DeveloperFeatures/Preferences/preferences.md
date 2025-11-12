@@ -85,11 +85,9 @@ prefUseBicubicInterpolation=Boolean:true
 
 ### Smoothing configuration
 
-These properties allow to set the smoothing distance threshold. 
-if the second config item (prefSmoothingUsePrimary) is switched on, then smoothing happens only for the primary direction (instead of random order with use of nodes visited flag)
+These properties allow to set the smoothing distance threshold.
 ```
 prefSmoothingDistance=32
-prefSmoothingUsePrimary=Boolean:true
 ```
 
 
@@ -106,8 +104,7 @@ DownloadMapsDirect=Boolean:false
 #prefMapsforgeNumRenderThreads=2
 preferences_hill_shading_hiRes_key=Boolean:false
 prefUseBicubicInterpolation=Boolean:true
-prefSmoothingDistance=16
-prefSmoothingUsePrimary=Boolean:true
+prefSmoothingDistance=32
 ```
 can be downloaded and installed [here](mgmap-install://mg4gh.github.io/MGMapViewer/Features/DeveloperFeatures/Preferences/config.zip).
 After installation you can use the internal [FileManager](../../FurtherFeatures/FileManager/filemanager.md) to modify these preferences.

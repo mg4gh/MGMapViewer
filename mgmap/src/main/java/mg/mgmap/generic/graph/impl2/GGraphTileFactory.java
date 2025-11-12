@@ -578,79 +578,42 @@ public class GGraphTileFactory implements GraphFactory {
         }
         for (GNode aNode : tile.getGNodes()) { // iterate over all nodes
             if (aNode.isFlag(GNode.FLAG_FIX)){
-                GNode minHeightPoint;
-                GNode maxHeightPoint;
                 GNeighbour aNeighbour = null;
                 while ((aNeighbour = tile.getNextNeighbour(aNode, aNeighbour)) != null) { // iterate over all neighbours
-//                    aNeighbour = tile.getNextNeighbour(aNode, aNeighbour);
 
                     GNeighbour neighbour = aNeighbour;
-                    if (prefSmoothUsePrimary.getValue() && !neighbour.isPrimaryDirection()) continue; // smooth only in primary direction
                     GNode neighbourNode = neighbour.getNeighbourNode();
-                    if (neighbourNode.isFlag(GNode.FLAG_VISITED)) continue; // this path is already handled
+                    if (neighbourNode.isFlag(GNode.FLAG_FIX) || neighbourNode.isFlag(GNode.FLAG_VISITED)){
+                        continue; // this path is already handled
+                    }
                     int neighbourNodeIdx;
                     // reset smoothNodeList
                     smoothNeighbourList.clear();
                     smoothNeighbourList.add(aNode.getNeighbour().getReverse()); // a neighbour with getNeighbourNode = aNode
                     float minHeight = aNode.getEle();
                     float maxHeight = aNode.getEle();
-                    minHeightPoint = aNode;
-                    maxHeightPoint = aNode;
-                    int minHeightPointIdx = 0;
-                    int maxHeightPointIdx = 0;
                     GNode lastHeightRelevantPoint = aNode;
                     int lastHeightRelevantPointIdx = 0;
-                    int signumLastHeightInterval = 0;
-                    int signumHeightInterval = 0;
 
                     while (true){
                         neighbourNode.setFlag(GNode.FLAG_VISITED, true);
                         neighbourNodeIdx = smoothNeighbourList.size();
                         smoothNeighbourList.add(neighbour);
                         if (neighbourNode.getEle() < minHeight){
-                            minHeightPoint = neighbourNode;
                             minHeight = neighbourNode.getEle();
-                            minHeightPointIdx = neighbourNodeIdx;
                         }
                         if (neighbourNode.getEle() > maxHeight){
-                            maxHeightPoint = neighbourNode;
                             maxHeight = neighbourNode.getEle();
-                            maxHeightPointIdx = neighbourNodeIdx;
                         }
 
-                        if ( (maxHeight - minHeight >= TrackLogStatistic.ELE_THRESHOLD_ELSE) && (distance(smoothNeighbourList, minHeightPointIdx, maxHeightPointIdx) > smoothingDistance)){
-                            neighbourNode.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
-                            if ( maxHeight == neighbourNode.getEle() ){
-                                signumHeightInterval = 1;
-                                if (minHeightPoint != lastHeightRelevantPoint){
-                                    if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX)){
-                                        minHeightPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
-                                        if (distance (smoothNeighbourList, lastHeightRelevantPointIdx, minHeightPointIdx) <  smoothingDistance){
-                                            if ( signumLastHeightInterval == Math.signum( minHeightPoint.getEle() - lastHeightRelevantPoint.getEle() ) ) lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset height relevance
-                                        }
-                                    }
 
-                                }
-                            }
-                            if ( minHeight == neighbourNode.getEle() ){
-                                signumHeightInterval = -1;
-                                if (maxHeightPoint != lastHeightRelevantPoint){
-                                    if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX)) {
-                                        maxHeightPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
-                                        if (distance (smoothNeighbourList, lastHeightRelevantPointIdx, maxHeightPointIdx) < smoothingDistance){
-                                            if ( signumLastHeightInterval == Math.signum( maxHeightPoint.getEle() - lastHeightRelevantPoint.getEle() ) ) lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset height relevance
-                                        }
-                                    }
-                                }
-                            }
+                        double distance2LastHeightRelevant = distance(smoothNeighbourList, lastHeightRelevantPointIdx, neighbourNodeIdx);
+                        if ((distance2LastHeightRelevant > smoothingDistance*5) || ((Math.abs(neighbourNode.getEle()-lastHeightRelevantPoint.getEle()) >= TrackLogStatistic.ELE_THRESHOLD_ELSE)   && (distance2LastHeightRelevant > smoothingDistance)  && !neighbourNode.isFlag(GNode.FLAG_FIX))){
+                            neighbourNode.setFlag(GNode.FLAG_HEIGHT_RELEVANT, true);
                             lastHeightRelevantPoint = neighbourNode;
                             lastHeightRelevantPointIdx = neighbourNodeIdx;
-                            signumLastHeightInterval = signumHeightInterval;
                             minHeight = neighbourNode.getEle();
                             maxHeight = neighbourNode.getEle();
-                            minHeightPoint = neighbourNode;
-                            maxHeightPoint = neighbourNode;
-
                         }
                         if (neighbourNode.isFlag(GNode.FLAG_FIX)) break; // main exit from loop!
 
@@ -658,8 +621,8 @@ public class GGraphTileFactory implements GraphFactory {
                         neighbourNode = neighbour.getNeighbourNode();
                     } // while true
                     if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX) &&
-                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx, neighbourNodeIdx) < smoothingDistance)){
-                        lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset last heightRelevantPoint in this segment - otherwise the remaining
+                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx+1, neighbourNodeIdx) < smoothingDistance)){
+                        lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset last heightRelevantPoint in this segment - otherwise the remaining might bee too short
                     }
 
                     mgLog.v(()->smoothNeighbourList.get(0).getNeighbourNode()+" --- "+smoothNeighbourList.get(smoothNeighbourList.size()-1).getNeighbourNode()+" ("+smoothNeighbourList.size()+")");
@@ -685,7 +648,6 @@ public class GGraphTileFactory implements GraphFactory {
                                 distance += smoothNeighbourList.get(endIdx).getDistance();
                                 float height = (float)PointModelUtil.interpolate (0, totalDistance, startHeight, endHeight, distance);
                                 endNode.fixEle( Math.round(height*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR );
-                                mgLog.d("fixEle: "+endNode);
                             }
                         }
                         startIdx = endIdx;
