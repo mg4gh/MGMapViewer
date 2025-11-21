@@ -2,7 +2,7 @@
 <resources>
     <string name="FSPosition_pref_Center">FSPosition.Center</string>
     <string name="FSPosition_pref_GpsOn">FSPosition.GpsOn</string>
-    <string name="FSPosition_pref_FusedLocationProvider">FSPosition.FusedLocationProvider</string>
+    <string name="FSPosition_pref_FusedLocationProvider">FSPosition.UseFusedLocationProvider</string>
     <string name="FSPosition_pref_RefreshMapView">FSPosition.RefreshMapView</string>
     <string name="FSPosition_pref_MapMoving">FSPosition.MapMoving</string>
     <string name="FSPosition_pref_MapMovingTrigger">FSPosition.MapMovingTrigger</string>

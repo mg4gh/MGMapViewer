@@ -132,7 +132,7 @@ public class TrackLoggerService extends Service {
             }
             mgLog.i("activateService smoothingPeriod="+barometerSmoothingPeriod);
             barometerListener = new BarometerListener(application,  SensorManager.SENSOR_DELAY_FASTEST, barometerSmoothingPeriod);
-            boolean prefFused = prefCache.get(R.string.FSPosition_pref_FusedLocationProvider, false).getValue();
+            boolean prefFused = prefCache.get(R.string.FSPosition_pref_FusedLocationProvider, true).getValue();
             locationListener = prefFused?new FusedLocationListener(application, this):new GnssLocationListener(application, this);
 
             int minMillis = 4000;
