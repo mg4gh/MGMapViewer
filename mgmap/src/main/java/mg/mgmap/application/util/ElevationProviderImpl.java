@@ -28,11 +28,13 @@ public class ElevationProviderImpl implements ElevationProvider{
     final MGMapApplication mgMapApplication;
     final HgtProvider hgtProvider;
     final Pref<Boolean> prefBicubicInterpolation;
+    final Pref<Boolean> prefBicubicSplineInterpolation;
 
     public ElevationProviderImpl(MGMapApplication mgMapApplication, HgtProvider hgtProvider){
         this.mgMapApplication = mgMapApplication;
         this.hgtProvider = hgtProvider;
         prefBicubicInterpolation = mgMapApplication.getPrefCache().get("prefUseBicubicInterpolation", false);
+        prefBicubicSplineInterpolation = mgMapApplication.getPrefCache().get("prefUseBicubicSplineInterpolation", false);
     }
 
     public void setElevation(TrackLogPoint tlp) {
@@ -77,11 +79,11 @@ public class ElevationProviderImpl implements ElevationProvider{
 
                 double hi, maxEle, minEle;
                 if (prefBicubicInterpolation.getValue() && (1 <= oLon) && (oLon <= 3598) && (1 <= oLat) && (oLat <= 3598)){
-                    double h0 = cubicInterpolate1(getEle(hgtBuf,off-7204),getEle(hgtBuf,off-7202),getEle(hgtBuf,off-7200),getEle(hgtBuf,off-7198), dlon3600 - oLon);
-                    double h1 = cubicInterpolate1(getEle(hgtBuf,off-2),nwEle,neEle,getEle(hgtBuf,off+4), dlon3600 - oLon);
-                    double h2 = cubicInterpolate1(getEle(hgtBuf,off+7200),swEle,seEle,getEle(hgtBuf,off+7206), dlon3600 - oLon);
-                    double h3 = cubicInterpolate1(getEle(hgtBuf,off+14402),getEle(hgtBuf,off+14404),getEle(hgtBuf,off+14406),getEle(hgtBuf,off+14408), dlon3600 - oLon);
-                    hi = cubicInterpolate1(h0, h1, h2, h3, dlat3600 - oLat);
+                    double h0 = cubicInterpolate(getEle(hgtBuf,off-7204),getEle(hgtBuf,off-7202),getEle(hgtBuf,off-7200),getEle(hgtBuf,off-7198), dlon3600 - oLon);
+                    double h1 = cubicInterpolate(getEle(hgtBuf,off-2),nwEle,neEle,getEle(hgtBuf,off+4), dlon3600 - oLon);
+                    double h2 = cubicInterpolate(getEle(hgtBuf,off+7200),swEle,seEle,getEle(hgtBuf,off+7206), dlon3600 - oLon);
+                    double h3 = cubicInterpolate(getEle(hgtBuf,off+14402),getEle(hgtBuf,off+14404),getEle(hgtBuf,off+14406),getEle(hgtBuf,off+14408), dlon3600 - oLon);
+                    hi = cubicInterpolate(h0, h1, h2, h3, dlat3600 - oLat);
                 } else {
                     double nhi = PointModelUtil.interpolate(0, 1, nwEle, neEle, dlon3600 - oLon);
                     double shi = PointModelUtil.interpolate(0, 1, swEle, seEle, dlon3600 - oLon);
@@ -113,6 +115,14 @@ public class ElevationProviderImpl implements ElevationProvider{
         return res;
     }
 
+    public double cubicInterpolate(double y0, double y1, double y2, double y3, double t) {
+        if (prefBicubicSplineInterpolation.getValue()){
+            return cubicSplineInterpolate(y0, y1, y2, y3, t);
+        } else {
+            return cubicInterpolate1(y0, y1, y2, y3, t);
+        }
+    }
+
     public static double cubicInterpolate1(double y0, double y1, double y2, double y3, double t) {
         // Kubische Interpolation für gleichmäßig verteilte x
         double a = (-y0 + 3*y1  - 3*y2 + y3)/6;
@@ -124,12 +134,12 @@ public class ElevationProviderImpl implements ElevationProvider{
         return ((a * t + b) * t + c) * t + d;
     }
 
-    public static double cubicInterpolate2(double y0, double y1, double y2, double y3, double t) {
+    public static double cubicSplineInterpolate(double y0, double y1, double y2, double y3, double t) {
         // Kubische Spline Interpolation für gleichmäßig verteilte x
         @SuppressWarnings("unused")
         double d = y1;
         double b =  (4*y0 -9*y1 +6*y2 -y3)/5;
-        double c = y1 -y0 + (2*b)/3; 
+        double c = y1 -y0 + (2*b)/3;
         double a = y2 -b -c -d;
 
         return ((a * t + b) * t + c) * t + d;
