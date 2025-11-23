@@ -19,18 +19,19 @@ import mg.mgmap.activity.mgmap.features.routing.profile.MTB_K2S2;
 import mg.mgmap.activity.mgmap.features.routing.profile.ShortestDistance;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.util.ElevationProvider;
+import mg.mgmap.application.util.ElevationProviderImpl;
 import mg.mgmap.application.util.ElevationProviderImplHelper;
 import mg.mgmap.application.util.ElevationProviderImplHelper2;
 import mg.mgmap.application.util.HgtProvider2;
 import mg.mgmap.application.util.WayProviderHelper;
-import mg.mgmap.generic.graph.impl.AStar;
-import mg.mgmap.generic.graph.impl.ApproachModelImpl;
-import mg.mgmap.generic.graph.impl.BidirectionalAStar;
-import mg.mgmap.generic.graph.impl.GGraphMulti;
-import mg.mgmap.generic.graph.impl.GGraphAlgorithm;
-import mg.mgmap.generic.graph.impl.GGraphTile;
-import mg.mgmap.generic.graph.impl.GGraphTileFactory;
-import mg.mgmap.generic.graph.impl.GNode;
+import mg.mgmap.generic.graph.impl2.AStar;
+import mg.mgmap.generic.graph.impl2.ApproachModelImpl;
+import mg.mgmap.generic.graph.impl2.BidirectionalAStar;
+import mg.mgmap.generic.graph.impl2.GGraphMulti;
+import mg.mgmap.generic.graph.impl2.GGraphAlgorithm;
+import mg.mgmap.generic.graph.impl2.GGraphTile;
+import mg.mgmap.generic.graph.impl2.GGraphTileFactory;
+import mg.mgmap.generic.graph.impl2.GNode;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
@@ -70,7 +71,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true), new Pref<>("16"));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new MTB_K2S2());
@@ -107,7 +108,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new ShortestDistance());
@@ -180,7 +181,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
@@ -234,7 +235,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
@@ -305,7 +306,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new TrekkingBike());
@@ -325,5 +326,112 @@ public class RoutingTest {
             GpxExporter.export(new PrintWriter(gpxFile), rotl);
         }
     }
+
+    /** compare bilinear interpolation with bicubic and with bicubic spline interpolation */
+    @Test
+    public void _10_routing(){
+        PointModelUtil.init(32);
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.WARN);
+        MGLog.setUnittest(true);
+
+        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
+        assert(mapFile.exists());
+
+        RoutingContext interactiveRoutingContext = new RoutingContext(
+                1000000,
+                false, // no extra snap, since FSMarker snaps point zoom level dependent
+                10, // accept long detours in interactive mode
+                1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
+
+        Pref<Boolean> useQubicInterpolation = new Pref<>(true);
+        Pref<Boolean> useQubicSplineInterpolation = new Pref<>(true);
+        ElevationProvider elevationProvider = new ElevationProviderImpl( new HgtProvider2(), useQubicInterpolation, useQubicSplineInterpolation );
+        MapDataStore mds = new MapFile(mapFile, "de");
+        WayProvider wayProvider = new WayProviderHelper(mds);
+
+        WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
+        mtl.startTrack(1L);
+        mtl.startSegment(2L);
+        mtl.addPoint(new PointModelImpl(49.407757, 8.679018));
+//        mtl.addPoint(new PointModelImpl(49.136299, 8.914161));
+        mtl.addPoint(new PointModelImpl(48.948888, 8.960108));
+
+        Pref<String> prefSmoothingDistance = new Pref<>("32");
+
+        // need multiple rounds, maybe related to caching effects (at the beginning each round is faster then the previous)
+        for (int i=0; i<10; i++)
+        {
+            useQubicInterpolation.setValue(false);
+            useQubicSplineInterpolation.setValue(false);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
+            RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
+            routingEngine.setRoutingProfile(new TrekkingBike());
+            routingEngine.refreshRequired.set(0);
+
+            long now1 = System.currentTimeMillis();
+            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
+            long now2 = System.currentTimeMillis();
+            String statistic = rotl.getTrackStatistic().toString();
+//            System.out.println("******************************************************** "+useQubicInterpolation.getValue()+","+useQubicSplineInterpolation.getValue()+" *********************************************************");
+            System.out.println("round"+ i +" duration="+(now2-now1)+"ms  "+statistic);
+//            System.out.println("********************************************************************************************************************************");
+        }
+        {
+            useQubicInterpolation.setValue(false);
+            useQubicSplineInterpolation.setValue(false);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
+            RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
+            routingEngine.setRoutingProfile(new TrekkingBike());
+            routingEngine.refreshRequired.set(0);
+
+            long now1 = System.currentTimeMillis();
+            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
+            long now2 = System.currentTimeMillis();
+            String statistic = rotl.getTrackStatistic().toString();
+            System.out.println("******************************************************** "+useQubicInterpolation.getValue()+","+useQubicSplineInterpolation.getValue()+" *********************************************************");
+            System.out.println("duration="+(now2-now1)+"ms  "+statistic);
+            System.out.println("********************************************************************************************************************************");
+            System.out.println();
+        }
+        {
+            useQubicInterpolation.setValue(true);
+            useQubicSplineInterpolation.setValue(false);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
+            RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
+            routingEngine.setRoutingProfile(new TrekkingBike());
+            routingEngine.refreshRequired.set(0);
+
+            long now1 = System.currentTimeMillis();
+            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
+            long now2 = System.currentTimeMillis();
+            String statistic = rotl.getTrackStatistic().toString();
+            System.out.println("******************************************************** "+useQubicInterpolation.getValue()+","+useQubicSplineInterpolation.getValue()+" *********************************************************");
+            System.out.println("duration="+(now2-now1)+"ms  "+statistic);
+            System.out.println("********************************************************************************************************************************");
+            System.out.println();
+        }
+        for (int i=0; i<10; i++)
+        {
+            useQubicInterpolation.setValue(true);
+            useQubicSplineInterpolation.setValue(true);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
+            RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
+            routingEngine.setRoutingProfile(new TrekkingBike());
+            routingEngine.refreshRequired.set(0);
+
+            long now1 = System.currentTimeMillis();
+            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
+            long now2 = System.currentTimeMillis();
+            String statistic = rotl.getTrackStatistic().toString();
+            System.out.println("******************************************************** "+useQubicInterpolation.getValue()+","+useQubicSplineInterpolation.getValue()+" *********************************************************");
+            System.out.println("duration="+(now2-now1)+"ms  "+statistic);
+            System.out.println("********************************************************************************************************************************");
+            System.out.println();
+        }
+    }
+
+
+
 
 }

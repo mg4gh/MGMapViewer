@@ -73,7 +73,7 @@ public class PerformanceAnalysesTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"), new Pref<>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         BBox bBox = new BBox();
         long start = System.nanoTime();
@@ -110,7 +110,7 @@ public class PerformanceAnalysesTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>("BidirectionalAStar"), new Pref<>(false), new Pref<>("16"), new Pref<>(false));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>("BidirectionalAStar"), new Pref<>(false), new Pref<>("16"));
 
         long start = System.nanoTime();
         for (int x = baseX; x < baseX + 100; x++){

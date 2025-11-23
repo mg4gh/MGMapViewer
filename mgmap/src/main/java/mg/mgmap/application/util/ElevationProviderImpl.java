@@ -25,16 +25,19 @@ import mg.mgmap.generic.util.Pref;
 /** Provide an elevation value for a given position on the .hgt file basis. */
 public class ElevationProviderImpl implements ElevationProvider{
 
-    final MGMapApplication mgMapApplication;
     final HgtProvider hgtProvider;
     final Pref<Boolean> prefBicubicInterpolation;
     final Pref<Boolean> prefBicubicSplineInterpolation;
 
     public ElevationProviderImpl(MGMapApplication mgMapApplication, HgtProvider hgtProvider){
-        this.mgMapApplication = mgMapApplication;
         this.hgtProvider = hgtProvider;
         prefBicubicInterpolation = mgMapApplication.getPrefCache().get("prefUseBicubicInterpolation", false);
         prefBicubicSplineInterpolation = mgMapApplication.getPrefCache().get("prefUseBicubicSplineInterpolation", false);
+    }
+    public ElevationProviderImpl(HgtProvider hgtProvider, Pref<Boolean> prefBicubicInterpolation, Pref<Boolean> prefBicubicSplineInterpolation){
+        this.hgtProvider = hgtProvider;
+        this.prefBicubicInterpolation = prefBicubicInterpolation;
+        this.prefBicubicSplineInterpolation = prefBicubicSplineInterpolation;
     }
 
     public void setElevation(TrackLogPoint tlp) {

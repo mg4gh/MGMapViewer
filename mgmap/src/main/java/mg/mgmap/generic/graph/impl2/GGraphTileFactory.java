@@ -67,19 +67,17 @@ public class GGraphTileFactory implements GraphFactory {
     GTileCache gTileCache;
     ArrayList<PointModel> neighbourPoints = new ArrayList<>();
     Pref<String> prefSmoothDistance;
-    Pref<Boolean> prefSmoothUsePrimary;
 
     public GGraphTileFactory(){}
 
     public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails,
-                                      Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance, Pref<Boolean> prefSmoothUsePrimary){
+                                      Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
         this.wayDetails = wayDetails;
         this.prefRoutingAlgorithm = prefRoutingAlgorithm;
         this.prefSmooth4Routing = prefSmooth4Routing;
         this.prefSmoothDistance = prefSmoothDistance;
-        this.prefSmoothUsePrimary = prefSmoothUsePrimary;
 
         gTileCache = new GTileCache(CACHE_LIMIT);
         return this;

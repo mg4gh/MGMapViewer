@@ -40,7 +40,7 @@ import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImpl;
 import mg.mgmap.application.util.ExtrasUtil;
 import mg.mgmap.application.util.GeoidProvider;
-import mg.mgmap.application.util.HgtProvider;
+import mg.mgmap.application.util.HgtProviderImpl;
 import mg.mgmap.application.util.MetaDataUtil;
 import mg.mgmap.application.util.NotificationUtil;
 import mg.mgmap.application.util.PersistenceManager;
@@ -93,7 +93,7 @@ public class MGMapApplication extends Application {
     public static final String LABEL = "mg.mgmap";
     private Process pLogcat = null;
 
-    private HgtProvider hgtProvider;
+    private HgtProviderImpl hgtProviderImpl;
     private ElevationProvider elevationProvider;
     private GeoidProvider geoidProvider;
     private PersistenceManager persistenceManager;
@@ -174,8 +174,8 @@ public class MGMapApplication extends Application {
 
         initVersionCode();
         BackupUtil.restore(this, persistenceManager);
-        hgtProvider = new HgtProvider(this, persistenceManager, getAssets()); // for hgt file handling
-        elevationProvider = new ElevationProviderImpl(this, hgtProvider); // for height data handling
+        hgtProviderImpl = new HgtProviderImpl(this, persistenceManager, getAssets()); // for hgt file handling
+        elevationProvider = new ElevationProviderImpl(this, hgtProviderImpl); // for height data handling
         geoidProvider = new GeoidProvider(this); // for difference between wgs84 and nmea elevation
         metaDataUtil = new MetaDataUtil(this, persistenceManager);
         notificationUtil = new NotificationUtil(this);
@@ -347,7 +347,7 @@ public class MGMapApplication extends Application {
             SystemClock.sleep(20);
         }
         metaTrackLogs.clear();
-        if (hgtProvider != null) hgtProvider.cleanup();
+        if (hgtProviderImpl != null) hgtProviderImpl.cleanup();
 
         logPoints2process.add(new PointModelImpl()); // abort Thread for TrackLogPoint handling
         if (pLogcat != null) pLogcat.destroy(); // abort logcat and als Logcat supervision thread
@@ -514,8 +514,8 @@ public class MGMapApplication extends Application {
         }
     }
 
-    public HgtProvider getHgtProvider() {
-        return hgtProvider;
+    public HgtProviderImpl getHgtProvider() {
+        return hgtProviderImpl;
     }
 
     public ElevationProvider getElevationProvider() {

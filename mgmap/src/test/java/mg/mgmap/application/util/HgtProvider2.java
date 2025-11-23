@@ -13,7 +13,7 @@ import java.util.zip.ZipFile;
 
 import mg.mgmap.generic.util.basic.MGLog;
 
-public class HgtProvider2 {
+public class HgtProvider2 implements HgtProvider{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 

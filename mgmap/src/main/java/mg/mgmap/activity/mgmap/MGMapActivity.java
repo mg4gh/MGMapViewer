@@ -227,10 +227,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         coView = getControlView();
         boolean wayDetails = prefCache.get(R.string.FSGrad_pref_WayDetails_key, false).getValue();
         Pref<Boolean> prefSmooth4Routing = prefCache.get(R.string.preferences_smoothing4routing_key, true);
-        Pref<Boolean> prefSmoothUsePrimary = prefCache.get(R.string.preferences_smoothing4routing_usePrimary, false);
         Pref<String> prefSmoothDistance = prefCache.get(R.string.preferences_smoothing4routing_distance, ""+PointModelUtil.getCloseThreshold()/2f);
         Pref<String> prefRoutingAlgorithm = prefCache.get(R.string.FSRouting_routing_algorithm_key, "BidirectionalAStar");
-        graphFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), wayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, prefSmoothUsePrimary);
+        graphFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), wayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSAlpha(this));
