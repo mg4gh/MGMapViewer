@@ -115,13 +115,24 @@ public class ElevationProviderImpl implements ElevationProvider{
 
     public static double cubicInterpolate1(double y0, double y1, double y2, double y3, double t) {
         // Kubische Interpolation für gleichmäßig verteilte x
-        double a0 = y3 - y2 - y0 + y1;
-        double a1 = y0 - y1 - a0;
-        double a2 = y2 - y0;
+        double a = (-y0 + 3*y1  - 3*y2 + y3)/6;
+        double b = (y0 - 2*y1 + y2)/2;
+        double c = (y2 - y0)/2 - a;
         @SuppressWarnings("unused")
-        double a3 = y1;
+        double d = y1;
 
-        return ((a0 * t + a1) * t + a2) * t + a3;
+        return ((a * t + b) * t + c) * t + d;
+    }
+
+    public static double cubicInterpolate2(double y0, double y1, double y2, double y3, double t) {
+        // Kubische Spline Interpolation für gleichmäßig verteilte x
+        @SuppressWarnings("unused")
+        double d = y1;
+        double b =  (4*y0 -9*y1 +6*y2 -y3)/5;
+        double c = y1 -y0 + (2*b)/3; 
+        double a = y2 -b -c -d;
+
+        return ((a * t + b) * t + c) * t + d;
     }
 
 }
