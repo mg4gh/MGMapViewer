@@ -310,6 +310,7 @@ public class RoutingTest {
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new TrekkingBike());
+        routingEngine.refreshRequired.set(0);
 
         {
             WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
@@ -324,7 +325,38 @@ public class RoutingTest {
             File gpxFile = new File("src/test/assets/temp_local/test.gpx"); // !!! gpx is not uploaded to git (test result)
 
             GpxExporter.export(new PrintWriter(gpxFile), rotl);
+            try (PrintWriter pw = new PrintWriter(gpxFile)){
+                GpxExporter.export(pw, rotl);
+            } catch (Exception e) {
+                MGLog.se(e);
+            }
+
         }
+
+        routingEngine.setRoutingProfile(new MTB_K2S2());
+        routingEngine.refreshRequired.set(0);
+
+        {
+            WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
+            mtl.startTrack(1L);
+            mtl.startSegment(2L);
+            mtl.addPoint(new PointModelImpl(49.405697,8.679110));
+            mtl.addPoint(new PointModelImpl(48.817059,9.060983));
+
+            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
+            String statistic = rotl.getTrackStatistic().toString();
+            System.out.println( statistic);
+            File gpxFile = new File("src/test/assets/temp_local/test2.gpx"); // !!! gpx is not uploaded to git (test result)
+
+            GpxExporter.export(new PrintWriter(gpxFile), rotl);
+            try (PrintWriter pw = new PrintWriter(gpxFile)){
+                GpxExporter.export(pw, rotl);
+            } catch (Exception e) {
+                MGLog.se(e);
+            }
+
+        }
+
     }
 
     /** compare bilinear interpolation with bicubic and with bicubic spline interpolation */
