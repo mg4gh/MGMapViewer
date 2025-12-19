@@ -14,6 +14,8 @@
  */
 package mg.mgmap.generic.graph.impl2;
 
+import android.os.Build;
+
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
@@ -163,14 +165,14 @@ public class GGraphTileFactory implements GraphFactory {
         GGraphAlgorithm gGraphAlgorithm = null;
         if (graph instanceof GGraph gGraph){
             try {
-                Class<?> clazz = Class.forName("mg.mgmap.generic.graph.impl."+prefRoutingAlgorithm.getValue());
+                String packageName = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)?this.getClass().getPackageName():"mg.mgmap.generic.graph.impl2";
+                Class<?> clazz = Class.forName(packageName+"."+prefRoutingAlgorithm.getValue());
                 Constructor<?> constructor = clazz.getConstructor(GGraph.class, RoutingProfile.class);
                 Object object = constructor.newInstance(gGraph, routingProfile);
                 if (object instanceof GGraphAlgorithm) {
                     gGraphAlgorithm = (GGraphAlgorithm) object;
                 }
             } catch (Exception e) {
-//                mgLog.e(e);
                 gGraphAlgorithm = new BidirectionalAStar(gGraph, routingProfile); // fallback
             }
         }

@@ -45,7 +45,9 @@ public class BidirectionalAStar extends GGraphAlgorithm {
     private int cntRelaxed = 0;
     private int cntSettled = 0;
     private int resultPathLength = 0;
-    private GNode matchNode = null;
+    protected GNode matchNode = null;
+
+    int rc = 0;
 
     public BidirectionalAStar(GGraph graph, RoutingProfile routingProfile) {
         super(graph, routingProfile);
@@ -80,17 +82,20 @@ public class BidirectionalAStar extends GGraphAlgorithm {
         double bestMatchCost = Double.MAX_VALUE;
         while (true){
             if (ref.getHeuristicCost() > costLimit/2){ // if costLimit reached
-                mgLog.i("exit perform 5 cost limit reached: ref.getHeuristicCost()="+ref.getHeuristicCost()+" costLimit/2="+(costLimit/2));
+                mgLog.i("exit performAlgo rc=5 cost limit reached: ref.getHeuristicCost()="+ref.getHeuristicCost()+" costLimit/2="+(costLimit/2));
+                rc = 5;
                 break;
             }
             if (ref.getNode().getNodeRef(ref.isReverse()) == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
                 if (refreshRequired.get() != 0) {
-                    mgLog.i("exit perform 3 refresh required");
+                    mgLog.i("exit performAlgo rc=3 refresh required");
+                    rc = 3;
                     break;
                 }
                 GNode node = ref.getNode();
                 if (preNodeRelax(node)) { // add lazy expansion of GGraphMulti
-                    mgLog.i("exit perform 4 low memory");
+                    mgLog.i("exit performAlgo rc=4 low memory");
+                    rc = 4;
                     break;
                 }
                 GNeighbour neighbour = null; // start relax all neighbours
@@ -136,12 +141,14 @@ public class BidirectionalAStar extends GGraphAlgorithm {
             }
             ref = prioQueue.higher(ref);
             if (ref == null) {
-                mgLog.i("exit perform 2 ref=null, no more nodes to handle, no path found");
+                mgLog.i("exit performAlgo rc=2 ref=null, no more nodes to handle, no path found");
+                rc = 2;
                 break; // no more nodes to handle - no path found
             }
             reverseRef = ref.getNode().getNodeRef(!ref.isReverse());
             if ((reverseRef != null) && (reverseRef.isSetteled())) { // match found
-                mgLog.i("exit perform 1 refNode="+ref.getNode()+" ref="+getRefDetails(ref)+" revRef="+getRefDetails(reverseRef));
+                mgLog.i("exit performAlgo rc=0 refNode="+ref.getNode()+" ref="+getRefDetails(ref)+" revRef="+getRefDetails(reverseRef));
+                rc = 0;
                 break;
             }
         }
@@ -206,7 +213,7 @@ public class BidirectionalAStar extends GGraphAlgorithm {
         return res;
     }
 
-    private double getMatchCost(GNode aMatchNode){
+    protected double getMatchCost(GNode aMatchNode){
         if ((aMatchNode == null) || (aMatchNode.getNodeRef()==null) || (aMatchNode.getNodeRef(true)== null)) return Double.MAX_VALUE;
         return aMatchNode.getNodeRef().getCost()+aMatchNode.getNodeRef(true).getCost();
     }

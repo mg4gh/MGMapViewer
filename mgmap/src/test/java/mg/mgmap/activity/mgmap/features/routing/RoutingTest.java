@@ -32,6 +32,7 @@ import mg.mgmap.generic.graph.impl2.GGraphAlgorithm;
 import mg.mgmap.generic.graph.impl2.GGraphTile;
 import mg.mgmap.generic.graph.impl2.GGraphTileFactory;
 import mg.mgmap.generic.graph.impl2.GNode;
+import mg.mgmap.generic.graph.impl2.RoutingSummary;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
@@ -355,6 +356,61 @@ public class RoutingTest {
                 MGLog.se(e);
             }
 
+        }
+
+    }
+    @Test
+    public void _05_routing() throws Exception{
+        PointModelUtil.init(32);
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+        MGLog.setUnittest(true);
+
+        RoutingContext interactiveRoutingContext = new RoutingContext(
+                1000000,
+                true, // no extra snap, since FSMarker snaps point zoom level dependent
+                10, // accept long detours in interactive mode
+                32); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
+
+        ElevationProvider elevationProvider = new ElevationProviderImplHelper();
+        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
+
+        MapDataStore mds = new MapFile(mapFile, "de");
+        WayProvider wayProvider = new WayProviderHelper(mds);
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>("BidirectionalAstarExt"), new Pref<>(false), new Pref<>("16"));
+
+        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
+        routingEngine.setRoutingProfile(new TrekkingBike());
+        routingEngine.refreshRequired.set(0);
+
+        {
+            WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
+            mtl.startTrack(1L);
+            mtl.startSegment(2L);
+            mtl.addPoint(new PointModelImpl(49.405490,8.679168));
+            mtl.addPoint(new PointModelImpl(49.398707,8.694131));
+            mtl.stopSegment(10L);
+            mtl.startSegment(20L);
+            mtl.addPoint(new PointModelImpl(49.404678,8.698063));
+            mtl.addPoint(new PointModelImpl(49.398282,8.704087));
+            mtl.stopSegment(30L);
+            mtl.stopTrack(41L);
+
+            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
+            String statistic = rotl.getTrackStatistic().toString();
+            System.out.println( statistic);
+            File gpxFile = new File("src/test/assets/temp_local/test.gpx"); // !!! gpx is not uploaded to git (test result)
+
+            GpxExporter.export(new PrintWriter(gpxFile), rotl);
+            try (PrintWriter pw = new PrintWriter(gpxFile)){
+                GpxExporter.export(pw, rotl);
+            } catch (Exception e) {
+                MGLog.se(e);
+            }
+
+            for (RoutingSummary routingSummary : RoutingSummary.routingSummaries){
+                System.out.println( routingSummary);
+            }
         }
 
     }
