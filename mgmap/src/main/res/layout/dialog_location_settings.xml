@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Switch feature on/off"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+        <Switch
+            android:id="@+id/switchMasterShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvOwnEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Email: not registered"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tvCertValidity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Certificate valid until: N/A"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnRegisterInSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register / Refresh Certificate"
+        android:layout_marginBottom="16dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Manage Email Addresses Section -->
+    <LinearLayout
+        android:id="@+id/layoutManageEmails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginBottom="16dp">
+        <TextView
+            android:id="@+id/tvManageEmailsLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Manage email addresses ..."
+            android:textStyle="bold"
+            android:textSize="16sp" />
+        <ImageView
+            android:id="@+id/ivManageEmailsIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_menu_edit" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Share own location with Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+        <TextView
+            android:id="@+id/tvShareWithLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Share own location with ..."
+            android:textStyle="bold" />
+        <ImageButton
+            android:id="@+id/btnAddPersonShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_input_add"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Add person to share with" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollShareWith"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_marginBottom="8dp"
+        android:fadeScrollbars="false"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical">
+        <LinearLayout
+            android:id="@+id/layoutShareWith"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Get shared location from Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+        <TextView
+            android:id="@+id/tvGetFromLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Get shared location from ..."
+            android:textStyle="bold" />
+        <ImageButton
+            android:id="@+id/btnAddPersonGet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_input_add"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Add person to get from" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollGetFrom"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:fadeScrollbars="false"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical">
+        <LinearLayout
+            android:id="@+id/layoutGetFrom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

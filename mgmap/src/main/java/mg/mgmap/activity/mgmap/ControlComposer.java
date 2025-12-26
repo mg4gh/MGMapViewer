@@ -35,6 +35,7 @@ import mg.mgmap.activity.mgmap.features.position.FSPosition;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.activity.mgmap.features.rtl.FSRecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.search.FSSearch;
+import mg.mgmap.activity.mgmap.features.shareloc.FSShareLoc;
 import mg.mgmap.activity.mgmap.features.time.FSTime;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
 import mg.mgmap.generic.util.Observer;
@@ -204,7 +205,7 @@ public class ControlComposer {
         createQC(activity, FSBB.class,qcss[4],"TSDeleteAll",gos.get(0)).setId(R.id.mi_delete_all);
 
         createQC(activity, FSControl.class,qcss[5],"help").setId(R.id.mi_gps_help);
-        createQC(activity, FSControl.class,qcss[5],"empty",gos.get(0)).setId(R.id.mi_gps_empty1);
+        createQC(activity, FSShareLoc.class,qcss[5],"shareloc",gos.get(0)).setId(R.id.mi_gps_shareloc);
         createQC(activity, FSPosition.class,qcss[5],"center",gos.get(0)).setId(R.id.mi_gps_center);
         createQC(activity, FSPosition.class,qcss[5],"gps",gos.get(0)).setId(R.id.mi_gps_toggle);
         createQC(activity, FSRecordingTrackLog.class,qcss[5],"track",gos.get(0)).setId(R.id.mi_record_track);

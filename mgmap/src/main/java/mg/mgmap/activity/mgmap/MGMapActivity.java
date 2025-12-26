@@ -59,6 +59,7 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
+import mg.mgmap.activity.mgmap.features.shareloc.FSShareLoc;
 import mg.mgmap.activity.mgmap.features.trad.FSTrackDetails;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.MVLayer;
@@ -246,6 +247,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSBeeline(this));
         featureServices.add(new FSBB(this));
         featureServices.add(new FSTrackDetails(this));
+        featureServices.add(new FSShareLoc(this));
         createLayers2();
 
         coView.init(application, this);
