@@ -1,20 +1,19 @@
 package mg.mgmap.activity.mgmap.features.shareloc;
 
-import android.graphics.Color;
+import android.annotation.SuppressLint;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.bouncycastle.asn1.x500.X500Name;
@@ -36,6 +35,8 @@ import java.security.SecureRandom;
 import java.util.UUID;
 
 import mg.mgmap.R;
+import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.view.DialogView;
 
 public class Registration {
     private static final String TAG = "Registration";
@@ -49,21 +50,17 @@ public class Registration {
         this.activity = activity;
     }
 
-    public void show(File baseDir) {
+    public void show(File baseDir, ShareLocationSettings shareLocationSettings) {
+        DialogView dialogViewChild = new DialogView(activity);
+
         LayoutInflater inflater = activity.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_register, null);
+        @SuppressLint("InflateParams")
+        View registrationDialogView = inflater.inflate(R.layout.dialog_register, null);
 
-        TextView tvError = dialogView.findViewById(R.id.tvError);
-        EditText etEmail = dialogView.findViewById(R.id.etEmail);
-        EditText etConfirmationCode = dialogView.findViewById(R.id.etConfirmationCode);
-        ProgressBar progressBar = dialogView.findViewById(R.id.progressBar);
-        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
-        ImageButton btnSubmit = dialogView.findViewById(R.id.btnSubmit);
-
-        AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setView(dialogView)
-                .setCancelable(false)
-                .create();
+        TextView tvError = registrationDialogView.findViewById(R.id.tvError);
+        EditText etEmail = registrationDialogView.findViewById(R.id.etEmail);
+        EditText etConfirmationCode = registrationDialogView.findViewById(R.id.etConfirmationCode);
+        ProgressBar progressBar = registrationDialogView.findViewById(R.id.progressBar);
 
         try (InputStream caCrt = activity.getAssets().open("ca.crt");
              InputStream clientCrt = activity.getAssets().open("client.crt");
@@ -74,9 +71,10 @@ public class Registration {
                 public void messageReceived(String topic, String message) {
                     Log.i(TAG, "Message arrived. Topic: " + topic + " Payload: " + message);
                     if (topic.equals("/server/" + clientId + "/register_confirm")) {
-                        handleRegisterConfirm(message, etConfirmationCode, progressBar, btnSubmit, dialogView);
+                        handleRegisterConfirm(message, etConfirmationCode, progressBar, dialogViewChild, registrationDialogView);
                     } else if (topic.equals("/server/" + clientId + "/register_response")) {
-                        handleRegisterResponse(message, baseDir, dialog);
+                        handleRegisterResponse(message, baseDir, dialogViewChild);
+                        shareLocationSettings.updateCertificateInfo();
                     }
                 }
 
@@ -121,15 +119,7 @@ public class Registration {
 
                 boolean hasError = tvError.getVisibility() == View.VISIBLE;
                 boolean canSubmit = isInputValid && mqttClient != null && !hasError;
-                
-                btnSubmit.setEnabled(canSubmit);
-                if (canSubmit) {
-                    btnSubmit.setColorFilter(Color.BLUE);
-                    btnSubmit.setAlpha(1.0f);
-                } else {
-                    btnSubmit.clearColorFilter();
-                    btnSubmit.setAlpha(0.5f);
-                }
+                dialogViewChild.setEnablePositive(canSubmit);
             }
 
             @Override
@@ -142,24 +132,16 @@ public class Registration {
         // Initial check to set button state correctly
         commonWatcher.onTextChanged("", 0, 0, 0);
 
-        btnCancel.setOnClickListener(v -> {
-            stopMqtt();
-            dialog.dismiss();
-        });
-
         @SuppressWarnings("ResultOfMethodCallIgnored")
-        View.OnClickListener submitListener = v -> {
+        Observer submitObserver = propertyChangeEvent -> {
             tvError.setVisibility(View.GONE);
-            
+
             if (!isAwaitingConfirmation) {
                 // Phase 1: Send registration request
-                this.email = etEmail.getText().toString();
-
+                Registration.this.email = etEmail.getText().toString();
                 etEmail.setEnabled(false);
-                btnSubmit.setEnabled(false);
-                btnSubmit.setAlpha(0.5f);
+                dialogViewChild.setEnablePositive(false);
                 progressBar.setVisibility(View.VISIBLE);
-
                 try {
                     mqttClient.sendMessage("/client/server/register_init", mqttClient.clientId + ":" + email);
                 } catch (Exception e) {
@@ -168,12 +150,9 @@ public class Registration {
             } else {
                 // Phase 2: Send confirmation request
                 String code = etConfirmationCode.getText().toString();
-
                 etConfirmationCode.setEnabled(false);
-                btnSubmit.setEnabled(false);
-                btnSubmit.setAlpha(0.5f);
+                dialogViewChild.setEnablePositive(false);
                 progressBar.setVisibility(View.VISIBLE);
-
                 try {
                     // Generate KeyPair
                     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
@@ -214,13 +193,21 @@ public class Registration {
                     mqttClient.registerThrowable(e);
                 }
             }
-        };
-        btnSubmit.setOnClickListener(submitListener);
 
-        dialog.show();
+        };
+
+
+        dialogViewChild.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        dialogViewChild.lock(() -> dialogViewChild
+                .setTitle("Register at MGMapServer")
+                .setContentView(registrationDialogView)
+                .setPositive("Submit",submitObserver, false)
+                .setNegative("Cancel",pce->stopMqtt())
+                .show());
+
     }
 
-    private void handleRegisterConfirm(String message, EditText etConfirmationCode, ProgressBar progressBar, ImageButton btnSubmit, View dialogView) {
+    private void handleRegisterConfirm(String message, EditText etConfirmationCode, ProgressBar progressBar, DialogView dialogViewChild, View dialogView) {
         String[] parts = message.split(":");
         if (parts.length == 2) {
             boolean success = Boolean.parseBoolean(parts[0]);
@@ -231,24 +218,21 @@ public class Registration {
                 if (success) {
                     isAwaitingConfirmation = true;
                     etConfirmationCode.setVisibility(View.VISIBLE);
-                    btnSubmit.setEnabled(false);
-                    btnSubmit.setAlpha(0.5f);
-                    btnSubmit.clearColorFilter();
                     Toast.makeText(activity, "Please enter the code from your email", Toast.LENGTH_LONG).show();
                 } else {
                     TextView tvError = dialogView.findViewById(R.id.tvError);
-                    tvError.setText("Server error: " + info);
+                    String errorText = "Server error: " + info;
+                    tvError.setText(errorText);
                     tvError.setVisibility(View.VISIBLE);
                     dialogView.findViewById(R.id.etEmail).setEnabled(true);
-                    btnSubmit.setEnabled(false);
-                    btnSubmit.setAlpha(0.5f);
                 }
+                dialogViewChild.setEnablePositive(false);
             });
         }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void handleRegisterResponse(String message, File baseDir, AlertDialog dialog) {
+    private void handleRegisterResponse(String message, File baseDir, DialogView dialog) {
         String[] parts = message.split(":");
         if (parts.length == 2) {
             String extra1 = parts[0];
@@ -279,7 +263,7 @@ public class Registration {
                                     activity.runOnUiThread(() -> {
                                         Toast.makeText(activity, "Registration successful finished.", Toast.LENGTH_SHORT).show();
                                         stopMqtt();
-                                        dialog.dismiss();
+                                        dialog.cancel();
                                     });
 
                                 }
@@ -300,7 +284,7 @@ public class Registration {
                 activity.runOnUiThread(() -> {
                     Toast.makeText(activity, "Registration failed : "+ finalExtra2, Toast.LENGTH_LONG).show();
                     stopMqtt();
-                    dialog.dismiss();
+                    dialog.cancel();
                 });
             }
         }
@@ -319,7 +303,7 @@ public class Registration {
         if (mqttClient != null && mqttClient.client != null) {
             new Thread(() -> {
                 try {
-                    mqttClient.client.disconnect(0l);
+                    mqttClient.client.disconnect(0L);
                     mqttClient.client.close();
                 } catch (MqttException e) {
                     Log.e(TAG, "Error closing MQTT", e);

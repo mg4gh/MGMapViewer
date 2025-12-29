@@ -13,7 +13,7 @@ public class FSShareLoc extends FeatureService {
     public FSShareLoc(MGMapActivity mmActivity) {
         super(mmActivity);
         toggleShareLocation.addObserver(plc -> {
-            new LocationSettingsDialog(mmActivity).show();
+            new ShareLocationSettings(mmActivity).show();
         });
     }
 
@@ -22,9 +22,8 @@ public class FSShareLoc extends FeatureService {
         super.initQuickControl(etv,info);
         if ("shareloc".equals(info)){
             etv.setData(R.drawable.shareloc);
-//            etv.setData(prefRecordTrack, R.drawable.record_track1,R.drawable.record_track2);
             etv.setPrAction(toggleShareLocation);
-            etv.setHelp(r(R.string.FSRecording_qcRec_help)).setHelp(r(R.string.FSRecording_qcRec_help1),r(R.string.FSRecording_qcRec_help2));
+            etv.setHelp(r(R.string.FSShareLoc_qcLsd_help));
         }
         return etv;
     }

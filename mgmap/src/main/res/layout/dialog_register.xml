@@ -5,22 +5,6 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register at MGMapServer"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:id="@+id/tvError"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#FF0000"
-        android:visibility="gone"
-        android:layout_marginBottom="8dp" />
-
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
@@ -37,6 +21,14 @@
         android:visibility="gone"
         android:layout_marginTop="8dp" />
 
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FF0000"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -44,30 +36,5 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
         android:visibility="gone" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="16dp">
-
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:layout_marginEnd="16dp" />
-
-        <ImageButton
-            android:id="@+id/btnSubmit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_send"
-            android:contentDescription="Submit"
-            android:enabled="false"
-            android:alpha="0.5"
-            android:background="?attr/selectableItemBackgroundBorderless" />
-    </LinearLayout>
 
 </LinearLayout>
