@@ -1,11 +1,9 @@
 package mg.mgmap.activity.mgmap.features.shareloc;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -18,32 +16,25 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Space;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.bouncycastle.asn1.x500.RDN;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x500.style.IETFUtils;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
-
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.util.CC;
@@ -57,47 +48,57 @@ public class ShareLocationSettings {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.getDefault());
+    SimpleDateFormat sdf = new SimpleDateFormat(FSShareLoc.DATE_FORMAT, Locale.getDefault());
 
     private final AppCompatActivity activity;
-    private static final String PREFS_NAME = "ShareLocationPrefs";
-    private static final String KEY_SHARE_PERSONS = "key_share_persons";
-    private static final String KEY_MASTER_SWITCH = "master_share_switch";
 
     private TextView tvOwnEmail;
-    private TextView tvCertValidity;
-    private Switch switchMasterShare;
+    private TextView tvOwnValidity;
+    private SwitchCompat switchMasterShare;
     private ImageButton btnAddPerson;
-//    private Button btnSaveSettings;
     private LinearLayout btnRegistrationParent;
     private ExtendedTextView btnRegistration;
     private LinearLayout layoutShareWithFrom;
 
-    private final ArrayList<SharePerson> persons = new ArrayList<>();
+    private final ShareLocConfig shareLocConfig;
+    private final ShareLocConfig config;
+    private final SharePerson me;
 
-    public ShareLocationSettings(AppCompatActivity activity) {
+    public ShareLocationSettings(AppCompatActivity activity, ShareLocConfig shareLocConfig, SharePerson me) {
         this.activity = activity;
+        this.shareLocConfig = shareLocConfig;
+        this.config = new ShareLocConfig(shareLocConfig); // deep copy
+        this.me = me;
     }
 
+    @SuppressLint("SetTextI18n")
     public void show() {
-
-//        DialogView dialogView = activity.findViewById(R.id.dialog_parent);
-        DialogView dialogView = new DialogView(activity);
-
-
-        View locationSettingsDialogView = activity.getLayoutInflater().inflate(R.layout.dialog_location_settings, null);
+        @SuppressLint({"InflateParams"})
+        View locationSettingsDialogView = activity.getLayoutInflater().inflate(R.layout.dialog_location_settings, null, false);
 
         tvOwnEmail = locationSettingsDialogView.findViewById(R.id.tvOwnEmail);
-        tvCertValidity = locationSettingsDialogView.findViewById(R.id.tvCertValidity);
+        tvOwnValidity = locationSettingsDialogView.findViewById(R.id.tvCertValidity);
+        me.addObserver(pce->{
+            tvOwnEmail.setText("Email: "+me.email);
+            setCertificateValidity(tvOwnValidity, me, System.currentTimeMillis(), true);
+        });
+        DialogView dialogView = new DialogView(activity){
+            @Override
+            protected void onDetachedFromWindow() {
+                super.onDetachedFromWindow();
+                me.deleteObservers();
+            }
+        };
+
         switchMasterShare = locationSettingsDialogView.findViewById(R.id.switchMasterShare);
         btnRegistrationParent = locationSettingsDialogView.findViewById(R.id.btnRegistration);
         btnRegistration = dialogView.createButton("Register / Refresh certificate",R.id.bt_registration, "bt_register",
-                pce->new Registration(activity).show(activity.getFilesDir(), this));
+                pce->new Registration(activity, me).show(activity.getFilesDir()));
         btnRegistrationParent.addView(btnRegistration);
         btnAddPerson = locationSettingsDialogView.findViewById(R.id.btnAddPerson);
         layoutShareWithFrom = locationSettingsDialogView.findViewById(R.id.layoutShareWithFrom);
 
-        updateCertificateInfo();
+        me.changed();
         loadSavedSettings();
 
         switchMasterShare.setOnCheckedChangeListener((buttonView, isChecked) -> updateEnabledState(isChecked));
@@ -108,7 +109,7 @@ public class ShareLocationSettings {
 
         btnAddPerson.setOnClickListener(v -> {
             SharePerson person = new SharePerson();
-            persons.add(person);
+            config.persons.add(person);
             showAddPerson(layoutShareWithFrom, person);
         });
 
@@ -129,7 +130,6 @@ public class ShareLocationSettings {
     private void updateEnabledState(boolean enabled) {
         btnRegistration.setEnabled(enabled);
         btnAddPerson.setEnabled(enabled);
-
         enableViewGroup(layoutShareWithFrom, enabled);
     }
 
@@ -144,122 +144,134 @@ public class ShareLocationSettings {
         viewGroup.setAlpha(enabled ? 1.0f : 0.5f);
     }
 
-    void updateCertificateInfo() {
-        File certFile = new File(activity.getFilesDir(), "certs/my.crt");
-        if (certFile.exists()) {
-            try (FileInputStream fis = new FileInputStream(certFile)) {
-                CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                X509Certificate cert = (X509Certificate) cf.generateCertificate(fis);
-
-                X500Name x500name = new JcaX509CertificateHolder(cert).getSubject();
-                RDN cn = x500name.getRDNs(BCStyle.CN)[0];
-                String email = IETFUtils.valueToString(cn.getFirst().getValue());
-                tvOwnEmail.setText("Email: " + email);
-
-                SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm", Locale.getDefault());
-                tvCertValidity.setText("Certificate valid until: " + sdf.format(cert.getNotAfter()));
-
-            } catch (Exception e) {
-                Log.e("LocationSettingsDialog", "Error reading my.crt", e);
-                tvOwnEmail.setText("Email: error reading cert");
-                tvCertValidity.setText("Certificate valid until: N/A");
-            }
-        } else {
-            tvOwnEmail.setText("Email: not registered");
-            tvCertValidity.setText("Certificate valid until: N/A");
-        }
-    }
-
     private void loadSavedSettings() {
-        SharedPreferences prefs = activity.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        switchMasterShare.setChecked(prefs.getBoolean(KEY_MASTER_SWITCH, false));
-        Set<String> shareWithSet = prefs.getStringSet(KEY_SHARE_PERSONS, new HashSet<>());
-        persons.clear();
+        switchMasterShare.setChecked(config.shareLocOn);
         layoutShareWithFrom.removeAllViews();
-        for (String entry : shareWithSet) {
-            SharePerson person = SharePerson.fromPrefString(entry);
-            persons.add(person);
+        for (SharePerson person : config.persons) {
             showAddPerson(layoutShareWithFrom, person);
         }
     }
 
     private boolean saveSettings() {
+        shareLocConfig.shareLocOn = switchMasterShare.isChecked(); // update original config
+        if (shareLocConfig.shareLocOn){
+            SharePerson me;
+            try (InputStream clientCrt = new FileInputStream(new File(activity.getFilesDir(), "certs/my.crt")) ) {
+                me = CryptoUtils.getPersonData(clientCrt);
+                if (me.shareWithUntil < 10*24*60*60*1000L + System.currentTimeMillis()){
+                    Toast.makeText(activity, "ERROR: refresh certificate", Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            } catch (Exception e) {
+                Toast.makeText(activity, "ERROR: register first", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+
         HashSet<String> emails = new HashSet<>();
-        for (SharePerson person : persons){
+        for (SharePerson person : config.persons){
             emails.add(person.email);
             if (person.email.equals(SharePerson.DUMMY_EMAIL)){
                 Toast.makeText(activity, "ERROR: invalid email address", Toast.LENGTH_LONG).show();
                 return false;
             }
         }
-        if (persons.size() != emails.size()){
+        if (config.persons.size() != emails.size()){
             Toast.makeText(activity, "ERROR: duplicate email address", Toast.LENGTH_LONG).show();
             return false;
         }
-
-        SharedPreferences prefs = activity.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(KEY_MASTER_SWITCH, switchMasterShare.isChecked());
-        Set<String> shareWithSet = new HashSet<>();
-        for (SharePerson person : persons){
-            shareWithSet.add(person.toPrefString());
+        // remove observers that were used to refresh UI
+        for (SharePerson person : config.persons) {
+            person.deleteObservers();
         }
-        editor.putStringSet(KEY_SHARE_PERSONS, shareWithSet);
-        editor.apply();
-        Toast.makeText(activity, "Settings saved", Toast.LENGTH_SHORT).show();
+        shareLocConfig.persons = config.persons; // replace with modified config persons
+        shareLocConfig.saveConfig();
+        shareLocConfig.changed();
         return true;
     }
 
+    @SuppressLint("SetTextI18n")
+    private void setCertificateValidity(TextView tvValidity, SharePerson person, long now, boolean withDate){
+        try {
+            if ((person.crt != null) && (!person.crt.isEmpty())){
+                if ("unknown".equals(person.crt)) {
+                    tvValidity.setTextColor(CC.getColor(R.color.CC_RED));
+                    tvValidity.setText("Certificate not found");
+                } else {
+                    SharePerson p = CryptoUtils.getPersonData(new ByteArrayInputStream(person.crt.getBytes()));
+                    String sWithDate = withDate?(": "+sdf.format(p.shareWithUntil)):"";
+                    if  (p.shareWithUntil < now){ // certificate is no longer valid
+                        tvValidity.setTextColor(CC.getColor(R.color.CC_RED));
+                        tvValidity.setText("Certificate expired"+sWithDate);
+                    } else if  (p.shareWithUntil < now + 30*24*60*60*1000L){ // certificate will expire in the next 30 days
+                        tvValidity.setTextColor(CC.getColor(R.color.CC_ORANGE));
+                        tvValidity.setText("Certificate expires soon"+sWithDate);
+                    } else {
+                        tvValidity.setTextColor(CC.getColor(R.color.CC_GREEN150_A150));
+                        tvValidity.setText("Certificate valid"+sWithDate);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            mgLog.e(e);
+            tvValidity.setTextColor(CC.getColor(R.color.CC_RED));
+            tvValidity.setText("Certificate error");
+        }
+    }
 
 
-
+    @SuppressLint("SetTextI18n")
     private void showAddPerson(LinearLayout container, SharePerson person) {
-        View itemView = activity.getLayoutInflater().inflate(R.layout.item_shareloc, container, false);
+        View itemView = activity.getLayoutInflater().inflate(R.layout.shareloc_person_other, container, false);
 
         TextView tvEmail = itemView.findViewById(R.id.tvPersonEmail);
         tvEmail.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape2, activity.getTheme()));
-        tvEmail.setText(person.email);
-        tvEmail.setOnClickListener(view -> editEmail(tvEmail, person));
-
+        tvEmail.setOnClickListener(view -> editEmail(person));
+        TextView tvCrtValidity = itemView.findViewById(R.id.tvCertValidity);
         ImageButton btnRemovePerson = itemView.findViewById(R.id.btnRemoveItem);
         btnRemovePerson.setOnClickListener(v->{
             container.removeView(itemView);
-            persons.removeIf(p->tvEmail.getText().toString().equals(p.email));
+            config.persons.removeIf(p->tvEmail.getText().toString().equals(p.email));
         });
 
         long now = System.currentTimeMillis();
         if (now > person.shareWithUntil) person.shareWithActive = false;
         CheckBox cbShareWithOn = itemView.findViewById(R.id.cbShareWithOn);
-        cbShareWithOn.setChecked(person.shareWithActive);
         TextView tvShareWithUntil = itemView.findViewById(R.id.tvShareWithUntil);
-        tvShareWithUntil.setText( (person.shareWithUntil == Long.MAX_VALUE)?"infinite":sdf.format(new Date(person.shareWithUntil)) );
         tvShareWithUntil.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape2, activity.getTheme()));
-        tvShareWithUntil.setOnClickListener(v->editUntil(tvShareWithUntil, cbShareWithOn, person, true));
+        tvShareWithUntil.setOnClickListener(v->editUntil(person, true));
 
         if (now > person.shareFromUntil) person.shareFromActive = false;
         CheckBox cbShareFromOn = itemView.findViewById(R.id.cbShareFromOn);
-        cbShareFromOn.setChecked(person.shareFromActive);
         TextView tvShareFromUntil = itemView.findViewById(R.id.tvShareFromUntil);
-        tvShareFromUntil.setText( sdf.format(new Date(person.shareFromUntil)) );
         tvShareFromUntil.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape2, activity.getTheme()));
-        tvShareFromUntil.setOnClickListener(v->editUntil(tvShareFromUntil, cbShareFromOn, person, false));
+        tvShareFromUntil.setOnClickListener(v->editUntil(person, false));
 
         View viewColorPreview = itemView.findViewById(R.id.viewColorPreview);
         viewColorPreview.setBackgroundColor(person.color);
-        viewColorPreview.setOnClickListener(v->showColorPickerDialog(viewColorPreview, person));
-
+        viewColorPreview.setOnClickListener(v->showColorPickerDialog(person));
 
         if (!switchMasterShare.isChecked()) {
             enableViewGroup((ViewGroup) itemView, false);
         }
+        person.addObserver(pce-> activity.runOnUiThread(() ->{
+            tvEmail.setText(person.email);
+            tvShareWithUntil.setText( (person.shareWithUntil == Long.MAX_VALUE)?"infinite":sdf.format(new Date(person.shareWithUntil)) );
+            cbShareWithOn.setChecked(person.shareWithActive);
+            tvShareFromUntil.setText( sdf.format(new Date(person.shareFromUntil)) );
+            cbShareFromOn.setChecked(person.shareFromActive);
+            viewColorPreview.setBackgroundColor(person.color);
+            setCertificateValidity(tvCrtValidity, person, now, false);
+        }));
+        person.changed();
         container.addView(itemView);
     }
 
-    private void editEmail(TextView tvEmail, SharePerson person){
+    private void editEmail(SharePerson person){
         DialogView dialogViewChild = new DialogView(activity);
 
         EditText etEmail = new EditText(activity);
-        etEmail.setText(tvEmail.getText());
+        etEmail.setText(person.email);
         etEmail.setSelectAllOnFocus(true);
         etEmail.requestFocus();
         etEmail.addTextChangedListener(new TextWatcher() {
@@ -283,13 +295,15 @@ public class ShareLocationSettings {
                 .setContentView(etEmail)
                 .setPositive("Ok",pce->{
                     person.email = etEmail.getText().toString();
-                    tvEmail.setText(person.email);
+                    person.changed();
+                    MqttUtil.updateCertificate(activity, me, List.of(person));
                 })
                 .setNegative("Cancel",null)
                 .show());
     }
 
-    private void editUntil(TextView tvUntil, CheckBox cbUntil, SharePerson person, boolean isShareWithUntil){
+    @SuppressLint("SetTextI18n")
+    private void editUntil(SharePerson person, boolean isShareWithUntil){
         Calendar cal = Calendar.getInstance();
         long timestamp = isShareWithUntil?person.shareWithUntil:person.shareFromUntil;
         long now = System.currentTimeMillis();
@@ -432,9 +446,7 @@ public class ShareLocationSettings {
                         person.shareFromUntil = ts;
                         person.shareFromActive = checked;
                     }
-                    cbUntil.setChecked(checked);
-
-                    tvUntil.setText(infinite?"infinite":sdf.format(ts));
+                    person.changed();
                 })
                 .setNegative("Cancel",null)
                 .show());
@@ -468,7 +480,7 @@ public class ShareLocationSettings {
                 .show());
     }
 
-    private void showColorPickerDialog(View colorPreview, SharePerson person) {
+    private void showColorPickerDialog(SharePerson person) {
         final String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Cyan", "Magenta", "Black", "Gray", "Orange"};
         final int[] colorValues = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.CYAN, Color.MAGENTA, Color.BLACK, Color.GRAY, CC.getColor(R.color.CC_ORANGE)};
 
@@ -486,7 +498,7 @@ public class ShareLocationSettings {
             name.setText(colorNames[i]);
             llColor.setOnClickListener(v->{
                 person.color = colorValue;
-                colorPreview.setBackgroundColor(colorValue);
+                person.changed();
                 dialogViewChild.cancel();
             });
             if (person.color == colorValue){
@@ -501,6 +513,6 @@ public class ShareLocationSettings {
                 .setContentView(llColors)
                 .show());
 
-
     }
-}
+
+ }

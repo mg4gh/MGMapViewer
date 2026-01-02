@@ -5,9 +5,9 @@ import java.beans.PropertyChangeListener;
 public interface Observable {
 
 
-    void addObserver(PropertyChangeListener propertyChangeListener);
+    void addObserver(Observer propertyChangeListener);
 
-    void deleteObserver(PropertyChangeListener propertyChangeListener);
+    void deleteObserver(Observer propertyChangeListener);
 
     void deleteObservers();
 

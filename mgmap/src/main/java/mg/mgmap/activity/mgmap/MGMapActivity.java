@@ -95,6 +95,7 @@ import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.GpxSyncUtil;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Zipper;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
@@ -112,7 +113,6 @@ import mg.mgmap.generic.util.hints.HintAccessBackgroundLocation;
 import mg.mgmap.generic.util.hints.HintAccessFineLocation;
 import mg.mgmap.generic.util.hints.HintBatteryUsage;
 
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -152,7 +152,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
     private final Runnable ttCheckFullBackup = () ->
         BackupUtil.checkFullBackup(MGMapActivity.this, application.getPersistenceManager());
-    private final PropertyChangeListener prefGpsObserver = (e) -> triggerTrackLoggerService();
+    private final Observer prefGpsObserver = (e) -> triggerTrackLoggerService();
     private Pref<Boolean> prefTracksVisible;
     private List<String> recreatePreferences;
 

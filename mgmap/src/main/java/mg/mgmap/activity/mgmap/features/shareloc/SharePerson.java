@@ -2,8 +2,9 @@ package mg.mgmap.activity.mgmap.features.shareloc;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.util.CC;
+import mg.mgmap.generic.util.ObservableImpl;
 
-public class SharePerson {
+public class SharePerson extends ObservableImpl {
 
     final public static String DUMMY_EMAIL = "email@example.com";
 
@@ -14,6 +15,8 @@ public class SharePerson {
     long shareFromUntil;
     int color;
 
+    String crt; // not persisted
+
     public SharePerson(){
         long now = System.currentTimeMillis();
         email = DUMMY_EMAIL;
@@ -22,6 +25,16 @@ public class SharePerson {
         shareFromActive = false;
         shareFromUntil = now;
         color = CC.getColor(R.color.CC_GREEN);
+        crt = "";
+    }
+    public SharePerson(SharePerson person){
+        email = person.email;
+        shareWithActive = person.shareWithActive;
+        shareWithUntil = person.shareWithUntil;
+        shareFromActive = person.shareFromActive;
+        shareFromUntil = person.shareFromUntil;
+        color = person.color;
+        crt = person.crt;
     }
 
     String toPrefString(){

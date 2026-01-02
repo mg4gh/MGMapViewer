@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -15,7 +16,7 @@
             android:id="@+id/tvPersonEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="email"
+            android:text=""
             android:textStyle="bold"
             android:textSize="16sp"
             android:paddingStart="8dp"
@@ -31,9 +32,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Delete"
             android:src="@android:drawable/ic_menu_delete"
-            android:contentDescription="Remove" />
+            tools:ignore="HardcodedText"
+            />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvCertValidity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Certificate not checked"
+        android:textColor="@color/CC_GRAY200"
+        android:layout_marginBottom="0dp"
+        tools:ignore="HardcodedText" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,13 +60,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Share with:" />
+                android:text="Share with:"
+                tools:ignore="HardcodedText"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
-                android:text="Share from:" />
-
+                android:text="Share from:"
+                tools:ignore="HardcodedText"/>
         </RelativeLayout>
 
 
@@ -69,16 +82,17 @@
             android:layout_height="wrap_content"
             android:text="till:"
             android:layout_marginEnd="5dp"
+            tools:ignore="HardcodedText"
             />
         <TextView
             android:id="@+id/tvShareWithUntil"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="infinite"
             android:paddingStart="8dp"
             android:paddingTop="3dp"
             android:paddingEnd="8dp"
             android:paddingBottom="3dp"
+            tools:ignore="HardcodedText"
             />
         <Space
             android:layout_width="0dp"
@@ -100,7 +114,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Share from:" />
+            android:text="Share from:"
+            tools:ignore="HardcodedText"
+            />
 
         <CheckBox
             android:id="@+id/cbShareFromOn"
@@ -113,12 +129,12 @@
             android:layout_height="wrap_content"
             android:text="till:"
             android:layout_marginEnd="5dp"
+            tools:ignore="HardcodedText"
             />
         <TextView
             android:id="@+id/tvShareFromUntil"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="infinite"
             android:paddingStart="8dp"
             android:paddingTop="3dp"
             android:paddingEnd="8dp"

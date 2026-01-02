@@ -24,6 +24,7 @@ import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -124,6 +125,8 @@ public class MgMain {
                         handleRegisterRequest(payload);
                     } else if (topic.endsWith("/server/register_verify")) {
                         handleRegisterVerify(topic);
+                    } else if (topic.endsWith("/server/crt_request")) {
+                        handleCrtRequest(topic, payload);
                     } else if (topic.equals("/server/server/watchdog")) {
                         SystemdNotify.watchdog();
                         System.out.println("Watchdog received");
@@ -180,7 +183,7 @@ public class MgMain {
         }, 2 * 60 * 1000, 2 * 60 * 1000);
     }
 
-    private static void handleRegisterInit(String payload) {
+    private void handleRegisterInit(String payload) {
         String[] payloadParts = payload.split(":", 2);
         if (payloadParts.length == 2) {
             String senderClientId = payloadParts[0];
@@ -215,7 +218,7 @@ public class MgMain {
         }
     }
 
-    private static void handleRegisterVerify(String topic) {
+    private void handleRegisterVerify(String topic) {
         String[] parts = topic.split("/");
         if (parts.length >= 2) {
             String email = parts[1];
@@ -229,7 +232,7 @@ public class MgMain {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void handleRegisterRequest(String payload) {
+    private void handleRegisterRequest(String payload) {
         String[] payloadParts = payload.split(":", 3);
         if (payloadParts.length != 3) {
             System.err.println("Invalid payload format for registration request: " + payload);
@@ -337,6 +340,31 @@ public class MgMain {
             System.err.println("Failed to send MQTT response: " + e.getMessage());
         }
     }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void handleCrtRequest(String topic, String payload){
+        try {
+            String[] parts = payload.split(":");
+            StringBuilder message = new StringBuilder(parts[0]);
+            for (int i=1; i<parts.length; i++) {
+                String email = parts[i];
+                File userCrtFile = new File("user_certs/" + email);
+                String crt = "unknown";
+                try (InputStream is = new FileInputStream(userCrtFile)){
+                    byte[] buf = new byte[is.available()];
+                    is.read(buf);
+                    crt = new String(buf);
+                } catch (Exception e){ System.err.println(e.getMessage()); }
+                message.append(":").append(crt);
+            }
+            topic = "/server" + topic.replace("server/crt_request","crt_response");
+            System.out.println("Generated response: topic=\""+topic+"\" message=\""+message+"\"");
+            sendMqttMessage(topic, message.toString());
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
 
     public static void sendMqttMessage(String topic, String payload) throws Exception {
         if (mqttClient == null || !mqttClient.isConnected()) {

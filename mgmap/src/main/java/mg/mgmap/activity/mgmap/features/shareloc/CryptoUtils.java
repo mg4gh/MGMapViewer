@@ -1,6 +1,13 @@
 package mg.mgmap.activity.mgmap.features.shareloc;
 
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
@@ -142,4 +149,26 @@ public class CryptoUtils {
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(encoded);
         return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    static SharePerson getPersonData(InputStream is) throws Exception {
+        SharePerson person = new SharePerson();
+
+        byte[] buf = new byte[is.available()];
+        is.read(buf);
+        person.crt = new String(buf);
+
+        try (InputStream isCrt =  new ByteArrayInputStream(person.crt.getBytes());){
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate cert = (X509Certificate) cf.generateCertificate(isCrt);
+
+            X500Name x500name = new JcaX509CertificateHolder(cert).getSubject();
+            RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+            person.shareWithUntil = cert.getNotAfter().getTime();
+            person.shareFromUntil = cert.getNotAfter().getTime();
+            person.email = IETFUtils.valueToString(cn.getFirst().getValue());
+        }
+        return person;
+    }
+
 }

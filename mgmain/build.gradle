@@ -16,7 +16,6 @@ sourceSets {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    implementation project(':commonutil')
     implementation libs.mqttv5
     implementation libs.jakarta.mail
     implementation libs.bcprov
@@ -34,12 +33,12 @@ tasks.register('runMgMain', JavaExec) {
 
 tasks.register('copyDependencies', Copy) {
     from configurations.runtimeClasspath
-    into "$buildDir/dependencies"
+    into layout.buildDirectory.dir('dependencies')
 }
 
 tasks.register('fatJar', Jar) {
-//    dependsOn ':commonutil:jar'
     dependsOn(build)
+    dependsOn(copyDependencies)
     archiveBaseName = 'MgMain-fat'
     manifest {
         attributes 'Main-Class': 'mg.mgmap.mgmain.MgMain'

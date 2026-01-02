@@ -3,7 +3,6 @@ package mg.mgmap.activity.mgmap.features.shareloc;
 import android.annotation.SuppressLint;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
@@ -36,21 +36,27 @@ import java.util.UUID;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.DialogView;
 
 public class Registration {
-    private static final String TAG = "Registration";
+
+    private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
     private final AppCompatActivity activity;
+    SharePerson me;
+
     private MqttBase mqttClient;
     private boolean isAwaitingConfirmation = false;
     private KeyPair currentKeyPair;
     private String email;
 
-    public Registration(AppCompatActivity activity) {
+    public Registration(AppCompatActivity activity, SharePerson me) {
         this.activity = activity;
+        this.me = me;
     }
 
-    public void show(File baseDir, ShareLocationSettings shareLocationSettings) {
+    public void show(File baseDir) {
         DialogView dialogViewChild = new DialogView(activity);
 
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -66,21 +72,21 @@ public class Registration {
              InputStream clientCrt = activity.getAssets().open("client.crt");
              InputStream clientKey = activity.getAssets().open("client.key")) {
 
-            mqttClient = new MqttBase(caCrt, clientCrt, clientKey) {
+            mqttClient = new MqttBase("ClientInit",caCrt, clientCrt, clientKey) {
                 @Override
                 public void messageReceived(String topic, String message) {
-                    Log.i(TAG, "Message arrived. Topic: " + topic + " Payload: " + message);
-                    if (topic.equals("/server/" + clientId + "/register_confirm")) {
+                    super.messageReceived(topic, message);
+                    if (topic.equals("/server/" + getClientId() + "/register_confirm")) {
                         handleRegisterConfirm(message, etConfirmationCode, progressBar, dialogViewChild, registrationDialogView);
-                    } else if (topic.equals("/server/" + clientId + "/register_response")) {
+                    } else if (topic.equals("/server/" + getClientId() + "/register_response")) {
                         handleRegisterResponse(message, baseDir, dialogViewChild);
-                        shareLocationSettings.updateCertificateInfo();
+//                        shareLocationSettings.updateCertificateInfo();
                     }
                 }
 
                 @Override
                 protected void registerThrowable(Throwable throwable) {
-                    Log.e(TAG, "MQTT error", throwable);
+                    mgLog.e("MQTT error", throwable);
                     activity.runOnUiThread(() -> {
                         tvError.setText(throwable.getMessage());
                         tvError.setVisibility(View.VISIBLE);
@@ -89,15 +95,22 @@ public class Registration {
                         etEmail.setText(etEmail.getText()); 
                     });
                 }
+
+                @Override
+                protected void connectComplete(boolean reconnect, String serverURI) throws MqttException {
+                    if (!reconnect){
+                        mqttClient.registerTopic("/server/" + mqttClient.getClientId() + "/#");
+                    }
+                }
             };
 
-            mqttClient.registerTopic("/server/" + mqttClient.clientId + "/#");
+
 
         } catch (Exception e) {
             if (mqttClient != null) {
                 mqttClient.registerThrowable(e);
             } else {
-                Log.e(TAG, "MQTT initialization error", e);
+                mgLog.e("MQTT initialization error", e);
                 Toast.makeText(activity, "Failed to connect to server: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
@@ -143,7 +156,7 @@ public class Registration {
                 dialogViewChild.setEnablePositive(false);
                 progressBar.setVisibility(View.VISIBLE);
                 try {
-                    mqttClient.sendMessage("/client/server/register_init", mqttClient.clientId + ":" + email);
+                    mqttClient.sendMessage("/client/server/register_init", mqttClient.getClientId() + ":" + email);
                 } catch (Exception e) {
                     mqttClient.registerThrowable(e);
                 }
@@ -187,7 +200,7 @@ public class Registration {
                     String pemCsr = sw.toString();
 
                     String hashedCode = CryptoUtils.sha256(code);
-                    String payload = mqttClient.clientId + ":" + hashedCode + ":" + pemCsr;
+                    String payload = mqttClient.getClientId() + ":" + hashedCode + ":" + pemCsr;
                     mqttClient.sendMessage("/client/server/register_request", payload);
                 } catch (Exception e) {
                     mqttClient.registerThrowable(e);
@@ -202,7 +215,9 @@ public class Registration {
                 .setTitle("Register at MGMapServer")
                 .setContentView(registrationDialogView)
                 .setPositive("Submit",submitObserver, false)
-                .setNegative("Cancel",pce->stopMqtt())
+                .setNegative("Cancel",pce->{
+                    if (mqttClient != null) mqttClient.stop();
+                })
                 .show());
 
     }
@@ -255,26 +270,40 @@ public class Registration {
                         InputStream myCrt = new FileInputStream(new File(certsDir, "my.crt"));
                         InputStream myKey = new FileInputStream(new File(certsDir, "my.key")) ){
 
-                        MqttBase verifyMqtt = new MqttBase(caCrt, myCrt, myKey) {
+                        new MqttBase("ClientVerify",caCrt, myCrt, myKey) {
                             @Override
                             public void messageReceived(String topic, String message) {
-                                Log.i(TAG, "Message arrived. Topic: " + topic + " Payload: " + message);
+                                super.messageReceived(topic, message);
                                 if (topic.equals("/server/" + email + "/verify_confirm")) {
                                     activity.runOnUiThread(() -> {
                                         Toast.makeText(activity, "Registration successful finished.", Toast.LENGTH_SHORT).show();
-                                        stopMqtt();
+                                        this.stop();
                                         dialog.cancel();
+                                        try (InputStream myCrt = new FileInputStream(new File(certsDir, "my.crt"))){
+                                            SharePerson newMe = CryptoUtils.getPersonData(myCrt);
+                                            me.email = newMe.email;
+                                            me.shareWithUntil = newMe.shareWithUntil;
+                                            me.shareFromUntil = newMe.shareFromUntil;
+                                            me.changed();
+                                        } catch(Exception e){ mgLog.e(e.getMessage()); }
                                     });
 
                                 }
                             }
+
+                            @Override
+                            protected void connectComplete(boolean reconnect, String serverURI) throws MqttException {
+                                if (!reconnect){
+                                    this.registerTopic("/server/" + email + "/verify_confirm");
+                                    this.sendMessage("/" + email + "/server/register_verify", "register_verify");
+
+                                }
+                            }
                         };
-                        verifyMqtt.registerTopic("/server/" + email + "/verify_confirm");
-                        verifyMqtt.sendMessage("/" + email + "/server/register_verify", "register_verify");
                     }
 
                 } catch (Exception e) {
-                    Log.e(TAG, "Error processing register response", e);
+                    mgLog.e("Error processing register response", e);
                     success = false;
                     extra2 = e.getMessage();
                 }
@@ -283,7 +312,9 @@ public class Registration {
             if (!success){
                 activity.runOnUiThread(() -> {
                     Toast.makeText(activity, "Registration failed : "+ finalExtra2, Toast.LENGTH_LONG).show();
-                    stopMqtt();
+                    if (mqttClient != null){
+                        mqttClient.stop();
+                    }
                     dialog.cancel();
                 });
             }
@@ -299,16 +330,4 @@ public class Registration {
         }
     }
 
-    private void stopMqtt() {
-        if (mqttClient != null && mqttClient.client != null) {
-            new Thread(() -> {
-                try {
-                    mqttClient.client.disconnect(0L);
-                    mqttClient.client.close();
-                } catch (MqttException e) {
-                    Log.e(TAG, "Error closing MQTT", e);
-                }
-            }).start();
-        }
-    }
 }

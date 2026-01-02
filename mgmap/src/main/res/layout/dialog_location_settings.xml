@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -12,58 +13,63 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:layout_marginBottom="16dp"
-        android:layout_alignParentTop="true">
+        >
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Switch feature on/off"
             android:textSize="20sp"
-            android:textStyle="bold" />
-        <Switch
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switchMasterShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvOwnEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/llFeatureOn"
-        android:text="Email: not registered"
-        android:layout_marginBottom="4dp"
-        />
-
-    <TextView
-        android:id="@+id/tvCertValidity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvOwnEmail"
-        android:text="Certificate valid until: N/A"
-        android:layout_marginBottom="8dp" />
-
     <LinearLayout
-        android:id="@+id/btnRegistration"
+        android:id="@+id/tvPersonMe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tvCertValidity"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+       >
         <TextView
-            android:layout_width="1dp"
+            android:id="@+id/tvOwnEmail"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=" "
-            android:layout_marginBottom="8dp" />
-        <Space
-            android:layout_width="0dp"
+            android:layout_marginBottom="4dp"
+            />
+
+        <TextView
+            android:id="@+id/tvCertValidity"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_marginBottom="8dp"
+            />
+
+        <LinearLayout
+            android:id="@+id/btnRegistration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_marginBottom="8dp" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
     </LinearLayout>
+
     <View
         android:id="@+id/vLsdSpacer"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/btnRegistration"
         android:background="@android:color/darker_gray"
         android:layout_marginBottom="16dp" />
 
@@ -73,7 +79,6 @@
         android:id="@+id/llShareWithFromHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/vLsdSpacer"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:layout_marginBottom="4dp">
@@ -83,21 +88,22 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Share location with/from ..."
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
         <ImageButton
             android:id="@+id/btnAddPerson"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_input_add"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Add person to share with" />
+            android:contentDescription="Add person to share with"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrollShareWithFrom"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_below="@id/llShareWithFromHeader"
         android:layout_marginBottom="8dp"
         android:fadeScrollbars="false"
         android:scrollbarStyle="outsideOverlay"
@@ -111,4 +117,4 @@
     </ScrollView>
 
 
-</RelativeLayout>
+</LinearLayout>
