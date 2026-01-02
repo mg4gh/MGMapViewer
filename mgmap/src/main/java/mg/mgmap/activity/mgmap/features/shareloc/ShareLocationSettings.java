@@ -2,9 +2,6 @@ package mg.mgmap.activity.mgmap.features.shareloc;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -274,20 +271,7 @@ public class ShareLocationSettings {
         etEmail.setText(person.email);
         etEmail.setSelectAllOnFocus(true);
         etEmail.requestFocus();
-        etEmail.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String input = s.toString().trim();
-                boolean isValid = Patterns.EMAIL_ADDRESS.matcher(input).matches();
-                dialogViewChild.setEnablePositive(isValid);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
+        etEmail.addTextChangedListener(new TextWatcherEmail(dialogViewChild));
 
         dialogViewChild.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         dialogViewChild.lock(() -> dialogViewChild

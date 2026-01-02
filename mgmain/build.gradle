@@ -6,14 +6,6 @@ java {
     targetCompatibility JavaVersion.VERSION_11
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDirs += 'certs'
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation libs.mqttv5

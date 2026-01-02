@@ -80,7 +80,6 @@ public class Registration {
                         handleRegisterConfirm(message, etConfirmationCode, progressBar, dialogViewChild, registrationDialogView);
                     } else if (topic.equals("/server/" + getClientId() + "/register_response")) {
                         handleRegisterResponse(message, baseDir, dialogViewChild);
-//                        shareLocationSettings.updateCertificateInfo();
                     }
                 }
 
@@ -139,8 +138,9 @@ public class Registration {
             public void afterTextChanged(Editable s) {}
         };
 
-        etEmail.addTextChangedListener(commonWatcher);
-        etConfirmationCode.addTextChangedListener(commonWatcher);
+        etEmail.addTextChangedListener(new TextWatcherEmail(dialogViewChild));
+        etEmail.setText(me.email);
+        etConfirmationCode.addTextChangedListener(new TextWatcherConfirmation(dialogViewChild));
 
         // Initial check to set button state correctly
         commonWatcher.onTextChanged("", 0, 0, 0);
@@ -282,8 +282,7 @@ public class Registration {
                                         try (InputStream myCrt = new FileInputStream(new File(certsDir, "my.crt"))){
                                             SharePerson newMe = CryptoUtils.getPersonData(myCrt);
                                             me.email = newMe.email;
-                                            me.shareWithUntil = newMe.shareWithUntil;
-                                            me.shareFromUntil = newMe.shareFromUntil;
+                                            me.crt = newMe.crt;
                                             me.changed();
                                         } catch(Exception e){ mgLog.e(e.getMessage()); }
                                     });

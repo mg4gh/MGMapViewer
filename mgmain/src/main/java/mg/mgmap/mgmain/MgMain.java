@@ -46,13 +46,13 @@ public class MgMain {
     private static class RegistrationRecord {
         String clientId;
         String email;
-        String confirmationUuid;
+        String confirmationId;
         long timestamp;
 
-        public RegistrationRecord(String clientId, String email, String confirmationUuid) {
+        public RegistrationRecord(String clientId, String email, String confirmationId) {
             this.clientId = clientId;
             this.email = email;
-            this.confirmationUuid = confirmationUuid;
+            this.confirmationId = confirmationId;
             this.timestamp = System.currentTimeMillis();
         }
 
@@ -61,7 +61,7 @@ public class MgMain {
             return "RegistrationRecord{" +
                     "clientId='" + clientId + '\'' +
                     ", email='" + email + '\'' +
-                    ", confirmationUuid='" + confirmationUuid + '\'' +
+                    ", confirmationId='" + confirmationId + '\'' +
                     ", timestamp=" + timestamp +
                     '}';
         }
@@ -91,13 +91,10 @@ public class MgMain {
             mqttClient = new MqttClient(broker, clientId, new MemoryPersistence());
             MqttConnectionOptions options = new MqttConnectionOptions();
 
-            try (InputStream caCrt = MgMain.class.getResourceAsStream("/ca.crt");
-                 InputStream clientCrt = MgMain.class.getResourceAsStream("/server2.crt");
-                 InputStream clientKey = MgMain.class.getResourceAsStream("/server2.key")) {
+            try (InputStream caCrt = new FileInputStream("certs/ca.crt");
+                 InputStream clientCrt = new FileInputStream("certs/server2.crt");
+                 InputStream clientKey = new FileInputStream("certs/server2.key")) {
 
-                if (caCrt == null || clientCrt == null || clientKey == null) {
-                    throw new RuntimeException("Required certificate or key files not found in classpath.");
-                }
                 options.setSocketFactory(CryptoUtils.getSocketFactory(caCrt, clientCrt, clientKey));
             }
 
@@ -162,7 +159,7 @@ public class MgMain {
             }
 
         } catch (Exception e) {
-            System.err.println(e);
+            e.printStackTrace(System.err);
         }
     }
 
@@ -177,7 +174,7 @@ public class MgMain {
                 try {
                     sendMqttMessage("/server/server/watchdog", "watchdog "+cnt++);
                 } catch (Exception e) {
-                    System.err.println(e);
+                    e.printStackTrace(System.err);
                 }
             }
         }, 2 * 60 * 1000, 2 * 60 * 1000);
@@ -193,14 +190,14 @@ public class MgMain {
             System.out.println("Client ID: " + senderClientId);
             System.out.println("Email: " + email);
 
-            String confirmationUuid = UUID.randomUUID().toString();
+            String confirmationId = UUID.randomUUID().toString().substring(0,8);
 
-            String emailError = MailUtil.sendEmail(email, confirmationUuid);
+            String emailError = MailUtil.sendEmail(email, confirmationId);
             boolean success = (emailError == null);
             String info = success ? "Mail sent successfully" : emailError;
             
             if (success) {
-                RegistrationRecord record = new RegistrationRecord(senderClientId, email, confirmationUuid);
+                RegistrationRecord record = new RegistrationRecord(senderClientId, email, confirmationId);
                 registrations.put(senderClientId, record);
                 System.out.println("Stored registration record for client: " + senderClientId);
             }
@@ -244,14 +241,14 @@ public class MgMain {
         String pemCsr = payloadParts[2];
 
         String extra1 = "success";
-        String extra2 = "";
+        String extra2;
 
         RegistrationRecord record = registrations.get(clientId);
         try {
             if (record == null) {
                 throw new Exception("No record found for clientId: " + clientId);
             }
-            if (!CryptoUtils.sha256(record.confirmationUuid).equals(hashedConfirmationUuid)) {
+            if (!CryptoUtils.sha256(record.confirmationId).equals(hashedConfirmationUuid)) {
                 throw new Exception("Confirmation code mismatch");
             }
 
@@ -261,10 +258,8 @@ public class MgMain {
             X509Certificate caCert;
             PrivateKey caPrivateKey;
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-            try (InputStream isCrt = MgMain.class.getResourceAsStream("/ca.crt");
-                 InputStream isKey = MgMain.class.getResourceAsStream("/ca.key")) {
-                if (isCrt == null) throw new Exception("ca.crt not found");
-                if (isKey == null) throw new Exception("ca.key not found");
+            try (InputStream isCrt = new FileInputStream("certs/ca.crt");
+                 InputStream isKey = new FileInputStream("certs/ca.key")) {
                 caCert = (X509Certificate) certFactory.generateCertificate(isCrt);
                 caPrivateKey = CryptoUtils.loadPrivateKey(isKey);
 
