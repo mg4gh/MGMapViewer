@@ -14,6 +14,9 @@ import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
+import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelUtil;
+import mg.mgmap.generic.model.TrackLogRefApproach;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -25,9 +28,12 @@ public class FSShareLoc extends FeatureService {
     static final String DATE_FORMAT = "dd.MM.yy HH:mm";
 
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
+    private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_pref_Center, true);
+    private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     Pref<Boolean> toggleShareLocation = new Pref<>(true);
     Pref<Boolean> shareWithActive = new Pref<>(false);
     Pref<Boolean> shareFromActive = new Pref<>(false);
+    Pref<Boolean> showLocationText = new Pref<>(false);
 
 
     SharePerson me = null;
@@ -53,7 +59,16 @@ public class FSShareLoc extends FeatureService {
             updateShareWithActive();
             updateShareFromActive();
         });
+        showLocationText.addObserver(refreshObserver);
 
+        Runnable ttHideText = ()->showLocationText.setValue(false);
+        showLocationText.addObserver(pce->{
+            if (showLocationText.getValue()){
+                getTimer().postDelayed(ttHideText, 10000);
+            } else {
+                getTimer().removeCallbacks(ttHideText);
+            }
+        });
 
         toggleShareLocation.addObserver(plc -> new ShareLocationSettings(mmActivity, shareLocConfig, me).show());
 
@@ -80,7 +95,7 @@ public class FSShareLoc extends FeatureService {
             if (shareFromActive.getValue()){ // should be active
                 if (locationReceiver == null){
                     try {
-                        locationReceiver = new LocationReceiver(getApplication(), me, shareLocConfig, shareLocMap);
+                        locationReceiver = new LocationReceiver(getApplication(), this, me, shareLocConfig, shareLocMap);
                     } catch (Exception e) {
                         mgLog.e(e);
                     }
@@ -123,7 +138,8 @@ public class FSShareLoc extends FeatureService {
         for (SharePerson person : shareLocConfig.persons){
             MultiPointModel mpm = shareLocMap.get(person.email);
             if (mpm != null){
-                register(new PointViewShareLoc(mpm.get(mpm.size()-1), person.color));
+                register(new MultiPointViewSL(mpm, person.color));
+                register(new PointViewShareLoc(mpm.get(mpm.size()-1), person, showLocationText));
             }
         }
 
@@ -151,4 +167,21 @@ public class FSShareLoc extends FeatureService {
         return etv;
     }
 
+    void onLocationReceived(PointModel pm){
+        if ((!prefEditMarkerTrack.getValue()) && (!prefGps.getValue() || !prefCenter.getValue())){
+            getMapViewUtility().setCenter(pm);
+        }
+    }
+
+    public boolean checkClose(PointModel point) {
+        TrackLogRefApproach best = new TrackLogRefApproach(null, -1, getMapViewUtility().getCloseThresholdForZoomLevel());
+        for (MultiPointModel mpm : shareLocMap.values()){
+            PointModelUtil.getBestDistance(mpm, point, best);
+            if (best.getEndPointIndex() > 0){
+                showLocationText.toggle();
+                return true;
+            }
+        }
+        return false;
+    }
 }

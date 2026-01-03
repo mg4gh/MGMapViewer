@@ -27,6 +27,7 @@ public class LocationSender implements Observer {
     final ArrayList<PointModel> point2send = new ArrayList<>();
     MqttBase sendClient = null;
     SharePerson me;
+    PointModel lastSentPM = null;
 
     public LocationSender(MGMapApplication application, SharePerson me, ShareLocConfig shareLocConfig){
         this.application = application;
@@ -63,7 +64,9 @@ public class LocationSender implements Observer {
     void stop(){
         application.lastPositionsObservable.deleteObserver(this);
         stop = true;
-        sendClient.stop();
+        if (sendClient != null){
+            sendClient.stop();
+        }
     }
 
     void setConfig(ShareLocConfig config){
@@ -89,10 +92,11 @@ public class LocationSender implements Observer {
         if ((sendClient != null) && (me != null)){
             if (sendClient.isConnected()){
                 MqttProperties props = new MqttProperties();
-//                props.setMessageExpiryInterval(8 * 60 * 60L);
-                props.setMessageExpiryInterval( 600L);
-                sendClient.publish("/"+me.email+"/"+person.email+"/location", new MqttMessage(LocationMessage.toMessage(pm).getBytes(), 1, true, props));
-//                sendClient.publish("/"+me.email+"/"+person.email+"/location", new MqttMessage(LocationMessage.toMessage(pm).getBytes(), 0, false, null));
+                props.setMessageExpiryInterval(8 * 60 * 60L);
+//                props.setMessageExpiryInterval( 600L); // used for test - to see whether msg expires after 10min
+                String msg = LocationMessage.toMessage(pm) + ((lastSentPM!=null)?("::"+LocationMessage.toMessage(lastSentPM)):"");
+                sendClient.publish("/"+me.email+"/"+person.email+"/location", new MqttMessage(msg.getBytes(), 1, true, props));
+                lastSentPM = pm;
             } else {
                 if (pm.getTimestamp() + 30 * 60 * 1000 > now){ // pm is less than 30min old
                     synchronized (point2send){

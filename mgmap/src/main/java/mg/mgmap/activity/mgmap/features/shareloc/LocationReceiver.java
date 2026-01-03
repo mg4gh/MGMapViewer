@@ -9,7 +9,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
 import mg.mgmap.application.MGMapApplication;
-import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -22,7 +21,7 @@ public class LocationReceiver {
     MqttBase receiveClient = null;
     SharePerson me;
 
-    public LocationReceiver(MGMapApplication application, SharePerson me, ShareLocConfig config, Map<String, MultiPointModelImpl> shareLocMap) throws  Exception{
+    public LocationReceiver(MGMapApplication application, FSShareLoc fsShareLoc, SharePerson me, ShareLocConfig config, Map<String, MultiPointModelImpl> shareLocMap) throws  Exception{
         this.me = me;
         this.config = config;
         try (InputStream caCrt = application.getAssets().open("ca.crt");
@@ -35,19 +34,24 @@ public class LocationReceiver {
                     super.messageReceived(topic, message);
 
                     String[] parts = topic.split("/");
-
-                    PointModel pm = LocationMessage.fromMessage(message);
-                    mgLog.i("Received pm: "+pm.toString());
+                    String[] msgParts = message.split("::");
+                    PointModel pm = LocationMessage.fromMessage(msgParts[0]);
+                    PointModel pmLast = null;
+                    if (msgParts.length > 1){
+                        pmLast = LocationMessage.fromMessage(msgParts[1]);
+                    }
+                    mgLog.i("Received pm: "+pm+ " pmLast: "+pmLast);
 
                     boolean changed = false;
                     for (SharePerson person : config.persons){
                         if (parts[1].equals(person.email) ){
-                            MultiPointModelImpl mpmi = shareLocMap.get(person.email);
-                            if (mpmi == null){
-                                mpmi = new MultiPointModelImpl();
-                                shareLocMap.put(person.email, mpmi);
+                            MultiPointModelImpl mpmi = new MultiPointModelImpl();
+                            shareLocMap.put(person.email, mpmi);
+                            if (pmLast != null){
+                                mpmi.addPoint(pmLast);
                             }
                             mpmi.addPoint(pm);
+                            fsShareLoc.onLocationReceived(pm);
                             changed = true;
                         }
                     }

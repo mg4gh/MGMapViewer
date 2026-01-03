@@ -54,9 +54,11 @@ public abstract class MVLayer extends Layer {
         if (mapViewUtility != null) {
             dx = (canvas.getDimension().width - mapViewUtility.getMapViewDimension().width) / 2;
             dy = (canvas.getDimension().height - mapViewUtility.getMapViewDimension().height) / 2;
-        }
 
-        doDraw(boundingBox,zoomLevel,canvas,topLeftPoint);
+            if (mapViewUtility.getTrackVisibility()){
+                doDraw(boundingBox,zoomLevel,canvas,topLeftPoint);
+            }
+        }
     }
 
     protected void doDraw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) { }

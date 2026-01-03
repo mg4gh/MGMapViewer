@@ -14,17 +14,42 @@
  */
 package mg.mgmap.activity.mgmap.features.shareloc;
 
-import org.mapsforge.core.graphics.Paint;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
-import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.view.PointView;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.CC;
+import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.view.VUtil;
 
 public class PointViewShareLoc extends PointView {
 
-    public PointViewShareLoc(PointModel pointModel, int color){
-        super(pointModel, CC.getStrokePaint4Color(color, 2), CC.getFillPaint4Color(color));
+    static SimpleDateFormat sdf = new SimpleDateFormat(FSShareLoc.DATE_FORMAT, Locale.ENGLISH);
+
+    public PointViewShareLoc(PointModel pointModel, SharePerson person, Pref<Boolean> showLocationText){
+
+
+        super(pointModel, CC.getStrokePaint4Color(person.color, VUtil.dp(2f)), CC.getFillPaint4Color(setAlpha(person.color, getAlpha(person.color)/2)));
+        setRadius(VUtil.dp(3));
+        if (showLocationText.getValue()) {
+            setText(person.email + "\n" + sdf.format(pointModel.getTimestamp()));
+        } else {
+            setText(null);
+        }
+
     }
 
+    private static int getAlpha(int color){
+        return (0xFF & color>>24);
+    }
+
+    private static int setAlpha(int color, int alpha){
+        return ((color & 0xFFFFFF) | (alpha <<24));
+    }
+
+    @Override
+    protected int getTextSize(int radiusInPixel) {
+        return (int)( super.getTextSize(radiusInPixel) * 1.8f);
+    }
 }

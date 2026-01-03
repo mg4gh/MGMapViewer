@@ -834,6 +834,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
             @Override
             protected boolean onLongPress(PointModel point) {
+                if (getFS(FSShareLoc.class).checkClose(point)) return true;
+
                 TrackLogRefApproach bestMatch = selectCloseTrack( point );
                 TrackLog rtl = application.recordingTrackLogObservable.getTrackLog();
                 if (rtl != null){
