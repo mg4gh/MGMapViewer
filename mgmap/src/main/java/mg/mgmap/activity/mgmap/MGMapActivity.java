@@ -59,6 +59,7 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
+import mg.mgmap.activity.mgmap.features.shareloc.FSShareLoc;
 import mg.mgmap.activity.mgmap.features.trad.FSTrackDetails;
 import mg.mgmap.activity.mgmap.view.ControlMVLayer;
 import mg.mgmap.activity.mgmap.view.MVLayer;
@@ -94,6 +95,7 @@ import mg.mgmap.generic.util.BgJobGroupCallback;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.FullscreenUtil;
 import mg.mgmap.generic.util.GpxSyncUtil;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Zipper;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.gpx.GpxImporter;
@@ -111,7 +113,6 @@ import mg.mgmap.generic.util.hints.HintAccessBackgroundLocation;
 import mg.mgmap.generic.util.hints.HintAccessFineLocation;
 import mg.mgmap.generic.util.hints.HintBatteryUsage;
 
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -151,7 +152,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
     private final Runnable ttCheckFullBackup = () ->
         BackupUtil.checkFullBackup(MGMapActivity.this, application.getPersistenceManager());
-    private final PropertyChangeListener prefGpsObserver = (e) -> triggerTrackLoggerService();
+    private final Observer prefGpsObserver = (e) -> triggerTrackLoggerService();
     private Pref<Boolean> prefTracksVisible;
     private List<String> recreatePreferences;
 
@@ -246,6 +247,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSBeeline(this));
         featureServices.add(new FSBB(this));
         featureServices.add(new FSTrackDetails(this));
+        featureServices.add(new FSShareLoc(this));
         createLayers2();
 
         coView.init(application, this);
@@ -832,6 +834,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
             @Override
             protected boolean onLongPress(PointModel point) {
+                if (getFS(FSShareLoc.class).checkClose(point)) return true;
+
                 TrackLogRefApproach bestMatch = selectCloseTrack( point );
                 TrackLog rtl = application.recordingTrackLogObservable.getTrackLog();
                 if (rtl != null){

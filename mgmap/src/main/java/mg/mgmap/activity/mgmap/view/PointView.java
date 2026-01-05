@@ -38,6 +38,7 @@ public class PointView extends MVLayer {
     private float radiusIncrease = 1;
 
     private String text; // optional Text description
+    private String[] textLines; // same as text, but split with \n
     private Paint paintText;
     private Paint paintTextBg;
 
@@ -77,12 +78,16 @@ public class PointView extends MVLayer {
         }
 
 
-        if ((text != null) && (!text.isEmpty())){
+        if ((text != null) && (!text.isEmpty()) && (textLines != null)){
             int textSize = getTextSize(radiusInPixel);
             paintText.setTextSize(textSize);
             paintTextBg.setTextSize(textSize);
-            canvas.drawText(text, pixelX+radiusInPixel+textSize/4, pixelY+textSize/3, paintTextBg);
-            canvas.drawText(text, pixelX+radiusInPixel+textSize/4, pixelY+textSize/3, paintText);
+            int posX = pixelX+radiusInPixel+textSize/4;
+            for (int i = 0; i< textLines.length; i++){
+                int posY = pixelY + textSize / 3 + i * textSize;
+                canvas.drawText(textLines[i], posX, posY, paintTextBg);
+                canvas.drawText(textLines[i], posX, posY, paintText);
+            }
         }
     }
 
@@ -120,6 +125,9 @@ public class PointView extends MVLayer {
 
     public PointView setText(String text) {
         this.text = text;
+        if (text != null){
+            this.textLines = text.split("\n");
+        }
         if (paintText == null){
             paintText = CC.getFillPaint(R.color.CC_WHITE);
             paintText.setColor(paintStroke.getColor());

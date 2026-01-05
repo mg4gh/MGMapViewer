@@ -24,30 +24,31 @@ Especially for easy update installations this flavor needs additional permission
 This app tries to respect your privacy as much as possible. There is **no advertising**. During "normal" operation no data is transferred to any server.
 But there are a few features that need or offer internet access to different servers to match their functionality. So please check these feature with internet connectivity:
 
-- [mapsforge](./Features/MainMapFeatures/Mapsforge/mapsforge.md)<br>
+#### [mapsforge](./Features/MainMapFeatures/Mapsforge/mapsforge.md)
 Once a mapsforge map is available in your device this main feature for map visualisation doesn't need or execute any internet access. But how to get a map to the correct directory? 
 For this purpose the map download feature can be used as described in the [Getting Started](./GettingStarted/GettingStarted.md). This download procedure opens a browser window to the domain
 **www.openandromaps.org**. By pressing the "Install others" button, a url with the protocol schema *mf-v4-map* is opened and since this app has registered for this protocol schema, this 
 app will be called with the url for the map download. The map download is based on the domain **ftp.gwdg.de**, which is an ftp server provided by the 
 "Gesellschaft für wissenschaftliche Datenverarbeitung mbH Göttingen" (a part of the university of Göttingen).
-- [Maponline](./Features/MainMapFeatures/MapOnline/maponline.md)<br>As the name of this feature suggests this feature is to visualize online maps that consists of a set of tiles. 
+#### [Maponline](./Features/MainMapFeatures/MapOnline/maponline.md)
+As the name of this feature suggests this feature is to visualize online maps that consists of a set of tiles. 
 For each such map you need to provide an config file with contains the list of used serves (as the example in the feature description). The internet access for those
 online maps is part of the [mapsforge](https://github.com/mapsforge/mapsforge) library. As far as I know this library is just executing a tile download for the requested tiles. 
 No further data are transferred.
-- [Mapstore](./Features/MainMapFeatures/MapStore/mapstore.md)<br>
+#### [Mapstore](./Features/MainMapFeatures/MapStore/mapstore.md)
 A mapstore can be downloaded completely offline and copied just to the path for the mapstore. But there is an additional feature that allows to download tiles
 similar to the online maps, except that the downloaded tiles are stored additionally in a local mapstore, similar to a cache. So they are available for later usage independent 
 on the internet access. Again the server have to be listed in a configuration file that is provided by the user. 
-- [height data](./Features/FurtherFeatures/HeightData/heightdata.md)<br>
+##### [height data](./Features/FurtherFeatures/HeightData/heightdata.md)
 Similar to the mapstore download feature the [hgt grid layer](./Features/MainMapFeatures/MapGrid/hgt.md) can be used to download hgt height data files. Additionally such a height data download, 
 will automatically be offered after a mapsforge map download, if corresponding height data are not yet abailable.
 The data are downloaded either form this [github height data project](https://github.com/mg4gh/hgtdata) or (if not found there) 
 from the domain **step.esa.int** that is provided by the European Space Agency (ESA).
-- [mapsforge themes](./Features/MainMapFeatures/MapsforgeThemes/mapsforgethemes.md)<br>
+#### [mapsforge themes](./Features/MainMapFeatures/MapsforgeThemes/mapsforgethemes.md)<br>
 Similar to the mapsforge maps there is a download option for the mapsforge map themes. As in the feature description visible, this download procedure opens a browser window again to the domain
 **www.openandromaps.org**. By pressing the "Standard Karten App" button, this app is called again based on the protocol schema *mf-theme*. The theme download is based also on the domain
   **www.openandromaps.org**.
-- [Geocode](./Features/FurtherFeatures/Geocode/geocode.md)<br>
+#### [Geocode](./Features/FurtherFeatures/Geocode/geocode.md)<br>
 Internet access depends on the selected search provider:
   - **POI** - This search provider is based on the poi-file that is downloaded together with a mapsforge map file. Therefore it doesn't need internet access. 
   - **Nominatim** - This search provider is based on the domain **nominatim.openstreetmap.org**. In case of a search request the search strings and positions for reverse geocoding are transferred to this server.
@@ -56,12 +57,17 @@ Internet access depends on the selected search provider:
 Be aware that an incremental search starts as soon as your search string has a at least 5 character.
   - **Pelias** - This search provider is based on the domain **api.openrouteservice.org**. In case of a search request the search strings and positions for reverse geocoding are transferred to this server.
     Be aware that an incremental search starts as soon as your search string has a at least 5 character.
-- [SshSync](Features/FurtherFeatures/SshSync/sshsync.md)<br>
+#### [SshSync](Features/FurtherFeatures/SshSync/sshsync.md)<br>
 This feature allows an automatic backup of your gpx files. If you provide the corresponding configuration file, then this feature starts to do its work and to sync your gpx track files to the specified server 
 (typically in your local network) - in other words: as long as you do not provide a config for this, there will be no data transfer.
-- [Software update](Features/FurtherFeatures/SoftwareUpdate/softwareUpdate.md)<br>
-If you have installed the app via Googles Play Store, then the updates will follow the Googles standard procedure for updating the app.
-If you have installed the app manually via apk form the project page on the **github.com**, then there are additional options to update the app via the same project page.
+#### [Software update](Features/FurtherFeatures/SoftwareUpdate/softwareUpdate.md)<br>
+  If you have installed the app via Googles Play Store, then the updates will follow the Googles standard procedure for updating the app.
+  If you have installed the app manually via apk form the project page on the **github.com**, then there are additional options to update the app via the same project page.
+#### [Share Location](Features/FurtherFeatures/ShareLoc/shareloc.md)
+  <a href="shareloc">This</a> feature is about to share your location or to received a location shared by other person. To enable this feature, the app is communicating with the MgMap server. 
+  User identity is implemented via email address and verified with a confirmation code. All communication with the server is encrypted on transport level with TLS v1.3. 
+  Location data which shall be shared with another user is additionally end to end encrypted and will be kept on the server for at most 24 hours.
+
 
 <small><small>[Back to Index](./index.md)</small></small>
 

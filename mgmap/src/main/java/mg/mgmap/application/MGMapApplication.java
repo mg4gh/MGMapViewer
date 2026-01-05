@@ -339,10 +339,15 @@ public class MGMapApplication extends Application {
         currentRun = UUID.randomUUID();
         mgLog.i("do cleanup now. lastRun="+lastRun+" currentRun="+currentRun);
         recordingTrackLogObservable.setTrackLog(null);
+        recordingTrackLogObservable.deleteObservers();
         markerTrackLogObservable.setTrackLog(null);
+        markerTrackLogObservable.deleteObservers();
         routeTrackLogObservable.setTrackLog(null);
+        routeTrackLogObservable.deleteObservers();
         availableTrackLogsObservable.removeAll();
+        availableTrackLogsObservable.deleteObservers();
         lastPositionsObservable.clear();
+        lastPositionsObservable.deleteObservers();
         if (lastRun != null){
             SystemClock.sleep(20);
         }

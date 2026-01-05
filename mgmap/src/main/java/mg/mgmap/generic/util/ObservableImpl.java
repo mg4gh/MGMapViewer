@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class ObservableImpl implements Observable{
 
-    final ArrayList<PropertyChangeListener> propertyChangeListeners = new ArrayList<>();
+    final ArrayList<Observer> observers = new ArrayList<>();
 
     protected final String propertyName;
     private Object value;
@@ -22,18 +22,18 @@ public class ObservableImpl implements Observable{
     }
 
     @Override
-    public void addObserver(PropertyChangeListener propertyChangeListener) {
-        propertyChangeListeners.add(propertyChangeListener);
+    public void addObserver(Observer observer) {
+        observers.add(observer);
     }
 
     @Override
-    public void deleteObserver(PropertyChangeListener propertyChangeListener) {
-        propertyChangeListeners.remove(propertyChangeListener);
+    public void deleteObserver(Observer observer) {
+        observers.remove(observer);
     }
 
     @Override
     public void deleteObservers() {
-        propertyChangeListeners.clear();
+        observers.clear();
     }
 
     @Override
@@ -45,8 +45,8 @@ public class ObservableImpl implements Observable{
     public void notifyObservers(Object newValue) {
         if (changed) {
             PropertyChangeEvent propertyChangeEvent = new PropertyChangeEvent(this, propertyName, value, newValue);
-            for (PropertyChangeListener propertyChangeListener : propertyChangeListeners) {
-                propertyChangeListener.propertyChange(propertyChangeEvent);
+            for (Observer observer : observers) {
+                observer.propertyChange(propertyChangeEvent);
             }
             value = newValue;
             changed = false;
@@ -58,5 +58,13 @@ public class ObservableImpl implements Observable{
         this.changed = true;
     }
 
+    public Observer findObserver(Class<?> clazz){
+        for (Observer observer : observers){
+            if (clazz.isInstance(observer)){
+                return observer;
+            }
+        }
+        return null;
+    }
 
 }

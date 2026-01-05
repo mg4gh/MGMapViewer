@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item type="id" name="bt_registration"  />
+    <string name="FSShareLoc_qcLsd_help">Share Location Settings …</string>
+
+    <string name="FSShareLoc_shareLocOn_key">FSShareLoc.shareLocOn</string>
+    <string name="FSShareLoc_shareLocOn_title">Location sharing on</string>
+    <string name="FSShareLoc_shareLocOn_desc">Switch on/off the option to share your location with other users.</string>
+
+</resources>

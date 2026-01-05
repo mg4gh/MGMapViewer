@@ -48,10 +48,11 @@ public class DialogView extends RelativeLayout {
     private final int defaultPadding = ControlView.dp(10);
 
     private final Observer dismissObserver = evt -> reset();
-
+    int resetCnt = 0;
 
     public DialogView(Context context) {
         super(context);
+        setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
     public DialogView(Context context, @Nullable AttributeSet attrs) {
@@ -73,6 +74,7 @@ public class DialogView extends RelativeLayout {
     }
 
     private void reset(){
+        resetCnt++;
         removeAllViews();
         setBackgroundColor(0x00FFFFFF);
         setClickable(false);
@@ -88,11 +90,17 @@ public class DialogView extends RelativeLayout {
         logPrefix = "";
         maximize = false;
         KeyboardUtil.hideKeyboard(this);
+        if (getParent() instanceof DialogView dialogParentView){ // if it is a sub-dialog, remove it
+            if (resetCnt <= 1) { // due to removeView onDetachFromWindow and again reset gets called. But remove from parent should happen just once.
+                dialogParentView.removeView(this);
+            }
+        }
         mgLog.i("try unlock "+this.getContext());
         synchronized (this){
             locked = false;
             notifyAll();
         }
+        resetCnt = 0;
         mgLog.i("try unlock success "+this.getContext());
     }
 
@@ -113,7 +121,13 @@ public class DialogView extends RelativeLayout {
                     if (! locked){
                         locked = true;
                         mgLog.i("try lock success "+this.getContext());
-                        activity.runOnUiThread(dialogBuilder);
+                        activity.runOnUiThread(()->{
+                            if (this.getParent() == null){ // if it is a sub-dialog, then add it
+                                DialogView dialogParentView = activity.findViewById(R.id.dialog_parent);
+                                dialogParentView.addView(this);
+                            }
+                            dialogBuilder.run();
+                        });
                         return;
                     }
                     mgLog.i("try lock failed "+this.getContext());
@@ -163,9 +177,14 @@ public class DialogView extends RelativeLayout {
     }
 
     public DialogView setPositive(String buttonText, Observer action){
+        return setPositive(buttonText, action, true);
+    }
+    public DialogView setPositive(String buttonText, Observer action, boolean addDismissObserver){
         if (buttonText != null) {
             positiveETV = createButton(buttonText, R.id.bt_dialog_positive, logPrefix+"btPositive", action);
-            positiveETV.addActionObserver(dismissObserver);
+            if (addDismissObserver){
+                positiveETV.addActionObserver(dismissObserver);
+            }
         }
         return this;
     }
@@ -203,7 +222,7 @@ public class DialogView extends RelativeLayout {
         return this;
     }
 
-    protected ExtendedTextView createButton(String text, int viewId, String logName, Observer observer){
+    public ExtendedTextView createButton(String text, int viewId, String logName, Observer observer){
         ExtendedTextView etv = new ExtendedTextView(getContext());
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
         buttonParams.setMargins(ControlView.dp(5),0,ControlView.dp(5),ControlView.dp(5));

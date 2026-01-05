@@ -106,8 +106,11 @@ public class CC { // short for ColorConstant
     }
 
     public static Paint getFillPaint(int colorId){
+        return getFillPaint4Color(getColor(colorId));
+    }
+    public static Paint getFillPaint4Color(int color){
         Paint paint = GRAPHIC_FACTORY.createPaint();
-        paint.setColor( getColor(colorId) );
+        paint.setColor( color );
         paint.setStrokeWidth(0);
         paint.setStyle(Style.FILL);
         return paint;

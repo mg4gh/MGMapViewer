@@ -28,10 +28,8 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
-import org.mapsforge.map.model.common.Observer;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.generic.model.MultiPointModelImpl;
@@ -44,6 +42,7 @@ import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.model.TrackLogSegment;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -86,7 +85,7 @@ public class FeatureService {
         getMapView().getLayerManager().getLayers().add(fsControlLayers);
     }
 
-    public class RefreshObserver implements Observer, PropertyChangeListener {
+    public class RefreshObserver implements org.mapsforge.map.model.common.Observer, Observer {
 
         public Object last;
 

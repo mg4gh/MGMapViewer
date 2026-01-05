@@ -1,0 +1,49 @@
+plugins {
+    id 'java-library'
+}
+java {
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation libs.mqttv5
+    implementation libs.jakarta.mail
+    implementation libs.bcprov
+    implementation libs.bcpkix
+}
+
+tasks.register('runMgMain', JavaExec) {
+    group = 'application'
+    description = 'Runs the MgMain class'
+    dependsOn 'copyDependencies'
+    dependsOn 'fatJar'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'mg.mgmap.mgmain.MgMain'
+}
+
+tasks.register('copyDependencies', Copy) {
+    from configurations.runtimeClasspath
+    into layout.buildDirectory.dir('dependencies')
+}
+
+tasks.register('fatJar', Jar) {
+    dependsOn(build)
+    dependsOn(copyDependencies)
+    archiveBaseName = 'MgMain-fat'
+    manifest {
+        attributes 'Main-Class': 'mg.mgmap.mgmain.MgMain'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        // Exclude signature files that cause the SecurityException
+        exclude 'META-INF/*.SF'
+        exclude 'META-INF/*.RSA'
+        exclude 'META-INF/*.INF'
+        exclude 'META-INF/*.DSA'
+    }
+    with jar
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

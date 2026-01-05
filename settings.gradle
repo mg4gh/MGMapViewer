@@ -1,2 +1,3 @@
 include ':mgmap'
 rootProject.name='MGMapViewer'
+include ':mgmain'

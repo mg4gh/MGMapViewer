@@ -21,7 +21,6 @@ import androidx.core.content.res.ResourcesCompat;
 import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 
-import mg.mgmap.R;
 import mg.mgmap.activity.mgmap.ControlView;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -146,7 +145,7 @@ public class HintUtil {
                     }
                 }
 
-                DialogView dialogView = activity.findViewById(R.id.dialog_parent);
+                DialogView dialogView = new DialogView(activity);
                 dialogView.lock(() -> dialogView
                         .setTitle(headline)
                         .setContentView(ll)

@@ -25,7 +25,6 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.res.ResourcesCompat;
 
-import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
 
 import mg.mgmap.generic.util.Observer;
@@ -56,9 +55,9 @@ public class ExtendedTextView extends AppCompatTextView {
     private Object value = null;
     private int availableWidth = 0;
     private String availableText = null;
-    PropertyChangeListener pclPrState1 = null;
-    PropertyChangeListener pclPrState2 = null;
-    PropertyChangeListener pclPrEnabled = null;
+    Observer pclPrState1 = null;
+    Observer pclPrState2 = null;
+    Observer pclPrEnabled = null;
 
 
     public ExtendedTextView(Context context) {

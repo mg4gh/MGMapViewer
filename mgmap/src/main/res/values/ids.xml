@@ -39,7 +39,7 @@
 
     <item type="id" name="menu_gps"  />
     <item type="id" name="mi_gps_help"  />
-    <item type="id" name="mi_gps_empty1"  />
+    <item type="id" name="mi_gps_shareloc"  />
     <item type="id" name="mi_gps_center"  />
     <item type="id" name="mi_gps_toggle"  />
     <item type="id" name="mi_record_track"  />
