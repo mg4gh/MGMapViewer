@@ -18,7 +18,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.io.ByteArrayInputStream;
@@ -27,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -51,7 +51,6 @@ public class ShareLocationSettings {
 
     private TextView tvOwnEmail;
     private TextView tvOwnValidity;
-    private SwitchCompat switchMasterShare;
     private ImageButton btnAddPerson;
     private LinearLayout btnRegistrationParent;
     private ExtendedTextView btnRegistration;
@@ -87,7 +86,6 @@ public class ShareLocationSettings {
             }
         };
 
-        switchMasterShare = locationSettingsDialogView.findViewById(R.id.switchMasterShare);
         btnRegistrationParent = locationSettingsDialogView.findViewById(R.id.btnRegistration);
         btnRegistration = dialogView.createButton("Register / Refresh certificate",R.id.bt_registration, "bt_register",
                 pce->new Registration(activity, me).show(activity.getFilesDir()));
@@ -98,10 +96,6 @@ public class ShareLocationSettings {
         me.changed();
         loadSavedSettings();
 
-        switchMasterShare.setOnCheckedChangeListener((buttonView, isChecked) -> updateEnabledState(isChecked));
-        // Initial state update
-        updateEnabledState(switchMasterShare.isChecked());
-
         btnAddPerson.setBackgroundColor(0xFF0000);
 
         btnAddPerson.setOnClickListener(v -> {
@@ -109,6 +103,16 @@ public class ShareLocationSettings {
             config.persons.add(person);
             showAddPerson(layoutShareWithFrom, person);
         });
+
+        List<SharePerson> tempPersons = new ArrayList<>();
+        for (SharePerson person : config.persons){
+            if (person.crt.startsWith("network error")){
+                tempPersons.add(person);
+            }
+        }
+        if (!tempPersons.isEmpty()){
+            MqttUtil.updateCertificate(activity, me, tempPersons);
+        }
 
         dialogView.lock(() -> dialogView
                 .setTitle("Share Location Settings")
@@ -124,12 +128,6 @@ public class ShareLocationSettings {
 
     }
 
-    private void updateEnabledState(boolean enabled) {
-        btnRegistration.setEnabled(enabled);
-        btnAddPerson.setEnabled(enabled);
-        enableViewGroup(layoutShareWithFrom, enabled);
-    }
-
     private void enableViewGroup(ViewGroup viewGroup, boolean enabled) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
@@ -142,7 +140,6 @@ public class ShareLocationSettings {
     }
 
     private void loadSavedSettings() {
-        switchMasterShare.setChecked(config.shareLocOn);
         layoutShareWithFrom.removeAllViews();
         for (SharePerson person : config.persons) {
             showAddPerson(layoutShareWithFrom, person);
@@ -150,20 +147,18 @@ public class ShareLocationSettings {
     }
 
     private boolean saveSettings() {
-        shareLocConfig.shareLocOn = switchMasterShare.isChecked(); // update original config
-        if (shareLocConfig.shareLocOn){
-            SharePerson me;
-            try (InputStream clientCrt = new FileInputStream(new File(activity.getFilesDir(), "certs/my.crt")) ) {
-                me = CryptoUtils.getPersonData(clientCrt);
-                if (me.shareWithUntil < 10*24*60*60*1000L + System.currentTimeMillis()){
-                    Toast.makeText(activity, "ERROR: refresh certificate", Toast.LENGTH_LONG).show();
-                    return false;
-                }
-            } catch (Exception e) {
-                Toast.makeText(activity, "ERROR: register first", Toast.LENGTH_LONG).show();
+        SharePerson me;
+        try (InputStream clientCrt = new FileInputStream(new File(activity.getFilesDir(), "certs/my.crt")) ) {
+            me = CryptoUtils.getPersonData(clientCrt);
+            if (me.shareWithUntil < 10*24*60*60*1000L + System.currentTimeMillis()){
+                Toast.makeText(activity, "ERROR: refresh certificate", Toast.LENGTH_LONG).show();
                 return false;
             }
+        } catch (Exception e) {
+            Toast.makeText(activity, "ERROR: register first", Toast.LENGTH_LONG).show();
+            return false;
         }
+
 
         HashSet<String> emails = new HashSet<>();
         for (SharePerson person : config.persons){
@@ -194,6 +189,9 @@ public class ShareLocationSettings {
                 if ("unknown".equals(person.crt)) {
                     tvValidity.setTextColor(CC.getColor(R.color.CC_RED));
                     tvValidity.setText("Certificate not found");
+                } else if (person.crt.startsWith("network error")) {
+                    tvValidity.setTextColor(CC.getColor(R.color.CC_RED));
+                    tvValidity.setText("Certificate network problem");
                 } else {
                     SharePerson p = CryptoUtils.getPersonData(new ByteArrayInputStream(person.crt.getBytes()));
                     String sWithDate = withDate?(": "+sdf.format(p.shareWithUntil)):"";
@@ -248,9 +246,6 @@ public class ShareLocationSettings {
         viewColorPreview.setBackgroundColor(person.color);
         viewColorPreview.setOnClickListener(v->showColorPickerDialog(person));
 
-        if (!switchMasterShare.isChecked()) {
-            enableViewGroup((ViewGroup) itemView, false);
-        }
         person.addObserver(pce-> activity.runOnUiThread(() ->{
             tvEmail.setText(person.email);
             tvShareWithUntil.setText( (person.shareWithUntil == Long.MAX_VALUE)?"infinite":sdf.format(new Date(person.shareWithUntil)) );

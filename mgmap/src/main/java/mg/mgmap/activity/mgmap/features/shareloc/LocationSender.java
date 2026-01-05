@@ -45,7 +45,7 @@ public class LocationSender implements Observer {
                             point2send.wait(5000);
                         }
                     }
-                    if ((pm != null) && (config.shareLocOn)){
+                    if (pm != null){
                         long now = System.currentTimeMillis();
 
                         for (SharePerson person : config.persons){

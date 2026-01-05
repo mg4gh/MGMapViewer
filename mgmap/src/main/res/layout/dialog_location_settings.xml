@@ -7,28 +7,6 @@
     android:padding="16dp">
 
     <LinearLayout
-        android:id="@+id/llFeatureOn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp"
-        >
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Switch feature on/off"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchMasterShare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/tvPersonMe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

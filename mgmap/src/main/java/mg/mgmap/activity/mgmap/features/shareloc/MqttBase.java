@@ -147,7 +147,9 @@ public class MqttBase extends MqttClient{
             stop = true;
             new Thread(() -> {
                 try {
-                    disconnect(0L);
+                    if (isConnected() || !disconnected){
+                        disconnect(0L);
+                    }
                     close();
                 } catch (MqttException e) {
                     mgLog.e("Error closing MQTT", e);

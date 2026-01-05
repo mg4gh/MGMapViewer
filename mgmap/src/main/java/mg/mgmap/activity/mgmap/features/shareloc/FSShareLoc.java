@@ -17,6 +17,7 @@ import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLogRefApproach;
+import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
@@ -27,6 +28,7 @@ public class FSShareLoc extends FeatureService {
 
     static final String DATE_FORMAT = "dd.MM.yy HH:mm";
 
+    private final Pref<Boolean> prefShareLoc = getPref(R.string.FSShareLoc_shareLocOn_key, false);
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_pref_Center, true);
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
@@ -41,9 +43,25 @@ public class FSShareLoc extends FeatureService {
     LocationSender locationSender = null;
     LocationReceiver locationReceiver = null;
     final Map<String, MultiPointModelImpl> shareLocMap = new HashMap<>();
+    Observer gpsObserver = pce->updateShareWithActive();
+    boolean active = false;
+
 
     public FSShareLoc(MGMapActivity mmActivity) {
         super(mmActivity);
+
+        prefShareLoc.addObserver(pce->{
+            if (prefShareLoc.getValue()){
+                activate();
+            } else {
+                deactivate();
+            }
+        });
+    }
+
+    void activate(){
+        if (active) return;
+
         File fMyCrt = new File(application.getFilesDir(), "certs/my.crt");
         if (fMyCrt.exists()){
             try (InputStream clientCrt = new FileInputStream(fMyCrt) ) {
@@ -70,7 +88,7 @@ public class FSShareLoc extends FeatureService {
             }
         });
 
-        toggleShareLocation.addObserver(plc -> new ShareLocationSettings(mmActivity, shareLocConfig, me).show());
+        toggleShareLocation.addObserver(plc -> new ShareLocationSettings(getActivity(), shareLocConfig, me).show());
 
         shareWithActive.addObserver(pce->{
             if (shareWithActive.getValue()){
@@ -108,15 +126,19 @@ public class FSShareLoc extends FeatureService {
             }
         });
 
-        prefGps.addObserver(pce->updateShareWithActive());
 
+        prefGps.addObserver(gpsObserver);
+
+        active = true;
         new Thread(() -> {
-            while (true){
+            while (active){
                 try {
                     synchronized (shareLocMap){
                         shareLocMap.wait(30000);
                     }
-                    refreshObserver.onChange();
+                    if (active){
+                        refreshObserver.onChange();
+                    }
                 } catch (Exception e) {
                     mgLog.e(e.getMessage());
                 }
@@ -124,9 +146,44 @@ public class FSShareLoc extends FeatureService {
         }).start();
     }
 
+    void deactivate(){
+        if (!active) return;
+
+        try {
+            unregisterAll();
+            if (locationSender != null){
+                locationSender.stop();
+            }
+            if (locationReceiver != null){
+                locationReceiver.stop();
+            }
+            prefGps.deleteObserver(gpsObserver);
+            toggleShareLocation.deleteObservers();
+
+            showLocationText.setValue(false);
+            showLocationText.deleteObservers();
+
+            shareWithActive.setValue(false);
+            shareWithActive.deleteObservers();
+            shareFromActive.setValue(false);
+            shareFromActive.deleteObservers();
+            shareLocConfig.deleteObservers();
+            shareLocConfig = null;
+            me = null;
+        } catch (Exception e) {
+            mgLog.e(e);
+        } finally {
+            active = false;
+            synchronized (shareLocMap){
+                shareLocMap.notifyAll();
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        if (! prefShareLoc.getValue()) return; // if feature is switched off, then do nothing
         refreshObserver.onChange();
     }
 
@@ -160,9 +217,17 @@ public class FSShareLoc extends FeatureService {
     public ExtendedTextView initQuickControl(ExtendedTextView etv, String info) {
         super.initQuickControl(etv,info);
         if ("shareloc".equals(info)){
-            etv.setData(R.drawable.shareloc);
-            etv.setPrAction(toggleShareLocation);
-            etv.setHelp(r(R.string.FSShareLoc_qcLsd_help));
+            prefShareLoc.addObserver(pce->{
+                if (prefShareLoc.getValue()){
+                    etv.setData(R.drawable.shareloc);
+                    etv.setPrAction(toggleShareLocation);
+                    etv.setHelp(r(R.string.FSShareLoc_qcLsd_help));
+                } else {
+                    etv.setPrAction(new Pref<>(false));
+                    etv.setData(R.drawable.empty);
+                }
+            });
+            prefShareLoc.changed();
         }
         return etv;
     }
@@ -177,7 +242,9 @@ public class FSShareLoc extends FeatureService {
         TrackLogRefApproach best = new TrackLogRefApproach(null, -1, getMapViewUtility().getCloseThresholdForZoomLevel());
         for (MultiPointModel mpm : shareLocMap.values()){
             PointModelUtil.getBestDistance(mpm, point, best);
-            if (best.getEndPointIndex() > 0){
+            boolean closeSegment = (best.getEndPointIndex() > 0);
+            boolean closePoint = PointModelUtil.distance(point, mpm.get(mpm.size()-1))<getMapViewUtility().getCloseThresholdForZoomLevel();
+            if (closeSegment || closePoint){
                 showLocationText.toggle();
                 return true;
             }

@@ -76,7 +76,6 @@ public class LocationReceiver {
     }
 
     void stop(){
-//        stop = true;
         receiveClient.stop();
     }
 

@@ -244,6 +244,13 @@
         >
         <SwitchPreference
             app:defaultValue="false"
+            app:key="@string/FSShareLoc_shareLocOn_key"
+            app:summary="@string/FSShareLoc_shareLocOn_desc"
+            app:title="@string/FSShareLoc_shareLocOn_title"
+            app:iconSpaceReserved="false"
+            />
+        <SwitchPreference
+            app:defaultValue="false"
             app:key="@string/FSPosition_pref_FusedLocationProvider"
             app:summary="@string/preferences_gnss_fused_desc"
             app:title="@string/preferences_gnss_fused_title"

@@ -59,6 +59,9 @@ public class MqttUtil {
                     timer.postDelayed(mqttBase::stop, 30000); // kill it after 30s, if
                 }catch (Exception e){
                     mgLog.e(e);
+                    for (SharePerson person : persons){
+                        person.crt = "network error - "+e.getMessage();
+                    }
                 }
             }
         }.start();
