@@ -21,6 +21,9 @@ out/
 .gradle/
 build/
 
+# private keys
+*.key
+
 # Local configuration file (sdk path, etc)
 local.properties
 secure.properties

@@ -35,6 +35,8 @@ public class TextWatcherEmail implements TextWatcher {
             s.replace(0,s.length(), PATTERN_EMAIL_RAW_NEG.matcher(s).replaceAll("") );
             mgLog.d("changed from \""+before+"\" to \""+s+"\"");
         }
-        enableView.setEnablePositive(PATTERN_EMAIL.matcher(s).matches());
+        boolean valid = PATTERN_EMAIL.matcher(s).matches();
+        valid &= !SharePerson.DUMMY_EMAIL.equals(s.toString());
+        enableView.setEnablePositive(valid);
     }
 }

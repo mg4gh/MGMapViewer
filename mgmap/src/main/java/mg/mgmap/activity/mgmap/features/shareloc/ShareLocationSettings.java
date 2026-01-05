@@ -266,7 +266,8 @@ public class ShareLocationSettings {
         etEmail.setText(person.email);
         etEmail.setSelectAllOnFocus(true);
         etEmail.requestFocus();
-        etEmail.addTextChangedListener(new TextWatcherEmail(dialogViewChild));
+        TextWatcherEmail twe = new TextWatcherEmail(dialogViewChild);
+        etEmail.addTextChangedListener(twe);
 
         dialogViewChild.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         dialogViewChild.lock(() -> dialogViewChild
@@ -278,6 +279,7 @@ public class ShareLocationSettings {
                     MqttUtil.updateCertificate(activity, me, List.of(person));
                 })
                 .setNegative("Cancel",null)
+                .run(()-> twe.afterTextChanged(etEmail.getText()))
                 .show());
     }
 

@@ -138,8 +138,11 @@ public class Registration {
             public void afterTextChanged(Editable s) {}
         };
 
-        etEmail.addTextChangedListener(new TextWatcherEmail(dialogViewChild));
+        TextWatcherEmail twe = new TextWatcherEmail(dialogViewChild);
+        etEmail.addTextChangedListener(twe);
         etEmail.setText(me.email);
+        etEmail.setSelectAllOnFocus(true);
+        etEmail.requestFocus();
         etConfirmationCode.addTextChangedListener(new TextWatcherConfirmation(dialogViewChild));
 
         // Initial check to set button state correctly
@@ -218,6 +221,7 @@ public class Registration {
                 .setNegative("Cancel",pce->{
                     if (mqttClient != null) mqttClient.stop();
                 })
+                .run(()-> twe.afterTextChanged(etEmail.getText()))
                 .show());
 
     }

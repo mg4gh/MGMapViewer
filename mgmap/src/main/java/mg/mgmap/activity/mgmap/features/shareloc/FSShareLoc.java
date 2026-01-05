@@ -68,6 +68,9 @@ public class FSShareLoc extends FeatureService {
                 me = CryptoUtils.getPersonData(clientCrt);
             } catch (Exception e) { mgLog.e(e); }
         }
+        if (me == null){
+            me = new SharePerson();
+        }
         shareLocConfig = new ShareLocConfig(getApplication());
         shareLocConfig.loadConfig(me);
         shareLocConfig.addObserver(propertyChangeEvent -> {

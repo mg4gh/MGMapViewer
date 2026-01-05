@@ -92,8 +92,8 @@ public class MgMain {
             MqttConnectionOptions options = new MqttConnectionOptions();
 
             try (InputStream caCrt = new FileInputStream("certs/ca.crt");
-                 InputStream clientCrt = new FileInputStream("certs/server2.crt");
-                 InputStream clientKey = new FileInputStream("certs/server2.key")) {
+                 InputStream clientCrt = new FileInputStream("certs/server.crt");
+                 InputStream clientKey = new FileInputStream("certs/server.key")) {
 
                 options.setSocketFactory(CryptoUtils.getSocketFactory(caCrt, clientCrt, clientKey));
             }
@@ -290,7 +290,7 @@ public class MgMain {
                 // Sign Certificate
                 BigInteger certSerialNumber = new BigInteger(Long.toString(System.currentTimeMillis()));
                 Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.YEAR, 10);
+                calendar.add(Calendar.YEAR, 1);
                 Date endDate = calendar.getTime();
 
                 X500Name issuerName = new X500Name(caCert.getSubjectX500Principal().getName());

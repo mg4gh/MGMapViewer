@@ -221,6 +221,10 @@ public class DialogView extends RelativeLayout {
         this.maximize = maximize;
         return this;
     }
+    public DialogView run(Runnable runnable){
+        runnable.run();
+        return this;
+    }
 
     public ExtendedTextView createButton(String text, int viewId, String logName, Observer observer){
         ExtendedTextView etv = new ExtendedTextView(getContext());
