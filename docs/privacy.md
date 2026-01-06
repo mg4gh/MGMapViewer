@@ -64,7 +64,7 @@ This feature allows an automatic backup of your gpx files. If you provide the co
   If you have installed the app via Googles Play Store, then the updates will follow the Googles standard procedure for updating the app.
   If you have installed the app manually via apk form the project page on the **github.com**, then there are additional options to update the app via the same project page.
 #### [Share Location](Features/FurtherFeatures/ShareLoc/shareloc.md)
-  <a href="shareloc">This</a> feature is about to share your location or to received a location shared by other person. To enable this feature, the app is communicating with the MgMap server. 
+  This feature is about to share your location or to received a location shared by other person. To enable this feature, the app is communicating with the MgMap server. 
   User identity is implemented via email address and verified with a confirmation code. All communication with the server is encrypted on transport level with TLS v1.3. 
   Location data which shall be shared with another user is additionally end to end encrypted and will be kept on the server for at most 24 hours.
 

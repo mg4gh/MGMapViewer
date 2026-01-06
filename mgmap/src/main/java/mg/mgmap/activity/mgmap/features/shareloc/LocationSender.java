@@ -94,8 +94,12 @@ public class LocationSender implements Observer {
                 MqttProperties props = new MqttProperties();
                 props.setMessageExpiryInterval(8 * 60 * 60L);
 //                props.setMessageExpiryInterval( 600L); // used for test - to see whether msg expires after 10min
+                String topic = "/"+me.email+"/"+person.email+"/location";
                 String msg = LocationMessage.toMessage(pm) + ((lastSentPM!=null)?("::"+LocationMessage.toMessage(lastSentPM)):"");
-                sendClient.publish("/"+me.email+"/"+person.email+"/location", new MqttMessage(msg.getBytes(), 1, true, props));
+                mgLog.d("Message send. (1) Topic: \"" + topic + "\" Payload: \"" + msg+"\"");
+                msg = CryptoUtils.encrypt(msg, person);
+                mgLog.d("Message send. (2) Topic: \"" + topic + "\" Payload: \"" + msg+"\"");
+                sendClient.publish(topic, new MqttMessage(msg.getBytes(), 1, true, props));
                 lastSentPM = pm;
             } else {
                 if (pm.getTimestamp() + 30 * 60 * 1000 > now){ // pm is less than 30min old

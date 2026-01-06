@@ -18,14 +18,7 @@ public class SharePerson extends ObservableImpl {
     String crt; // not persisted
 
     public SharePerson(){
-        long now = System.currentTimeMillis();
-        email = DUMMY_EMAIL;
-        shareWithActive = false;
-        shareWithUntil = now;
-        shareFromActive = false;
-        shareFromUntil = now;
-        color = CC.getColor(R.color.CC_GREEN);
-        crt = "";
+        init();
     }
     public SharePerson(SharePerson person){
         email = person.email;
@@ -35,6 +28,17 @@ public class SharePerson extends ObservableImpl {
         shareFromUntil = person.shareFromUntil;
         color = person.color;
         crt = person.crt;
+    }
+
+    void init(){
+        long now = System.currentTimeMillis();
+        email = DUMMY_EMAIL;
+        shareWithActive = false;
+        shareWithUntil = now;
+        shareFromActive = false;
+        shareFromUntil = now;
+        color = CC.getColor(R.color.CC_GREEN);
+        crt = "";
     }
 
     String toPrefString(){

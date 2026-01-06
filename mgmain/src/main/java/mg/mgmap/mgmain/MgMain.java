@@ -124,6 +124,8 @@ public class MgMain {
                         handleRegisterVerify(topic);
                     } else if (topic.endsWith("/server/crt_request")) {
                         handleCrtRequest(topic, payload);
+                    } else if (topic.endsWith("/server/unregister_request")) {
+                        handleUnregisterRequest(topic, payload);
                     } else if (topic.equals("/server/server/watchdog")) {
                         SystemdNotify.watchdog();
                         System.out.println("Watchdog received");
@@ -355,6 +357,22 @@ public class MgMain {
             topic = "/server" + topic.replace("server/crt_request","crt_response");
             System.out.println("Generated response: topic=\""+topic+"\" message=\""+message+"\"");
             sendMqttMessage(topic, message.toString());
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    private void handleUnregisterRequest(String topic, String payload){
+        try {
+            boolean success = false;
+            File userCrtFile = new File("user_certs/" + payload);
+            if (userCrtFile.exists()){
+                success = userCrtFile.delete();
+            }
+            topic = "/server" + topic.replace("server/unregister_request","unregister_response");
+            String message = success?"success":"error";
+            System.out.println("Generated response: topic=\""+topic+"\" message=\""+message+"\"");
+            sendMqttMessage(topic, message);
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

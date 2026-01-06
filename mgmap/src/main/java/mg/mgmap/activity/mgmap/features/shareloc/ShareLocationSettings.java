@@ -2,6 +2,7 @@ package mg.mgmap.activity.mgmap.features.shareloc;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -53,7 +54,6 @@ public class ShareLocationSettings {
     private TextView tvOwnValidity;
     private ImageButton btnAddPerson;
     private LinearLayout btnRegistrationParent;
-    private ExtendedTextView btnRegistration;
     private LinearLayout layoutShareWithFrom;
 
     private final ShareLocConfig shareLocConfig;
@@ -72,12 +72,6 @@ public class ShareLocationSettings {
         @SuppressLint({"InflateParams"})
         View locationSettingsDialogView = activity.getLayoutInflater().inflate(R.layout.dialog_location_settings, null, false);
 
-        tvOwnEmail = locationSettingsDialogView.findViewById(R.id.tvOwnEmail);
-        tvOwnValidity = locationSettingsDialogView.findViewById(R.id.tvCertValidity);
-        me.addObserver(pce->{
-            tvOwnEmail.setText("Email: "+me.email);
-            setCertificateValidity(tvOwnValidity, me, System.currentTimeMillis(), true);
-        });
         DialogView dialogView = new DialogView(activity){
             @Override
             protected void onDetachedFromWindow() {
@@ -86,13 +80,26 @@ public class ShareLocationSettings {
             }
         };
 
-        btnRegistrationParent = locationSettingsDialogView.findViewById(R.id.btnRegistration);
-        btnRegistration = dialogView.createButton("Register / Refresh certificate",R.id.bt_registration, "bt_register",
+        tvOwnEmail = locationSettingsDialogView.findViewById(R.id.tvOwnEmail);
+        tvOwnValidity = locationSettingsDialogView.findViewById(R.id.tvCertValidity);
+
+        btnRegistrationParent = locationSettingsDialogView.findViewById(R.id.btnRegistrationParent);
+        ExtendedTextView btnRegister = dialogView.createButton("",R.id.bt_registration, "bt_register",
                 pce->new Registration(activity, me).show(activity.getFilesDir()));
-        btnRegistrationParent.addView(btnRegistration);
+        btnRegistrationParent.addView(btnRegister);
+        ExtendedTextView btnUnregister = dialogView.createButton("Unregister",R.id.bt_registration, "bt_unregister",
+                pce->unregister(activity.getFilesDir()));
+        btnRegistrationParent.addView(btnUnregister);
         btnAddPerson = locationSettingsDialogView.findViewById(R.id.btnAddPerson);
         layoutShareWithFrom = locationSettingsDialogView.findViewById(R.id.layoutShareWithFrom);
 
+        me.addObserver(pce->{
+            tvOwnEmail.setText("Email: "+me.email);
+            setCertificateValidity(tvOwnValidity, me, System.currentTimeMillis(), true);
+            boolean isRegistered = !me.email.equals(SharePerson.DUMMY_EMAIL);
+            btnRegister.setText(!isRegistered?"Register":"Refresh");
+            btnUnregister.setEnabled(isRegistered);
+        });
         me.changed();
         loadSavedSettings();
 
@@ -206,6 +213,9 @@ public class ShareLocationSettings {
                         tvValidity.setText("Certificate valid"+sWithDate);
                     }
                 }
+            } else {
+                tvValidity.setTextColor(CC.getColor(R.color.CC_RED));
+                tvValidity.setText("Certificate not found");
             }
         } catch (Exception e) {
             mgLog.e(e);
@@ -261,13 +271,16 @@ public class ShareLocationSettings {
 
     private void editEmail(SharePerson person){
         DialogView dialogViewChild = new DialogView(activity);
+        Pref<Boolean> enablePref = new Pref<>(false);
+        enablePref.addObserver(pce->dialogViewChild.setEnablePositive(enablePref.getValue()));
 
         EditText etEmail = new EditText(activity);
         etEmail.setText(person.email);
         etEmail.setSelectAllOnFocus(true);
         etEmail.requestFocus();
-        TextWatcherEmail twe = new TextWatcherEmail(dialogViewChild);
+        TextWatcherEmail twe = new TextWatcherEmail(enablePref);
         etEmail.addTextChangedListener(twe);
+        enablePref.addObserver(pce->dialogViewChild.setEnablePositive(enablePref.getValue()));
 
         dialogViewChild.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         dialogViewChild.lock(() -> dialogViewChild
@@ -279,7 +292,10 @@ public class ShareLocationSettings {
                     MqttUtil.updateCertificate(activity, me, List.of(person));
                 })
                 .setNegative("Cancel",null)
-                .run(()-> twe.afterTextChanged(etEmail.getText()))
+                .run(()-> {
+                    twe.afterTextChanged(etEmail.getText());
+                    enablePref.changed();
+                })
                 .show());
     }
 
@@ -496,4 +512,26 @@ public class ShareLocationSettings {
 
     }
 
+    private void unregister(File baseDir){
+        DialogView dialogViewChild = new DialogView(activity);
+        dialogViewChild.lock(() -> dialogViewChild
+                .setTitle("Unregister Confirmation")
+                .setMessage("You are about to unregister your email address. Location sharing is not longer possible after unregister.")
+                .setPositive("Confirm", pce->doUnregister(baseDir))
+                .setNegative("Cancel", null)
+                .show());
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void doUnregister(File baseDir){
+        MqttUtil.unregister(activity, me);
+        SystemClock.sleep(1000);
+        File certsDir = new File(baseDir, "certs");
+        File fCrt = new File(certsDir, "my.crt");
+        if (fCrt.exists()) fCrt.delete();
+        File fKey = new File(certsDir, "my.key");
+        if (fKey.exists()) fKey.delete();
+        me.init();
+        me.changed();
+    }
  }

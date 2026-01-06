@@ -31,34 +31,40 @@ public class LocationReceiver {
             receiveClient = new MqttBase("LocationReceiver",caCrt, clientCrt, clientKey ){
                 @Override
                 protected void messageReceived(String topic, String message) {
-                    super.messageReceived(topic, message);
+                    try {
+                        super.messageReceived(topic, message);
+                        message = CryptoUtils.decrypt(message, new File(application.getFilesDir(), "certs/my.key"));
+                        super.messageReceived(topic, message);
 
-                    String[] parts = topic.split("/");
-                    String[] msgParts = message.split("::");
-                    PointModel pm = LocationMessage.fromMessage(msgParts[0]);
-                    PointModel pmLast = null;
-                    if (msgParts.length > 1){
-                        pmLast = LocationMessage.fromMessage(msgParts[1]);
-                    }
-                    mgLog.i("Received pm: "+pm+ " pmLast: "+pmLast);
+                        String[] parts = topic.split("/");
+                        String[] msgParts = message.split("::");
+                        PointModel pm = LocationMessage.fromMessage(msgParts[0]);
+                        PointModel pmLast = null;
+                        if (msgParts.length > 1){
+                            pmLast = LocationMessage.fromMessage(msgParts[1]);
+                        }
+                        mgLog.i("Received pm: "+pm+ " pmLast: "+pmLast);
 
-                    boolean changed = false;
-                    for (SharePerson person : config.persons){
-                        if (parts[1].equals(person.email) ){
-                            MultiPointModelImpl mpmi = new MultiPointModelImpl();
-                            shareLocMap.put(person.email, mpmi);
-                            if (pmLast != null){
-                                mpmi.addPoint(pmLast);
+                        boolean changed = false;
+                        for (SharePerson person : config.persons){
+                            if (parts[1].equals(person.email) ){
+                                MultiPointModelImpl mpmi = new MultiPointModelImpl();
+                                shareLocMap.put(person.email, mpmi);
+                                if (pmLast != null){
+                                    mpmi.addPoint(pmLast);
+                                }
+                                mpmi.addPoint(pm);
+                                fsShareLoc.onLocationReceived(pm);
+                                changed = true;
                             }
-                            mpmi.addPoint(pm);
-                            fsShareLoc.onLocationReceived(pm);
-                            changed = true;
                         }
-                    }
-                    if (changed){
-                        synchronized (shareLocMap){
-                            shareLocMap.notifyAll();
+                        if (changed){
+                            synchronized (shareLocMap){
+                                shareLocMap.notifyAll();
+                            }
                         }
+                    } catch (Exception e) {
+                        mgLog.e(e);
                     }
                 }
 

@@ -8,6 +8,8 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
@@ -17,6 +19,7 @@ import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -150,6 +153,27 @@ public class CryptoUtils {
         return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
+    public static PublicKey loadCertificate(InputStream inputStream) throws Exception {
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        X509Certificate cert = (X509Certificate) cf.generateCertificate(inputStream);
+        return cert.getPublicKey();
+    }
+
+    public static String encryptAsymmetric(String data, PublicKey publicKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encrypted = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encrypted);
+    }
+
+    public static String decryptAsymmetric(String base64Data, PrivateKey privateKey) throws Exception {
+        byte[] encrypted = Base64.getDecoder().decode(base64Data);
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] decrypted = cipher.doFinal(encrypted);
+        return new String(decrypted, StandardCharsets.UTF_8);
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     static SharePerson getPersonData(InputStream is) throws Exception {
         SharePerson person = new SharePerson();
@@ -158,7 +182,7 @@ public class CryptoUtils {
         is.read(buf);
         person.crt = new String(buf);
 
-        try (InputStream isCrt =  new ByteArrayInputStream(person.crt.getBytes());){
+        try (InputStream isCrt =  new ByteArrayInputStream(person.crt.getBytes()) ){
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             X509Certificate cert = (X509Certificate) cf.generateCertificate(isCrt);
 
@@ -169,6 +193,27 @@ public class CryptoUtils {
             person.email = IETFUtils.valueToString(cn.getFirst().getValue());
         }
         return person;
+    }
+
+    static String encrypt(String message, SharePerson person) throws Exception{
+        try (InputStream isCrt =  new ByteArrayInputStream(person.crt.getBytes()) ) {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate cert = (X509Certificate) cf.generateCertificate(isCrt);
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, cert.getPublicKey());
+            byte[] encrypted = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(encrypted);
+        }
+    }
+
+    static String decrypt(String base64Message, File fPrivateKey) throws Exception{
+        try (InputStream inputStream = new FileInputStream(fPrivateKey)){
+            byte[] encrypted = Base64.getDecoder().decode(base64Message);
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, loadPrivateKey(inputStream));
+            byte[] decrypted = cipher.doFinal(encrypted);
+            return new String(decrypted, StandardCharsets.UTF_8);
+        }
     }
 
 }

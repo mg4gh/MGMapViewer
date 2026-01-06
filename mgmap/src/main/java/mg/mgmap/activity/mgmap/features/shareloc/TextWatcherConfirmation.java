@@ -6,8 +6,8 @@ import android.text.TextWatcher;
 import java.lang.invoke.MethodHandles;
 import java.util.regex.Pattern;
 
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.view.DialogView;
 
 public class TextWatcherConfirmation implements TextWatcher {
 
@@ -18,10 +18,10 @@ public class TextWatcherConfirmation implements TextWatcher {
     static final Pattern PATTERN_CONFIRMATION_RAW = Pattern.compile("[a-f0-9]{0,8}");
     static final Pattern PATTERN_CONFIRMATION_NEG = Pattern.compile("[^a-f0-9]+");
 
-    private final DialogView enableView;
+    private final Pref<Boolean> enablePref;
 
-    public TextWatcherConfirmation(DialogView enableView){
-        this.enableView = enableView;
+    public TextWatcherConfirmation(Pref<Boolean> enablePref){
+        this.enablePref = enablePref;
     }
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -36,6 +36,7 @@ public class TextWatcherConfirmation implements TextWatcher {
             s.replace(0,s.length(), PATTERN_CONFIRMATION_NEG.matcher(s).replaceAll("") );
             mgLog.d("changed from \""+before+"\" to \""+s+"\"");
         }
-        enableView.setEnablePositive(PATTERN_CONFIRMATION.matcher(s).matches());
+        enablePref.setValue(PATTERN_CONFIRMATION.matcher(s).matches());
+        enablePref.changed();
     }
 }

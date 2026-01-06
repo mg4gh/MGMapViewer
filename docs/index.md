@@ -54,6 +54,7 @@ Each feature contains a link to the corresponding detailed feature description.
 - [Software update](./Features/FurtherFeatures/SoftwareUpdate/softwareUpdate.md): Update your software
 - [file manager](./Features/FurtherFeatures/FileManager/filemanager.md): show, edit, share and delete files
 - [backup](./Features/FurtherFeatures/Backup/backup.md): backup gpx files
+- [Share Location](Features/FurtherFeatures/ShareLoc/shareloc.md): share location with other app user(s)
 
 ### Developer features
 There [application design document](./more/add.pdf) provides an extensive description documentation. Additionally these pages are available:

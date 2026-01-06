@@ -6,8 +6,8 @@ import android.text.TextWatcher;
 import java.lang.invoke.MethodHandles;
 import java.util.regex.Pattern;
 
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
-import mg.mgmap.generic.view.DialogView;
 
 public class TextWatcherEmail implements TextWatcher {
 
@@ -17,10 +17,10 @@ public class TextWatcherEmail implements TextWatcher {
     static final Pattern PATTERN_EMAIL_RAW = Pattern.compile("[a-zA-Z0-9.\\-@]*");
     static final Pattern PATTERN_EMAIL_RAW_NEG = Pattern.compile("[^a-zA-Z0-9.\\-@]+");
 
-    private final DialogView enableView;
+    private final Pref<Boolean> enablePref;
 
-    public TextWatcherEmail(DialogView enableView){
-        this.enableView = enableView;
+    public TextWatcherEmail(Pref<Boolean> enablePref){
+        this.enablePref = enablePref;
     }
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -37,6 +37,7 @@ public class TextWatcherEmail implements TextWatcher {
         }
         boolean valid = PATTERN_EMAIL.matcher(s).matches();
         valid &= !SharePerson.DUMMY_EMAIL.equals(s.toString());
-        enableView.setEnablePositive(valid);
+        enablePref.setValue(valid);
+        enablePref.changed();
     }
 }

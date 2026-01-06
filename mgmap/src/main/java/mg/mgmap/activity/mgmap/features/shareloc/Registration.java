@@ -1,9 +1,6 @@
 package mg.mgmap.activity.mgmap.features.shareloc;
 
 import android.annotation.SuppressLint;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +29,10 @@ import java.lang.invoke.MethodHandles;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
-import java.util.UUID;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.DialogView;
 
@@ -51,22 +48,37 @@ public class Registration {
     private KeyPair currentKeyPair;
     private String email;
 
+    DialogView dialogViewChild;
+    View registrationDialogView;
+    TextView tvError;
+    EditText etEmail;
+    EditText etConfirmationCode;
+    ProgressBar progressBar;
+    private final Pref<Boolean> recalcEnabledTrigger = new Pref<>(true);
+
+    @SuppressLint("InflateParams")
     public Registration(AppCompatActivity activity, SharePerson me) {
         this.activity = activity;
         this.me = me;
+        dialogViewChild = new DialogView(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        registrationDialogView = inflater.inflate(R.layout.dialog_register, null);
+        tvError = registrationDialogView.findViewById(R.id.tvError);
+        etEmail = registrationDialogView.findViewById(R.id.etEmail);
+        etConfirmationCode = registrationDialogView.findViewById(R.id.etConfirmationCode);
+        progressBar = registrationDialogView.findViewById(R.id.progressBar);
     }
 
+    @SuppressLint("SetTextI18n")
     public void show(File baseDir) {
-        DialogView dialogViewChild = new DialogView(activity);
-
-        LayoutInflater inflater = activity.getLayoutInflater();
-        @SuppressLint("InflateParams")
-        View registrationDialogView = inflater.inflate(R.layout.dialog_register, null);
-
-        TextView tvError = registrationDialogView.findViewById(R.id.tvError);
-        EditText etEmail = registrationDialogView.findViewById(R.id.etEmail);
-        EditText etConfirmationCode = registrationDialogView.findViewById(R.id.etConfirmationCode);
-        ProgressBar progressBar = registrationDialogView.findViewById(R.id.progressBar);
+        Pref<Boolean> enablePref = new Pref<>(false);
+        enablePref.addObserver(pce->recalcEnabledTrigger.toggle());
+        recalcEnabledTrigger.addObserver(pce->{
+            boolean isInputValid = enablePref.getValue();
+            boolean hasError = tvError.getVisibility() == View.VISIBLE;
+            boolean canSubmit = isInputValid && (mqttClient != null) && !hasError;
+            dialogViewChild.setEnablePositive(canSubmit);
+        });
 
         try (InputStream caCrt = activity.getAssets().open("ca.crt");
              InputStream clientCrt = activity.getAssets().open("client.crt");
@@ -77,22 +89,16 @@ public class Registration {
                 public void messageReceived(String topic, String message) {
                     super.messageReceived(topic, message);
                     if (topic.equals("/server/" + getClientId() + "/register_confirm")) {
-                        handleRegisterConfirm(message, etConfirmationCode, progressBar, dialogViewChild, registrationDialogView);
+                        handleRegisterConfirm(message);
                     } else if (topic.equals("/server/" + getClientId() + "/register_response")) {
-                        handleRegisterResponse(message, baseDir, dialogViewChild);
+                        handleRegisterResponse(message, baseDir);
                     }
                 }
 
                 @Override
                 protected void registerThrowable(Throwable throwable) {
                     mgLog.e("MQTT error", throwable);
-                    activity.runOnUiThread(() -> {
-                        tvError.setText(throwable.getMessage());
-                        tvError.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        // Trigger watcher to update button state
-                        etEmail.setText(etEmail.getText()); 
-                    });
+                    activity.runOnUiThread(() -> showError("MQTT error"));
                 }
 
                 @Override
@@ -103,50 +109,25 @@ public class Registration {
                 }
             };
 
-
-
         } catch (Exception e) {
             if (mqttClient != null) {
                 mqttClient.registerThrowable(e);
             } else {
                 mgLog.e("MQTT initialization error", e);
-                Toast.makeText(activity, "Failed to connect to server: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                showError("MQTT initialization error "+e.getMessage());
             }
         }
 
         isAwaitingConfirmation = false;
 
-        TextWatcher commonWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                boolean isInputValid;
-                if (!isAwaitingConfirmation) {
-                    isInputValid = Patterns.EMAIL_ADDRESS.matcher(etEmail.getText().toString()).matches();
-                } else {
-                    isInputValid = isValidUuid(etConfirmationCode.getText().toString());
-                }
-
-                boolean hasError = tvError.getVisibility() == View.VISIBLE;
-                boolean canSubmit = isInputValid && mqttClient != null && !hasError;
-                dialogViewChild.setEnablePositive(canSubmit);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        };
-
-        TextWatcherEmail twe = new TextWatcherEmail(dialogViewChild);
+        TextWatcherEmail twe = new TextWatcherEmail(enablePref);
         etEmail.addTextChangedListener(twe);
         etEmail.setText(me.email);
         etEmail.setSelectAllOnFocus(true);
         etEmail.requestFocus();
-        etConfirmationCode.addTextChangedListener(new TextWatcherConfirmation(dialogViewChild));
 
-        // Initial check to set button state correctly
-        commonWatcher.onTextChanged("", 0, 0, 0);
+        TextWatcherConfirmation twc = new TextWatcherConfirmation(enablePref);
+        etConfirmationCode.addTextChangedListener(twc);
 
         @SuppressWarnings("ResultOfMethodCallIgnored")
         Observer submitObserver = propertyChangeEvent -> {
@@ -209,7 +190,6 @@ public class Registration {
                     mqttClient.registerThrowable(e);
                 }
             }
-
         };
 
 
@@ -221,12 +201,19 @@ public class Registration {
                 .setNegative("Cancel",pce->{
                     if (mqttClient != null) mqttClient.stop();
                 })
-                .run(()-> twe.afterTextChanged(etEmail.getText()))
+                .run(()-> {
+                    if (isAwaitingConfirmation) {
+                        twc.afterTextChanged(etConfirmationCode.getText());
+                    } else {
+                        twe.afterTextChanged(etEmail.getText());
+                    }
+                    recalcEnabledTrigger.toggle();
+                })
                 .show());
 
     }
 
-    private void handleRegisterConfirm(String message, EditText etConfirmationCode, ProgressBar progressBar, DialogView dialogViewChild, View dialogView) {
+    private void handleRegisterConfirm(String message) {
         String[] parts = message.split(":");
         if (parts.length == 2) {
             boolean success = Boolean.parseBoolean(parts[0]);
@@ -239,11 +226,9 @@ public class Registration {
                     etConfirmationCode.setVisibility(View.VISIBLE);
                     Toast.makeText(activity, "Please enter the code from your email", Toast.LENGTH_LONG).show();
                 } else {
-                    TextView tvError = dialogView.findViewById(R.id.tvError);
                     String errorText = "Server error: " + info;
-                    tvError.setText(errorText);
-                    tvError.setVisibility(View.VISIBLE);
-                    dialogView.findViewById(R.id.etEmail).setEnabled(true);
+                    Toast.makeText(activity, errorText, Toast.LENGTH_LONG).show();
+                    registrationDialogView.findViewById(R.id.etEmail).setEnabled(true);
                 }
                 dialogViewChild.setEnablePositive(false);
             });
@@ -251,7 +236,7 @@ public class Registration {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void handleRegisterResponse(String message, File baseDir, DialogView dialog) {
+    private void handleRegisterResponse(String message, File baseDir) {
         String[] parts = message.split(":");
         if (parts.length == 2) {
             String extra1 = parts[0];
@@ -280,9 +265,8 @@ public class Registration {
                                 super.messageReceived(topic, message);
                                 if (topic.equals("/server/" + email + "/verify_confirm")) {
                                     activity.runOnUiThread(() -> {
-                                        Toast.makeText(activity, "Registration successful finished.", Toast.LENGTH_SHORT).show();
                                         this.stop();
-                                        dialog.cancel();
+                                        dialogViewChild.cancel();
                                         try (InputStream myCrt = new FileInputStream(new File(certsDir, "my.crt"))){
                                             SharePerson newMe = CryptoUtils.getPersonData(myCrt);
                                             me.email = newMe.email;
@@ -314,23 +298,20 @@ public class Registration {
             String finalExtra2 = extra2;
             if (!success){
                 activity.runOnUiThread(() -> {
-                    Toast.makeText(activity, "Registration failed : "+ finalExtra2, Toast.LENGTH_LONG).show();
+                    showError("Registration failed : "+ finalExtra2);
                     if (mqttClient != null){
                         mqttClient.stop();
                     }
-                    dialog.cancel();
                 });
             }
         }
     }
 
-    private boolean isValidUuid(String target) {
-        try {
-            UUID.fromString(target);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+    private void showError(String errorText){
+        tvError.setText(errorText);
+        tvError.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+        recalcEnabledTrigger.changed();
     }
 
 }

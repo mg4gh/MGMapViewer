@@ -27,9 +27,7 @@ import mg.mgmap.R;
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.PrefCache;
-import mg.mgmap.generic.util.hints.HintAccessBackgroundLocation;
 import mg.mgmap.generic.util.hints.HintShareLoc;
-import mg.mgmap.generic.view.DialogView;
 
 public class MainPreferenceScreen extends MGPreferenceScreen {
 
@@ -58,6 +56,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
             }
             return true;
         });
+        prefShareLoc.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q);
     }
 
     final EditTextPreference.OnBindEditTextListener etNumberFormatter = editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER);

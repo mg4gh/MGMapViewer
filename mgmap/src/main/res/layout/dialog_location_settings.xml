@@ -27,7 +27,7 @@
             />
 
         <LinearLayout
-            android:id="@+id/btnRegistration"
+            android:id="@+id/btnRegistrationParent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

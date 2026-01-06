@@ -189,8 +189,11 @@ public class DialogView extends RelativeLayout {
         return this;
     }
     public boolean setEnablePositive(boolean enabled){
-        if (positiveETV == null) return false;
-        mgLog.d("positiveETV.isEnabled="+positiveETV.isEnabled());
+        if (positiveETV == null) {
+            mgLog.d("positiveETV=null enabled="+enabled);
+            return false;
+        }
+        mgLog.d("positiveETV.isEnabled old="+positiveETV.isEnabled()+" new="+enabled);
         positiveETV.setEnabled(enabled);
         return true;
     }

@@ -116,6 +116,7 @@ public class MqttBase extends MqttClient{
                 }
             }).start();
         } else {
+            mgLog.d("Message send. Topic: \"" + topic + "\" Payload: \"" + message+"\"");
             publish(topic, new MqttMessage(message.getBytes(), 1, false, null));
         }
     }
@@ -135,7 +136,7 @@ public class MqttBase extends MqttClient{
     }
 
     protected void messageReceived(String topic, String message){
-        mgLog.d("Message arrived. Topic: " + topic + " Payload: " + message);
+        mgLog.d("Message arrived. Topic: \"" + topic + "\" Payload: \"" + message+"\"");
     }
 
     protected void registerThrowable(Throwable throwable){
