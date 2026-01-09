@@ -46,6 +46,7 @@ public class DialogView extends RelativeLayout {
     private String logPrefix = "";
     private boolean maximize = false;
     private final int defaultPadding = ControlView.dp(10);
+    private Runnable onAttachRunnable = null;
 
     private final Observer dismissObserver = evt -> reset();
     int resetCnt = 0;
@@ -65,6 +66,18 @@ public class DialogView extends RelativeLayout {
 
     public DialogView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public void setOnAttachRunnable(Runnable onAttachRunnable) {
+        this.onAttachRunnable = onAttachRunnable;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (onAttachRunnable != null){
+            new Thread(onAttachRunnable).start();
+        }
     }
 
     @Override

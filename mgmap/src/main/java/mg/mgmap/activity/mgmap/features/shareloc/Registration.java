@@ -31,6 +31,7 @@ import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 
 import mg.mgmap.R;
+import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -61,6 +62,7 @@ public class Registration {
         this.activity = activity;
         this.me = me;
         dialogViewChild = new DialogView(activity);
+        dialogViewChild.setOnAttachRunnable(()->activity.runOnUiThread(()->KeyboardUtil.showKeyboard(activity)) );
         LayoutInflater inflater = activity.getLayoutInflater();
         registrationDialogView = inflater.inflate(R.layout.dialog_register, null);
         tvError = registrationDialogView.findViewById(R.id.tvError);
@@ -224,6 +226,8 @@ public class Registration {
                 if (success) {
                     isAwaitingConfirmation = true;
                     etConfirmationCode.setVisibility(View.VISIBLE);
+                    etConfirmationCode.requestFocus();
+                    KeyboardUtil.showKeyboard(activity);
                     Toast.makeText(activity, "Please enter the code from your email", Toast.LENGTH_LONG).show();
                 } else {
                     String errorText = "Server error: " + info;

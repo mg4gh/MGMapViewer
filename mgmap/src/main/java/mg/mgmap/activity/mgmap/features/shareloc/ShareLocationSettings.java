@@ -36,6 +36,7 @@ import java.util.Locale;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.util.CC;
+import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.DialogView;
@@ -283,6 +284,7 @@ public class ShareLocationSettings {
         enablePref.addObserver(pce->dialogViewChild.setEnablePositive(enablePref.getValue()));
 
         dialogViewChild.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        dialogViewChild.setOnAttachRunnable(()->activity.runOnUiThread(()-> KeyboardUtil.showKeyboard(activity)) );
         dialogViewChild.lock(() -> dialogViewChild
                 .setTitle("Enter email address")
                 .setContentView(etEmail)
