@@ -255,7 +255,7 @@ public class ShareLocationSettings {
 
         View viewColorPreview = itemView.findViewById(R.id.viewColorPreview);
         viewColorPreview.setBackgroundColor(person.color);
-        viewColorPreview.setOnClickListener(v->showColorPickerDialog(person));
+        itemView.findViewById(R.id.viewColorPreviewParent).setOnClickListener(v->showColorPickerDialog(person));
 
         person.addObserver(pce-> activity.runOnUiThread(() ->{
             tvEmail.setText(person.email);
