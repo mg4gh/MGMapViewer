@@ -1,7 +1,6 @@
 package mg.mgmap.activity.mgmap.features.shareloc;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -35,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 import mg.mgmap.R;
+import mg.mgmap.activity.mgmap.view.AlphaColorPicker;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.KeyboardUtil;
 import mg.mgmap.generic.util.Pref;
@@ -480,36 +480,24 @@ public class ShareLocationSettings {
     }
 
     private void showColorPickerDialog(SharePerson person) {
-        final String[] colorNames = {"Red", "Green", "Blue", "Yellow", "Cyan", "Magenta", "Black", "Gray", "Orange"};
-        final int[] colorValues = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.CYAN, Color.MAGENTA, Color.BLACK, Color.GRAY, CC.getColor(R.color.CC_ORANGE)};
-
-        LinearLayout llColors = new LinearLayout(activity);
-        llColors.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        llColors.setOrientation(LinearLayout.VERTICAL);
-
         DialogView dialogViewChild = new DialogView(activity);
-        for (int i=0; i<colorNames.length; i++){
-            int colorValue = colorValues[i];
-            View llColor = activity.getLayoutInflater().inflate(R.layout.item_color_picker, llColors, false);
-            View box = llColor.findViewById(R.id.viewColorBox);
-            TextView name = llColor.findViewById(R.id.tvColorName);
-            box.setBackgroundColor(colorValue);
-            name.setText(colorNames[i]);
-            llColor.setOnClickListener(v->{
-                person.color = colorValue;
-                person.changed();
-                dialogViewChild.cancel();
-            });
-            if (person.color == colorValue){
-                llColor.setBackgroundColor(CC.getColor(R.color.CC_GRAY240));
+        AlphaColorPicker colorPicker = new AlphaColorPicker(activity){
+            @Override
+            protected void onColorChanged(int color) {
+                int alpha = (color>>24) & 0xFF;
+                dialogViewChild.setEnablePositive( (alpha > 100) );
             }
-            llColors.addView(llColor);
-        }
-
+        };
+        colorPicker.setInitialColor(person.color);
         dialogViewChild.lock(() -> dialogViewChild
                 .setTitle("Select color")
                 .setMessage("Select a color that is used to visualize the shared position")
-                .setContentView(llColors)
+                .setContentView(colorPicker)
+                .setPositive("Select",pce->{
+                    person.color = colorPicker.getCurrentColor();
+                    person.changed();
+                })
+                .setNegative("Cancel", null)
                 .show());
 
     }
