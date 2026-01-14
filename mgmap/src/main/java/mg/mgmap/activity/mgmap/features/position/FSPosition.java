@@ -46,6 +46,7 @@ public class FSPosition extends FeatureService {
     private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_pref_Center, true);
     private final Pref<Boolean> prefGps = getPref(R.string.FSPosition_pref_GpsOn, false);
     private final Pref<Boolean> prefGpsEnabled = new Pref<>(Boolean.FALSE);
+    private final Pref<Boolean> prefShareWithActive = getPref(R.string.FSShareLoc_shareWithActive,false);
     private final Pref<Boolean> prefRefreshMapView = getPref(R.string.FSPosition_pref_RefreshMapView, false);
     private final Pref<Boolean> prefMapMoving = getPref(R.string.FSPosition_pref_MapMoving, false);
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
@@ -112,7 +113,7 @@ public class FSPosition extends FeatureService {
             etv.setDisabledData(prefGps, R.drawable.center_dis);
             etv.setHelp(r(R.string.FSPosition_qcCenter_Help)).setHelp(r(R.string.FSPosition_qcCenter_Help1),r(R.string.FSPosition_qcCenter_Help2));
         } else if ("group_record".equals(info)){
-            etv.setData(prefGps,R.drawable.group_record1,R.drawable.group_record2);
+            etv.setData(prefGps, prefShareWithActive,R.drawable.group_record1, R.drawable.group_record2, R.drawable.group_record1, R.drawable.group_record3);
             etv.setPrAction(new Pref<>(Boolean.FALSE));
         }
         return etv;

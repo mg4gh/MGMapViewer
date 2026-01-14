@@ -8,4 +8,6 @@
     <string name="FSShareLoc_shareLocOn_title">Location sharing on</string>
     <string name="FSShareLoc_shareLocOn_desc">Switch on/off the option to share your location with other users.</string>
 
+    <string name="FSShareLoc_shareWithActive">FSShareLoc.shareWithActive</string>
+
 </resources>

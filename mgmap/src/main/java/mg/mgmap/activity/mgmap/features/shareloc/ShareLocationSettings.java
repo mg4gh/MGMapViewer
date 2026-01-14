@@ -243,12 +243,14 @@ public class ShareLocationSettings {
         long now = System.currentTimeMillis();
         if (now > person.shareWithUntil) person.shareWithActive = false;
         CheckBox cbShareWithOn = itemView.findViewById(R.id.cbShareWithOn);
+        cbShareWithOn.setOnCheckedChangeListener((cb, b) -> person.shareWithActive = b);
         TextView tvShareWithUntil = itemView.findViewById(R.id.tvShareWithUntil);
         tvShareWithUntil.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape2, activity.getTheme()));
         tvShareWithUntil.setOnClickListener(v->editUntil(person, true));
 
         if (now > person.shareFromUntil) person.shareFromActive = false;
         CheckBox cbShareFromOn = itemView.findViewById(R.id.cbShareFromOn);
+        cbShareFromOn.setOnCheckedChangeListener((cb, b) -> person.shareFromActive = b);
         TextView tvShareFromUntil = itemView.findViewById(R.id.tvShareFromUntil);
         tvShareFromUntil.setBackground(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.shape2, activity.getTheme()));
         tvShareFromUntil.setOnClickListener(v->editUntil(person, false));

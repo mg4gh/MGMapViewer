@@ -33,7 +33,7 @@ public class FSShareLoc extends FeatureService {
     private final Pref<Boolean> prefCenter = getPref(R.string.FSPosition_pref_Center, true);
     private final Pref<Boolean> prefEditMarkerTrack =  getPref(R.string.FSMarker_qc_EditMarkerTrack, false);
     Pref<Boolean> toggleShareLocation = new Pref<>(true);
-    Pref<Boolean> shareWithActive = new Pref<>(false);
+    Pref<Boolean> shareWithActive = getPref(R.string.FSShareLoc_shareWithActive,false);
     Pref<Boolean> shareFromActive = new Pref<>(false);
     Pref<Boolean> showLocationText = new Pref<>(false);
 
@@ -49,6 +49,7 @@ public class FSShareLoc extends FeatureService {
 
     public FSShareLoc(MGMapActivity mmActivity) {
         super(mmActivity);
+        shareWithActive.setValue(false);
 
         prefShareLoc.addObserver(pce->{
             if (prefShareLoc.getValue()){
@@ -187,6 +188,7 @@ public class FSShareLoc extends FeatureService {
     protected void onResume() {
         super.onResume();
         if (! prefShareLoc.getValue()) return; // if feature is switched off, then do nothing
+        updateShareWithActive();
         refreshObserver.onChange();
     }
 
