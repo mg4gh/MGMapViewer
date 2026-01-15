@@ -94,7 +94,8 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
                 R.string.FSGrad_pref_WayDetails_key,
                 R.string.FSRouting_routing_profiles_menu_key,
                 R.string.preferences_smoothing4routing_key,
-                R.string.preferences_cat_gnss_key,
+                R.string.preferences_gnss_minMillis_key,
+                R.string.preferences_gnss_minMeter_key,
                 R.string.preferences_cat_behaviour_key,
                 R.string.preferences_hints_key,
         };

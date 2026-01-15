@@ -106,16 +106,16 @@
 
 
     <string name="preferences_cat_gnss_key">GNSS_settings_key</string>
-    <string name="preferences_cat_gnss_title">GNSS settings (developer)</string>
+    <string name="preferences_cat_gnss_title">GNSS settings</string>
     <string name="preferences_gnss_fused_title">Used google fused location provider</string>
     <string name="preferences_gnss_fused_desc">Use the google fused location provider instead of the pure GNSS location provider</string>
 
     <string name="preferences_gnss_minMillis_key">prefGnssMinMillis</string>
-    <string name="preferences_gnss_minMillis_title">LocationRequest minTime</string>
+    <string name="preferences_gnss_minMillis_title">LocationRequest minTime (developer)</string>
     <string name="preferences_gnss_minMillis_desc">Minimum time between location callbacks (in milliseconds)</string>
 
     <string name="preferences_gnss_minMeter_key">prefGnssMinMeter</string>
-    <string name="preferences_gnss_minMeter_title">LocationRequest minDistance</string>
+    <string name="preferences_gnss_minMeter_title">LocationRequest minDistance (developer)</string>
     <string name="preferences_gnss_minMeter_desc">Minimum distance between location callbacks (in meter)</string>
 
     <string name="preferences_cat_behaviour_key">Behaviour_settings_key</string>
