@@ -5,7 +5,7 @@ This app is mainly intended for biking and hiking. It is based on the [mapsforge
 Based on the great offline maps from (e.g. from [openandromaps](https://www.openandromaps.org/)) you can plan, record, view and share
 your tracks ... and much more.
 
-<img src="./docs/Features/MainTrackFeatures/Routing/RT1.png" width="400" />&nbsp;<img src="./docs/Features/MainTrackFeatures/TrackRecord/RecordA.png" width="400" />&nbsp;
+<img src="./docs/Features/MainTrackFeatures/Routing/08.png" width="400" />&nbsp;<img src="./docs/Features/MainTrackFeatures/TrackRecord/RecordA.png" width="400" />&nbsp;
 
 <img src="./docs/Features/MainTrackFeatures/TrackVisualization/gainLoss1.png" width="400" />&nbsp;<img src="./docs/Features/FurtherFeatures/Statistic/stat4.png" width="400" />
 
