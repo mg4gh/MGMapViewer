@@ -62,37 +62,7 @@ public class GeoLatLong extends SearchProvider {
                 setSearchText(String.format(Locale.ENGLISH,"%f, %f", request.pos.getLat(), request.pos.getLon()));
             }
         } else { // forward request
-            String text = request.text.trim().replaceAll("([EWNS]) ","$1");
-            String[] words = text.split("[\\s,]+");
-            int idx = 0;
-            if (words[idx].isEmpty()){
-                idx++;
-            }
-            double lat = 0, lon = 0;
-            try {
-                if (words.length > idx){
-                    lat = DegreeUtil.degree2double(true, words[idx]);
-                }
-            } catch (NumberFormatException e) {
-                try {
-                    lat = DegreeUtil.doubleDegree2double(true, words[idx]);
-                } catch (NumberFormatException e1) {
-                    mgLog.e(e.getMessage());
-                }
-            }
-            idx++;
-            try {
-                if (words.length > idx){
-                    lon = DegreeUtil.degree2double(false, words[idx]);
-                }
-            } catch (NumberFormatException e) {
-                try {
-                    lon = DegreeUtil.doubleDegree2double(false, words[idx]);
-                } catch (NumberFormatException e1) {
-                    mgLog.e(e.getMessage());
-                }
-            }
-            PointModel pm = new PointModelImpl(lat,lon);
+            PointModel pm = tryForwardSearch(request);
             setResults(request, pm, resList);
         }
         publishResult(request, resList);
@@ -101,13 +71,61 @@ public class GeoLatLong extends SearchProvider {
         }
     }
 
-    private void setResults(SearchRequest request, PointModel pm, ArrayList<SearchResult> results){
+    static PointModel tryForwardSearch(SearchRequest request){
+        String text = request.text.trim().replaceAll("([EWNS]) ","$1");
+        String[] words = text.split("[\\s,]+");
+        int idx = 0;
+        if (words[idx].isEmpty()){
+            idx++;
+        }
+        double lat = 0, lon = 0;
+        try {
+            if (words.length > idx){
+                lat = DegreeUtil.degree2double(true, words[idx]);
+            }
+        } catch (NumberFormatException e) {
+            try {
+                lat = DegreeUtil.doubleDegree2double(true, words[idx]);
+            } catch (NumberFormatException e1) {
+                mgLog.e(e.getMessage());
+            }
+        }
+        idx++;
+        try {
+            if (words.length > idx){
+                lon = DegreeUtil.degree2double(false, words[idx]);
+            }
+        } catch (NumberFormatException e) {
+            try {
+                lon = DegreeUtil.doubleDegree2double(false, words[idx]);
+            } catch (NumberFormatException e1) {
+                mgLog.e(e.getMessage());
+            }
+        }
+        return new PointModelImpl(lat,lon);
+    }
+
+    static void setResults(SearchRequest request, PointModel pm, ArrayList<SearchResult> results){
         String res1 = String.format(Locale.ENGLISH,"Lat=%2.6f, Long=%2.6f", pm.getLat(), pm.getLon());
         results.add( new SearchResult(request, res1, pm));
         String res2 = String.format(Locale.ENGLISH,"Lat=%s, Long=%s", DegreeUtil.double2Degree(true, pm.getLat(), true), DegreeUtil.double2Degree(false, pm.getLon(), true));
         results.add( new SearchResult(request, res2, pm));
         String res3 = String.format(Locale.ENGLISH,"Lat=%s, Long=%s", DegreeUtil.double2Degree(true, pm.getLat(), false), DegreeUtil.double2Degree(false, pm.getLon(), false));
         results.add( new SearchResult(request, res3, pm));
+    }
+
+    static boolean validate(PointModel pm){
+        if (pm.getLat() == 0) return false;
+        if (pm.getLon() == 0) return false;
+        int lat = (int)pm.getLat();
+        int latFraction = (int)( (pm.getLat() - lat)*1000000 );
+        if ((lat < -90) || (90 < lat)) return false;
+        if (latFraction == 0) return false;
+        int lon = (int)pm.getLon();
+        int lonFraction = (int)( (pm.getLon() - lon)*1000000 );
+        if ((lon < -180) || (180 < lon)) return false;
+        if (lonFraction == 0) return false;
+        return true;
     }
 
 }

@@ -64,71 +64,83 @@ public class Graphhopper extends SearchProvider {
             try {
                 ArrayList<SearchResult> resList = new ArrayList<>();
 
-                String sUrl;
+                String sUrl = null;
                 if (request.text.isEmpty()){
-                    sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&limit=5&reverse=true",
-                            URL_ORS, apiKey, pm.getLat(), pm.getLon());
+                    if (activity.getMapViewUtility().getZoomLevel() > 20) { // assume GeoLatLong request
+                        GeoLatLong.setResults(request, request.pos, resList);
+                        setSearchText(String.format(Locale.ENGLISH,"%f, %f", request.pos.getLat(), request.pos.getLon()));
+                    } else {
+                        sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&limit=5&reverse=true",
+                                URL_ORS, apiKey, pm.getLat(), pm.getLon());
+                    }
                 } else {
-                    sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&limit=5&q=%s",
-                            URL_ORS, apiKey, pm.getLat(), pm.getLon(), request.text);
-                    if (!fsSearch.isPosBasedSearch()){
-                        sUrl = sUrl.replaceFirst("point[^&]*&","");
+                    PointModel tpm = GeoLatLong.tryForwardSearch(request);
+                    if (GeoLatLong.validate(tpm)){ // seems to be a term for GeoLatLong
+                        GeoLatLong.setResults(request, tpm, resList);
+                    } else {
+                        sUrl = String.format(Locale.ENGLISH, "%s&key=%s&point=%.6f,%.6f&limit=5&q=%s",
+                                URL_ORS, apiKey, pm.getLat(), pm.getLon(), request.text);
+                        if (!fsSearch.isPosBasedSearch()){
+                            sUrl = sUrl.replaceFirst("point[^&]*&","");
+                        }
                     }
                 }
-                mgLog.i("sUrl="+sUrl);
+                if (sUrl != null){
+                    mgLog.i("sUrl="+sUrl);
 
-                URL url = new URL(sUrl);
-                URLConnection conn = url.openConnection();
-                InputStream is = conn.getInputStream();
+                    URL url = new URL(sUrl);
+                    URLConnection conn = url.openConnection();
+                    InputStream is = conn.getInputStream();
 
-                JsonReader jsonReader = Json.createReader(is);
-                JsonObject oAll = jsonReader.readObject();
+                    JsonReader jsonReader = Json.createReader(is);
+                    JsonObject oAll = jsonReader.readObject();
 
-                JsonArray fAll = oAll.getJsonArray("hits");
-                for (JsonValue f : fAll) {
+                    JsonArray fAll = oAll.getJsonArray("hits");
+                    for (JsonValue f : fAll) {
 
-                    try {
-                        JsonObject fo = f.asJsonObject();
+                        try {
+                            JsonObject fo = f.asJsonObject();
 
-                        String res = "";
-                        String key;
+                            String res = "";
+                            String key;
 
-                        key="name";
-                        res += (!fo.containsKey(key))?"":fo.getString(key);
+                            key="name";
+                            res += (!fo.containsKey(key))?"":fo.getString(key);
 
-                        key="street";
-                        res += (!fo.containsKey(key))?"":(", "+fo.getString(key));
+                            key="street";
+                            res += (!fo.containsKey(key))?"":(", "+fo.getString(key));
 
-                        key="housenumber";
-                        res += (!fo.containsKey(key))?"":(" "+fo.getString(key));
+                            key="housenumber";
+                            res += (!fo.containsKey(key))?"":(" "+fo.getString(key));
 
-                        res += ",";
-                        key="postcode";
-                        res += (!fo.containsKey(key))?"":(" "+fo.getString(key));
+                            res += ",";
+                            key="postcode";
+                            res += (!fo.containsKey(key))?"":(" "+fo.getString(key));
 
-                        key="city";
-                        res += (!fo.containsKey(key))?"":(" "+fo.getString(key));
+                            key="city";
+                            res += (!fo.containsKey(key))?"":(" "+fo.getString(key));
 
-                        if (res.endsWith(",")){
-                            res = res.substring(0,res.length()-1);
+                            if (res.endsWith(",")){
+                                res = res.substring(0,res.length()-1);
+                            }
+                            key="countrycode";
+                            res += (!fo.containsKey(key))?"":(", "+fo.getString(key));
+
+                            JsonObject jpo =  fo.getJsonObject("point");
+
+                            double lon = jpo.getJsonNumber("lng").doubleValue();
+                            double lat = jpo.getJsonNumber("lat").doubleValue();
+                            PointModel pm1 = new PointModelImpl(lat,lon);
+
+                            SearchResult sr = new SearchResult(request, res, pm1);
+                            sr.longResultText = fo.toString();
+                            resList.add( sr );
+                            mgLog.i("res="+res);
+                        } catch (Exception e) {
+                            mgLog.e(e);
                         }
-                        key="countrycode";
-                        res += (!fo.containsKey(key))?"":(", "+fo.getString(key));
 
-                        JsonObject jpo =  fo.getJsonObject("point");
-
-                        double lon = jpo.getJsonNumber("lng").doubleValue();
-                        double lat = jpo.getJsonNumber("lat").doubleValue();
-                        PointModel pm1 = new PointModelImpl(lat,lon);
-
-                        SearchResult sr = new SearchResult(request, res, pm1);
-                        sr.longResultText = fo.toString();
-                        resList.add( sr );
-                        mgLog.i("res="+res);
-                    } catch (Exception e) {
-                        mgLog.e(e);
                     }
-
                 }
 
                 publishResult(request, resList);
