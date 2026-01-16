@@ -38,11 +38,11 @@ import mg.mgmap.test.BaseTestCase;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
-public class GroupSerachTests extends BaseTestCase {
+public class GroupSearchTests extends BaseTestCase {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    public GroupSerachTests(){
+    public GroupSearchTests(){
         mgLog.i("create");
         mgMapApplication.getSetup().wantSetup("SETUP_002", androidTestAssets);
     }
