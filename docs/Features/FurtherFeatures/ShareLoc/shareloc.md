@@ -3,10 +3,10 @@
 ## Further Feature: Share Location
 
 This feature provides the option to to share your location with another user of this app. There are mainly two use cases considered:
-- Share position usage</br>
+- Share position usage  
 You want to meet somebody and it's easy, if you see other persons position on your map.
 In this case one user is sending its position and the second user is listening to it immediately.
-- Emergency usage</br>
+- Emergency usage  
 In case of an emergency, e.g. if after an accident, it may happen that you are not able to help yourself.
 In this scenario the second person is usually not checking the position of the first person all the time. Rather some time later the second person
 wants to check the last position of the first person.
