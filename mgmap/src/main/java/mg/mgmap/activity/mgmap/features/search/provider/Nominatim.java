@@ -14,10 +14,8 @@
  */
 package mg.mgmap.activity.mgmap.features.search.provider;
 
-import java.io.InputStream;
+import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -35,6 +33,10 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.model.PointModelUtil;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @SuppressWarnings("unused") // usage is via reflection
 public class Nominatim extends SearchProvider {
@@ -73,13 +75,21 @@ public class Nominatim extends SearchProvider {
                 }
                 mgLog.i("sUrl="+sUrl);
 
-                URL url = new URL(sUrl);
-                URLConnection conn = url.openConnection();
-                conn.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0");
-                conn.setRequestProperty("DNT","1");
-                InputStream is = conn.getInputStream();
+                OkHttpClient client = new OkHttpClient().newBuilder().build();
+                Request.Builder requestBuilder = new Request.Builder()
+                        .addHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0")
+                        .addHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'")
+                        .url(sUrl);
+                Request requestOk = requestBuilder.build();
 
-                JsonReader jsonReader = Json.createReader(is);
+                Call call = client.newCall(requestOk);
+                String responseText;
+                try (Response response = call.execute()){
+                    mgLog.i("rc=" + response.code());
+                    responseText = response.body().string();
+                }
+
+                JsonReader jsonReader = Json.createReader(new StringReader(responseText));
                 JsonObject oAll = jsonReader.readObject();
 
                 JsonArray fAll = oAll.getJsonArray("features");
