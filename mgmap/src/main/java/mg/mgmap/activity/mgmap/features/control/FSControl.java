@@ -167,9 +167,8 @@ public class FSControl extends FeatureService {
             if (prefHelp.getValue()){
                 ViewGroup qcs = qcss[prefQcs.getValue()];
                 for (int i=0; i<qcs.getChildCount(); i++){
-                    if (qcs.getChildAt(i) instanceof ExtendedTextView) {
+                    if (qcs.getChildAt(i) instanceof ExtendedTextView etv) {
                         try {
-                            ExtendedTextView etv = (ExtendedTextView) qcs.getChildAt(i);
                             @SuppressLint("DiscouragedApi") int id = activity.getResources().getIdentifier("help2_text"+i, "id", activity.getPackageName());
                             TextView tv = getActivity().findViewById(id);
                             tv.setText(etv.getHelp());
@@ -185,7 +184,7 @@ public class FSControl extends FeatureService {
             getActivity().findViewById(R.id.help).setVisibility(iVis);
             mgLog.d("change help Visibility to "+ prefHelp.getValue());
         });
-        triggerFileMgr.addObserver((Observer) evt -> {
+        triggerFileMgr.addObserver(evt -> {
             Intent intent = new Intent(activity, FileManagerActivity.class);
             activity.startActivity(intent);
         });
