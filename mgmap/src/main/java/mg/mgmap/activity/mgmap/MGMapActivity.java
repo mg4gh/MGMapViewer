@@ -58,6 +58,7 @@ import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 
+import mg.mgmap.activity.mgmap.features.control.FSSpeechControl;
 import mg.mgmap.activity.mgmap.features.rtl.RecordingTrackLog;
 import mg.mgmap.activity.mgmap.features.shareloc.FSShareLoc;
 import mg.mgmap.activity.mgmap.features.trad.FSTrackDetails;
@@ -130,6 +131,10 @@ import java.util.Set;
 public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCallback,SharedPreferences.OnSharedPreferenceChangeListener{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+
+    private static final int ACCESS_FINE_LOCATION_CODE = 995; // just an id to identify the callback
+    private static final int ACCESS_BACKGROUND_LOCATION = 997; // just an id to identify the callback
+    public static final int RECORD_AUDIO_CODE = 991; // just an id to identify the callback
 
     /** Reference to the MGMapApplication object */
     MGMapApplication application = null;
@@ -235,6 +240,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         featureServices.add(new FSTime(this));
         featureServices.add(new FSAlpha(this));
         featureServices.add(new FSControl(this));
+        featureServices.add(new FSSpeechControl(this));
 
         featureServices.add(new FSAvailableTrackLogs(this));
         featureServices.add(new FSMarker(this));
@@ -638,8 +644,6 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
 
 
-    private static final int ACCESS_FINE_LOCATION_CODE = 995; // just an id to identify the callback
-    private static final int ACCESS_BACKGROUND_LOCATION = 997; // just an id to identify the callback
     /** trigger TrackLoggerService, request permission on demand. */
     @SuppressLint("BatteryLife")
     public void triggerTrackLoggerService(){
@@ -694,8 +698,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
             }
         }
         if (requestCode == ACCESS_BACKGROUND_LOCATION) {
-            if (Permissions.check(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION})) { //ok, got the permission, start service - dont't check for Manifest.permission.ACCESS_BACKGROUND_LOCATION - this leads to problem in Android 9 on first recording
+            if (Permissions.check(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION})) {
                 triggerTrackLoggerService();
+            }
+        }
+        if (requestCode == RECORD_AUDIO_CODE) {
+            if (Permissions.check(this, new String[]{Manifest.permission.RECORD_AUDIO})) {
+                getFS(FSSpeechControl.class).voiceControl();
             }
         }
     }
@@ -927,27 +936,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        Pref<Boolean> prefRoutingHints = prefCache.get(R.string.FSRouting_qc_RoutingHint, false);
-        int action = event.getAction();
-        int keyCode = event.getKeyCode();
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                if (action == KeyEvent.ACTION_DOWN) {
-                    if (!prefRoutingHints.getValue()){
-                        getMapsforgeMapView().getModel().mapViewPosition.zoomIn();
-                        return true;
-                    }
-                }
-                break;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                if (action == KeyEvent.ACTION_DOWN) {
-                    if (!prefRoutingHints.getValue()){
-                        getMapsforgeMapView().getModel().mapViewPosition.zoomOut();
-                        return true;
-                    }
-                }
-                break;
-        }
+        if (getFS(FSSpeechControl.class).dispatchKeyEvent(event)) return true;
         return super.dispatchKeyEvent(event);
     }
 }

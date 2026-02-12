@@ -43,4 +43,5 @@
     <string name="preferences_minimalTurningInstruction_desc">Reduce tuning instructions to distance warnings.</string>
 
     <string name="FSRouting_routing_algorithm_key">FSRouting.RoutingAlgorithm</string>
+    <string name="FSRouting_pref_RouteDuration">FSRouting.RouteDuration</string>
 </resources>

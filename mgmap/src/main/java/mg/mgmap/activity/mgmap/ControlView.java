@@ -247,11 +247,11 @@ public class ControlView extends RelativeLayout {
 
         View parent = (View) tv_enlarge.getParent();
         RelativeLayout.LayoutParams parentLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        parentLayoutParams.setMargins(dp(60), dp(350), dp(60), dp(0));
+        parentLayoutParams.setMargins(dp(20), dp(350), dp(20), dp(0));
         parent.setLayoutParams(parentLayoutParams);
 
         tv_enlarge.setLines(1);
-        tv_enlarge.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 40);
+        tv_enlarge.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 60);
         int padding = dp(5);
         tv_enlarge.setPadding(padding,padding,padding,padding);
         tv_enlarge.setBackgroundResource(R.drawable.shape);

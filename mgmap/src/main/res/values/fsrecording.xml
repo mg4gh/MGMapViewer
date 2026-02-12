@@ -16,4 +16,7 @@
     <string name="FSRecording_qcRecSeg_help">Segment recording</string>
     <string name="FSRecording_qcRecSeg_help1">Start new segment</string>
     <string name="FSRecording_qcRecSeg_help2">Stop current segment</string>
+
+    <string name="FSRecording_pref_toggleTrackRecord">FSRecording.toggleTrackRecord</string>
+
 </resources>

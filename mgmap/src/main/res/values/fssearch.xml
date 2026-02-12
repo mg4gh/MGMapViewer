@@ -23,4 +23,6 @@
 
     <string name="FSSearch_reverseSearchOn">FSSearch.reverseSearchOn</string>
     <string name="FSSearch_locationBasedSearchOn">FSSearch.locationBasedSearchOn</string>
+    <string name="FSSearch_pref_SearchText">FSSearch.searchText</string>
+    <string name="FSSearch_pref_SearchTrigger">FSSearch.searchTrigger</string>
 </resources>

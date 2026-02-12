@@ -75,6 +75,8 @@ public class FSSearch extends FeatureService {
     private final Pref<Boolean> prefReverseSearchOn = getPref(R.string.FSSearch_reverseSearchOn, false);
     private final Pref<Boolean> prefLocationBasedSearchOn = getPref(R.string.FSSearch_locationBasedSearchOn, false);
     private final Pref<Boolean> prefQCSelectSearchProvider = new Pref<>(false);
+    private final Pref<String> prefSearchText = getPref(R.string.FSSearch_pref_SearchText, "");
+    private final Pref<Boolean> prefSearchTrigger = getPref(R.string.FSSearch_pref_SearchTrigger, false);
 
 
     public FSSearch(MGMapActivity mmActivity) {
@@ -95,6 +97,16 @@ public class FSSearch extends FeatureService {
         getControlView().variableVerticalOffsetViews.add(searchView);
 
         EditText searchText = searchView.searchText;
+        searchText.setText(prefSearchText.getValue());
+        prefSearchTrigger.addObserver(pcl->{
+            if (prefSearchTrigger.getValue()){
+                if (searchView.getVisibility() == View.VISIBLE){
+                    searchText.setText(prefSearchText.getValue());
+                    doSearch(prefSearchText.getValue().trim(),-1);
+                    prefSearchTrigger.setValue(false);
+                }
+            }
+        });
         searchText.setSelectAllOnFocus(true);
         searchText.setOnEditorActionListener((tv, actionId, event) -> {
             doSearch(tv.getText().toString().trim(), actionId);
@@ -204,6 +216,7 @@ public class FSSearch extends FeatureService {
                 scl = new SearchControlLayer();
                 register(scl);
                 triggerTTHideKeyboard();
+                prefSearchTrigger.changed();
             }
         } else {
             if (searchView.getVisibility() == View.VISIBLE){
@@ -252,6 +265,7 @@ public class FSSearch extends FeatureService {
 
     private void doSearch(String text, int actionId){
         if (text.length() < 3) return; // text too short
+        prefSearchText.setValue(text);
         long timestamp = System.currentTimeMillis();
         triggerTTHideKeyboard();
         mgLog.i("text="+text+" actionId="+actionId+" timestamp="+timestamp);

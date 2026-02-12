@@ -112,6 +112,11 @@ public class MapViewUtility {
             this.mapView.getModel().mapViewPosition.setCenter(new LatLong(pm.getLat(),pm.getLon()));
         }
     }
+    public void animateToCenter(PointModel pm){
+        if (pm.getLaLo() != PointModelUtil.NO_POS){
+            this.mapView.getModel().mapViewPosition.animateTo(new LatLong(pm.getLat(),pm.getLon()));
+        }
+    }
 
     public float getTrackWidth() {
         return DEFAULT_TRACK_WIDTH * mapView.getModel().displayModel.getScaleFactor();

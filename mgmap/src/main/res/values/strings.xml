@@ -151,4 +151,7 @@
 
     <string name="preferences_hill_shading_hiRes_key">hill_shading_hiRes_key</string>
 
+    <string name="FSTime_enlargeTimeTrigger">FSTime.enlargeTimeTrigger</string>
+    <string name="FSTime_enlargeBatTrigger">FSTime.enlargeBatTrigger</string>
+
 </resources>

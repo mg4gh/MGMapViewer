@@ -31,6 +31,8 @@ import org.mapsforge.map.layer.Layer;
 
 import java.beans.PropertyChangeEvent;
 import java.lang.invoke.MethodHandles;
+import java.util.HashMap;
+import java.util.Map;
 
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
@@ -76,6 +78,7 @@ public class FeatureService {
     protected MVGroupLayer fsControlLayers = new MVGroupLayer();
     protected String logName;
     public static final double ENUMERATION_DISTANCE = 1000;
+    private final Map<String, ViewGroup> dashboardMap = new HashMap<>();
 
     public FeatureService(MGMapActivity activity){
         this.activity = activity;
@@ -107,7 +110,7 @@ public class FeatureService {
     protected void onUpdate(PropertyChangeEvent event){} //hook for derived classes
 
     protected long ttRefreshTime = 100;
-    private final Runnable ttRefresh = this::doRefresh;
+    protected final Runnable ttRefresh = this::doRefresh;
     protected RefreshObserver refreshObserver = new RefreshObserver();
 
     protected void doRefresh(){
@@ -131,6 +134,7 @@ public class FeatureService {
                 child.setName(info);
             }
         }
+        dashboardMap.put(info, dvg);
         return dvg;
     }
     public LabeledSlider initLabeledSlider(LabeledSlider lsl, String info){
@@ -328,5 +332,9 @@ public class FeatureService {
 
     public Drawable getDrawable(int drawableId){
         return ResourcesCompat.getDrawable(getResources(), drawableId, getActivity().getTheme());
+    }
+
+    protected ViewGroup getDashboard(String info){
+        return dashboardMap.get(info);
     }
 }

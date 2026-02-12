@@ -64,6 +64,7 @@ import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.PrefCache;
+import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.gpx.GpxExporter;
@@ -114,6 +115,7 @@ public class FSRouting extends FeatureService {
     private final String defaultRoutingProfileId = RoutingProfile.constructId(ShortestDistance.class);
     private final Pref<String> prefRoutingProfileId = getPref(R.string.FSRouting_pref_currentRoutingProfile, defaultRoutingProfileId);
     private final Pref<Boolean> prefCalcRouteInProgress = getPref(R.string.FSRouting_pref_calcRouteInProgress, false);
+    private final Pref<Boolean> prefRouteDuration = getPref(R.string.FSRouting_pref_RouteDuration, true);
     private final ArrayList<ExtendedTextView> profileETVs = new ArrayList<>();
     private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
     private MultiPointView routingIntermediateMPV = null;
@@ -244,6 +246,7 @@ public class FSRouting extends FeatureService {
                 routingIntermediateMPV = null;
             }
         });
+        prefRouteDuration.addObserver(refreshObserver);
 
         routingThread = createRoutingThread();
     }
@@ -426,6 +429,7 @@ public class FSRouting extends FeatureService {
     @Override
     protected void doRefreshResumedUI() {
         unregisterAll();
+        enforceDurationMode();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
@@ -444,6 +448,7 @@ public class FSRouting extends FeatureService {
         getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, calcRemainingStatistic(rotl));
 
         checkRelaxedViews(mtl);
+        getTimer().postDelayed(ttRefresh, 5000);
     }
 
     private void updateRouting(){
@@ -473,11 +478,23 @@ public class FSRouting extends FeatureService {
                         dashboardStatistic = new TrackLogStatistic();
                         routeTrackLog.remainStatistic(dashboardStatistic, bestMatch.getApproachPoint(), bestMatch.getSegmentIdx(), bestMatch.getEndPointIndex());
                         dashboardStatistic.setSegmentIdx(-2); // indicates Remainings statistic
+
+                        if (!prefRouteDuration.getValue()){ // calc arrival time instead duration
+                            long now = System.currentTimeMillis();
+                            long duration = dashboardStatistic.getDuration();
+                            mgLog.d("now="+now+" duration="+duration);
+                            dashboardStatistic.setDuration( now + duration );
+                        }
                     }
                 }
             }
         }
         return dashboardStatistic;
+    }
+
+    void enforceDurationMode(){
+        boolean durationMode = prefRouteDuration.getValue();
+        ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(durationMode? Formatter.FormatType.FORMAT_TIME: Formatter.FormatType.FORMAT_ARRIVAL_TIME);
     }
 
     private void checkRelaxedViews(TrackLog mtl){

@@ -20,6 +20,7 @@ import android.os.BatteryManager;
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.view.ExtendedTextView;
 
@@ -30,10 +31,14 @@ public class FSTime extends FeatureService {
     private ExtendedTextView etvJob = null;
     private int batCnt = 1;
 
+    private final Pref<Boolean> prefEnlargeTime = getPref(R.string.FSTime_enlargeTimeTrigger, true);
+    private final Pref<Boolean> prefEnlargeBat = getPref(R.string.FSTime_enlargeBatTrigger, true);
 
     public FSTime(MGMapActivity mmActivity) {
         super(mmActivity);
         ttRefreshTime = 1000;
+        prefEnlargeTime.addObserver(propertyChangeEvent -> etvTime.callOnClick());
+        prefEnlargeBat.addObserver(propertyChangeEvent -> etvBat.callOnClick());
     }
 
     @Override
