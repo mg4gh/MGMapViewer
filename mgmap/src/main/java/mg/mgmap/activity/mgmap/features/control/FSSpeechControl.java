@@ -93,23 +93,25 @@ public class FSSpeechControl extends FeatureService {
     public boolean dispatchKeyEvent(KeyEvent event) {
         int action = event.getAction();
         int keyCode = event.getKeyCode();
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_UP:
+        return switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP -> {
                 if (action == KeyEvent.ACTION_DOWN) {
                     mgLog.d("KeyEvent.KEYCODE_VOLUME_UP KeyEvent.ACTION_DOWN");
                     tryVoiceControl();
                 }
-                break;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                yield true;
+            }
+            case KeyEvent.KEYCODE_VOLUME_DOWN -> {
                 if (action == KeyEvent.ACTION_DOWN) {
                     mgLog.d("KeyEvent.KEYCODE_VOLUME_DOWN KeyEvent.ACTION_DOWN");
-                    if (speechRecognizer != null){
+                    if (speechRecognizer != null) {
                         speechRecognizer.stopListening();
                     }
                 }
-                break;
-        }
-        return true;
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     public void tryVoiceControl() {
