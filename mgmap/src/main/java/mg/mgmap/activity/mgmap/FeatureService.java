@@ -78,7 +78,7 @@ public class FeatureService {
     protected MVGroupLayer fsControlLayers = new MVGroupLayer();
     protected String logName;
     public static final double ENUMERATION_DISTANCE = 1000;
-    private final Map<String, ViewGroup> dashboardMap = new HashMap<>();
+    private static final Map<String, ViewGroup> dashboardMap = new HashMap<>();
 
     public FeatureService(MGMapActivity activity){
         this.activity = activity;
