@@ -83,10 +83,10 @@ public class GeoLatLong extends SearchProvider {
             if (words.length > idx){
                 lat = DegreeUtil.degree2double(true, words[idx]);
             }
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             try {
                 lat = DegreeUtil.doubleDegree2double(true, words[idx]);
-            } catch (NumberFormatException e1) {
+            } catch (Exception e1) {
                 mgLog.e(e.getMessage());
             }
         }
@@ -95,10 +95,10 @@ public class GeoLatLong extends SearchProvider {
             if (words.length > idx){
                 lon = DegreeUtil.degree2double(false, words[idx]);
             }
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             try {
                 lon = DegreeUtil.doubleDegree2double(false, words[idx]);
-            } catch (NumberFormatException e1) {
+            } catch (Exception e1) {
                 mgLog.e(e.getMessage());
             }
         }
