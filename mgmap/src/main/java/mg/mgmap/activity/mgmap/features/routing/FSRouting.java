@@ -429,7 +429,6 @@ public class FSRouting extends FeatureService {
     @Override
     protected void doRefreshResumedUI() {
         unregisterAll();
-        enforceDurationMode();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
@@ -445,7 +444,10 @@ public class FSRouting extends FeatureService {
         if (getPref(R.string.preferences_display_show_km_key, true).getValue()){
             showTrack(rotl,CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()),false, 3, true, true);
         }
-        getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, calcRemainingStatistic(rotl));
+        TrackLogStatistic trackLogStatistic = calcRemainingStatistic(rotl);
+        boolean arrivalTimeMode = (trackLogStatistic != null) && (trackLogStatistic.getDuration() > 8640000000L); // > 100 days ==> assume arrival time
+        ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(arrivalTimeMode? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
+        getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, trackLogStatistic);
 
         checkRelaxedViews(mtl);
         getTimer().postDelayed(ttRefresh, 5000);
@@ -490,11 +492,6 @@ public class FSRouting extends FeatureService {
             }
         }
         return dashboardStatistic;
-    }
-
-    void enforceDurationMode(){
-        boolean durationMode = prefRouteDuration.getValue();
-        ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(durationMode? Formatter.FormatType.FORMAT_TIME: Formatter.FormatType.FORMAT_ARRIVAL_TIME);
     }
 
     private void checkRelaxedViews(TrackLog mtl){
