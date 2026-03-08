@@ -264,6 +264,9 @@ public class GroupSearchTests extends BaseTestCase {
         check(mgMapActivity, fsSearch, "geo:0,0?q=Kirchstraße 16, 69115 Heidelberg, Deutschland", ".*lat=49.4069.*lon=8.6784.*");
         check(mgMapActivity, fsSearch, "geo:0,0?q=zur+Post+Garz", ".*lat=54.31662.*lon=13.34847.*");
 
+        check(mgMapActivity, fsSearch, "geo:54.317003,13.350003?z=16&q=54.317003,13.350003", ".*lat=54.317003.*lon=13.350003.*zoom=16.*");
+        check(mgMapActivity, fsSearch, "geo:0,0?z=16&q=54.317003,13.350003", ".*lat=54.317003.*lon=13.350003.*zoom=16.*");
+
         SystemClock.sleep(3000);
         mgLog.i("finished");
     }

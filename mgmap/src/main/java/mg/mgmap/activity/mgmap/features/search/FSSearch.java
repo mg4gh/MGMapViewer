@@ -368,7 +368,7 @@ public class FSSearch extends FeatureService {
 
         String d = "(\\-?\\d*\\.?\\d+)";
         Pattern p1 = Pattern.compile("geo:"+d+","+d);
-        Pattern p2 = Pattern.compile("geo:"+d+","+d+"\\?(q="+d+", ?"+d+"&)?z=([12]?[0-9])");
+        Pattern p2 = Pattern.compile("geo:"+d+","+d+"\\?(q="+d+", ?"+d+"&)?z=([12]?[0-9])(&q="+d+", ?"+d+")?");
         Pattern p3 = Pattern.compile("geo:"+d+","+d+"\\?q="+d+", ?"+d+"(\\(([^\\)]+)\\))?");
         Pattern p4 = Pattern.compile("geo:0,0\\?q=(.*)");
 
@@ -391,6 +391,9 @@ public class FSSearch extends FeatureService {
                 if ((lat == 0) && (lon == 0) && (m.group(4) != null) && (m.group(5) != null)){
                     lat = Double.parseDouble(m.group(4));
                     lon = Double.parseDouble(m.group(5));
+                } else if ((lat == 0) && (lon == 0) && (m.group(8) != null) && (m.group(9) != null)){
+                    lat = Double.parseDouble(m.group(8));
+                    lon = Double.parseDouble(m.group(9));
                 }
                 zoom = Byte.parseByte(m.group(6));
                 zoom = (byte)Math.max(Math.min(zoom, 22), 6);
