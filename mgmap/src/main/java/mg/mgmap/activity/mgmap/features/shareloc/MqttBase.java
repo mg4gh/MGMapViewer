@@ -140,7 +140,7 @@ public class MqttBase extends MqttClient{
     }
 
     protected void registerThrowable(Throwable throwable){
-        mgLog.e("Asynchronous error occurred", throwable);
+        mgLog.e("Asynchronous error occurred: " + ((throwable!=null)?throwable.getMessage():"null"), throwable);
     }
 
     protected void stop(){

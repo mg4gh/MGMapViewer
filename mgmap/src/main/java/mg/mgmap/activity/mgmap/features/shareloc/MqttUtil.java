@@ -19,9 +19,13 @@ public class MqttUtil {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     static Handler timer = new Handler();
+    static long updateCertificateTimestamp = 0;
+    static long updateCertificateTimeout = 30_000;
 
     static void updateCertificate(Context context, SharePerson me, List<SharePerson> persons){
-
+        long now = System.currentTimeMillis();
+        if (now - updateCertificateTimestamp < updateCertificateTimeout) return; // don't repeat too fast
+        updateCertificateTimestamp = now;
         try (InputStream caCrt = context.getAssets().open("ca.crt");
              InputStream clientCrt = new FileInputStream(new File(context.getFilesDir(), "certs/my.crt"));
              InputStream clientKey = new FileInputStream(new File(context.getFilesDir(), "certs/my.key")) ) {
@@ -55,9 +59,9 @@ public class MqttUtil {
                     }
                 }
             };
-            timer.postDelayed(mqttBase::stop, 30000); // kill it after 30s, if
+            timer.postDelayed(mqttBase::stop, updateCertificateTimeout); // kill it after 30s, if it didn't work
         }catch (Exception e){
-            mgLog.e(e);
+            mgLog.e(e.getMessage(),e);
             for (SharePerson person : persons){
                 person.crt = "network error - "+e.getMessage();
             }

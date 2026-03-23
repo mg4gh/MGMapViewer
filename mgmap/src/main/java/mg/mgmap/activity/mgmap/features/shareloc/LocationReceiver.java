@@ -33,6 +33,7 @@ public class LocationReceiver {
                 protected void messageReceived(String topic, String message) {
                     try {
                         super.messageReceived(topic, message);
+                        //TODO do not read file for each message
                         message = CryptoUtils.decrypt(message, new File(application.getFilesDir(), "certs/my.key"));
                         super.messageReceived(topic, message);
 

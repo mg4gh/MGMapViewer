@@ -76,4 +76,8 @@ public class ShareLocConfig extends ObservableImpl {
         return false;
     }
 
+    boolean hasCertificates(){
+        long now = System.currentTimeMillis();
+        return persons.stream().allMatch(person ->  !person.shareWithActive || (person.shareWithUntil < now) ||  !person.crt.isEmpty());
+    }
 }

@@ -45,17 +45,21 @@ public class LocationSender implements Observer {
                             point2send.wait(5000);
                         }
                     }
-                    if (pm != null){
-                        long now = System.currentTimeMillis();
+                    if (config.hasCertificates()){
+                        if (pm != null){
+                            long now = System.currentTimeMillis();
 
-                        for (SharePerson person : config.persons){
-                            if (person.shareWithActive && (person.shareWithUntil > now)){
-                                sendLocation(person, pm, now);
+                            for (SharePerson person : config.persons){
+                                if (person.shareWithActive && (person.shareWithUntil > now)){
+                                    sendLocation(person, pm, now);
+                                }
                             }
                         }
+                    } else {
+                        MqttUtil.updateCertificate(application, me, config.persons);
                     }
                 } catch (Exception e){
-                    mgLog.e(e);
+                    mgLog.e(e.getMessage(),e);
                 }
             }
         }).start();
@@ -78,6 +82,7 @@ public class LocationSender implements Observer {
             try (InputStream caCrt = application.getAssets().open("ca.crt");
                  InputStream clientCrt = new FileInputStream(new File(application.getFilesDir(), "certs/my.crt"));
                  InputStream clientKey = new FileInputStream(new File(application.getFilesDir(), "certs/my.key")) ) {
+                // TODO Replace file read with string read - preinitialize proper strings
                 sendClient = new MqttBase("LocationSender", caCrt, clientCrt, clientKey){
                     @Override
                     protected void connectComplete(boolean reconnect, String serverURI) throws MqttException {
