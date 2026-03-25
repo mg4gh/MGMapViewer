@@ -5,10 +5,12 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 
+import mg.mgmap.generic.util.basic.IOUtil;
+
 public class EncryptionTest {
 
     @Test
-    public void _01_asymmetriy() throws Exception {
+    public void _01_asymmetric() throws Exception {
         File base = new File(".");
         System.out.println(base.getAbsolutePath());
         File fKey = new File("src/main/assets/client.key");
@@ -26,7 +28,8 @@ public class EncryptionTest {
         String cryptoMessage = CryptoUtils.encrypt(message, client);
         System.out.println(cryptoMessage);
 
-        String decryptedMessage = CryptoUtils.decrypt(cryptoMessage, fKey);
+        byte[] baKey = IOUtil.readToByteArray(fKey);
+        String decryptedMessage = CryptoUtils.decrypt(cryptoMessage, baKey);
         System.out.println("decryptedMessage: "+decryptedMessage);
 
     }

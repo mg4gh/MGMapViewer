@@ -13,6 +13,7 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.UUID;
@@ -28,6 +29,10 @@ public class MqttBase extends MqttClient{
 
     private boolean stop = false;
     private boolean disconnected = false;
+
+    public MqttBase(String clientPrefix, byte[] baCaCrt, byte[] baClientCrt, byte[] baClientKey) throws Exception {
+        this(clientPrefix, new ByteArrayInputStream(baCaCrt),new ByteArrayInputStream(baClientCrt),new ByteArrayInputStream(baClientKey));
+    }
 
     public MqttBase(String clientPrefix, InputStream caCrt, InputStream clientCrt, InputStream clientKey) throws Exception {
         super("ssl://" + SERVER_ADDRESS + ":" + SERVER_PORT, clientPrefix+"_"+ UUID.randomUUID(), new MemoryPersistence());

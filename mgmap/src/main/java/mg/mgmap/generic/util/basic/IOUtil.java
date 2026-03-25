@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
 
 public class IOUtil {
 
@@ -30,5 +31,18 @@ public class IOUtil {
         } catch (IOException e) {
             mgLog.e(e);
         }
+    }
+
+    public static byte[] readToByteArray(File file) throws IOException{
+        return Files.readAllBytes(file.toPath());
+    }
+    public static byte[] readToByteArray(InputStream is) throws IOException{
+        byte[] buf;
+        try (is) {
+            int size = is.available();
+            buf = new byte[size];
+            assert (size <= is.read(buf));
+        }
+        return buf;
     }
 }

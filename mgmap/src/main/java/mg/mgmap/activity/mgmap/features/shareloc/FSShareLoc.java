@@ -4,6 +4,7 @@ import androidx.lifecycle.Lifecycle;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public class FSShareLoc extends FeatureService {
         if (fMyCrt.exists()){
             try (InputStream clientCrt = new FileInputStream(fMyCrt) ) {
                 me = CryptoUtils.getPersonData(clientCrt);
-            } catch (Exception e) { mgLog.e(e); }
+            } catch (Exception e) { mgLog.e(e.getMessage(), e); }
         }
         if (me == null){
             me = new SharePerson();
@@ -95,12 +96,16 @@ public class FSShareLoc extends FeatureService {
         toggleShareLocation.addObserver(plc -> new ShareLocationSettings(getActivity(), shareLocConfig, me).show());
 
         shareWithActive.addObserver(pce->{
+            mgLog.d("shareWithActiveObserver: shareWithActive="+shareWithActive+" locationSender="+(locationSender!=null));
             if (shareWithActive.getValue()){
                 if (locationSender == null){
                     locationSender =  (LocationSender) getApplication().lastPositionsObservable.findObserver(LocationSender.class);
                     if (locationSender == null){
-                        mgLog.d("create new LocationSender");
-                        locationSender = new LocationSender(getApplication(), me, shareLocConfig);
+                        try {
+                            mgLog.d("LocationSender - try to create");
+                            locationSender = new LocationSender(getApplication(), me, shareLocConfig);
+                            mgLog.d("LocationSender - created.");
+                        } catch (IOException e) { mgLog.e(e.getMessage(),e); }
                     } else {
                         shareLocConfig.changed();
                     }
@@ -109,23 +114,28 @@ public class FSShareLoc extends FeatureService {
                 if (locationSender != null){
                     locationSender.stop();
                     locationSender = null;
+                    mgLog.d("LocationSender - destroyed");
                 }
             }
         });
 
         shareFromActive.addObserver(propertyChangeEvent -> {
+            mgLog.d("shareFromActiveObserver: shareFromActive="+shareFromActive+" locationReceiver="+(locationReceiver!=null));
             if (shareFromActive.getValue()){ // should be active
                 if (locationReceiver == null){
                     try {
+                        mgLog.d("locationReceiver - try to create");
                         locationReceiver = new LocationReceiver(getApplication(), this, me, shareLocConfig, shareLocMap);
+                        mgLog.d("locationReceiver - created");
                     } catch (Exception e) {
-                        mgLog.e(e);
+                        mgLog.e(e.getMessage(),e);
                     }
                 }
             } else {
                 if (locationReceiver != null){
                     locationReceiver.stop();
                     locationReceiver = null;
+                    mgLog.d("locationReceiver - destroyed");
                 }
             }
         });
@@ -188,8 +198,18 @@ public class FSShareLoc extends FeatureService {
     protected void onResume() {
         super.onResume();
         if (! prefShareLoc.getValue()) return; // if feature is switched off, then do nothing
+        if (!shareLocConfig.hasCertificates(System.currentTimeMillis())){
+            MqttUtil.updateCertificate(getApplication(),me,shareLocConfig.persons);
+        }
         updateShareWithActive();
         refreshObserver.onChange();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mgLog.d("pause");
+        updateShareFromActive();
     }
 
     @Override

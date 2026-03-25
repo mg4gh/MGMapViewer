@@ -57,4 +57,11 @@ public class SharePerson extends ObservableImpl {
         }
         return person;
     }
+
+    boolean hasCertificate(long now){
+        boolean needCertificate = (shareWithActive && (now > shareWithUntil))  || (shareFromActive && (now > shareFromUntil));
+        boolean hasCertificate = !crt.isEmpty();
+        return !needCertificate || hasCertificate;
+    }
+
 }

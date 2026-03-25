@@ -53,7 +53,7 @@ public class CryptoUtils {
         }
     }
 
-    public static String encrypt(String data, byte[] key) throws Exception {
+    public static String encryptAES(String data, byte[] key) throws Exception {
         if (key.length != 32) {
             throw new IllegalArgumentException("Key must be 32 bytes for AES-256");
         }
@@ -76,7 +76,7 @@ public class CryptoUtils {
         return Base64.getEncoder().encodeToString(combined);
     }
 
-    public static String decrypt(String base64Data, byte[] key) throws Exception {
+    public static String decryptAES(String base64Data, byte[] key) throws Exception {
         if (key.length != 32) {
             throw new IllegalArgumentException("Key must be 32 bytes for AES-256");
         }
@@ -206,8 +206,8 @@ public class CryptoUtils {
         }
     }
 
-    static String decrypt(String base64Message, File fPrivateKey) throws Exception{
-        try (InputStream inputStream = new FileInputStream(fPrivateKey)){
+    static String decrypt(String base64Message, byte[] baPrivateKey) throws Exception{
+        try (InputStream inputStream = new ByteArrayInputStream(baPrivateKey)){
             byte[] encrypted = Base64.getDecoder().decode(base64Message);
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.DECRYPT_MODE, loadPrivateKey(inputStream));

@@ -6,14 +6,14 @@ import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
 import java.beans.PropertyChangeEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import mg.mgmap.application.MGMapApplication;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.Observer;
+import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 
 public class LocationSender implements Observer {
@@ -29,10 +29,20 @@ public class LocationSender implements Observer {
     SharePerson me;
     PointModel lastSentPM = null;
 
-    public LocationSender(MGMapApplication application, SharePerson me, ShareLocConfig shareLocConfig){
+    byte[] baMyCrt;
+    byte[] baMyKey;
+    byte[] baCaCrt;
+
+    static long updateCertificateTimestamp = 0;
+    static long updateCertificateTimeout = 30_000;
+
+    public LocationSender(MGMapApplication application, SharePerson me, ShareLocConfig shareLocConfig) throws IOException {
         this.application = application;
         this.me = me;
         this.config = shareLocConfig;
+        baMyCrt = IOUtil.readToByteArray( new File(application.getFilesDir(), "certs/my.crt") );
+        baMyKey = IOUtil.readToByteArray( new File(application.getFilesDir(), "certs/my.key") );
+        baCaCrt = IOUtil.readToByteArray( application.getAssets().open("ca.crt") );
         application.lastPositionsObservable.addObserver(this);
         new Thread(() -> {
             while (!stop){
@@ -45,10 +55,9 @@ public class LocationSender implements Observer {
                             point2send.wait(5000);
                         }
                     }
-                    if (config.hasCertificates()){
+                    long now = System.currentTimeMillis();
+                    if (config.hasCertificates(now)){
                         if (pm != null){
-                            long now = System.currentTimeMillis();
-
                             for (SharePerson person : config.persons){
                                 if (person.shareWithActive && (person.shareWithUntil > now)){
                                     sendLocation(person, pm, now);
@@ -56,7 +65,10 @@ public class LocationSender implements Observer {
                             }
                         }
                     } else {
-                        MqttUtil.updateCertificate(application, me, config.persons);
+                        if (now - updateCertificateTimestamp >= updateCertificateTimeout) { // don't repeat updateCertificate too fast - can happen, if there is initially no network available
+                            updateCertificateTimestamp = now;
+                            MqttUtil.updateCertificate(application, me, config.persons);
+                        }
                     }
                 } catch (Exception e){
                     mgLog.e(e.getMessage(),e);
@@ -79,22 +91,17 @@ public class LocationSender implements Observer {
 
     private void sendLocation(SharePerson person, PointModel pm, long now) throws Exception{
         if (sendClient == null){
-            try (InputStream caCrt = application.getAssets().open("ca.crt");
-                 InputStream clientCrt = new FileInputStream(new File(application.getFilesDir(), "certs/my.crt"));
-                 InputStream clientKey = new FileInputStream(new File(application.getFilesDir(), "certs/my.key")) ) {
-                // TODO Replace file read with string read - preinitialize proper strings
-                sendClient = new MqttBase("LocationSender", caCrt, clientCrt, clientKey){
-                    @Override
-                    protected void connectComplete(boolean reconnect, String serverURI) throws MqttException {
-                        super.connectComplete(reconnect, serverURI);
-                        synchronized (point2send){
-                            point2send.notifyAll();
-                        }
+            sendClient = new MqttBase("LocationSender", baCaCrt, baMyCrt, baMyKey){
+                @Override
+                protected void connectComplete(boolean reconnect, String serverURI) throws MqttException {
+                    super.connectComplete(reconnect, serverURI);
+                    synchronized (point2send){
+                        point2send.notifyAll();
                     }
-                };
-            }
+                }
+            };
         }
-        if ((sendClient != null) && (me != null)){
+        if (me != null){
             if (sendClient.isConnected()){
                 MqttProperties props = new MqttProperties();
                 props.setMessageExpiryInterval(8 * 60 * 60L);
