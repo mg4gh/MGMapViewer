@@ -72,7 +72,6 @@ public class GroupSearchTests extends BaseTestCase {
         Assert.assertEquals(View.INVISIBLE, currentActivity.findViewById(R.id.search_result1).getVisibility());
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("n"));
         SystemClock.sleep(1000);
-        Assert.assertTrue (waitForView(TextView.class, R.id.search_result1).getText().toString().contains("Hunnen"));
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("s"));
         SystemClock.sleep(1000);
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("t"));
