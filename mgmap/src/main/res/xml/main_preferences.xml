@@ -295,6 +295,13 @@
             />
         <SwitchPreference
             app:defaultValue="false"
+            app:key="@string/preferences_speechControl_key"
+            app:summary="@string/preferences_speechControl_desc"
+            app:title="@string/preferences_speechControl_title"
+            app:iconSpaceReserved="false"
+            />
+        <SwitchPreference
+            app:defaultValue="false"
             app:key="@string/preferences_alarm_ps_key"
             app:summary="@string/preferences_alarm_ps_desc"
             app:title="@string/preferences_alarm_ps_title"

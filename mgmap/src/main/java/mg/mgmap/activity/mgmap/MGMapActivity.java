@@ -159,6 +159,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         BackupUtil.checkFullBackup(MGMapActivity.this, application.getPersistenceManager());
     private final Observer prefGpsObserver = (e) -> triggerTrackLoggerService();
     private Pref<Boolean> prefTracksVisible;
+    private Pref<Boolean> prefSpeechControl;
     private List<String> recreatePreferences;
 
     public MGMapApplication getMGMapApplication(){
@@ -268,6 +269,7 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         });
         prefTracksVisible = prefCache.get(R.string.preferences_tracks_visible, true);
         prefTracksVisible.addObserver(pcl -> getFS(FSAvailableTrackLogs.class).redraw());
+        prefSpeechControl = prefCache.get(R.string.preferences_speechControl_key, false);
     }
 
     @Override
@@ -455,7 +457,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
                 if (intent.hasExtra(paramKey)){
                     String value = intent.getStringExtra(paramKey);
                     mgLog.i(paramKey+" "+value );
-                    prefCache.get(R.string.activity_param_key, "").setValue(value);
+                    if (value!=null){
+                        prefCache.get(R.string.activity_param_key, "").setValue(value);
+                    }
                 }
 
 
@@ -936,7 +940,32 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (getFS(FSSpeechControl.class).dispatchKeyEvent(event)) return true;
+        if (prefSpeechControl.getValue()){
+            if (getFS(FSSpeechControl.class).dispatchKeyEvent(event)) return true;
+        } else {
+            Pref<Boolean> prefRoutingHints = prefCache.get(R.string.FSRouting_qc_RoutingHint, false);
+            int action = event.getAction();
+            int keyCode = event.getKeyCode();
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_VOLUME_UP:
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        if (!prefRoutingHints.getValue()){
+                            getMapsforgeMapView().getModel().mapViewPosition.zoomIn();
+                            return true;
+                        }
+                    }
+                    break;
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        if (!prefRoutingHints.getValue()){
+                            getMapsforgeMapView().getModel().mapViewPosition.zoomOut();
+                            return true;
+                        }
+                    }
+                    break;
+            }
+
+        }
         return super.dispatchKeyEvent(event);
     }
 }

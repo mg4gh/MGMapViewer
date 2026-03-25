@@ -119,11 +119,16 @@
     <string name="preferences_gnss_minMeter_desc">Minimum distance between location callbacks (in meter)</string>
 
     <string name="preferences_cat_behaviour_key">Behaviour_settings_key</string>
-    <string name="preferences_cat_behaviour_title">Behaviour settings (developer)</string>
+    <string name="preferences_cat_behaviour_title">Behaviour settings</string>
     <string name="preferences_cat_fileMgr_title">File manager settings</string>
     <string name="preferences_fileMgr_preferIntEditor_key">FileMgr.preferInternalEditor</string>
     <string name="preferences_fileMgr_preferIntEditor_title">Editor</string>
     <string name="preferences_fileMgr_preferIntEditor_desc">Prefer internal tiny editor to edit small Files.</string>
+
+    <string name="preferences_speechControl_key">FSpeechControl.speechControlKey</string>
+    <string name="preferences_speechControl_title">Speech Control</string>
+    <string name="preferences_speechControl_desc">Use speech control, e.g. for zoom, loudness, start/stop tracking, enlarge dashboard fields and more.</string>
+
 
     <string name="preferences_headline_version_key">Pref.headline_versionKey</string>
     <string name="preferences_headline_version_desc">Documentation on github.io …</string>

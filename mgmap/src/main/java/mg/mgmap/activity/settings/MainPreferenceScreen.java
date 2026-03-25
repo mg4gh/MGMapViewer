@@ -96,7 +96,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
                 R.string.preferences_smoothing4routing_key,
                 R.string.preferences_gnss_minMillis_key,
                 R.string.preferences_gnss_minMeter_key,
-                R.string.preferences_cat_behaviour_key,
+                R.string.preferences_alarm_ps_key,
                 R.string.preferences_hints_key,
         };
         for (int prefId : developerPrefIds){
