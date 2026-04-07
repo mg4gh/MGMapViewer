@@ -307,9 +307,10 @@ public class ExtendedTextView extends AppCompatTextView {
                         setCompoundDrawables(drawable, null, null, null);
                     } else {
                         mgLog.d("need UIThread: "+logName+ " context="+getContext().getClass().getSimpleName());
-                        onDrawableChanged(getCompoundDrawables()[0], drawable);
-                        Activity activity = (Activity) this.getContext();
-                        activity.runOnUiThread(() -> setCompoundDrawables(drawable, null, null, null));
+                        ((Activity) this.getContext()).runOnUiThread(() -> {
+                            onDrawableChanged(getCompoundDrawables()[0], drawable);
+                            setCompoundDrawables(drawable, null, null, null);
+                        });
                     }
                 }
 //            } else {
