@@ -64,10 +64,10 @@ public class GGraphMulti extends GGraph {
 
     @Override
     public ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> neighbourPoints) {
-        long mapSize = MercatorProjection.getMapSize(gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
+        long mapSize = MercatorProjection.getMapSize(gGraphTileFactory.getZoomLevel(), gGraphTileFactory.getTileSize());
 
-        int tileX = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( pointModel.getLon() , mapSize) , gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
-        int tileY = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( pointModel.getLat() , mapSize) , gGraphTileFactory.ZOOM_LEVEL, gGraphTileFactory.TILE_SIZE);
+        int tileX = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( pointModel.getLon() , mapSize) , gGraphTileFactory.getZoomLevel(), gGraphTileFactory.getTileSize());
+        int tileY = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( pointModel.getLat() , mapSize) , gGraphTileFactory.getZoomLevel(), gGraphTileFactory.getTileSize());
         GGraphTile graph = gGraphTileFactory.getGGraphTile(tileX, tileY);
         neighbourPoints = graph.getNeighbours(pointModel, new ArrayList<>());
 

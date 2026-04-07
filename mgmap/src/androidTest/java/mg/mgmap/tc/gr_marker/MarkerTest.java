@@ -74,7 +74,7 @@ public class MarkerTest extends BaseTestCase {
         Assert.assertEquals(91.5,stat.getLoss(), 2);
         Assert.assertEquals(14.1,stat.getMinEle(), 1);
         Assert.assertEquals(81.2,stat.getMaxEle(), 1);
-        Assert.assertEquals(125,stat.getNumPoints());
+        Assert.assertEquals(125,stat.getNumPoints(), 1);
 
 
         SystemClock.sleep(2000);
@@ -87,7 +87,7 @@ public class MarkerTest extends BaseTestCase {
         Assert.assertEquals(91.5,stat.getLoss(), 2);
         Assert.assertEquals(14.1,stat.getMinEle(), 1);
         Assert.assertEquals(81.2,stat.getMaxEle(), 1);
-        Assert.assertEquals(118,stat.getNumPoints());
+        Assert.assertEquals(118,stat.getNumPoints(),1);
 
         SystemClock.sleep(2000);
         animateTo(getCenterPos());

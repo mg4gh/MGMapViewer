@@ -52,15 +52,15 @@ public class GGraphTileFactory implements GraphFactory {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    final static int CACHE_LIMIT = 2000;
-    final byte ZOOM_LEVEL = 15;
-    final int TILE_SIZE = MapViewerBase.TILE_SIZE;
     static final int LOW_MEMORY_THRESHOLD = 2;
 
     static int getKey(int tileX,int tileY){
         return ( tileX <<16) + tileY;
     }
 
+    private int cacheLimit = 750;
+    private byte zoomLevel = 14;
+    private int tileSize = MapViewerBase.TILE_SIZE;
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
     private boolean wayDetails;
@@ -73,16 +73,32 @@ public class GGraphTileFactory implements GraphFactory {
     public GGraphTileFactory(){}
 
     public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails,
-                                      Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance){
+                                      Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance) {
+        return onCreate(wayProvider, elevationProvider, wayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, zoomLevel, cacheLimit, tileSize);
+    }
+
+    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails,
+                                      Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance, byte zoomLevel, int cacheLimit, int tileSize){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
         this.wayDetails = wayDetails;
         this.prefRoutingAlgorithm = prefRoutingAlgorithm;
         this.prefSmooth4Routing = prefSmooth4Routing;
         this.prefSmoothDistance = prefSmoothDistance;
+        this.zoomLevel = zoomLevel;
+        this.cacheLimit = cacheLimit;
+        this.tileSize = tileSize;
 
-        gTileCache = new GTileCache(CACHE_LIMIT);
+        gTileCache = new GTileCache(cacheLimit);
         return this;
+    }
+
+    public int getTileSize(){
+        return tileSize;
+    }
+
+    public byte getZoomLevel() {
+        return zoomLevel;
     }
 
     public void onDestroy(){
@@ -130,16 +146,16 @@ public class GGraphTileFactory implements GraphFactory {
     public ArrayList<GGraphTile> getGGraphTileList(BBox bBox){
         ArrayList<GGraphTile> tileList = new ArrayList<>();
         try {
-            long mapSize = MercatorProjection.getMapSize(ZOOM_LEVEL, TILE_SIZE);
-            int tileXMin = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( bBox.minLongitude , mapSize) , ZOOM_LEVEL, TILE_SIZE);
-            int tileXMax = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( bBox.maxLongitude , mapSize) , ZOOM_LEVEL, TILE_SIZE);
-            int tileYMin = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( bBox.maxLatitude , mapSize) , ZOOM_LEVEL, TILE_SIZE); // min and max reversed for tiles
-            int tileYMax = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( bBox.minLatitude , mapSize) , ZOOM_LEVEL, TILE_SIZE);
+            long mapSize = MercatorProjection.getMapSize(zoomLevel, tileSize);
+            int tileXMin = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( bBox.minLongitude , mapSize) , zoomLevel, tileSize);
+            int tileXMax = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( bBox.maxLongitude , mapSize) , zoomLevel, tileSize);
+            int tileYMin = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( bBox.maxLatitude , mapSize) , zoomLevel, tileSize); // min and max reversed for tiles
+            int tileYMax = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( bBox.minLatitude , mapSize) , zoomLevel, tileSize);
 
             int totalTiles = (tileXMax-tileXMin+1) * (tileYMax-tileYMin+1);
             mgLog.d(()->"create GGraphTileList with tileXMin=" + tileXMin + " tileYMin=" + tileYMin + " and tileXMax=" + tileXMax + " tileYMax=" + tileYMax +
                         " - total tiles=" + totalTiles);
-            if (totalTiles < CACHE_LIMIT){
+            if (totalTiles < cacheLimit){
                 for (int tileX = tileXMin; tileX <= tileXMax; tileX++) {
                     for (int tileY = tileYMin; tileY <= tileYMax; tileY++) {
                         GGraphTile graph = getGGraphTile(tileX,tileY);
@@ -147,7 +163,7 @@ public class GGraphTileFactory implements GraphFactory {
                     }
                 }
             } else {
-                mgLog.e("totalTiles exceeds CACHE_LIMIT: totalTiles="+ totalTiles+" CACHE_LIMIT="+ CACHE_LIMIT);
+                mgLog.e("totalTiles exceeds CACHE_LIMIT: totalTiles="+ totalTiles+" CACHE_LIMIT="+ cacheLimit);
             }
         } catch (Exception e) {
             mgLog.e(e);
@@ -433,7 +449,7 @@ public class GGraphTileFactory implements GraphFactory {
     @SuppressWarnings("CommentedOutCode")
     public GGraphTile loadGGraphTile(int tileX, int tileY){
         mgLog.d(()->"Load tileX=" + tileX + " tileY=" + tileY + " (" + gTileCache.size() + ")");
-        Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
+        Tile tile = new Tile(tileX, tileY, zoomLevel, tileSize);
         GGraphTile gGraphTile = new GGraphTile(elevationProvider, tile);
         for (Way way : wayProvider.getWays(tile)) {
             if (wayProvider.isWayForRouting(way)){
