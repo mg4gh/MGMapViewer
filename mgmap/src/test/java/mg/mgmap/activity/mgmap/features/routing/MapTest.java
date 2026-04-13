@@ -87,7 +87,15 @@ public class MapTest {
 
         }
 
-
+        {
+            final byte ZOOM_LEVEL = 14;
+            final int TILE_SIZE = MapViewerBase.TILE_SIZE;
+            int tileX=8808;
+            int tileY=5205;
+            Tile tile = new Tile(tileX, tileY, ZOOM_LEVEL, TILE_SIZE);
+            MapReadResult result = mds.readMapData(tile);
+            mgLog.d("tileX="+tileX+" tileY="+tileY+" numWays="+result.ways.size());
+        }
     }
 
 }
