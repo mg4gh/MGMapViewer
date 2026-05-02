@@ -24,6 +24,10 @@ import mg.mgmap.activity.mgmap.FeatureService;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import mg.mgmap.R;
 import mg.mgmap.generic.model.WriteableTrackLog;
@@ -62,12 +66,13 @@ public class FSMarker extends FeatureService {
     private final Pref<Boolean> prefCalcRouteInProgress = getPref(R.string.FSRouting_pref_calcRouteInProgress, false);
 
     final MGMapApplication.TrackLogObservable<WriteableTrackLog> markerTrackLogObservable = getApplication().markerTrackLogObservable;
+    final ExecutorService markerExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "routing-marker-helper"));
 
-   /**
+    /**
      * MtlSupportProvider allows other implementation to be injected:
      *  - support to check for close lines
      *  - for snap2Way after manual operation (zoom level dependent)
-    *   - to allow visualisation of dnd via extra line
+     *   - to allow visualisation of dnd via extra line
      */
     public MtlSupportProvider mtlSupportProvider = new SimpleMtlSupportProvider();
 
@@ -162,6 +167,13 @@ public class FSMarker extends FeatureService {
         refreshTTHide();
     }
 
+    @Override
+    protected void onDestroy() {
+        if (markerExecutor != null){
+            markerExecutor.shutdown();
+        }
+        super.onDestroy();
+    }
 
     private void checkStartStopMCL(){
         if (prefEditMarkerTrack.getValue()){
@@ -216,88 +228,100 @@ public class FSMarker extends FeatureService {
 
         @Override
         public boolean onTap(WriteablePointModel pmTap) {
-            WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
-            double radius = getRadiusForMarkerActions();
-            TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, radius);
-            if (pointRef != null){
-                deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
-            } else {
-                TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl,pmTap, radius);
-                mtlSupportProvider.optimizePosition(pmTap, radius);
-                if (lineRef != null){
-                    if (mtl.getBestPoint(lineRef.getApproachPoint(), radius) == null){ // if approachPoint is too close to other point, then don't insert
-                        insertPoint(mtl, lineRef, pmTap);
-                    }
+            markerExecutor.submit(() -> {
+                WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+                double radius = getRadiusForMarkerActions();
+                TrackLogRefApproach pointRef = mtl.getBestPoint(pmTap, radius);
+                if (pointRef != null){
+                    deleteMarkerPoint(mtl, pointRef.getSegmentIdx(), pointRef.getEndPointIndex());
                 } else {
-                    if (mtl.getBestPoint(pmTap, radius) == null){ // if optimized pos is too close to other point, then don't add
-                        addPoint(mtl, pmTap);
+                    TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl,pmTap, radius);
+                    mtlSupportProvider.optimizePosition(pmTap, radius);
+                    if (lineRef != null){
+                        if (mtl.getBestPoint(lineRef.getApproachPoint(), radius) == null){ // if approachPoint is too close to other point, then don't insert
+                            insertPoint(mtl, lineRef, pmTap);
+                        }
+                    } else {
+                        if (mtl.getBestPoint(pmTap, radius) == null){ // if optimized pos is too close to other point, then don't add
+                            addPoint(mtl, pmTap);
+                        }
                     }
                 }
-            }
-            mtl.recalcStatistic();
-            mtl.setModified(true);
-            markerTrackLogObservable.changed();
+                mtl.recalcStatistic();
+                mtl.setModified(true);
+                markerTrackLogObservable.changed();
+            });
             return true;
         }
 
         @Override
         protected boolean checkDrag(PointModel pmStart) {
-            WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
-            double radius = getRadiusForMarkerActions();
-            TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, radius);
-            TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl, pmStart, radius);
-            mgLog.i(pmStart);
-            try {
-                if (pointRef == null){
-                    if (lineRef != null){
-                        if (mtl.getBestPoint(lineRef.getApproachPoint(), radius) == null){ // if approachPoint is too close to other point, then don't insert
-                            WriteablePointModel wpm = new WriteablePointModelImpl(lineRef.getApproachPoint());
-                            mtlSupportProvider.optimizePosition(wpm, radius);
-                            insertPoint(mtl, lineRef, wpm);
-                            pointRef = mtl.getBestPoint(wpm, radius);
+            Future<?>  future =  markerExecutor.submit(() -> {
+                WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+                double radius = getRadiusForMarkerActions();
+                TrackLogRefApproach pointRef = mtl.getBestPoint(pmStart, radius);
+                TrackLogRefApproach lineRef = mtlSupportProvider.getBestDistance(mtl, pmStart, radius);
+                mgLog.i(pmStart);
+                try {
+                    if (pointRef == null){
+                        if (lineRef != null){
+                            if (mtl.getBestPoint(lineRef.getApproachPoint(), radius) == null){ // if approachPoint is too close to other point, then don't insert
+                                WriteablePointModel wpm = new WriteablePointModelImpl(lineRef.getApproachPoint());
+                                mtlSupportProvider.optimizePosition(wpm, radius);
+                                insertPoint(mtl, lineRef, wpm);
+                                pointRef = mtl.getBestPoint(wpm, radius);
+                            }
                         }
                     }
-                }
-                if (pointRef != null){
-                    setDragObject(pointRef);
+                    if (pointRef != null){
+                        setDragObject(pointRef);
 
-                    if (getMapView().getModel().mapViewPosition.getZoomLevel() < 15){
-                        // if prev of next point are also close, then prohibit drag - if too much points close, the user intention is not clear
-                        TrackLogSegment segment = mtl.getTrackLogSegment(pointRef.getSegmentIdx());
-                        int tlpIdx = pointRef.getEndPointIndex();
-                        if (tlpIdx > 0){ // there is a previous point -> check whether also close
-                            PointModel prevPoint = segment.get(tlpIdx-1);
-                            if (getMapViewUtility().isClose( PointModelUtil.distance(pmStart, prevPoint) )){
-                                setDragObject(null);
+                        if (getMapView().getModel().mapViewPosition.getZoomLevel() < 15){
+                            // if prev of next point are also close, then prohibit drag - if too much points close, the user intention is not clear
+                            TrackLogSegment segment = mtl.getTrackLogSegment(pointRef.getSegmentIdx());
+                            int tlpIdx = pointRef.getEndPointIndex();
+                            if (tlpIdx > 0){ // there is a previous point -> check whether also close
+                                PointModel prevPoint = segment.get(tlpIdx-1);
+                                if (getMapViewUtility().isClose( PointModelUtil.distance(pmStart, prevPoint) )){
+                                    setDragObject(null);
+                                }
                             }
-                        }
-                        if (tlpIdx < segment.size()-1){
-                            PointModel nextPoint = segment.get(tlpIdx+1);
-                            if (getMapViewUtility().isClose( PointModelUtil.distance(pmStart, nextPoint) )){
-                                setDragObject(null);
+                            if (tlpIdx < segment.size()-1){
+                                PointModel nextPoint = segment.get(tlpIdx+1);
+                                if (getMapViewUtility().isClose( PointModelUtil.distance(pmStart, nextPoint) )){
+                                    setDragObject(null);
+                                }
                             }
                         }
                     }
+                    if (getDragObject() != null){
+                        mgLog.i("dragObject="+getDragObject());
+                    }
+                } catch (Exception e){
+                    setDragObject(null);
                 }
-                if (getDragObject() != null){
-                    mgLog.i("dragObject="+getDragObject());
-                }
-            } catch (Exception e){
-                setDragObject(null);
+
+            });
+            try {
+                future.get();
+            } catch (ExecutionException | InterruptedException e) {
+                mgLog.e(e.getMessage(),e);
             }
             return (getDragObject() != null);
         }
 
         @Override
         protected void handleDrag(WriteablePointModel pmCurrent) {
-            mgLog.i("pmCurrent="+pmCurrent);
-            WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
-            TrackLogRefApproach dragRef = getDragObject();
-            mtlSupportProvider.optimizePosition(pmCurrent, getRadiusForMarkerActions());
-            moveMarkerPoint(mtl, dragRef.getSegmentIdx(), dragRef.getEndPointIndex(), pmCurrent);
-            mtl.recalcStatistic();
-            mtl.setModified(true);
-            markerTrackLogObservable.changed();
+            markerExecutor.submit(() -> {
+                mgLog.i("pmCurrent="+pmCurrent);
+                WriteableTrackLog mtl = markerTrackLogObservable.getTrackLog();
+                TrackLogRefApproach dragRef = getDragObject();
+                mtlSupportProvider.optimizePosition(pmCurrent, getRadiusForMarkerActions());
+                moveMarkerPoint(mtl, dragRef.getSegmentIdx(), dragRef.getEndPointIndex(), pmCurrent);
+                mtl.recalcStatistic();
+                mtl.setModified(true);
+                markerTrackLogObservable.changed();
+            });
         }
 
     }
