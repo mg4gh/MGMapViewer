@@ -119,7 +119,6 @@ public class FSRouting extends FeatureService {
     private final ArrayList<ExtendedTextView> profileETVs = new ArrayList<>();
     private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
     private MultiPointView routingIntermediateMPV = null;
-    private int rotlHashcode = -1;
 
 
     private ViewGroup dashboardRoute = null;
@@ -432,36 +431,40 @@ public class FSRouting extends FeatureService {
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
 
-        if ((mtl == null) || (rotl == null)){
-            unregisterAll();
-        } else { // mtl and rotl not null
-            if (rotl.hashCode() != rotlHashcode){ // rotl is changed
-                rotlHashcode = rotl.hashCode();
-
-                unregisterAll();
-                if (dndVisualisationLayer != null){
-                    if (checkMtlpMovement( dndVisualisationLayer.getModel().get(0), false )){
-                        register(dndVisualisationLayer);
-                    }
+        unregisterAll();
+        if ((mtl != null) && (rotl != null)){
+            if (dndVisualisationLayer != null){
+                if (checkMtlpMovement( dndVisualisationLayer.getModel().get(0), false )){
+                    register(dndVisualisationLayer);
                 }
-                showTrack(rotl,prefRouteGL,PAINT_STROKE_GL,PAINT_ROUTE_STROKE, prefAlphaRotl.getValue(), 0);
-                showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  6, true);
-                if (getPref(R.string.preferences_display_show_km_key, true).getValue()){
-                    showTrack(rotl,CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()),false, 3, true, true);
-                }
-                checkRelaxedViews(mtl);
             }
-            // do this block for statistic always, since in arrival time mode the value changes, even if rotl is unchanged
-            TrackLogStatistic trackLogStatistic = calcRemainingStatistic(rotl);
-            boolean arrivalTimeMode = (trackLogStatistic != null) && (trackLogStatistic.getDuration() > 8640000000L); // > 100 days ==> assume arrival time
-            ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(arrivalTimeMode? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
-            getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, trackLogStatistic);
-
-            cancelRefresh();
-            getTimer().postDelayed(ttRefresh, 5000);
-
+            showTrack(rotl,prefRouteGL,PAINT_STROKE_GL,PAINT_ROUTE_STROKE, prefAlphaRotl.getValue(), 0);
+            showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  6, true);
+            if (getPref(R.string.preferences_display_show_km_key, true).getValue()){
+                showTrack(rotl,CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()),false, 3, true, true);
+            }
+            checkRelaxedViews(mtl);
+            taskStatisticUpdate.run();
         }
     }
+
+    Runnable taskStatisticUpdate = new Runnable() {
+        @Override
+        public void run() {
+            WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
+            if (rotl != null) {
+                TrackLogStatistic trackLogStatistic = calcRemainingStatistic(rotl);
+                ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(!prefRouteDuration.getValue()? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
+                getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, trackLogStatistic);
+                getTimer().removeCallbacks(ttStatisticUpdate);
+                if (!prefRouteDuration.getValue()) { // refresh timer only in arrival time mode
+                    getTimer().postDelayed(ttStatisticUpdate, 5000);
+                }
+            }
+        }
+    };
+
+    Runnable ttStatisticUpdate = () -> getActivity().runOnUiThread(taskStatisticUpdate);
 
     private void updateRouting(){
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
