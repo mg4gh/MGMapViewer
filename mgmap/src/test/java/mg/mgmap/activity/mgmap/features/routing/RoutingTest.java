@@ -72,7 +72,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(true), new Pref<>("16"));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(true), new Pref<>("16"));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new MTB_K2S2());
@@ -109,7 +109,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new ShortestDistance());
@@ -182,7 +182,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
@@ -236,7 +236,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy HH:mm:ss.SSS");
         for (int x=0; x<100; x++){
@@ -307,7 +307,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new TrekkingBike());
@@ -377,7 +377,7 @@ public class RoutingTest {
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>("BidirectionalAstarExt"), new Pref<>(false), new Pref<>("16"));
+        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>("BidirectionalAstarExt"), new Pref<>(false), new Pref<>("16"));
 
         RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
         routingEngine.setRoutingProfile(new TrekkingBike());
@@ -452,7 +452,7 @@ public class RoutingTest {
         {
             useQubicInterpolation.setValue(false);
             useQubicSplineInterpolation.setValue(false);
-            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
             RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
             routingEngine.setRoutingProfile(new TrekkingBike());
             routingEngine.refreshRequired.set(0);
@@ -468,7 +468,7 @@ public class RoutingTest {
         {
             useQubicInterpolation.setValue(false);
             useQubicSplineInterpolation.setValue(false);
-            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
             RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
             routingEngine.setRoutingProfile(new TrekkingBike());
             routingEngine.refreshRequired.set(0);
@@ -485,7 +485,7 @@ public class RoutingTest {
         {
             useQubicInterpolation.setValue(true);
             useQubicSplineInterpolation.setValue(false);
-            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
             RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
             routingEngine.setRoutingProfile(new TrekkingBike());
             routingEngine.refreshRequired.set(0);
@@ -503,7 +503,7 @@ public class RoutingTest {
         {
             useQubicInterpolation.setValue(true);
             useQubicSplineInterpolation.setValue(true);
-            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), prefSmoothingDistance);
             RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
             routingEngine.setRoutingProfile(new TrekkingBike());
             routingEngine.refreshRequired.set(0);

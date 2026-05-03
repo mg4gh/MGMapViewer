@@ -63,7 +63,7 @@ public class GGraphTileFactory implements GraphFactory {
     private int tileSize = MapViewerBase.TILE_SIZE;
     private WayProvider wayProvider = null;
     private ElevationProvider elevationProvider = null;
-    private boolean wayDetails;
+    private Pref<Boolean> prefWayDetails;
     Pref<String> prefRoutingAlgorithm;
     Pref<Boolean> prefSmooth4Routing;
     GTileCache gTileCache;
@@ -72,16 +72,16 @@ public class GGraphTileFactory implements GraphFactory {
 
     public GGraphTileFactory(){}
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails,
+    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, Pref<Boolean> prefWayDetails,
                                       Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance) {
-        return onCreate(wayProvider, elevationProvider, wayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, zoomLevel, cacheLimit, tileSize);
+        return onCreate(wayProvider, elevationProvider, prefWayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, zoomLevel, cacheLimit, tileSize);
     }
 
-    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, boolean wayDetails,
+    public GGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, Pref<Boolean> prefWayDetails,
                                       Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance, byte zoomLevel, int cacheLimit, int tileSize){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
-        this.wayDetails = wayDetails;
+        this.prefWayDetails = prefWayDetails;
         this.prefRoutingAlgorithm = prefRoutingAlgorithm;
         this.prefSmooth4Routing = prefSmooth4Routing;
         this.prefSmoothDistance = prefSmoothDistance;
@@ -458,7 +458,7 @@ public class GGraphTileFactory implements GraphFactory {
                 gGraphTile.addLatLongs( wayAttributs, way.latLongs[0]);
 
                 // now setup rawWays
-                if (wayDetails){
+                if (prefWayDetails.getValue()){
                     MultiPointModelImpl mpm = new MultiPointModelImpl();
                     for (LatLong latLong : way.latLongs[0] ){
                         // for points inside the tile use the GNodes as already allocated

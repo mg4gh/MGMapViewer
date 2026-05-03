@@ -232,11 +232,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         coView = getControlView();
-        boolean wayDetails = prefCache.get(R.string.FSGrad_pref_WayDetails_key, false).getValue();
+        Pref<Boolean> prefWayDetails = prefCache.get(R.string.FSGrad_pref_WayDetails_key, false);
         Pref<Boolean> prefSmooth4Routing = prefCache.get(R.string.preferences_smoothing4routing_key, true);
         Pref<String> prefSmoothDistance = prefCache.get(R.string.preferences_smoothing4routing_distance, ""+PointModelUtil.getCloseThreshold()/2f);
         Pref<String> prefRoutingAlgorithm = prefCache.get(R.string.FSRouting_routing_algorithm_key, "BidirectionalAStar");
-        graphFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), wayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
+        graphFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), prefWayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSAlpha(this));
@@ -807,6 +807,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         // Some preference changes take effect due to mapLayerFactory.recreateMapLayers - those need to be listed in recreatePreferences
         if (recreatePreferences.contains(key) && (!preferences.getBoolean(getResources().getString(R.string.MGMapApplication_pref_Restart), true))){
             FeatureService.getTimer().postDelayed(() -> {
+                getGraphFactory().clearCache();
+
                 boolean recreateAllMapsforge = !key.startsWith(MGMapLayerFactory.LAYER_PREF_KEY_PREFIX);
                 if (key.startsWith("mapsforge")){ // R.string.preferences_scale_key, R.string.preferences_scalebar_key, R.string.preferences_language_key
                     // reset mapsforge settings

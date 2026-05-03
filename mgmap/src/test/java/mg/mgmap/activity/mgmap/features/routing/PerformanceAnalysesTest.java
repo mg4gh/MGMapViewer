@@ -95,7 +95,7 @@ public class PerformanceAnalysesTest {
         {
             MapDataStore mds = new MapFile(mapFile, "de");
             WayProvider wayProvider = new WayProviderHelper(mds);
-            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"), (byte)15, 2000, 256);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), new Pref<>("16"), (byte)15, 2000, 256);
 
             BBox bBox = new BBox();
             long start = System.nanoTime();
@@ -118,7 +118,7 @@ public class PerformanceAnalysesTest {
         {
             MapDataStore mds = new MapFile(mapFile, "de");
             WayProvider wayProvider = new WayProviderHelper(mds);
-            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>(""), new Pref<>(false), new Pref<>("16"));
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(false), new Pref<>("16"));
 //            gGraphTileFactory.ZOOM_LEVEL = 15;
 
             BBox bBox = new BBox();
@@ -158,7 +158,7 @@ public class PerformanceAnalysesTest {
         {
             MapDataStore mds = new MapFile(mapFile, "de");
             WayProvider wayProvider = new WayProviderHelper(mds);
-            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>("BidirectionalAStar"), new Pref<>(false), new Pref<>("16"), (byte)15, 2000, 256);
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>("BidirectionalAStar"), new Pref<>(false), new Pref<>("16"), (byte)15, 2000, 256);
 
             long start = System.nanoTime();
             for (int x = baseX; x < baseX + steps; x++){
@@ -174,7 +174,7 @@ public class PerformanceAnalysesTest {
         {
             MapDataStore mds = new MapFile(mapFile, "de");
             WayProvider wayProvider = new WayProviderHelper(mds);
-            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, false, new Pref<>("BidirectionalAStar"), new Pref<>(false), new Pref<>("16"));
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>("BidirectionalAStar"), new Pref<>(false), new Pref<>("16"));
 //            gGraphTileFactory.ZOOM_LEVEL = 15;
 
             long start = System.nanoTime();
