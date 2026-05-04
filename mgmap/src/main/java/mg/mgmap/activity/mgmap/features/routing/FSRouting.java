@@ -428,38 +428,35 @@ public class FSRouting extends FeatureService {
 
     @Override
     protected void doRefreshResumedUI() {
+        unregisterAll();
         WriteableTrackLog mtl = application.markerTrackLogObservable.getTrackLog();
         WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
-
-        unregisterAll();
-        if ((mtl != null) && (rotl != null)){
-            if (dndVisualisationLayer != null){
-                if (checkMtlpMovement( dndVisualisationLayer.getModel().get(0), false )){
-                    register(dndVisualisationLayer);
-                }
+        if (dndVisualisationLayer != null){
+            if (checkMtlpMovement( dndVisualisationLayer.getModel().get(0), false )){
+                register(dndVisualisationLayer);
             }
-            showTrack(rotl,prefRouteGL,PAINT_STROKE_GL,PAINT_ROUTE_STROKE, prefAlphaRotl.getValue(), 0);
-            showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  6, true);
-            if (getPref(R.string.preferences_display_show_km_key, true).getValue()){
-                showTrack(rotl,CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()),false, 3, true, true);
-            }
-            checkRelaxedViews(mtl);
-            taskStatisticUpdate.run();
         }
+        showTrack(rotl,prefRouteGL,PAINT_STROKE_GL,PAINT_ROUTE_STROKE, prefAlphaRotl.getValue(), 0);
+        if (mtl != null){
+            showTrack(mtl, CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()) , false,  6, true);
+        }
+        if (getPref(R.string.preferences_display_show_km_key, true).getValue()){
+            showTrack(rotl,CC.getAlphaCloneFill(PAINT_ROUTE_STROKE2, prefAlphaRotl.getValue()),false, 3, true, true);
+        }
+        checkRelaxedViews(mtl);
+        taskStatisticUpdate.run();
     }
 
     Runnable taskStatisticUpdate = new Runnable() {
         @Override
         public void run() {
             WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
-            if (rotl != null) {
-                TrackLogStatistic trackLogStatistic = calcRemainingStatistic(rotl);
-                ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(!prefRouteDuration.getValue()? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
-                getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, trackLogStatistic);
-                getTimer().removeCallbacks(ttStatisticUpdate);
-                if (!prefRouteDuration.getValue()) { // refresh timer only in arrival time mode
-                    getTimer().postDelayed(ttStatisticUpdate, 5000);
-                }
+            TrackLogStatistic trackLogStatistic = calcRemainingStatistic(rotl);
+            ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(!prefRouteDuration.getValue()? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
+            getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, trackLogStatistic);
+            getTimer().removeCallbacks(ttStatisticUpdate);
+            if (!prefRouteDuration.getValue()) { // refresh timer only in arrival time mode
+                getTimer().postDelayed(ttStatisticUpdate, 5000);
             }
         }
     };
