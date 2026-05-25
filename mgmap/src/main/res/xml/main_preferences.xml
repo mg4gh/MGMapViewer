@@ -194,6 +194,14 @@
             app:title="@string/preferences_minimalTurningInstruction_title"
             app:iconSpaceReserved="false"
             />
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="@string/FSRouting_pref_RouteArrivalTime"
+            app:summary="@string/FSRouting_pref_RouteArrivalTime_desc"
+            app:title="@string/FSRouting_pref_RouteArrivalTime_title"
+            app:iconSpaceReserved="false"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory

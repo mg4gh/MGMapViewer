@@ -115,7 +115,7 @@ public class FSRouting extends FeatureService {
     private final String defaultRoutingProfileId = RoutingProfile.constructId(ShortestDistance.class);
     private final Pref<String> prefRoutingProfileId = getPref(R.string.FSRouting_pref_currentRoutingProfile, defaultRoutingProfileId);
     private final Pref<Boolean> prefCalcRouteInProgress = getPref(R.string.FSRouting_pref_calcRouteInProgress, false);
-    private final Pref<Boolean> prefRouteDuration = getPref(R.string.FSRouting_pref_RouteDuration, true);
+    private final Pref<Boolean> prefRouteArrivalTime = getPref(R.string.FSRouting_pref_RouteArrivalTime, false);
     private final ArrayList<ExtendedTextView> profileETVs = new ArrayList<>();
     private final Pref<Boolean> prefRouteSavable = new Pref<>(false); // when MTL is changed
     private MultiPointView routingIntermediateMPV = null;
@@ -246,7 +246,7 @@ public class FSRouting extends FeatureService {
                 routingIntermediateMPV = null;
             }
         });
-        prefRouteDuration.addObserver(refreshObserver);
+        prefRouteArrivalTime.addObserver(refreshObserver);
 
         routingThread = createRoutingThread();
     }
@@ -452,10 +452,11 @@ public class FSRouting extends FeatureService {
         public void run() {
             WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
             TrackLogStatistic trackLogStatistic = calcRemainingStatistic(rotl);
-            ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(!prefRouteDuration.getValue()? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
+            boolean arrivalTimeMode = (trackLogStatistic != null) && (trackLogStatistic.getSegmentIdx()==-7);
+            ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(arrivalTimeMode? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
             getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, trackLogStatistic);
             getTimer().removeCallbacks(ttStatisticUpdate);
-            if (!prefRouteDuration.getValue()) { // refresh timer only in arrival time mode
+            if (arrivalTimeMode) { // refresh timer only in arrival time mode
                 getTimer().postDelayed(ttStatisticUpdate, 5000);
             }
         }
@@ -492,11 +493,12 @@ public class FSRouting extends FeatureService {
                         routeTrackLog.remainStatistic(dashboardStatistic, bestMatch.getApproachPoint(), bestMatch.getSegmentIdx(), bestMatch.getEndPointIndex());
                         dashboardStatistic.setSegmentIdx(-2); // indicates Remainings statistic
 
-                        if (!prefRouteDuration.getValue()){ // calc arrival time instead duration
+                        if (prefRouteArrivalTime.getValue()){ // calc arrival time instead duration
                             long now = System.currentTimeMillis();
                             long duration = dashboardStatistic.getDuration();
                             mgLog.d("now="+now+" duration="+duration);
                             dashboardStatistic.setDuration( now + duration );
+                            dashboardStatistic.setSegmentIdx(-7); // indicates arrival time statistic
                         }
                     }
                 }

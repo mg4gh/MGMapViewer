@@ -51,7 +51,7 @@ public class FSSpeechControl extends FeatureService {
     private SpeechRecognizer speechRecognizer = null;
     private final Map<String, String> wordFixes = new HashMap<>();
 
-    private final Pref<Boolean> prefRouteDuration = getPref(R.string.FSRouting_pref_RouteDuration, true);
+    private final Pref<Boolean> prefRouteArrivalTime = getPref(R.string.FSRouting_pref_RouteArrivalTime, false);
     private final Pref<Boolean> prefEnlargeTimeTrigger = getPref(R.string.FSTime_enlargeTimeTrigger, true);
     private final Pref<Boolean> prefEnlargeBatTrigger = getPref(R.string.FSTime_enlargeBatTrigger, true);
     private final Pref<String> prefSearchText = getPref(R.string.FSSearch_pref_SearchText, "");
@@ -493,7 +493,7 @@ public class FSSpeechControl extends FeatureService {
     }
 
     private boolean setDurationMode(boolean durationMode){
-        prefRouteDuration.setValue(durationMode);
+        prefRouteArrivalTime.setValue(!durationMode);
         return true;
     }
     private boolean enlarge(ViewGroup dashboard, int childAt){

@@ -36,7 +36,8 @@ public class TrackLogStatistic {
             -3,"S-2",
             -4,"1-E",
             -5,"1-2",
-            -6,"2-1");
+            -6,"2-1",
+            -7,"A");
 
     private boolean frozen = false; //used to prevent recalc Statistic after MetaData.load ... and later lazy loading of Points
     String logName = "";  // used only for debug puposes
