@@ -155,8 +155,11 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
     private MapDataStoreUtil mapDataStoreUtil = null;
     private GraphFactory graphFactory = null;
     private final Runnable ttUploadGpxTrigger = () -> prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).toggle();
-    private final Runnable ttCheckFullBackup = () ->
-        BackupUtil.checkFullBackup(MGMapActivity.this, application.getPersistenceManager());
+    private final Runnable ttCheckFullBackup = () -> {
+        if (!prefCache.get(R.string.preferences_tom_archive_key,false).getValue()) {
+            BackupUtil.checkFullBackup(MGMapActivity.this, application.getPersistenceManager());
+        }
+    };
     private final Observer prefGpsObserver = (e) -> triggerTrackLoggerService();
     private Pref<Boolean> prefTracksVisible;
     private Pref<Boolean> prefSpeechControl;
@@ -264,7 +267,9 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         application.prefGps.addObserver(prefGpsObserver);
         application.prefGps.onChange();
         prefCache.get(R.string.preferences_sftp_uploadGpxTrigger, false).addObserver((e) -> {
-            FeatureService.getTimer().postDelayed(()->BackupUtil.checkLatestBackup(MGMapActivity.this, application.getPersistenceManager()), 10);
+            if (!prefCache.get(R.string.preferences_tom_archive_key,false).getValue()){
+                FeatureService.getTimer().postDelayed(()->BackupUtil.checkLatestBackup(MGMapActivity.this, application.getPersistenceManager()), 10);
+            }
             FeatureService.getTimer().postDelayed(()->new GpxSyncUtil().trySynchronisation(application), 10000);
         });
         prefTracksVisible = prefCache.get(R.string.preferences_tracks_visible, true);

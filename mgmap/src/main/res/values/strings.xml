@@ -159,4 +159,8 @@
     <string name="FSTime_enlargeTimeTrigger">FSTime.enlargeTimeTrigger</string>
     <string name="FSTime_enlargeBatTrigger">FSTime.enlargeBatTrigger</string>
 
+    <string name="preferences_tom_archive_key">tom_archive_key</string>
+    <string name="preferences_tom_archive_title">TOM - Turn On Manual archiving</string>
+    <string name="preferences_tom_archive_desc">In standard behavior there is an automatic trigger for archiving of gpx files. Switch on to disable this automatic backup trigger.</string>
+
 </resources>
