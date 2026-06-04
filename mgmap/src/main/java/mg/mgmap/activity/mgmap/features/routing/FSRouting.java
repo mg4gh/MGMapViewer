@@ -64,7 +64,6 @@ import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.util.CC;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.PrefCache;
-import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.gpx.GpxExporter;
@@ -452,11 +451,9 @@ public class FSRouting extends FeatureService {
         public void run() {
             WriteableTrackLog rotl = application.routeTrackLogObservable.getTrackLog();
             TrackLogStatistic trackLogStatistic = calcRemainingStatistic(rotl);
-            boolean arrivalTimeMode = (trackLogStatistic != null) && (trackLogStatistic.getSegmentIdx()==-7);
-            ((ExtendedTextView)dashboardRoute.getChildAt(4)).setFormat(arrivalTimeMode? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
             getControlView().setDashboardValue(prefMtlVisibility.getValue(), dashboardRoute, trackLogStatistic);
             getTimer().removeCallbacks(ttStatisticUpdate);
-            if (arrivalTimeMode) { // refresh timer only in arrival time mode
+            if ((trackLogStatistic != null) && (trackLogStatistic.getSegmentIdx()==-7)) { // refresh timer only in arrival time mode
                 getTimer().postDelayed(ttStatisticUpdate, 5000);
             }
         }

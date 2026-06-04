@@ -51,6 +51,7 @@ import mg.mgmap.generic.util.CC;
 import mg.mgmap.activity.mgmap.util.EnlargeControl;
 import mg.mgmap.generic.util.Observer;
 import mg.mgmap.generic.util.Pref;
+import mg.mgmap.generic.util.basic.Formatter;
 import mg.mgmap.generic.util.basic.MGLog;
 import mg.mgmap.generic.view.ExtendedTextView;
 import mg.mgmap.activity.mgmap.view.LabeledSlider;
@@ -364,6 +365,7 @@ public class ControlView extends RelativeLayout {
         ((ExtendedTextView) dashboardEntry.getChildAt(1)).setValue(statistic.getTotalLength());
         ((ExtendedTextView) dashboardEntry.getChildAt(2)).setValue(statistic.getGain());
         ((ExtendedTextView) dashboardEntry.getChildAt(3)).setValue(statistic.getLoss());
+        ((ExtendedTextView) dashboardEntry.getChildAt(4)).setFormat("A".equals(sIdx)? Formatter.FormatType.FORMAT_ARRIVAL_TIME: Formatter.FormatType.FORMAT_DURATION);
         ((ExtendedTextView) dashboardEntry.getChildAt(4)).setValue(statistic.getDuration());
     }
 
