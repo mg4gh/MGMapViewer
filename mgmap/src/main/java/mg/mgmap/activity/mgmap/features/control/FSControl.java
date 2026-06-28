@@ -58,6 +58,7 @@ public class FSControl extends FeatureService {
 
     private final Pref<Integer> prefQcs = getPref(R.string.FSControl_qc_selector, 0);
     private final Pref<Boolean> prefFullscreen = getPref(R.string.FSControl_qcFullscreenOn, true);
+    private final Pref<Boolean> prefPermanentOn = getPref(R.string.FSControl_qcPermanentOn, false);
     public  final Pref<Boolean> prefMenuInflated = getPref(R.string.FSControl_pref_menu_inflated, false);
     private final Pref<Boolean> prefMenuOneLine;
     private final Pref<String> prefMenuAnimationTimeout;
@@ -139,6 +140,7 @@ public class FSControl extends FeatureService {
                 getControlView().setVerticalOffset( );
             }
         });
+        prefPermanentOn.addObserver((e)->getControlView().setKeepScreenOn(prefPermanentOn.getValue()));
         prefMenuOneLine = getPref(R.string.FSControl_pref_menu_one_line_key, false);
         RelativeLayout base2 = activity.findViewById(R.id.base2);
         prefMenuOneLine.addObserver(evt -> base2.getLayoutParams().height = (prefMenuOneLine.getValue()?1:2) * VUtil.QC_HEIGHT );
@@ -200,10 +202,14 @@ public class FSControl extends FeatureService {
         super.initQuickControl(etv,info);
         if ("group_multi".equals(info)) {
             etv.setPrAction(new Pref<>(false), triggerHome);
-            etv.setData(R.drawable.group_multi);
+            etv.setData(prefPermanentOn,R.drawable.group_multi,R.drawable.group_multi2);
         } else if ("group_task".equals(info)) {
             etv.setPrAction(new Pref<>(false));
             etv.setData(R.drawable.group_task);
+        } else if ("permanent".equals(info)) {
+            etv.setPrAction(prefPermanentOn);
+            etv.setData(prefPermanentOn,R.drawable.permanent_on2,R.drawable.permanent_on);
+            etv.setHelp(r(R.string.FSControl_qcPermanentOn_help));
         } else if ("fullscreen".equals(info)) {
             etv.setPrAction(prefFullscreen);
             etv.setData(R.drawable.fullscreen);
