@@ -225,7 +225,7 @@ public class MgMain {
                 sendMqttMessage("/server/" + email + "/verify_confirm", "success");
                 System.out.println("Sent verify confirm to: " + email);
             } catch (Exception e) {
-                System.err.println("Failed to send MQTT verify confirm: " + e.getMessage());
+                System.err.println("Failed to send MQTT verify confirm:  " + e.getMessage());
             }
         }
     }
