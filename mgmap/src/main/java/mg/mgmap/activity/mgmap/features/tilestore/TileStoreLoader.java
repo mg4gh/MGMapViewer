@@ -22,8 +22,11 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.Nullable;
 
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
@@ -118,6 +121,8 @@ public class TileStoreLoader {
                     WebView myWebView = new WebView(activity);
                     myWebView.getSettings().setJavaScriptEnabled(true);
                     myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+                    myWebView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0");
+                    myWebView.removeJavascriptInterface("HostAppInterface");
 
                     myWebView.setWebViewClient(new WebViewClient(){
                         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
