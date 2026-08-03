@@ -112,9 +112,9 @@ public class PointModelImpl implements PointModel{
     @Override
     public String toString() {
         if (ele == NO_ELE){
-            return String.format(Locale.ENGLISH, "Lat=%2.6f, Lon=%2.6f",getLat(), getLon());
+            return String.format(Locale.ENGLISH, "Pos=%2.6f,%2.6f",getLat(), getLon());
         } else{
-            return String.format(Locale.ENGLISH, "Lat=%2.6f, Lon=%2.6f, Ele=%2.1fm",getLat(), getLon(), ele);
+            return String.format(Locale.ENGLISH, "Pos=%2.6f,%2.6f, Ele=%2.1fm",getLat(), getLon(), ele);
         }
     }
 
