@@ -101,13 +101,12 @@ public class MGMapLayerFactory {
 
     private final MGMapActivity activity;
     private final PersistenceManager persistenceManager;
-    private final XmlRenderTheme xmlRenderTheme;
+    private XmlRenderTheme xmlRenderTheme = null;
     private final SharedPreferences sharedPreferences;
 
     public MGMapLayerFactory(MGMapActivity activity) {
         this.activity = activity;
         persistenceManager = activity.getMGMapApplication().getPersistenceManager();
-        xmlRenderTheme = activity.getRenderTheme();
 
         sharedPreferences = activity.getSharedPreferences();
         for (int i=0; i<NUM_MAP_LAYERS; i++) {
@@ -133,6 +132,10 @@ public class MGMapLayerFactory {
             LayerManager layerManager = activity.getMapsforgeMapView().getLayerManager();
             Layers layers = layerManager.getLayers();
             synchronized (layers){
+                if (recreateAllMapsforge) {
+                    // On initial setup and on a theme change the flag recreateAllMapsforge is set.
+                    xmlRenderTheme = activity.getRenderTheme();
+                }
                 int layersIdx = 0;
                 for (int i=0; i<NUM_MAP_LAYERS; i++){
                     String prefKey = getPrefKey4Idx(i);

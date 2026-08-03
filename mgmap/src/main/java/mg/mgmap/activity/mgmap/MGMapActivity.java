@@ -49,6 +49,7 @@ import org.mapsforge.map.android.view.MapView;
 
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.Layers;
+import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 
 import org.mapsforge.map.model.DisplayModel;
@@ -815,8 +816,13 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         if (recreatePreferences.contains(key) && (!preferences.getBoolean(getResources().getString(R.string.MGMapApplication_pref_Restart), true))){
             FeatureService.getTimer().postDelayed(() -> {
                 getGraphFactory().clearCache();
+                for (TileCache tileCache : tileCaches){
+                    mgLog.d("purge "+tileCache);
+                    tileCache.purge();
+                }
 
                 boolean recreateAllMapsforge = !key.startsWith(MGMapLayerFactory.LAYER_PREF_KEY_PREFIX);
+                recreateAllMapsforge |= key.equals(getResources().getString(R.string.preference_choose_theme_key));
                 if (key.startsWith("mapsforge")){ // R.string.preferences_scale_key, R.string.preferences_scalebar_key, R.string.preferences_language_key
                     // reset mapsforge settings
                     mapView.getModel().displayModel.setUserScaleFactor(getUserScaleFactor());
