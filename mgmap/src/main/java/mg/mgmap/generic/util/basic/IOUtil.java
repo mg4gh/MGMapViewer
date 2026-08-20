@@ -41,7 +41,8 @@ public class IOUtil {
         try (is) {
             int size = is.available();
             buf = new byte[size];
-            assert (size <= is.read(buf));
+            int readBytes = is.read(buf);
+            assert (size == readBytes);
         }
         return buf;
     }

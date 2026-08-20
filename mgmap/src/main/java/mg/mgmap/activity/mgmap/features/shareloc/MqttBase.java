@@ -141,7 +141,7 @@ public class MqttBase extends MqttClient{
     }
 
     protected void messageReceived(String topic, String message){
-        mgLog.d("Message arrived. Topic: \"" + topic + "\" Payload: \"" + message+"\"");
+        mgLog.i("Message arrived. Topic: \"" + topic + "\" Payload: \"" + message+"\"");
     }
 
     protected void registerThrowable(Throwable throwable){
