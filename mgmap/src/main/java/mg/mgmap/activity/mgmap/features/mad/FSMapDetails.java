@@ -96,6 +96,7 @@ public class FSMapDetails extends FeatureService {
         super(mmActivity);
 
         active = getApplication().getPrefCache().get("FSMapDetails.active", false).getValue();
+        mgLog.d("FSMapDetails active="+active);
         if (active){
             mgLog.d("start FSMapDetails");
 
