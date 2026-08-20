@@ -547,12 +547,12 @@ public class FSRouting extends FeatureService {
             ApproachModel approachModel = gFactory.calcApproach(wpm, closeThreshold);
             if (approachModel != null){
                 PointModel pos = approachModel.getApproachNode();
-                mgLog.i("optimize Pos "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm", approachModel.getApproachDistance() ));
+                mgLog.i("optimize "+wpm+" to "+pos +String.format(Locale.ENGLISH," dist=%.1fm", approachModel.getApproachDistance() ));
                 wpm.setLat(pos.getLat());
                 wpm.setLon(pos.getLon());
                 wpm.setEle(pos.getEle());
             } else {
-                mgLog.i("optimize Pos "+wpm + " no approach");
+                mgLog.i("optimize "+wpm + " no approach");
             }
         }
 

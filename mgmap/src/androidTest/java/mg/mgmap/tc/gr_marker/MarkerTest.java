@@ -214,10 +214,10 @@ public class MarkerTest extends BaseTestCase {
         addRegex(".*onClick mi_marker_edit.*");
         animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
-        addRegex(".*optimize Pos Lat=54.3551.., Lon=13.2729.. to Lat=54.3547.., Lon=13.2729... .*");
-        addRegex(".*optimize Pos Lat=54.3556.., Lon=13.2759.. to Lat=54.3547.., Lon=13.2759.., .*");
-        addRegex(".*optimize Pos Lat=54.3560.., Lon=13.2789.. to Lat=54.3547.., Lon=13.2789.., .*");
-        addRegex(".*optimize Pos Lat=54.3565.., Lon=13.2819.. no approach.*");
+        addRegex(".*optimize Pos=54.3551..,13.2729.. to Pos=54.3547..,13.2729... .*");
+        addRegex(".*optimize Pos=54.3556..,13.2759.. to Pos=54.3547..,13.2759.., .*");
+        addRegex(".*optimize Pos=54.3560..,13.2789.. to Pos=54.3547..,13.2789.., .*");
+        addRegex(".*optimize Pos=54.3565..,13.2819.. no approach.*");
 
         double disty  = PointModelUtil.latitudeDistance(50.0);
         double distx = 0.003;
@@ -243,10 +243,10 @@ public class MarkerTest extends BaseTestCase {
         addRegex(".*onClick mi_marker_edit.*");
         animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
-        addRegex(".*optimize Pos Lat=54.3550.., Lon=13.2729.. to Lat=54.3547.., Lon=13.2729.., .*");
-        addRegex(".*optimize Pos Lat=54.3552.., Lon=13.2759.. to Lat=54.3547.., Lon=13.2759.., .*");
-        addRegex(".*optimize Pos Lat=54.3555.., Lon=13.2789.. to Lat=54.3547.., Lon=13.2789.., .*");
-        addRegex(".*optimize Pos Lat=54.3558.., Lon=13.2819.. no approach.*");
+        addRegex(".*optimize Pos=54.3550..,13.2729.. to Pos=54.3547..,13.2729.., .*");
+        addRegex(".*optimize Pos=54.3552..,13.2759.. to Pos=54.3547..,13.2759.., .*");
+        addRegex(".*optimize Pos=54.3555..,13.2789.. to Pos=54.3547..,13.2789.., .*");
+        addRegex(".*optimize Pos=54.3558..,13.2819.. no approach.*");
 
         double disty  = PointModelUtil.latitudeDistance(30.0);
         double distx = 0.003;
@@ -272,10 +272,10 @@ public class MarkerTest extends BaseTestCase {
         addRegex(".*onClick mi_marker_edit.*");
         animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
-        addRegex(".*optimize Pos Lat=54.3548.., Lon=13.2729.. to Lat=54.3547.., Lon=13.2729.., .*");
-        addRegex(".*optimize Pos Lat=54.3550.., Lon=13.2744.. to Lat=54.3547.., Lon=13.2744.., .*");
-        addRegex(".*optimize Pos Lat=54.3551.., Lon=13.2759.. to Lat=54.3547.., Lon=13.2759.., .*");
-        addRegex(".*optimize Pos Lat=54.3552.., Lon=13.2774.. no approach.*");
+        addRegex(".*optimize Pos=54.3548..,13.2729.. to Pos=54.3547..,13.2729.., .*");
+        addRegex(".*optimize Pos=54.3550..,13.2744.. to Pos=54.3547..,13.2744.., .*");
+        addRegex(".*optimize Pos=54.3551..,13.2759.. to Pos=54.3547..,13.2759.., .*");
+        addRegex(".*optimize Pos=54.3552..,13.2774.. no approach.*");
 
         double disty  = PointModelUtil.latitudeDistance(15.0);
         double distx = 0.0015;
