@@ -82,13 +82,13 @@ public class GroupSearchTests extends BaseTestCase {
         SystemClock.sleep(1000);
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("1"));
         SystemClock.sleep(1000);
-        Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("3"));
+        Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("3a"));
         SystemClock.sleep(1000);
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText(","));
         SystemClock.sleep(1000);
         Espresso.onView(ViewMatchers.withId(R.id.search_edit_text)).perform(ViewActions.typeText("Garz"), ViewActions.pressImeActionButton());
         SystemClock.sleep(1000);
-        animateToViewAndClick(R.id.search_result2);
+        animateToViewAndClick(R.id.search_result1);
 
         PointModel pmCenter = getPointModel4Point(getCenterPos().point());
         Assert.assertEquals(54.317866, pmCenter.getLat(), 0.00001);
