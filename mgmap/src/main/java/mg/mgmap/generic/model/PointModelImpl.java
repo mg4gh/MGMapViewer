@@ -155,8 +155,4 @@ public class PointModelImpl implements PointModel{
         return LaLo.getLaLo(la,lo);
     }
 
-    @Override
-    public LatLong getLatLong() {
-        return new LatLong(getLat(), getLon());
-    }
 }

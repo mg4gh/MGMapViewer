@@ -14,8 +14,6 @@
  */
 package mg.mgmap.generic.model;
 
-import org.mapsforge.core.model.LatLong;
-
 import mg.mgmap.generic.util.basic.LaLo;
 
 /** A model for a single point */
@@ -44,5 +42,4 @@ public interface PointModel extends Comparable<PointModel>{
 
     long getLaLo();
 
-    LatLong getLatLong();
 }

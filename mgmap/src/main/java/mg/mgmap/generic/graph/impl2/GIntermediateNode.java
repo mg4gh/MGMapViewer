@@ -1,7 +1,5 @@
 package mg.mgmap.generic.graph.impl2;
 
-import org.mapsforge.core.model.LatLong;
-
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.util.basic.LaLo;
@@ -50,11 +48,6 @@ public class GIntermediateNode implements PointModel {
     @Override
     public long getLaLo() {
         return (((long)neighbour.getIntermediatesPoints()[pIdx*3])<<32) +neighbour.getIntermediatesPoints()[pIdx*3+1];
-    }
-
-    @Override
-    public LatLong getLatLong() {
-        return new LatLong(getLat(), getLon());
     }
 
     @Override
