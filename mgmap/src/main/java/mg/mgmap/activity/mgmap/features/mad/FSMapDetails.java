@@ -101,7 +101,7 @@ public class FSMapDetails extends FeatureService {
             mgLog.d("start FSMapDetails");
 
             prefZoomLevel.addObserver(refreshObserver);
-            File mapFile = new File(getApplication().getPersistenceManager().getMapsforgeDir(),"bw.osm.map"); // !!! map is not uploaded to git (due to map size)
+            File mapFile = new File(getApplication().getPersistenceManager().getMapsforgeDir(),"ruegen.osm.map"); // !!! map is not uploaded to git (due to map size)
             active = mapFile.exists();
             mgLog.d(mapFile.getAbsolutePath() + " " + active);
             if (active){
@@ -122,11 +122,11 @@ public class FSMapDetails extends FeatureService {
             controlLayer = new MadControlLayer();
             register(controlLayer);
 
-            MultiPointModelImpl mpm = new MultiPointModelImpl();
-            mpm.addPoint( new PointModelImpl(49.404680, 8.753337) );
-            mpm.addPoint( new PointModelImpl(49.406142, 8.753165) );
-            MultiPointView mpv =new MultiPointView(mpm, PAINT_MAD_STROKE);
-            register(mpv);
+//            MultiPointModelImpl mpm = new MultiPointModelImpl();
+//            mpm.addPoint( new PointModelImpl(49.404680, 8.753337) );
+//            mpm.addPoint( new PointModelImpl(49.406142, 8.753165) );
+//            MultiPointView mpv =new MultiPointView(mpm, PAINT_MAD_STROKE);
+//            register(mpv);
         }
     }
 
@@ -170,7 +170,8 @@ public class FSMapDetails extends FeatureService {
 
                     int key = getKey(tile.tileX,tile.tileY);
                     TileMeta tm = tileMetaMap.get(key);
-                    assert tm != null;
+                    if (tm == null) return false;
+//                    assert tm != null;
                     raf.seek(tm.offset);
                     byte[] buf = new byte[tm.length];
                     raf.read(buf);
