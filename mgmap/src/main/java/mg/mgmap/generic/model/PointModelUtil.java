@@ -80,25 +80,27 @@ public class PointModelUtil {
     /** Check, whether pm has an approach to the segment segmentEnd1-segmentEnd2. Return the closest point in pmResult.
      * Be careful with passing references to pmResult !!*/
     public static boolean findApproach(PointModel pm, PointModel segmentEnd1, PointModel segmentEnd2, WriteablePointModel pmResult, int threshold) {
-        return findApproach(pm, segmentEnd1.getLat(), segmentEnd1.getLon(), segmentEnd1.getEle(), segmentEnd1.getTimestamp(),
-                                segmentEnd2.getLat(), segmentEnd2.getLon(), segmentEnd2.getEle(), segmentEnd2.getTimestamp(), pmResult, threshold);
+        return findApproach(pm.getLat(), pm.getLon(),
+                segmentEnd1.getLat(), segmentEnd1.getLon(), segmentEnd1.getEle(), segmentEnd1.getTimestamp(),
+                segmentEnd2.getLat(), segmentEnd2.getLon(), segmentEnd2.getEle(), segmentEnd2.getTimestamp(),
+                pmResult, threshold);
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public static boolean findApproach(PointModel pm, double latEnd1, double lonEnd1, float eleEnd1, long tsEnd1, double latEnd2, double lonEnd2, float eleEnd2, long tsEnd2, WriteablePointModel pmResult, int threshold) {
+    public static boolean findApproach(double pmLat, double pmLon, double latEnd1, double lonEnd1, float eleEnd1, long tsEnd1, double latEnd2, double lonEnd2, float eleEnd2, long tsEnd2, WriteablePointModel pmResult, int threshold) {
         double minLat = Math.min(latEnd1, latEnd2);
         double maxLat = Math.max(latEnd1, latEnd2);
         double minLong = Math.min(lonEnd1, lonEnd2);
         double maxLong = Math.max(lonEnd1, lonEnd2);
 
         double closeDeltaLat = latitudeDistance(threshold);
-        double closeDeltaLong = longitudeDistance(threshold, pm.getLat());
+        double closeDeltaLong = longitudeDistance(threshold, pmLat);
 
         if ((minLong == maxLong) && (minLat == maxLat))
             return false;
-        if ((pm.getLat() > (maxLat + closeDeltaLat)) || (pm.getLat() < (minLat - closeDeltaLat)))
+        if ((pmLat > (maxLat + closeDeltaLat)) || (pmLat < (minLat - closeDeltaLat)))
             return false;
-        if ((pm.getLon() > (maxLong + closeDeltaLong)) || (pm.getLon() < (minLong - closeDeltaLong)))
+        if ((pmLon > (maxLong + closeDeltaLong)) || (pmLon < (minLong - closeDeltaLong)))
             return false;
 
         double resLong;
@@ -111,16 +113,16 @@ public class PointModelUtil {
         double v1ox = v1y;
         double v1oy = -v1x;
         // vector dp = Vector from segmentEnd1 to pm
-        double dpx = pm.getLon() - lonEnd1;
-        double dpy = pm.getLat() - latEnd1;
+        double dpx = pmLon - lonEnd1;
+        double dpy = pmLat - latEnd1;
         // vector v2 = orthogonal Vector from v1 - scaled by latitude factor f
-        double f = Math.cos(Math.toRadians(pm.getLat()));
+        double f = Math.cos(Math.toRadians(pmLat));
         double v2x = v1y/(f*f);
         double v2y = -v1x;
         // segmentEnd1 + n * v1 == pm + m * v2
         double m= crossProduct(v1ox, v1oy, dpx, dpy) / crossProduct(v1ox, v1oy, v2x, v2y); //resolve the two vector equations to eliminate n
-        resLong = pm.getLon() - m*v2x;
-        resLat = pm.getLat() - m*v2y;
+        resLong = pmLon - m*v2x;
+        resLat = pmLat - m*v2y;
 
         pmResult.setLon(Math.min(maxLong, Math.max(minLong, resLong)));
         pmResult.setLat(Math.min(maxLat, Math.max(minLat, resLat)));
