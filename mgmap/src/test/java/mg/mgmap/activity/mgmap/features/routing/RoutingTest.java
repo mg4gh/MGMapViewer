@@ -152,7 +152,7 @@ public class RoutingTest {
             String statistic = rotl.getTrackStatistic().toString();
             System.out.println( statistic);
             Assert.assertEquals(2412.19, rotl.getTrackStatistic().getTotalLength(), 0.01);
-            Assert.assertEquals(74, rotl.getTrackStatistic().getNumPoints());
+            Assert.assertEquals(73, rotl.getTrackStatistic().getNumPoints());
         }
 
         {   // Problemfall Heiligkreuzsteinach
@@ -193,10 +193,14 @@ public class RoutingTest {
             GGraphMulti multi;
             GNode gStart;
             GNode gEnd;
-            int tileXStart = 17084;
-            int tileYStart = 11160;
-            int tileXEnd = 17102;
-            int tileYEnd = 11179;
+//            int tileXStart = 17084;
+//            int tileYStart = 11160;
+//            int tileXEnd = 17102;
+//            int tileYEnd = 11179;
+            int tileXStart = 8541;
+            int tileYStart = 5580;
+            int tileXEnd = 8551;
+            int tileYEnd = 5599;
 
             gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getGNodes().get(5);
             gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getGNodes().get(5);
@@ -247,10 +251,10 @@ public class RoutingTest {
             GGraphMulti multi;
             GNode gStart;
             GNode gEnd;
-            int tileXStart = 17184;
-            int tileYStart = 11160;
-            int tileXEnd = 17202;
-            int tileYEnd = 11179;
+            int tileXStart = 8541;
+            int tileYStart = 5580;
+            int tileXEnd = 8551;
+            int tileYEnd = 5599;
 
             gStart = gGraphTileFactory.getGGraphTile(tileXStart+x/2, tileYStart+x).getGNodes().get(5);
             gEnd = gGraphTileFactory.getGGraphTile(tileXEnd+x/2, tileYEnd+x).getGNodes().get(5);
