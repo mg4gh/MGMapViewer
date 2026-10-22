@@ -22,18 +22,16 @@ import androidx.annotation.NonNull;
 
 public class GNodeRef implements Comparable<GNodeRef>{
 
-    private final GNode node;
-    private final GNode predecessor;
+//    private final GNode node;
+//    private final GNode predecessor;
     private final GNeighbour neighbour;
     private final double cost;
     private final double heuristic;
     private boolean settled = false;
     private boolean reverse = false;
 
-    GNodeRef(GNode node, double cost, GNode predecessor, GNeighbour neighbour, double heuristic){
-        this.node = node;
+    GNodeRef(GNeighbour neighbour, double cost , double heuristic){
         this.cost = cost;
-        this.predecessor  = predecessor;
         this.neighbour = neighbour;
         this.heuristic = heuristic;
     }
@@ -41,8 +39,11 @@ public class GNodeRef implements Comparable<GNodeRef>{
     public int compareTo(@NonNull GNodeRef gNodeRef) {
         if (this == gNodeRef) return 0;
         if (getHeuristicCost() == gNodeRef.getHeuristicCost()){
-            int res = Long.compare(node.getLaLo(), gNodeRef.node.getLaLo());
-            if (res == 0) return Integer.compare(hashCode(), gNodeRef.hashCode());
+            int res = Long.compare(neighbour.getNeighbourNode().getLaLo(), gNodeRef.neighbour.getNeighbourNode().getLaLo());
+            if (res == 0) {
+                res = Long.compare(neighbour.getReverse().getNeighbourNode().getLaLo(), gNodeRef.neighbour.getReverse().getNeighbourNode().getLaLo());
+                if (res == 0) res = Integer.compare(hashCode(), gNodeRef.hashCode());
+            }
             return res;
         }
         if (getHeuristicCost() < gNodeRef.getHeuristicCost()){
@@ -51,16 +52,11 @@ public class GNodeRef implements Comparable<GNodeRef>{
         return 1;
     }
 
-    public GNode getNode() {
-        return node;
-    }
-
-    public GNode getPredecessor() {
-        return predecessor;
-    }
-
     public GNeighbour getNeighbour() {
         return neighbour;
+    }
+    public GNeighbour getNeighbour(boolean reverse) {
+        return reverse?neighbour.getReverse():neighbour;
     }
 
     public double getCost() {
@@ -91,12 +87,13 @@ public class GNodeRef implements Comparable<GNodeRef>{
         this.reverse = reverse;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "GNodeRef{" +
-                "node=" + node +
-                ", predecessor=" + predecessor +
-                ", neighbour=" + neighbour +
+//                "node=" + node +
+//                ", predecessor=" + predecessor +
+                "neighbour=" + neighbour +
                 ", cost=" + cost +
                 ", heuristic=" + heuristic +
                 ", settled=" + settled +

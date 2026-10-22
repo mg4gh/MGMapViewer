@@ -99,7 +99,7 @@ public abstract class GGraphAlgorithm implements GraphAlgorithm {
         MultiPointModelImpl path = new MultiPointModelImpl();
         if (ref != null){
             if (ref.isReverse()){
-                while (ref.getPredecessor() != null){
+                while (ref.getCost() > 0){
 
                     int[] intermediates = ref.isReverse()?ref.getNeighbour().getIntermediatesPoints():ref.getNeighbour().getReverse().getIntermediatesPoints();
                     if (intermediates != null){
@@ -107,23 +107,23 @@ public abstract class GGraphAlgorithm implements GraphAlgorithm {
                             path.addPoint(ExtendedPointModelImpl.createFromLaLo(intermediates[3*i],intermediates[3*i+1],intermediates[3*i+2],ref.getNeighbour().getWayAttributs()));
                         }
                     }
-                    path.addPoint( new ExtendedPointModelImpl<>(ref.getPredecessor(), ref.getNeighbour().getWayAttributs()) );
-                    ref = ref.getPredecessor().getNodeRef(ref.isReverse());
+                    path.addPoint( new ExtendedPointModelImpl<>(ref.getNeighbour().getNeighbourNode(), ref.getNeighbour().getWayAttributs()) );
+                    ref = ref.getNeighbour().getNeighbourNode().getNodeRef(ref.isReverse());
                 }
 
 
             } else { // none reverse
-                while (ref.getPredecessor() != null){
-                    path.addPoint(0, new ExtendedPointModelImpl<>(ref.getNode(), ref.getNeighbour().getWayAttributs()));
+                while (ref.getCost() > 0){
+                    path.addPoint(0, new ExtendedPointModelImpl<>(ref.getNeighbour().getNeighbourNode(), ref.getNeighbour().getWayAttributs()));
                     int[] intermediates = ref.getNeighbour().getIntermediatesPoints(); // neighbour.getReverse contains
                     if (intermediates != null){
                         for (int i=intermediates.length/3-1; i>=0;i--){ // traverse through intermediate points also in backward direction (same as through GNodeRef(s))
                             path.addPoint(0, ExtendedPointModelImpl.createFromLaLo(intermediates[3*i],intermediates[3*i+1],intermediates[3*i+2],ref.getNeighbour().getWayAttributs()));
                         }
                     }
-                    ref = ref.getPredecessor().getNodeRef(ref.isReverse());
+                    ref = ref.getNeighbour(true).getNeighbourNode().getNodeRef(ref.isReverse());
                 }
-                path.addPoint(0,new ExtendedPointModelImpl<>(ref.getNode(), null));
+                path.addPoint(0,new ExtendedPointModelImpl<>(ref.getNeighbour().getNeighbourNode(), null));
             }
         }
         return path;

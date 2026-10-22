@@ -63,13 +63,15 @@ public class BidirectionalAStar extends GGraphAlgorithm {
         if ((source == null) || (target == null)) return null; // should never happen
 
         long tStart = System.currentTimeMillis();
-        GNodeRef refSource = new GNodeRef(source,0,null,null, heuristic(false, source));
+        // take any neighbour that points to source
+        GNodeRef refSource = new GNodeRef(source.getNeighbour().getReverse(),0, heuristic(false, source));
         source.resetNodeRefs();
         source.setNodeRef(refSource);
         prioQueue.add(refSource);
         mgLog.d(()->String.format(Locale.ENGLISH, "Source: lat=%.6f lon=%.6f ele=%.2f cost=%.2f heuristic=%.2f hcost=%.2f",source.getLat(),source.getLon(),source.getEle(),
                 refSource.getCost(),refSource.getHeuristic(),refSource.getHeuristicCost()));
-        GNodeRef refTarget = new GNodeRef(target,0,null,null, heuristic(true, target));
+        // take any neighbour from target (reverse neighbour points to target)
+        GNodeRef refTarget = new GNodeRef(target.getNeighbour(),0, heuristic(true, target));
         refTarget.setReverse(true);
         target.resetNodeRefs();
         target.setNodeRef(refTarget);
@@ -86,13 +88,21 @@ public class BidirectionalAStar extends GGraphAlgorithm {
                 rc = 5;
                 break;
             }
-            if (ref.getNode().getNodeRef(ref.isReverse()) == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we ca skip this entry of the prioQueue
+            GNode node = ref.getNeighbour(ref.isReverse()).getNeighbourNode(); // node to be relaxed
+            reverseRef = node.getNodeRef(!ref.isReverse());
+            if ((reverseRef != null) && (reverseRef.isSetteled())) { // match found
+                mgLog.i("exit performAlgo rc=0 refNode="+node+" ref="+getRefDetails(ref)+" revRef="+getRefDetails(reverseRef));
+                rc = 0;
+                break;
+            }
+
+            if (node.getNodeRef(ref.isReverse()) == ref){ // if there was already a better path to node found, then node.getNodeRef points to this -> then we can skip this entry of the prioQueue
                 if (refreshRequired.get() != 0) {
                     mgLog.i("exit performAlgo rc=3 refresh required");
                     rc = 3;
                     break;
                 }
-                GNode node = ref.getNode();
+//                GNode node = ref.getNode();
                 if (preNodeRelax(node)) { // add lazy expansion of GGraphMulti
                     mgLog.i("exit performAlgo rc=4 low memory");
                     rc = 4;
@@ -113,7 +123,7 @@ public class BidirectionalAStar extends GGraphAlgorithm {
                     // create new prioQueue entry, if there is currently none or if the current relaxted path has better cost
                     GNodeRef neighbourRef = neighbourNode.getNodeRef(ref.isReverse());
                     if ((neighbourRef == null) || (currentCost < neighbourRef.getCost() )){
-                        neighbourRef = new GNodeRef(neighbourNode,currentCost, ref.getNode(),directedNeighbour, heuristic(ref.isReverse(), neighbourNode));
+                        neighbourRef = new GNodeRef(directedNeighbour,currentCost, heuristic(ref.isReverse(), neighbourNode));
                         neighbourRef.setReverse(ref.isReverse());
                         neighbourNode.setNodeRef(neighbourRef);
                         prioQueue.add(neighbourRef);
@@ -145,12 +155,12 @@ public class BidirectionalAStar extends GGraphAlgorithm {
                 rc = 2;
                 break; // no more nodes to handle - no path found
             }
-            reverseRef = ref.getNode().getNodeRef(!ref.isReverse());
-            if ((reverseRef != null) && (reverseRef.isSetteled())) { // match found
-                mgLog.i("exit performAlgo rc=0 refNode="+ref.getNode()+" ref="+getRefDetails(ref)+" revRef="+getRefDetails(reverseRef));
-                rc = 0;
-                break;
-            }
+//            reverseRef = ref.getNeighbour(ref.isReverse()).getNeighbourNode().getNodeRef(!ref.isReverse());
+//            if ((reverseRef != null) && (reverseRef.isSetteled())) { // match found
+//                mgLog.i("exit performAlgo rc=0 refNode="+ref.getNode()+" ref="+getRefDetails(ref)+" revRef="+getRefDetails(reverseRef));
+//                rc = 0;
+//                break;
+//            }
         }
         duration = System.currentTimeMillis() - tStart;
 
