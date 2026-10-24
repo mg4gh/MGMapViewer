@@ -28,6 +28,7 @@ import mg.mgmap.generic.model.PointModelImpl;
 
 public abstract class GGraph implements Graph {
 
+    // TODO harmonise with GTileConnector.CONNECT_THRESHOLD_METER
     public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
 
     private final ArrayList<GNode> gNodes = new ArrayList<>();

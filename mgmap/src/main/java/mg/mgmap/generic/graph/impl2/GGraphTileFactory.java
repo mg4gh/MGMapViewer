@@ -106,6 +106,7 @@ public class GGraphTileFactory implements GraphFactory {
         gTileCache = null;
     }
 
+    // TODO: delegate this to GGraphTile
     public void resetCosts(){
         if (gTileCache != null){
             for (GGraphTile graph : gTileCache.getAll()){
