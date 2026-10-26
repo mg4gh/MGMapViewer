@@ -41,7 +41,7 @@ public class DTileConnector {
             }
         }
         ArrayList<Short> borderNodeIdxs2 = new ArrayList<>();
-        connectAt = horizontal? 0 : (short) LaLo.d2md(dGraphTile1.bBox.maxLatitude-dGraphTile1.bBox.minLatitude);
+        connectAt = horizontal? 0 : (short) LaLo.d2md(dGraphTile2.bBox.maxLatitude-dGraphTile2.bBox.minLatitude);
         for (short idx=0; idx < dGraphTile2.initialNodeCnt; idx++){
             short dLx = dGraphTile2.nodesBuffer.getShort(idx*DGraphTile.NODE_SIZE + (horizontal?DGraphTile.ND_LO_OFFSET :DGraphTile.ND_LA_OFFSET));
             if (dLx == connectAt){
@@ -50,18 +50,21 @@ public class DTileConnector {
         }
         final ArrayList<Short> remainingNodeIdxs1 = new ArrayList<>(borderNodeIdxs1);
         final ArrayList<Short> remainingNodeIdxs2 = new ArrayList<>(borderNodeIdxs2);
-        double threshold = (horizontal)? PointModelUtil.latitudeDistance(Config.CONNECT_THRESHOLD_METER):PointModelUtil.longitudeDistance(Config.CONNECT_THRESHOLD_METER, dGraphTile1.bBox.minLatitude);
-        for (short idx1 : borderNodeIdxs1){
-            for (short idx2 : borderNodeIdxs2){
+        double mdThreshold = LaLo.d2md((horizontal)? PointModelUtil.latitudeDistance(Config.CONNECT_THRESHOLD_METER):PointModelUtil.longitudeDistance(Config.CONNECT_THRESHOLD_METER, dGraphTile1.bBox.minLatitude));
+        int fieldOffset = horizontal?DGraphTile.ND_LA_OFFSET :DGraphTile.ND_LO_OFFSET;
+        int connectCnt = 0;
+        for (Short idx1 : borderNodeIdxs1){ // use Short (not short)
+            for (Short idx2 : borderNodeIdxs2){ // use Short (not short)
 
-                int offset = horizontal?DGraphTile.ND_LO_OFFSET :DGraphTile.ND_LA_OFFSET;
-                if (dGraphTile1.nodesBuffer.getShort(idx1*DGraphTile.NODE_SIZE + offset) - dGraphTile2.nodesBuffer.getShort(idx2*DGraphTile.NODE_SIZE + offset) <= threshold) {
+                if (Math.abs(dGraphTile1.nodesBuffer.getShort(idx1*DGraphTile.NODE_SIZE + fieldOffset) - dGraphTile2.nodesBuffer.getShort(idx2*DGraphTile.NODE_SIZE + fieldOffset)) <= mdThreshold) {
                     bidirectionalConnect(dGraphTile1, idx1, dGraphTile2, idx2, horizontal);
-                    remainingNodeIdxs1.remove(idx1);
-                    remainingNodeIdxs2.remove(idx2);
+                    remainingNodeIdxs1.remove(idx1); // remove Short object with value idx1 (not with list index idx1)
+                    remainingNodeIdxs2.remove(idx2); // remove Short object with value idx2 (not with list index idx2)
+                    connectCnt++;
                 }
             }
         }
+        mgLog.d("connectCnt="+connectCnt);
 
         if ((!remainingNodeIdxs1.isEmpty()) && ((!remainingNodeIdxs2.isEmpty()))){
             WriteablePointModel approachPoint = new WriteablePointModelImpl();
@@ -69,7 +72,7 @@ public class DTileConnector {
             ArrayList<Short> stillRemainingNodes2 = new ArrayList<>(remainingNodeIdxs2);
             mgLog.v(remainingNodeIdxs1::toString);
             mgLog.v(remainingNodeIdxs2::toString);
-            for (short nodeIdx1 : remainingNodeIdxs1){
+            for (Short nodeIdx1 : remainingNodeIdxs1){
                 dGraphTile1.nodesBuffer.position(nodeIdx1 * DGraphTile.NODE_SIZE);
                 double node1Lat = dGraphTile1.bBox.minLatitude + LaLo.md2d(dGraphTile1.nodesBuffer.getShort());
                 double node1Lon = dGraphTile1.bBox.minLongitude + LaLo.md2d(dGraphTile1.nodesBuffer.getShort());
@@ -83,7 +86,7 @@ public class DTileConnector {
                     double neighbourNode1Lat = dGraphTile1.bBox.minLatitude + LaLo.md2d(dGraphTile1.nodesBuffer.getShort());
                     double neighbourNode1Lon = dGraphTile1.bBox.minLongitude + LaLo.md2d(dGraphTile1.nodesBuffer.getShort());
 
-                    for (short nodeIdx2 : remainingNodeIdxs2) {
+                    for (Short nodeIdx2 : remainingNodeIdxs2) {
                         dGraphTile2.nodesBuffer.position(nodeIdx2 * DGraphTile.NODE_SIZE);
                         double node2Lat = dGraphTile2.bBox.minLatitude + LaLo.md2d(dGraphTile2.nodesBuffer.getShort());
                         double node2Lon = dGraphTile2.bBox.minLongitude + LaLo.md2d(dGraphTile2.nodesBuffer.getShort());
@@ -152,7 +155,7 @@ public class DTileConnector {
         tile1.nodesBuffer.putShort(nodeIdx1*DGraphTile.NODE_SIZE + DGraphTile.ND_NEIGHBOUR_OFFSET, newNeighbourIdxTile1);
 
         short nextNeighbourIdx2 = tile2.nodesBuffer.getShort(nodeIdx2*DGraphTile.NODE_SIZE + DGraphTile.ND_NEIGHBOUR_OFFSET);
-        tile1.addNeighbourAt(newNeighbourIdxTile2, nodeIdx1,nextNeighbourIdx2,newNeighbourIdxTile1,(short)-1, horizontal?Border.BORDER_NODE_WEST:Border.BORDER_NODE_NORTH, flags);
+        tile2.addNeighbourAt(newNeighbourIdxTile2, nodeIdx1,nextNeighbourIdx2,newNeighbourIdxTile1,(short)-1, horizontal?Border.BORDER_NODE_WEST:Border.BORDER_NODE_NORTH, flags);
         tile2.nodesBuffer.putShort(nodeIdx2*DGraphTile.NODE_SIZE + DGraphTile.ND_NEIGHBOUR_OFFSET, newNeighbourIdxTile2);
     }
 

@@ -8,6 +8,7 @@ import org.mapsforge.core.model.Tile;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.TreeMap;
 
 import mg.mgmap.application.util.ElevationProvider;
@@ -20,6 +21,7 @@ import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
+import mg.mgmap.generic.util.basic.ByteBufferCopyUtil;
 import mg.mgmap.generic.util.basic.LaLo;
 import mg.mgmap.generic.util.basic.MGLog;
 
@@ -32,6 +34,7 @@ public class DGraphTile implements Graph {
     /* ******************************************************************************************** */
 
     static int NODE_SIZE = 16;
+    static int MAX_APPROACH_NODES = 2;
 
     static int ND_LA_OFFSET = 0;
     static int ND_LO_OFFSET = 2;
@@ -51,8 +54,14 @@ public class DGraphTile implements Graph {
         nodesBuffer.putFloat(eleAcc);
         nodesBuffer.put(flags);
         nodesBuffer.put(border);
-        nodesBuffer.putShort((short)0); // neighbourIdx not yet set
+        nodesBuffer.putShort((short)-1); // neighbourIdx not yet set
         return (short)(pos/NODE_SIZE);
+    }
+
+    String nodeToString(short nodeIdx){
+        nodesBuffer.position( nodeIdx * NODE_SIZE);
+        return String.format(Locale.ENGLISH, "nodeIdx=%03d lat=%02.6f lon=%02.6f ele=%+05.1f eleAcc=%+05.1f flags=%02x border=%02x neighbourIdx=%03d",
+                nodeIdx, LaLo.md2d(minLa+nodesBuffer.getShort()), LaLo.md2d(minLo+nodesBuffer.getShort()), nodesBuffer.getFloat(), nodesBuffer.getFloat(), nodesBuffer.get(), nodesBuffer.get(), nodesBuffer.getShort());
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -111,6 +120,7 @@ public class DGraphTile implements Graph {
     /* ******************************************************************************************** */
 
     static int NEIGHBOUR_SIZE = 14;
+    static int MAX_APPROACH_NEIGHBOURS = 12;
 
     static int NB_NEIGHBOUR_NODE_OFFSET = 0;
     static int NB_NEXT_NEIGHBOUR_OFFSET = 2;
@@ -125,7 +135,7 @@ public class DGraphTile implements Graph {
 
     @SuppressWarnings("SameParameterValue")
     short addNeighbour(short neighbourNodeIdx, short nextNeighbourIdx, short reverseIdx, short wayAttributesIdx, float cost, byte border, byte flags){
-        int pos = nodesBuffer.position();
+        int pos = neighboursBuffer.position();
         neighboursBuffer.putShort(neighbourNodeIdx);
         neighboursBuffer.putShort(nextNeighbourIdx);
         neighboursBuffer.putShort(reverseIdx);
@@ -135,6 +145,13 @@ public class DGraphTile implements Graph {
         neighboursBuffer.put(flags);
         return (short)(pos/NEIGHBOUR_SIZE);
     }
+
+    String neighbourToString(short neighbourIdx){
+        neighboursBuffer.position( neighbourIdx * NEIGHBOUR_SIZE);
+        return String.format(Locale.ENGLISH, "neighbourIdx=%03d neighbourNodeIdx=%03d nextNeighbourIdx=%03d reverseIdx=%03d wayAttributesIdx=%03d cost=%+04.5f border=%02x flags=%02x",
+                neighbourIdx, neighboursBuffer.getShort(), neighboursBuffer.getShort(), neighboursBuffer.getShort(), neighboursBuffer.getShort(), neighboursBuffer.getFloat(), neighboursBuffer.get(), neighboursBuffer.get());
+    }
+
 
     @SuppressWarnings("SameParameterValue")
     void addNeighbourAt(short neighbourIdx, short neighbourNodeIdx, short nextNeighbourIdx, short reverseIdx, short wayAttributesIdx, byte border, byte flags){
@@ -231,12 +248,12 @@ public class DGraphTile implements Graph {
         maxLo = LaLo.d2md(bBox.maxLongitude);
 
         // reset static buffers for initialization of new DGraphTile object
-        initialNodesBuffer.reset();
-        initialNeighboursBuffer.reset();
+        initialNodesBuffer.clear();
+        initialNeighboursBuffer.clear();
         while (initialNodesBuffer.hasRemaining()) initialNodesBuffer.put((byte)0);
         while (initialNeighboursBuffer.hasRemaining()) initialNeighboursBuffer.put((byte)0);
-        initialNodesBuffer.reset();
-        initialNeighboursBuffer.reset();
+        initialNodesBuffer.clear();
+        initialNeighboursBuffer.clear();
         initialNodeIdxMap.clear();
 
         nodesBuffer = initialNodesBuffer;
@@ -268,16 +285,14 @@ public class DGraphTile implements Graph {
     }
 
     public void setupFinished(){
-        int initialNodeCnt = nodesBuffer.position() / NODE_SIZE;
-        int initialNeighbourCnt = neighboursBuffer.position() / NEIGHBOUR_SIZE;
+        initialNodeCnt = (short)(initialNodesBuffer.position() / NODE_SIZE);
+        initialNeighbourCnt = (short)(initialNeighboursBuffer.position() / NEIGHBOUR_SIZE);
 
-        maxNodeCnt = (short)(initialNodeCnt + 2); // add 2 for temporary sourceApproachNode and targetApproachNode
-        nodesBuffer = ByteBuffer.allocateDirect(maxNodeCnt * NODE_SIZE);
-        System.arraycopy(initialNodesBuffer.array(), 0, nodesBuffer.array(), 0, initialNodeCnt * NODE_SIZE);
+        maxNodeCnt = (short)(initialNodeCnt + MAX_APPROACH_NODES); // add MAX_APPROACH_NODES for temporary sourceApproachNode and targetApproachNode
+        nodesBuffer = ByteBufferCopyUtil.cloneArea(initialNodesBuffer, 0, maxNodeCnt * NODE_SIZE);
 
-        maxNeighbourCnt = (short)(initialNeighbourCnt+borderNodeCnt*2 +6); // add 2 neighbours per border node + 6 neighbours for temporary connection to sourceApproachNode and targetApproachNode
-        neighboursBuffer = ByteBuffer.allocateDirect((initialNeighbourCnt+borderNodeCnt*2 +6) * NEIGHBOUR_SIZE);
-        System.arraycopy(initialNeighboursBuffer.array(), 0, neighboursBuffer.array(), 0, initialNeighbourCnt * NEIGHBOUR_SIZE);
+        maxNeighbourCnt = (short)(initialNeighbourCnt+borderNodeCnt*2 +MAX_APPROACH_NEIGHBOURS); // add 2 neighbours per border node + MAX_APPROACH_NEIGHBOURS for temporary connection to sourceApproachNode and targetApproachNode
+        neighboursBuffer = ByteBufferCopyUtil.cloneArea(initialNeighboursBuffer, 0, maxNeighbourCnt * NEIGHBOUR_SIZE);
 
         nodeRefs = new DNodeRef[maxNodeCnt]; // use nodeIdx
         reverseNodeRefs = new DNodeRef[maxNodeCnt]; // use nodeIdx
@@ -292,9 +307,9 @@ public class DGraphTile implements Graph {
     short getAddNode(double latitude, double longitude){
         int la = LaLo.d2md(latitude);
         int lo = LaLo.d2md(longitude);
-        short dLa = (short) (la - bBox.minLatitude);
-        short dLo = (short) (lo - bBox.minLongitude);
-        int key = (la << 16) + lo;
+        short dLa = (short) (la - minLa);
+        short dLo = (short) (lo - minLo);
+        int key = (dLa << 16) + dLo;
         short expectedNodeIdx = (short)(initialNodesBuffer.position() / NODE_SIZE);
         Short oldNodeIdx = initialNodeIdxMap.putIfAbsent(key, expectedNodeIdx);
 
@@ -338,7 +353,7 @@ public class DGraphTile implements Graph {
         short neighbourIdx = initialNeighbourCnt; // all neighbours before are static
         while ((neighboursBuffer.get(neighbourIdx * NEIGHBOUR_SIZE + NB_FLAGS_OFFSET) & NB_FLAG_VALID) != 0){
             neighbourIdx++;
-            assert (neighbourIdx < maxNeighbourCnt -6); // 6 neighbours are reserved for approach connectivity
+            assert (neighbourIdx < maxNeighbourCnt - MAX_APPROACH_NEIGHBOURS); // MAX_APPROACH_NEIGHBOURS neighbours are reserved for approach connectivity
         }
         return neighbourIdx;
     }
@@ -364,10 +379,11 @@ public class DGraphTile implements Graph {
 
     /** scope - true: remove neighbours to neighbour tile based on border;
      *          false: remove all neighbours to neighbourNodeIdx (used for approachNode) */
+    @SuppressWarnings("SimplifiableConditionalExpression")
     public void removeNeighbours(boolean scope, byte border, short neighbourNodeIdx){
         for (short nodeIdx=0; nodeIdx<maxNodeCnt; nodeIdx++){
             if ((getNdFlags(nodeIdx) & ND_FLAG_VALID) != 0){ // node is valid
-                if (scope?((getNdBorder(nodeIdx) & border) != 0):true){ // node is on relevant border
+                if (scope?((getNdBorder(nodeIdx) & border) != 0):true){ // node is relevant
                     short lastNeighbourIdx = -1;
                     short neighbourIdx = getNdNeighbourIdx(nodeIdx);
                     while (neighbourIdx != -1){
@@ -466,6 +482,11 @@ public class DGraphTile implements Graph {
     }
 
     @Override
+    public BBox getBBox(){
+        return bBox;
+    }
+
+    @Override
     public String getRefDetails(PointModel node) {
         throw new UnsupportedOperationException();
     }
@@ -499,6 +520,7 @@ public class DGraphTile implements Graph {
                             bestApproach.node2Idx = neighbourNodeIdx;
                             bestApproach.neighbour1to2 = neighbourIdx;
                             bestApproach.pos = pos;
+                            bestApproach.approachNode.tileIdx  = tileIdx;
                             bestApproach.approachNode.setLat(pmTempApproach.getLat());
                             bestApproach.approachNode.setLon(pmTempApproach.getLon());
                             bestApproach.approachNode.setEle(pmTempApproach.getEle());
@@ -520,8 +542,8 @@ public class DGraphTile implements Graph {
                 throw new RuntimeException("ApproachNode indexes are in use.");
             }
         }
-        short dLa = (short) (dam.approachNode.getLa() - bBox.minLatitude);
-        short dLo = (short) (dam.approachNode.getLo() - bBox.minLongitude);
+        short dLa = (short) (dam.approachNode.getLa() - minLa);
+        short dLo = (short) (dam.approachNode.getLo() - minLo);
         addNodeAt(nodeIdx,dLa,dLo,dam.approachNode.getEle(),dam.approachNode.getEleAcc(),ND_FLAG_VALID,(byte)0);
         dam.approachNode.nodeIdx = nodeIdx; // save approach node index in approach
 
@@ -536,7 +558,7 @@ public class DGraphTile implements Graph {
         if (initPhase) {
             expectedNeighbourIdx = (short)(initialNeighboursBuffer.position() / NEIGHBOUR_SIZE);
         } else {
-            expectedNeighbourIdx = (short)(maxNeighbourCnt -6);
+            expectedNeighbourIdx = (short)(maxNeighbourCnt - MAX_APPROACH_NEIGHBOURS);
             while (((neighboursBuffer.get(expectedNeighbourIdx * NEIGHBOUR_SIZE + NB_FLAGS_OFFSET) & NB_FLAG_VALID) == NB_FLAG_VALID) && (expectedNeighbourIdx < maxNeighbourCnt)){
                 expectedNeighbourIdx += 2;
             }
@@ -581,7 +603,7 @@ public class DGraphTile implements Graph {
                 if ((nodeRefs[nodeIdx] != null) || (reverseNodeRefs[nodeIdx] != null)){
                     statistics.cntRelaxed++;
                     // if (relaxedList != null) relaxedList.add(getNode(nodeIdx)); // !! generates lots of objects
-                    if ((nodeRefs[nodeIdx].isSetteled()) && (reverseNodeRefs[nodeIdx].isSetteled())){
+                    if (((nodeRefs[nodeIdx] != null) && (nodeRefs[nodeIdx].isSetteled())) || ((reverseNodeRefs[nodeIdx] != null) && (reverseNodeRefs[nodeIdx].isSetteled()))){
                         statistics.cntSettled++;
                     }
                 }

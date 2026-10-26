@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 
 import mg.mgmap.generic.graph.Graph;
+import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
@@ -56,12 +57,14 @@ public class BidirectionalAStar extends DGraphAlgorithm {
         prioQueue = new TreeSet<>();
         if (relaxedList != null) relaxedList.clear();
         statistics = new AlgorithmStatistics();
+        matchNode = new DNode();
 
         long tStart = System.currentTimeMillis();
+        source = sourceApproachModel.approachNode;
+        target = targetApproachModel.approachNode;
 
         // take any neighbour that points to source for refSource
         DGraphTile sourceGraphTile = graph.dGraphTileFactory.getDGraphTile(sourceApproachModel.tileIdx);
-        source = sourceApproachModel.approachNode;
         short neighbourOfSource = sourceGraphTile.getNdNeighbourIdx(source.nodeIdx);
         short neighbourToSource = sourceGraphTile.getNbReverseIdx(neighbourOfSource);
         DNodeRef refSource = new DNodeRef(source.tileIdx, neighbourToSource,0, heuristic(false, source));
@@ -72,7 +75,6 @@ public class BidirectionalAStar extends DGraphAlgorithm {
 
         // take any neighbour from target (reverse neighbour points to target)
         DGraphTile targetGraphTile = graph.dGraphTileFactory.getDGraphTile(targetApproachModel.tileIdx);
-        target = targetApproachModel.approachNode;
         short neighbourOfTarget = targetGraphTile.getNdNeighbourIdx(target.nodeIdx);
         DNodeRef refTarget = new DNodeRef(target.tileIdx, neighbourOfTarget,0, heuristic(true, target));
         refTarget.setReverse(true);
@@ -95,8 +97,19 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                 break;
             }
 
-            DGraphTile nodeGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
-            short nodeIdx = nodeGraphTile.getNbNeighbourNodeIdx( ref.getNeighbourIdx(nodeGraphTile) ); // getNeighbourIdx result depends on reverse flag of ref
+            DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
+            byte nBorder = neighbourGraphTile.getNbBorder(ref.neighbourIdx);
+            DGraphTile reverserNeighbourGraphTile = (nBorder==0)?neighbourGraphTile:neighbourGraphTile.neighbourTiles[nBorder];
+            short nodeIdx;
+            DGraphTile nodeGraphTile;
+            if (ref.isReverse()){
+                short reverseNeighbourIdx = neighbourGraphTile.getNbReverseIdx(ref.neighbourIdx);
+                nodeIdx = reverserNeighbourGraphTile.getNbNeighbourNodeIdx(reverseNeighbourIdx);
+                nodeGraphTile = neighbourGraphTile;
+            } else {
+                nodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(ref.neighbourIdx);
+                nodeGraphTile = reverserNeighbourGraphTile;
+            }
             nodeGraphTile.getNodeData(node, nodeIdx); // node to be relaxed
 
             reverseRef = ref.reverse? nodeGraphTile.nodeRefs[nodeIdx]: nodeGraphTile.reverseNodeRefs[nodeIdx];
@@ -113,7 +126,8 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                     break;
                 }
 //                GNode node = ref.getNode();
-                if (preNodeRelax(node, nodeGraphTile.getNdBorder(nodeIdx))) { // add lazy expansion of GGraphMulti
+                byte nodeBorder = nodeGraphTile.getNdBorder(nodeIdx);
+                if (preNodeRelax(node, nodeBorder)) { // add lazy expansion of GGraphMulti
                     mgLog.i("exit performAlgo rc=4 low memory");
                     rc = 4;
                     break;
@@ -123,16 +137,20 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                     short neighbourNodeIdx = nodeGraphTile.getNbNeighbourNodeIdx(neighbourIdx);
                     byte border = nodeGraphTile.getNbBorder(neighbourIdx);
                     DGraphTile neighbourNodeGraphTile = (border==0)?nodeGraphTile:nodeGraphTile.neighbourTiles[border];
+                    if (neighbourNodeGraphTile == null){
+                        mgLog.e("Inconsistency detected");
+                    }
                     neighbourNodeGraphTile.getNodeData(neighbourNode, neighbourNodeIdx);
 
                     short directedNeighbourIdx = ref.isReverse()?nodeGraphTile.getNbReverseIdx(neighbourIdx):neighbourIdx;
-                    DGraphTile directedNodeGraphTile = ref.isReverse()?nodeGraphTile:neighbourNodeGraphTile;
+                    DGraphTile directedNodeGraphTile = ref.isReverse()?neighbourNodeGraphTile:nodeGraphTile;
                     float costToNeighbour = directedNodeGraphTile.getNbCost(directedNeighbourIdx);
                     if (costToNeighbour < 0){
                         DNode directedNode = ref.isReverse()?neighbourNode:node;
                         DNode directedNeighbourNode = ref.isReverse()?node:neighbourNode;
-                        short wayAttributesIdx = nodeGraphTile.getNbWayAttributesIdx(directedNeighbourIdx);
-                        costToNeighbour = costToNeighbour(directedNode, directedNeighbourNode, nodeGraphTile.wayAttributesList.get(wayAttributesIdx), nodeGraphTile.isNbPrimaryDirection(directedNeighbourIdx));
+                        short wayAttributesIdx = directedNodeGraphTile.getNbWayAttributesIdx(directedNeighbourIdx);
+                        WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:directedNodeGraphTile.wayAttributesList.get(wayAttributesIdx);
+                        costToNeighbour = costToNeighbour(directedNode, directedNeighbourNode, wayAttributs, directedNodeGraphTile.isNbPrimaryDirection(directedNeighbourIdx));
                         directedNodeGraphTile.setNbCost(directedNeighbourIdx, costToNeighbour);
                     }
                     double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path
@@ -184,7 +202,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
 
         MultiPointModelImpl resultPath = new MultiPointModelImpl();
         DGraphTile matchGraphTile = graph.dGraphTileFactory.getDGraphTile(matchNode.tileIdx);
-        if (matchNode != null){
+        if (matchNode.tileIdx != 0){
             resultPath = getPath(matchGraphTile.getNodeRef(matchNode.nodeIdx, false));
             for (PointModel pm : getPath(matchGraphTile.getNodeRef(matchNode.nodeIdx, true)) ){
                 resultPath.addPoint(pm);

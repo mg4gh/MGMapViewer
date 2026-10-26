@@ -114,7 +114,8 @@ public abstract class DGraphAlgorithm implements GraphAlgorithm {
                     DGraphTile neighbourNodeGraphTile = (border==0)?neighbourGraphTile:neighbourGraphTile.neighbourTiles[border];
                     DNode neighbourNode = neighbourNodeGraphTile.getNode(neighbourNodeIdx);
 
-                    path.addPoint( new ExtendedPointModelImpl<>(neighbourNode, neighbourGraphTile.wayAttributesList.get(wayAttributesIdx)) );
+                    WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:neighbourGraphTile.wayAttributesList.get(wayAttributesIdx);
+                    path.addPoint( new ExtendedPointModelImpl<>(neighbourNode, wayAttributs) );
                     ref = neighbourNodeGraphTile.getNodeRef(neighbourNodeIdx, ref.isReverse());
                 }
 
@@ -129,8 +130,9 @@ public abstract class DGraphAlgorithm implements GraphAlgorithm {
                     DNode neighbourNode = neighbourNodeGraphTile.getNode(neighbourNodeIdx);
                     short reverseNeighbourNodeIdx = neighbourNodeGraphTile.getNbNeighbourNodeIdx(reverseNeighbourIdx); // idx of neighbourNode of reverseNeighbour
 
-                    path.addPoint( 0, new ExtendedPointModelImpl<>(neighbourNode, neighbourGraphTile.wayAttributesList.get(wayAttributesIdx)) );
-                    ref = neighbourNodeGraphTile.getNodeRef(reverseNeighbourNodeIdx, ref.isReverse());
+                    WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:neighbourGraphTile.wayAttributesList.get(wayAttributesIdx);
+                    path.addPoint( 0, new ExtendedPointModelImpl<>(neighbourNode, wayAttributs) );
+                    ref = neighbourGraphTile.getNodeRef(reverseNeighbourNodeIdx, ref.isReverse());
 
 
                 }

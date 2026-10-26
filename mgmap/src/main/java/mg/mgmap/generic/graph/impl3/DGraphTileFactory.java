@@ -180,7 +180,7 @@ public class DGraphTileFactory implements GraphFactory {
         return approachModel; // is always valid
     }
 
-    public ApproachModel calcApproach(PointModel pos, int closeThreshold){
+    public DApproach calcApproach(PointModel pos, int closeThreshold){
         BBox posBBox = new BBox()
                 .extend(pos)
                 .extend(closeThreshold);
