@@ -32,7 +32,7 @@ import mg.mgmap.generic.graph.impl2.GGraphAlgorithm;
 import mg.mgmap.generic.graph.impl2.GGraphTile;
 import mg.mgmap.generic.graph.impl2.GGraphTileFactory;
 import mg.mgmap.generic.graph.impl2.GNode;
-import mg.mgmap.generic.graph.impl2.RoutingSummary;
+import mg.mgmap.generic.graph.RoutingSummary;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;

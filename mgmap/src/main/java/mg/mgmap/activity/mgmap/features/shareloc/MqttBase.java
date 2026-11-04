@@ -158,7 +158,7 @@ public class MqttBase extends MqttClient{
                     }
                     close();
                 } catch (MqttException e) {
-                    mgLog.e("Error closing MQTT", e);
+                    mgLog.w("Error closing MQTT: "+ e.getMessage());
                 }
             }).start();
         } // else already stopped

@@ -1,8 +1,9 @@
-package mg.mgmap.generic.graph.impl3;
+package mg.mgmap.generic.graph.impl4;
+
+import androidx.annotation.NonNull;
 
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.model.PointModel;
-import mg.mgmap.generic.model.WriteablePointModelImpl;
 
 public class DApproach implements ApproachModel {
 
@@ -32,5 +33,19 @@ public class DApproach implements ApproachModel {
     @Override
     public boolean verifyApproach(PointModel node1, PointModel approachNode, PointModel node2) {
         return true;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "DApproach{" +
+                "tileIdx=" + (tileIdx>>16) + ":" + (tileIdx&0xFFFF) +
+                ", node1Idx=" + node1Idx +
+                ", node2Idx=" + node2Idx +
+                ", neighbour1to2=" + neighbour1to2 +
+                ", pos=" + pos +
+                ", approachNode=" + approachNode +
+                ", distance=" + distance +
+                '}';
     }
 }

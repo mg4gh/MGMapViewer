@@ -12,6 +12,8 @@ public interface GraphFactory {
 
     Graph getGraph(PointModel pm1, PointModel pm2);
 
+    Graph getGraphTile(ApproachModel approachModel);
+
     ApproachModel calcApproach(PointModel pointModel, int closeThreshold);
 
     ApproachModel validateApproachModel(ApproachModel approachModel);

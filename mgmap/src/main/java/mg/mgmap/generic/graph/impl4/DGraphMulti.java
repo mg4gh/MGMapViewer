@@ -12,12 +12,13 @@
  * You should have received a copy of the GNU Lesser General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package mg.mgmap.generic.graph.impl3;
+package mg.mgmap.generic.graph.impl4;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.util.basic.MGLog;
@@ -37,6 +38,9 @@ public class DGraphMulti implements Graph {
     public DGraphMulti(DGraphTileFactory dGraphTileFactory, ArrayList<DGraphTile> gGraphTiles){
         this.dGraphTileFactory = dGraphTileFactory;
         for (DGraphTile dGraphTile : gGraphTiles){
+            if (!dGraphTileFactory.tileCache.tileMap.containsKey(dGraphTile.tileIdx)){
+                dGraphTileFactory.tileCache.put(dGraphTile.tile.tileX, dGraphTile.tile.tileY, dGraphTile);
+            }
             use(dGraphTile);
         }
     }
@@ -45,22 +49,7 @@ public class DGraphMulti implements Graph {
         return useCnt;
     }
 
-//    /**
-//     * Redefines getNodes() implementation of GGraph, which simply returns the ArrayList of its nodes.
-//     * Here we get a new ArrayList Object with all nodes from each included GGraphTile
-//     * @return all node ot the multi graph
-//     */
-//    @Override
-//    public ArrayList<GNode> getGNodes() {
-//        ArrayList<GNode> nodes = new ArrayList<>( super.getGNodes() );
-//        for (GGraphTile gGraphTile : dGraphTileFactory.getCached()){
-//            if (gGraphTile.used){
-//                nodes.addAll( gGraphTile.getGNodes() );
-//            }
-//        }
-//        return nodes;
-//    }
-
+    // TODO implement correct
     @Override
     public ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> neighbourPoints) {
         return new ArrayList<>();
@@ -129,7 +118,7 @@ public class DGraphMulti implements Graph {
     }
 
     @Override
-    public ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2) {
+    public ArrayList<PointModel> segmentNodes(ApproachModel approachModel) {
         return null;
     }
 

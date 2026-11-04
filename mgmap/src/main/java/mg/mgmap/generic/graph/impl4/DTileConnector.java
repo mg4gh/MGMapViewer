@@ -1,9 +1,8 @@
-package mg.mgmap.generic.graph.impl3;
+package mg.mgmap.generic.graph.impl4;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
-
 
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
@@ -16,9 +15,48 @@ public class DTileConnector {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     /** symmetric connect dGraphTile1 and dGraphTile2  */
-    static void connect(DGraphTile dGraphTile1, DGraphTile dGraphTile2, boolean horizontal){ // horizontal true: dGraphTile1 is left, dGraphTile2 is right - false: dGraphTile1 is above, dGraphTile2 is below
+    static void connect(DGraphTile dGraphTile1, DGraphTile dGraphTile2, boolean horizontal) { // horizontal true: dGraphTile1 is left, dGraphTile2 is right - false: dGraphTile1 is above, dGraphTile2 is below
         if ((dGraphTile1 == null) || (dGraphTile2 == null)) return; // cannot connect yet
-        assert(horizontal?(dGraphTile1.tile.tileX+1 == dGraphTile2.tile.tileX):(dGraphTile1.tile.tileY+1 == dGraphTile2.tile.tileY));
+        assert (horizontal ? (dGraphTile1.tile.tileX + 1 == dGraphTile2.tile.tileX) : (dGraphTile1.tile.tileY + 1 == dGraphTile2.tile.tileY));
+
+        if ((dGraphTile1.neighbourConnected & (horizontal ? Border.BORDER_NODE_EAST : Border.BORDER_NODE_SOUTH)) != 0) { // tile1 has already neighbours at this border
+            if ((dGraphTile2.neighbourConnected & (horizontal ? Border.BORDER_NODE_WEST : Border.BORDER_NODE_NORTH)) != 0) { // tile2 has also already neighbours at this border
+                // okay, both are already connected
+                mgLog.v("both already connected "+dGraphTile1+" "+dGraphTile2);
+            } else {
+                // tile1 is connected, but not tile2
+                connectFromTo(dGraphTile1, horizontal ? Border.BORDER_NODE_EAST : Border.BORDER_NODE_SOUTH, dGraphTile2);
+            }
+        } else {
+            if ((dGraphTile2.neighbourConnected & (horizontal ? Border.BORDER_NODE_WEST : Border.BORDER_NODE_NORTH)) != 0) { // tile2 has also already neighbours at this border
+                // tile2 is connected, but not tile1
+                connectFromTo(dGraphTile2, horizontal ? Border.BORDER_NODE_WEST : Border.BORDER_NODE_NORTH, dGraphTile1);
+            } else { // both unconnected
+                connectUnconnected(dGraphTile1, dGraphTile2, horizontal);
+            }
+        }
+        dGraphTile1.neighbourTiles[horizontal ? Border.BORDER_NODE_EAST : Border.BORDER_NODE_SOUTH] = dGraphTile2;
+        dGraphTile2.neighbourTiles[horizontal ? Border.BORDER_NODE_WEST : Border.BORDER_NODE_NORTH] = dGraphTile1;
+    }
+
+    //* take over neighbour relations from dGraphTile1 to dGraphTile2 at given border */
+    static void connectFromTo(DGraphTile dGraphTileFrom, byte border, DGraphTile dGraphTileTo){
+        for (short nodeIdx=0; nodeIdx < dGraphTileFrom.maxNodeCnt; nodeIdx++){
+            if (dGraphTileFrom.isNdValid(nodeIdx) && ((dGraphTileFrom.getNdBorder(nodeIdx) & border) != 0)){ // node is valid and relevant for given border
+                short neighbourIdx = dGraphTileFrom.getNdNeighbourIdx(nodeIdx);
+                while (neighbourIdx != -1){
+                    if (dGraphTileFrom.getNbBorder(neighbourIdx) == border) {
+                        // okay, found relevant neighbour, copy to dGraphTileTo
+                        unidirectionalConnect(dGraphTileFrom, nodeIdx, neighbourIdx, border, dGraphTileTo);
+                    }
+                    neighbourIdx = dGraphTileFrom.getNbNextNeighbourIdx(neighbourIdx);
+                }
+            }
+        }
+        dGraphTileTo.neighbourConnected |= Border.oppositeBorder(border);
+    }
+
+    static void connectUnconnected(DGraphTile dGraphTile1, DGraphTile dGraphTile2, boolean horizontal) { // horizontal true: dGraphTile1 is left, dGraphTile2 is right - false: dGraphTile1 is above, dGraphTile2 is below
         if ((dGraphTile1.neighbourTiles[horizontal? Border.BORDER_NODE_EAST: Border.BORDER_NODE_SOUTH] == dGraphTile2) &&
                 (dGraphTile2.neighbourTiles[horizontal? Border.BORDER_NODE_WEST: Border.BORDER_NODE_NORTH] == dGraphTile1)){ // tiles already connected
             return;
@@ -35,7 +73,7 @@ public class DTileConnector {
         ArrayList<Short> borderNodeIdxs1 = new ArrayList<>();
         short connectAt = horizontal? (short) LaLo.d2md(dGraphTile1.bBox.maxLongitude-dGraphTile1.bBox.minLongitude) : 0;
         for (short idx=0; idx < dGraphTile1.initialNodeCnt; idx++){
-            short dLx = dGraphTile1.nodesBuffer.getShort(idx*DGraphTile.NODE_SIZE + (horizontal?DGraphTile.ND_LO_OFFSET :DGraphTile.ND_LA_OFFSET));
+            short dLx = dGraphTile1.nodesBuffer.getShort(idx* DGraphTile.NODE_SIZE + (horizontal? DGraphTile.ND_LO_OFFSET : DGraphTile.ND_LA_OFFSET));
             if (dLx == connectAt){
                 borderNodeIdxs1.add(idx);
             }
@@ -43,7 +81,7 @@ public class DTileConnector {
         ArrayList<Short> borderNodeIdxs2 = new ArrayList<>();
         connectAt = horizontal? 0 : (short) LaLo.d2md(dGraphTile2.bBox.maxLatitude-dGraphTile2.bBox.minLatitude);
         for (short idx=0; idx < dGraphTile2.initialNodeCnt; idx++){
-            short dLx = dGraphTile2.nodesBuffer.getShort(idx*DGraphTile.NODE_SIZE + (horizontal?DGraphTile.ND_LO_OFFSET :DGraphTile.ND_LA_OFFSET));
+            short dLx = dGraphTile2.nodesBuffer.getShort(idx* DGraphTile.NODE_SIZE + (horizontal? DGraphTile.ND_LO_OFFSET : DGraphTile.ND_LA_OFFSET));
             if (dLx == connectAt){
                 borderNodeIdxs2.add(idx);
             }
@@ -51,12 +89,12 @@ public class DTileConnector {
         final ArrayList<Short> remainingNodeIdxs1 = new ArrayList<>(borderNodeIdxs1);
         final ArrayList<Short> remainingNodeIdxs2 = new ArrayList<>(borderNodeIdxs2);
         double mdThreshold = LaLo.d2md((horizontal)? PointModelUtil.latitudeDistance(Config.CONNECT_THRESHOLD_METER):PointModelUtil.longitudeDistance(Config.CONNECT_THRESHOLD_METER, dGraphTile1.bBox.minLatitude));
-        int fieldOffset = horizontal?DGraphTile.ND_LA_OFFSET :DGraphTile.ND_LO_OFFSET;
+        int fieldOffset = horizontal? DGraphTile.ND_LA_OFFSET : DGraphTile.ND_LO_OFFSET;
         int connectCnt = 0;
         for (Short idx1 : borderNodeIdxs1){ // use Short (not short)
             for (Short idx2 : borderNodeIdxs2){ // use Short (not short)
 
-                if (Math.abs(dGraphTile1.nodesBuffer.getShort(idx1*DGraphTile.NODE_SIZE + fieldOffset) - dGraphTile2.nodesBuffer.getShort(idx2*DGraphTile.NODE_SIZE + fieldOffset)) <= mdThreshold) {
+                if (Math.abs(dGraphTile1.nodesBuffer.getShort(idx1* DGraphTile.NODE_SIZE + fieldOffset) - dGraphTile2.nodesBuffer.getShort(idx2* DGraphTile.NODE_SIZE + fieldOffset)) <= mdThreshold) {
                     bidirectionalConnect(dGraphTile1, idx1, dGraphTile2, idx2, horizontal);
                     remainingNodeIdxs1.remove(idx1); // remove Short object with value idx1 (not with list index idx1)
                     remainingNodeIdxs2.remove(idx2); // remove Short object with value idx2 (not with list index idx2)
@@ -124,8 +162,10 @@ public class DTileConnector {
             mgLog.d(()->"remainings1 " + remainingNodeIdxs1);
             mgLog.d(()->"remainings2 " + remainingNodeIdxs2);
         }
-        dGraphTile1.neighbourTiles[horizontal? Border.BORDER_NODE_EAST: Border.BORDER_NODE_SOUTH] = dGraphTile2;
-        dGraphTile2.neighbourTiles[horizontal? Border.BORDER_NODE_WEST: Border.BORDER_NODE_NORTH] = dGraphTile1;
+        dGraphTile1.neighbourConnected |= horizontal? Border.BORDER_NODE_EAST: Border.BORDER_NODE_SOUTH;
+//        dGraphTile1.neighbourTiles[horizontal? Border.BORDER_NODE_EAST: Border.BORDER_NODE_SOUTH] = dGraphTile2;
+        dGraphTile2.neighbourConnected |= horizontal? Border.BORDER_NODE_WEST: Border.BORDER_NODE_NORTH;
+//        dGraphTile2.neighbourTiles[horizontal? Border.BORDER_NODE_WEST: Border.BORDER_NODE_NORTH] = dGraphTile1;
     }
 
 
@@ -138,7 +178,7 @@ public class DTileConnector {
         DGraphTile neighbourTile = dGraphTile.neighbourTiles[border];
         if (neighbourTile == null) return; // nothing to do
         byte neighboursBorder = Border.oppositeBorder(border);
-        neighbourTile.removeNeighbours(neighboursBorder);
+//        neighbourTile.removeNeighbours(neighboursBorder);
         neighbourTile.neighbourTiles[neighboursBorder] = null;
     }
 
@@ -149,15 +189,36 @@ public class DTileConnector {
         short newNeighbourIdxTile1 = tile1.findFreeInterconnectNeighbour();
         short newNeighbourIdxTile2 = tile2.findFreeInterconnectNeighbour();
 
+        float distance = (float)PointModelUtil.distance(tile1.getNdLat(nodeIdx1), tile1.getNdLon(nodeIdx1), tile2.getNdLat(nodeIdx2), tile2.getNdLon(nodeIdx2));
+        float vertDistance = PointModelUtil.verticalDistance(tile1.getNdEle(nodeIdx1), tile2.getNdEle(nodeIdx2));
         byte flags = (byte)(DGraphTile.NB_FLAG_VALID | DGraphTile.NB_FLAG_PRIMARY_DIRECTION);
-        short nextNeighbourIdx1 = tile1.nodesBuffer.getShort(nodeIdx1*DGraphTile.NODE_SIZE + DGraphTile.ND_NEIGHBOUR_OFFSET);
-        tile1.addNeighbourAt(newNeighbourIdxTile1, nodeIdx2,nextNeighbourIdx1,newNeighbourIdxTile2,(short)-1, horizontal?Border.BORDER_NODE_EAST:Border.BORDER_NODE_SOUTH, flags);
-        tile1.nodesBuffer.putShort(nodeIdx1*DGraphTile.NODE_SIZE + DGraphTile.ND_NEIGHBOUR_OFFSET, newNeighbourIdxTile1);
+        byte border = horizontal? Border.BORDER_NODE_EAST: Border.BORDER_NODE_SOUTH;
+        byte oppositeBorder = Border.oppositeBorder(border);
 
-        short nextNeighbourIdx2 = tile2.nodesBuffer.getShort(nodeIdx2*DGraphTile.NODE_SIZE + DGraphTile.ND_NEIGHBOUR_OFFSET);
-        tile2.addNeighbourAt(newNeighbourIdxTile2, nodeIdx1,nextNeighbourIdx2,newNeighbourIdxTile1,(short)-1, horizontal?Border.BORDER_NODE_WEST:Border.BORDER_NODE_NORTH, flags);
-        tile2.nodesBuffer.putShort(nodeIdx2*DGraphTile.NODE_SIZE + DGraphTile.ND_NEIGHBOUR_OFFSET, newNeighbourIdxTile2);
+        short nextNeighbourIdx1 = tile1.getNdNeighbourIdx(nodeIdx1);
+        tile1.addNeighbourAt(newNeighbourIdxTile1, nodeIdx2,nextNeighbourIdx1,(short)-1, border, flags, distance, vertDistance);
+        tile1.setNdNeighbourIdx(nodeIdx1, newNeighbourIdxTile1);
+        tile1.addNeighbour(nodeIdx1,(short)-1,(short)-1, oppositeBorder, flags, distance, -vertDistance); // add reverse neighbour
+
+        short nextNeighbourIdx2 = tile2.getNdNeighbourIdx(nodeIdx2);
+        tile2.addNeighbourAt(newNeighbourIdxTile2, nodeIdx1,nextNeighbourIdx2,(short)-1, oppositeBorder, flags, distance, -vertDistance);
+        tile2.setNdNeighbourIdx(nodeIdx2, newNeighbourIdxTile2);
+        tile2.addNeighbour(nodeIdx2,(short)-1,(short)-1, border, flags, distance, vertDistance); // add reverse neighbour
     }
 
+    /** Takeover neighbour relationship from tile1 nodeIdx1 neighbourIdx1 to tile2 */
+    public static void unidirectionalConnect(DGraphTile tile1, short nodeIdx1, short neighbourIdx1, byte border, DGraphTile tile2){
+        short neighbourIdxTile2 = tile2.findFreeInterconnectNeighbour();
+        short nodeIdx2 = tile1.getNbNeighbourNodeIdx(neighbourIdx1);
+
+        float distance = tile1.getNbDistance(neighbourIdx1);
+        float vertDistance = tile1.getNbVertDistance(neighbourIdx1);
+        byte flags = (byte)(DGraphTile.NB_FLAG_VALID | DGraphTile.NB_FLAG_PRIMARY_DIRECTION);
+        byte oppositeBorder = Border.oppositeBorder(border);
+
+        short nextNeighbourIdx2 = tile2.getNdNeighbourIdx(nodeIdx2);
+        tile2.addNeighbourAt(neighbourIdxTile2, nodeIdx1, nextNeighbourIdx2,(short)-1, oppositeBorder, flags, distance, -vertDistance);
+        tile2.addNeighbour(nodeIdx2,(short)-1,(short)-1, border, flags, distance, vertDistance); // add reverse neighbour
+    }
 
 }

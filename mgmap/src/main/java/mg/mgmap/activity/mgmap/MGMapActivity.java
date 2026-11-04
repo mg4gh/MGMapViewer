@@ -85,6 +85,7 @@ import mg.mgmap.activity.mgmap.features.time.FSTime;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.graph.GraphFactory;
 import mg.mgmap.generic.graph.impl2.GGraphTileFactory;
+import mg.mgmap.generic.graph.impl4.DGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.TrackLogRef;
@@ -241,7 +242,8 @@ public class MGMapActivity extends MapViewerBase implements XmlRenderThemeMenuCa
         Pref<Boolean> prefSmooth4Routing = prefCache.get(R.string.preferences_smoothing4routing_key, true);
         Pref<String> prefSmoothDistance = prefCache.get(R.string.preferences_smoothing4routing_distance, ""+PointModelUtil.getCloseThreshold()/2f);
         Pref<String> prefRoutingAlgorithm = prefCache.get(R.string.FSRouting_routing_algorithm_key, "BidirectionalAStar");
-        graphFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), prefWayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
+//        graphFactory = new GGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), prefWayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
+        graphFactory = new DGraphTileFactory().onCreate(mapDataStoreUtil, application.getElevationProvider(), prefWayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
 
         featureServices.add(new FSTime(this));
         featureServices.add(new FSAlpha(this));

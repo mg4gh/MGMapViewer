@@ -71,7 +71,8 @@ public class MapViewUtility {
     }
 
     public double getCloseThresholdForZoomLevel(double limit) {
-        return Math.min(limit, getCloseThresholdForZoomLevel());
+        // TODO: Better meke close threshold double - rather big impact
+        return Math.max(1, Math.min(limit, getCloseThresholdForZoomLevel()));
     }
 
     public double getCloseThresholdForZoomLevel() {

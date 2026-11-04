@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph.impl3;
+package mg.mgmap.generic.graph.impl4;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -21,9 +21,13 @@ public class DTileCache {
     /** map accessTime to tileIdx */
     final TreeMap<Long, Integer> accessMap = new TreeMap<>();
 
+    long recentlyAdded = 0;
+    long lastAccessTimeNanos = 0;
+
     synchronized void put (int tileX, int tileY, DGraphTile tile){
         int tileIdx = DGraphTileFactory.getTileIdx(tileX,tileY);
         DGraphTile cacheTile = tileMap.put(tileIdx, tile);
+        recentlyAdded = tileIdx;
         if (cacheTile != null){
             accessMap.remove(cacheTile.accessTime);
         }
@@ -31,10 +35,11 @@ public class DTileCache {
         DTileConnector.connect(tile, get( tileX+1,tileY), true);
         DTileConnector.connect(get( tileX,tileY-1), tile, false);
         DTileConnector.connect(tile, get( tileX,tileY+1), false);
-        long now = System.nanoTime();
+        long now = currentAccessTime();
         tile.accessTime = now;
         accessMap.put(now, tileIdx);
         service2();
+        recentlyAdded = 0;
     }
 
     DGraphTile get(int tileX, int tileY){
@@ -45,12 +50,22 @@ public class DTileCache {
         DGraphTile cacheTile = tileMap.get(tileIdx);
         if (cacheTile != null){
             accessMap.remove(cacheTile.accessTime);
-            long now = System.nanoTime();
+            long now = currentAccessTime();
             cacheTile.accessTime = now;
             if (!cacheTile.used)
                 accessMap.put(now, tileIdx);
         }
         return cacheTile;
+    }
+
+    // ensure that access time is strict monotonous increasing
+    long currentAccessTime(){
+        long now = System.nanoTime();
+        if (lastAccessTimeNanos >= now){
+            now = lastAccessTimeNanos + 1;
+        }
+        lastAccessTimeNanos = now;
+        return now;
     }
 
     synchronized ArrayList<DGraphTile> getAll(){
@@ -81,6 +96,7 @@ public class DTileCache {
             if ((entry != null) && (accessMap.size() >= 2)){ // accessMap.size() >= 2 ensures that the recently added tile isn't removed from cache
                 DGraphTile tile = tileMap.get(entry.getValue());
                 assert (tile != null);
+                if (tile.tileIdx == recentlyAdded) break; // no elder entry that might be cleaned up
                 if (tile.used) {
                     accessMap.remove(tile.accessTime); // remove tile from access map, since cleanup is not allowed as long as it is used
                 } else {
@@ -91,7 +107,7 @@ public class DTileCache {
                     DTileConnector.disconnect(tile, Border.BORDER_NODE_EAST);
                     DTileConnector.disconnect(tile, Border.BORDER_NODE_SOUTH);
                     tile.resetNodeRefs();
-//                    mgLog.d("remove from cache: tileX="+tile.getTileX()+" tileY="+tile.getTileY()+" access="+tile.accessTime);
+//                    mgLog.d("remove from cache: tileX="+tile+" access="+tile.accessTime);
                 }
             } else {
                 break;

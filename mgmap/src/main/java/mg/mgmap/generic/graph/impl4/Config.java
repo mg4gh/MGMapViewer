@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph.impl3;
+package mg.mgmap.generic.graph.impl4;
 
 public class Config {
 
@@ -8,7 +8,7 @@ public class Config {
 
     static final int LOW_MEMORY_THRESHOLD = 2;
 
-    static int CACHE_LIMIT = 750;
+    static int CACHE_LIMIT = 1000;
     static byte ZOOM_LEVEL = 14;
 
 }

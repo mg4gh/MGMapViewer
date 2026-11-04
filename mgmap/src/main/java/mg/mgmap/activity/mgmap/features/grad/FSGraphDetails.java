@@ -17,7 +17,6 @@ package mg.mgmap.activity.mgmap.features.grad;
 import org.mapsforge.core.graphics.Paint;
 
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Locale;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
@@ -26,7 +25,6 @@ import mg.mgmap.activity.mgmap.FeatureService;
 import mg.mgmap.R;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
-import mg.mgmap.generic.graph.impl2.ApproachModelImpl;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
@@ -113,17 +111,15 @@ public class FSGraphDetails extends FeatureService {
     private BBox getGraphDetails(PointModel pmTap, MultiPointModelImpl multiPointModel){
 
         double closeThreshold = getMapViewUtility().getCloseThresholdForZoomLevel(500);
-        BBox bBoxTap = new BBox()
-                .extend(pmTap)
-                .extend(closeThreshold);
+        BBox bBox = null;
 
-        ApproachModel am = getActivity().getGraphFactory().calcApproach(pmTap, PointModelUtil.getCloseThreshold());
-        ArrayList<? extends Graph> graphs =  getActivity().getGraphFactory().getGraphList(bBoxTap);
+        ApproachModel am = getActivity().getGraphFactory().calcApproach(pmTap, (int)closeThreshold);
+        Graph graph = getActivity().getGraphFactory().getGraphTile(am);
 
-        Graph aGraph = graphs.get(0);
         PointModel lastPm = null;
-        if ((aGraph != null) && (am instanceof ApproachModelImpl ami)){
-            for (PointModel pm : aGraph.segmentNodes(ami.getNode1(), ami.getNode2())){
+        if (graph != null){
+            bBox = graph.getBBox();
+            for (PointModel pm : graph.segmentNodes(am)){
                 multiPointModel.addPoint(pm);
                 if (lastPm != null){
                     double dist = PointModelUtil.distance(lastPm,pm);
@@ -131,24 +127,16 @@ public class FSGraphDetails extends FeatureService {
                     double rise = 100 * vertDist/dist;
                     mgLog.d(String.format(Locale.ENGLISH, "    dist=%.2fm vertDist=%.1fm rise=%.1f",dist,vertDist,rise));
                 }
-                mgLog.d("Point "+ pm + aGraph.getRefDetails(pm));
+                mgLog.d("Point "+ pm + graph.getRefDetails(pm));
                 lastPm = pm;
             }
+            MultiMultiPointView mmpv = new MultiMultiPointView(graph.getRawWays(), PAINT_GRAD_ALL_STROKE);
+            mmpv.setShowIntermediates(true);
+            register(mmpv); // show also the complete tile graph
+            BoxView boxView = new BoxView(graph.getBBox(), PAINT_GRAD_ALL_STROKE);
+            register(boxView);
         }
-        aGraph = null;
-        for (Graph graph : graphs) {
-            if (graph.getBBox().contains(pmTap)) {
-                MultiMultiPointView mmpv = new MultiMultiPointView(graph.getRawWays(), PAINT_GRAD_ALL_STROKE);
-                mmpv.setShowIntermediates(true);
-                register(mmpv); // show also the complete tile graph
-                BoxView boxView = new BoxView(graph.getBBox(), PAINT_GRAD_ALL_STROKE);
-                register(boxView);
-            }
-            if (graph.getBBox().contains(multiPointModel.getBBox())){
-                aGraph = graph;
-            }
-        }
-        return aGraph==null?null:aGraph.getBBox();
+        return bBox;
     }
 
 }

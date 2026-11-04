@@ -1,4 +1,4 @@
-package mg.mgmap.generic.graph.impl3;
+package mg.mgmap.generic.graph.impl4;
 
 public class Border {
 
