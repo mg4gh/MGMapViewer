@@ -213,8 +213,8 @@ public class BidirectionalAStar extends DGraphAlgorithm {
         MultiPointModelImpl resultPath = new MultiPointModelImpl();
         if (matchNode.tileIdx != 0){
             DGraphTile matchGraphTile = graph.dGraphTileFactory.getDGraphTile(matchNode.tileIdx);
-            resultPath = getPath(matchGraphTile.getNodeRef(matchNode.nodeIdx, false));
-            for (PointModel pm : getPath(matchGraphTile.getNodeRef(matchNode.nodeIdx, true)) ){
+            resultPath = getPath(matchGraphTile.getNodeRef(matchNode.nodeIdx, false), matchNode);
+            for (PointModel pm : getPath(matchGraphTile.getNodeRef(matchNode.nodeIdx, true), matchNode) ){
                 resultPath.addPoint(pm);
             }
             resultPath.addPoint(target);
@@ -256,10 +256,103 @@ public class BidirectionalAStar extends DGraphAlgorithm {
         return h;
     }
 
+    public MultiPointModelImpl getPath(MiDNodeRef ref, DNode baseNode){
+        MultiPointModelImpl path = new MultiPointModelImpl();
+        if (ref != null){
+            if (ref.isReverse()){
+                DNode neighbourNode = null;
+                while (!ref.isStart()){
+                    DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
+                    short neighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(ref.neighbourIdx);
+                    neighbourNode = neighbourGraphTile.getNode(neighbourNodeIdx);
+                    setDuration(neighbourGraphTile, neighbourNode, ref.neighbourIdx);
+                    path.addPoint( neighbourNode);
+
+//                    short wayAttributesIdx = neighbourGraphTile.getNbWayAttributesIdx(ref.neighbourIdx);
+//                    WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:neighbourGraphTile.wayAttributesList.get(wayAttributesIdx);
+//                    path.addPoint( new ExtendedPointModelImpl<>(neighbourNode, wayAttributs) );
+                    ref = neighbourGraphTile.getNodeRef(neighbourNodeIdx, ref.isReverse());
+                    if (ref == null) {
+                        mgLog.e("Inconsistency detected");
+                        break;
+                    }
+                }
+
+                if (ref != null) { // ref == null should never happen, just for defensive programming
+                    if (neighbourNode != null){
+                        DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
+                        setDuration(neighbourGraphTile, target, neighbourGraphTile.getNbWayAttributesIdx(ref.neighbourIdx), (float)PointModelUtil.distance(neighbourNode, target), PointModelUtil.verticalDistance(neighbourNode, target));
+                    } else if (baseNode != null){
+                        assert (ref.tileIdx == baseNode.tileIdx);
+                        DGraphTile baseGraphTile = graph.dGraphTileFactory.getDGraphTile(baseNode.tileIdx);
+                        baseGraphTile.getNodeData(baseNode, baseNode.nodeIdx);
+                        setDuration(baseGraphTile, target, baseGraphTile.getNbWayAttributesIdx(ref.neighbourIdx), (float)PointModelUtil.distance(baseNode, target), PointModelUtil.verticalDistance(baseNode, target));
+                    }
+                } else {
+                    mgLog.e("Inconsistency detected");
+                }
+                path.addPoint( target );
+
+
+            } else { // none reverse
+                ArrayList<MiDNodeRef> refList = new ArrayList<>();
+                while (!ref.isStart()){
+                    if (!refList.contains(ref)){
+                        refList.add(ref);
+                    } else {
+                        mgLog.e("Inconsistency detected");
+                        mgLog.w(refList);
+                        mgLog.w("ref="+ref);
+                        break;
+                    }
+                    DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
+                    short neighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(ref.neighbourIdx);
+                    short border = neighbourGraphTile.getNbBorder(ref.neighbourIdx);
+                    DGraphTile neighbourNodeGraphTile = neighbourGraphTile.neighbourTiles[border];
+                    DNode neighbourNode = neighbourNodeGraphTile.getNode(neighbourNodeIdx);
+                    setDuration(neighbourGraphTile, neighbourNode, ref.neighbourIdx);
+                    path.addPoint( 0, neighbourNode );
+
+                    short reverseNeighbourIdx = neighbourGraphTile.getNbReverseIdx(ref.neighbourIdx);
+                    short reverseNeighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(reverseNeighbourIdx); // idx of neighbourNode of reverseNeighbour
+                    ref = neighbourGraphTile.getNodeRef(reverseNeighbourNodeIdx, ref.isReverse());
+                    if (ref == null) {
+                        mgLog.e("Inconsistency detected");
+                        break;
+                    }
+                }
+
+                if (ref != null){ // ref == null should never happen, just for defensive programming
+                    DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
+                    short neighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(ref.neighbourIdx);
+                    DNode neighbourNode = neighbourGraphTile.getNode(neighbourNodeIdx);
+                    setDuration(neighbourGraphTile, neighbourNode, neighbourGraphTile.getNbWayAttributesIdx(ref.neighbourIdx), (float)PointModelUtil.distance(source, neighbourNode), PointModelUtil.verticalDistance(source, neighbourNode));
+                    path.addPoint( 0, neighbourNode );
+//                    path.addPoint( 0, new ExtendedPointModelImpl<>(neighbourNode, null) );
+                }
+
+                source.setTimestamp(0);
+                path.addPoint( 0, source );
+            }
+        }
+        return path;
+    }
+
+    void setDuration(DGraphTile graphTile, DNode node, short neighbourIdx){
+        short wayAttributesIdx = graphTile.getNbWayAttributesIdx(neighbourIdx);
+        setDuration(graphTile, node, wayAttributesIdx, graphTile.getNbDistance(neighbourIdx), graphTile.getNbVertDistance(neighbourIdx));
+    }
+    void setDuration(DGraphTile graphTile, DNode node, short wayAttributesIdx, float distance, float vertDistance){
+        WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:graphTile.wayAttributesList.get(wayAttributesIdx);
+        long duration = routingProfile.getDuration(wayAttributs, distance, vertDistance);
+        node.setTimestamp(duration);
+    }
+
+
     public ArrayList<MultiPointModel> getBestPath(){
         ArrayList<MultiPointModel> paths = new ArrayList<>();
-        paths.add(getPath(bestHeuristicRef));
-        paths.add(getPath(bestReverseHeuristicRef));
+        paths.add(getPath(bestHeuristicRef, null));
+        paths.add(getPath(bestReverseHeuristicRef, null));
         return paths;
     }
 

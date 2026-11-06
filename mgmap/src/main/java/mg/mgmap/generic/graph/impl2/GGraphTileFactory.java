@@ -647,9 +647,8 @@ public class GGraphTileFactory implements GraphFactory {
                         neighbour = tile.oppositeNeighbour(neighbourNode, neighbour.getReverse());
                         neighbourNode = neighbour.getNeighbourNode();
                     } // while true
-                    // TODO: Why "lastHeightRelevantPointIdx+1", not just lastHeightRelevantPointIdx
                     if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX) &&
-                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx+1, neighbourNodeIdx) < smoothingDistance)){
+                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx, neighbourNodeIdx) < smoothingDistance)){
                         lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset last heightRelevantPoint in this segment - otherwise the remaining might bee too short
                     }
 

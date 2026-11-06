@@ -602,8 +602,9 @@ public class DGraphTile implements Graph {
 
         // Iterate over FIX nodes
         ArrayList<ExDNeighbour> smoothList = new ArrayList<>(); // contains neighbourIdx values that point to Nodes that are on the VISITING process
-        for (short nodeIdx=0; nodeIdx<initialNodeCnt; nodeIdx++){ // iterate over all nodes
-            ExDNode node = eNodes[nodeIdx];
+        for (ExDNode node = initialNodeMap.firstKey(); node != null; node = initialNodeMap.higherKey(node)){
+//        for (short nodeIdx=0; nodeIdx<initialNodeCnt; nodeIdx++){ // iterate over all nodes
+//            ExDNode node = eNodes[nodeIdx];
             if (node.hasFlags(ND_FLAG_VALID, ND_FLAG_FIX)){ // node is valid and fix
                 ExDNeighbour aNeighbour = null;
                 while ( (aNeighbour = (aNeighbour==null)?node.neighbour:aNeighbour.nextNeighbour) != null){
@@ -624,6 +625,8 @@ public class DGraphTile implements Graph {
                     while (true) { // follow the neighbours until next FIX point - try to mark relevant points HEIGHT_RELEVANT; and all on the path as VISITED
                         smoothList.add(neighbour);
                         ExDNode neighbourNode = neighbour.neighbourNode;
+                        distance2LastHeightRelevant += neighbour.distance;
+
                         if (neighbourNode.hasFlags(ND_FLAG_FIX))
                             break; // new FIX point reached, no more intermediate HEIGHT_RELEVANT points (don't leave loop before adding this point to smoothList)
                         neighbourNode.setFlags(ND_FLAG_VISITED);
@@ -632,7 +635,6 @@ public class DGraphTile implements Graph {
                         minHeight = Math.min(minHeight, neighbourNodeEle);
                         maxHeight = Math.max(maxHeight, neighbourNodeEle);
 
-                        distance2LastHeightRelevant += neighbour.distance;
                         if ((distance2LastHeightRelevant > smoothingDistance * 5) ||
                                 ((Math.abs(neighbourNodeEle - lastHeightRelevantPointEle) >= TrackLogStatistic.ELE_THRESHOLD_ELSE) && (distance2LastHeightRelevant > smoothingDistance))) {
                             neighbourNode.setFlags(ND_FLAG_HEIGHT_RELEVANT);

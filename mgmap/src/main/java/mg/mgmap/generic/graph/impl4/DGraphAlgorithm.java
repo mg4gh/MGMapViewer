@@ -9,8 +9,6 @@ import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.GraphAlgorithm;
-import mg.mgmap.generic.graph.WayAttributs;
-import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
@@ -100,64 +98,5 @@ public abstract class DGraphAlgorithm implements GraphAlgorithm {
         }
         return false;
     }
-
-    public MultiPointModelImpl getPath(MiDNodeRef ref){
-        MultiPointModelImpl path = new MultiPointModelImpl();
-        if (ref != null){
-            if (ref.isReverse()){
-                while (!ref.isStart()){
-                    DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
-                    short neighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(ref.neighbourIdx);
-                    DNode neighbourNode = neighbourGraphTile.getNode(neighbourNodeIdx);
-                    short wayAttributesIdx = neighbourGraphTile.getNbWayAttributesIdx(ref.neighbourIdx);
-                    WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:neighbourGraphTile.wayAttributesList.get(wayAttributesIdx);
-                    path.addPoint( new ExtendedPointModelImpl<>(neighbourNode, wayAttributs) );
-                    ref = neighbourGraphTile.getNodeRef(neighbourNodeIdx, ref.isReverse());
-                    if (ref == null) {
-                        mgLog.e("Inconsistency detected");
-                        break;
-                    }
-                }
-
-            } else { // none reverse
-                ArrayList<MiDNodeRef> refList = new ArrayList<>();
-                while (!ref.isStart()){
-                    if (!refList.contains(ref)){
-                        refList.add(ref);
-                    } else {
-                        mgLog.e("Inconsistency detected");
-                        mgLog.w(refList);
-                        mgLog.w("ref="+ref);
-                        break;
-                    }
-                    DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
-                    short neighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(ref.neighbourIdx);
-                    short border = neighbourGraphTile.getNbBorder(ref.neighbourIdx);
-                    DGraphTile neighbourNodeGraphTile = neighbourGraphTile.neighbourTiles[border];
-                    DNode neighbourNode = neighbourNodeGraphTile.getNode(neighbourNodeIdx);
-                    short wayAttributesIdx = neighbourGraphTile.getNbWayAttributesIdx(ref.neighbourIdx);
-                    WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:neighbourGraphTile.wayAttributesList.get(wayAttributesIdx);
-                    path.addPoint( 0, new ExtendedPointModelImpl<>(neighbourNode, wayAttributs) );
-
-                    short reverseNeighbourIdx = neighbourGraphTile.getNbReverseIdx(ref.neighbourIdx);
-                    short reverseNeighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(reverseNeighbourIdx); // idx of neighbourNode of reverseNeighbour
-                    ref = neighbourGraphTile.getNodeRef(reverseNeighbourNodeIdx, ref.isReverse());
-                    if (ref == null) {
-                        mgLog.e("Inconsistency detected");
-                        break;
-                    }
-                }
-                if (ref != null){ // null should not occur (only in case of inconsistency possible)
-                    DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
-                    short neighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(ref.neighbourIdx);
-                    DNode neighbourNode = neighbourGraphTile.getNode(neighbourNodeIdx);
-                    path.addPoint( 0, new ExtendedPointModelImpl<>(neighbourNode, null) );
-                }
-            }
-        }
-        return path;
-    }
-
-
 
 }

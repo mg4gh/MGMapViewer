@@ -94,7 +94,7 @@ public class PointModelImpl implements PointModel{
         return ele;
     }
     public int getEl(){
-        return (int)(ele*PointModelUtil.ELE_FACTOR);
+        return Math.round(ele*PointModelUtil.ELE_FACTOR);
     }
 
 

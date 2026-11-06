@@ -306,9 +306,13 @@ public class RoutingEngine {
                         if (mpmRaw.get(idx) instanceof ExtendedPointModelImpl<?>){
                             //noinspection unchecked
                             wayAttributs =((ExtendedPointModelImpl<WayAttributs>)mpmRaw.get(idx)).getExtent();
+                            duration += routingProfile.getDuration(wayAttributs,mpmRaw.get(idx-1), mpmRaw.get(idx));
+                        } else {
+                            long segmentTimestamp = mpmRaw.get(idx).getTimestamp();
+                            if (segmentTimestamp != PointModel.NO_TIME){
+                                duration += segmentTimestamp;
+                            }
                         }
-                        duration += routingProfile.getDuration(wayAttributs,mpmRaw.get(idx-1), mpmRaw.get(idx));
-
                         if (idx < mpmRaw.size()-1){
                             hint = new RoutingHint();
                             hint.pmPrev = mpmRaw.get(idx-1);

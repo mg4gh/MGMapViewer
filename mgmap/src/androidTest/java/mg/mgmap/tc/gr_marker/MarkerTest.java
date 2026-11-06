@@ -75,6 +75,7 @@ public class MarkerTest extends BaseTestCase {
         Assert.assertEquals(14.1,stat.getMinEle(), 1);
         Assert.assertEquals(81.2,stat.getMaxEle(), 1);
         Assert.assertEquals(125,stat.getNumPoints(), 1);
+        Assert.assertEquals(1553653,stat.getDuration(), 1000);
 
 
         SystemClock.sleep(2000);
