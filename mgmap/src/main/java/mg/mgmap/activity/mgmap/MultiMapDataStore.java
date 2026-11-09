@@ -322,6 +322,7 @@ public class MultiMapDataStore extends MapDataStore {
                 yield null;
             }
             case RETURN_ALL -> readAllMapData(upperLeft, lowerRight);
+            // TODO deduplicate for FAST_DETAILS only, if there was no full tile found in subroutine
             case FAST_DETAILS, DEDUPLICATE -> readAllMapData(upperLeft, lowerRight).deduplicate();
         };
     }

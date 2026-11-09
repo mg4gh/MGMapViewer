@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.MapViewerBase;
+import mg.mgmap.activity.mgmap.MultiMapDataStore;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.util.ElevationProvider;
@@ -41,8 +42,11 @@ public class GraphConsistencyTest {
         File mapFile = new File("src/test/assets/map_local/Germany-South_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
 
+        MultiMapDataStore mmds = new MultiMapDataStore(MultiMapDataStore.DataPolicy.FAST_DETAILS);
+//        MultiMapDataStore mmds = new MultiMapDataStore(MultiMapDataStore.DataPolicy.RETURN_ALL);
         MapDataStore mds = new MapFile(mapFile, "de");
-        WayProvider wayProvider = new WayProviderHelper(mds);
+        mmds.addMapDataStore(mds, false, false);
+        WayProvider wayProvider = new WayProviderHelper(mmds);
 
         Pref<Boolean> prefWayDetails = new Pref<>(false);
         Pref<String> prefRoutingAlgorithm = new Pref<>("BidirectionalAstarExt");
@@ -53,11 +57,13 @@ public class GraphConsistencyTest {
 
         ArrayList<DGraphTile> tiles = new ArrayList<>();
         PointModel pm1 = new PointModelImpl(49.405673,8.679079); // Heidelberg
+//        PointModel pm1 = new PointModelImpl(49.406391, 8.679864); // Heidelberg
+//        PointModel pm2 = new PointModelImpl(49.406400, 8.680031);
 //        PointModel pm2 = new PointModelImpl(49.386410,8.703825);
 //        PointModel pm2 = new PointModelImpl(49.136262, 8.914056);
 //        PointModel pm2 = new PointModelImpl(49.792982, 9.925589); // Würzburg
-//        PointModel pm2 = new PointModelImpl(49.921241, 10.178596); // Wipfeld (Main)
-        PointModel pm2 = new PointModelImpl(50.043004, 10.237682); // Schweifurt
+        PointModel pm2 = new PointModelImpl(49.921241, 10.178596); // Wipfeld (Main)
+//        PointModel pm2 = new PointModelImpl(50.043004, 10.237682); // Schweifurt
 
         double distance;
         {
