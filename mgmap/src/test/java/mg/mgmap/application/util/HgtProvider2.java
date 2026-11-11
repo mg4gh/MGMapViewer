@@ -1,7 +1,5 @@
 package mg.mgmap.application.util;
 
-import android.util.LruCache;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +28,7 @@ public class HgtProvider2 implements HgtProvider{
             if (buf == null){
                 try {
                     File hgtFile = new File("src/test/assets/map_local/"+hgtName+".SRTMGL1.hgt.zip");
-                    System.out.println("load "+hgtFile.getAbsolutePath());
+//                    System.out.println("load "+hgtFile.getAbsolutePath());
                     if (hgtFile.exists()){
                         if (hgtFile.length()>0){
                             if (hgtFile.getName().endsWith("zip")){

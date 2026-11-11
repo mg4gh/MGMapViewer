@@ -292,7 +292,7 @@ public class DGraphTile implements Graph {
         nodesBuffer = ByteBuffer.allocateDirect(maxNodeCnt * NODE_SIZE);
         for (int i=0; i<initialNodeCnt; i++){
             ExDNode node = eNodes[i];
-            addNode(node.dla, node.dlo, node.getEle(), node.getEleAcc(), node.flags, node.border, node.neighbour==null?-1:node.neighbour.neighbourIdx);
+            addNode(node.dla, node.dlo, node.getEle(), node.getEleAcc(), (byte)(node.flags & ND_FLAG_VALID), node.border, node.neighbour==null?-1:node.neighbour.neighbourIdx);
             node.neighbour = null;
         }
 

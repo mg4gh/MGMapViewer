@@ -267,17 +267,12 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                     neighbourNode = neighbourGraphTile.getNode(neighbourNodeIdx);
                     setDuration(neighbourGraphTile, neighbourNode, ref.neighbourIdx);
                     path.addPoint( neighbourNode);
-
-//                    short wayAttributesIdx = neighbourGraphTile.getNbWayAttributesIdx(ref.neighbourIdx);
-//                    WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:neighbourGraphTile.wayAttributesList.get(wayAttributesIdx);
-//                    path.addPoint( new ExtendedPointModelImpl<>(neighbourNode, wayAttributs) );
                     ref = neighbourGraphTile.getNodeRef(neighbourNodeIdx, ref.isReverse());
                     if (ref == null) {
                         mgLog.e("Inconsistency detected");
                         break;
                     }
                 }
-
                 if (ref != null) { // ref == null should never happen, just for defensive programming
                     if (neighbourNode != null){
                         DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
@@ -293,18 +288,9 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                 }
                 path.addPoint( target );
 
-
             } else { // none reverse
-                ArrayList<MiDNodeRef> refList = new ArrayList<>();
+
                 while (!ref.isStart()){
-                    if (!refList.contains(ref)){
-                        refList.add(ref);
-                    } else {
-                        mgLog.e("Inconsistency detected");
-                        mgLog.w(refList);
-                        mgLog.w("ref="+ref);
-                        break;
-                    }
                     DGraphTile neighbourGraphTile = graph.dGraphTileFactory.getDGraphTile(ref.tileIdx);
                     short neighbourNodeIdx = neighbourGraphTile.getNbNeighbourNodeIdx(ref.neighbourIdx);
                     short border = neighbourGraphTile.getNbBorder(ref.neighbourIdx);
@@ -328,11 +314,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                     DNode neighbourNode = neighbourGraphTile.getNode(neighbourNodeIdx);
                     setDuration(neighbourGraphTile, neighbourNode, neighbourGraphTile.getNbWayAttributesIdx(ref.neighbourIdx), (float)PointModelUtil.distance(source, neighbourNode), PointModelUtil.verticalDistance(source, neighbourNode));
                     path.addPoint( 0, neighbourNode );
-//                    path.addPoint( 0, new ExtendedPointModelImpl<>(neighbourNode, null) );
                 }
-
-                source.setTimestamp(0);
-                path.addPoint( 0, source );
             }
         }
         return path;
