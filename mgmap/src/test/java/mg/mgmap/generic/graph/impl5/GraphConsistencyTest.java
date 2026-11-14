@@ -20,6 +20,8 @@ import mg.mgmap.application.util.ElevationProviderImplHelper2;
 import mg.mgmap.application.util.HgtProvider2;
 import mg.mgmap.application.util.WayProviderHelper;
 import mg.mgmap.generic.graph.GraphAlgorithm;
+import mg.mgmap.generic.graph.WayAttributesManager;
+import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
@@ -39,7 +41,9 @@ public class GraphConsistencyTest {
         MGLog.logConfig.put("mg.mgmap", MGLog.Level.WARN);
         MGLog.setUnittest(true);
 
-        ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
+        ElevationProviderImplHelper2 elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
+        elevationProvider.getPrefBicubicInterpolation().setValue(true);
+        elevationProvider.getPrefBicubicSplineInterpolation().setValue(true);
         File mapFile = new File("src/test/assets/map_local/Germany-South_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
 
@@ -51,18 +55,24 @@ public class GraphConsistencyTest {
 
         Pref<Boolean> prefWayDetails = new Pref<>(false);
         Pref<String> prefRoutingAlgorithm = new Pref<>("BidirectionalAstarExt");
-        Pref<Boolean> prefSmooth4Routing = new Pref<>(false);
-        Pref<String> prefSmoothDistance = new Pref<>("16");
+        Pref<Boolean> prefSmooth4Routing = new Pref<>(true);
+        Pref<String> prefSmoothDistance = new Pref<>("32");
         DGraphTileFactory graphTileFactory = new DGraphTileFactory().onCreate(wayProvider,elevationProvider,prefWayDetails,
                 prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, Config.ZOOM_LEVEL, 1000, MapViewerBase.TILE_SIZE);
 
 
         ArrayList<DGraphTile> tiles = new ArrayList<>();
-        PointModel pm1 = new PointModelImpl(49.405673,8.679079); // Heidelberg
+        PointModel pm1 = new PointModelImpl(49.405761,8.679108); // Heidelberg
+        PointModel pm2 = new PointModelImpl(49.792993,9.925837); // Würzburg
+
+
+//        PointModel pm1 = new PointModelImpl(49.405618,8.679108); // Heidelberg
+//        PointModel pm1 = new PointModelImpl(49.405673,8.679079); // Heidelberg
 //        PointModel pm1 = new PointModelImpl(49.406391, 8.679864); // Heidelberg
 //        PointModel pm2 = new PointModelImpl(49.792982, 9.925589); // Würzburg
+//        PointModel pm2 = new PointModelImpl(49.792999,9.925915); // Würzburg
 //        PointModel pm2 = new PointModelImpl(49.921241, 10.178596); // Wipfeld (Main)
-        PointModel pm2 = new PointModelImpl(50.043004, 10.237682); // Schweifurt
+//        PointModel pm2 = new PointModelImpl(50.043004, 10.237682); // Schweifurt
 //        PointModel pm2 = new PointModelImpl(50.355218, 10.687741); // Streufdorf
 
         double distance;
@@ -92,6 +102,7 @@ public class GraphConsistencyTest {
             System.out.printf(Locale.ENGLISH, "distance: %.1f%n", distance);
             AlgorithmStatistics statistics = graphTileFactory.renewStatistics();
             System.out.printf(Locale.ENGLISH, "%s\n", statistics);
+            System.out.printf(Locale.ENGLISH, "waMap.size=%d\n", WayAttributesManager.waMap.size());
 
             if (algorithm instanceof BidirectionalAStar bas){
                 assert (bas.rc == 0);

@@ -1,14 +1,27 @@
 package mg.mgmap.application.util;
 
 import mg.mgmap.generic.model.PointModel;
+import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.TrackLogPoint;
 import mg.mgmap.generic.model.WriteablePointModel;
 import mg.mgmap.generic.model.WriteablePointModelImpl;
+import mg.mgmap.generic.util.Pref;
 
 public class ElevationProviderImplHelper2 implements ElevationProvider{
 
     final HgtProvider2 hgtProvider;
+
+    Pref<Boolean> prefBicubicInterpolation = new Pref<>(false);
+    Pref<Boolean> prefBicubicSplineInterpolation = new Pref<>(false);
+
+    public Pref<Boolean> getPrefBicubicInterpolation() {
+        return prefBicubicInterpolation;
+    }
+    public Pref<Boolean> getPrefBicubicSplineInterpolation() {
+        return prefBicubicSplineInterpolation;
+    }
+
 
     public ElevationProviderImplHelper2(HgtProvider2 hgtProvider){
         this.hgtProvider = hgtProvider;
@@ -54,16 +67,24 @@ public class ElevationProviderImplHelper2 implements ElevationProvider{
                 double seEle = getEle(hgtBuf, off+7204);
                 double swEle = getEle(hgtBuf, off+7202);
 
-                double nhi = PointModelUtil.interpolate(0, 1, nwEle, neEle, dlon3600 - oLon);
-                double shi = PointModelUtil.interpolate(0, 1, swEle, seEle, dlon3600 - oLon);
-                double hi = PointModelUtil.interpolate(0, 1, nhi, shi, dlat3600 - oLat);
-
-                double maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
-                double minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
-
+                double hi, maxEle, minEle;
+                if (prefBicubicInterpolation.getValue() && (1 <= oLon) && (oLon <= 3598) && (1 <= oLat) && (oLat <= 3598)){
+                    double h0 = cubicInterpolate(getEle(hgtBuf,off-7204),getEle(hgtBuf,off-7202),getEle(hgtBuf,off-7200),getEle(hgtBuf,off-7198), dlon3600 - oLon);
+                    double h1 = cubicInterpolate(getEle(hgtBuf,off-2),nwEle,neEle,getEle(hgtBuf,off+4), dlon3600 - oLon);
+                    double h2 = cubicInterpolate(getEle(hgtBuf,off+7200),swEle,seEle,getEle(hgtBuf,off+7206), dlon3600 - oLon);
+                    double h3 = cubicInterpolate(getEle(hgtBuf,off+14402),getEle(hgtBuf,off+14404),getEle(hgtBuf,off+14406),getEle(hgtBuf,off+14408), dlon3600 - oLon);
+                    hi = cubicInterpolate(h0, h1, h2, h3, dlat3600 - oLat);
+                } else {
+                    double nhi = PointModelUtil.interpolate(0, 1, nwEle, neEle, dlon3600 - oLon);
+                    double shi = PointModelUtil.interpolate(0, 1, swEle, seEle, dlon3600 - oLon);
+                    hi = PointModelUtil.interpolate(0, 1, nhi, shi, dlat3600 - oLat);
+                }
+                maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
+                minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
                 hi = Math.round(hi*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR;
                 wpm.setEle((float) hi);
                 wpm.setEleAcc((float) (maxEle-minEle));
+
             } else { // dummy file for sea level
                 wpm.setEle(0);
                 wpm.setEleAcc(0);
@@ -83,6 +104,36 @@ public class ElevationProviderImplHelper2 implements ElevationProvider{
             res = (short)( ((b1 & 0xff)<<8) + (b2 & 0xff) );
         }
         return res;
+    }
+
+    public double cubicInterpolate(double y0, double y1, double y2, double y3, double t) {
+        if (prefBicubicSplineInterpolation.getValue()){
+            return cubicSplineInterpolate(y0, y1, y2, y3, t);
+        } else {
+            return cubicInterpolate1(y0, y1, y2, y3, t);
+        }
+    }
+
+    public static double cubicInterpolate1(double y0, double y1, double y2, double y3, double t) {
+        // Kubische Interpolation für gleichmäßig verteilte x
+        double a = (-y0 + 3*y1  - 3*y2 + y3)/6;
+        double b = (y0 - 2*y1 + y2)/2;
+        double c = (y2 - y0)/2 - a;
+        @SuppressWarnings("unused")
+        double d = y1;
+
+        return ((a * t + b) * t + c) * t + d;
+    }
+
+    public static double cubicSplineInterpolate(double y0, double y1, double y2, double y3, double t) {
+        // Kubische Spline Interpolation für gleichmäßig verteilte x
+        @SuppressWarnings("unused")
+        double d = y1;
+        double b =  (4*y0 -9*y1 +6*y2 -y3)/5;
+        double c = y1 -y0 + (2*b)/3;
+        double a = y2 -b -c -d;
+
+        return ((a * t + b) * t + c) * t + d;
     }
 
 }

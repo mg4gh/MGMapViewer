@@ -43,7 +43,7 @@ public abstract class DGraphAlgorithm implements GraphAlgorithm {
             while (running) {
                 synchronized (DGraphAlgorithm.this) {
                     try {
-                        DGraphAlgorithm.this.wait(1000);
+                        DGraphAlgorithm.this.wait(3000);
                         if (running && (routeIntermediatesObservable != null)) {
                             routeIntermediatesObservable.setChanged();
                             routeIntermediatesObservable.notifyObservers(getBestPath());

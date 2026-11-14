@@ -27,6 +27,7 @@ import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.generic.graph.ApproachModel;
+import mg.mgmap.generic.graph.WayAttributesManager;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.graph.GraphFactory;
@@ -263,7 +264,8 @@ public class DGraphTileFactory implements GraphFactory {
         for (Way way : ways) {
             if (wayProvider.isWayForRouting(way)){
 
-                WayAttributs wayAttributs = new WayAttributs(way);
+                WayAttributs wayAttributs = WayAttributesManager.getWayAttributs(way);
+//                WayAttributs wayAttributs = new WayAttributs(way);
                 dGraphTile.addLatLongs( wayAttributs, way.latLongs[0]);
 
                 // now setup rawWays

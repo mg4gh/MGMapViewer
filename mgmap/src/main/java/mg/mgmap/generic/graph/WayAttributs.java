@@ -7,7 +7,6 @@ import org.mapsforge.map.datastore.Way;
 
 public class WayAttributs {
 
-//    public boolean accessible = false;
     public String highway = null;
     public String bicycle = null;
     public String access = null;
@@ -19,11 +18,6 @@ public class WayAttributs {
     public String trackType = null;
     public String network = null;
     public final boolean onewayBic;
-//    additional tags that might be used in future
-//    public String service = null;
-//    public String trail_visibility = null;
-
-    final StringBuilder sb = new StringBuilder();
 
     private Object derivedData; // profile specific, will be reset on profile change
 
@@ -31,7 +25,6 @@ public class WayAttributs {
 
         String oneway = null;
         String oneway_bic = null;
-//        String name = null;
 
         for (Tag tag : way.tags) {
             switch (tag.key) {
@@ -71,21 +64,8 @@ public class WayAttributs {
                 case "oneway:bicycle":
                     oneway_bic = tag.value;
                     break;
-                case "smoothness":
-                    boolean smoothness = true;
-                    break;
-     /*           case "name":
-                    name = tag.value;
-                    break;
-                case "service":
-                    service = tag.value; */
             }
-            sb.append(tag.key).append("=").append(tag.value).append(" ");
         }
-/*        if (accessible && ("private".equals(bicycle) || (("private".equals(access)|| "no".equals(access))&&!("bic_yes".equals(bicycle)|| "bic_designated".equals(bicycle)||"bic_permissive".equals(bicycle))) ||
-                "motorway".equals(highway) || "trunk".equals(highway))) {
-            accessible = false;
-        } */
         this.onewayBic = ( "yes".equals(oneway) && !"ow_bic_no".equals(oneway_bic));
     }
 
@@ -102,7 +82,23 @@ public class WayAttributs {
     public String toString() {
         return Integer.toHexString(hashCode());
     }
+
+
     public String toDetailedString() {
-        return Integer.toHexString(hashCode())+" "+sb.toString();
+        return "WayAttributs{" +
+                "hash='" + Integer.toHexString(hashCode()) + '\'' +
+                ", highway='" + highway + '\'' +
+                ", bicycle='" + bicycle + '\'' +
+                ", access='" + access + '\'' +
+                ", cycleway='" + cycleway + '\'' +
+                ", surface='" + surface + '\'' +
+                ", mtbScale='" + mtbScale + '\'' +
+                ", mtbScaleUp='" + mtbScaleUp + '\'' +
+                ", trackType='" + trackType + '\'' +
+                ", network='" + network + '\'' +
+                ", onewayBic=" + onewayBic +
+                ", derivedData=" + derivedData +
+                '}';
     }
+
 }

@@ -162,7 +162,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                     WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:graphTile.wayAttributesList.get(wayAttributesIdx);
                     float distance = graphTile.getNbDistance(directedNeighbourIdx);
                     float vertDistance = graphTile.getNbVertDistance(directedNeighbourIdx);
-                    costToNeighbour = routingProfile.getCost(wayAttributs, distance, vertDistance, graphTile.isNbPrimaryDirection(directedNeighbourIdx));
+                    costToNeighbour = routingProfile.getCost(wayAttributs, distance, vertDistance, graphTile.isNbPrimaryDirection(directedNeighbourIdx)) + 0.001f;
                     graphTile.setNbCost(directedNeighbourIdx, costToNeighbour);
                 }
                 double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path
@@ -365,7 +365,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
         ArrayList<MultiPointModel> paths = new ArrayList<>();
         paths.add(getPath(bestHeuristicNode, false, sourceApproachModel));
         paths.add(getPath(bestReverseHeuristicNode, true, targetApproachModel));
-        mgLog.w(String.format(Locale.ENGLISH, "best heuristic remaining distance: %.1f", PointModelUtil.distance(bestHeuristicNode, bestReverseHeuristicNode)));
+        mgLog.d(String.format(Locale.ENGLISH, "best heuristic remaining distance: %.1f", PointModelUtil.distance(bestHeuristicNode, bestReverseHeuristicNode)));
         return paths;
     }
 

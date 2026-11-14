@@ -418,7 +418,7 @@ public class DGraphTile implements Graph {
 
     // reduce Graph by dropping nNode, all Neighbours form nNode will get iNode as a Neighbour
     private void reduceGraph(ExDNode iNode, ExDNode nNode){
-        mgLog.d("reduceGraph: "+nNode+"("+nNode.nodeIdx+") -> "+iNode+"("+iNode.nodeIdx+")");
+        mgLog.v("reduceGraph: "+nNode+"("+nNode.nodeIdx+") -> "+iNode+"("+iNode.nodeIdx+")");
         //determine last neighbour from iIdx
         ExDNeighbour lastNeighbour = iNode.neighbour; // assume that iNode has at least one neighbour (so is not null)
         while (lastNeighbour.nextNeighbour != null){
