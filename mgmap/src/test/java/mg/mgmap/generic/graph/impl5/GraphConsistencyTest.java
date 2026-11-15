@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import mg.mgmap.activity.mgmap.ExtendedMapFile;
 import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.activity.mgmap.MultiMapDataStore;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
@@ -49,7 +50,7 @@ public class GraphConsistencyTest {
 
         MultiMapDataStore mmds = new MultiMapDataStore(MultiMapDataStore.DataPolicy.FAST_DETAILS);
 //        MultiMapDataStore mmds = new MultiMapDataStore(MultiMapDataStore.DataPolicy.RETURN_ALL);
-        MapDataStore mds = new MapFile(mapFile, "de");
+        ExtendedMapFile mds = new ExtendedMapFile("MAPSFORGE: Germany-South_oam.osm.map", mapFile, "de");
         mmds.addMapDataStore(mds, false, false);
         WayProvider wayProvider = new WayProviderHelper(mmds);
 

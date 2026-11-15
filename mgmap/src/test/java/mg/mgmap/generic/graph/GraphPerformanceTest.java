@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import mg.mgmap.activity.mgmap.ExtendedMapFile;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.util.ElevationProvider;
@@ -53,7 +54,7 @@ public class GraphPerformanceTest {
         File mapFile = new File("src/test/assets/map_local/Germany-South_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
 
-        MapDataStore mds = new MapFile(mapFile, "de");
+        MapDataStore mds = new ExtendedMapFile("MAPSFORGE: Germany-South_oam.osm.map", mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
 
         Pref<Boolean> prefWayDetails = new Pref<>(false);
@@ -149,7 +150,7 @@ public class GraphPerformanceTest {
         File mapFile = new File("src/test/assets/map_local/Germany-South_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
 
-        MapDataStore mds = new MapFile(mapFile, "de");
+        MapDataStore mds = new ExtendedMapFile("MAPSFORGE: Germany-South_oam.osm.map", mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
 
         Pref<Boolean> prefWayDetails = new Pref<>(false);
