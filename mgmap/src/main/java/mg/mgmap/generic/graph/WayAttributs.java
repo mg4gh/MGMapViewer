@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import org.mapsforge.core.model.Tag;
 import org.mapsforge.map.datastore.Way;
 
+import java.util.Objects;
+
 public class WayAttributs {
 
     public String highway = null;
@@ -17,9 +19,13 @@ public class WayAttributs {
 
     public String trackType = null;
     public String network = null;
-    public final boolean onewayBic;
+    public boolean onewayBic;
 
     private Object derivedData; // profile specific, will be reset on profile change
+
+    long waValue = 0;
+
+    public WayAttributs() {}
 
     public WayAttributs(Way way) {
 
@@ -47,7 +53,7 @@ public class WayAttributs {
                 case "cycleway":
                 case "cycleway_track":
                 case "cycleway_lane":
-                    cycleway = tag.value;
+                    cycleway = "set";
                     break;
                 case "access":
                     access = tag.value;
@@ -86,7 +92,7 @@ public class WayAttributs {
 
     public String toDetailedString() {
         return "WayAttributs{" +
-                "hash='" + Integer.toHexString(hashCode()) + '\'' +
+                "hash='" + Integer.toHexString(hashCode()) + "\n"+
                 ", highway='" + highway + '\'' +
                 ", bicycle='" + bicycle + '\'' +
                 ", access='" + access + '\'' +
@@ -101,4 +107,27 @@ public class WayAttributs {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WayAttributs that = (WayAttributs) o;
+        return onewayBic == that.onewayBic && Objects.equals(highway, that.highway) && Objects.equals(bicycle, that.bicycle) && Objects.equals(access, that.access) && Objects.equals(cycleway, that.cycleway) && Objects.equals(surface, that.surface) && Objects.equals(mtbScale, that.mtbScale) && Objects.equals(mtbScaleUp, that.mtbScaleUp) && Objects.equals(trackType, that.trackType) && Objects.equals(network, that.network);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(highway);
+        result = 31 * result + Objects.hashCode(bicycle);
+        result = 31 * result + Objects.hashCode(access);
+        result = 31 * result + Objects.hashCode(cycleway);
+        result = 31 * result + Objects.hashCode(surface);
+        result = 31 * result + Objects.hashCode(mtbScale);
+        result = 31 * result + Objects.hashCode(mtbScaleUp);
+        result = 31 * result + Objects.hashCode(trackType);
+        result = 31 * result + Objects.hashCode(network);
+        result = 31 * result + Boolean.hashCode(onewayBic);
+        result = 31 * result + Objects.hashCode(derivedData);
+        return result;
+    }
 }

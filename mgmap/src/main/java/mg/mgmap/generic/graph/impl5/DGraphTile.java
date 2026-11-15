@@ -332,8 +332,6 @@ public class DGraphTile implements Graph {
             neighbour.nextNeighbour = null;
         }
 
-//        nodeRefs[0] = new MiDNodeRef[maxNodeCnt]; // use nodeIdx
-//        nodeRefs[1] = new MiDNodeRef[maxNodeCnt]; // use nodeIdx
         initialNodeMap.clear();
         statistics.setupNanos += (System.nanoTime() - creationNanos);
     }
