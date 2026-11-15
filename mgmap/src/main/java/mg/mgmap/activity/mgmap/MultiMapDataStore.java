@@ -262,22 +262,21 @@ public class MultiMapDataStore extends MapDataStore {
                 }
                 yield null;
             }
-            case RETURN_ALL -> readAllMapData(tile);
-            case FAST_DETAILS, DEDUPLICATE -> readAllMapData(tile).deduplicate();
+            case RETURN_ALL, FAST_DETAILS, DEDUPLICATE -> readAllMapData(tile);
         };
     }
 
     private MapReadResult readAllMapData(Tile tile) {
-//        mgLog.v(  " x="+tile.tileX+" y="+tile.tileY+" z="+tile.zoomLevel+ " "+tile.getBoundingBox());
         MapReadResult mapReadResult = new MapReadResult();
         boolean isTileFilled = false;
+        boolean deduplicate = ((this.dataPolicy == DataPolicy.DEDUPLICATE) || (this.dataPolicy == DataPolicy.FAST_DETAILS)); // set true for policy DEDUPLICATE and FAST_DETAILS
         if (this.dataPolicy==DataPolicy.FAST_DETAILS){
             for (MapDataStore mdb : mapDatabases) {                                                 // if there is a mapDataStore
                 if (mdb instanceof ExtendedMapFile extendedMapFile){
                     if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(tile)){ // with inner border that covers the tile fully
                         mapReadResult = extendedMapFile.readMapData(tile);                          // then take just the result from this store
                         isTileFilled = true;                                                        // and stop further processing
-//                        mgLog.v(  "id="+extendedMapFile.getId()+" mapReadResult.ways.size="+mapReadResult.ways.size());
+                        deduplicate = false;                                                        // reset deduplicate, if map covers tile fully
                         break;
                     }
                 }
@@ -304,6 +303,9 @@ public class MultiMapDataStore extends MapDataStore {
             }
 
         }
+        if (deduplicate){
+            mapReadResult.deduplicate();
+        }
         return mapReadResult;
     }
 
@@ -321,19 +323,19 @@ public class MultiMapDataStore extends MapDataStore {
                 }
                 yield null;
             }
-            case RETURN_ALL -> readAllMapData(upperLeft, lowerRight);
-            // TODO deduplicate for FAST_DETAILS only, if there was no full tile found in subroutine
-            case FAST_DETAILS, DEDUPLICATE -> readAllMapData(upperLeft, lowerRight).deduplicate();
+            case RETURN_ALL, FAST_DETAILS, DEDUPLICATE -> readAllMapData(upperLeft, lowerRight);
         };
     }
 
     private MapReadResult readAllMapData(Tile upperLeft, Tile lowerRight) {
         MapReadResult mapReadResult = new MapReadResult();
+        boolean deduplicate = ((this.dataPolicy == DataPolicy.DEDUPLICATE) || (this.dataPolicy == DataPolicy.FAST_DETAILS)); // set true for policy DEDUPLICATE and FAST_DETAILS
         boolean isTileFilled = false;
         for (MapDataStore mdb : mapDatabases) {
             if (this.dataPolicy==DataPolicy.FAST_DETAILS && mdb instanceof ExtendedMapFile extendedMapFile){
                 if (extendedMapFile.hasInnerBorder() && extendedMapFile.isInInnerBorder(upperLeft, lowerRight)){
                     mapReadResult = extendedMapFile.readMapData(upperLeft, lowerRight);
+                    deduplicate = false;                                                        // reset deduplicate, if map covers tile fully
                     break;
                 }
             }
@@ -359,6 +361,9 @@ public class MultiMapDataStore extends MapDataStore {
             ) {
                 isTileFilled = true;
             }
+        }
+        if (deduplicate){
+            mapReadResult.deduplicate();
         }
         return mapReadResult;
     }
