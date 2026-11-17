@@ -19,9 +19,13 @@ import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.datastore.Way;
 
+import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
@@ -64,17 +68,26 @@ public class DGraphTileFactory implements GraphFactory {
     Pref<String> prefRoutingAlgorithm;
     DTileCache tileCache;
     double smoothingDistance;
+    Set<DGraphTile> persistencyCandidates = null;
+    DTilePersistentCache persistentCache = null;
 
     AlgorithmStatistics statistics = new AlgorithmStatistics();
 
+
+
     public DGraphTileFactory(){}
 
-    public DGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, Pref<Boolean> prefWayDetails,
+    public DGraphTileFactory onCreate(File cacheDir, WayProvider wayProvider, ElevationProvider elevationProvider, Pref<Boolean> prefWayDetails,
                                       Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance) {
-        return onCreate(wayProvider, elevationProvider, prefWayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, Config.ZOOM_LEVEL, Config.CACHE_LIMIT, tileSize);
+        return onCreate(cacheDir, wayProvider, elevationProvider, prefWayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, Config.ZOOM_LEVEL, Config.CACHE_LIMIT, tileSize);
     }
 
     public DGraphTileFactory onCreate(WayProvider wayProvider, ElevationProvider elevationProvider, Pref<Boolean> prefWayDetails,
+                                      Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance) {
+        return onCreate(null, wayProvider, elevationProvider, prefWayDetails, prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, Config.ZOOM_LEVEL, Config.CACHE_LIMIT, tileSize);
+    }
+
+    public DGraphTileFactory onCreate(File cacheDir, WayProvider wayProvider, ElevationProvider elevationProvider, Pref<Boolean> prefWayDetails,
                                       Pref<String> prefRoutingAlgorithm, Pref<Boolean> prefSmooth4Routing, Pref<String> prefSmoothDistance, byte zoomLevel, int cacheLimit, int tileSize){
         this.wayProvider = wayProvider;
         this.elevationProvider = elevationProvider;
@@ -93,10 +106,14 @@ public class DGraphTileFactory implements GraphFactory {
         } else {
             smoothingDistance = -1d;
         }
-// TODO better solution fot this
+// TODO better solution for this
         DGraphTile.initStatics();
 
-        tileCache = new DTileCache(cacheLimit);
+        persistentCache = new DTilePersistentCacheFS();
+        persistencyCandidates = Collections.synchronizedSet(new HashSet<>());
+        persistentCache.init(cacheDir, persistencyCandidates);
+
+        tileCache = new DTileCache(persistencyCandidates, cacheLimit);
         return this;
     }
 
@@ -123,11 +140,13 @@ public class DGraphTileFactory implements GraphFactory {
 
     public void clearCache(){
         tileCache.clear();
+        persistentCache.clear();
     }
 
     public void serviceCache(){
         try {
             tileCache.service();
+            persistentCache.service();
         } catch (Exception e) {
             mgLog.e(e);
         }
@@ -248,7 +267,12 @@ public class DGraphTileFactory implements GraphFactory {
             synchronized (this){  // prevent parallel access from routing thread and FSGraphDetails
                 dGraphTile = tileCache.get(tileX, tileY); // check, if tile is meanwhile in cache
                 if (dGraphTile == null) {
-                    dGraphTile = loadGGraphTile(tileX, tileY);
+                    Tile tile = new Tile(tileX, tileY, zoomLevel, tileSize);
+                    dGraphTile = new DGraphTile(tile, elevationProvider, statistics, smoothingDistance);
+                    if (!persistentCache.get(dGraphTile)){
+                        loadGGraphTile(dGraphTile);
+//                        persistentCache.put(dGraphTile);
+                    }
                     tileCache.put(tileX, tileY, dGraphTile);
                 }
             }
@@ -256,11 +280,9 @@ public class DGraphTileFactory implements GraphFactory {
         return dGraphTile;
     }
 
-    public DGraphTile loadGGraphTile(int tileX, int tileY){
-        mgLog.d(()->"Load tileX=" + tileX + " tileY=" + tileY + " (" + tileCache.size() + ")");
-        Tile tile = new Tile(tileX, tileY, zoomLevel, tileSize);
-        List<Way> ways = wayProvider.getWays(tile);
-        DGraphTile dGraphTile = new DGraphTile(tile, elevationProvider, statistics, smoothingDistance);
+    public void loadGGraphTile(DGraphTile dGraphTile){
+        mgLog.d(()->"Load tileX=" + dGraphTile.tile.tileX + " tileY=" + dGraphTile.tile.tileY + " (" + tileCache.size() + ")");
+        List<Way> ways = wayProvider.getWays(dGraphTile.tile);
         for (Way way : ways) {
             if (wayProvider.isWayForRouting(way)){
 
@@ -279,7 +301,6 @@ public class DGraphTileFactory implements GraphFactory {
             }
         }
         dGraphTile.setupFinished();
-        return dGraphTile;
     }
 
 }

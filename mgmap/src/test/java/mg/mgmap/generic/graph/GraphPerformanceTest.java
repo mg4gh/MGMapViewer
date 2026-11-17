@@ -4,7 +4,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.mapsforge.map.datastore.MapDataStore;
-import org.mapsforge.map.reader.MapFile;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,11 +11,13 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import mg.mgmap.activity.mgmap.ExtendedMapFile;
+import mg.mgmap.activity.mgmap.MultiMapDataStore;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.activity.mgmap.features.routing.profile.TrekkingBike;
 import mg.mgmap.application.util.ElevationProvider;
 import mg.mgmap.application.util.ElevationProviderImplHelper2;
 import mg.mgmap.application.util.HgtProvider2;
+import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.application.util.WayProviderHelper;
 import mg.mgmap.generic.graph.impl2.GGraphMulti;
 import mg.mgmap.generic.graph.impl2.GGraphTile;
@@ -50,95 +51,68 @@ public class GraphPerformanceTest {
         MGLog.logConfig.put("mg.mgmap", MGLog.Level.WARN);
         MGLog.setUnittest(true);
 
+        File cacheDir = new File("cache_local");
+        PersistenceManager.deleteRecursivly(cacheDir);
+        cacheDir.mkdirs();
+        System.out.println(cacheDir.getAbsolutePath());
+
+        DGraphTileFactory factory = getFactory(null);
+        runTest01(factory);
+        runTest01(factory);
+
+        factory = getFactory(cacheDir);
+        runTest01(factory);
+        runTest01(factory);
+
+        factory = getFactory(cacheDir);
+        runTest01(factory);
+        runTest01(factory);
+    }
+
+
+    private DGraphTileFactory getFactory(File cacheDir){
         ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
         File mapFile = new File("src/test/assets/map_local/Germany-South_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
-        System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
 
+        MultiMapDataStore mmds = new MultiMapDataStore(MultiMapDataStore.DataPolicy.FAST_DETAILS);
         MapDataStore mds = new ExtendedMapFile("MAPSFORGE: Germany-South_oam.osm.map", mapFile, "de");
-        WayProvider wayProvider = new WayProviderHelper(mds);
+        mmds.addMapDataStore(mds, false, false);
+        WayProvider wayProvider = new WayProviderHelper(mmds);
 
         Pref<Boolean> prefWayDetails = new Pref<>(false);
         Pref<String> prefRoutingAlgorithm = new Pref<>("BidirectionalAstarExt");
         Pref<Boolean> prefSmooth4Routing = new Pref<>(false);
         Pref<String> prefSmoothDistance = new Pref<>("16");
-        DGraphTileFactory graphTileFactory = new DGraphTileFactory().onCreate(wayProvider,elevationProvider,prefWayDetails,
+        return new DGraphTileFactory().onCreate(cacheDir, wayProvider,elevationProvider,prefWayDetails,
                 prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
+    }
+
+    int cntRunTest01 = 1;
+    private void runTest01(DGraphTileFactory graphTileFactory){
 
         ArrayList<DGraphTile> tiles = new ArrayList<>();
 
-        {
-            DApproach dpm1 = graphTileFactory.calcApproach(pm1, PointModelUtil.getCloseThreshold());
-            assert (dpm1 != null);
-            assert (dpm1.getApproachNode() != null);
-            tiles.add(graphTileFactory.getGraphTile(dpm1));
+        DApproach dpm1 = graphTileFactory.calcApproach(pm1, PointModelUtil.getCloseThreshold());
+        assert (dpm1 != null);
+        assert (dpm1.getApproachNode() != null);
+        tiles.add(graphTileFactory.getGraphTile(dpm1));
 
+        DApproach dpm2 = graphTileFactory.calcApproach(pm2, PointModelUtil.getCloseThreshold());
+        assert (dpm2 != null);
+        assert (dpm2.getApproachNode() != null);
+        tiles.add(graphTileFactory.getGraphTile(dpm2));
 
-            DApproach dpm2 = graphTileFactory.calcApproach(pm2, PointModelUtil.getCloseThreshold());
-            assert (dpm2 != null);
-            assert (dpm2.getApproachNode() != null);
-            tiles.add(graphTileFactory.getGraphTile(dpm2));
+        DGraphMulti graphMulti = new DGraphMulti(graphTileFactory, tiles);
 
-            DGraphMulti graphMulti = new DGraphMulti(graphTileFactory, tiles);
+        GraphAlgorithm algorithm = graphTileFactory.getAlgorithmForGraph(graphMulti, rp);
+        MultiPointModel mpm1 = algorithm.perform(dpm1, dpm2, Double.MAX_VALUE, new AtomicInteger(), new ArrayList<>());
+//            System.out.println(algorithm.getResult());
+        graphMulti.finalizeUsage();
+        graphTileFactory.serviceCache();
 
-            graphTileFactory.connectApproach2Graph(graphMulti, dpm1);
-            graphTileFactory.connectApproach2Graph(graphMulti, dpm2);
-            graphTileFactory.checkDirectConnectApproaches(graphMulti, dpm1, dpm2);
-
-            GraphAlgorithm algorithm = graphTileFactory.getAlgorithmForGraph(graphMulti, rp);
-            MultiPointModel mpm1 = algorithm.perform(dpm1, dpm2, Double.MAX_VALUE, new AtomicInteger(), new ArrayList<>());
-            System.out.println(algorithm.getResult());
-            graphMulti.finalizeUsage();
-            graphTileFactory.serviceCache();
-            graphTileFactory.disconnectApproach2Graph(graphMulti, dpm1);
-            graphTileFactory.disconnectApproach2Graph(graphMulti, dpm2);
-
-
-            System.out.printf(Locale.ENGLISH, "distance: %.1f%n", PointModelUtil.distance(mpm1));
-            System.out.printf(Locale.ENGLISH, "%s\n", graphTileFactory.renewStatistics());
-
-        }
-        System.out.printf(Locale.ENGLISH, "************************************* end 1  *****************************************************\n");
-        System.gc();
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.printf(Locale.ENGLISH, "************************************* start 2*****************************************************\n");
-
-        {
-            DApproach dpm1 = graphTileFactory.calcApproach(pm1, PointModelUtil.getCloseThreshold());
-            assert (dpm1 != null);
-            assert (dpm1.getApproachNode() != null);
-            tiles.add(graphTileFactory.getGraphTile(dpm1));
-
-            DApproach dpm2 = graphTileFactory.calcApproach(pm2, PointModelUtil.getCloseThreshold());
-            assert (dpm2 != null);
-            assert (dpm2.getApproachNode() != null);
-            tiles.add(graphTileFactory.getGraphTile(dpm2));
-
-            DGraphMulti graphMulti = new DGraphMulti(graphTileFactory, tiles);
-
-            graphTileFactory.connectApproach2Graph(graphMulti, dpm1);
-            graphTileFactory.connectApproach2Graph(graphMulti, dpm2);
-            graphTileFactory.checkDirectConnectApproaches(graphMulti, dpm1, dpm2);
-
-            GraphAlgorithm algorithm = graphTileFactory.getAlgorithmForGraph(graphMulti, rp);
-            MultiPointModel mpm1 = algorithm.perform(dpm1, dpm2, Double.MAX_VALUE, new AtomicInteger(), new ArrayList<>());
-            System.out.println(algorithm.getResult());
-            graphMulti.finalizeUsage();
-            graphTileFactory.serviceCache();
-            graphTileFactory.disconnectApproach2Graph(graphMulti, dpm1);
-            graphTileFactory.disconnectApproach2Graph(graphMulti, dpm2);
-
-            System.out.printf(Locale.ENGLISH, "distance: %.1f%n", PointModelUtil.distance(mpm1));
-            System.out.printf(Locale.ENGLISH, "%s\n", graphTileFactory.renewStatistics());
-
-        }
-
-        for (RoutingSummary summary : RoutingSummary.routingSummaries) {
-            System.out.printf(Locale.ENGLISH, "%s\n",summary);
-        }
+        System.out.printf(Locale.ENGLISH, "************************************* RunTest01: %d ************************************************%n", cntRunTest01++);
+        System.out.printf(Locale.ENGLISH, "distance: %.1f%n", PointModelUtil.distance(mpm1));
+        System.out.printf(Locale.ENGLISH, "%s\n", graphTileFactory.renewStatistics());
     }
 
     @Test

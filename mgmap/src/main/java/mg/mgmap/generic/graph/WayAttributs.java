@@ -83,6 +83,10 @@ public class WayAttributs {
         this.derivedData = derivedData;
     }
 
+    public long getWaValue(){
+        return waValue;
+    }
+
     @NonNull
     @Override
     public String toString() {

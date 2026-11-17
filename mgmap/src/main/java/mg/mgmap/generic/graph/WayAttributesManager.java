@@ -257,6 +257,7 @@ public class WayAttributesManager {
         wa.network = WA_Network_values[(int)((waValue>>WA_NETWORK_BIT_SHIFT) & WA_NETWORK_MASK)].name().toLowerCase();
         if (wa.network.equals("unset")) wa.network = null;
         wa.onewayBic = ((int)(waValue>>WA_ONEWAY_BIT_SHIFT) & WA_ONEWAY_MASK) == WA_Oneway.OW_BIC.ordinal();
+        wa.waValue = waValue;
         return wa;
     }
 

@@ -58,7 +58,7 @@ public class GraphConsistencyTest {
         Pref<String> prefRoutingAlgorithm = new Pref<>("BidirectionalAstarExt");
         Pref<Boolean> prefSmooth4Routing = new Pref<>(true);
         Pref<String> prefSmoothDistance = new Pref<>("32");
-        DGraphTileFactory graphTileFactory = new DGraphTileFactory().onCreate(wayProvider,elevationProvider,prefWayDetails,
+        DGraphTileFactory graphTileFactory = new DGraphTileFactory().onCreate(null, wayProvider,elevationProvider,prefWayDetails,
                 prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, Config.ZOOM_LEVEL, 1000, MapViewerBase.TILE_SIZE);
 
 
@@ -129,7 +129,7 @@ public class GraphConsistencyTest {
         Pref<String> prefRoutingAlgorithm = new Pref<>("BidirectionalAstarExt");
         Pref<Boolean> prefSmooth4Routing = new Pref<>(false);
         Pref<String> prefSmoothDistance = new Pref<>("16");
-        DGraphTileFactory graphTileFactory = new DGraphTileFactory().onCreate(wayProvider,elevationProvider,prefWayDetails,
+        DGraphTileFactory graphTileFactory = new DGraphTileFactory().onCreate(null, wayProvider,elevationProvider,prefWayDetails,
                 prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, Config.ZOOM_LEVEL, 2, MapViewerBase.TILE_SIZE);
 
         ArrayList<DGraphTile> tiles = new ArrayList<>();

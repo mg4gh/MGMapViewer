@@ -248,7 +248,7 @@ public class DGraphTest {
         Pref<String> prefRoutingAlgorithm = new Pref<>("BidirectionalAStar");
         Pref<Boolean> prefSmooth4Routing = new Pref<>(false);
         Pref<String> prefSmoothDistance = new Pref<>("16");
-        DGraphTileFactory dGraphTileFactory = new DGraphTileFactory().onCreate(wayProvider,elevationProvider,prefWayDetails,
+        DGraphTileFactory dGraphTileFactory = new DGraphTileFactory().onCreate(null, wayProvider,elevationProvider,prefWayDetails,
                 prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance, Config.ZOOM_LEVEL, 2, MapViewerBase.TILE_SIZE);
 
         DGraphTile dGraphTile1 = dGraphTileFactory.getDGraphTile(8586,5598);

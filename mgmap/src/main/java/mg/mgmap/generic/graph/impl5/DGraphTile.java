@@ -259,7 +259,6 @@ public class DGraphTile implements Graph {
     byte neighbourConnected = 0; // if e.g. neighbours on BORDER_NODE_WEST are added, then this bit is set in neighbourConnected
 
     boolean used = false;
-//    MiDNodeRef[][] nodeRefs = new MiDNodeRef[2][];
 
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     long creationNanos;
@@ -610,14 +609,6 @@ public class DGraphTile implements Graph {
             }
         }
     }
-
-//    MiDNodeRef getNodeRef(short nodeIdx, boolean reverse){
-//        return nodeRefs[reverse?1:0][nodeIdx];
-//    }
-//
-//    void setNodeRef(short nodeIdx, boolean reverse, MiDNodeRef nodeRef){
-//        nodeRefs[reverse?1:0][nodeIdx] = nodeRef;
-//    }
 
     private static short nextFreeERefIdx = 0;
     static short findFreeERefIdx(){
