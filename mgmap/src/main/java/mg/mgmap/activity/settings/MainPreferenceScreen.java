@@ -97,6 +97,7 @@ public class MainPreferenceScreen extends MGPreferenceScreen {
                 R.string.preferences_gnss_minMillis_key,
                 R.string.preferences_gnss_minMeter_key,
                 R.string.preferences_hints_key,
+                R.string.FSRouting_pref_UseDGraph
         };
         for (int prefId : developerPrefIds){
             Preference preference = findPreference(getResources().getString(prefId));

@@ -231,7 +231,10 @@ public class BidirectionalAStar extends DGraphAlgorithm {
             graphTile.setNdRef(nodeIdx, lastRef.isReverse(), lastRef.neighbourIdx);
 
             if (prioQueue.first() != ref){
-                if (!prioQueueRefNotFirstReported) mgLog.e("prioQueue.first() != ref");
+                if (!prioQueueRefNotFirstReported){
+                    mgLog.e("prioQueue.first() (hcost="+prioQueue.first().getHeuristicCost()+") != ref (hcost="+ref.getHeuristicCost()+")");
+                    prioQueueRefNotFirstReported = true;
+                }
             }
 
             if (ref == null) {
