@@ -8,6 +8,7 @@ import org.mapsforge.core.model.Tile;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeMap;
 
@@ -65,16 +66,19 @@ public class DGraphTile implements Graph {
     }
 
     String nodeToString(short nodeIdx){
+        ByteBuffer nodesBuffer = (Thread.currentThread().getName().equals("routing"))?this.nodesBuffer:nodesBufferClone;
         nodesBuffer.position( nodeIdx * NODE_SIZE);
-        return String.format(Locale.ENGLISH, "nodeIdx=%03d lat=%02.6f lon=%02.6f ele=%+05.1f eleAcc=%+05.1f flags=%02x border=%02x neighbourIdx=%03d",
-                nodeIdx, LaLo.md2d(minLa+nodesBuffer.getShort()), LaLo.md2d(minLo+nodesBuffer.getShort()), nodesBuffer.getFloat(), nodesBuffer.getFloat(), nodesBuffer.get(), nodesBuffer.get(), nodesBuffer.getShort());
+        return String.format(Locale.ENGLISH, "nodeIdx=%04d lat=%02.6f lon=%02.6f ele=%+05.2f eleAcc=%+05.1f flags=%02x border=%02x neighbourIdx=%05d  ref=%04X revRef=%04X ",
+                nodeIdx, LaLo.md2d(minLa+nodesBuffer.getShort()), LaLo.md2d(minLo+nodesBuffer.getShort()), nodesBuffer.getFloat(), nodesBuffer.getFloat(), nodesBuffer.get(), nodesBuffer.get(), nodesBuffer.getShort(), nodesBuffer.getShort(), nodesBuffer.getShort());
     }
 
     DNode getNode(short nodeIdx){
+        ByteBuffer nodesBuffer = (Thread.currentThread().getName().equals("routing"))?this.nodesBuffer:nodesBufferClone;
         nodesBuffer.position(NODE_SIZE * nodeIdx);
         return new DNode(tileIdx,nodeIdx,minLa+nodesBuffer.getShort(),minLo+nodesBuffer.getShort(),nodesBuffer.getFloat(),nodesBuffer.getFloat());
     }
     void getNodeData(DNode node, short nodeIdx){
+        ByteBuffer nodesBuffer = (Thread.currentThread().getName().equals("routing"))?this.nodesBuffer:nodesBufferClone;
         nodesBuffer.position(NODE_SIZE * nodeIdx);
         node.tileIdx = tileIdx;
         node.nodeIdx = nodeIdx;
@@ -154,7 +158,7 @@ public class DGraphTile implements Graph {
 
     String neighbourToString(short neighbourIdx){
         neighboursBuffer.position( neighbourIdx * NEIGHBOUR_SIZE);
-        return String.format(Locale.ENGLISH, "neighbourIdx=%03d neighbourNodeIdx=%03d nextNeighbourIdx=%03d wayAttributesIdx=%03d border=%02x flags=%02x distance=%+04.5f  vertDistance=%+04.5f  cost=%+04.5f ",
+        return String.format(Locale.ENGLISH, "neighbourIdx=%05d neighbourNodeIdx=%04d nextNeighbourIdx=%05d wayAttributesIdx=%03d border=%02x flags=%02x distance=%+09.5f  vertDistance=%+09.5f  cost=%+09.5f ",
                 neighbourIdx, neighboursBuffer.getShort(), neighboursBuffer.getShort(), neighboursBuffer.getShort(), neighboursBuffer.get(), neighboursBuffer.get(), neighboursBuffer.getFloat(), neighboursBuffer.getFloat(), neighboursBuffer.getFloat());
     }
 
@@ -248,9 +252,11 @@ public class DGraphTile implements Graph {
     int initialNodeCnt; // number of nodes after setup from WayProvider  - no approach node
     int maxNodeCnt;
     ByteBuffer nodesBuffer;
+    ByteBuffer nodesBufferClone;
     int initialNeighbourCnt; // number of neighbours after setup from WayProvider  - no approach neighbours, no tile connect neighbours
     int maxNeighbourCnt;
     ByteBuffer neighboursBuffer;
+    ByteBuffer neighboursBufferClone;
     int borderNodeCnt = 0;
 
     TreeMap<ExDNode, ExDNode> initialNodeMap = new TreeMap<>();
@@ -263,6 +269,7 @@ public class DGraphTile implements Graph {
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     long creationNanos;
     long accessTime = 0; // used for cache
+    HashMap <Long, Short> waValueIndexMap = null;
 
     public DGraphTile(Tile tile, ElevationProvider elevationProvider, AlgorithmStatistics statistics, double smoothingDistance){
         this.creationNanos = System.nanoTime();
@@ -287,9 +294,17 @@ public class DGraphTile implements Graph {
         mgLog.d("created: "+this);
     }
 
+    public void setupStarted(){
+        waValueIndexMap = new HashMap<>();
+    }
+
     public void addLatLongs(WayAttributs wayAttributes, LatLong[] latLongs) {
-        short wayAttributesIdx = (short)wayAttributesList.size();
-        wayAttributesList.add(wayAttributes);
+        Short wayAttributesIdx = waValueIndexMap.get(wayAttributes.getWaValue());
+        if (wayAttributesIdx == null){
+            wayAttributesIdx = (short)wayAttributesList.size();
+            waValueIndexMap.put(wayAttributes.getWaValue(), wayAttributesIdx);
+            wayAttributesList.add(wayAttributes);
+        }
 
         for (int i=1; i<latLongs.length; i++){
             double lat1 = PointModelUtil.roundMD(latLongs[i-1].latitude);
@@ -311,6 +326,7 @@ public class DGraphTile implements Graph {
     }
 
     public void setupFinished(){
+        waValueIndexMap = null;
         fixGraph();
         smooth(smoothingDistance);
 
@@ -321,6 +337,7 @@ public class DGraphTile implements Graph {
             addNode(node.dla, node.dlo, node.getEle(), node.getEleAcc(), (byte)(node.flags & ND_FLAG_VALID), node.border, node.neighbour==null?-1:node.neighbour.neighbourIdx);
             node.neighbour = null;
         }
+        nodesBufferClone = nodesBuffer.duplicate();
 
         maxNeighbourCnt = (short)(initialNeighbourCnt+borderNodeCnt*3 + NEIGHBOURS_FOR_FIX_GRAPH); // one border node should have in avg not more than 1.5 neighbourNodes in the neighbour tile
         neighboursBuffer = ByteBuffer.allocateDirect(maxNeighbourCnt * NEIGHBOUR_SIZE);
@@ -330,6 +347,7 @@ public class DGraphTile implements Graph {
             neighbour.neighbourNode = null;
             neighbour.nextNeighbour = null;
         }
+        neighboursBufferClone = neighboursBuffer.duplicate();
 
         initialNodeMap.clear();
         statistics.setupNanos += (System.nanoTime() - creationNanos);
@@ -545,7 +563,7 @@ public class DGraphTile implements Graph {
         return -1;
     }
 
-    void bestApproach(PointModel pos, DApproach bestApproach, WriteablePointModel pmTempApproach) {
+    void bestApproach(PointModel pos, DApproach bestApproach, WriteablePointModel pmTempApproach, int closeThreshold) {
         for (short nodeIdx = 0; nodeIdx < initialNodeCnt; nodeIdx++) {
             if (!isNdValid(nodeIdx)) continue;
             short neighbourIdx = getNdNeighbourIdx(nodeIdx);
@@ -562,9 +580,9 @@ public class DGraphTile implements Graph {
                     if (PointModelUtil.findApproach(pos.getLat(), pos.getLon(),
                             nodeLat, nodeLon, nodeEle, 0L,
                             neighbourNodeLat, neighbourNodeLon, neighbourNodeEle, 0L,
-                            pmTempApproach, PointModelUtil.getCloseThreshold())) {
+                            pmTempApproach, closeThreshold)) {
                         float distance = (float) (PointModelUtil.distance(pos, pmTempApproach) + 0.0001);
-                        if ((distance < PointModelUtil.getCloseThreshold()) && (distance < bestApproach.getApproachDistance())) { // okay, is close ==> new Approach found; and it's better than current best
+                        if ((distance < closeThreshold) && (distance < bestApproach.getApproachDistance())) { // okay, is close ==> new Approach found; and it's better than current best
                             bestApproach.tileIdx = tileIdx;
                             bestApproach.node1Idx = nodeIdx;
                             bestApproach.node2Idx = neighbourNodeIdx;

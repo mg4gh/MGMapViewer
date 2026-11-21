@@ -16,6 +16,7 @@ public class AlgorithmStatistics {
     int dNodeRefCnt = 0;
     int miDNodeRefCnt = 0;
     int prioQueueSize = 0;
+    int maxPrioQueueSize = 0;
 
 
     long fixNanos = 0;
@@ -27,8 +28,8 @@ public class AlgorithmStatistics {
     public String toString() {
         return String.format(Locale.ENGLISH, "AlgorithmStatistics{  duration=%dms " +
                         "\n cntTotal=%d cntRelaxed=%d cntSettled=%d resultPathLength=%d matchCost=%.6f removedNodeRefs=%d fixMs=%.1fms smooth=%.1fms setupMs=%.1fms " +
-                        "\n dNodeRefCnt=%d miDNodeRefCnt=%d prioQueueSize=%d",
+                        "\n dNodeRefCnt=%d miDNodeRefCnt=%d prioQueueSize=%d maxPrioQueueSize=%d",
                 duration, cntTotal, cntRelaxed, cntSettled, resultPathLength, matchCost, removedNodeRefs, fixNanos/1000000.0, smoothNanos/1000000.0, setupNanos/1000000.0,
-                dNodeRefCnt,miDNodeRefCnt,prioQueueSize);
+                dNodeRefCnt,miDNodeRefCnt,prioQueueSize,maxPrioQueueSize);
     }
 }

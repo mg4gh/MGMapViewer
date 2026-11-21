@@ -237,27 +237,31 @@ public class WayAttributesManager {
     }
 
     public static WayAttributs getWayAttributs(long waValue) {
-        WayAttributs wa = new WayAttributs();
-        wa.highway = WA_Highway_values[(int)((waValue>>WA_HIGHWAY_BIT_SHIFT) & WA_HIGHWAY_MASK)].name().toLowerCase();
-        if (wa.highway.equals("unset")) wa.highway = null;
-        wa.bicycle = WA_Bicycle_values[(int)((waValue>>WA_BICYCLE_BIT_SHIFT) & WA_BICYCLE_MASK)].name().toLowerCase();
-        if (wa.bicycle.equals("unset")) wa.bicycle = null;
-        wa.access = WA_Access_values[(int)((waValue>>WA_ACCESS_BIT_SHIFT) & WA_ACCESS_MASK)].name().toLowerCase();
-        if (wa.access.equals("unset")) wa.access = null;
-        wa.cycleway = WA_Cycleway_values[(int)((waValue>>WA_CYCLEWAY_BIT_SHIFT) & WA_CYCLEWAY_MASK)].name().toLowerCase();
-        if (wa.cycleway.equals("unset")) wa.cycleway = null;
-        wa.surface = WA_Surface_values[(int)((waValue>>WA_SURFACE_BIT_SHIFT) & WA_SURFACE_MASK)].name().toLowerCase();
-        if (wa.surface.equals("unset")) wa.surface = null;
-        wa.mtbScale = WA_MtbScale_values[(int)((waValue>>WA_MTB_SCALE_BIT_SHIFT) & WA_MTB_SCALE_MASK)].name().toLowerCase();
-        if (wa.mtbScale.equals("unset")) wa.mtbScale = null;
-        wa.mtbScaleUp = WA_MtbScaleUp_values[(int)((waValue>>WA_MTB_SCALE_UP_BIT_SHIFT) & WA_MTB_SCALE_UP_MASK)].name().toLowerCase();
-        if (wa.mtbScaleUp.equals("unset")) wa.mtbScaleUp = null;
-        wa.trackType = WA_TrackType_values[(int)((waValue>>WA_TRACK_TYPE_BIT_SHIFT) & WA_TRACK_TYPE_MASK)].name().toLowerCase();
-        if (wa.trackType.equals("unset")) wa.trackType = null;
-        wa.network = WA_Network_values[(int)((waValue>>WA_NETWORK_BIT_SHIFT) & WA_NETWORK_MASK)].name().toLowerCase();
-        if (wa.network.equals("unset")) wa.network = null;
-        wa.onewayBic = ((int)(waValue>>WA_ONEWAY_BIT_SHIFT) & WA_ONEWAY_MASK) == WA_Oneway.OW_BIC.ordinal();
-        wa.waValue = waValue;
+        WayAttributs wa = waMap.get(waValue);
+        if (wa == null){
+            wa = new WayAttributs();
+
+            wa.highway = WA_Highway_values[(int)((waValue>>WA_HIGHWAY_BIT_SHIFT) & WA_HIGHWAY_MASK)].name().toLowerCase();
+            if (wa.highway.equals("unset")) wa.highway = null;
+            wa.bicycle = WA_Bicycle_values[(int)((waValue>>WA_BICYCLE_BIT_SHIFT) & WA_BICYCLE_MASK)].name().toLowerCase();
+            if (wa.bicycle.equals("unset")) wa.bicycle = null;
+            wa.access = WA_Access_values[(int)((waValue>>WA_ACCESS_BIT_SHIFT) & WA_ACCESS_MASK)].name().toLowerCase();
+            if (wa.access.equals("unset")) wa.access = null;
+            wa.cycleway = WA_Cycleway_values[(int)((waValue>>WA_CYCLEWAY_BIT_SHIFT) & WA_CYCLEWAY_MASK)].name().toLowerCase();
+            if (wa.cycleway.equals("unset")) wa.cycleway = null;
+            wa.surface = WA_Surface_values[(int)((waValue>>WA_SURFACE_BIT_SHIFT) & WA_SURFACE_MASK)].name().toLowerCase();
+            if (wa.surface.equals("unset")) wa.surface = null;
+            wa.mtbScale = WA_MtbScale_values[(int)((waValue>>WA_MTB_SCALE_BIT_SHIFT) & WA_MTB_SCALE_MASK)].name().toLowerCase();
+            if (wa.mtbScale.equals("unset")) wa.mtbScale = null;
+            wa.mtbScaleUp = WA_MtbScaleUp_values[(int)((waValue>>WA_MTB_SCALE_UP_BIT_SHIFT) & WA_MTB_SCALE_UP_MASK)].name().toLowerCase();
+            if (wa.mtbScaleUp.equals("unset")) wa.mtbScaleUp = null;
+            wa.trackType = WA_TrackType_values[(int)((waValue>>WA_TRACK_TYPE_BIT_SHIFT) & WA_TRACK_TYPE_MASK)].name().toLowerCase();
+            if (wa.trackType.equals("unset")) wa.trackType = null;
+            wa.network = WA_Network_values[(int)((waValue>>WA_NETWORK_BIT_SHIFT) & WA_NETWORK_MASK)].name().toLowerCase();
+            if (wa.network.equals("unset")) wa.network = null;
+            wa.onewayBic = ((int)(waValue>>WA_ONEWAY_BIT_SHIFT) & WA_ONEWAY_MASK) == WA_Oneway.OW_BIC.ordinal();
+            wa.waValue = waValue;
+        }
         return wa;
     }
 

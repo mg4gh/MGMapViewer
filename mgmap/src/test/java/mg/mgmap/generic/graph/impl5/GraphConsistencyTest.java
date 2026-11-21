@@ -22,7 +22,6 @@ import mg.mgmap.application.util.HgtProvider2;
 import mg.mgmap.application.util.WayProviderHelper;
 import mg.mgmap.generic.graph.GraphAlgorithm;
 import mg.mgmap.generic.graph.WayAttributesManager;
-import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;

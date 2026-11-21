@@ -233,7 +233,7 @@ public class DGraphTileFactory implements GraphFactory {
 
         ArrayList<DGraphTile> tiles = getDGraphTileList(posBBox);
         for (DGraphTile dGraphTile : tiles) {
-            dGraphTile.bestApproach(pos, bestApproach, pmApproach);
+            dGraphTile.bestApproach(pos, bestApproach, pmApproach, closeThreshold);
         }
         return (bestApproach.distance > closeThreshold)?null:bestApproach;
     }
@@ -283,6 +283,7 @@ public class DGraphTileFactory implements GraphFactory {
     public void loadGGraphTile(DGraphTile dGraphTile){
         mgLog.d(()->"Load tileX=" + dGraphTile.tile.tileX + " tileY=" + dGraphTile.tile.tileY + " (" + tileCache.size() + ")");
         List<Way> ways = wayProvider.getWays(dGraphTile.tile);
+        dGraphTile.setupStarted();
         for (Way way : ways) {
             if (wayProvider.isWayForRouting(way)){
 

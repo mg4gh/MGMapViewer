@@ -74,6 +74,54 @@ public class DGraphTest {
     }
 
     @Test
+    public void testDGraphSetup1a() {
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+        MGLog.setUnittest(true);
+
+        ElevationProvider elevationProvider = new ElevationProviderImplHelper();
+        WayProvider wayProvider = new WayProviderHelper4DGraph();
+
+        Pref<Boolean> prefWayDetails = new Pref<>(false);
+        Pref<String> prefRoutingAlgorithm = new Pref<>("BidirectionalAStar");
+        Pref<Boolean> prefSmooth4Routing = new Pref<>(false);
+        Pref<String> prefSmoothDistance = new Pref<>("16");
+        DGraphTileFactory dGraphTileFactory = new DGraphTileFactory().onCreate(wayProvider,elevationProvider,prefWayDetails,
+                prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
+
+        ArrayList<DGraphTile> tiles = new ArrayList<>();
+        DGraphTile dGraphTile = dGraphTileFactory.getDGraphTile(8586,5597);
+        assert (dGraphTile.initialNodeCnt == 4);
+        assert (dGraphTile.borderNodeCnt == 1);
+        assert (dGraphTile.initialNeighbourCnt == 6);
+        dumpDGraphTile(dGraphTile);
+        tiles.add(dGraphTile);
+
+        PointModel pm1 = new PointModelImpl(49.420005,8.659995);
+        DApproach dpm1 = dGraphTileFactory.calcApproach(pm1, PointModelUtil.getCloseThreshold());
+        assert (dpm1 != null);
+        assert( dpm1.tileIdx == DGraphTileFactory.getTileIdx(8586,5597));
+
+        PointModel pm2 = new PointModelImpl(49.420010,8.667);
+        DApproach dpm2 = dGraphTileFactory.calcApproach(pm2, PointModelUtil.getCloseThreshold());
+        assert (dpm2 != null);
+        assert( dpm2.tileIdx == DGraphTileFactory.getTileIdx(8586,5597));
+
+        RoutingProfile rp = new ShortestDistance();
+        DGraphMulti dGraphMulti = new DGraphMulti(dGraphTileFactory, tiles);
+
+        GraphAlgorithm algorithm = dGraphTileFactory.getAlgorithmForGraph(dGraphMulti,rp);
+        MultiPointModel mpm = algorithm.perform(dpm1, dpm2, 100000, new AtomicInteger(), new ArrayList<>());
+        System.out.println(algorithm.getResult());
+        for (PointModel pm : mpm) {
+            System.out.println(pm.toString());
+        }
+        double distance = PointModelUtil.distance(mpm);
+        System.out.printf(Locale.ENGLISH, "distance: %.1f%n",distance);
+        Assert.assertEquals(506.9 ,distance, 0.1);
+    }
+
+
+    @Test
     public void testDGraphSetup2() {
         MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
         MGLog.setUnittest(true);

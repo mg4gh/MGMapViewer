@@ -289,7 +289,7 @@ public class FSRouting extends FeatureService {
             }
             mgLog.d("routeCalcThread terminating");
         });
-        routingThread.setName("routing");
+        routingThread.setName("routing"); // don't change - is used to identify this thread
         return routingThread;
     }
 

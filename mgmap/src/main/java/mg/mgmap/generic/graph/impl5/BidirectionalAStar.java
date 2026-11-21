@@ -191,12 +191,11 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                     dNodeRef.init(neighbourGraphTile.tileIdx, directedNeighbourIdx, ref.isReverse(), currentCost, heuristic(ref.isReverse(), neighbourNode));
                     neighbourGraphTile.setNdRef(neighbourNodeIdx, ref.isReverse(), (short)(neighbourRefIdx | DGraphTile.ND_DNODEREF_MARKER));
 
-                    if (ref.getHeuristicCost() >= dNodeRef.getHeuristicCost()){
-                        mgLog.e("inconsistency in heuristicCost monotony: current="+ref+" new="+dNodeRef);
-                    }
                     if (!prioQueue.add(dNodeRef)){
                         DNodeRef other = prioQueue.ceiling(dNodeRef);
                         mgLog.e("error nodeRef not added: "+dNodeRef+" due to existing entry:: "+other);
+                    } else {
+                        if (prioQueue.size() > statistics.maxPrioQueueSize) statistics.maxPrioQueueSize = prioQueue.size();
                     }
 
                     if (dNodeRef.getHeuristicCost() <= ref.getHeuristicCost()) {
@@ -280,6 +279,8 @@ public class BidirectionalAStar extends DGraphAlgorithm {
         }
 
         statistics.resultPathLength = resultPath.size();
+        source = null;
+        target = null;
         return resultPath;
     }
 
@@ -366,9 +367,11 @@ public class BidirectionalAStar extends DGraphAlgorithm {
 
     public ArrayList<MultiPointModel> getBestPath(){
         ArrayList<MultiPointModel> paths = new ArrayList<>();
-        paths.add(getPath(bestHeuristicNode, false, sourceApproachModel));
-        paths.add(getPath(bestReverseHeuristicNode, true, targetApproachModel));
-        mgLog.d(String.format(Locale.ENGLISH, "best heuristic remaining distance: %.1f", PointModelUtil.distance(bestHeuristicNode, bestReverseHeuristicNode)));
+        if (source != null){ // performAlgo is in progress - after leaving the path data are reset due to put to persistent cache
+            paths.add(getPath(bestHeuristicNode, false, sourceApproachModel));
+            paths.add(getPath(bestReverseHeuristicNode, true, targetApproachModel));
+            mgLog.d(String.format(Locale.ENGLISH, "best heuristic remaining distance: %.1f", PointModelUtil.distance(bestHeuristicNode, bestReverseHeuristicNode)));
+        }
         return paths;
     }
 
