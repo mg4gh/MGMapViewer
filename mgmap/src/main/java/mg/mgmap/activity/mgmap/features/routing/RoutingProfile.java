@@ -53,7 +53,7 @@ public abstract class RoutingProfile {
         return getDuration(wayAttributs, PointModelUtil.distance(node1, node2), PointModelUtil.verticalDistance(node1,node2));
 
     }
-    protected long getDuration(WayAttributs wayAttributs, double distance, float verticalDistance){
+    public long getDuration(WayAttributs wayAttributs, double distance, float verticalDistance){
         CostCalculator calculator = this.costCalculator;
         if ((wayAttributs != null) && (wayAttributs.getDerivedData() instanceof CostCalculator wayCostCalculator)){
             calculator = wayCostCalculator;

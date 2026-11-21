@@ -17,6 +17,7 @@ package mg.mgmap.generic.graph.impl2;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.WayAttributs;
 import mg.mgmap.generic.model.PointModel;
@@ -28,6 +29,7 @@ import mg.mgmap.generic.model.PointModelImpl;
 
 public abstract class GGraph implements Graph {
 
+    // TODO harmonise with GTileConnector.CONNECT_THRESHOLD_METER
     public static final double CONNECT_THRESHOLD_METER = 0.5; // means 0.5m
 
     private final ArrayList<GNode> gNodes = new ArrayList<>();
@@ -113,20 +115,25 @@ public abstract class GGraph implements Graph {
         return null; // should not happen (given neighbourNode is not neighbour to node
     }
 
-    public ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2){
+    public ArrayList<PointModel> segmentNodes(ApproachModel approachModel){
         ArrayList<PointModel> pms = new ArrayList<>();
-        GIntermediateNode giNode = (node1 instanceof GIntermediateNode giNode1)?giNode1:null;
-        giNode = (node2 instanceof GIntermediateNode giNode2)?giNode2:giNode;
-        if (giNode == null){ // both nodes are not GIntermediateNode -> so the are GNode
-            pms.add(node1);
-            pms.add(node2);
-        } else {
-            pms.add(giNode.neighbour.getReverse().getNeighbourNode());
-            for (int pIdx=0; pIdx<giNode.neighbour.cntIntermediates(); pIdx++){
-                int[] intermediates = giNode.neighbour.getIntermediatesPoints();
-                pms.add(PointModelImpl.createFromLaLo(intermediates[3*pIdx],intermediates[3*pIdx+1],intermediates[3*pIdx+2]));
+        if (approachModel instanceof ApproachModelImpl ami){
+            PointModel node1 = ami.getNode1();
+            PointModel node2 = ami.getNode2();
+            GIntermediateNode giNode = (node1 instanceof GIntermediateNode giNode1)?giNode1:null;
+            giNode = (node2 instanceof GIntermediateNode giNode2)?giNode2:giNode;
+            if (giNode == null){ // both nodes are not GIntermediateNode -> so the are GNode
+                pms.add(node1);
+                pms.add(node2);
+            } else {
+                pms.add(giNode.neighbour.getReverse().getNeighbourNode());
+                for (int pIdx=0; pIdx<giNode.neighbour.cntIntermediates(); pIdx++){
+                    int[] intermediates = giNode.neighbour.getIntermediatesPoints();
+                    pms.add(PointModelImpl.createFromLaLo(intermediates[3*pIdx],intermediates[3*pIdx+1],intermediates[3*pIdx+2]));
+                }
+                pms.add(giNode.neighbour.getNeighbourNode());
             }
-            pms.add(giNode.neighbour.getNeighbourNode());
+
         }
         return pms;
     }

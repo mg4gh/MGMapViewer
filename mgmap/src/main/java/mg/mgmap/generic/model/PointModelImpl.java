@@ -94,7 +94,7 @@ public class PointModelImpl implements PointModel{
         return ele;
     }
     public int getEl(){
-        return (int)(ele*PointModelUtil.ELE_FACTOR);
+        return Math.round(ele*PointModelUtil.ELE_FACTOR);
     }
 
 
@@ -114,7 +114,7 @@ public class PointModelImpl implements PointModel{
         if (ele == NO_ELE){
             return String.format(Locale.ENGLISH, "Pos=%2.6f,%2.6f",getLat(), getLon());
         } else{
-            return String.format(Locale.ENGLISH, "Pos=%2.6f,%2.6f, Ele=%2.1fm",getLat(), getLon(), ele);
+            return String.format(Locale.ENGLISH, "Pos=%2.6f,%2.6f, Ele=%2.2fm",getLat(), getLon(), ele);
         }
     }
 

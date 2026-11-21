@@ -168,6 +168,7 @@ public class PersistenceManager {
 
     private File baseDir;
     private File baseDirExt = null;
+    private final File cacheDir;
     private final File appDir;
 
     private final File trackMetaDir;
@@ -219,7 +220,8 @@ public class PersistenceManager {
             }
         }
 
-        mgLog.i("Storage baseDir="+baseDir.getAbsolutePath());
+        cacheDir = createIfNotExists(baseDir.getParentFile(), "cache");
+        mgLog.i("Storage baseDir="+baseDir.getAbsolutePath() +" cacheDir="+cacheDir.getAbsolutePath());
 
         appDir = createIfNotExists(baseDir, sAppDir);
         configDir = createIfNotExists(appDir, "config");
@@ -263,6 +265,9 @@ public class PersistenceManager {
     }
     public File getAppDir(){
         return appDir;
+    }
+    public File getRoutingCacheDir(){
+        return createIfNotExists(cacheDir, "routingCache");
     }
     public File getHgtDir(){
         return hgtDir;

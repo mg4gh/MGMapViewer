@@ -40,7 +40,7 @@ public class BidirectionalAStar extends GGraphAlgorithm {
     protected GNodeRef bestHeuristicRef = null;
     protected GNodeRef bestReverseHeuristicRef = null;
 
-    private long duration = 0;
+    protected long duration = 0;
     private int cntTotal = 0;
     private int cntRelaxed = 0;
     private int cntSettled = 0;

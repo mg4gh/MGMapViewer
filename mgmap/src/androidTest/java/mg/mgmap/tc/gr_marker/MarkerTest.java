@@ -75,6 +75,7 @@ public class MarkerTest extends BaseTestCase {
         Assert.assertEquals(14.1,stat.getMinEle(), 1);
         Assert.assertEquals(81.2,stat.getMaxEle(), 1);
         Assert.assertEquals(125,stat.getNumPoints(), 1);
+        Assert.assertEquals(1553653,stat.getDuration(), 1000);
 
 
         SystemClock.sleep(2000);
@@ -214,10 +215,10 @@ public class MarkerTest extends BaseTestCase {
         addRegex(".*onClick mi_marker_edit.*");
         animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
-        addRegex(".*optimize Pos=54.3551..,13.2729.. to Pos=54.3547..,13.2729... .*");
-        addRegex(".*optimize Pos=54.3556..,13.2759.. to Pos=54.3547..,13.2759.., .*");
-        addRegex(".*optimize Pos=54.3560..,13.2789.. to Pos=54.3547..,13.2789.., .*");
-        addRegex(".*optimize Pos=54.3565..,13.2819.. no approach.*");
+        addRegex(".*optimize Pos=54.3551..,13.2729..* Pos=54.3547..,13.2729... .*");
+        addRegex(".*optimize Pos=54.3556..,13.2759..* Pos=54.3547..,13.2759.., .*");
+        addRegex(".*optimize Pos=54.3560..,13.2789..* Pos=54.3547..,13.2789.., .*");
+        addRegex(".*optimize Pos=54.3565..,13.2819..* no approach.*");
 
         double disty  = PointModelUtil.latitudeDistance(50.0);
         double distx = 0.003;
@@ -243,9 +244,9 @@ public class MarkerTest extends BaseTestCase {
         addRegex(".*onClick mi_marker_edit.*");
         animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
-        addRegex(".*optimize Pos=54.3550..,13.2729.. to Pos=54.3547..,13.2729.., .*");
-        addRegex(".*optimize Pos=54.3552..,13.2759.. to Pos=54.3547..,13.2759.., .*");
-        addRegex(".*optimize Pos=54.3555..,13.2789.. to Pos=54.3547..,13.2789.., .*");
+        addRegex(".*optimize Pos=54.3550..,13.2729..* Pos=54.3547..,13.2729.., .*");
+        addRegex(".*optimize Pos=54.3552..,13.2759..* Pos=54.3547..,13.2759.., .*");
+        addRegex(".*optimize Pos=54.3555..,13.2789..* Pos=54.3547..,13.2789.., .*");
         addRegex(".*optimize Pos=54.3558..,13.2819.. no approach.*");
 
         double disty  = PointModelUtil.latitudeDistance(30.0);
@@ -272,9 +273,9 @@ public class MarkerTest extends BaseTestCase {
         addRegex(".*onClick mi_marker_edit.*");
         animateMenu(R.id.menu_marker, R.id.mi_marker_edit);
 
-        addRegex(".*optimize Pos=54.3548..,13.2729.. to Pos=54.3547..,13.2729.., .*");
-        addRegex(".*optimize Pos=54.3550..,13.2744.. to Pos=54.3547..,13.2744.., .*");
-        addRegex(".*optimize Pos=54.3551..,13.2759.. to Pos=54.3547..,13.2759.., .*");
+        addRegex(".*optimize Pos=54.3548..,13.2729..* Pos=54.3547..,13.2729.., .*");
+        addRegex(".*optimize Pos=54.3550..,13.2744..* Pos=54.3547..,13.2744.., .*");
+        addRegex(".*optimize Pos=54.3551..,13.2759..* Pos=54.3547..,13.2759.., .*");
         addRegex(".*optimize Pos=54.3552..,13.2774.. no approach.*");
 
         double disty  = PointModelUtil.latitudeDistance(15.0);

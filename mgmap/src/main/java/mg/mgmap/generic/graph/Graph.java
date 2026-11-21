@@ -8,7 +8,7 @@ import mg.mgmap.generic.model.PointModel;
 
 public interface Graph {
 
-    ArrayList<PointModel> segmentNodes(PointModel node1, PointModel node2);
+    ArrayList<PointModel> segmentNodes(ApproachModel approachModel);
 
     String getRefDetails(PointModel node);
 

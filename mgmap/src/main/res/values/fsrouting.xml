@@ -43,8 +43,13 @@
     <string name="preferences_minimalTurningInstruction_desc">Reduce tuning instructions to distance warnings.</string>
 
     <string name="FSRouting_routing_algorithm_key">FSRouting.RoutingAlgorithm</string>
+
     <string name="FSRouting_pref_RouteArrivalTime">FSRouting.RouteArrivalTIme</string>
     <string name="FSRouting_pref_RouteArrivalTime_title">Arrival time mode</string>
     <string name="FSRouting_pref_RouteArrivalTime_desc">Show instead of remaining time the estimated arrival time.</string>
+
+    <string name="FSRouting_pref_UseDGraph">FSRouting.UseDGraphKey</string>
+    <string name="FSRouting_pref_UseDGraph_title">Use DGraph</string>
+    <string name="FSRouting_pref_UseDGraph_desc">Use DGraph (instead GGraph) - experimental.</string>
 
 </resources>

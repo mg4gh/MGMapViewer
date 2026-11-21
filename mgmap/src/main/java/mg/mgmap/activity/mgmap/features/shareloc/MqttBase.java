@@ -145,7 +145,7 @@ public class MqttBase extends MqttClient{
     }
 
     protected void registerThrowable(Throwable throwable){
-        mgLog.e("Asynchronous error occurred: " + ((throwable!=null)?throwable.getMessage():"null"), throwable);
+        mgLog.e("Asynchronous error occurred: " + ((throwable!=null)?throwable.getMessage():"null"));
     }
 
     protected void stop(){
@@ -158,7 +158,7 @@ public class MqttBase extends MqttClient{
                     }
                     close();
                 } catch (MqttException e) {
-                    mgLog.e("Error closing MQTT", e);
+                    mgLog.w("Error closing MQTT: "+ e.getMessage());
                 }
             }).start();
         } // else already stopped

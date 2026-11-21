@@ -106,6 +106,7 @@ public class GGraphTileFactory implements GraphFactory {
         gTileCache = null;
     }
 
+    // TODO: delegate this to GGraphTile
     public void resetCosts(){
         if (gTileCache != null){
             for (GGraphTile graph : gTileCache.getAll()){
@@ -258,7 +259,9 @@ public class GGraphTileFactory implements GraphFactory {
                 float distance = (float)(PointModelUtil.distance(pointModel, pmApproach)+0.0001);
                 if (distance < closeThreshold){ // ok, is close ==> new Approach found
                     if ((bestApproach == null) || (distance < bestApproach.getApproachDistance())){
+                        //TODO: investigate, why none exec of round my result in routing inconsistency? Failure in CostCalculator???
                         GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), Math.round(pmApproach.getEle()*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR, pmApproach.getEleAcc()); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
+//                        GNode approachNode = new GNode(pmApproach.getLat(), pmApproach.getLon(), pmApproach.getEle(), pmApproach.getEleAcc()); // so we get a new node for the approach, since pmApproach will be overwritten in next cycle
                         bestApproach = new ApproachModelImpl(gGraphTile.getTileX(),gGraphTile.getTileY() ,pointModel, node, neighbour, neighbourNode, approachNode, distance);
                     }
                 }
@@ -425,6 +428,13 @@ public class GGraphTileFactory implements GraphFactory {
         }
     }
 
+    @Override
+    public GGraphTile getGraphTile(ApproachModel approachModel) {
+        if (approachModel instanceof ApproachModelImpl ami){
+            return getGGraphTile(ami.getTileX(), ami.getTileY());
+        }
+        return null;
+    }
     public GGraphTile getGGraphTile(int tileX, int tileY){
         return getGGraphTile(tileX, tileY, true);
     }
@@ -615,6 +625,7 @@ public class GGraphTileFactory implements GraphFactory {
                         neighbourNode.setFlag(GNode.FLAG_VISITED, true);
                         neighbourNodeIdx = smoothNeighbourList.size();
                         smoothNeighbourList.add(neighbour);
+                        // TODO can be replaced with Math.min and Math.max
                         if (neighbourNode.getEle() < minHeight){
                             minHeight = neighbourNode.getEle();
                         }
@@ -637,7 +648,7 @@ public class GGraphTileFactory implements GraphFactory {
                         neighbourNode = neighbour.getNeighbourNode();
                     } // while true
                     if (!lastHeightRelevantPoint.isFlag(GNode.FLAG_FIX) &&
-                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx+1, neighbourNodeIdx) < smoothingDistance)){
+                            (distance (smoothNeighbourList,  lastHeightRelevantPointIdx, neighbourNodeIdx) < smoothingDistance)){
                         lastHeightRelevantPoint.setFlag(GNode.FLAG_HEIGHT_RELEVANT, false); // reset last heightRelevantPoint in this segment - otherwise the remaining might bee too short
                     }
 

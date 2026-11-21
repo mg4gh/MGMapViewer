@@ -42,7 +42,7 @@ public class PointModelUtil {
      */
     public static final double EQUATORIAL_RADIUS = 6378137.0;
 
-    protected static int closeThreshold;
+    protected static int closeThreshold = 32; // default, if not set via PointModelUtil.init()
 
     public static void init(int closeThreshold){
         PointModelUtil.closeThreshold = closeThreshold;
@@ -365,8 +365,12 @@ public class PointModelUtil {
 
     public static float verticalDistance(PointModel pm1, PointModel pm2){
         if ((pm1 instanceof TrackLogPoint) && (pm2 instanceof TrackLogPoint)) return verticalDistance((TrackLogPoint)pm1, (TrackLogPoint)pm2 );
-        if ((pm1.getEle() == PointModel.NO_ELE) || (pm2.getEle() == PointModel.NO_ELE)) return 0;
-        return pm2.getEle() - pm1.getEle();
+        return verticalDistance(pm1.getEle(), pm2.getEle());
+    }
+
+    public static float verticalDistance(float ele1, float ele2){
+        if ((ele1 == PointModel.NO_ELE) || (ele2 == PointModel.NO_ELE)) return 0;
+        return ele2 - ele1;
     }
 
     /**

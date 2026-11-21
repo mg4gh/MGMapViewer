@@ -5,9 +5,10 @@ import androidx.annotation.NonNull;
 import org.mapsforge.core.model.Tag;
 import org.mapsforge.map.datastore.Way;
 
+import java.util.Objects;
+
 public class WayAttributs {
 
-//    public boolean accessible = false;
     public String highway = null;
     public String bicycle = null;
     public String access = null;
@@ -18,20 +19,18 @@ public class WayAttributs {
 
     public String trackType = null;
     public String network = null;
-    public final boolean onewayBic;
-//    additional tags that might be used in future
-//    public String service = null;
-//    public String trail_visibility = null;
-
-    final StringBuilder sb = new StringBuilder();
+    public boolean onewayBic;
 
     private Object derivedData; // profile specific, will be reset on profile change
+
+    long waValue = 0;
+
+    public WayAttributs() {}
 
     public WayAttributs(Way way) {
 
         String oneway = null;
         String oneway_bic = null;
-//        String name = null;
 
         for (Tag tag : way.tags) {
             switch (tag.key) {
@@ -54,7 +53,7 @@ public class WayAttributs {
                 case "cycleway":
                 case "cycleway_track":
                 case "cycleway_lane":
-                    cycleway = tag.value;
+                    cycleway = "set";
                     break;
                 case "access":
                     access = tag.value;
@@ -71,21 +70,8 @@ public class WayAttributs {
                 case "oneway:bicycle":
                     oneway_bic = tag.value;
                     break;
-                case "smoothness":
-                    boolean smoothness = true;
-                    break;
-     /*           case "name":
-                    name = tag.value;
-                    break;
-                case "service":
-                    service = tag.value; */
             }
-            sb.append(tag.key).append("=").append(tag.value).append(" ");
         }
-/*        if (accessible && ("private".equals(bicycle) || (("private".equals(access)|| "no".equals(access))&&!("bic_yes".equals(bicycle)|| "bic_designated".equals(bicycle)||"bic_permissive".equals(bicycle))) ||
-                "motorway".equals(highway) || "trunk".equals(highway))) {
-            accessible = false;
-        } */
         this.onewayBic = ( "yes".equals(oneway) && !"ow_bic_no".equals(oneway_bic));
     }
 
@@ -97,12 +83,55 @@ public class WayAttributs {
         this.derivedData = derivedData;
     }
 
+    public long getWaValue(){
+        return waValue;
+    }
+
     @NonNull
     @Override
     public String toString() {
         return Integer.toHexString(hashCode());
     }
+
+
     public String toDetailedString() {
-        return Integer.toHexString(hashCode())+" "+sb.toString();
+        return "WayAttributs{" +
+                "hash='" + Integer.toHexString(hashCode()) + "\n"+
+                ", highway='" + highway + '\'' +
+                ", bicycle='" + bicycle + '\'' +
+                ", access='" + access + '\'' +
+                ", cycleway='" + cycleway + '\'' +
+                ", surface='" + surface + '\'' +
+                ", mtbScale='" + mtbScale + '\'' +
+                ", mtbScaleUp='" + mtbScaleUp + '\'' +
+                ", trackType='" + trackType + '\'' +
+                ", network='" + network + '\'' +
+                ", onewayBic=" + onewayBic +
+                ", derivedData=" + derivedData +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WayAttributs that = (WayAttributs) o;
+        return onewayBic == that.onewayBic && Objects.equals(highway, that.highway) && Objects.equals(bicycle, that.bicycle) && Objects.equals(access, that.access) && Objects.equals(cycleway, that.cycleway) && Objects.equals(surface, that.surface) && Objects.equals(mtbScale, that.mtbScale) && Objects.equals(mtbScaleUp, that.mtbScaleUp) && Objects.equals(trackType, that.trackType) && Objects.equals(network, that.network);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(highway);
+        result = 31 * result + Objects.hashCode(bicycle);
+        result = 31 * result + Objects.hashCode(access);
+        result = 31 * result + Objects.hashCode(cycleway);
+        result = 31 * result + Objects.hashCode(surface);
+        result = 31 * result + Objects.hashCode(mtbScale);
+        result = 31 * result + Objects.hashCode(mtbScaleUp);
+        result = 31 * result + Objects.hashCode(trackType);
+        result = 31 * result + Objects.hashCode(network);
+        result = 31 * result + Boolean.hashCode(onewayBic);
+        result = 31 * result + Objects.hashCode(derivedData);
+        return result;
     }
 }

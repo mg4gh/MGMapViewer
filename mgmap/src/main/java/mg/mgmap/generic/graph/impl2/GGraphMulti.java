@@ -98,6 +98,7 @@ public class GGraphMulti extends GGraph {
 
     // Returns true, if graph is extended
     private boolean checkGGraphTileNeighbour(GNode node, byte border){
+        // TODO refactor handling tileX, tileY
         boolean bRes = false;
         if ( (node.borderNode & border) != 0 ) {
             int tileX = node.tileIdx>>16;

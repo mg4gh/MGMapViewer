@@ -32,13 +32,14 @@ import mg.mgmap.generic.graph.impl2.GGraphAlgorithm;
 import mg.mgmap.generic.graph.impl2.GGraphTile;
 import mg.mgmap.generic.graph.impl2.GGraphTileFactory;
 import mg.mgmap.generic.graph.impl2.GNode;
-import mg.mgmap.generic.graph.impl2.RoutingSummary;
+import mg.mgmap.generic.graph.RoutingSummary;
+import mg.mgmap.generic.graph.impl4.DGraphTileFactory;
 import mg.mgmap.generic.model.BBox;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.PointModel;
 import mg.mgmap.generic.model.PointModelImpl;
 import mg.mgmap.generic.model.PointModelUtil;
-import mg.mgmap.generic.model.WriteablePointModelImpl;
+import mg.mgmap.generic.model.TrackLogSegment;
 import mg.mgmap.generic.model.WriteableTrackLog;
 import mg.mgmap.generic.util.ObservableImpl;
 import mg.mgmap.generic.util.Pref;
@@ -53,8 +54,8 @@ public class RoutingTest {
     @Test
     public void _00_routing() {
 
-//        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
-//        MGLog.setUnittest(true);
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.DEBUG);
+        MGLog.setUnittest(true);
 
         PointModelUtil.init(32);
         RoutingContext interactiveRoutingContext = new RoutingContext(
@@ -64,34 +65,82 @@ public class RoutingTest {
                 1); // approachLimit 1 is ok, since FSMarker snaps point zoom level dependent
 
         ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
-        File mapFile = new File("src/test/assets/map_local/Baden-Wuerttemberg_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
+        File mapFile = new File("src/test/assets/map_local/Ruegen_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
-
-        WriteablePointModelImpl wpmi1 = new WriteablePointModelImpl(49.392927, 8.707837);
-        elevationProvider.setElevation(wpmi1);
 
         MapDataStore mds = new MapFile(mapFile, "de");
         WayProvider wayProvider = new WayProviderHelper(mds);
-        GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(true), new Pref<>("16"));
 
-        RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
-        routingEngine.setRoutingProfile(new MTB_K2S2());
-        routingEngine.refreshRequired.set(0);
+        PointModel pm1 = new PointModelImpl(54.420327,13.437579);
+        PointModel pm2 = new PointModelImpl(54.415861,13.447284);
+        PointModel pm3 = new PointModelImpl(54.418657,13.456617);
+        PointModel pm4 = new PointModelImpl(54.424050,13.454930);
+        PointModel pm5 = new PointModelImpl(54.421417,13.444976);
+        PointModel pm6 = new PointModelImpl(54.423379,13.433771);
 
-        {   // einfache Strecke Nahe Spyrer Hof
+        WriteableTrackLog rotlG;
+        {
+            GGraphTileFactory gGraphTileFactory = new GGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(true), new Pref<>("16"));
+            PointModel opm1 = gGraphTileFactory.calcApproach(pm1, 32).getApproachNode();
+            PointModel opm2 = gGraphTileFactory.calcApproach(pm2, 32).getApproachNode();
+            PointModel opm3 = gGraphTileFactory.calcApproach(pm3, 32).getApproachNode();
+            PointModel opm4 = gGraphTileFactory.calcApproach(pm4, 32).getApproachNode();
+            PointModel opm5 = gGraphTileFactory.calcApproach(pm5, 32).getApproachNode();
+            PointModel opm6 = gGraphTileFactory.calcApproach(pm6, 32).getApproachNode();
+            RoutingEngine routingEngine = new RoutingEngine(gGraphTileFactory, interactiveRoutingContext, new ObservableImpl());
+            routingEngine.setRoutingProfile(new ShortestDistance());
+//            routingEngine.setRoutingProfile(new MTB_K2S2());
+            routingEngine.refreshRequired.set(0);
             WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
             mtl.startTrack(1L);
             mtl.startSegment(2L);
-
-
-            mtl.addPoint(new PointModelImpl(49.402665, 8.686337));
-            mtl.addPoint(new PointModelImpl(49.392902, 8.707811));
-
-            WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
-            String statistic = rotl.getTrackStatistic().toString();
-            System.out.println( statistic);
-
+            mtl.addPoint(opm1);
+            mtl.addPoint(opm2);
+            mtl.addPoint(opm3);
+            mtl.addPoint(opm4);
+            mtl.addPoint(opm5);
+            mtl.addPoint(opm6);
+            rotlG = routingEngine.updateRouting2(mtl, null);
+            System.out.println( rotlG.getTrackStatistic().toString() );
         }
+        WriteableTrackLog rotlD;
+        {
+            DGraphTileFactory graphTileFactory = new DGraphTileFactory().onCreate(wayProvider, elevationProvider, new Pref<>(false), new Pref<>(""), new Pref<>(true), new Pref<>("16"));
+            PointModel opm1 = graphTileFactory.calcApproach(pm1, 32).getApproachNode();
+            PointModel opm2 = graphTileFactory.calcApproach(pm2, 32).getApproachNode();
+            PointModel opm3 = graphTileFactory.calcApproach(pm3, 32).getApproachNode();
+            PointModel opm4 = graphTileFactory.calcApproach(pm4, 32).getApproachNode();
+            PointModel opm5 = graphTileFactory.calcApproach(pm5, 32).getApproachNode();
+            PointModel opm6 = graphTileFactory.calcApproach(pm6, 32).getApproachNode();
+            RoutingEngine routingEngine = new RoutingEngine(graphTileFactory, interactiveRoutingContext, new ObservableImpl());
+            routingEngine.setRoutingProfile(new ShortestDistance());
+//            routingEngine.setRoutingProfile(new MTB_K2S2());
+            routingEngine.refreshRequired.set(0);
+            WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
+            mtl.startTrack(1L);
+            mtl.startSegment(2L);
+            mtl.addPoint(opm1);
+            mtl.addPoint(opm2);
+            mtl.addPoint(opm3);
+            mtl.addPoint(opm4);
+            mtl.addPoint(opm5);
+            mtl.addPoint(opm6);
+            rotlD = routingEngine.updateRouting2(mtl, null);
+            System.out.println( rotlD.getTrackStatistic().toString() );
+        }
+
+        System.out.println( rotlG.getTrackStatistic().getDuration() );
+        System.out.println( rotlD.getTrackStatistic().getDuration() );
+
+        TrackLogSegment tlsG = rotlG.getTrackLogSegment(0);
+        TrackLogSegment tlsD = rotlD.getTrackLogSegment(0);
+        assert tlsD.size() == tlsG.size();
+        System.out.println( tlsD.size() );
+        for (int i=0; i< tlsG.size(); i++){
+            System.out.println(tlsG.get(i)+" "+tlsG.get(i).getTimestamp()+" "+tlsD.get(i)+" "+tlsD.get(i).getTimestamp()+" ");
+            assert tlsD.get(i).equals(tlsG.get(i));
+        }
+        assert rotlG.getTrackStatistic().getDuration() == rotlD.getTrackStatistic().getDuration();
     }
 
     @Test
@@ -119,8 +168,9 @@ public class RoutingTest {
             WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
             mtl.startTrack(1L);
             mtl.startSegment(2L);
-            mtl.addPoint(new PointModelImpl(49.396434,8.708706));
-            mtl.addPoint(new PointModelImpl(49.397147,8.705246));
+
+            mtl.addPoint(gGraphTileFactory.calcApproach(new PointModelImpl(49.396434,8.708706), PointModelUtil.getCloseThreshold()).getApproachNode());
+            mtl.addPoint(gGraphTileFactory.calcApproach(new PointModelImpl(49.397147,8.705246), PointModelUtil.getCloseThreshold()).getApproachNode());
 
             WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
             String statistic = rotl.getTrackStatistic().toString();
@@ -132,8 +182,8 @@ public class RoutingTest {
             WriteableTrackLog mtl = new WriteableTrackLog("test_mtl");
             mtl.startTrack(1L);
             mtl.startSegment(2L);
-            mtl.addPoint(new PointModelImpl(49.365779,8.794608));
-            mtl.addPoint(new PointModelImpl(49.371844,8.795191));
+            mtl.addPoint(gGraphTileFactory.calcApproach(new PointModelImpl(49.365779,8.794608), PointModelUtil.getCloseThreshold()).getApproachNode());
+            mtl.addPoint(gGraphTileFactory.calcApproach(new PointModelImpl(49.371844,8.795191), PointModelUtil.getCloseThreshold()).getApproachNode());
 
             WriteableTrackLog rotl = routingEngine.updateRouting2(mtl, null);
             String statistic = rotl.getTrackStatistic().toString();
@@ -193,10 +243,7 @@ public class RoutingTest {
             GGraphMulti multi;
             GNode gStart;
             GNode gEnd;
-//            int tileXStart = 17084;
-//            int tileYStart = 11160;
-//            int tileXEnd = 17102;
-//            int tileYEnd = 11179;
+
             int tileXStart = 8541;
             int tileYStart = 5580;
             int tileXEnd = 8551;
