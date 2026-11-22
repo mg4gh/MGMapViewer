@@ -84,11 +84,11 @@ public class ElevationProviderImpl implements ElevationProvider{
                 double swEle = getEle(hb, sIdx+3601);
 
                 double hi;
-                if (prefBicubicInterpolation.getValue() && (1 <= oLon) && (oLon <= 3599) && (1 <= oLat) && (oLat <= 3599)){
+                if (prefBicubicInterpolation.getValue() && (1 <= oLon) && (oLon <= 3598) && (1 <= oLat) && (oLat <= 3598)){
                     double h0 = cubicInterpolate(getEle(hb,sIdx-3602), getEle(hb,sIdx-3601), getEle(hb,sIdx-3600), getEle(hb,sIdx-3599), dlon3600 - oLon);
                     double h1 = cubicInterpolate(getEle(hb,sIdx-1),    nwEle,                     neEle,                     getEle(hb,sIdx+2),    dlon3600 - oLon);
                     double h2 = cubicInterpolate(getEle(hb,sIdx+3600), swEle,                     seEle,                     getEle(hb,sIdx+3603), dlon3600 - oLon);
-                    double h3 = cubicInterpolate(getEle(hb,sIdx+7201), getEle(hb,sIdx+7202), getEle(hb,sIdx+7303), getEle(hb,sIdx+7304), dlon3600 - oLon);
+                    double h3 = cubicInterpolate(getEle(hb,sIdx+7201), getEle(hb,sIdx+7202), getEle(hb,sIdx+7203), getEle(hb,sIdx+7204), dlon3600 - oLon);
                     hi = cubicInterpolate(h0, h1, h2, h3, dlat3600 - oLat);
                 } else {
                     double nhi = PointModelUtil.interpolate(0, 1, nwEle, neEle, dlon3600 - oLon);
