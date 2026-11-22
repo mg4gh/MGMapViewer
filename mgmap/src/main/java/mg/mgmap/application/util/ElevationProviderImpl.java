@@ -64,43 +64,43 @@ public class ElevationProviderImpl implements ElevationProvider{
             iLat--;
         }
         String hgtName = HgtProvider.getHgtName(iLat,iLon);
-        byte[] hgtBuf = hgtProvider.getHgtBuf(hgtName);
-        if ((hgtBuf != null) && (hgtBuf.length > 0)){ // hgt files exists (real one or dummy)
-            if (hgtBuf.length > 1){ // ok, exists with content (length 1 indicates dummy file for sea level)
+        HgtBuffer hb = hgtProvider.getHgtBuf(hgtName);
+        if (hb != null){ // hgt files exists (real one or dummy)
+            if (hb.isSeaLevel()){ // dummy file for sea level
+                wpm.setEle(0);
+                wpm.setEleAcc(0);
+            } else { // ok, exists with content
                 double dlat = 1 - (latitude - iLat);
                 double dlat3600 = dlat * 3600;
                 int oLat = (int) (dlat3600);
                 double dlon = longitude - iLon;
                 double dlon3600 = dlon * 3600;
                 int oLon = (int) (dlon3600);
-                int off = oLat * 7202 + oLon * 2;
+                int sIdx = oLat * 3601 + oLon;
 
-                double nwEle = getEle(hgtBuf, off);
-                double neEle = getEle(hgtBuf, off+2);
-                double seEle = getEle(hgtBuf, off+7204);
-                double swEle = getEle(hgtBuf, off+7202);
+                double nwEle = getEle(hb, sIdx);
+                double neEle = getEle(hb, sIdx+1);
+                double seEle = getEle(hb, sIdx+3602);
+                double swEle = getEle(hb, sIdx+3601);
 
-                double hi, maxEle, minEle;
-                if (prefBicubicInterpolation.getValue() && (1 <= oLon) && (oLon <= 3598) && (1 <= oLat) && (oLat <= 3598)){
-                    double h0 = cubicInterpolate(getEle(hgtBuf,off-7204),getEle(hgtBuf,off-7202),getEle(hgtBuf,off-7200),getEle(hgtBuf,off-7198), dlon3600 - oLon);
-                    double h1 = cubicInterpolate(getEle(hgtBuf,off-2),nwEle,neEle,getEle(hgtBuf,off+4), dlon3600 - oLon);
-                    double h2 = cubicInterpolate(getEle(hgtBuf,off+7200),swEle,seEle,getEle(hgtBuf,off+7206), dlon3600 - oLon);
-                    double h3 = cubicInterpolate(getEle(hgtBuf,off+14402),getEle(hgtBuf,off+14404),getEle(hgtBuf,off+14406),getEle(hgtBuf,off+14408), dlon3600 - oLon);
+                double hi;
+                if (prefBicubicInterpolation.getValue() && (1 <= oLon) && (oLon <= 3599) && (1 <= oLat) && (oLat <= 3599)){
+                    double h0 = cubicInterpolate(getEle(hb,sIdx-3602), getEle(hb,sIdx-3601), getEle(hb,sIdx-3600), getEle(hb,sIdx-3599), dlon3600 - oLon);
+                    double h1 = cubicInterpolate(getEle(hb,sIdx-1),    nwEle,                     neEle,                     getEle(hb,sIdx+2),    dlon3600 - oLon);
+                    double h2 = cubicInterpolate(getEle(hb,sIdx+3600), swEle,                     seEle,                     getEle(hb,sIdx+3603), dlon3600 - oLon);
+                    double h3 = cubicInterpolate(getEle(hb,sIdx+7201), getEle(hb,sIdx+7202), getEle(hb,sIdx+7303), getEle(hb,sIdx+7304), dlon3600 - oLon);
                     hi = cubicInterpolate(h0, h1, h2, h3, dlat3600 - oLat);
                 } else {
                     double nhi = PointModelUtil.interpolate(0, 1, nwEle, neEle, dlon3600 - oLon);
                     double shi = PointModelUtil.interpolate(0, 1, swEle, seEle, dlon3600 - oLon);
                     hi = PointModelUtil.interpolate(0, 1, nhi, shi, dlat3600 - oLat);
                 }
-                maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
-                minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
+                double maxEle = Math.max( Math.max(nwEle,neEle), Math.max(seEle,swEle));
+                double minEle = Math.min( Math.min(nwEle,neEle), Math.min(seEle,swEle));
                 hi = Math.round(hi*PointModelUtil.ELE_FACTOR)/PointModelUtil.ELE_FACTOR;
                 wpm.setEle((float) hi);
                 wpm.setEleAcc((float) (maxEle-minEle));
 
-            } else { // dummy file for sea level
-                wpm.setEle(0);
-                wpm.setEleAcc(0);
             }
         } else {
             wpm.setEle(PointModel.NO_ELE);
@@ -108,15 +108,19 @@ public class ElevationProviderImpl implements ElevationProvider{
         }
     }
 
-    private float getEle(byte[] hgtBuf, int off) {
-        float res = PointModel.NO_ELE;
-        if (hgtBuf.length >= off+2){
-            byte b1 = hgtBuf[off];
-            byte b2 = hgtBuf[off+1];
-            res = (short)( ((b1 & 0xff)<<8) + (b2 & 0xff) );
-        }
-        return res;
+    private float getEle(HgtBuffer hgtBuffer, int sIdx){
+        return hgtBuffer.get(sIdx);
     }
+
+//    private float getEle(byte[] hgtBuf, int off) {
+//        float res = PointModel.NO_ELE;
+//        if (hgtBuf.length >= off+2){
+//            byte b1 = hgtBuf[off];
+//            byte b2 = hgtBuf[off+1];
+//            res = (short)( ((b1 & 0xff)<<8) + (b2 & 0xff) );
+//        }
+//        return res;
+//    }
 
     public double cubicInterpolate(double y0, double y1, double y2, double y3, double t) {
         if (prefBicubicSplineInterpolation.getValue()){

@@ -9,62 +9,60 @@ import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.MGLog;
 
 public class HgtProvider2 implements HgtProvider{
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
-    private HashMap<String, byte[]> hgtCache;
+    private final HashMap<String, HgtBuffer> hgtCache;
+    public Pref<Boolean> useSB = new Pref<>(false);
 
     public HgtProvider2(){
         hgtCache = new HashMap<>();
     }
 
-    public byte[] getHgtBuf(String hgtName){
-        byte[] buf;
+    public synchronized HgtBuffer getHgtBuf(String hgtName) { // assume hgt file exists
+        HgtBuffer hgtBuffer;
         synchronized (this){
-            buf = hgtCache.get(hgtName);
-            if (buf == null){
-                try {
-                    File hgtFile = new File("src/test/assets/map_local/"+hgtName+".SRTMGL1.hgt.zip");
-//                    System.out.println("load "+hgtFile.getAbsolutePath());
-                    if (hgtFile.exists()){
-                        if (hgtFile.length()>0){
-                            if (hgtFile.getName().endsWith("zip")){
-                                try (ZipFile zipFile = new ZipFile(hgtFile)){
-                                    ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
-                                    buf = readHgtData( zipFile.getInputStream(zipEntry) );
-                                }
-                            } else {
-                                try (FileInputStream is = new FileInputStream(hgtFile)){
-                                    buf = readHgtData( is );
-                                }
-                            }
-                        } else { // is dummy hgt file
-                            buf = new byte[1];
+            hgtBuffer = hgtCache.get(hgtName);
+            if (hgtBuffer == null){
+                hgtBuffer = getHgtBufInternal(hgtName);
+                hgtCache.put(hgtName, hgtBuffer);
+            }
+        }
+        return hgtBuffer;
+    }
+
+    public HgtBuffer getHgtBufInternal(String hgtName) { // assume hgt file exists
+        HgtBuffer buf = null;
+        try {
+//            File hgtFile = persistenceManager.getHgtFile(hgtName);
+            File hgtFile = new File("src/test/assets/map_local/"+hgtName+".SRTMGL1.hgt.zip");
+            if (hgtFile.exists()){
+                if (hgtFile.length()>0){
+                    if (hgtFile.getName().endsWith("zip")){
+                        try (ZipFile zipFile = new ZipFile(hgtFile)){
+                            ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
+                            InputStream is = zipFile.getInputStream(zipEntry);
+                            buf = useSB.getValue()? new HgtBufferImplSB(is) : new HgtBufferImplBA(is);
+                        }
+                    } else {
+                        try (FileInputStream is = new FileInputStream(hgtFile)){
+                            buf = useSB.getValue()? new HgtBufferImplSB(is) : new HgtBufferImplBA(is);
                         }
                     }
-                } catch (IOException e) { // should not happen
-                    mgLog.e(e);
-                    buf = new byte[0]; // but if so, prevent accessing inconsistent data
+                } else { // is dummy hgt file
+                    buf = new HgtBufferImplSea();
                 }
-                hgtCache.put(hgtName, buf);
             }
+        } catch (IOException e) { // should not happen
+            mgLog.e(e);
+            buf = null; // but if so, prevent accessing inconsistent data
         }
         return buf;
     }
 
-    private byte[] readHgtData(InputStream is) throws IOException{
-        int todo = is.available();
-        byte[] buf = new byte[todo];
-        int done = 0;
-        while (todo > 0) {
-            int step = is.read(buf, done, todo);
-            todo -= step;
-            done += step;
-        }
-        return buf;
-    }
 
 }

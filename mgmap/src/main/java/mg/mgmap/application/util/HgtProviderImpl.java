@@ -7,11 +7,17 @@ import android.util.LruCache;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import mg.mgmap.activity.mgmap.MGMapActivity;
 import mg.mgmap.activity.mgmap.view.HgtGridView;
@@ -20,6 +26,7 @@ import mg.mgmap.generic.model.TrackLog;
 import mg.mgmap.generic.util.BgJob;
 import mg.mgmap.generic.util.BgJobGroup;
 import mg.mgmap.generic.util.BgJobGroupCallback;
+import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.basic.IOUtil;
 import mg.mgmap.generic.util.basic.MGLog;
 import okhttp3.OkHttpClient;
@@ -37,23 +44,19 @@ public class HgtProviderImpl implements HgtProvider{
     private final MGMapApplication application;
     private final PersistenceManager persistenceManager;
     final AssetManager assetManager;
+    Pref<Boolean> useSB;
 
     /** This contains a list of all hgt files available from ESA or Sonny data */
     private final Properties hgtSize = new Properties();
 
     private final Handler timer;
-    private final LruCache<String, byte[]> hgtCache = new LruCache<>(4){
-        @Override
-        protected void entryRemoved(boolean evicted, String key, byte[] oldValue, byte[] newValue) {
-            super.entryRemoved(evicted, key, oldValue, newValue);
-            mgLog.i("drop from LRUCache: key="+key);
-        }
-    };
+    private final LruCache<String, HgtBuffer> hgtCache;
+
     private final Runnable ttCheckHgts = new Runnable() {
         @Override
         public void run() {
-            hgtCache.put(UUID.randomUUID().toString(), new byte[0]); // dummy value with "no" space will kick out large buffer, so its reducing memory usage
-            timer.postDelayed(ttCheckHgts, 5*60*1000L);
+            hgtCache.put("dummy_"+UUID.randomUUID().toString(), new HgtBufferImplSea()); // dummy value with "no" space will kick out large buffer, so its reducing memory usage
+            timer.postDelayed(ttCheckHgts, 60*1000L);
         }
     };
 
@@ -68,7 +71,15 @@ public class HgtProviderImpl implements HgtProvider{
             mgLog.e(e);
         }
         timer = new Handler(Looper.getMainLooper());
-
+        timer.postDelayed(ttCheckHgts, 60*1000L);
+        useSB = application.getPrefCache().get("HgtProvider.useSB", false);
+        hgtCache = new LruCache<>(4){
+            @Override
+            protected void entryRemoved(boolean evicted, String key, HgtBuffer oldValue, HgtBuffer newValue) {
+                super.entryRemoved(evicted, key, oldValue, newValue);
+                mgLog.i("drop from LRUCache: key="+key);
+            }
+        };
     }
 
     public void loadHgt(MGMapActivity activity, boolean all, ArrayList<String> hgtNames, String layerName, HgtGridView hgtGridView){
@@ -208,18 +219,45 @@ public class HgtProviderImpl implements HgtProvider{
         persistenceManager.dropHgt(hgtName);
     }
 
-    public synchronized byte[] getHgtBuf(String hgtName) { // assume hgt file exists
-        timer.removeCallbacks(ttCheckHgts);
-        timer.postDelayed(ttCheckHgts, 5*60*1000L);
-        byte[] buf;
+    public synchronized HgtBuffer getHgtBuf(String hgtName) { // assume hgt file exists
+        HgtBuffer hgtBuffer;
         synchronized (this){
-            buf = hgtCache.get(hgtName);
-            if (buf == null){
-                buf = persistenceManager.getHgtBuf(hgtName);
-                hgtCache.put(hgtName, buf);
+            hgtBuffer = hgtCache.get(hgtName);
+            if (hgtBuffer == null){
+                hgtBuffer = getHgtBufInternal(hgtName);
+                hgtCache.put(hgtName, hgtBuffer);
             }
+        }
+        return hgtBuffer;
+    }
+
+    public HgtBuffer getHgtBufInternal(String hgtName) { // assume hgt file exists
+        HgtBuffer buf = null;
+        try {
+            File hgtFile = persistenceManager.getHgtFile(hgtName);
+            if (hgtFile.exists()){
+                if (hgtFile.length()>0){
+                    if (hgtFile.getName().endsWith("zip")){
+                        try (ZipFile zipFile = new ZipFile(hgtFile)){
+                            ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
+                            InputStream is = zipFile.getInputStream(zipEntry);
+                            buf = useSB.getValue()? new HgtBufferImplSB(is) : new HgtBufferImplBA(is);
+                        }
+                    } else {
+                        try (FileInputStream is = new FileInputStream(hgtFile)){
+                            buf = useSB.getValue()? new HgtBufferImplSB(is) : new HgtBufferImplBA(is);
+                        }
+                    }
+                } else { // is dummy hgt file
+                    buf = new HgtBufferImplSea();
+                }
+            }
+        } catch (IOException e) { // should not happen
+            mgLog.e(e);
+            buf = null; // but if so, prevent accessing inconsistent data
         }
         return buf;
     }
+
 
 }
