@@ -14,7 +14,6 @@
  */
 package mg.mgmap.activity.mgmap.features.routing;
 
-import android.content.ComponentCallbacks2;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -407,22 +406,6 @@ public class FSRouting extends FeatureService {
             FSRouting.this.notifyAll();
         }
         prefRoutingProfileId.deleteObservers();
-    }
-
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-        if (level == ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL){
-            if (prefCalcRouteInProgress.getValue()){
-                TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
-                if (mtl != null){
-                    routingEngine.refreshRequired.set(-1000);
-                    mgLog.w("abort routing due to onTrimMemory callback with TRIM_MEMORY_RUNNING_CRITICAL");
-                }
-            }
-            gFactory.clearCache(); // clear GGraphTileFactory cache
-            application.getHgtProvider().clearCache(); // clear HgtCache
-        }
     }
 
     @Override

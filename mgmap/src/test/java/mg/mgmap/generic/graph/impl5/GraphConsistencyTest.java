@@ -107,6 +107,7 @@ public class GraphConsistencyTest {
             if (algorithm instanceof BidirectionalAStar bas){
                 assert (bas.rc == 0);
             }
+            for (DGraphTile dGraphTile : tiles) dGraphTile.destroy();
         }
     }
 
@@ -167,6 +168,7 @@ public class GraphConsistencyTest {
             System.out.printf(Locale.ENGLISH, "%s\n", statistics);
         }
         System.out.printf(Locale.ENGLISH, "************************************* end 1  *****************************************************\n");
+        for (DGraphTile dGraphTile : tiles) dGraphTile.destroy();
         tiles.clear();
         System.gc();
 

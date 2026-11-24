@@ -7,9 +7,12 @@ import mg.mgmap.generic.model.PointModel;
 
 public class HgtBufferImplBA implements HgtBuffer{
 
+    String name;
     byte[] buf;
+    long accessNanos = System.nanoTime();
 
-    public HgtBufferImplBA(InputStream is) throws IOException {
+    public HgtBufferImplBA(String name, InputStream is) throws IOException {
+        this.name = name;
         int todo = is.available();
         buf = new byte[todo];
         int done = 0;
@@ -34,7 +37,17 @@ public class HgtBufferImplBA implements HgtBuffer{
             byte b2 = buf[off+1];
             res = (short)( ((b1 & 0xff)<<8) + (b2 & 0xff) );
         }
+        accessNanos = System.nanoTime();
         return res;
     }
 
+    @Override
+    public long getAccessNanos() {
+        return accessNanos;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
 }

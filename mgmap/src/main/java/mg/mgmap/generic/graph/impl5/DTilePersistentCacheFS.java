@@ -1,14 +1,12 @@
 package mg.mgmap.generic.graph.impl5;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
-import java.util.Locale;
-import java.util.Set;
 
+import mg.mgmap.application.util.NativeBuffer;
 import mg.mgmap.application.util.PersistenceManager;
 import mg.mgmap.generic.graph.WayAttributesManager;
 import mg.mgmap.generic.graph.WayAttributs;
@@ -33,38 +31,34 @@ public class DTilePersistentCacheFS implements DTilePersistentCache{
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     File cacheDir = null;
-    Set<DGraphTile> persistencyCandidates;
     short headerSize = 32;
 
-
-    // TODO rework
-    boolean resetBeforePersistentWrite = true;
-
     @Override
-    public void init(File cacheDir, Set<DGraphTile> persistencyCandidates) {
-        this.persistencyCandidates = persistencyCandidates;
+    public void init(File cacheDir) {
         this.cacheDir = cacheDir;
-
-
     }
 
     @Override
     public void service() {
-        persistencyCandidates.forEach(this::put);
-        persistencyCandidates.clear();
+        // TODO Implement mechanism that prevents that the persistent cache becomes to large
+        // - define meta Object per File with path,size,accessTime
+        // - loop over all cache files and create a sorted tree of such meta objects.
+        // - according to the targeted cache size define wich part of the tree shall be dropped
+        // - remove files accordingly
     }
 
     @Override
     public synchronized void put(DGraphTile tile) {
         if (cacheDir == null) return;
 
-        // usually this should not be necessary, but to get comparable files
-        // -> this is tru for nodeRefs
-        // -> !!!! this is not so easy for costs - keep costs means save/restore and verify the routing profile.
-        if (resetBeforePersistentWrite){
-            tile.resetNodeRefs();
-            tile.resetCosts();
-        }
+        // keep files deterministic
+        // TODO check, if a separate array of refs would make more sense - no need to persist this data
+        tile.resetNodeRefs();
+        // Here are multiple aspects relevant - first again, keep files deterministic
+        // otherwise it would be necessary to keep track obout the used profile
+        // Would it make sense to store cost separately (in a profile related File??)
+        // At the end rather not, high effort and low performance gain
+        tile.resetCosts();
 
         int numWayAttributes = tile.wayAttributesList.size();
         int headerBufSize = headerSize + 8*numWayAttributes;
@@ -116,7 +110,7 @@ public class DTilePersistentCacheFS implements DTilePersistentCache{
                 res += channel.write(neighboursBuffer);
             }
             assert (res == tile.neighboursBuffer.capacity()):" res="+res+" tile.neighboursBuffer.capacity()="+tile.neighboursBuffer.capacity();
-
+            tile.graphModified = false;
         } catch (Exception e) {
             mgLog.e(e);
         }
@@ -125,6 +119,7 @@ public class DTilePersistentCacheFS implements DTilePersistentCache{
 
     @Override
     public synchronized boolean get(DGraphTile tile) {
+        tile.state = DGraphTile.State.INIT_FROM_PERSISTENT_CACHE;
         File ydir = new File(cacheDir, String.valueOf(tile.tile.tileY));
         if (!ydir.exists()) return false;
 
@@ -154,29 +149,32 @@ public class DTilePersistentCacheFS implements DTilePersistentCache{
                 tile.wayAttributesList.add(WayAttributesManager.getWayAttributs(waValuesBuffer.getLong()));
             }
 
-            ByteBuffer nodesBuffer = ByteBuffer.allocateDirect(tile.maxNodeCnt * DGraphTile.NODE_SIZE);
-            while (nodesBuffer.hasRemaining()) {
-                int bytesRead = channel.read(nodesBuffer);
+            tile.naBuNodes = new NativeBuffer(tile+" nodes refilled", (long) tile.maxNodeCnt * DGraphTile.NODE_SIZE);
+            tile.nodesBuffer = tile.naBuNodes.getBuffer();
+//            tile.nodesBuffer = ByteBuffer.allocateDirect(tile.maxNodeCnt * DGraphTile.NODE_SIZE);
+            while (tile.nodesBuffer.hasRemaining()) {
+                int bytesRead = channel.read(tile.nodesBuffer);
                 if (bytesRead == -1) {
                     mgLog.e("Unexpected EOF: "+fTile.getAbsolutePath());
                 }
             }
-            nodesBuffer.flip();
-            tile.nodesBuffer = nodesBuffer;
-            tile.nodesBufferClone = nodesBuffer.duplicate();
+            tile.nodesBuffer.flip();
+            tile.nodesBufferClone = tile.nodesBuffer.duplicate();
 
-            ByteBuffer neighboursBuffer = ByteBuffer.allocateDirect(tile.maxNeighbourCnt * DGraphTile.NEIGHBOUR_SIZE);
-            while (neighboursBuffer.hasRemaining()) {
-                int bytesRead = channel.read(neighboursBuffer);
+            tile.naBuNeighbours = new NativeBuffer(tile+" neighbours refilled", (long) tile.maxNeighbourCnt * DGraphTile.NEIGHBOUR_SIZE);
+            tile.neighboursBuffer = tile.naBuNeighbours.getBuffer();
+//            tile.neighboursBuffer = ByteBuffer.allocateDirect(tile.maxNeighbourCnt * DGraphTile.NEIGHBOUR_SIZE);
+            while (tile.neighboursBuffer.hasRemaining()) {
+                int bytesRead = channel.read(tile.neighboursBuffer);
                 if (bytesRead == -1) {
                     mgLog.e("Unexpected EOF: "+fTile.getAbsolutePath());
                     return false;
                 }
             }
-            neighboursBuffer.flip();
-            tile.neighboursBuffer = neighboursBuffer;
-            tile.neighboursBufferClone = neighboursBuffer.duplicate();
+            tile.neighboursBuffer.flip();
+            tile.neighboursBufferClone = tile.neighboursBuffer.duplicate();
 
+            tile.state = DGraphTile.State.REFILLED;
             return true;
         } catch (Exception e){
             mgLog.e(e);
@@ -191,35 +189,34 @@ public class DTilePersistentCacheFS implements DTilePersistentCache{
 
 
 
-    private void createDump(DGraphTile origTile){
-        DGraphTile tile = new DGraphTile(origTile.tile, origTile.elevationProvider, origTile.statistics, origTile.smoothingDistance);
-        if (get(tile)){
-            File ydir = new File(cacheDir, String.valueOf(tile.tile.tileY));
-            File fTile = new File(ydir, String.valueOf(tile.tile.tileX)+".dump");
-            try (PrintWriter pw = new PrintWriter(fTile)) {
-                String header = String.format(Locale.ENGLISH, "Header %s maxNodes=%d initialNodes=%d ,maxNeighbours=%d initialNeighbours=%d, numWayAttributes=%d, neighbourConnected=%02X", tile.toString(), tile.maxNodeCnt, tile.initialNodeCnt, tile.maxNeighbourCnt, tile.initialNeighbourCnt, tile.wayAttributesList.size(), tile.neighbourConnected);
-                pw.println(header);
-                int cnt = 0;
-                for (WayAttributs wa : tile.wayAttributesList){
-                    pw.println(String.format(Locale.ENGLISH, "  %04d: %08X %08X", cnt++, wa.getWaValue()>>32, (wa.getWaValue() & 0xFFFFFFFFL)));
-                }
-                pw.println("Nodes:");
-                for (short i = 0; i < tile.maxNodeCnt; i++) {
-                    pw.println(tile.nodeToString(i));
-                }
-                pw.println("Neighbours:");
-                for (short i = 0; i < tile.maxNeighbourCnt; i++) {
-                    pw.println(tile.neighbourToString(i));
-                }
-            } catch (Exception e) {
-                mgLog.e(e);
-            }
+//    private void createDump(DGraphTile origTile){
+//        DGraphTile tile = new DGraphTile(origTile.tile, origTile.elevationProvider, origTile.statistics, origTile.smoothingDistance);
+//        if (get(tile)){
+//            File ydir = new File(cacheDir, String.valueOf(tile.tile.tileY));
+//            File fTile = new File(ydir, String.valueOf(tile.tile.tileX)+".dump");
+//            try (PrintWriter pw = new PrintWriter(fTile)) {
+//                String header = String.format(Locale.ENGLISH, "Header %s maxNodes=%d initialNodes=%d ,maxNeighbours=%d initialNeighbours=%d, numWayAttributes=%d, neighbourConnected=%02X", tile.toString(), tile.maxNodeCnt, tile.initialNodeCnt, tile.maxNeighbourCnt, tile.initialNeighbourCnt, tile.wayAttributesList.size(), tile.neighbourConnected);
+//                pw.println(header);
+//                int cnt = 0;
+//                for (WayAttributs wa : tile.wayAttributesList){
+//                    pw.println(String.format(Locale.ENGLISH, "  %04d: %08X %08X", cnt++, wa.getWaValue()>>32, (wa.getWaValue() & 0xFFFFFFFFL)));
+//                }
+//                pw.println("Nodes:");
+//                for (short i = 0; i < tile.maxNodeCnt; i++) {
+//                    pw.println(tile.nodeToString(i));
+//                }
+//                pw.println("Neighbours:");
+//                for (short i = 0; i < tile.maxNeighbourCnt; i++) {
+//                    pw.println(tile.neighbourToString(i));
+//                }
+//            } catch (Exception e) {
+//                mgLog.e(e);
+//            }
+//
+//
+//        } else {
+//            mgLog.w("verify tile failed");
+//
+//        }
 
-
-        } else {
-            mgLog.w("verify tile failed");
-
-        }
-
-    }
 }

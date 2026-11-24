@@ -3,7 +3,6 @@ package mg.mgmap.application.util;
 import android.content.res.AssetManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.LruCache;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,7 +14,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -50,15 +48,41 @@ public class HgtProviderImpl implements HgtProvider{
     private final Properties hgtSize = new Properties();
 
     private final Handler timer;
-    private final LruCache<String, HgtBuffer> hgtCache;
+//    private final LruCache<String, HgtBuffer> hgtCache;
+    // Instead of using a LruCache now each hgt buffer will be supervised and dropped out, if access time is above 30s
+    private final ArrayList<HgtBuffer> hgtBuffers = new ArrayList<>();
+    private final ArrayList<HgtBuffer> hgtBuffers2Delete = new ArrayList<>();
 
     private final Runnable ttCheckHgts = new Runnable() {
         @Override
         public void run() {
-            hgtCache.put("dummy_"+UUID.randomUUID().toString(), new HgtBufferImplSea()); // dummy value with "no" space will kick out large buffer, so its reducing memory usage
-            timer.postDelayed(ttCheckHgts, 60*1000L);
+            if (hgtBuffers.isEmpty()){
+                timer.postDelayed(ttCheckHgts, 35*1000L);
+            } else {
+                for (HgtBuffer hgtBuffer : hgtBuffers){
+                    long now = System.nanoTime();
+                    long access = hgtBuffer.getAccessNanos();
+                    if ( (now-access) >= 30_000_000_000L){
+                        hgtBuffers2Delete.add(hgtBuffer);
+                    }
+                }
+                applyHgtBuffersToDelete();
+                timer.postDelayed(ttCheckHgts, 5*1000L);
+            }
         }
     };
+
+    void applyHgtBuffersToDelete(){
+        if (!hgtBuffers2Delete.isEmpty()){
+            synchronized (this){
+                hgtBuffers.removeAll(hgtBuffers2Delete);
+                for (HgtBuffer hgtBuffer : hgtBuffers2Delete){
+                    hgtBuffer.cleanup();
+                }
+            }
+            hgtBuffers2Delete.clear();
+        }
+    }
 
 
     public HgtProviderImpl(MGMapApplication application, PersistenceManager persistenceManager, AssetManager assetManager){
@@ -73,13 +97,13 @@ public class HgtProviderImpl implements HgtProvider{
         timer = new Handler(Looper.getMainLooper());
         timer.postDelayed(ttCheckHgts, 60*1000L);
         useSB = application.getPrefCache().get("HgtProvider.useSB", false);
-        hgtCache = new LruCache<>(4){
-            @Override
-            protected void entryRemoved(boolean evicted, String key, HgtBuffer oldValue, HgtBuffer newValue) {
-                super.entryRemoved(evicted, key, oldValue, newValue);
-                mgLog.i("drop from LRUCache: key="+key);
-            }
-        };
+//        hgtCache = new LruCache<>(4){
+//            @Override
+//            protected void entryRemoved(boolean evicted, String key, HgtBuffer oldValue, HgtBuffer newValue) {
+//                super.entryRemoved(evicted, key, oldValue, newValue);
+//                mgLog.i("drop from LRUCache: key="+key);
+//            }
+//        };
     }
 
     public void loadHgt(MGMapActivity activity, boolean all, ArrayList<String> hgtNames, String layerName, HgtGridView hgtGridView){
@@ -89,7 +113,7 @@ public class HgtProviderImpl implements HgtProvider{
                 if (hgtGridView != null){
                     hgtGridView.requestRedraw();
                 }
-                hgtCache.evictAll();
+                clearCache();
                 activity.getGraphFactory().clearCache();
                 TrackLog mtl = application.markerTrackLogObservable.getTrackLog();
                 if (mtl != null){
@@ -146,11 +170,13 @@ public class HgtProviderImpl implements HgtProvider{
     }
 
     public void clearCache(){
-        hgtCache.evictAll();
+        hgtBuffers2Delete.addAll(hgtBuffers);
+        applyHgtBuffersToDelete();
     }
-    public void cleanup(){
-        clearCache();
+
+    public synchronized void cleanup(){
         timer.removeCallbacks(ttCheckHgts);
+        clearCache();
     }
 
     private boolean hgtExists(String hgtName){
@@ -222,11 +248,11 @@ public class HgtProviderImpl implements HgtProvider{
     public synchronized HgtBuffer getHgtBuf(String hgtName) { // assume hgt file exists
         HgtBuffer hgtBuffer;
         synchronized (this){
-            hgtBuffer = hgtCache.get(hgtName);
-            if (hgtBuffer == null){
-                hgtBuffer = getHgtBufInternal(hgtName);
-                hgtCache.put(hgtName, hgtBuffer);
+            for (HgtBuffer aHgtBuffer : hgtBuffers){
+                if (hgtName.equals( aHgtBuffer.getName() )) return aHgtBuffer;
             }
+            hgtBuffer = getHgtBufInternal(hgtName);
+            hgtBuffers.add(hgtBuffer);
         }
         return hgtBuffer;
     }
@@ -241,15 +267,15 @@ public class HgtProviderImpl implements HgtProvider{
                         try (ZipFile zipFile = new ZipFile(hgtFile)){
                             ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
                             InputStream is = zipFile.getInputStream(zipEntry);
-                            buf = useSB.getValue()? new HgtBufferImplSB(is) : new HgtBufferImplBA(is);
+                            buf = useSB.getValue()? new HgtBufferImplSB(hgtName,is) : new HgtBufferImplBA(hgtName,is);
                         }
                     } else {
                         try (FileInputStream is = new FileInputStream(hgtFile)){
-                            buf = useSB.getValue()? new HgtBufferImplSB(is) : new HgtBufferImplBA(is);
+                            buf = useSB.getValue()? new HgtBufferImplSB(hgtName,is) : new HgtBufferImplBA(hgtName,is);
                         }
                     }
                 } else { // is dummy hgt file
-                    buf = new HgtBufferImplSea();
+                    buf = new HgtBufferImplSea(hgtName);
                 }
             }
         } catch (IOException e) { // should not happen

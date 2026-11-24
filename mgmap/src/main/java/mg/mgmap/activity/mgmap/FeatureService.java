@@ -70,7 +70,7 @@ public class FeatureService {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     /** A timer object. */
-    private static final Handler timer = new Handler();
+    private static final Handler timer = new Handler(Looper.getMainLooper());
 
     protected final MGMapActivity activity;
     protected final MGMapApplication application;
@@ -321,7 +321,6 @@ public class FeatureService {
         cancelRefresh();
     }
     protected void onDestroy(){ }
-    public void onTrimMemory(int level){ }
 
     protected <T> Pref<T> getPref(int id, T defaultValue){
         return activity.getPrefCache().get(id,defaultValue);

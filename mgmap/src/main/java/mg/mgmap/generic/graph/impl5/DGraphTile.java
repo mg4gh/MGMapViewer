@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.TreeMap;
 
 import mg.mgmap.application.util.ElevationProvider;
+import mg.mgmap.application.util.NativeBuffer;
 import mg.mgmap.generic.graph.ApproachModel;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.WayAttributs;
@@ -211,6 +212,7 @@ public class DGraphTile implements Graph {
     /* ************************************ DGraphTile stuff ************************************** */
     /* ******************************************************************************************** */
 
+    public enum State { INITIAL, INIT_FROM_SCRATCH, INIT_FROM_PERSISTENT_CACHE, FILLED, REFILLED, DESTROYED}
 
     static ExDNode[] eNodes = null;
     static ExDNeighbour[] eNeighbours = null;
@@ -264,7 +266,11 @@ public class DGraphTile implements Graph {
     final DGraphTile[] neighbourTiles = new DGraphTile[Border.BORDER_NODE_WEST+1];//use BORDER constants as index, although some entries stay always null
     byte neighbourConnected = 0; // if e.g. neighbours on BORDER_NODE_WEST are added, then this bit is set in neighbourConnected
 
+    boolean graphModified = false; // will be set when on initial load and on connect with a neighbour tile
     boolean used = false;
+    State state = State.INITIAL;
+    NativeBuffer naBuNodes = null;
+    NativeBuffer naBuNeighbours = null;
 
     private final WriteablePointModel clipRes = new WriteablePointModelImpl();
     long creationNanos;
@@ -295,6 +301,7 @@ public class DGraphTile implements Graph {
     }
 
     public void setupStarted(){
+        state = State.INIT_FROM_SCRATCH;
         waValueIndexMap = new HashMap<>();
     }
 
@@ -331,7 +338,9 @@ public class DGraphTile implements Graph {
         smooth(smoothingDistance);
 
         maxNodeCnt = initialNodeCnt;
-        nodesBuffer = ByteBuffer.allocateDirect(maxNodeCnt * NODE_SIZE);
+        naBuNodes = new NativeBuffer(this+" nodes filled", (long) maxNodeCnt * NODE_SIZE);
+        nodesBuffer = naBuNodes.getBuffer();
+//        nodesBuffer = ByteBuffer.allocateDirect(maxNodeCnt * NODE_SIZE);
         for (int i=0; i<initialNodeCnt; i++){
             ExDNode node = eNodes[i];
             addNode(node.dla, node.dlo, node.getEle(), node.getEleAcc(), (byte)(node.flags & ND_FLAG_VALID), node.border, node.neighbour==null?-1:node.neighbour.neighbourIdx);
@@ -340,16 +349,23 @@ public class DGraphTile implements Graph {
         nodesBufferClone = nodesBuffer.duplicate();
 
         maxNeighbourCnt = (short)(initialNeighbourCnt+borderNodeCnt*3 + NEIGHBOURS_FOR_FIX_GRAPH); // one border node should have in avg not more than 1.5 neighbourNodes in the neighbour tile
-        neighboursBuffer = ByteBuffer.allocateDirect(maxNeighbourCnt * NEIGHBOUR_SIZE);
+        naBuNeighbours = new NativeBuffer(this+" neighbours filled", (long) maxNeighbourCnt * NEIGHBOUR_SIZE);
+        neighboursBuffer = naBuNeighbours.getBuffer();
+//        neighboursBuffer = ByteBuffer.allocateDirect(maxNeighbourCnt * NEIGHBOUR_SIZE);
         for (int i=0; i<initialNeighbourCnt; i++) {
             ExDNeighbour neighbour = eNeighbours[i];
             addNeighbour(neighbour.neighbourNode.nodeIdx, neighbour.getNextNeighbourIdx(), neighbour.wayAttributesIdx, neighbour.border, neighbour.flags, neighbour.distance, neighbour.vertDistance);
             neighbour.neighbourNode = null;
             neighbour.nextNeighbour = null;
         }
+        for (int i=initialNeighbourCnt; i<maxNeighbourCnt; i++) {
+            addNeighbour((short)-1, (short)-1, (short)-1, (byte)0, (byte)0, 0, 0);
+        }
         neighboursBufferClone = neighboursBuffer.duplicate();
 
         initialNodeMap.clear();
+        graphModified = true;
+        state = State.FILLED;
         statistics.setupNanos += (System.nanoTime() - creationNanos);
     }
 
@@ -811,5 +827,20 @@ public class DGraphTile implements Graph {
 //        }
 //        return sb.toString();
 //    }
+
+
+    public void destroy(){
+        if (!state.equals(State.DESTROYED)){
+            state = State.DESTROYED;
+            if (naBuNodes != null) {
+                naBuNodes.free();
+                naBuNodes = null;
+            }
+            if (naBuNeighbours != null) {
+                naBuNeighbours.free();
+                naBuNeighbours = null;
+            }
+        }
+    }
 
 }
