@@ -45,6 +45,7 @@ public class DTilePersistentCacheFS implements DTilePersistentCache{
         // - loop over all cache files and create a sorted tree of such meta objects.
         // - according to the targeted cache size define wich part of the tree shall be dropped
         // - remove files accordingly
+        // - do this procedure only, if minimum time after last check is reached
     }
 
     @Override

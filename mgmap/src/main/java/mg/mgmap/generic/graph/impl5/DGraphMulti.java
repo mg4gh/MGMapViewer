@@ -65,7 +65,7 @@ public class DGraphMulti implements Graph {
                 } else { // node is at the border and neighbourNode in neighbourTile has exactly same location - so add neighbourPoints from this neighbourNode too
                     if (traverseBorder){
                         DGraphTile neighbourGraphTile = dGraphTile.neighbourTiles[border];
-                        DNode neighbourNode = neighbourGraphTile.getNode(neighbourGraphTile.getNbNeighbourNodeIdx(neighbourIdx));
+                        DNode neighbourNode = neighbourGraphTile.getNode(dGraphTile.getNbNeighbourNodeIdx(neighbourIdx));
                         getNeighbours(neighbourNode, neighbourPoints, false);
                     }
                 }
