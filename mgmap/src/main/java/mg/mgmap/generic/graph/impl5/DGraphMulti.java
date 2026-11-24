@@ -49,31 +49,33 @@ public class DGraphMulti implements Graph {
         return useCnt;
     }
 
-    // TODO implement correct
     @Override
     public ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> neighbourPoints) {
-        return new ArrayList<>();
-//        long mapSize = MercatorProjection.getMapSize(dGraphTileFactory.getZoomLevel(), dGraphTileFactory.getTileSize());
-//
-//        int tileX = MercatorProjection.pixelXToTileX( MercatorProjection.longitudeToPixelX( pointModel.getLon() , mapSize) , dGraphTileFactory.getZoomLevel(), dGraphTileFactory.getTileSize());
-//        int tileY = MercatorProjection.pixelYToTileY( MercatorProjection.latitudeToPixelY( pointModel.getLat() , mapSize) , dGraphTileFactory.getZoomLevel(), dGraphTileFactory.getTileSize());
-//        DGraphTile graph = dGraphTileFactory.getDGraphTile(tileX, tileY);
-//        neighbourPoints = graph.getNeighbours(pointModel, new ArrayList<>());
-//
-//        GNode node = graph.getNode(pointModel.getLat(), pointModel.getLon());
-//        if (node != null){
-//            for (byte border = GNode.BORDER_NODE_SOUTH; border <= GNode.BORDER_NODE_WEST; border = (byte)(border<<1)){
-//                if ((node.borderNode & border) != 0){
-//                    GGraphTile neighbourGraph = graph.neighbourTiles[border];
-//                    if (neighbourGraph != null) neighbourGraph.getNeighbours(pointModel, neighbourPoints);
-//                }
-//            }
-//        }
-//        return neighbourPoints;
+        return getNeighbours(pointModel, neighbourPoints, true);
+    }
+
+    public ArrayList<PointModel> getNeighbours(PointModel pointModel, ArrayList<PointModel> neighbourPoints, boolean traverseBorder) {
+        if (pointModel instanceof DNode dNode){
+            DGraphTile dGraphTile = dGraphTileFactory.getDGraphTile(dNode.tileIdx);
+            for (short neighbourIdx = dGraphTile.getNdNeighbourIdx(dNode.nodeIdx); neighbourIdx != -1; neighbourIdx = dGraphTile.getNbNextNeighbourIdx(neighbourIdx)){
+                byte border = dGraphTile.getNbBorder(neighbourIdx);
+                float distance = dGraphTile.getNbDistance(neighbourIdx);
+                if ((border == 0) || (distance > 0)){
+                    neighbourPoints.add(dGraphTile.getNode(dGraphTile.getNbNeighbourNodeIdx(neighbourIdx)));
+                } else { // node is at the border and neighbourNode in neighbourTile has exactly same location - so add neighbourPoints from this neighbourNode too
+                    if (traverseBorder){
+                        DGraphTile neighbourGraphTile = dGraphTile.neighbourTiles[border];
+                        DNode neighbourNode = neighbourGraphTile.getNode(neighbourGraphTile.getNbNeighbourNodeIdx(neighbourIdx));
+                        getNeighbours(neighbourNode, neighbourPoints, false);
+                    }
+                }
+            }
+        }
+        return neighbourPoints;
     }
 
 
-    // return true, if graph changed
+        // return true, if graph changed
     boolean preNodeRelax(DNode node, byte border){
         boolean changed = false;
         if (border != 0){ // add lazy expansion of GGraphMulti

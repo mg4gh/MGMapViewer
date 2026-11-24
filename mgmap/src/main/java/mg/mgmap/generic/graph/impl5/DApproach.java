@@ -32,7 +32,12 @@ public class DApproach implements ApproachModel {
 
     @Override
     public boolean verifyApproach(PointModel node1, PointModel approachNode, PointModel node2) {
-        return true;
+        if (this.getApproachNode() != approachNode) return false;
+        if ((node1 instanceof DNode dNode1) && (node2 instanceof DNode dNode2)){
+            if ((node1Idx == dNode1.nodeIdx) && (node2Idx == dNode2.nodeIdx)) return true;
+            if ((node1Idx == dNode2.nodeIdx) && (node2Idx == dNode1.nodeIdx)) return true;
+        }
+        return false;
     }
 
     @NonNull

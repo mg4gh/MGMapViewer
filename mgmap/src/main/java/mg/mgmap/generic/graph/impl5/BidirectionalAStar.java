@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
 import mg.mgmap.generic.graph.Graph;
 import mg.mgmap.generic.graph.WayAttributs;
-import mg.mgmap.generic.model.ExtendedPointModelImpl;
 import mg.mgmap.generic.model.MultiPointModel;
 import mg.mgmap.generic.model.MultiPointModelImpl;
 import mg.mgmap.generic.model.PointModel;
@@ -265,16 +264,18 @@ public class BidirectionalAStar extends DGraphAlgorithm {
             DNode node1 = new DNode();
             graphTile.getNodeData(node1, sourceApproachModel.node1Idx);
 
-            WayAttributs wayAttributes = graphTile.wayAttributesList.get(graphTile.getNbWayAttributesIdx(sourceApproachModel.neighbour1to2));
-            double distance = PointModelUtil.distance(source, target);
-            double verDistance = PointModelUtil.verticalDistance(source, target);
+            short wayAttributesIdx = graphTile.getNbWayAttributesIdx(sourceApproachModel.neighbour1to2);
+            WayAttributs wayAttributes = graphTile.wayAttributesList.get(wayAttributesIdx);
+            float distance = (float)PointModelUtil.distance(source, target);
+            float verDistance = PointModelUtil.verticalDistance(source, target);
             boolean primaryDirection = graphTile.isNbPrimaryDirection(sourceApproachModel.neighbour1to2);
             primaryDirection = (PointModelUtil.distance(source, node1) < PointModelUtil.distance(target, node1)) == primaryDirection;
-            double directCost = routingProfile.getCost(wayAttributes, (float)distance, (float)verDistance, primaryDirection);
+            double directCost = routingProfile.getCost(wayAttributes, distance, verDistance, primaryDirection);
             if (directCost < matchCost){
                 resultPath = new MultiPointModelImpl(); // drop calculated route, since direct connection is better
-                resultPath.addPoint( new ExtendedPointModelImpl<>(source, null) );
-                resultPath.addPoint( new ExtendedPointModelImpl<>(target, wayAttributes) );
+                resultPath.addPoint( source );
+                setDuration(graphTile, target, wayAttributesIdx, distance, verDistance);
+                resultPath.addPoint( target );
             }
         }
 

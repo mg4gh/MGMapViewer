@@ -302,10 +302,9 @@ public class RoutingEngine {
                     if (idx == 0){
                         duration = 0;
                     } else {
-                        WayAttributs wayAttributs = null;
                         if (mpmRaw.get(idx) instanceof ExtendedPointModelImpl<?>){
                             //noinspection unchecked
-                            wayAttributs =((ExtendedPointModelImpl<WayAttributs>)mpmRaw.get(idx)).getExtent();
+                            WayAttributs wayAttributs =((ExtendedPointModelImpl<WayAttributs>)mpmRaw.get(idx)).getExtent();
                             duration += routingProfile.getDuration(wayAttributs,mpmRaw.get(idx-1), mpmRaw.get(idx));
                         } else {
                             long segmentTimestamp = mpmRaw.get(idx).getTimestamp();
