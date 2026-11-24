@@ -9,20 +9,32 @@ import mg.mgmap.generic.util.basic.MGLog;
 public class NativeBuffer {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
+    private static boolean nativeLoaded;
 
     static {
-        System.loadLibrary("mgmap-native");
+        try {
+            System.loadLibrary("mgmap-native");
+            nativeLoaded = true;
+        } catch (UnsatisfiedLinkError e) {
+            // Running on host JVM (local unit test) where Android .so library is not present
+            nativeLoaded = false;
+        }
     }
 
-    String name;
-    long size;
     private ByteBuffer byteBuffer;
+    private final String name;
+    private final long size;
 
     public NativeBuffer(String name, long size) {
         this.name = name;
         this.size = size;
-        mgLog.v(()->String.format(Locale.ENGLISH,"NaBu allocate: %s - %d",name,size));
-        byteBuffer = allocateDirectBuffer(size);
+        mgLog.v(() -> String.format(Locale.ENGLISH, "NaBu allocate: %s - %d", name, size));
+        if (nativeLoaded) {
+            byteBuffer = allocateDirectBuffer(size);
+        } else {
+            // Fallback for local unit tests running on host JVM
+            byteBuffer = ByteBuffer.allocateDirect((int) size);
+        }
     }
 
     public ByteBuffer getBuffer() {
@@ -31,8 +43,10 @@ public class NativeBuffer {
 
     public void free() {
         if (byteBuffer != null) {
-            mgLog.v(()->String.format(Locale.ENGLISH,"NaBu free: %s - %d",name,size));
-            freeDirectBuffer(byteBuffer);
+            mgLog.v(() -> String.format(Locale.ENGLISH, "NaBu free: %s - %d", name, size));
+            if (nativeLoaded) {
+                freeDirectBuffer(byteBuffer);
+            }
             byteBuffer = null;
         }
     }
