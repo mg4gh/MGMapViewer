@@ -22,10 +22,7 @@ import org.mapsforge.map.datastore.Way;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import mg.mgmap.activity.mgmap.MapViewerBase;
 import mg.mgmap.activity.mgmap.features.routing.RoutingProfile;
@@ -68,7 +65,6 @@ public class DGraphTileFactory implements GraphFactory {
     Pref<String> prefRoutingAlgorithm;
     DTileCache tileCache;
     double smoothingDistance;
-    Set<DGraphTile> persistencyCandidates = null;
     DTilePersistentCache persistentCache = null;
 
     AlgorithmStatistics statistics = new AlgorithmStatistics();
@@ -110,10 +106,8 @@ public class DGraphTileFactory implements GraphFactory {
         DGraphTile.initStatics();
 
         persistentCache = new DTilePersistentCacheFS();
-        persistencyCandidates = Collections.synchronizedSet(new HashSet<>());
-        persistentCache.init(cacheDir, persistencyCandidates);
-
-        tileCache = new DTileCache(persistencyCandidates, cacheLimit);
+        persistentCache.init(cacheDir);
+        tileCache = new DTileCache(cacheLimit);
         return this;
     }
 
@@ -127,6 +121,7 @@ public class DGraphTileFactory implements GraphFactory {
 
     public void onDestroy(){
         wayProvider = null;
+        tileCache.clear();
         tileCache = null;
     }
 
@@ -143,8 +138,12 @@ public class DGraphTileFactory implements GraphFactory {
         persistentCache.clear();
     }
 
+    // serviceCache is called after a calcRouting, so now is a good point to
+    //   -> check for modified tiles that should be saved persistent
+    //   -> check if tileCache size is above the configured limit; reduce if necessary
     public void serviceCache(){
         try {
+            tileCache.getAll().stream().filter(t->t.graphModified).forEach(t-> persistentCache.put(t));
             tileCache.service();
             persistentCache.service();
         } catch (Exception e) {

@@ -3,19 +3,23 @@ package mg.mgmap.generic.graph.impl5;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import mg.mgmap.generic.util.basic.MGLog;
 
+/**
+ * Keep the DGraphTile Objects available.
+ * DGraphTile Objects might be dropped due to
+ *   - call of clear() method. Then all tiles are taken out of the tileMap and tile.destroy() is called to free native memory
+ *   - call of service2 method. This can drop single tile, when cache is above the limit and tile is not in use (by a DGraphMulti,
+ *     which happen when a calcRouting is in progress). Also in this case tile.destroy() is called.
+ */
 public class DTileCache {
 
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     private final int limit;
-    private final Set<DGraphTile> persistencyCandidates;
-    public DTileCache(Set<DGraphTile> persistencyCandidates, int limit){
-        this.persistencyCandidates = persistencyCandidates;
+    public DTileCache(int limit){
         this.limit = limit;
     }
 
@@ -34,10 +38,10 @@ public class DTileCache {
         if (cacheTile != null){
             accessMap.remove(cacheTile.accessTime);
         }
-        DTileConnector.connect(persistencyCandidates, get( tileX-1,tileY), tile, true);
-        DTileConnector.connect(persistencyCandidates, tile, get( tileX+1,tileY), true);
-        DTileConnector.connect(persistencyCandidates, get( tileX,tileY-1), tile, false);
-        DTileConnector.connect(persistencyCandidates, tile, get( tileX,tileY+1), false);
+        DTileConnector.connect(get( tileX-1,tileY), tile, true);
+        DTileConnector.connect(tile, get( tileX+1,tileY), true);
+        DTileConnector.connect(get( tileX,tileY-1), tile, false);
+        DTileConnector.connect(tile, get( tileX,tileY+1), false);
         long now = currentAccessTime();
         tile.accessTime = now;
         accessMap.put(now, tileIdx);
@@ -76,6 +80,9 @@ public class DTileCache {
     }
 
     synchronized void clear(){
+        for (DGraphTile tile : tileMap.values()){
+            tile.destroy();
+        }
         tileMap.clear();
         accessMap.clear();
     }
@@ -110,6 +117,7 @@ public class DTileCache {
                     DTileConnector.disconnect(tile, Border.BORDER_NODE_EAST);
                     DTileConnector.disconnect(tile, Border.BORDER_NODE_SOUTH);
                     tile.resetNodeRefs();
+                    tile.destroy();
 //                    mgLog.d("remove from cache: tileX="+tile+" access="+tile.accessTime);
                 }
             } else {

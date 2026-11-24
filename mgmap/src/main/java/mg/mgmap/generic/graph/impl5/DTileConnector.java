@@ -3,7 +3,6 @@ package mg.mgmap.generic.graph.impl5;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Set;
 
 import mg.mgmap.generic.model.PointModelUtil;
 import mg.mgmap.generic.model.WriteablePointModel;
@@ -16,7 +15,7 @@ public class DTileConnector {
     private static final MGLog mgLog = new MGLog(MethodHandles.lookup().lookupClass().getName());
 
     /** symmetric connect dGraphTile1 and dGraphTile2  */
-    static void connect(Set<DGraphTile> persistencyCandidates, DGraphTile dGraphTile1, DGraphTile dGraphTile2, boolean horizontal) { // horizontal true: dGraphTile1 is left, dGraphTile2 is right - false: dGraphTile1 is above, dGraphTile2 is below
+    static void connect(DGraphTile dGraphTile1, DGraphTile dGraphTile2, boolean horizontal) { // horizontal true: dGraphTile1 is left, dGraphTile2 is right - false: dGraphTile1 is above, dGraphTile2 is below
         if ((dGraphTile1 == null) || (dGraphTile2 == null)) return; // cannot connect yet
         assert (horizontal ? (dGraphTile1.tile.tileX + 1 == dGraphTile2.tile.tileX) : (dGraphTile1.tile.tileY + 1 == dGraphTile2.tile.tileY));
 
@@ -27,17 +26,13 @@ public class DTileConnector {
             } else {
                 // tile1 is connected, but not tile2
                 connectFromTo(dGraphTile1, horizontal ? Border.BORDER_NODE_EAST : Border.BORDER_NODE_SOUTH, dGraphTile2);
-                if (persistencyCandidates != null) persistencyCandidates.add(dGraphTile2);
             }
         } else {
             if ((dGraphTile2.neighbourConnected & (horizontal ? Border.BORDER_NODE_WEST : Border.BORDER_NODE_NORTH)) != 0) { // tile2 has also already neighbours at this border
                 // tile2 is connected, but not tile1
                 connectFromTo(dGraphTile2, horizontal ? Border.BORDER_NODE_WEST : Border.BORDER_NODE_NORTH, dGraphTile1);
-                if (persistencyCandidates != null) persistencyCandidates.add(dGraphTile1);
             } else { // both unconnected
                 connectUnconnected(dGraphTile1, dGraphTile2, horizontal);
-                if (persistencyCandidates != null) persistencyCandidates.add(dGraphTile1);
-                if (persistencyCandidates != null) persistencyCandidates.add(dGraphTile2);
             }
         }
         dGraphTile1.neighbourTiles[horizontal ? Border.BORDER_NODE_EAST : Border.BORDER_NODE_SOUTH] = dGraphTile2;
@@ -59,6 +54,7 @@ public class DTileConnector {
             }
         }
         dGraphTileTo.neighbourConnected |= Border.oppositeBorder(border);
+        dGraphTileTo.graphModified = true;
     }
 
     static void connectUnconnected(DGraphTile dGraphTile1, DGraphTile dGraphTile2, boolean horizontal) { // horizontal true: dGraphTile1 is left, dGraphTile2 is right - false: dGraphTile1 is above, dGraphTile2 is below
@@ -168,9 +164,9 @@ public class DTileConnector {
             mgLog.d(()->"remainings2 " + remainingNodeIdxs2);
         }
         dGraphTile1.neighbourConnected |= horizontal? Border.BORDER_NODE_EAST: Border.BORDER_NODE_SOUTH;
-//        dGraphTile1.neighbourTiles[horizontal? Border.BORDER_NODE_EAST: Border.BORDER_NODE_SOUTH] = dGraphTile2;
         dGraphTile2.neighbourConnected |= horizontal? Border.BORDER_NODE_WEST: Border.BORDER_NODE_NORTH;
-//        dGraphTile2.neighbourTiles[horizontal? Border.BORDER_NODE_WEST: Border.BORDER_NODE_NORTH] = dGraphTile1;
+        dGraphTile1.graphModified = true;
+        dGraphTile2.graphModified = true;
     }
 
 
@@ -183,7 +179,6 @@ public class DTileConnector {
         DGraphTile neighbourTile = dGraphTile.neighbourTiles[border];
         if (neighbourTile == null) return; // nothing to do
         byte neighboursBorder = Border.oppositeBorder(border);
-//        neighbourTile.removeNeighbours(neighboursBorder);
         neighbourTile.neighbourTiles[neighboursBorder] = null;
     }
 

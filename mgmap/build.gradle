@@ -165,6 +165,12 @@ android {
         buildConfigField "String", "BUILD_TIME", "${mgBuildTime}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         outputFileNameBundle = "${parent.name}-${versionName}-soft4mg-release.aab"
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            }
+        }
     }
     buildTypes {
         release {
@@ -260,6 +266,13 @@ android {
     namespace = 'mg.mgmap'
     buildFeatures {
         buildConfig = true
+    }
+
+    externalNativeBuild {
+        cmake {
+            path file("src/main/cpp/CMakeLists.txt")
+            version "3.22.1" // Or your installed CMake version
+        }
     }
 }
 

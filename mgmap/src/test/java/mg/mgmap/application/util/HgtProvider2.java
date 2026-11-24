@@ -46,15 +46,15 @@ public class HgtProvider2 implements HgtProvider{
                         try (ZipFile zipFile = new ZipFile(hgtFile)){
                             ZipEntry zipEntry = zipFile.getEntry(hgtName+".hgt");
                             InputStream is = zipFile.getInputStream(zipEntry);
-                            buf = useSB.getValue()? new HgtBufferImplSB(is) : new HgtBufferImplBA(is);
+                            buf = useSB.getValue()? new HgtBufferImplSB(hgtName, is) : new HgtBufferImplBA(hgtName,is);
                         }
                     } else {
                         try (FileInputStream is = new FileInputStream(hgtFile)){
-                            buf = useSB.getValue()? new HgtBufferImplSB(is) : new HgtBufferImplBA(is);
+                            buf = useSB.getValue()? new HgtBufferImplSB(hgtName,is) : new HgtBufferImplBA(hgtName,is);
                         }
                     }
                 } else { // is dummy hgt file
-                    buf = new HgtBufferImplSea();
+                    buf = new HgtBufferImplSea(hgtName);
                 }
             }
         } catch (IOException e) { // should not happen

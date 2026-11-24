@@ -109,6 +109,7 @@ public class GraphPerformanceTest {
 //            System.out.println(algorithm.getResult());
         graphMulti.finalizeUsage();
         graphTileFactory.serviceCache();
+        for (DGraphTile dGraphTile : tiles) dGraphTile.destroy();
 
         System.out.printf(Locale.ENGLISH, "************************************* RunTest01: %d ************************************************%n", cntRunTest01++);
         System.out.printf(Locale.ENGLISH, "distance: %.1f%n", PointModelUtil.distance(mpm1));

@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface DTilePersistentCache {
 
-    void init(File cacheDir, Set<DGraphTile> persistencyCandidates);
+    void init(File cacheDir);
 
     void put(DGraphTile tile);
 
