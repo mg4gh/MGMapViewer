@@ -76,31 +76,28 @@ public class DGraphMulti implements Graph {
     // return true, if graph changed
     boolean preNodeRelax(DNode node, byte border){
         boolean changed = false;
-        if (border != 0 /*&& (gGraphTileMap.size() < GGraphTileFactory.CACHE_LIMIT)*/){ // add lazy expansion of GGraphMulti
-            changed |= checkGGraphTileNeighbour(node, border, Border.BORDER_NODE_WEST);
-            changed |= checkGGraphTileNeighbour(node, border, Border.BORDER_NODE_NORTH);
-            changed |= checkGGraphTileNeighbour(node, border, Border.BORDER_NODE_EAST);
-            changed |= checkGGraphTileNeighbour(node, border, Border.BORDER_NODE_SOUTH);
+        if (border != 0){ // add lazy expansion of GGraphMulti
+            changed |= loadDGraphTileNeighbour(node, border, Border.BORDER_NODE_WEST);
+            changed |= loadDGraphTileNeighbour(node, border, Border.BORDER_NODE_NORTH);
+            changed |= loadDGraphTileNeighbour(node, border, Border.BORDER_NODE_EAST);
+            changed |= loadDGraphTileNeighbour(node, border, Border.BORDER_NODE_SOUTH);
         }
         return changed;
     }
 
     // Returns true, if graph is extended
-    private boolean checkGGraphTileNeighbour(DNode node, byte nodeBorder, byte border){
+    private boolean loadDGraphTileNeighbour(DNode node, byte nodeBorder, byte border){
         boolean bRes = false;
         if ( (nodeBorder & border) != 0 ) { // OK, this border is relevant for given node
             int tileX = DGraphTileFactory.getTileX(node.tileIdx);
             int tileY = DGraphTileFactory.getTileY(node.tileIdx);
-            // todo check if dGraphTile is really needed
-            DGraphTile dGraphTile = dGraphTileFactory.getDGraphTile(tileX, tileY, false);
-            assert(dGraphTile != null) : "Node tileIdx="+node.tileIdx+" "+tileX+" "+tileY+" "+useCnt+" "+nodeBorder;
             int tileXn = tileX + Border.deltaX(border);
             int tileYn = tileY + Border.deltaY(border);
             DGraphTile dGraphTileNeighbour = dGraphTileFactory.getDGraphTile(tileXn, tileYn, false);
 
             if (dGraphTileNeighbour == null){
                 dGraphTileNeighbour = dGraphTileFactory.getDGraphTile(tileXn, tileYn, true);
-                mgLog.d(String.format(Locale.ENGLISH, "tileX=%d tileY=%d use=%b border=%d tileXn=%d tileYn=%d use=%b",tileX,tileY,dGraphTile.used,border,tileXn,tileYn,dGraphTileNeighbour.used)+" "+dGraphTile.bBox +" "+dGraphTileNeighbour.bBox);
+                mgLog.d(String.format(Locale.ENGLISH, "tileX=%d tileY=%d border=%d tileXn=%d tileYn=%d use=%b",tileX,tileY,border,tileXn,tileYn,dGraphTileNeighbour.used));
                 bRes = true;
             }
             use(dGraphTileNeighbour);
