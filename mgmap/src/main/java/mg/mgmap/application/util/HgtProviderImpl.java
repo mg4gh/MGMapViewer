@@ -245,19 +245,19 @@ public class HgtProviderImpl implements HgtProvider{
         persistenceManager.dropHgt(hgtName);
     }
 
-    public synchronized HgtBuffer getHgtBuf(String hgtName) { // assume hgt file exists
+    public synchronized HgtBuffer getHgtBuf(String hgtName) {
         HgtBuffer hgtBuffer;
         synchronized (this){
             for (HgtBuffer aHgtBuffer : hgtBuffers){
                 if (hgtName.equals( aHgtBuffer.getName() )) return aHgtBuffer;
             }
             hgtBuffer = getHgtBufInternal(hgtName);
-            hgtBuffers.add(hgtBuffer);
+            if (hgtBuffer != null) hgtBuffers.add(hgtBuffer);
         }
         return hgtBuffer;
     }
 
-    public HgtBuffer getHgtBufInternal(String hgtName) { // assume hgt file exists
+    public HgtBuffer getHgtBufInternal(String hgtName) {
         HgtBuffer buf = null;
         try {
             File hgtFile = persistenceManager.getHgtFile(hgtName);
