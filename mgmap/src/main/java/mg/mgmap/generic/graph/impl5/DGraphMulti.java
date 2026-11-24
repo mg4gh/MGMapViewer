@@ -59,14 +59,18 @@ public class DGraphMulti implements Graph {
             DGraphTile dGraphTile = dGraphTileFactory.getDGraphTile(dNode.tileIdx);
             for (short neighbourIdx = dGraphTile.getNdNeighbourIdx(dNode.nodeIdx); neighbourIdx != -1; neighbourIdx = dGraphTile.getNbNextNeighbourIdx(neighbourIdx)){
                 byte border = dGraphTile.getNbBorder(neighbourIdx);
-                float distance = dGraphTile.getNbDistance(neighbourIdx);
-                if ((border == 0) || (distance > 0)){
+                if (border == 0){
                     neighbourPoints.add(dGraphTile.getNode(dGraphTile.getNbNeighbourNodeIdx(neighbourIdx)));
-                } else { // node is at the border and neighbourNode in neighbourTile has exactly same location - so add neighbourPoints from this neighbourNode too
-                    if (traverseBorder){
-                        DGraphTile neighbourGraphTile = dGraphTile.neighbourTiles[border];
-                        DNode neighbourNode = neighbourGraphTile.getNode(dGraphTile.getNbNeighbourNodeIdx(neighbourIdx));
-                        getNeighbours(neighbourNode, neighbourPoints, false);
+                } else { // node is at the border
+                    float distance = dGraphTile.getNbDistance(neighbourIdx);
+                    DGraphTile neighbourGraphTile = dGraphTile.neighbourTiles[border];
+                    DNode neighbourNode = neighbourGraphTile.getNode(dGraphTile.getNbNeighbourNodeIdx(neighbourIdx));
+                    if (distance > 0){
+                        neighbourPoints.add(neighbourNode);
+                    } else { // distance == 0 ==> neighbourPoint is identical
+                        if (traverseBorder){
+                            getNeighbours(neighbourNode, neighbourPoints, false);
+                        }
                     }
                 }
             }
