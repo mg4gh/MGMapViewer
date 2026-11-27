@@ -295,6 +295,7 @@ public class DGraphTile implements Graph {
     long creationNanos;
     long accessTime = 0; // used for cache
     HashMap <Long, Short> waValueIndexMap = null;
+    short wayIdx = 0; // raw Idx of way in tile - different from wayAttributesIdx
 
     public DGraphTile(Tile tile, ElevationProvider elevationProvider, AlgorithmStatistics statistics, double smoothingDistance){
         this.creationNanos = System.nanoTime();
@@ -345,10 +346,10 @@ public class DGraphTile implements Graph {
             lat1 = clipRes.getLat();
             lon1 = clipRes.getLon();
             if (bBox.contains(lat1, lon1) && bBox.contains(lat2, lon2)){
-                addSegment(wayAttributesIdx, lat1, lon1 ,lat2, lon2);
+                addSegment(wayAttributesIdx, wayIdx, lat1, lon1 ,lat2, lon2);
             }
         }
-
+        wayIdx++;
     }
 
     public void setupFinished(){
@@ -359,7 +360,6 @@ public class DGraphTile implements Graph {
         maxNodeCnt = initialNodeCnt;
         naBuNodes = new NativeBuffer(this+" nodes filled", (long) maxNodeCnt * NODE_SIZE);
         nodesBuffer = naBuNodes.getBuffer();
-//        nodesBuffer = ByteBuffer.allocateDirect(maxNodeCnt * NODE_SIZE);
         for (int i=0; i<initialNodeCnt; i++){
             ExDNode node = eNodes[i];
             addNode(node.dla, node.dlo, node.getEle(), node.getEleAcc(), (byte)(node.flags & ND_FLAG_VALID), node.border, node.neighbour==null?-1:node.neighbour.neighbourIdx);
@@ -370,7 +370,6 @@ public class DGraphTile implements Graph {
         maxNeighbourCnt = (short)(initialNeighbourCnt+borderNodeCnt*3 + NEIGHBOURS_FOR_FIX_GRAPH); // one border node should have in avg not more than 1.5 neighbourNodes in the neighbour tile
         naBuNeighbours = new NativeBuffer(this+" neighbours filled", (long) maxNeighbourCnt * NEIGHBOUR_SIZE);
         neighboursBuffer = naBuNeighbours.getBuffer();
-//        neighboursBuffer = ByteBuffer.allocateDirect(maxNeighbourCnt * NEIGHBOUR_SIZE);
         for (int i=0; i<initialNeighbourCnt; i++) {
             ExDNeighbour neighbour = eNeighbours[i];
             addNeighbour(neighbour.neighbourNode.nodeIdx, neighbour.getNextNeighbourIdx(), neighbour.wayAttributesIdx, neighbour.border, neighbour.flags, neighbour.distance, neighbour.vertDistance);
@@ -388,10 +387,10 @@ public class DGraphTile implements Graph {
         statistics.setupNanos += (System.nanoTime() - creationNanos);
     }
 
-    void addSegment(short wayAttributesIdx, double lat1, double long1, double lat2, double long2){
+    void addSegment(short wayAttributesIdx, short wayIdx, double lat1, double long1, double lat2, double long2){
         ExDNode node1 = getAddNode( lat1, long1);
         ExDNode node2 = getAddNode( lat2, long2);
-        addSegment(wayAttributesIdx, node1, node2);
+        addSegment(wayAttributesIdx, wayIdx, node1, node2);
     }
 
     ExDNode getAddNode(double latitude, double longitude){
@@ -416,14 +415,14 @@ public class DGraphTile implements Graph {
         }
     }
 
-    void addSegment(short wayAttributesIdx, ExDNode node1, ExDNode node2){  // during init phase
+    void addSegment(short wayAttributesIdx, short wayIdx, ExDNode node1, ExDNode node2){  // during init phase
         int expectedNeighbourIdx = initialNeighbourCnt;
         ExDNeighbour neighbour12 = eNeighbours[expectedNeighbourIdx];
         ExDNeighbour neighbour21 = eNeighbours[expectedNeighbourIdx+1];
         float distance = (float)PointModelUtil.distance(node1,node2);
         float vertDistance = PointModelUtil.verticalDistance(node1,node2);
-        neighbour12.init(node2, node1.neighbour, neighbour21, wayAttributesIdx, distance, vertDistance, (byte)(NB_FLAG_VALID | NB_FLAG_PRIMARY_DIRECTION));
-        neighbour21.init(node1, node2.neighbour, neighbour12, wayAttributesIdx, distance, -vertDistance, NB_FLAG_VALID);
+        neighbour12.init(node2, node1.neighbour, neighbour21, wayAttributesIdx, wayIdx, distance, vertDistance, (byte)(NB_FLAG_VALID | NB_FLAG_PRIMARY_DIRECTION));
+        neighbour21.init(node1, node2.neighbour, neighbour12, wayAttributesIdx, wayIdx, distance, -vertDistance, NB_FLAG_VALID);
         node1.neighbour = neighbour12;
         node2.neighbour = neighbour21;
         node1.neighbourCnt++;
@@ -459,7 +458,7 @@ public class DGraphTile implements Graph {
                     reduceGraph(nNode, iNode); // drop iNode, replace neighbours with those from nNode
                 } else { // cannot drop both nodes (since they are border nodes)
                     // ==> just connect; accept potential problem with routing hints
-                    addSegment((short)-1, iNode, nNode); // neighbours are in the potential tile connect area - this should be large enough
+                    addSegment((short)-1, (short)-1, iNode, nNode); // neighbours are in the potential tile connect area - this should be large enough
                 }
             }
         }
@@ -502,7 +501,7 @@ public class DGraphTile implements Graph {
     boolean checkCommonWay(ExDNode node1, ExDNode node2){
         for (ExDNeighbour neighbour1 = node1.neighbour; neighbour1 != null; neighbour1 = neighbour1.nextNeighbour){
             for (ExDNeighbour neighbour2 = node2.neighbour; neighbour2 != null; neighbour2 = neighbour2.nextNeighbour){
-                if (neighbour1.wayAttributesIdx == neighbour2.wayAttributesIdx) return true;
+                if (neighbour1.wayIdx == neighbour2.wayIdx) return true;
             }
         }
         return false;
@@ -576,7 +575,6 @@ public class DGraphTile implements Graph {
 
     @Override
     public String getRefDetails(PointModel node) {
-        if (node instanceof DNode dNode) return " nodeIdx="+dNode.nodeIdx;
         return "";
     }
 

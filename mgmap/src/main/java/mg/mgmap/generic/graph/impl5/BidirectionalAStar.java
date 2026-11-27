@@ -123,7 +123,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
             graphTile.getNodeData(node, nodeIdx); // node to be relaxed
 
             if (graphTile.isNdSettled(nodeIdx, !ref.isReverse())){ // reverseRef is settled -> match found
-                mgLog.w("exit performAlgo rc=0 refNode="+node);
+                mgLog.w("exit performAlgo rc=0 refNode="+node+" matchNode="+matchNode);
                 rc = 0;
                 break;
             }
@@ -159,7 +159,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                     WayAttributs wayAttributs = (wayAttributesIdx==-1)?null:graphTile.wayAttributesList.get(wayAttributesIdx);
                     float distance = graphTile.getNbDistance(directedNeighbourIdx);
                     float vertDistance = graphTile.getNbVertDistance(directedNeighbourIdx);
-                    costToNeighbour = routingProfile.getCost(wayAttributs, distance, vertDistance, graphTile.isNbPrimaryDirection(directedNeighbourIdx)) + 0.001f;
+                    costToNeighbour = routingProfile.getCost(wayAttributs, distance, vertDistance, graphTile.isNbPrimaryDirection(directedNeighbourIdx));
                     graphTile.setNbCost(directedNeighbourIdx, costToNeighbour);
                 }
                 double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path

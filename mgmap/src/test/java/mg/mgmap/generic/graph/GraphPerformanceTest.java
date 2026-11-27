@@ -1,5 +1,6 @@
 package mg.mgmap.generic.graph;
 
+import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -47,30 +48,31 @@ public class GraphPerformanceTest {
 //    PointModel pm2 = new PointModelImpl(49.792982, 9.925589);
 
     @Test
-    public void test04__DGraphRoute1() {
+    public void test04__DGraphRoute() {
         MGLog.logConfig.put("mg.mgmap", MGLog.Level.WARN);
         MGLog.setUnittest(true);
 
         File cacheDir = new File("cache_local");
         PersistenceManager.deleteRecursivly(cacheDir);
+        //noinspection ResultOfMethodCallIgnored
         cacheDir.mkdirs();
         System.out.println(cacheDir.getAbsolutePath());
 
-        DGraphTileFactory factory = getFactory(null);
-        runTest01(factory);
-        runTest01(factory);
+        DGraphTileFactory factory = getFactoryDG(null);
+        runTestDG(factory);
+        runTestDG(factory);
 
-        factory = getFactory(cacheDir);
-        runTest01(factory);
-        runTest01(factory);
+        factory = getFactoryDG(cacheDir);
+        runTestDG(factory);
+        runTestDG(factory);
 
-        factory = getFactory(cacheDir);
-        runTest01(factory);
-        runTest01(factory);
+        factory = getFactoryDG(cacheDir);
+        runTestDG(factory);
+        runTestDG(factory);
     }
 
 
-    private DGraphTileFactory getFactory(File cacheDir){
+    private DGraphTileFactory getFactoryDG(File cacheDir){
         ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
         File mapFile = new File("src/test/assets/map_local/Germany-South_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
 
@@ -88,7 +90,7 @@ public class GraphPerformanceTest {
     }
 
     int cntRunTest01 = 1;
-    private void runTest01(DGraphTileFactory graphTileFactory){
+    private MultiPointModel runTestDG(DGraphTileFactory graphTileFactory){
 
         ArrayList<DGraphTile> tiles = new ArrayList<>();
 
@@ -106,7 +108,7 @@ public class GraphPerformanceTest {
 
         GraphAlgorithm algorithm = graphTileFactory.getAlgorithmForGraph(graphMulti, rp);
         MultiPointModel mpm1 = algorithm.perform(dpm1, dpm2, Double.MAX_VALUE, new AtomicInteger(), new ArrayList<>());
-//            System.out.println(algorithm.getResult());
+        System.out.println(algorithm.getResult());
         graphMulti.finalizeUsage();
         graphTileFactory.serviceCache();
         for (DGraphTile dGraphTile : tiles) dGraphTile.destroy();
@@ -114,13 +116,54 @@ public class GraphPerformanceTest {
         System.out.printf(Locale.ENGLISH, "************************************* RunTest01: %d ************************************************%n", cntRunTest01++);
         System.out.printf(Locale.ENGLISH, "distance: %.1f%n", PointModelUtil.distance(mpm1));
         System.out.printf(Locale.ENGLISH, "%s\n", graphTileFactory.renewStatistics());
+
+        return mpm1;
     }
 
     @Test
-    public void test02__DGraphRoute2() {
+    public void test02__GGraphRoute() {
         MGLog.logConfig.put("mg.mgmap", MGLog.Level.WARN);
         MGLog.setUnittest(true);
 
+        GGraphTileFactory factory = getFactoryGG();
+        runTestGG(factory);
+        runTestGG(factory);
+        for (RoutingSummary summary : RoutingSummary.routingSummaries) {
+            System.out.printf(Locale.ENGLISH, "%s\n",summary);
+        }
+    }
+
+    private MultiPointModel runTestGG(GGraphTileFactory graphTileFactory) {
+        ArrayList<GGraphTile> tiles = new ArrayList<>();
+
+        ApproachModel dpm1 = graphTileFactory.calcApproach(pm1, PointModelUtil.getCloseThreshold());
+        assert (dpm1 != null);
+        assert (dpm1.getApproachNode() != null);
+        tiles.add(graphTileFactory.getGraphTile(dpm1));
+
+        ApproachModel dpm2 = graphTileFactory.calcApproach(pm2, PointModelUtil.getCloseThreshold());
+        assert (dpm2 != null);
+        assert (dpm2.getApproachNode() != null);
+        tiles.add(graphTileFactory.getGraphTile(dpm2));
+
+        GGraphMulti graphMulti = new GGraphMulti(graphTileFactory, tiles);
+
+        graphTileFactory.connectApproach2Graph(graphMulti, dpm1);
+        graphTileFactory.connectApproach2Graph(graphMulti, dpm2);
+        graphTileFactory.checkDirectConnectApproaches(graphMulti, dpm1, dpm2);
+
+        GraphAlgorithm algorithm = graphTileFactory.getAlgorithmForGraph(graphMulti, rp);
+        MultiPointModel mpm1 = algorithm.perform(dpm1, dpm2, Double.MAX_VALUE, new AtomicInteger(), new ArrayList<>());
+        System.out.printf(Locale.ENGLISH, "distance: %.1f%n", PointModelUtil.distance(mpm1));
+
+        graphMulti.finalizeUsage();
+        graphTileFactory.serviceCache();
+        graphTileFactory.disconnectApproach2Graph(graphMulti, dpm1);
+        graphTileFactory.disconnectApproach2Graph(graphMulti, dpm2);
+        return mpm1;
+    }
+
+    private GGraphTileFactory getFactoryGG(){
         ElevationProvider elevationProvider = new ElevationProviderImplHelper2( new HgtProvider2() );
         File mapFile = new File("src/test/assets/map_local/Germany-South_oam.osm.map"); // !!! map is not uploaded to git (due to map size)
         System.out.println(mapFile.getAbsolutePath()+" "+mapFile.exists());
@@ -132,70 +175,23 @@ public class GraphPerformanceTest {
         Pref<String> prefRoutingAlgorithm = new Pref<>("BidirectionalAstarExt");
         Pref<Boolean> prefSmooth4Routing = new Pref<>(false);
         Pref<String> prefSmoothDistance = new Pref<>("16");
-        GGraphTileFactory graphTileFactory = new GGraphTileFactory().onCreate(wayProvider,elevationProvider,prefWayDetails,
+        return new GGraphTileFactory().onCreate(wayProvider,elevationProvider,prefWayDetails,
                 prefRoutingAlgorithm, prefSmooth4Routing, prefSmoothDistance);
-
-        ArrayList<GGraphTile> tiles = new ArrayList<>();
-
-
-        {
-            ApproachModel dpm1 = graphTileFactory.calcApproach(pm1, PointModelUtil.getCloseThreshold());
-            assert (dpm1 != null);
-            assert (dpm1.getApproachNode() != null);
-            tiles.add(graphTileFactory.getGraphTile(dpm1));
-
-            ApproachModel dpm2 = graphTileFactory.calcApproach(pm2, PointModelUtil.getCloseThreshold());
-            assert (dpm2 != null);
-            assert (dpm2.getApproachNode() != null);
-            tiles.add(graphTileFactory.getGraphTile(dpm2));
-
-            GGraphMulti graphMulti = new GGraphMulti(graphTileFactory, tiles);
-
-            graphTileFactory.connectApproach2Graph(graphMulti, dpm1);
-            graphTileFactory.connectApproach2Graph(graphMulti, dpm2);
-            graphTileFactory.checkDirectConnectApproaches(graphMulti, dpm1, dpm2);
-
-            GraphAlgorithm algorithm = graphTileFactory.getAlgorithmForGraph(graphMulti, rp);
-            MultiPointModel mpm1 = algorithm.perform(dpm1, dpm2, Double.MAX_VALUE, new AtomicInteger(), new ArrayList<>());
-            System.out.printf(Locale.ENGLISH, "distance: %.1f%n", PointModelUtil.distance(mpm1));
-
-            graphMulti.finalizeUsage();
-            graphTileFactory.serviceCache();
-            graphTileFactory.disconnectApproach2Graph(graphMulti, dpm1);
-            graphTileFactory.disconnectApproach2Graph(graphMulti, dpm2);
-        }
-
-        {
-            ApproachModel dpm1 = graphTileFactory.calcApproach(pm1, PointModelUtil.getCloseThreshold());
-            assert (dpm1 != null);
-            assert (dpm1.getApproachNode() != null);
-            tiles.add(graphTileFactory.getGraphTile(dpm1));
-
-            ApproachModel dpm2 = graphTileFactory.calcApproach(pm2, PointModelUtil.getCloseThreshold());
-            assert (dpm2 != null);
-            assert (dpm2.getApproachNode() != null);
-            tiles.add(graphTileFactory.getGraphTile(dpm2));
-
-            GGraphMulti graphMulti = new GGraphMulti(graphTileFactory, tiles);
-
-            graphTileFactory.connectApproach2Graph(graphMulti, dpm1);
-            graphTileFactory.connectApproach2Graph(graphMulti, dpm2);
-            graphTileFactory.checkDirectConnectApproaches(graphMulti, dpm1, dpm2);
-
-            GraphAlgorithm algorithm = graphTileFactory.getAlgorithmForGraph(graphMulti, rp);
-            MultiPointModel mpm1 = algorithm.perform(dpm1, dpm2, Double.MAX_VALUE, new AtomicInteger(), new ArrayList<>());
-            System.out.printf(Locale.ENGLISH, "distance: %.1f%n", PointModelUtil.distance(mpm1));
-
-            graphMulti.finalizeUsage();
-            graphTileFactory.serviceCache();
-            graphTileFactory.disconnectApproach2Graph(graphMulti, dpm1);
-            graphTileFactory.disconnectApproach2Graph(graphMulti, dpm2);
-        }
-
-        for (RoutingSummary summary : RoutingSummary.routingSummaries) {
-            System.out.printf(Locale.ENGLISH, "%s\n",summary);
-        }
     }
 
+
+    @Test
+    public void test10__compare() {
+        MGLog.logConfig.put("mg.mgmap", MGLog.Level.WARN);
+        MGLog.setUnittest(true);
+
+        DGraphTileFactory dGraphTileFactory = getFactoryDG(null);
+        MultiPointModel mpmDG = runTestDG(dGraphTileFactory);
+
+        GGraphTileFactory gGraphTileFactory = getFactoryGG();
+        MultiPointModel mpmGG = runTestGG(gGraphTileFactory);
+
+        Assert.assertEquals(PointModelUtil.distance(mpmDG), PointModelUtil.distance(mpmGG), 1.0);
+    }
 
 }

@@ -9,6 +9,7 @@ public class ExDNeighbour {
     ExDNeighbour reverseNeighbour;
 
     short wayAttributesIdx;
+    short wayIdx;
     float distance;
     float vertDistance;
     byte border;
@@ -18,11 +19,12 @@ public class ExDNeighbour {
         this.neighbourIdx = neighbourIdx;
     }
 
-    void init(ExDNode neighbourNode, ExDNeighbour nextNeighbour, ExDNeighbour reverseNeighbour, short wayAttributesIdx, float distance, float vertDistance, byte flags){
+    void init(ExDNode neighbourNode, ExDNeighbour nextNeighbour, ExDNeighbour reverseNeighbour, short wayAttributesIdx, short wayIdx, float distance, float vertDistance, byte flags){
         this.neighbourNode = neighbourNode;
         this.nextNeighbour = nextNeighbour;
         this.reverseNeighbour = reverseNeighbour;
         this.wayAttributesIdx = wayAttributesIdx;
+        this.wayIdx = wayIdx;
         this.distance = distance;
         this.vertDistance = vertDistance;
         this.border = 0;
