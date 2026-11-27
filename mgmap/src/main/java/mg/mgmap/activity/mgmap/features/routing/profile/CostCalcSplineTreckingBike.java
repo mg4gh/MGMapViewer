@@ -71,10 +71,12 @@ public class CostCalcSplineTreckingBike implements CostCalculator {
         if (dist <= 0.0000001 ) {
             return 0.0001;
         }
+        double cost;
         if ( oneway && !primaryDirection)
-            return mfd*dist*surfaceCatSpline.calc(vertDist / (float) dist) + dist * 5;
+            cost = mfd*dist*surfaceCatSpline.calc(vertDist / (float) dist) + dist * 5;
         else
-            return mfd*dist*surfaceCatSpline.calc(vertDist / (float) dist);
+            cost = mfd*dist*surfaceCatSpline.calc(vertDist / (float) dist);
+        return cost + 0.001;
     }
 
     public double heuristic(double dist, float vertDist) {
