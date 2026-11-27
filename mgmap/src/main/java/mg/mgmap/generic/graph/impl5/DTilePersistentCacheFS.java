@@ -185,7 +185,9 @@ public class DTilePersistentCacheFS implements DTilePersistentCache{
 
     @Override
     public synchronized void clear() {
-        PersistenceManager.deleteRecursivly(cacheDir);
+        if (cacheDir != null){
+            PersistenceManager.deleteRecursivly(cacheDir);
+        }
     }
 
 

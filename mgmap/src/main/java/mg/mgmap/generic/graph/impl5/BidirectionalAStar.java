@@ -77,9 +77,9 @@ public class BidirectionalAStar extends DGraphAlgorithm {
         double cost = routingProfile.getCost(wayAttributes, (float)distance, (float)verDistance, is12PrimaryDirection);
         double heuristic = heuristic(reverse, node);
         short directedNeighbourIdx = reverse?dGraphTile.getNbReverseIdx(neighbourIdx):neighbourIdx;
-        short neighbourRefIdx = DGraphTile.findFreeERefIdx();
+        int neighbourRefIdx = DGraphTile.findFreeERefIdx();
         DNodeRef ref = DGraphTile.eRefs[neighbourRefIdx].init(am.tileIdx, directedNeighbourIdx, reverse, cost, heuristic);
-        dGraphTile.setNdRef(nodeIdx, reverse, (short)(neighbourRefIdx | DGraphTile.ND_DNODEREF_MARKER));
+        dGraphTile.setNdRef(nodeIdx, reverse, (short)neighbourRefIdx ); // store reference on 2 byte - semantically as unsigned short
         prioQueue.add(ref);
         checkMatchCost(dGraphTile, nodeIdx);
     }
@@ -105,7 +105,6 @@ public class BidirectionalAStar extends DGraphAlgorithm {
         createStartEntries(targetApproachModel, true);
 
         DNodeRef ref = prioQueue.first();
-        short reverseRefIdx;
 
         DNode node = new DNode();
         DNode neighbourNode = new DNode();
@@ -123,8 +122,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
             short nodeIdx = graphTile.getNbNeighbourNodeIdx( refNeighbourIdx );
             graphTile.getNodeData(node, nodeIdx); // node to be relaxed
 
-            reverseRefIdx = graphTile.getNdRef(nodeIdx, !ref.isReverse());
-            if (reverseRefIdx >= 0) { // reverseRef is settled -> match found
+            if (graphTile.isNdSettled(nodeIdx, !ref.isReverse())){ // reverseRef is settled -> match found
                 mgLog.w("exit performAlgo rc=0 refNode="+node);
                 rc = 0;
                 break;
@@ -149,7 +147,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                 byte border = graphTile.getNbBorder(neighbourIdx);
                 DGraphTile neighbourGraphTile = (border==0)?graphTile:graphTile.neighbourTiles[border];
                 assert (neighbourGraphTile != null):"neighbourGraphTile is null - "+graphTile+" border="+border;
-                if (neighbourGraphTile.getNdRef(neighbourNodeIdx, ref.isReverse()) >= 0) continue; // neighbourNode in own direction is already settled (this check seems not relevant for performance)
+                if (neighbourGraphTile.isNdSettled(neighbourNodeIdx, ref.isReverse())) continue; // neighbourNode in own direction is already settled
                 neighbourGraphTile.getNodeData(neighbourNode, neighbourNodeIdx);
 
 
@@ -167,14 +165,14 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                 double currentCost = ref.getCost() + costToNeighbour; // calc cost on current relaxed path
                 // create new prioQueue entry, if there is currently none or if the current relaxed path has better cost
                 short oldNeighbourRefIdx = neighbourGraphTile.getNdRef(neighbourNodeIdx, ref.isReverse());
-                if ((oldNeighbourRefIdx == -1) || ((oldNeighbourRefIdx < -1) && (DGraphTile.eRefs[DGraphTile.eRefIdx(oldNeighbourRefIdx)].getCost() > currentCost))) { // OK, is better  - create new prioQueue entry
-                    if (oldNeighbourRefIdx < -1) { // there is an old prioQueue entry
+                if ((oldNeighbourRefIdx == -1) || (DGraphTile.eRefs[DGraphTile.eRefIdx(oldNeighbourRefIdx)].getCost() > currentCost)) { // OK, is better  - create new prioQueue entry
+                    if (oldNeighbourRefIdx != -1) { // there is an old prioQueue entry
                         DNodeRef oldDNodeRef = DGraphTile.eRefs[DGraphTile.eRefIdx(oldNeighbourRefIdx)];
                         statistics.removedNodeRefs++;
                         prioQueue.remove(oldDNodeRef);
                         oldDNodeRef.setInvalid();
                     }
-                    short neighbourRefIdx = DGraphTile.findFreeERefIdx();
+                    int neighbourRefIdx = DGraphTile.findFreeERefIdx();
                     if (neighbourRefIdx == -1) {
                         mgLog.e("exit performAlgo rc=6 no free DNodeRef object found");
                         rc = 6;
@@ -188,7 +186,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                         assert (directedNeighbourIdx != -1);
                     }
                     dNodeRef.init(neighbourGraphTile.tileIdx, directedNeighbourIdx, ref.isReverse(), currentCost, heuristic(ref.isReverse(), neighbourNode));
-                    neighbourGraphTile.setNdRef(neighbourNodeIdx, ref.isReverse(), (short)(neighbourRefIdx | DGraphTile.ND_DNODEREF_MARKER));
+                    neighbourGraphTile.setNdRef(neighbourNodeIdx, ref.isReverse(), (short)neighbourRefIdx);
 
                     if (!prioQueue.add(dNodeRef)){
                         DNodeRef other = prioQueue.ceiling(dNodeRef);
@@ -221,12 +219,13 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                 }
             }
 
+            graphTile.setNdRef(nodeIdx, ref.isReverse(), ref.neighbourIdx);
+            graphTile.setNdSettled(nodeIdx, ref.isReverse());
+
             DNodeRef lastRef = ref;
             ref = prioQueue.higher(ref);
             prioQueue.remove(lastRef);
             lastRef.setInvalid();
-
-            graphTile.setNdRef(nodeIdx, lastRef.isReverse(), lastRef.neighbourIdx);
 
             if (prioQueue.first() != ref){
                 if (!prioQueueRefNotFirstReported){
@@ -311,7 +310,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                 while (true){
                     graphTile = graph.dGraphTileFactory.getDGraphTile(node.tileIdx);
                     short refIdx = graphTile.getNdRef(node.nodeIdx, reverse);
-                    neighbourIdx = (refIdx >= 0)?refIdx:DGraphTile.eRefs[DGraphTile.eRefIdx(refIdx)].neighbourIdx;
+                    neighbourIdx = graphTile.isNdSettled(node.nodeIdx,reverse)?refIdx:DGraphTile.eRefs[DGraphTile.eRefIdx(refIdx)].neighbourIdx;
 
                     if ((approachModel.tileIdx == node.tileIdx) && ((approachModel.node1Idx == node.nodeIdx) || (approachModel.node2Idx == node.nodeIdx))) break;
 
@@ -332,7 +331,7 @@ public class BidirectionalAStar extends DGraphAlgorithm {
                 while (true){
                     graphTile = graph.dGraphTileFactory.getDGraphTile(node.tileIdx);
                     short refIdx = graphTile.getNdRef(node.nodeIdx, reverse);
-                    neighbourIdx = (refIdx >= 0)?refIdx:DGraphTile.eRefs[DGraphTile.eRefIdx(refIdx)].neighbourIdx;
+                    neighbourIdx = graphTile.isNdSettled(node.nodeIdx,reverse)?refIdx:DGraphTile.eRefs[DGraphTile.eRefIdx(refIdx)].neighbourIdx;
 
                     if ((approachModel.tileIdx == node.tileIdx) && ((approachModel.node1Idx == node.nodeIdx) || (approachModel.node2Idx == node.nodeIdx))) break;
 
@@ -390,9 +389,10 @@ public class BidirectionalAStar extends DGraphAlgorithm {
 
     void checkMatchCost(DGraphTile dGraphTile, short nodeIdx){
         if (nodeIdx == -1) return;
+        if (dGraphTile.isNdSettled(nodeIdx,false) || dGraphTile.isNdSettled(nodeIdx,true)) return; // if one direction is already settled, then this neighbourNode is no better "matchNode" than current (relaxing) node
         short fwRef = dGraphTile.getNdRef(nodeIdx, false);
         short rvRef = dGraphTile.getNdRef(nodeIdx, true);
-        if ((fwRef < -1) && (rvRef < -1)){
+        if ((fwRef != -1) && (rvRef != -1)){
             double nodeMatchCost = DGraphTile.eRefs[DGraphTile.eRefIdx(fwRef)].getCost() + DGraphTile.eRefs[DGraphTile.eRefIdx(rvRef)].getCost();
             if (nodeMatchCost < matchCost){
                 matchNode.tileIdx = dGraphTile.tileIdx;

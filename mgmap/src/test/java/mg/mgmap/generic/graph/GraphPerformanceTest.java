@@ -34,7 +34,7 @@ import mg.mgmap.generic.util.Pref;
 import mg.mgmap.generic.util.WayProvider;
 import mg.mgmap.generic.util.basic.MGLog;
 
-@FixMethodOrder(MethodSorters.DEFAULT)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING )
 public class GraphPerformanceTest {
     RoutingProfile rp = new TrekkingBike();
 
@@ -47,7 +47,7 @@ public class GraphPerformanceTest {
 //    PointModel pm2 = new PointModelImpl(49.792982, 9.925589);
 
     @Test
-    public void test01__DGraphRoute1() {
+    public void test04__DGraphRoute1() {
         MGLog.logConfig.put("mg.mgmap", MGLog.Level.WARN);
         MGLog.setUnittest(true);
 

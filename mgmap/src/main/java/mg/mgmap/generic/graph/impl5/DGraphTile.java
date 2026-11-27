@@ -42,8 +42,8 @@ public class DGraphTile implements Graph {
     static int ND_ELE_OFFSET = 4;
     @SuppressWarnings("unused")
     static int ND_ELEACC_OFFSET = 8;
-    static int ND_FLAGS_OFFSET = 12;
-    static int ND_BORDER_OFFSET = 13;
+    static int ND_BORDER_OFFSET = 12;
+    static int ND_FLAGS_OFFSET = 13;
     static int ND_NEIGHBOUR_OFFSET = 14;
     static int ND_FW_REF_OFFSET = 16;
     static int ND_RV_REF_OFFSET = 18;
@@ -52,16 +52,16 @@ public class DGraphTile implements Graph {
     static byte ND_FLAG_FIX = 0x02;
     static byte ND_FLAG_VISITED = 0x04;
     static byte ND_FLAG_HEIGHT_RELEVANT = 0x08;
-
-    static short ND_DNODEREF_MARKER = (short)(0x8000);
+    static byte ND_FW_SETTLED = 0x10;
+    static byte ND_RV_SETTLED = 0x20;
 
     void addNode(short dLa, short dLo, float ele, float eleAcc, byte flags, byte border, short neighbourIdx){
         nodesBuffer.putShort(dLa);
         nodesBuffer.putShort(dLo);
         nodesBuffer.putFloat(ele);
         nodesBuffer.putFloat(eleAcc);
-        nodesBuffer.put(flags);
         nodesBuffer.put(border);
+        nodesBuffer.put(flags);
         nodesBuffer.putShort(neighbourIdx);
         nodesBuffer.putInt(-1); // resets fw and rv nodeRef
     }
@@ -98,8 +98,27 @@ public class DGraphTile implements Graph {
     float getNdEle(short nodeIdx){
         return nodesBuffer.getFloat(NODE_SIZE * nodeIdx + ND_ELE_OFFSET);
     }
+    byte getNdFlags(short nodeIdx){
+        return nodesBuffer.get(NODE_SIZE * nodeIdx + ND_FLAGS_OFFSET);
+    }
+    void setNdFlags(short nodeIdx, byte flags){
+        nodesBuffer.put(NODE_SIZE * nodeIdx + ND_FLAGS_OFFSET, flags);
+    }
     boolean isNdValid(short nodeIdx){
         return (nodesBuffer.get(NODE_SIZE * nodeIdx + ND_FLAGS_OFFSET) & ND_FLAG_VALID) == ND_FLAG_VALID;
+    }
+    boolean isNdSettled(short nodeIdx, boolean reverse){
+        return (nodesBuffer.get(NODE_SIZE * nodeIdx + ND_FLAGS_OFFSET) & (reverse?ND_RV_SETTLED:ND_FW_SETTLED)) != 0;
+    }
+    void setNdSettled(short nodeIdx, boolean reverse){
+        byte flags = getNdFlags(nodeIdx);
+        flags |= reverse?ND_RV_SETTLED:ND_FW_SETTLED;
+        setNdFlags(nodeIdx, flags);
+    }
+    void setNdUnsettled(short nodeIdx){ // reset means alway to reset fw and rv direction
+        byte flags = getNdFlags(nodeIdx);
+        flags &= ND_FLAG_VALID;
+        setNdFlags(nodeIdx, flags);
     }
     byte getNdBorder(short nodeIdx){
         return nodesBuffer.get(NODE_SIZE * nodeIdx + ND_BORDER_OFFSET);
@@ -113,9 +132,8 @@ public class DGraphTile implements Graph {
     void setNdResetNodeRefs(short nodeIdx){
         nodesBuffer.putInt(NODE_SIZE * nodeIdx + ND_FW_REF_OFFSET, -1); // resets fw and rv nodeRef
     }
-    static short eRefIdx(short refIdx){
-        assert ((refIdx & ND_DNODEREF_MARKER) != 0);
-        return (short)(refIdx & ~ND_DNODEREF_MARKER);
+    static int eRefIdx(short refIdx){ // use refIdx as unsigned short value
+        return refIdx & 0xFFFF;
     }
     short getNdRef(short nodeIdx, boolean reverse){
         return nodesBuffer.getShort(NODE_SIZE *nodeIdx + (reverse?ND_RV_REF_OFFSET:ND_FW_REF_OFFSET));
@@ -216,6 +234,7 @@ public class DGraphTile implements Graph {
 
     static ExDNode[] eNodes = null;
     static ExDNeighbour[] eNeighbours = null;
+    static int nextFreeERefIdx = 0;
     static DNodeRef[] eRefs = null;
 
     static synchronized void initStatics(){
@@ -233,7 +252,7 @@ public class DGraphTile implements Graph {
         }
         if (eRefs == null){
             eRefs = new DNodeRef[Config.MAX_DNODEREF_CNT];
-            for (short i = 0; i< Config.MAX_DNODEREF_CNT; i++) {
+            for (int i = 0; i< Config.MAX_DNODEREF_CNT; i++) {
                 if (eRefs[i] == null) eRefs[i] = new DNodeRef();
             }
         }
@@ -501,6 +520,7 @@ public class DGraphTile implements Graph {
     void resetNodeRefs(){
         for (short i=0; i<maxNodeCnt; i++){
             setNdResetNodeRefs(i);
+            setNdUnsettled(i);
         }
     }
 
@@ -621,34 +641,32 @@ public class DGraphTile implements Graph {
     void setupStatistic(AlgorithmStatistics statistics){
         for (short nodeIdx=0; nodeIdx < maxNodeCnt; nodeIdx++){
             if (isNdValid(nodeIdx)){
+                boolean isFwSettled = isNdSettled(nodeIdx, false);
+                boolean isRvSettled = isNdSettled(nodeIdx, true);
                 short fwRef = getNdRef(nodeIdx, false);
                 short rvRef = getNdRef(nodeIdx, true);
                 statistics.cntTotal++;
                 if ((fwRef != -1) || (rvRef != -1)) {
                     statistics.cntRelaxed++;
-                    if ((fwRef >= 0) || (rvRef >= 0)) {
+                    if (isFwSettled || isRvSettled) {
                         statistics.cntSettled++;
                     }
                 }
-                if (fwRef < -1){
+                if (!isFwSettled && (fwRef != -1)){
                     statistics.dNodeRefCnt++;
-                } else if (fwRef >= 0){
-                    statistics.miDNodeRefCnt++;
                 }
-                if (rvRef < -1){
+                if (!isRvSettled && (rvRef < -1)){
                     statistics.dNodeRefCnt++;
-                } else if (rvRef >= 0){
-                    statistics.miDNodeRefCnt++;
                 }
             }
         }
     }
 
-    private static short nextFreeERefIdx = 0;
-    static short findFreeERefIdx(){
-        short idx = nextFreeERefIdx;
+    static int findFreeERefIdx(){
+        int idx = nextFreeERefIdx;
         while (true){
-            short nextIdx = (idx==Config.MAX_DNODEREF_CNT-1)?0:(short)(idx+1);
+            int nextIdx = (idx==Config.MAX_DNODEREF_CNT-1)?0:idx+1;
+            if (nextIdx == nextFreeERefIdx) return -1;
             if (eRefs[idx].isValid()) {
                 idx = nextIdx;
                 continue;
